@@ -186,7 +186,8 @@ void WebNavigationEventRouter::TabReplaced(content::WebContents* old_contents,
   if (!tab_observer) {
     // If you hit this DCHECK(), please add reproduction steps to
     // http://crbug.com/40135496.
-    DCHECK(GetViewType(old_contents) != mojom::ViewType::kTabContents);
+    CHECK(GetViewType(old_contents) != mojom::ViewType::kTabContents,
+          base::NotFatalUntil::M161);
     return;
   }
   if (!FrameNavigationState::IsValidUrl(old_contents->GetLastCommittedURL()) ||
@@ -213,7 +214,8 @@ void WebNavigationEventRouter::RecordNewWebContents(
   if (!tab_observer) {
     // If you hit this DCHECK(), please add reproduction steps to
     // http://crbug.com/40135496.
-    DCHECK(GetViewType(source_web_contents) != mojom::ViewType::kTabContents);
+    CHECK(GetViewType(source_web_contents) != mojom::ViewType::kTabContents,
+          base::NotFatalUntil::M161);
     return;
   }
 

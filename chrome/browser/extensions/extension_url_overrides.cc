@@ -260,7 +260,8 @@ void UpdateOverridesLists(Profile* profile,
       // uninstalling an externally loaded extension, which has not been enabled
       // once.
       // But if it's being deactivated, it should already be in the list.
-      DCHECK_NE(behavior, UpdateBehavior::kDeactivate);
+      CHECK_NE(behavior, UpdateBehavior::kDeactivate,
+               base::NotFatalUntil::M161);
       continue;
     }
     if (UpdateOverridesList(*page_overrides, page_override_pair.second.spec(),
@@ -370,7 +371,7 @@ std::vector<GURL> GetOverridesForChromeURL(
     content::BrowserContext* browser_context,
     bool get_all) {
   // Only chrome: URLs can be overridden like this.
-  DCHECK(url.SchemeIs(content::kChromeUIScheme));
+  CHECK(url.SchemeIs(content::kChromeUIScheme), base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   const base::DictValue& overrides = profile->GetPrefs()->GetDict(
@@ -417,7 +418,7 @@ std::vector<GURL> GetOverridesForChromeURL(
     } else {
       override_urls.push_back(override_url);
       if (!get_all) {  // Early out, since the highest-priority was found.
-        DCHECK_EQ(1u, override_urls.size());
+        CHECK_EQ(1u, override_urls.size(), base::NotFatalUntil::M161);
         return override_urls;
       }
     }
@@ -426,7 +427,7 @@ std::vector<GURL> GetOverridesForChromeURL(
   if (!get_all) {
     // Since component overrides are lower priority, we should only get here if
     // there are no non-component overrides.
-    DCHECK(override_urls.empty());
+    CHECK(override_urls.empty(), base::NotFatalUntil::M161);
     // Return the highest-priority component override, if any.
     if (component_overrides.size() > 1) {
       component_overrides.resize(1);
@@ -517,14 +518,15 @@ const extensions::Extension* ExtensionUrlOverrides::GetExtensionControllingURL(
     return nullptr;
   }
 
-  DCHECK_NE(url, mutable_url);
-  DCHECK(mutable_url.SchemeIs(extensions::kExtensionScheme));
+  CHECK_NE(url, mutable_url, base::NotFatalUntil::M161);
+  CHECK(mutable_url.SchemeIs(extensions::kExtensionScheme),
+        base::NotFatalUntil::M161);
 
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context)
           ->enabled_extensions()
           .GetByID(mutable_url.GetHost());
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   return extension;
 }

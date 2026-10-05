@@ -113,10 +113,10 @@ ChromeAppIcon::ChromeAppIcon(ChromeAppIconDelegate* delegate,
       app_id_(app_id),
       resource_size_in_dip_(resource_size_in_dip),
       resize_function_(resize_function) {
-  DCHECK(delegate_);
-  DCHECK(browser_context_);
-  DCHECK(!destroyed_callback_.is_null());
-  DCHECK_GE(resource_size_in_dip, 0);
+  CHECK(delegate_, base::NotFatalUntil::M161);
+  CHECK(browser_context_, base::NotFatalUntil::M161);
+  CHECK(!destroyed_callback_.is_null(), base::NotFatalUntil::M161);
+  CHECK_GE(resource_size_in_dip, 0, base::NotFatalUntil::M161);
   Reload();
 }
 
@@ -142,12 +142,12 @@ void ChromeAppIcon::Reload() {
 }
 
 bool ChromeAppIcon::IsValid() const {
-  DCHECK(icon_);
+  CHECK(icon_, base::NotFatalUntil::M161);
   return icon_->is_valid();
 }
 
 void ChromeAppIcon::UpdateIcon() {
-  DCHECK(icon_);
+  CHECK(icon_, base::NotFatalUntil::M161);
 
   image_skia_ = icon_->image_skia();
 
@@ -168,7 +168,7 @@ void ChromeAppIcon::UpdateIcon() {
 }
 
 void ChromeAppIcon::OnExtensionIconImageChanged(IconImage* icon) {
-  DCHECK_EQ(icon_.get(), icon);
+  CHECK_EQ(icon_.get(), icon, base::NotFatalUntil::M161);
   UpdateIcon();
 }
 

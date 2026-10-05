@@ -118,7 +118,7 @@ void ExtensionLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
   ExtensionIdSet ids_to_upload;
   for (const auto& item_id : items) {
     const std::string* item_id_str = std::get_if<std::string>(&item_id);
-    DCHECK(item_id_str);
+    CHECK(item_id_str, base::NotFatalUntil::M161);
     ids_to_upload.insert(*item_id_str);
   }
 

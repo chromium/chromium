@@ -276,7 +276,7 @@ class DelayLoadStartAndExecuteJavascript : public content::WebContentsObserver {
     }
 
     void Unblock() {
-      DCHECK(throttled_);
+      CHECK(throttled_, base::NotFatalUntil::M161);
       Resume();
     }
 

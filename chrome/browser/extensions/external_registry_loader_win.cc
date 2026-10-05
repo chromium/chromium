@@ -74,7 +74,7 @@ ExternalRegistryLoader::ExternalRegistryLoader()
 ExternalRegistryLoader::~ExternalRegistryLoader() = default;
 
 void ExternalRegistryLoader::StartLoading() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   GetOrCreateTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExternalRegistryLoader::LoadOnBlockingThread, this));
@@ -201,8 +201,8 @@ base::DictValue ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
 }
 
 void ExternalRegistryLoader::LoadOnBlockingThread() {
-  DCHECK(task_runner_);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_, base::NotFatalUntil::M161);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   base::TimeTicks start_time = base::TimeTicks::Now();
   base::DictValue prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWin",
@@ -216,7 +216,7 @@ void ExternalRegistryLoader::LoadOnBlockingThread() {
 
 void ExternalRegistryLoader::CompleteLoadAndStartWatchingRegistry(
     base::DictValue prefs) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   LoadFinished(std::move(prefs));
 
   // Attempt to watch registry if we haven't already.
@@ -278,8 +278,8 @@ ExternalRegistryLoader::GetOrCreateTaskRunner() {
 }
 
 void ExternalRegistryLoader::UpdatePrefsOnBlockingThread() {
-  DCHECK(task_runner_);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_, base::NotFatalUntil::M161);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   base::TimeTicks start_time = base::TimeTicks::Now();
   base::DictValue prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWinUpdate",

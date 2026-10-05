@@ -135,14 +135,14 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
   }
 
   bool RunTest(const std::string& test_name) {
-    DCHECK(extension_);
+    CHECK(extension_, base::NotFatalUntil::M161);
     const std::string extension_url = "basic.html?#" + test_name;
     return RunExtensionTest("vpn_provider",
                             {.extension_url = extension_url.c_str()});
   }
 
   const std::string& extension_id() const {
-    DCHECK(extension_id_);
+    CHECK(extension_id_, base::NotFatalUntil::M161);
     return *extension_id_;
   }
 
@@ -158,7 +158,7 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
 
  protected:
   void LoadVpnExtension() {
-    DCHECK(!extension_);
+    CHECK(!extension_, base::NotFatalUntil::M161);
     extension_ = LoadExtension(test_data_dir_.AppendASCII("vpn_provider"));
     extension_id_ = extension_->id();
   }

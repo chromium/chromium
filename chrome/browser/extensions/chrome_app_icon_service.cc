@@ -102,7 +102,7 @@ void ChromeAppIconService::OnAppUpdated(const std::string& app_id) {
 }
 
 void ChromeAppIconService::OnIconDestroyed(ChromeAppIcon* icon) {
-  DCHECK(icon);
+  CHECK(icon, base::NotFatalUntil::M161);
   auto it = icon_map_.find(icon->app_id());
   CHECK(it != icon_map_.end());
   it->second.erase(icon);

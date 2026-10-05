@@ -46,9 +46,9 @@ void DeleteOrigin(Profile* profile,
                   StoragePartition* partition,
                   const GURL& origin,
                   base::OnceClosure done_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(profile);
-  DCHECK(partition);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile, base::NotFatalUntil::M161);
+  CHECK(partition, base::NotFatalUntil::M161);
 
   if (origin.SchemeIs(kExtensionScheme)) {
     auto subtask_done_callback =
@@ -93,9 +93,9 @@ void OnNeedsToGarbageCollectIsolatedStorage(WeakPtr<Profile> profile) {
 void DataDeleter::StartDeleting(Profile* profile,
                                 const Extension* extension,
                                 base::OnceClosure done_callback) {
-  DCHECK(profile);
-  DCHECK(!profile->IsOffTheRecord());
-  DCHECK(extension);
+  CHECK(profile, base::NotFatalUntil::M161);
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   // Storage deletion can take a couple different tasks, depending on the
   // extension. The number of tasks is precomputed and passed to a barrier
@@ -147,12 +147,12 @@ void DataDeleter::StartDeleting(Profile* profile,
         subtask_done_callback);
   }
   if (delete_extension_origin) {
-    DCHECK(partition);
+    CHECK(partition, base::NotFatalUntil::M161);
     DeleteOrigin(profile, partition, extension->url(), subtask_done_callback);
   }
   if (delete_web_url_origin) {
-    DCHECK(partition);
-    DCHECK(!launch_web_url_origin.is_empty());
+    CHECK(partition, base::NotFatalUntil::M161);
+    CHECK(!launch_web_url_origin.is_empty(), base::NotFatalUntil::M161);
     DeleteOrigin(profile, partition, launch_web_url_origin,
                  subtask_done_callback);
   }

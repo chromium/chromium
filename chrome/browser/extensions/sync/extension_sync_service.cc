@@ -304,7 +304,7 @@ std::string ExtensionSyncService::GetClientTag(
   if (entity_data.specifics.has_extension()) {
     return entity_data.specifics.extension().id();
   }
-  DCHECK(entity_data.specifics.has_app());
+  CHECK(entity_data.specifics.has_app(), base::NotFatalUntil::M161);
   return entity_data.specifics.app().extension().id();
 }
 
@@ -361,7 +361,8 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
   if (it != pending_updates_.end()) {
     const base::Version& version = it->second.version;
     // If we have a pending version, it should be newer than the installed one.
-    DCHECK_EQ(-1, extension.version().CompareTo(version));
+    CHECK_EQ(-1, extension.version().CompareTo(version),
+             base::NotFatalUntil::M161);
     result.set_version(version);
     // If we'll re-enable the extension once it's updated, also send that back
     // to sync.
@@ -438,7 +439,7 @@ void ExtensionSyncService::ApplySyncData(
   syncer::DataType type =
       extension_sync_data.is_app() ? syncer::APPS : syncer::EXTENSIONS;
   SyncBundle* bundle = GetSyncBundle(type);
-  DCHECK(bundle->IsSyncing());
+  CHECK(bundle->IsSyncing(), base::NotFatalUntil::M161);
   if (extension && !IsCorrectSyncType(*extension, type)) {
     // The installed item isn't the same type as the sync data item, so we need
     // to remove the sync data item; otherwise it will be a zombie that will
@@ -634,7 +635,8 @@ void ExtensionSyncService::ApplySyncData(
 
   // Notify the AccountExtensionTracker of an incoming extension via sync.
   if (!extension_sync_data.is_app() && state != NOT_INSTALLED) {
-    DCHECK(ShouldPromoteToAccountExtension(extension_sync_data));
+    CHECK(ShouldPromoteToAccountExtension(extension_sync_data),
+          base::NotFatalUntil::M161);
     AccountExtensionTracker::Get(profile_)->OnExtensionSyncDataReceived(id);
   }
 
@@ -686,7 +688,7 @@ void ExtensionSyncService::SetSyncStartFlareForTesting(
 }
 
 void ExtensionSyncService::DeleteThemeDoNotUse(const Extension& theme) {
-  DCHECK(theme.is_theme());
+  CHECK(theme.is_theme(), base::NotFatalUntil::M161);
   GetSyncBundle(syncer::EXTENSIONS)
       ->PushSyncDeletion(theme.id(), CreateSyncData(theme).GetSyncData());
 }
@@ -702,7 +704,7 @@ void ExtensionSyncService::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
-  DCHECK_EQ(profile_, browser_context);
+  CHECK_EQ(profile_, browser_context, base::NotFatalUntil::M161);
 
   if (!is_update && IsPendingSyncInstall(extension->id())) {
     sync_installs_in_progress_.insert(extension->id());
@@ -763,7 +765,7 @@ void ExtensionSyncService::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  DCHECK_EQ(profile_, browser_context);
+  CHECK_EQ(profile_, browser_context, base::NotFatalUntil::M161);
   // Don't bother syncing if the extension will be re-installed momentarily.
   // Don't sync extension removals enforced by policy.
   if (reason == extensions::UNINSTALL_REASON_REINSTALL ||
@@ -817,7 +819,7 @@ void ExtensionSyncService::OnExtensionDisableReasonsChanged(
 
 void ExtensionSyncService::OnExtensionPrefsWillBeDestroyed(
     ExtensionPrefs* prefs) {
-  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  CHECK(prefs_observation_.IsObservingSource(prefs), base::NotFatalUntil::M161);
   prefs_observation_.Reset();
 }
 
@@ -855,7 +857,8 @@ void ExtensionSyncService::FillSyncDataList(
   for (const scoped_refptr<const Extension>& extension : extensions) {
     if (IsCorrectSyncType(*extension, type) && ShouldSync(*extension)) {
       // We should never have pending data for an installed extension.
-      DCHECK(!GetSyncBundle(type)->HasPendingExtensionData(extension->id()));
+      CHECK(!GetSyncBundle(type)->HasPendingExtensionData(extension->id()),
+            base::NotFatalUntil::M161);
       sync_data_list->push_back(CreateSyncData(*extension));
     }
   }

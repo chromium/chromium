@@ -58,7 +58,8 @@ SkColor RawStringToSkColor(const std::string& str) {
   uint64_t value = 0;
   base::StringToUint64(str, &value);
   SkColor color = static_cast<SkColor>(value);
-  DCHECK(value == color);  // ensure value fits into color's 32 bits
+  CHECK(value == color,
+        base::NotFatalUntil::M161);  // ensure value fits into color's 32 bits
   return color;
 }
 

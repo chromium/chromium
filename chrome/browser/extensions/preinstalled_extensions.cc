@@ -115,7 +115,7 @@ void Provider::InitProfileState() {
   preinstalled_extensions_enabled_ =
       IsLocaleSupported() && profile_->GetPrefs()->GetString(
                                  prefs::kPreinstalledExtensions) == "install";
-  DCHECK(!perform_new_installation_);
+  CHECK(!perform_new_installation_, base::NotFatalUntil::M161);
 
   InstallState state =
       static_cast<InstallState>(profile_->GetPrefs()->GetInteger(
@@ -177,7 +177,7 @@ Provider::Provider(Profile* profile,
                                        download_location,
                                        creation_flags),
       profile_(profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   // See SetPrefs() below.
   CHECK_EQ(download_location, ManifestLocation::kInternal);
   set_auto_acknowledge(true);
@@ -197,7 +197,7 @@ void Provider::VisitRegisteredExtension() {
 }
 
 void Provider::SetPrefs(base::DictValue prefs) {
-  DCHECK(preinstalled_extensions_enabled_);
+  CHECK(preinstalled_extensions_enabled_, base::NotFatalUntil::M161);
 
   // Load a hard-coded list of external extensions. These are not component
   // extensions; they are installed from the webstore and don't get access to
@@ -212,7 +212,7 @@ void Provider::SetPrefs(base::DictValue prefs) {
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // First, check if this is for a migration from around 2013. Likely not.
   if (is_migration_) {
-    DCHECK(!perform_new_installation_);
+    CHECK(!perform_new_installation_, base::NotFatalUntil::M161);
     absl::flat_hash_set<std::string> keys_to_erase;
     // Filter out the new pre-installed apps for migrating users, so that we
     // don't randomly install them out of the blue. Two-pass to keep iterators

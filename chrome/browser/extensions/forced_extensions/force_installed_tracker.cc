@@ -74,14 +74,14 @@ void ForceInstalledTracker::AddExtensionInfo(const ExtensionId& extension_id,
                                              bool is_from_store) {
   auto result =
       extensions_.emplace(extension_id, ExtensionInfo{status, is_from_store});
-  DCHECK(result.second);
+  CHECK(result.second, base::NotFatalUntil::M161);
   UpdateCounters(result.first->second.status, +1);
 }
 
 void ForceInstalledTracker::ChangeExtensionStatus(
     const ExtensionId& extension_id,
     ExtensionStatus status) {
-  DCHECK_GE(status_, kWaitingForExtensionLoads);
+  CHECK_GE(status_, kWaitingForExtensionLoads, base::NotFatalUntil::M161);
   auto item = extensions_.find(extension_id);
   if (item == extensions_.end())
     return;
@@ -96,8 +96,8 @@ void ForceInstalledTracker::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 
 void ForceInstalledTracker::OnPolicyServiceInitialized(
     policy::PolicyDomain domain) {
-  DCHECK_EQ(domain, policy::POLICY_DOMAIN_CHROME);
-  DCHECK_EQ(status_, kWaitingForPolicyService);
+  CHECK_EQ(domain, policy::POLICY_DOMAIN_CHROME, base::NotFatalUntil::M161);
+  CHECK_EQ(status_, kWaitingForPolicyService, base::NotFatalUntil::M161);
 
   policy_service()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
 
@@ -113,15 +113,17 @@ void ForceInstalledTracker::OnPolicyServiceInitialized(
 }
 
 void ForceInstalledTracker::OnInstallForcelistChanged() {
-  DCHECK_EQ(status_, kWaitingForInstallForcelistPref);
+  CHECK_EQ(status_, kWaitingForInstallForcelistPref, base::NotFatalUntil::M161);
   ProceedIfForcedExtensionsPrefReady();
 }
 
 bool ForceInstalledTracker::ProceedIfForcedExtensionsPrefReady() {
-  DCHECK(
-      policy_service()->IsInitializationComplete(policy::POLICY_DOMAIN_CHROME));
-  DCHECK(status_ == kWaitingForPolicyService ||
-         status_ == kWaitingForInstallForcelistPref);
+  CHECK(
+      policy_service()->IsInitializationComplete(policy::POLICY_DOMAIN_CHROME),
+      base::NotFatalUntil::M161);
+  CHECK(status_ == kWaitingForPolicyService ||
+            status_ == kWaitingForInstallForcelistPref,
+        base::NotFatalUntil::M161);
 
   const base::DictValue& value =
       pref_service_->GetDict(pref_names::kInstallForceList);
@@ -134,11 +136,13 @@ bool ForceInstalledTracker::ProceedIfForcedExtensionsPrefReady() {
 }
 
 void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
-  DCHECK(forced_extensions_pref_ready_);
-  DCHECK(
-      policy_service()->IsInitializationComplete(policy::POLICY_DOMAIN_CHROME));
-  DCHECK(status_ == kWaitingForPolicyService ||
-         status_ == kWaitingForInstallForcelistPref);
+  CHECK(forced_extensions_pref_ready_, base::NotFatalUntil::M161);
+  CHECK(
+      policy_service()->IsInitializationComplete(policy::POLICY_DOMAIN_CHROME),
+      base::NotFatalUntil::M161);
+  CHECK(status_ == kWaitingForPolicyService ||
+            status_ == kWaitingForInstallForcelistPref,
+        base::NotFatalUntil::M161);
 
   pref_change_registrar_.RemoveAll();
 
@@ -281,7 +285,7 @@ bool ForceInstalledTracker::IsMisconfiguration(
   }
   if (installation_data.failure_reason ==
       InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY) {
-    DCHECK(installation_data.no_updates_info);
+    CHECK(installation_data.no_updates_info, base::NotFatalUntil::M161);
     if (installation_data.no_updates_info.value() ==
         InstallStageTracker::NoUpdatesInfo::kEmpty) {
       return true;
@@ -355,7 +359,7 @@ policy::PolicyService* ForceInstalledTracker::policy_service() {
 }
 
 void ForceInstalledTracker::MaybeNotifyObservers() {
-  DCHECK_GE(status_, kWaitingForExtensionLoads);
+  CHECK_GE(status_, kWaitingForExtensionLoads, base::NotFatalUntil::M161);
   if (status_ == kWaitingForExtensionLoads && load_pending_count_ == 0) {
     for (auto& obs : observers_)
       obs.OnForceInstalledExtensionsLoaded();

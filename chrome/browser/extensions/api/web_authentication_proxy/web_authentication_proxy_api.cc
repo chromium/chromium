@@ -37,9 +37,10 @@ void WebAuthenticationProxyAPI::Shutdown() {
 
 void WebAuthenticationProxyAPI::OnListenerAdded(
     const EventListenerInfo& details) {
-  DCHECK_EQ(
+  CHECK_EQ(
       details.event_name,
-      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName);
+      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName,
+      base::NotFatalUntil::M161);
   // This may be called multiple times for the same extension, but we only need
   // to instantiate a notifier once.
   session_state_change_notifiers_.try_emplace(
@@ -48,9 +49,10 @@ void WebAuthenticationProxyAPI::OnListenerAdded(
 
 void WebAuthenticationProxyAPI::OnListenerRemoved(
     const EventListenerInfo& details) {
-  DCHECK_EQ(
+  CHECK_EQ(
       details.event_name,
-      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName);
+      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName,
+      base::NotFatalUntil::M161);
   if (EventRouter::Get(context_)->ExtensionHasEventListener(
           details.extension_id, api::web_authentication_proxy::
                                     OnRemoteSessionStateChange::kEventName)) {
@@ -68,7 +70,7 @@ WebAuthenticationProxyAttachFunction::~WebAuthenticationProxyAttachFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebAuthenticationProxyAttachFunction::Run() {
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
 
   const bool success =
       WebAuthenticationProxyRegistrarFactory::GetForBrowserContext(
@@ -85,7 +87,7 @@ WebAuthenticationProxyDetachFunction::~WebAuthenticationProxyDetachFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebAuthenticationProxyDetachFunction::Run() {
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
 
   WebAuthenticationProxyService* proxy_service =
       WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
@@ -113,7 +115,7 @@ void WebAuthenticationProxyCompleteCreateRequestFunction::DoRespond(
 
 ExtensionFunction::ResponseAction
 WebAuthenticationProxyCompleteCreateRequestFunction::Run() {
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
   auto params =
       api::web_authentication_proxy::CompleteCreateRequest::Params::Create(
           args());
@@ -143,7 +145,7 @@ void WebAuthenticationProxyCompleteGetRequestFunction::DoRespond(
 
 ExtensionFunction::ResponseAction
 WebAuthenticationProxyCompleteGetRequestFunction::Run() {
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
   auto params =
       api::web_authentication_proxy::CompleteGetRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -166,7 +168,7 @@ WebAuthenticationProxyCompleteIsUvpaaRequestFunction::
 
 ExtensionFunction::ResponseAction
 WebAuthenticationProxyCompleteIsUvpaaRequestFunction::Run() {
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
   auto params =
       api::web_authentication_proxy::CompleteIsUvpaaRequest::Params::Create(
           args());

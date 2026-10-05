@@ -72,7 +72,7 @@ ExtensionFunction::ResponseAction EnterpriseWebrtcStartCaptureFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction EnterpriseWebrtcStopCaptureFunction::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   switch (content::WebRtcDiagnostics::GetInstance()->StopCaptureForClient(
       browser_context(), extension_id())) {
@@ -85,7 +85,7 @@ ExtensionFunction::ResponseAction EnterpriseWebrtcStopCaptureFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction EnterpriseWebrtcGetSnapshotFunction::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto params = api::enterprise_webrtc::GetSnapshot::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -113,7 +113,7 @@ ExtensionFunction::ResponseAction EnterpriseWebrtcGetSnapshotFunction::Run() {
 
 void EnterpriseWebrtcGetSnapshotFunction::OnDataRetrieved(
     base::DictValue data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   api::enterprise_webrtc::CaptureSnapshot snapshot;
   // //content builds the snapshot against this same schema, so a mismatch is
@@ -125,7 +125,7 @@ void EnterpriseWebrtcGetSnapshotFunction::OnDataRetrieved(
 
 ExtensionFunction::ResponseAction
 EnterpriseWebrtcGetCaptureStatusFunction::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   api::enterprise_webrtc::StatusResult result;
   // Reports this extension's own session in this profile, not whether some

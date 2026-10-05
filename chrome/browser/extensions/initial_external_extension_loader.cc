@@ -56,7 +56,7 @@ base::DictValue GenerateExtensionPrefs(const base::ListValue& extensions_ids) {
 InitialExternalExtensionLoader::InitialExternalExtensionLoader(
     PrefService& prefs)
     : prefs_(prefs) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   pref_registrar_.Init(base::to_address(prefs_));
 
@@ -75,13 +75,13 @@ InitialExternalExtensionLoader::InitialExternalExtensionLoader(
 InitialExternalExtensionLoader::~InitialExternalExtensionLoader() = default;
 
 void InitialExternalExtensionLoader::StartLoading() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   const base::ListValue& ids = prefs_->GetList(pref_names::kInitialInstallList);
   LoadFinished(GenerateExtensionPrefs(ids));
 }
 
 void InitialExternalExtensionLoader::OnExtensionsPrefChanged() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   const base::ListValue& ids = prefs_->GetList(pref_names::kInitialInstallList);
   OnUpdated(GenerateExtensionPrefs(ids));
 }

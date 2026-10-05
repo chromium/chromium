@@ -162,7 +162,7 @@ syncer::SyncChange ExtensionSyncData::GetSyncChange(
 
 void ExtensionSyncData::ToExtensionSpecifics(
     sync_pb::ExtensionSpecifics* specifics) const {
-  DCHECK(crx_file::id_util::IdIsValid(id_));
+  CHECK(crx_file::id_util::IdIsValid(id_), base::NotFatalUntil::M161);
   specifics->set_id(id_);
   specifics->set_update_url(update_url_.spec());
   specifics->set_version(version_.GetString());
@@ -184,7 +184,7 @@ void ExtensionSyncData::ToExtensionSpecifics(
 }
 
 void ExtensionSyncData::ToAppSpecifics(sync_pb::AppSpecifics* specifics) const {
-  DCHECK(specifics);
+  CHECK(specifics, base::NotFatalUntil::M161);
   // Only sync the ordinal values and launch type if they are valid.
   if (app_launch_ordinal_.IsValid()) {
     specifics->set_app_launch_ordinal(app_launch_ordinal_.ToInternalValue());
@@ -207,7 +207,7 @@ void ExtensionSyncData::ToAppSpecifics(sync_pb::AppSpecifics* specifics) const {
   for (const auto& linked_icon : linked_icons_) {
     sync_pb::LinkedAppIconInfo* linked_app_icon_info =
         specifics->add_linked_app_icons();
-    DCHECK(linked_icon.url.is_valid());
+    CHECK(linked_icon.url.is_valid(), base::NotFatalUntil::M161);
     linked_app_icon_info->set_url(linked_icon.url.spec());
     linked_app_icon_info->set_size(linked_icon.size);
   }

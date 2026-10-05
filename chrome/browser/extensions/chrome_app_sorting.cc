@@ -195,7 +195,7 @@ void ChromeAppSorting::MigrateAppIndex(const ExtensionIdList& extension_ids) {
 
 void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
   auto* profile = Profile::FromBrowserContext(browser_context_);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!web_app_provider)
     return;
@@ -550,7 +550,7 @@ void ChromeAppSorting::OnWebAppInstallManagerDestroyed() {
 
 void ChromeAppSorting::OnWebAppsWillBeUpdatedFromSync(
     base::span<const web_app::WebApp* const> updated_apps_state) {
-  DCHECK(web_app_registrar_);
+  CHECK(web_app_registrar_, base::NotFatalUntil::M161);
 
   // Unlike the extensions system (which calls SetPageOrdinal() and
   // SetAppLaunchOrdinal() from within the extensions sync code), setting the
@@ -561,8 +561,9 @@ void ChromeAppSorting::OnWebAppsWillBeUpdatedFromSync(
   for (const web_app::WebApp* new_web_app_state : updated_apps_state) {
     const web_app::WebApp* old_web_app_state =
         web_app_registrar_->GetAppById(new_web_app_state->app_id());
-    DCHECK(old_web_app_state);
-    DCHECK_EQ(new_web_app_state->app_id(), old_web_app_state->app_id());
+    CHECK(old_web_app_state, base::NotFatalUntil::M161);
+    CHECK_EQ(new_web_app_state->app_id(), old_web_app_state->app_id(),
+             base::NotFatalUntil::M161);
     if (old_web_app_state->user_page_ordinal() !=
             new_web_app_state->user_page_ordinal() ||
         old_web_app_state->user_launch_ordinal() !=
@@ -626,8 +627,8 @@ void ChromeAppSorting::InitializePageOrdinalMap(
 
     // Ensure that the web store app still isn't found in this list, since
     // it is added after this loop.
-    DCHECK(*ext_it != kWebStoreAppId);
-    DCHECK(*ext_it != app_constants::kChromeAppId);
+    CHECK(*ext_it != kWebStoreAppId, base::NotFatalUntil::M161);
+    CHECK(*ext_it != app_constants::kChromeAppId, base::NotFatalUntil::M161);
   }
 
   // Include the Web Store App since it is displayed on the NTP.
@@ -732,7 +733,8 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
 syncer::StringOrdinal ChromeAppSorting::ResolveCollision(
     const syncer::StringOrdinal& page_ordinal,
     const syncer::StringOrdinal& app_launch_ordinal) const {
-  DCHECK(page_ordinal.IsValid() && app_launch_ordinal.IsValid());
+  CHECK(page_ordinal.IsValid() && app_launch_ordinal.IsValid(),
+        base::NotFatalUntil::M161);
 
   auto page_it = ntp_ordinal_map_.find(page_ordinal);
   if (page_it == ntp_ordinal_map_.end())

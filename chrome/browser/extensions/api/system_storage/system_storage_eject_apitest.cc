@@ -81,7 +81,8 @@ class SystemStorageEjectApiTest : public extensions::ExtensionApiTest {
   }
 
   void Attach() {
-    DCHECK(StorageMonitor::GetInstance()->IsInitialized());
+    CHECK(StorageMonitor::GetInstance()->IsInitialized(),
+          base::NotFatalUntil::M161);
     StorageMonitor::GetInstance()->receiver()->ProcessAttach(
         extensions::test::BuildStorageInfoFromTestStorageUnitInfo(
             kRemovableStorageData));
@@ -89,7 +90,8 @@ class SystemStorageEjectApiTest : public extensions::ExtensionApiTest {
   }
 
   void Detach() {
-    DCHECK(StorageMonitor::GetInstance()->IsInitialized());
+    CHECK(StorageMonitor::GetInstance()->IsInitialized(),
+          base::NotFatalUntil::M161);
     StorageMonitor::GetInstance()->receiver()->ProcessDetach(
         kRemovableStorageData.device_id);
     content::RunAllPendingInMessageLoop();

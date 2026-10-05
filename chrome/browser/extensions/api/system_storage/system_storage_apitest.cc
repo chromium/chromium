@@ -41,7 +41,7 @@ class TestStorageInfoProvider : public extensions::StorageInfoProvider {
   void set_expected_call_count(int count) { expected_call_count_ = count; }
 
   void WaitForCallbacks() {
-    DCHECK(expected_call_count_);
+    CHECK(expected_call_count_, base::NotFatalUntil::M161);
     if (callback_count_ != expected_call_count_) {
       run_loop_.Run();
     }

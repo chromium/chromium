@@ -28,7 +28,7 @@ void OnSessionStateChangeFileUpdate(
     const base::RepeatingCallback<void()>& update_callback,
     const base::FilePath& path,
     bool is_error) {
-  DCHECK_EQ(path, watched_path);
+  CHECK_EQ(path, watched_path, base::NotFatalUntil::M161);
   if (is_error) {
     DLOG(ERROR) << "OnRemoteSessionStateFileUpdate() error";
     return;
@@ -80,7 +80,7 @@ WebAuthenticationProxyRemoteSessionStateChangeNotifier::
         EventRouter* event_router,
         ExtensionId extension_id)
     : event_router_(event_router), extension_id_(std::move(extension_id)) {
-  DCHECK(event_router_);
+  CHECK(event_router_, base::NotFatalUntil::M161);
   auto broadcast_event_on_change =
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &WebAuthenticationProxyRemoteSessionStateChangeNotifier::

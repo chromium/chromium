@@ -158,7 +158,8 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
           continue;
         }
 
-        DCHECK(sync_util::ShouldSync(profile_, extension));
+        CHECK(sync_util::ShouldSync(profile_, extension),
+              base::NotFatalUntil::M161);
         SetAccountExtensionType(
             extension_from_promo,
             AccountExtensionType::kAccountInstalledSignedIn);

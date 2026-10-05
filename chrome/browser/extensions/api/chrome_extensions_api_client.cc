@@ -156,7 +156,7 @@ bool ChromeExtensionsAPIClient::ShouldHideResponseHeader(
 bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
     content::BrowserContext* context,
     const WebRequestInfo& request) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Note: browser initiated non-navigation requests are hidden from extensions.
   // But we do still need to protect some sensitive sub-frame navigation
@@ -209,7 +209,7 @@ void ChromeExtensionsAPIClient::NotifyWebRequestWithheld(
     int render_process_id,
     int render_frame_id,
     const ExtensionId& extension_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Track down the ExtensionActionRunner and the extension. Since this is
   // asynchronous, we could hit a null anywhere along the path.
@@ -270,11 +270,11 @@ void ChromeExtensionsAPIClient::UpdateActionCount(
   const Extension* extension =
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   ExtensionAction* action =
       ExtensionActionManager::Get(context)->GetExtensionAction(*extension);
-  DCHECK(action);
+  CHECK(action, base::NotFatalUntil::M161);
 
   action->SetDNRActionCount(tab_id, action_count);
 
@@ -299,7 +299,7 @@ void ChromeExtensionsAPIClient::ClearActionCount(
     const Extension& extension) {
   ExtensionAction* action =
       ExtensionActionManager::Get(context)->GetExtensionAction(extension);
-  DCHECK(action);
+  CHECK(action, base::NotFatalUntil::M161);
 
   action->ClearDNRActionCountForAllTabs();
 

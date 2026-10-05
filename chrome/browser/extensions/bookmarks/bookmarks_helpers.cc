@@ -71,7 +71,7 @@ void PopulateBookmarkTreeNode(
     bool only_folders,
     std::optional<size_t> visible_index,
     api::bookmarks::BookmarkTreeNode* out_bookmark_tree_node) {
-  DCHECK(out_bookmark_tree_node);
+  CHECK(out_bookmark_tree_node, base::NotFatalUntil::M161);
 
   out_bookmark_tree_node->id = base::NumberToString(node->id());
 

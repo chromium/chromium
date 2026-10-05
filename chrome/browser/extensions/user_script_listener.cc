@@ -38,7 +38,7 @@ class UserScriptListener::Throttle : public NavigationThrottle {
   Throttle& operator=(const Throttle&) = delete;
 
   void ResumeIfDeferred() {
-    DCHECK(should_defer_);
+    CHECK(should_defer_, base::NotFatalUntil::M161);
     should_defer_ = false;
     // Only resume the request if |this| has deferred it.
     if (did_defer_) {
@@ -179,7 +179,7 @@ void UserScriptListener::CheckIfAllUserScriptsReady() {
 }
 
 void UserScriptListener::UserScriptsReady(content::BrowserContext* context) {
-  DCHECK(!context->IsOffTheRecord());
+  CHECK(!context->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   profile_data_[context].user_scripts_ready = true;
   CheckIfAllUserScriptsReady();
@@ -187,7 +187,7 @@ void UserScriptListener::UserScriptsReady(content::BrowserContext* context) {
 
 void UserScriptListener::AppendNewURLPatterns(content::BrowserContext* context,
                                               const URLPatterns& new_patterns) {
-  DCHECK(!context->IsOffTheRecord());
+  CHECK(!context->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   user_scripts_ready_ = false;
 
@@ -200,7 +200,7 @@ void UserScriptListener::AppendNewURLPatterns(content::BrowserContext* context,
 
 void UserScriptListener::ReplaceURLPatterns(content::BrowserContext* context,
                                             const URLPatterns& patterns) {
-  DCHECK_EQ(1U, profile_data_.count(context));
+  CHECK_EQ(1U, profile_data_.count(context), base::NotFatalUntil::M161);
   profile_data_[context].url_patterns = patterns;
 }
 
@@ -229,8 +229,9 @@ void UserScriptListener::OnProfileAdded(Profile* profile) {
   }
 
   auto* registry = ExtensionRegistry::Get(profile);
-  DCHECK(registry);
-  DCHECK(!extension_registry_observations_.IsObservingSource(registry));
+  CHECK(registry, base::NotFatalUntil::M161);
+  CHECK(!extension_registry_observations_.IsObservingSource(registry),
+        base::NotFatalUntil::M161);
   extension_registry_observations_.AddObservation(registry);
 }
 

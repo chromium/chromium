@@ -204,7 +204,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   template <typename Function>
   void RunFunctionAndExpectError(const base::ListValue& parameters,
                                  const std::string& expected_error) {
-    DCHECK(!expected_error.empty());
+    CHECK(!expected_error.empty(), base::NotFatalUntil::M161);
     scoped_refptr<Function> function(CreateFunction<Function>());
     const std::string error_message = utils::RunFunctionAndReturnError(
         function.get(), ParamsToString(parameters), GetProfile());
@@ -354,7 +354,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
                          int web_app_id,
                          bool expect_success,
                          const std::string& expected_error = std::string()) {
-    DCHECK_EQ(expect_success, expected_error.empty());
+    CHECK_EQ(expect_success, expected_error.empty(), base::NotFatalUntil::M161);
 
     base::ListValue params;
     AppendTabIdAndUrl(params);

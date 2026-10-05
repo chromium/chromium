@@ -32,11 +32,11 @@ ZipFileInstaller::DoneCallback MakeRegisterInExtensionServiceCallback(
         }
 
         if (!unzip_dir.empty()) {
-          DCHECK(error.empty());
+          CHECK(error.empty(), base::NotFatalUntil::M161);
           UnpackedInstaller::Create(context_weak.get())->Load(unzip_dir);
           return;
         }
-        DCHECK(!error.empty());
+        CHECK(!error.empty(), base::NotFatalUntil::M161);
         LoadErrorReporter::GetInstance()->ReportLoadError(
             zip_file, base::UTF8ToUTF16(error), context_weak.get(),
             /*noisy_on_failure=*/true);

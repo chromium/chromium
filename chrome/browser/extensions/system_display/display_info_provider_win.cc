@@ -34,7 +34,7 @@ BOOL CALLBACK EnumMonitorCallback(HMONITOR monitor,
                                   LPARAM data) {
   base::flat_map<std::string, std::string>* device_id_to_name =
       reinterpret_cast<base::flat_map<std::string, std::string>*>(data);
-  DCHECK(device_id_to_name);
+  CHECK(device_id_to_name, base::NotFatalUntil::M161);
 
   DisplayUnitInfo unit;
 

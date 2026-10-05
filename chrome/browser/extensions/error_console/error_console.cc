@@ -84,7 +84,7 @@ ErrorConsole* ErrorConsole::Get(content::BrowserContext* browser_context) {
 void ErrorConsole::SetReportingForExtension(const std::string& extension_id,
                                             ExtensionError::Type type,
                                             bool enabled) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   if (!enabled_ || !crx_file::id_util::IdIsValid(extension_id))
     return;
 
@@ -106,7 +106,7 @@ void ErrorConsole::SetReportingForExtension(const std::string& extension_id,
 
 void ErrorConsole::SetReportingAllForExtension(
     const std::string& extension_id, bool enabled) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   if (!enabled_ || !crx_file::id_util::IdIsValid(extension_id))
     return;
 
@@ -121,7 +121,7 @@ void ErrorConsole::SetReportingAllForExtension(
 
 bool ErrorConsole::IsReportingEnabledForExtension(
     const std::string& extension_id) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   if (!enabled_ || !crx_file::id_util::IdIsValid(extension_id))
     return false;
 
@@ -130,7 +130,7 @@ bool ErrorConsole::IsReportingEnabledForExtension(
 
 void ErrorConsole::UseDefaultReportingForExtension(
     const std::string& extension_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   if (!enabled_ || !crx_file::id_util::IdIsValid(extension_id))
     return;
 
@@ -139,7 +139,7 @@ void ErrorConsole::UseDefaultReportingForExtension(
 }
 
 void ErrorConsole::ReportError(std::unique_ptr<ExtensionError> error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   if (!enabled_ || !crx_file::id_util::IdIsValid(error->extension_id()))
     return;
 
@@ -169,12 +169,12 @@ const ErrorList& ErrorConsole::GetErrorsForExtension(
 }
 
 void ErrorConsole::AddObserver(Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   observers_.AddObserver(observer);
 }
 
 void ErrorConsole::RemoveObserver(Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   observers_.RemoveObserver(observer);
 }
 

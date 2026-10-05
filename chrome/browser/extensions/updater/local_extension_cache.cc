@@ -63,7 +63,7 @@ LocalExtensionCache::~LocalExtensionCache() {
 
 void LocalExtensionCache::Init(bool wait_for_cache_initialization,
                                base::OnceClosure callback) {
-  DCHECK_EQ(state_, kUninitialized);
+  CHECK_EQ(state_, kUninitialized, base::NotFatalUntil::M161);
 
   state_ = kWaitInitialization;
   if (wait_for_cache_initialization)
@@ -73,7 +73,7 @@ void LocalExtensionCache::Init(bool wait_for_cache_initialization,
 }
 
 void LocalExtensionCache::Shutdown(base::OnceClosure callback) {
-  DCHECK_NE(state_, kShutdown);
+  CHECK_NE(state_, kShutdown, base::NotFatalUntil::M161);
   if (state_ == kReady)
     CleanUp();
   state_ = kShutdown;
@@ -330,7 +330,7 @@ void LocalExtensionCache::OnCacheStatusChecked(bool ready,
 }
 
 void LocalExtensionCache::CheckCacheContents(base::OnceClosure callback) {
-  DCHECK_EQ(state_, kWaitInitialization);
+  CHECK_EQ(state_, kWaitInitialization, base::NotFatalUntil::M161);
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&LocalExtensionCache::BackendCheckCacheContents,
                                 weak_ptr_factory_.GetWeakPtr(), cache_dir_,
@@ -684,7 +684,7 @@ bool LocalExtensionCache::CompareCacheItemsAge(const CacheMap::iterator& lhs,
 }
 
 void LocalExtensionCache::CleanUp() {
-  DCHECK_EQ(state_, kReady);
+  CHECK_EQ(state_, kReady, base::NotFatalUntil::M161);
 
   std::vector<CacheMap::iterator> items;
   items.reserve(cached_extensions_.size());

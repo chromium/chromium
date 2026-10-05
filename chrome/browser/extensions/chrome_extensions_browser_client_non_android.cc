@@ -88,7 +88,7 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
 
   // Clean up context menus for the WebView.
   auto* menu_manager = MenuManager::Get(profile);
-  DCHECK(menu_manager);
+  CHECK(menu_manager, base::NotFatalUntil::M161);
   // The |webview_embedder_frame_id| parameter of ExtensionKey is not used to
   // identify the context menu items that belong to a WebView so it is OK for it
   // to be |IPC::mojom::kRoutingIdNone| here.

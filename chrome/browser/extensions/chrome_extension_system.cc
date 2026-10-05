@@ -464,7 +464,7 @@ void ChromeExtensionSystem::InstallUpdate(
     const base::FilePath& unpacked_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
-  DCHECK(!install_update_callback.is_null());
+  CHECK(!install_update_callback.is_null(), base::NotFatalUntil::M161);
 
   scoped_refptr<CrxInstaller> installer =
       CrxInstaller::CreateSilent(profile_->GetOriginalProfile());

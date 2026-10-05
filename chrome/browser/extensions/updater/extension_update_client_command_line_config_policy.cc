@@ -16,7 +16,7 @@ namespace extensions {
 ExtensionUpdateClientCommandLineConfigPolicy::
     ExtensionUpdateClientCommandLineConfigPolicy(
         const base::CommandLine* cmdline) {
-  DCHECK(cmdline);
+  CHECK(cmdline, base::NotFatalUntil::M161);
   test_request_ = cmdline->HasSwitch(kSwitchTestRequestParam);
 }
 

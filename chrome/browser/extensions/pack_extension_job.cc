@@ -85,7 +85,7 @@ void PackExtensionJob::Start() {
                        // See class level comments for why Unretained is safe.
                        base::Unretained(this), std::move(task_runner)));
   } else {
-    DCHECK_EQ(RunMode::kSynchronous, run_mode_);
+    CHECK_EQ(RunMode::kSynchronous, run_mode_, base::NotFatalUntil::M161);
     Run(nullptr);
   }
 }
@@ -128,7 +128,7 @@ void PackExtensionJob::Run(
                          base::Unretained(this), creator.error_message(),
                          creator.error_type()));
     } else {
-      DCHECK_EQ(RunMode::kSynchronous, run_mode_);
+      CHECK_EQ(RunMode::kSynchronous, run_mode_, base::NotFatalUntil::M161);
       ReportFailureOnClientSequence(creator.error_message(),
                                     creator.error_type());
     }
@@ -138,7 +138,7 @@ void PackExtensionJob::Run(
 void PackExtensionJob::ReportSuccessOnClientSequence(
     std::unique_ptr<base::FilePath> crx_file_out,
     std::unique_ptr<base::FilePath> key_file_out) {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M161);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_->OnPackSuccess(*crx_file_out, *key_file_out);
 }
@@ -146,7 +146,7 @@ void PackExtensionJob::ReportSuccessOnClientSequence(
 void PackExtensionJob::ReportFailureOnClientSequence(
     const std::u16string& error,
     ExtensionCreator::ErrorType error_type) {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M161);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_->OnPackFailure(error, error_type);
 }

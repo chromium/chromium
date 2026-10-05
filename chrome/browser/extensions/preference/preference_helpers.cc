@@ -101,8 +101,8 @@ void DispatchEventToExtensionsImpl(Profile* profile,
         extension->permissions_data()->HasAPIPermission(permission) &&
         (!incognito || util::IsIncognitoEnabled(extension->id(), profile))) {
       // Inject level of control key-value.
-      DCHECK(!args.empty());
-      DCHECK(args[0].is_dict());
+      CHECK(!args.empty(), base::NotFatalUntil::M161);
+      CHECK(args[0].is_dict(), base::NotFatalUntil::M161);
 
       std::string level_of_control =
           level_getter.Run(profile, extension->id(), browser_pref, incognito);

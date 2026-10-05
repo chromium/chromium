@@ -127,7 +127,7 @@ void ExtensionActionDispatcher::DispatchExtensionActionClicked(
 void ExtensionActionDispatcher::ClearAllValuesForTab(
     content::WebContents* web_contents,
     bool web_contents_being_destroyed) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   const ExtensionSet& enabled_extensions =

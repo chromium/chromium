@@ -69,7 +69,7 @@ ExternalInstallManager::ExternalInstallManager(
       is_first_run_(false),
       extension_prefs_(ExtensionPrefs::Get(browser_context_)),
       currently_visible_install_alert_(nullptr) {
-  DCHECK(browser_context_);
+  CHECK(browser_context_, base::NotFatalUntil::M161);
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
   // Populate the set of unacknowledged external extensions now. We can't just
@@ -85,7 +85,7 @@ ExternalInstallManager::ExternalInstallManager(
 
 ExternalInstallManager::~ExternalInstallManager() {
   // Shutdown should have been called.
-  DCHECK(errors_.empty());
+  CHECK(errors_.empty(), base::NotFatalUntil::M161);
 }
 
 // static

@@ -229,8 +229,9 @@ bool CommandService::AddKeybindingPref(const ui::Accelerator& accelerator,
   }
 
   // Media Keys are allowed to be used by named command only.
-  DCHECK(!accelerator.IsMediaKey() ||
-         !Command::IsActionRelatedCommand(command_name));
+  CHECK(!accelerator.IsMediaKey() ||
+            !Command::IsActionRelatedCommand(command_name),
+        base::NotFatalUntil::M161);
 
   ScopedDictPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
   base::DictValue& bindings = updater.Get();

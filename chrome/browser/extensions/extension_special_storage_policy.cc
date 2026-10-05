@@ -218,7 +218,7 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
     const extensions::Extension* extension,
     content::BrowserContext* context) {
   base::AutoLock locker(lock_);
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   int change_flags = 0;
   if (extensions::ContentCapabilitiesInfo::Get(extension).permissions.count(
@@ -264,7 +264,7 @@ void ExtensionSpecialStoragePolicy::RevokeRightsForExtension(
     const extensions::Extension* extension,
     content::BrowserContext* context) {
   base::AutoLock locker(lock_);
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   int change_flags = 0;
   if (extensions::ContentCapabilitiesInfo::Get(extension).permissions.count(

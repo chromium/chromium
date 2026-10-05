@@ -43,7 +43,7 @@ ExtensionCacheImpl::~ExtensionCacheImpl() = default;
 
 void ExtensionCacheImpl::Start(base::OnceClosure callback) {
   if (!cache_ || cache_->is_ready()) {
-    DCHECK(init_callbacks_.empty());
+    CHECK(init_callbacks_.empty(), base::NotFatalUntil::M161);
     std::move(callback).Run();
   } else {
     init_callbacks_.push_back(std::move(callback));

@@ -36,7 +36,7 @@ class ClipboardExtensionHelper::ClipboardImageDataDecoder
   bool has_request_pending() const { return has_request_pending_; }
 
   void Start(std::vector<uint8_t> image_data, clipboard::ImageType type) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
     ImageDecoder::ImageCodec codec = ImageDecoder::DEFAULT_CODEC;
     switch (type) {
@@ -88,7 +88,7 @@ void ClipboardExtensionHelper::DecodeAndSaveImageData(
     AdditionalDataItemList additional_items,
     base::OnceClosure success_callback,
     base::OnceCallback<void(const std::string&)> error_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // If there is a previous image decoding request still running, cancel it
   // first. We only need the most recent image save request be completed, since

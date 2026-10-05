@@ -316,14 +316,14 @@ void ReportCurrentStage(
   base::UmaHistogramEnumeration("Extensions.ForceInstalledStage2",
                                 install_stage);
   if (install_stage == InstallStageTracker::Stage::CREATED) {
-    DCHECK(installation.install_creation_stage);
+    CHECK(installation.install_creation_stage, base::NotFatalUntil::M161);
     InstallStageTracker::InstallCreationStage install_creation_stage =
         installation.install_creation_stage.value();
     base::UmaHistogramEnumeration("Extensions.ForceInstalledCreationStage",
                                   install_creation_stage);
   }
   if (install_stage == InstallStageTracker::Stage::DOWNLOADING) {
-    DCHECK(installation.downloading_stage);
+    CHECK(installation.downloading_stage, base::NotFatalUntil::M161);
     ExtensionDownloaderDelegate::Stage downloading_stage =
         installation.downloading_stage.value();
     base::UmaHistogramEnumeration("Extensions.ForceInstalledDownloadingStage",
@@ -370,21 +370,22 @@ void ReportDetailedFailureReasons(
   }
   if (failure_reason ==
       FailureReason::CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE) {
-    DCHECK(installation.unpacker_failure_reason);
+    CHECK(installation.unpacker_failure_reason, base::NotFatalUntil::M161);
     base::UmaHistogramEnumeration(
         "Extensions.ForceInstalledFailureSandboxUnpackFailureReason2",
         installation.unpacker_failure_reason.value(),
         SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS);
   }
   if (failure_reason == FailureReason::CRX_FETCH_URL_EMPTY) {
-    DCHECK(installation.no_updates_info);
+    CHECK(installation.no_updates_info, base::NotFatalUntil::M161);
     base::UmaHistogramEnumeration(
         "Extensions."
         "ForceInstalledFailureNoUpdatesInfo",
         installation.no_updates_info.value());
   }
   if (installation.manifest_invalid_error) {
-    DCHECK_EQ(failure_reason, FailureReason::MANIFEST_INVALID);
+    CHECK_EQ(failure_reason, FailureReason::MANIFEST_INVALID,
+             base::NotFatalUntil::M161);
     if (is_from_store) {
       base::UmaHistogramEnumeration(
           "Extensions.WebStore_"

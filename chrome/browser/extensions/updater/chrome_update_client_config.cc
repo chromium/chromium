@@ -114,7 +114,7 @@ PrefService* GetPrefService(base::WeakPtr<content::BrowserContext> context) {
 ExtensionActivityDataService::ExtensionActivityDataService(
     ExtensionPrefs* extension_prefs)
     : extension_prefs_(extension_prefs) {
-  DCHECK(extension_prefs_);
+  CHECK(extension_prefs_, base::NotFatalUntil::M161);
 
   prefs_observation_.Observe(extension_prefs);
 }
@@ -168,7 +168,7 @@ void ExtensionActivityDataService::GetAndClearActiveBits(
 
 void ExtensionActivityDataService::OnExtensionPrefsWillBeDestroyed(
     ExtensionPrefs* prefs) {
-  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  CHECK(prefs_observation_.IsObservingSource(prefs), base::NotFatalUntil::M161);
   prefs_observation_.Reset();
   extension_prefs_ = nullptr;
 }
@@ -309,7 +309,7 @@ ChromeUpdateClientConfig::GetCrxDownloaderFactory() {
 scoped_refptr<update_client::UnzipperFactory>
 ChromeUpdateClientConfig::GetUnzipperFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!unzip_factory_) {
     unzip_factory_ = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
         base::BindRepeating(&unzip::LaunchUnzipper));
@@ -320,7 +320,7 @@ ChromeUpdateClientConfig::GetUnzipperFactory() {
 scoped_refptr<update_client::PatcherFactory>
 ChromeUpdateClientConfig::GetPatcherFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!patch_factory_) {
     patch_factory_ = base::MakeRefCounted<update_client::PatchChromiumFactory>(
         base::BindRepeating(&patch::LaunchFilePatcher));
@@ -394,7 +394,7 @@ scoped_refptr<ChromeUpdateClientConfig> ChromeUpdateClientConfig::Create(
 // static
 void ChromeUpdateClientConfig::SetChromeUpdateClientConfigFactoryForTesting(
     FactoryCallback factory) {
-  DCHECK(!factory.is_null());
+  CHECK(!factory.is_null(), base::NotFatalUntil::M161);
   GetFactoryCallback() = factory;
 }
 

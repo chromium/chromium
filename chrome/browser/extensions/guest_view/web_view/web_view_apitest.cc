@@ -288,7 +288,7 @@ void WebViewAPITest::CloseAppWindows() {
 content::WebContents* WebViewAPITest::GetFirstAppWindowWebContents() {
   const AppWindowRegistry::AppWindowList& app_window_list =
       AppWindowRegistry::Get(profile())->app_windows();
-  DCHECK_EQ(1u, app_window_list.size());
+  CHECK_EQ(1u, app_window_list.size(), base::NotFatalUntil::M161);
   return (*app_window_list.begin())->web_contents();
 }
 

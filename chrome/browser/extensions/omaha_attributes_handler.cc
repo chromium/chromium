@@ -95,7 +95,7 @@ OmahaAttributesHandler::OmahaAttributesHandler(
 void OmahaAttributesHandler::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
     const base::DictValue& attributes) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // It is possible that an extension is uninstalled when the omaha attributes
   // are notified by the update client asynchronously. In this case, we should
   // ignore this extension.

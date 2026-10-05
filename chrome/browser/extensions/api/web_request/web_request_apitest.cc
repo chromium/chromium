@@ -429,7 +429,7 @@ bool HasSeenWebRequestInBackgroundScript(const Extension* extension,
       hostname.c_str());
   base::Value value =
       ExecuteScriptAndReturnValue(extension->id(), context, script);
-  DCHECK(value.is_bool());
+  CHECK(value.is_bool(), base::NotFatalUntil::M161);
   return value.GetBool();
 }
 
@@ -3595,7 +3595,7 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionWebRequestAPITest,
       [this](const ExtensionId& extension_id) {
         const std::optional<bool> result = ExecuteScriptAndReturnBool(
             extension_id, profile(), "getAndResetRequestIntercepted();");
-        DCHECK(result);
+        CHECK(result, base::NotFatalUntil::M161);
         return *result;
       };
 
@@ -3743,7 +3743,7 @@ IN_PROC_BROWSER_TEST_P(WebUiNtpInterceptionWebRequestAPITest,
       [this](const ExtensionId& extension_id) {
         std::optional<bool> result = ExecuteScriptAndReturnBool(
             extension_id, profile(), "getAndResetRequestIntercepted();");
-        DCHECK(result);
+        CHECK(result, base::NotFatalUntil::M161);
         return *result;
       };
 
@@ -6463,7 +6463,7 @@ class ProxyCORSWebRequestApiTest
   }
 
   void WaitForPreflightResponse() {
-    DCHECK(preflight_waiter_);
+    CHECK(preflight_waiter_, base::NotFatalUntil::M161);
     preflight_waiter_->Run();
     preflight_waiter_.reset();
   }

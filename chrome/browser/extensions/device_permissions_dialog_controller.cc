@@ -101,7 +101,7 @@ void DevicePermissionsDialogController::OnDeviceRemoved(
     size_t index,
     const std::u16string& device_name) {
   if (view()) {
-    DCHECK_GT(device_name_map_[device_name], 0);
+    CHECK_GT(device_name_map_[device_name], 0, base::NotFatalUntil::M161);
     if (--device_name_map_[device_name] == 0)
       device_name_map_.erase(device_name);
     view()->OnOptionRemoved(index);
