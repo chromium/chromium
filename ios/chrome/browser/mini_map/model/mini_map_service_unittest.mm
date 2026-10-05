@@ -29,14 +29,15 @@
 
 class MiniMapServiceTest : public PlatformTest {
  public:
-  MiniMapServiceTest() : application_(OCMClassMock([UIApplication class])) {}
+  MiniMapServiceTest() : application_(OCMClassMock([UIApplication class])) {
+    // Force the localization in a country where the service is allowed.
+    scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
+  }
 
   void SetUp() override {
     PlatformTest::SetUp();
 
-    MiniMapServiceFactory::GetInstance();
     TestProfileIOS::Builder test_profile_builder;
-
     test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -53,6 +54,8 @@ class MiniMapServiceTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  IOSChromeScopedTestingVariationsService scoped_variations_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<MiniMapService> mini_map_service_;
   id application_;
