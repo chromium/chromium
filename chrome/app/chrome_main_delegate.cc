@@ -149,7 +149,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_exception_reporter.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/initialize_feature_list_android.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -1167,9 +1166,7 @@ void ChromeMainDelegate::SetupTracing() {
   // If we are the browser process (missing process type), then use the
   // experimental libunwindstack unwinder.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kProcessType) &&
-      chrome::android::IsJavaDrivenFeatureEnabled(
-          chrome::android::kUseLibunwindstackNativeUnwinderAndroid)) {
+          switches::kProcessType)) {
     tracing_factory = base::BindRepeating(&CreateLibunwindstackUnwinderFactory);
     unwinder_type = tracing::TracingSamplerProfiler::UnwinderType::
         kLibunwindstackUnwinderAndroid;

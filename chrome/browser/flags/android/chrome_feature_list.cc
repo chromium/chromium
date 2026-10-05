@@ -544,7 +544,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUnparcelIntentFileDescriptors,
     &kUseActivityManagerForTabActivation,
     &kUseAppTaskForCustomTabActivation,
-    &kUseLibunwindstackNativeUnwinderAndroid,
     &kUsePLinkInHelp,
     &kUseWebUiBookmarksAndroid,
     &kUseWebUiNtp3PDSE,
@@ -986,9 +985,6 @@ BASE_FEATURE(kUnparcelIntentFileDescriptors, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUseActivityManagerForTabActivation, base::FEATURE_ENABLED_BY_DEFAULT);
 // Use AppTask.startActivity to bypass Background Activity Launch (BAL) restrictions.
 BASE_FEATURE(kUseAppTaskForCustomTabActivation, base::FEATURE_ENABLED_BY_DEFAULT);
-// Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and
-// only on Android.
-BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUsePLinkInHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiBookmarksAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiNtp3PDSE, base::FEATURE_DISABLED_BY_DEFAULT);

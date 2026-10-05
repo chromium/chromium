@@ -347,7 +347,6 @@ BASE_DECLARE_FEATURE(kUniversalKeyboardHandling);
 BASE_DECLARE_FEATURE(kUnparcelIntentFileDescriptors);
 BASE_DECLARE_FEATURE(kUseActivityManagerForTabActivation);
 BASE_DECLARE_FEATURE(kUseAppTaskForCustomTabActivation);
-BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kUsePLinkInHelp);
 BASE_DECLARE_FEATURE(kUseWebUiBookmarksAndroid);
 BASE_DECLARE_FEATURE(kUseWebUiNtp3PDSE);
