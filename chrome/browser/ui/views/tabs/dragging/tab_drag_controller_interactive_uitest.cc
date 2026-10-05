@@ -2628,7 +2628,7 @@ class ActiveTabTracker : public TabStripModelObserver {
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
     if (selection.active_tab_changed() && selection.new_contents) {
-      active_contents_.push_back(selection.new_contents);
+      active_contents_.push_back(selection.new_contents.get());
     }
   }
 
@@ -2638,7 +2638,7 @@ class ActiveTabTracker : public TabStripModelObserver {
   }
 
  private:
-  std::vector<content::WebContents*> active_contents_;
+  std::vector<raw_ptr<content::WebContents>> active_contents_;
   raw_ptr<TabStripModel> model_;
 };
 
