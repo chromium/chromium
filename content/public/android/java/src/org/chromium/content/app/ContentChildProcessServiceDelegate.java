@@ -25,7 +25,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
 import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.build.annotations.NullMarked;
@@ -138,7 +137,6 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
                         () -> {
                             ContentChildProcessServiceDelegateJni.get()
                                     .initMemoryPressureListener();
-                            MemoryPressureUma.initializeForChildService();
                         });
     }
 

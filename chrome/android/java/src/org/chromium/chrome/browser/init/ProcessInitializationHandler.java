@@ -28,7 +28,6 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
@@ -494,7 +493,6 @@ public class ProcessInitializationHandler {
                     }
                 });
 
-        MemoryPressureUma.initializeForBrowser();
         UmaUtils.recordBackgroundRestrictions();
 
         // Needed for field trial metrics to be properly collected in minimal browser mode.

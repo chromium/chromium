@@ -3239,22 +3239,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.MemoryPressureNotification{AndroidProcessType}"
-    enum="Android.MemoryPressureNotification" expires_after="2021-12-05">
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Memory pressure notifications sent by Android through ComponentCallbacks2.
-    This metric was added 04/2018; for prior data for the browser process see
-    MemoryAndroid.NotificationBackground and
-    MemoryAndroid.NotificationForeground. {AndroidProcessType}
-  </summary>
-  <token key="AndroidProcessType">
-    <variant name=".Browser" summary="Browser process"/>
-    <variant name=".ChildService"
-        summary="Child service process (renderer, GPU, etc.)"/>
-  </token>
-</histogram>
-
 <histogram name="Android.Messages.DismissedWithoutFullyVisible"
     enum="MessageIdentifier" expires_after="2027-08-23">
   <owner>aishwaryarj@google.com</owner>
