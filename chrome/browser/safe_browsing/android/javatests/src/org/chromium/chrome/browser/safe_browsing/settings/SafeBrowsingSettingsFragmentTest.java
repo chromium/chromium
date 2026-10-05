@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import androidx.preference.Preference;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Rule;
@@ -28,7 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -51,7 +52,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 
 /** Tests for {@link SafeBrowsingSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "This test launches a Settings activity")
+@Batch(Batch.PER_CLASS)
 public class SafeBrowsingSettingsFragmentTest {
     private static final String ASSERT_SAFE_BROWSING_STATE_RADIO_BUTTON_GROUP =
             "Incorrect Safe Browsing state in the radio button group.";
@@ -73,6 +74,13 @@ public class SafeBrowsingSettingsFragmentTest {
     private SafeBrowsingSettingsFragment mSafeBrowsingSettingsFragment;
     private RadioButtonGroupSafeBrowsingPreference mSafeBrowsingPreference;
     private Preference mManagedDisclaimerText;
+
+    @After
+    public void tearDown() {
+        if (ProfileManager.isInitialized()) {
+            setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        }
+    }
 
     private void startSettings() {
         mTestRule.startSettingsActivity();
