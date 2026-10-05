@@ -249,6 +249,39 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="I/O device error."/>
 </enum>
 
+<!-- LINT.IfChange(WofLocalePakCompressionDecision) -->
+
+<enum name="WofLocalePakCompressionDecision">
+  <summary>
+    Whether setup.exe scheduled WOF compression of the locale packs it installs
+    and, if it did not, why.
+  </summary>
+  <int value="0" label="Scheduled">
+    Windows setup had finished, so compression was scheduled. The work item that
+    compresses the packs is best effort, so this does not mean that it
+    succeeded.
+  </int>
+  <int value="1" label="WindowsSetupIncomplete">
+    The machine's ImageState was present but was not IMAGE_STATE_COMPLETE, so
+    Windows setup, OOBE included, had not finished. The packs were left
+    uncompressed.
+  </int>
+  <int value="2" label="ImageStateMissing">
+    The machine had no ImageState, so there was nothing to say that Windows
+    setup had finished and the packs were left uncompressed. Recorded apart from
+    WindowsSetupIncomplete so that a configuration that never records the value,
+    and so never compresses, can be told from machines genuinely in audit mode
+    or OOBE.
+  </int>
+  <int value="3" label="ImageStateUnreadable">
+    Setup could not read the machine's ImageState, so the packs were left
+    uncompressed. The error is recorded in
+    Setup.Install.WofLocalePakImageStateError.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/installer/setup/wof_compression.cc:WofLocalePakCompressionDecision) -->
+
 </enums>
 
 </histogram-configuration>
