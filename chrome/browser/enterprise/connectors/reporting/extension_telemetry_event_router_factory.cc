@@ -4,9 +4,11 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 
 namespace enterprise_connectors {
 
@@ -33,6 +35,9 @@ ExtensionTelemetryEventRouterFactory::ExtensionTelemetryEventRouterFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
+              // Gated by kEnterpriseIsolatedModeMilestone2 in
+              // BuildServiceInstanceForBrowserContext().
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(RealtimeReportingClientFactory::GetInstance());
 }
@@ -43,6 +48,12 @@ ExtensionTelemetryEventRouterFactory::~ExtensionTelemetryEventRouterFactory() =
 std::unique_ptr<KeyedService>
 ExtensionTelemetryEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (profile->IsEnterpriseIsolatedModeProfile() &&
+      !base::FeatureList::IsEnabled(
+          enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2)) {
+    return nullptr;
+  }
   return std::make_unique<ExtensionTelemetryEventRouter>(context);
 }
 
