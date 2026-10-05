@@ -35,7 +35,6 @@
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/gwp_asan/crash_handler/crash_handler.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_upload_list.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

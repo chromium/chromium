@@ -42,7 +42,8 @@ class CrashHelperTest : public PlatformTest {
   base::test::TaskEnvironment task_environment;
 };
 
-TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
+// Tests helpers from crash_keys_helper.h
+TEST_F(CrashHelperTest, CrashKeysHelper) {
   // Clear previous params for testing sync.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   for (NSString* key in [defaults dictionaryRepresentation].allKeys) {
@@ -52,10 +53,6 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
     }
   }
 
-  // Test that the serialized dictionary does not exceed the maximum size of a
-  // single crash key. This test should include all keys for
-  // CrashReportUserApplicationState, since the whole dictionary is considered a
-  // single key.
   crash_keys::SetCurrentlyInBackground(true);
   crash_keys::SetCurrentlySignedIn(true);
   crash_keys::SetMemoryWarningCount(2);
@@ -72,10 +69,6 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
   crash_keys::SetForegroundScenesCount(999);
   crash_keys::SetConnectedScenesCount(999);
   crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(true);
-  crash_keys::SetGridToVisibleTabAnimation(
-      @"to_view_controller", @"presenting_view_controller",
-      @"presented_view_controller", @"parent_view_controller");
-  crash_keys::MediaStreamPlaybackDidStart();
   crash_keys::SetVoiceOverRunning(true);
   crash_keys::SetCurrentlyInReaderMode(true);
 
@@ -96,17 +89,27 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
       reportParameters[crash_key] = [defaults stringForKey:key];
     }
   }
-  EXPECT_NSEQ(reportParameters[@"memory_warning_count"], @"2");
+
+  EXPECT_NSEQ(reportParameters[@"connected_scenes"], @"999");
   EXPECT_NSEQ(reportParameters[@"crashed_in_background"], @"yes");
+  EXPECT_NSEQ(reportParameters[@"foreground_scenes"], @"999");
   EXPECT_NSEQ(reportParameters[@"free_memory_in_kb"], @"1234");
+  EXPECT_NSEQ(reportParameters[@"inactive_tabs"], @"999");
+  EXPECT_NSEQ(reportParameters[@"incognito_tabs"], @"999");
   EXPECT_NSEQ(reportParameters[@"memory_limit_bytes_remaining_in_kb"], @"5678");
-  EXPECT_NSEQ(reportParameters[@"user_application_state"],
-              @"{\"OTRTabs\":999,\"avplay\":1,\"destroyingAndRebuildingOTR\":1,"
-              @"\"fgScenes\":999,\"inactiveTabs\":999,\"orient\":37,\"pdf\":1,"
-              @"\"regTabs\":999,\"scenes\":999,\"signIn\":1,\"sizeclass\":2,"
-              @"\"user_interface_style\":2,\"voiceOver\":1}");
+  EXPECT_NSEQ(reportParameters[@"memory_warning_count"], @"2");
   EXPECT_NSEQ(reportParameters[@"memory_warning_in_progress"], @"yes");
-  EXPECT_NSEQ(reportParameters[@"readerMode"], @"yes");
+  EXPECT_NSEQ(reportParameters[@"orient"], @"37");
+  EXPECT_NSEQ(reportParameters[@"reader_mode"], @"yes");
+  EXPECT_NSEQ(reportParameters[@"recreating_incognito_profile"], @"yes");
+  EXPECT_NSEQ(reportParameters[@"regular_tabs"], @"999");
+  EXPECT_NSEQ(reportParameters[@"signed_in"], @"yes");
+  EXPECT_NSEQ(reportParameters[@"sizeclass"], @"2");
+  EXPECT_NSEQ(reportParameters[@"tabs_showing_pdfs"], @"1");
+  EXPECT_NSEQ(reportParameters[@"user_interface_style"], @"2");
+  EXPECT_NSEQ(reportParameters[@"voice_over"], @"yes");
+
+  crash_keys::SetCurrentTabIsPDF(false);
 }
 
 TEST_F(CrashHelperTest, IsUploadingEnabled) {

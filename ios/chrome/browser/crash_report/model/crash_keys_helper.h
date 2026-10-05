@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_KEYS_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_KEYS_HELPER_H_
 
-@class NSString;
-@class NSArray;
 class ProfileIOS;
 
 namespace crash_keys {
@@ -84,28 +82,6 @@ void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress);
 // Sets a key in profile dictionary to store the count of bookmark nodes in
 // `profile`.
 void SetBookmarkNodesCount(int bookmarks_count, ProfileIOS* profile);
-
-// Sets a key to help debug a crash when animating from grid to visible tab.
-// `to_view_controller` is the view controller about to be presented. The
-// remaining parameters relate to the `to_view_controller`.
-void SetGridToVisibleTabAnimation(NSString* to_view_controller,
-                                  NSString* presenting_view_controller,
-                                  NSString* presented_view_controller,
-                                  NSString* parent_view_controller);
-
-// Removes the key to help debug a crash when animating from grid to visible
-// tab.
-void RemoveGridToVisibleTabAnimation();
-
-// Sets a key in browser to store the playback state of media player (audio or
-// video). This function records a new start. This function is called for each
-// stream in the media (once or twice for audio, two or three times for video).
-void MediaStreamPlaybackDidStart();
-
-// Sets a key in browser to store the playback state of media player (audio or
-// video). This function records a stop or pause. This function must be called
-// the same number of times as MediaStreamPlaybackDidStart.
-void MediaStreamPlaybackDidStop();
 
 // Sets whether VoiceOver is currently running or not.
 void SetVoiceOverRunning(bool running);

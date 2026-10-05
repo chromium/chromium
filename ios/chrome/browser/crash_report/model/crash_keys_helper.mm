@@ -4,272 +4,226 @@
 
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 
+#import <limits>
+
 #import "base/check.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
 
 namespace crash_keys {
 
 namespace {
 
+// Helper to record a boolean crash key.
+class BooleanCrashKey {
+ public:
+  constexpr explicit BooleanCrashKey(const char name[])
+      : name_(name), key_(name) {}
+
+  void Update(bool value) {
+    if (value) {
+      key_.Set("yes");
+      [[PreviousSessionInfo sharedInstance]
+          setReportParameterValue:@"yes"
+                           forKey:base::SysUTF8ToNSString(name_)];
+    } else {
+      key_.Clear();
+      [[PreviousSessionInfo sharedInstance]
+          removeReportParameterForKey:base::SysUTF8ToNSString(name_)];
+    }
+  }
+
+ private:
+  const char* const name_;
+  crash_reporter::CrashKeyString<4> key_;
+};
+
+// Helper to record an integer crash key.
+template <const bool clear_on_zero = false>
+class IntegerCrashKey {
+ public:
+  constexpr explicit IntegerCrashKey(const char name[])
+      : name_(name), key_(name) {}
+
+  void Update(int value) {
+    if constexpr (clear_on_zero) {
+      if (value == 0) {
+        key_.Clear();
+        [[PreviousSessionInfo sharedInstance]
+            removeReportParameterForKey:base::SysUTF8ToNSString(name_)];
+        return;
+      }
+    }
+
+    const std::string value_as_string = base::NumberToString(value);
+    key_.Set(value_as_string);
+    [[PreviousSessionInfo sharedInstance]
+        setReportParameterValue:base::SysUTF8ToNSString(value_as_string)
+                         forKey:base::SysUTF8ToNSString(name_)];
+  }
+
+ private:
+  const char* const name_;
+  crash_reporter::CrashKeyString<16> key_;
+};
+
+// Helper to record an integer crash key computed from local true/false events.
+template <const bool clear_on_zero = false>
+class CounterCrashKey {
+ public:
+  constexpr explicit CounterCrashKey(const char name[])
+      : key_(name), count_(0) {}
+
+  void Update(bool value) {
+    if (value) {
+      if (count_ < std::numeric_limits<int>::max()) {
+        ++count_;
+      }
+    } else {
+      if (count_ > 0) {
+        --count_;
+      }
+    }
+
+    key_.Update(count_);
+  }
+
+ private:
+  IntegerCrashKey<clear_on_zero> key_;
+  int count_ = 0;
+};
+
+char const kBookmarkNodesCount[] = "bookmarks";
+char const kConnectedScenesCount[] = "connected_scenes";
+char const kForegroundScenesCount[] = "foreground_scenes";
+char const kHorizontalSizeClass[] = "sizeclass";
+char const kInactiveTabsCount[] = "inactive_tabs";
+char const kIncognitoTabsCount[] = "incognito_tabs";
+char const kIsReaderModeActive[] = "reader_mode";
+char const kOrientationState[] = "orient";
+char const kRecreatingIncognitoProfile[] = "recreating_incognito_profile";
+char const kRegularTabsCount[] = "regular_tabs";
+char const kSignedIn[] = "signed_in";
+char const kTabsShowingPDFsCount[] = "tabs_showing_pdfs";
+char const kUserInterfaceStyle[] = "user_interface_style";
+char const kVoiceOverRunning[] = "voice_over";
+const char kCrashedAfterAppWillTerminate[] = "crashed_after_app_will_terminate";
 const char kCrashedInBackground[] = "crashed_in_background";
-const char kFreeDiskInKB[] = "free_disk_in_kb";
 const char kFreeMemoryInKB[] = "free_memory_in_kb";
 const char kMemoryLimitBytesRemainingInKB[] =
     "memory_limit_bytes_remaining_in_kb";
-const char kMemoryWarningInProgress[] = "memory_warning_in_progress";
 const char kMemoryWarningCount[] = "memory_warning_count";
-const char kGridToVisibleTabAnimation[] = "grid_to_visible_tab_animation";
-static crash_reporter::CrashKeyString<1028> kRemoveGridToVisibleTabAnimationKey(
-    kGridToVisibleTabAnimation);
-const char kCrashedAfterAppWillTerminate[] = "crashed_after_app_will_terminate";
-
-// Multiple state information are combined into one CrashReportMultiParameter
-// to save limited and finite number of ReportParameters.
-// These are the values grouped in the user_application_state parameter.
-char const kOrientationState[] = "orient";
-char const kHorizontalSizeClass[] = "sizeclass";
-char const kUserInterfaceStyle[] = "user_interface_style";
-char const kSignedIn[] = "signIn";
-char const kIsShowingPDF[] = "pdf";
-char const kVideoPlaying[] = "avplay";
-char const kIncognitoTabCount[] = "OTRTabs";
-char const kRegularTabCount[] = "regTabs";
-char const kInactiveTabCount[] = "inactiveTabs";
-char const kBookmarkNodesCount[] = "bookmarks";
-char const kConnectedScenes[] = "scenes";
-char const kForegroundScenes[] = "fgScenes";
-char const kDestroyingAndRebuildingIncognitoBrowserState[] =
-    "destroyingAndRebuildingOTR";
-char const kVoiceOverRunning[] = "voiceOver";
-char const kIsReaderModeActive[] = "readerMode";
+const char kMemoryWarningInProgress[] = "memory_warning_in_progress";
 
 }  // namespace
 
 void SetCurrentlyInBackground(bool background) {
-  static crash_reporter::CrashKeyString<4> key(kCrashedInBackground);
-  if (background) {
-    key.Set("yes");
-    [[PreviousSessionInfo sharedInstance]
-        setReportParameterValue:@"yes"
-                         forKey:base::SysUTF8ToNSString(kCrashedInBackground)];
-  } else {
-    key.Clear();
-    [[PreviousSessionInfo sharedInstance]
-        removeReportParameterForKey:base::SysUTF8ToNSString(
-                                        kCrashedInBackground)];
-  }
+  static BooleanCrashKey key(kCrashedInBackground);
+  key.Update(background);
 }
 
 void SetMemoryWarningCount(int count) {
-  static crash_reporter::CrashKeyString<16> key(kMemoryWarningCount);
-  if (count) {
-    key.Set(base::NumberToString(count));
-    [[PreviousSessionInfo sharedInstance]
-        setReportParameterValue:base::SysUTF8ToNSString(
-                                    base::NumberToString(count))
-                         forKey:base::SysUTF8ToNSString(kMemoryWarningCount)];
-  } else {
-    key.Clear();
-    [[PreviousSessionInfo sharedInstance]
-        removeReportParameterForKey:base::SysUTF8ToNSString(
-                                        kMemoryWarningCount)];
-  }
+  static IntegerCrashKey</*clear_on_zero=*/true> key(kMemoryWarningCount);
+  key.Update(count);
 }
 
 void SetMemoryWarningInProgress(bool value) {
-  static crash_reporter::CrashKeyString<4> key(kMemoryWarningInProgress);
-  if (value) {
-    key.Set("yes");
-    [[PreviousSessionInfo sharedInstance]
-        setReportParameterValue:@"yes"
-                         forKey:base::SysUTF8ToNSString(
-                                    kMemoryWarningInProgress)];
-
-  } else {
-    key.Clear();
-    [[PreviousSessionInfo sharedInstance]
-        removeReportParameterForKey:base::SysUTF8ToNSString(
-                                        kMemoryWarningInProgress)];
-  }
+  static BooleanCrashKey key(kMemoryWarningInProgress);
+  key.Update(value);
 }
 
 void SetCrashedAfterAppWillTerminate() {
-  static crash_reporter::CrashKeyString<4> key(kCrashedAfterAppWillTerminate);
-  key.Set("yes");
-  [[PreviousSessionInfo sharedInstance]
-      setReportParameterValue:@"yes"
-                       forKey:base::SysUTF8ToNSString(
-                                  kCrashedAfterAppWillTerminate)];
+  static BooleanCrashKey key(kCrashedAfterAppWillTerminate);
+  key.Update(true);
 }
 
 void SetCurrentFreeMemoryInKB(int value) {
-  static crash_reporter::CrashKeyString<16> key(kFreeMemoryInKB);
-  key.Set(base::NumberToString(value));
-  [[PreviousSessionInfo sharedInstance]
-      setReportParameterValue:base::SysUTF8ToNSString(
-                                  base::NumberToString(value))
-                       forKey:base::SysUTF8ToNSString(kFreeMemoryInKB)];
+  static IntegerCrashKey<> key(kFreeMemoryInKB);
+  key.Update(value);
 }
 
 void SetCurrentMemoryLimitBytesRemainingInKB(int value) {
-  static crash_reporter::CrashKeyString<16> key(kMemoryLimitBytesRemainingInKB);
-  key.Set(base::NumberToString(value));
-  [[PreviousSessionInfo sharedInstance]
-      setReportParameterValue:base::SysUTF8ToNSString(
-                                  base::NumberToString(value))
-                       forKey:base::SysUTF8ToNSString(
-                                  kMemoryLimitBytesRemainingInKB)];
-}
-
-void SetCurrentFreeDiskInKB(int value) {
-  static crash_reporter::CrashKeyString<16> key(kFreeDiskInKB);
-  key.Set(base::NumberToString(value));
-  [[PreviousSessionInfo sharedInstance]
-      setReportParameterValue:base::SysUTF8ToNSString(
-                                  base::NumberToString(value))
-                       forKey:base::SysUTF8ToNSString(kFreeDiskInKB)];
+  static IntegerCrashKey<> key(kMemoryLimitBytesRemainingInKB);
+  key.Update(value);
 }
 
 void SetCurrentTabIsPDF(bool value) {
-  if (value) {
-    [[CrashReportUserApplicationState sharedInstance]
-        incrementValue:kIsShowingPDF];
-  } else {
-    [[CrashReportUserApplicationState sharedInstance]
-        decrementValue:kIsShowingPDF];
-  }
+  static CounterCrashKey</*clear_on_zero=*/true> key(kTabsShowingPDFsCount);
+  key.Update(value);
 }
 
 void SetCurrentOrientation(int statusBarOrientation, int deviceOrientation) {
+  static IntegerCrashKey<> key(kOrientationState);
   DCHECK((statusBarOrientation < 10) && (deviceOrientation < 10));
   int deviceAndUIOrientation = 10 * statusBarOrientation + deviceOrientation;
-  [[CrashReportUserApplicationState sharedInstance]
-       setValue:kOrientationState
-      withValue:deviceAndUIOrientation];
+  key.Update(deviceAndUIOrientation);
 }
 
 void SetCurrentHorizontalSizeClass(int horizontalSizeClass) {
-  [[CrashReportUserApplicationState sharedInstance]
-       setValue:kHorizontalSizeClass
-      withValue:horizontalSizeClass];
+  static IntegerCrashKey<> key(kHorizontalSizeClass);
+  key.Update(horizontalSizeClass);
 }
 
 void SetCurrentUserInterfaceStyle(int userInterfaceStyle) {
-  [[CrashReportUserApplicationState sharedInstance]
-       setValue:kUserInterfaceStyle
-      withValue:userInterfaceStyle];
+  static IntegerCrashKey<> key(kUserInterfaceStyle);
+  key.Update(userInterfaceStyle);
 }
 
 void SetCurrentlySignedIn(bool signedIn) {
-  if (signedIn) {
-    [[CrashReportUserApplicationState sharedInstance] setValue:kSignedIn
-                                                     withValue:1];
-  } else {
-    [[CrashReportUserApplicationState sharedInstance] removeValue:kSignedIn];
-  }
+  static BooleanCrashKey key(kSignedIn);
+  key.Update(signedIn);
 }
 
 void SetConnectedScenesCount(int connectedScenes) {
-  [[CrashReportUserApplicationState sharedInstance] setValue:kConnectedScenes
-                                                   withValue:connectedScenes];
+  static IntegerCrashKey<> key(kConnectedScenesCount);
+  key.Update(connectedScenes);
 }
 
 void SetForegroundScenesCount(int foregroundScenes) {
-  [[CrashReportUserApplicationState sharedInstance] setValue:kForegroundScenes
-                                                   withValue:foregroundScenes];
+  static IntegerCrashKey<> key(kForegroundScenesCount);
+  key.Update(foregroundScenes);
 }
 
 void SetRegularTabCount(int tabCount) {
-  [[CrashReportUserApplicationState sharedInstance] setValue:kRegularTabCount
-                                                   withValue:tabCount];
+  static IntegerCrashKey<> key(kRegularTabsCount);
+  key.Update(tabCount);
   [[PreviousSessionInfo sharedInstance] updateCurrentSessionTabCount:tabCount];
 }
 
 void SetInactiveTabCount(int tabCount) {
-  [[CrashReportUserApplicationState sharedInstance] setValue:kInactiveTabCount
-                                                   withValue:tabCount];
+  static IntegerCrashKey<> key(kInactiveTabsCount);
+  key.Update(tabCount);
   [[PreviousSessionInfo sharedInstance]
       updateCurrentSessionInactiveTabCount:tabCount];
 }
 
 void SetIncognitoTabCount(int tabCount) {
-  [[CrashReportUserApplicationState sharedInstance] setValue:kIncognitoTabCount
-                                                   withValue:tabCount];
+  static IntegerCrashKey<> key(kIncognitoTabsCount);
+  key.Update(tabCount);
   [[PreviousSessionInfo sharedInstance]
       updateCurrentSessionOTRTabCount:tabCount];
 }
 
 void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress) {
-  if (in_progress) {
-    [[CrashReportUserApplicationState sharedInstance]
-         setValue:kDestroyingAndRebuildingIncognitoBrowserState
-        withValue:1];
-  } else {
-    [[CrashReportUserApplicationState sharedInstance]
-        removeValue:kDestroyingAndRebuildingIncognitoBrowserState];
-  }
+  static BooleanCrashKey key(kRecreatingIncognitoProfile);
+  key.Update(in_progress);
 }
 
 void SetBookmarkNodesCount(int bookmarks_count, ProfileIOS* profile) {
-  [[CrashReportUserApplicationState sharedInstance] setValue:kBookmarkNodesCount
-                                                   withValue:bookmarks_count];
-}
-
-void SetGridToVisibleTabAnimation(NSString* to_view_controller,
-                                  NSString* presenting_view_controller,
-                                  NSString* presented_view_controller,
-                                  NSString* parent_view_controller) {
-  NSString* formatted_value =
-      [NSString stringWithFormat:
-                    @"{toVC:%@, presentingVC:%@, presentedVC:%@, parentVC:%@}",
-                    to_view_controller, presenting_view_controller,
-                    presented_view_controller, parent_view_controller];
-  kRemoveGridToVisibleTabAnimationKey.Set(
-      base::SysNSStringToUTF8(formatted_value));
-}
-
-void RemoveGridToVisibleTabAnimation() {
-  kRemoveGridToVisibleTabAnimationKey.Clear();
-}
-
-void MediaStreamPlaybackDidStart() {
-  [[CrashReportUserApplicationState sharedInstance]
-      incrementValue:kVideoPlaying];
-}
-
-void MediaStreamPlaybackDidStop() {
-  [[CrashReportUserApplicationState sharedInstance]
-      decrementValue:kVideoPlaying];
+  static IntegerCrashKey<> key(kBookmarkNodesCount);
+  key.Update(bookmarks_count);
 }
 
 void SetVoiceOverRunning(bool running) {
-  if (running) {
-    [[CrashReportUserApplicationState sharedInstance] setValue:kVoiceOverRunning
-                                                     withValue:1];
-  } else {
-    [[CrashReportUserApplicationState sharedInstance]
-        removeValue:kVoiceOverRunning];
-  }
+  static BooleanCrashKey key(kVoiceOverRunning);
+  key.Update(running);
 }
 
 void SetCurrentlyInReaderMode(bool is_reader_mode_active) {
-  static crash_reporter::CrashKeyString<4> key(kIsReaderModeActive);
-  if (is_reader_mode_active) {
-    key.Set("yes");
-    [[PreviousSessionInfo sharedInstance]
-        setReportParameterValue:@"yes"
-                         forKey:base::SysUTF8ToNSString(kIsReaderModeActive)];
-
-  } else {
-    key.Clear();
-    [[PreviousSessionInfo sharedInstance]
-        removeReportParameterForKey:base::SysUTF8ToNSString(
-                                        kIsReaderModeActive)];
-  }
+  static BooleanCrashKey key(kIsReaderModeActive);
+  key.Update(is_reader_mode_active);
 }
 
 }  // namespace crash_keys
