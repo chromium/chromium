@@ -53,6 +53,11 @@ constexpr base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>
         &kPasskeyUnlockErrorUiExperimentArms};
 #endif
 
+#if BUILDFLAG(IS_MAC)
+// Not yet enabled by default.
+BASE_FEATURE(kPasskeyUnlockICloudRecovery, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 // Permanent flag
 BASE_FEATURE(kWebAuthUseNativeWinApi,

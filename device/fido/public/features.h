@@ -29,6 +29,13 @@ extern const base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>
     kPasskeyUnlockErrorUiExperimentArm;
 #endif
 
+#if BUILDFLAG(IS_MAC)
+// Enables unlocking passkeys using iCloud Keychain upon PasskeyUnlockManager
+// startup.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kPasskeyUnlockICloudRecovery);
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 // Controls whether on Windows, U2F/CTAP2 requests are forwarded to the
 // native WebAuthentication API, where available.
