@@ -64,7 +64,6 @@ import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,6 +74,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -82,6 +82,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
@@ -128,6 +129,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** View tests for the keyboard accessory component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class KeyboardAccessoryViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
@@ -229,11 +231,6 @@ public class KeyboardAccessoryViewTest {
         public void addOnInitializedCallback(Callback<Boolean> callback) {
             callback.onResult(/* result= */ true);
         }
-    }
-
-    @After
-    public void tearDown() {
-        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Before
@@ -495,6 +492,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("Changes orientation")
     public void testUpdatesKeyPaddingAfterRotation() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -506,15 +504,18 @@ public class KeyboardAccessoryViewTest {
                 () -> view.mBarItemsView.isShown() && view.mBarItemsView.getChildAt(1) != null);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
 
-        rotateActivityToLandscape();
-
-        CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
-        CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
-
-        // Reset device orientation.
-        mActivityTestRule
-                .getActivity()
-                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        try {
+            rotateActivityToLandscape();
+            CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
+            CriteriaHelper.pollUiThread(
+                    viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
+        } finally {
+            if (mActivityTestRule.getActivity() != null) {
+                mActivityTestRule
+                        .getActivity()
+                        .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            }
+        }
     }
 
     @Test
