@@ -267,6 +267,7 @@ source_set("arc_util_impl") {
     "//chromeos/components/mgs",
     "//components/embedder_support:user_agent",
     "//components/prefs",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
     "//content/public/common",

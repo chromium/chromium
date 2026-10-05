@@ -79,7 +79,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1704,11 +1704,10 @@ void ArcSessionManager::StartArc() {
   params.preferred_languages = base::SplitString(
       preferred_languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  CHECK(user_manager->GetPrimaryUser(), base::NotFatalUntil::M160);
-  params.account_id =
-      cryptohome::Identification(user_manager->GetPrimaryUser()->GetAccountId())
-          .id();
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
+  CHECK(user);
+  params.account_id = cryptohome::Identification(user->GetAccountId()).id();
 
   params.is_account_managed =
       profile_->GetProfilePolicyConnector()->IsManaged();

@@ -59,6 +59,8 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -585,10 +587,13 @@ bool IsArcOobeOptInActive() {
   // ARC OOBE opt-in will only be active if the user did not complete the
   // onboarding flow yet. The OnboardingCompletedVersion preference will only be
   // saved after the onboarding flow is completed.
-  AccountId account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  return !known_user.GetOnboardingCompletedVersion(account_id).has_value();
+  return !known_user.GetOnboardingCompletedVersion(active_session->account_id())
+              .has_value();
 }
 
 bool IsArcOobeOptInConfigurationBased() {

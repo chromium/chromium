@@ -14,26 +14,24 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager_delegate.h"
-#include "components/user_manager/test_helper.h"
-#include "components/user_manager/user_manager_impl.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,19 +43,27 @@ namespace {
 constexpr char kMuteAudioWithSuccessHistogram[] = "Arc.MuteAudioSuccess";
 constexpr char kUnmuteAudioWithSuccessHistogram[] = "Arc.UnmuteAudioSuccess";
 constexpr char kUserEmail[] = "test@example.com";
-constexpr char kUserGaiaId[] = "1234567890";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kUserEmail,
+                                            GaiaId::Literal("1234567890"));
 
 class ArcLockedFullscreenManagerTest
     : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  protected:
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-
     // Initialize fake clients and enable ARC through command line.
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::DlcserviceClient::InitializeFake();
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
+
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
 
     // Force ARC session manager to skip UI.
     ArcSessionManager::SetUiEnabledForTesting(false);
@@ -67,21 +73,11 @@ class ArcLockedFullscreenManagerTest
             base::BindRepeating(FakeArcSession::Create)),
         arc_dlc_installer_.get());
 
-    // Initialize a testing profile and the user manager. Needed to test ARC.
-    user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        ash::CrosSettings::Get());
-    user_manager_->Initialize();
-
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kUserGaiaId)));
-    ASSERT_TRUE(user_manager::TestHelper(user_manager_.get())
-                    .AddRegularUser(account_id));
-    const std::string user_id_hash =
-        user_manager::TestHelper::GetFakeUsernameHash(account_id);
-    user_manager_->UserLoggedIn(account_id, user_id_hash);
-    profile_ = profile_manager_.CreateTestingProfile(kUserEmail);
+    user_session_test_environment_->LogIn(kTestAccountId);
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kTestAccountId)));
+    ASSERT_TRUE(profile_);
 
     // Initialize the locked fullscreen manager.
     arc_locked_fullscreen_manager_ =
@@ -94,13 +90,15 @@ class ArcLockedFullscreenManagerTest
   }
 
   void TearDown() override {
+    arc_locked_fullscreen_manager_.reset();
     // Reset ARC session manager before shutting down the Concierge client since
     // it is observing it.
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    user_manager_->Destroy();
   }
 
   bool IsMuteAudioRequest() const { return std::get<0>(GetParam()); }
@@ -124,10 +122,8 @@ class ArcLockedFullscreenManagerTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
 
-  std::unique_ptr<user_manager::UserManagerImpl> user_manager_;
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
