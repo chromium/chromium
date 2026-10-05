@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/dom/range.h"
 
-#include "base/check.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
@@ -206,7 +205,12 @@ Node* Range::commonAncestorContainer(const Node* container_a,
 void Range::setStart(Node* ref_node,
                      unsigned offset,
                      ExceptionState& exception_state) {
-  CHECK(ref_node);
+  if (!ref_node) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return;
+  }
 
   RangeUpdateScope scope(this);
   bool did_move_document = false;
@@ -232,7 +236,12 @@ void Range::setStart(Node* ref_node,
 void Range::setEnd(Node* ref_node,
                    unsigned offset,
                    ExceptionState& exception_state) {
-  CHECK(ref_node);
+  if (!ref_node) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return;
+  }
 
   RangeUpdateScope scope(this);
   bool did_move_document = false;
@@ -307,7 +316,12 @@ bool Range::HasSameRoot(const Node& node) const {
 bool Range::isPointInRange(Node* ref_node,
                            unsigned offset,
                            ExceptionState& exception_state) const {
-  CHECK(ref_node);
+  if (!ref_node) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return false;
+  }
   if (!HasSameRoot(*ref_node))
     return false;
 
@@ -457,10 +471,15 @@ void Range::deleteContents(ExceptionState& exception_state) {
   }
 }
 
-bool Range::intersectsNode(Node* ref_node, ExceptionState&) {
+bool Range::intersectsNode(Node* ref_node, ExceptionState& exception_state) {
   // http://developer.mozilla.org/en/docs/DOM:range.intersectsNode
   // Returns a bool if the node intersects the range.
-  CHECK(ref_node);
+  if (!ref_node) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return false;
+  }
   if (!HasSameRoot(*ref_node))
     return false;
 
@@ -837,7 +856,12 @@ DocumentFragment* Range::cloneContents(ExceptionState& exception_state) {
 
 // https://dom.spec.whatwg.org/#concept-range-insert
 void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
-  CHECK(new_node);
+  if (!new_node) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return;
+  }
 
   // 1. If range’s start node is a ProcessingInstruction or Comment node, is a
   // Text node whose parent is null, or is node, then throw a
@@ -1099,25 +1123,32 @@ Node* Range::CheckNodeWOffset(Node* n,
   NOTREACHED();
 }
 
-void Range::CheckNodeBA(Node& n, ExceptionState& exception_state) const {
+void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
+  if (!n) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return;
+  }
+
   // InvalidNodeTypeError: Raised if the root container of refNode is not an
   // Attr, Document, DocumentFragment or ShadowRoot node, or part of a SVG
   // shadow DOM tree, or if refNode is a Document, DocumentFragment, ShadowRoot,
   // Attr, Entity, or Notation node.
 
-  if (!n.parentNode()) {
+  if (!n->parentNode()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidNodeTypeError,
                                       "the given Node has no parent.");
     return;
   }
 
-  switch (n.getNodeType()) {
+  switch (n->getNodeType()) {
     case Node::kAttributeNode:
     case Node::kDocumentFragmentNode:
     case Node::kDocumentNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          StrCat({"The node provided is of type '", n.nodeName(), "'."}));
+          StrCat({"The node provided is of type '", n->nodeName(), "'."}));
       return;
     case Node::kCdataSectionNode:
     case Node::kCommentNode:
@@ -1128,7 +1159,7 @@ void Range::CheckNodeBA(Node& n, ExceptionState& exception_state) const {
       break;
   }
 
-  Node* root = &n;
+  Node* root = n;
   while (ContainerNode* parent = root->parentNode())
     root = parent;
 
@@ -1145,7 +1176,7 @@ void Range::CheckNodeBA(Node& n, ExceptionState& exception_state) const {
     case Node::kTextNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          StrCat({"The node provided is of type '", n.nodeName(), "'."}));
+          StrCat({"The node provided is of type '", n->nodeName(), "'."}));
       return;
   }
 }
@@ -1157,7 +1188,7 @@ Range* Range::cloneRange() const {
 }
 
 void Range::setStartAfter(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(*ref_node, exception_state);
+  CheckNodeBA(ref_node, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -1165,7 +1196,7 @@ void Range::setStartAfter(Node* ref_node, ExceptionState& exception_state) {
 }
 
 void Range::setEndBefore(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(*ref_node, exception_state);
+  CheckNodeBA(ref_node, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -1173,7 +1204,7 @@ void Range::setEndBefore(Node* ref_node, ExceptionState& exception_state) {
 }
 
 void Range::setEndAfter(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(*ref_node, exception_state);
+  CheckNodeBA(ref_node, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -1181,7 +1212,12 @@ void Range::setEndAfter(Node* ref_node, ExceptionState& exception_state) {
 }
 
 void Range::selectNode(Node* ref_node, ExceptionState& exception_state) {
-  CHECK(ref_node);
+  if (!ref_node) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return;
+  }
 
   if (!ref_node->parentNode()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidNodeTypeError,
@@ -1226,7 +1262,12 @@ void Range::selectNode(Node* ref_node, ExceptionState& exception_state) {
 
 void Range::selectNodeContents(Node* ref_node,
                                ExceptionState& exception_state) {
-  CHECK(ref_node);
+  if (!ref_node) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return;
+  }
 
   // InvalidNodeTypeError: Raised if refNode or an ancestor of refNode is an
   // Entity, Notation
@@ -1292,7 +1333,12 @@ bool Range::selectNodeContents(Node* ref_node, Position& start, Position& end) {
 // https://dom.spec.whatwg.org/#dom-range-surroundcontents
 void Range::surroundContents(Node* new_parent,
                              ExceptionState& exception_state) {
-  CHECK(new_parent);
+  if (!new_parent) {
+    // FIXME: Generated bindings code never calls with null, and neither should
+    // other callers!
+    exception_state.ThrowTypeError("The node provided is null.");
+    return;
+  }
 
   // 1. If a non-Text node is partially contained in the context object, then
   // throw an InvalidStateError.
@@ -1360,7 +1406,7 @@ void Range::surroundContents(Node* new_parent,
 }
 
 void Range::setStartBefore(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(*ref_node, exception_state);
+  CheckNodeBA(ref_node, exception_state);
   if (exception_state.HadException())
     return;
 

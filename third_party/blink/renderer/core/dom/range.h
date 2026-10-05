@@ -176,7 +176,7 @@ class CORE_EXPORT Range final : public NodeRange {
  private:
   void SetDocument(Document&);
 
-  void CheckNodeBA(Node&, ExceptionState&) const;
+  void CheckNodeBA(Node*, ExceptionState&) const;
   void CheckExtractPrecondition(ExceptionState&);
   bool HasSameRoot(const Node&) const;
 
