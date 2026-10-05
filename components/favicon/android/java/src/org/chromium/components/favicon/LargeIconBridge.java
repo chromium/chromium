@@ -7,8 +7,10 @@ package org.chromium.components.favicon;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.LruCache;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -26,11 +28,14 @@ import org.chromium.url.GURL;
 /**
  * A Java API for using the C++ LargeIconService.
  *
- * An instance of this class must be created, used, and destroyed on the same thread.
+ * <p>An instance of this class must be created, used, and destroyed on the same thread.
  */
 @JNINamespace("favicon")
 @NullMarked
 public class LargeIconBridge {
+    // LINT.IfChange(DEFAULT_ICON_FALLBACK_COLOR)
+    @ColorInt public static final int DEFAULT_ICON_FALLBACK_COLOR = Color.rgb(0x78, 0x78, 0x78);
+    // LINT.ThenChange(//components/favicon_base/fallback_icon_style.cc:kDefaultBackgroundColor)
     private static final int CACHE_ENTRY_MIN_SIZE_BYTES = ConversionUtils.BYTES_PER_KILOBYTE;
     private final @Nullable BrowserContextHandle mBrowserContextHandle;
     private long mNativeLargeIconBridge;

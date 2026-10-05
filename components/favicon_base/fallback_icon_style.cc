@@ -18,8 +18,10 @@ namespace {
 const double kMaxBackgroundColorLightness = 0.67;
 const double kMinBackgroundColorLightness = 0.15;
 
+// LINT.IfChange(kDefaultBackgroundColor)
 // Default values for FallbackIconStyle.
 const SkColor kDefaultBackgroundColor = SkColorSetRGB(0x78, 0x78, 0x78);
+// LINT.ThenChange(//components/favicon/android/java/src/org/chromium/components/favicon/LargeIconBridge.java:DEFAULT_ICON_FALLBACK_COLOR)
 const SkColor kDefaultTextColor = SK_ColorWHITE;
 
 }  // namespace
