@@ -9,7 +9,6 @@
 #include <functional>
 #include <limits>
 
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
@@ -196,7 +195,7 @@ std::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
 
 base::expected<DecimalInteger, ParseStatus> ParseDecimalInteger(
     ResolvedSourceString source_str) {
-  static const base::NoDestructor<re2::RE2> decimal_integer_regex("\\d{1,20}");
+  static constexpr re2::LazyRE2 decimal_integer_regex = {"\\d{1,20}"};
 
   const auto str = source_str.Str();
 
@@ -239,8 +238,8 @@ base::expected<SignedDecimalFloatingPoint, ParseStatus>
 ParseSignedDecimalFloatingPoint(ResolvedSourceString source_str) {
   // Accept no decimal point, decimal point with leading digits, trailing
   // digits, or both
-  static const base::NoDestructor<re2::RE2> decimal_floating_point_regex(
-      "-?(\\d+|\\d+\\.|\\.\\d+|\\d+\\.\\d+)");
+  static constexpr re2::LazyRE2 decimal_floating_point_regex{
+      "-?(\\d+|\\d+\\.|\\.\\d+|\\d+\\.\\d+)"};
 
   const auto str = source_str.Str();
 
@@ -467,8 +466,7 @@ AttributeMap::~AttributeMap() = default;
 // static
 base::expected<VariableName, ParseStatus> VariableName::Parse(
     SourceString source_str) {
-  static const base::NoDestructor<re2::RE2> variable_name_regex(
-      "[a-zA-Z0-9_-]+");
+  static constexpr re2::LazyRE2 variable_name_regex{"[a-zA-Z0-9_-]+"};
 
   // This source_str must match completely
   if (!re2::RE2::FullMatch(source_str.Str(), *variable_name_regex)) {
