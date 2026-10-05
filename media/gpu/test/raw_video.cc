@@ -418,9 +418,10 @@ RawVideo::Metadata::~Metadata() = default;
 RawVideo::Metadata::Metadata(const Metadata&) = default;
 RawVideo::Metadata& RawVideo::Metadata::operator=(const Metadata&) = default;
 
-RawVideo::FrameData::FrameData(const std::vector<const uint8_t*>& plane_addrs,
-                               const std::vector<size_t>& strides,
-                               std::vector<uint8_t> buffer)
+RawVideo::FrameData::FrameData(
+    const std::vector<raw_ptr<const uint8_t>>& plane_addrs,
+    const std::vector<size_t>& strides,
+    std::vector<uint8_t> buffer)
     : plane_addrs(plane_addrs), strides(strides), buffer(std::move(buffer)) {}
 
 RawVideo::FrameData::FrameData(FrameData&& frame_data)
@@ -700,7 +701,7 @@ RawVideo::FrameData RawVideo::GetFrame(size_t frame_index) const {
 
   const auto& plane_layouts = FrameLayout().planes();
   const size_t num_planes = plane_layouts.size();
-  std::vector<const uint8_t*> plane_addrs(num_planes);
+  std::vector<raw_ptr<const uint8_t>> plane_addrs(num_planes);
   std::vector<size_t> strides(num_planes);
   for (size_t i = 0; i < num_planes; ++i) {
     plane_addrs[i] = frame_span.subspan(plane_layouts[i].offset).data();

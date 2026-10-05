@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,7 +35,7 @@ class RawVideo final {
 
   // FrameData serves the access of the frame data.
   struct FrameData {
-    FrameData(const std::vector<const uint8_t*>& plane_addrs,
+    FrameData(const std::vector<raw_ptr<const uint8_t>>& plane_addrs,
               const std::vector<size_t>& strides,
               std::vector<uint8_t> buffer);
     FrameData(FrameData&& frame_data);
@@ -44,7 +45,7 @@ class RawVideo final {
     FrameData(const FrameData&) = delete;
     FrameData& operator=(const FrameData&) = delete;
 
-    const std::vector<const uint8_t*> plane_addrs;
+    const std::vector<raw_ptr<const uint8_t>> plane_addrs;
     const std::vector<size_t> strides;
 
    private:
