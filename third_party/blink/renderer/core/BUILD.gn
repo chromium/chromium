@@ -415,7 +415,6 @@ component("core") {
     "//components/performance_manager/public/mojom:mojom_blink",
     "//components/shared_highlighting/core/common",
     "//components/subresource_filter/core/common",
-    "//components/web_package",
     "//gin",
     "//gpu/config",
     "//mojo/public/cpp/bindings",

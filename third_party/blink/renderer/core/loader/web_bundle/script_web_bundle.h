@@ -32,6 +32,15 @@ class CORE_EXPORT ScriptWebBundle final
     : public GarbageCollected<ScriptWebBundle>,
       public SubresourceWebBundle {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Corresponds to SubresourceWebBundleOriginType in enums.xml.
+  enum class OriginType {
+    kSameOrigin = 0,
+    kCrossOrigin = 1,
+    kMaxValue = kCrossOrigin,
+  };
+
   static std::variant<ScriptWebBundle*, ScriptWebBundleError>
   CreateOrReuseInline(ScriptElementBase&, const String& inline_text);
 

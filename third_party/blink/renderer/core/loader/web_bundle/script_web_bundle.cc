@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
-#include "components/web_package/web_bundle_utils.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -98,13 +97,11 @@ ScriptWebBundle::ScriptWebBundle(ScriptElementBase& element,
     : element_(&element), element_document_(&element_document), rule_(rule) {
   UseCounter::Count(element_document_, WebFeature::kScriptWebBundle);
   if (IsSameOriginBundle()) {
-    base::UmaHistogramEnumeration(
-        "SubresourceWebBundles.OriginType",
-        web_package::ScriptWebBundleOriginType::kSameOrigin);
+    base::UmaHistogramEnumeration("SubresourceWebBundles.OriginType",
+                                  OriginType::kSameOrigin);
   } else {
-    base::UmaHistogramEnumeration(
-        "SubresourceWebBundles.OriginType",
-        web_package::ScriptWebBundleOriginType::kCrossOrigin);
+    base::UmaHistogramEnumeration("SubresourceWebBundles.OriginType",
+                                  OriginType::kCrossOrigin);
   }
 
   CreateBundleLoaderAndRegister();
