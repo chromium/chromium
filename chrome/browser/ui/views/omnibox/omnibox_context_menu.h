@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -71,7 +72,7 @@ class OmniboxContextMenu : public views::MenuDelegate,
 
  private:
   void BuildMenuTree();
-  const raw_ptr<views::Widget> parent_widget_;
+  base::WeakPtr<views::Widget> parent_widget_;
   std::unique_ptr<OmniboxContextMenuController> controller_;
 
   // Responsible for running the menu.
