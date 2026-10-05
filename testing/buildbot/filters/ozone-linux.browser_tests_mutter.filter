@@ -35,6 +35,11 @@
 
 -WebAppFrameToolbarBrowserTest_WindowControlsOverlay.DownloadIconVisibilityForAppDownload
 
+# TODO(b/569815188): Times out because the test relies on programmatic window
+# re-activation (BrowserWindow::Activate()), which mutter ignores due to
+# focus-stealing prevention.
+-PageContextMonitorBrowserTest.SwitchingBrowserWindowsAndClosingAllWindows
+
 #################################################
 # Also flaky/failing weston and/or other builders
 #################################################
