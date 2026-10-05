@@ -49,8 +49,8 @@
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_util.h"
 #import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -516,11 +516,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     features.push_back(AimCobrowseJavaScriptFeature::GetInstance());
   }
 
-  // TODO(crbug.com/517112324): Avoid registering this JavaScriptFeature if the
-  // user is not an enterprise user with a configured Device Trust policy
-  // allowlist.
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::features::kEnableIOSDeviceTrustConnector)) {
+  if (ShouldRegisterDeviceTrust(profile)) {
     features.push_back(DeviceTrustJavaScriptFeature::GetInstance());
   }
 

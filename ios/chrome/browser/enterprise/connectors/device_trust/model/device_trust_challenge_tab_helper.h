@@ -88,11 +88,11 @@ class DeviceTrustChallengeTabHelper
  private:
   friend class web::WebStateUserData<DeviceTrustChallengeTabHelper>;
 
-  // `device_trust_service` is the profile's DeviceTrustService. It is null for
-  // off-the-record profiles (and in tests without a testing factory), in which
-  // case the API is never set up and attestation requests fail with
-  // `kServiceUnavailable`. Otherwise, it must outlive this tab helper; the
-  // pointer is cleared in WebStateDestroyed().
+  // `device_trust_service` is the profile's DeviceTrustService. It may be null
+  // (e.g. in tests without a testing factory), in which case the API is never
+  // set up and attestation requests fail with `kServiceUnavailable`. Otherwise,
+  // it must outlive this tab helper; the pointer is cleared in
+  // `WebStateDestroyed()`.
   DeviceTrustChallengeTabHelper(
       web::WebState* web_state,
       enterprise_connectors::DeviceTrustService* device_trust_service);
