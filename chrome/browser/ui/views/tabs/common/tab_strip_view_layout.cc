@@ -191,11 +191,11 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
     unpinned_width = std::min(unpinned_width, available_unpinned_width);
   }
   gfx::Rect unpinned_bounds(x, 0, unpinned_width, container_height);
-  layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view,
-                                     unpinned_tabs_scroll_view->GetVisible(),
-                                     unpinned_bounds);
   x += unpinned_width;
 
+  // Add `scroll_button_container` to `child_layouts` before
+  // `unpinned_tabs_scroll_view` so its visibility change callback runs before
+  // `unpinned_tabs_scroll_view` is laid out and executes post-layout callbacks.
   if (scroll_button_container) {
     if (show_scroll_buttons) {
       gfx::Rect scroll_container_bounds(
@@ -208,6 +208,10 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
                                          gfx::Rect());
     }
   }
+
+  layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view,
+                                     unpinned_tabs_scroll_view->GetVisible(),
+                                     unpinned_bounds);
 
   x += overflow_padding;
 

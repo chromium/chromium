@@ -224,6 +224,10 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
           &TabStripView::ResetCollectionNode, base::Unretained(this))));
 
   if (tab_scroll_button_container_) {
+    callback_subscriptions_.emplace_back(
+        tab_scroll_button_container_->AddVisibleChangedCallback(
+            base::BindRepeating(&TabStripView::OnScrollButtonsVisibilityChanged,
+                                base::Unretained(this))));
     if (PrefService* prefs = GetPrefs()) {
       pref_change_registrar_.Init(prefs);
       pref_change_registrar_.Add(
@@ -363,7 +367,7 @@ void TabStripView::OnTabChanged(const tabs::TabInterface* active_tab) {
 
 void TabStripView::ScrollToFitTabs(const tabs::TabInterface* active_tab,
                                    const tabs::TabInterface* new_tab) {
-  if (!collection_node_ || !active_tab || !new_tab) {
+  if (!collection_node_ || (!active_tab && !new_tab)) {
     return;
   }
 
@@ -372,22 +376,14 @@ void TabStripView::ScrollToFitTabs(const tabs::TabInterface* active_tab,
   }
 
   TabCollectionNode* active_node =
-      collection_node_->GetNodeForHandle(active_tab->GetHandle());
+      active_tab ? collection_node_->GetNodeForHandle(active_tab->GetHandle())
+                 : nullptr;
   TabCollectionNode* new_node =
-      collection_node_->GetNodeForHandle(new_tab->GetHandle());
+      new_tab ? collection_node_->GetNodeForHandle(new_tab->GetHandle())
+              : nullptr;
 
-  if (!active_node || !new_node) {
-    return;
-  }
-
-  views::View* active_view = active_node->view();
-  views::View* new_view = new_node->view();
-
-  if (!active_view || !new_view) {
-    return;
-  }
-
-  ScrollToFitViews(active_view, new_view);
+  ScrollToFitViews(active_node ? active_node->view() : nullptr,
+                   new_node ? new_node->view() : nullptr);
 }
 
 void TabStripView::ScrollToFitViews(views::View* view1, views::View* view2) {
@@ -810,6 +806,16 @@ void TabStripView::HideHoverCardOnScroll() {
       hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kAnimating);
+  }
+}
+
+void TabStripView::OnScrollButtonsVisibilityChanged() {
+  // Only scroll to the active tab if a scroll request isn't already pending
+  // (e.g. from adding or activating a tab) to avoid overwriting any tracked
+  // secondary target view.
+  if (collection_node_ && tab_scroll_button_container_->GetVisible() &&
+      target_views_tracker_->empty()) {
+    ScrollToFitTabs(collection_node_->GetController()->GetActiveTab(), nullptr);
   }
 }
 

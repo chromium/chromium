@@ -130,6 +130,7 @@ class TabStripView final : public views::View,
                                           views::ScrollView* scroll_view);
 
   void HideHoverCardOnScroll();
+  void OnScrollButtonsVisibilityChanged();
 
   PrefService* GetPrefs() const;
 

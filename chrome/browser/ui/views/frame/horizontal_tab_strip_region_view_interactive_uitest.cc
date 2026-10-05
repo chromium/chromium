@@ -496,6 +496,35 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       ScrollsToActiveTabWhenScrollButtonsAppear) {
+  AddTabsUntilNearlyScrollable();
+
+  auto* const model = browser()->GetTabStripModel();
+  const int active_tab_index = model->count() - 1;
+  model->ActivateTabAt(active_tab_index);
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kActiveTabVisibleObserver);
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      EnsureNotPresent(TabScrollButtonContainer::kTabScrollButtonContainer),
+      PollState(
+          kActiveTabVisibleObserver,
+          base::BindRepeating(
+              &HorizontalTabStripRegionViewNewInteractiveUiTest::IsTabVisible,
+              base::Unretained(this), active_tab_index)),
+      WaitForState(kActiveTabVisibleObserver, true),
+      Do([this]() { AddTabsUntilScrollable(); }),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      // The active tab at the end should be scrolled into view rather than
+      // covered by the newly shown scroll buttons.
+      WaitForState(kActiveTabVisibleObserver, true));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
                        ScrollButtonsShowOnOverflowWithPinnedTabs) {
   // Add unpinned tabs and pinned tabs. The pinned tabs
   // should cause the unpinned tabs container to overflow.
