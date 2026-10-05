@@ -31,7 +31,7 @@ class TabAndroidUserData : public base::SupportsUserData::Data {
   // Creates an object of type T, and attaches it to the specified TabAndroid.
   // If an instance is already attached, does nothing.
   static void CreateForTabAndroid(TabAndroid* tab) {
-    DCHECK(tab);
+    CHECK(tab, base::NotFatalUntil::M161);
     if (!FromTabAndroid(tab))
       tab->SetUserData(UserDataKey(), base::WrapUnique(new T(tab)));
   }
@@ -40,7 +40,7 @@ class TabAndroidUserData : public base::SupportsUserData::Data {
   // TabAndroid (via CreateForTabAndroid above) and returns it. If no instance
   // of the type was attached, returns nullptr.
   static T* FromTabAndroid(TabAndroid* tab) {
-    DCHECK(tab);
+    CHECK(tab, base::NotFatalUntil::M161);
     return static_cast<T*>(tab->GetUserData(UserDataKey()));
   }
 

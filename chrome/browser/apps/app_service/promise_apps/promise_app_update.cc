@@ -17,9 +17,9 @@ namespace apps {
 PromiseAppUpdate::PromiseAppUpdate(const PromiseApp* state,
                                    const PromiseApp* delta)
     : state_(state), delta_(delta) {
-  DCHECK(state_ || delta_);
+  CHECK(state_ || delta_, base::NotFatalUntil::M161);
   if (state_ && delta_) {
-    DCHECK_EQ(state_->package_id, delta->package_id);
+    CHECK_EQ(state_->package_id, delta->package_id, base::NotFatalUntil::M161);
   }
 }
 
@@ -43,7 +43,7 @@ bool PromiseAppUpdate::operator==(const PromiseAppUpdate& rhs) const {
 }
 
 void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
-  DCHECK(state);
+  CHECK(state, base::NotFatalUntil::M161);
   if (!delta) {
     return;
   }
@@ -65,7 +65,7 @@ void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
 }
 
 const PackageId& PromiseAppUpdate::PackageId() const {
-  DCHECK(state_ || delta_);
+  CHECK(state_ || delta_, base::NotFatalUntil::M161);
   if (delta_) {
     return delta_->package_id;
   } else {

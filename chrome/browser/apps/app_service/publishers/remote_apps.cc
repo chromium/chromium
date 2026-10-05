@@ -17,7 +17,7 @@ namespace apps {
 
 RemoteApps::RemoteApps(AppServiceProxy* proxy, Delegate* delegate)
     : AppPublisher(proxy), profile_(proxy->profile()), delegate_(delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
 }
 
 RemoteApps::~RemoteApps() = default;

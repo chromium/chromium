@@ -47,7 +47,7 @@ ResourceMap ConstructMap() {
 #undef LINK_RESOURCE_ID
 #undef DECLARE_RESOURCE_ID
   // Make sure ID list sizes match up.
-  DCHECK_EQ(next_id, resource_id_list.size());
+  CHECK_EQ(next_id, resource_id_list.size(), base::NotFatalUntil::M161);
   return id_map;
 }
 

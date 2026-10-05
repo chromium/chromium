@@ -69,7 +69,7 @@ JNI_BackgroundSyncBackgroundTaskScheduler_SetPlayServicesVersionCheckDisabledFor
 
 // static
 BackgroundSyncLauncherAndroid* BackgroundSyncLauncherAndroid::Get() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   return g_background_sync_launcher.Pointer();
 }
@@ -84,7 +84,7 @@ void BackgroundSyncLauncherAndroid::SetPlayServicesVersionCheckDisabledForTests(
 void BackgroundSyncLauncherAndroid::ScheduleBrowserWakeUpWithDelay(
     blink::mojom::BackgroundSyncType sync_type,
     base::TimeDelta delay) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   Get()->ScheduleBrowserWakeUpWithDelayImpl(sync_type, delay);
 }
@@ -92,13 +92,13 @@ void BackgroundSyncLauncherAndroid::ScheduleBrowserWakeUpWithDelay(
 // static
 void BackgroundSyncLauncherAndroid::CancelBrowserWakeup(
     blink::mojom::BackgroundSyncType sync_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   Get()->CancelBrowserWakeupImpl(sync_type);
 }
 
 // static
 bool BackgroundSyncLauncherAndroid::ShouldDisableBackgroundSync() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (disable_play_services_version_check_for_tests)
     return false;
   return Java_GooglePlayServicesChecker_shouldDisableBackgroundSync(
@@ -108,7 +108,7 @@ bool BackgroundSyncLauncherAndroid::ShouldDisableBackgroundSync() {
 void BackgroundSyncLauncherAndroid::ScheduleBrowserWakeUpWithDelayImpl(
     blink::mojom::BackgroundSyncType sync_type,
     base::TimeDelta soonest_wakeup_delta) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   int64_t min_delay_ms = soonest_wakeup_delta.InMilliseconds();
@@ -120,7 +120,7 @@ void BackgroundSyncLauncherAndroid::ScheduleBrowserWakeUpWithDelayImpl(
 
 void BackgroundSyncLauncherAndroid::CancelBrowserWakeupImpl(
     blink::mojom::BackgroundSyncType sync_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -132,17 +132,17 @@ void BackgroundSyncLauncherAndroid::CancelBrowserWakeupImpl(
 void BackgroundSyncLauncherAndroid::FireBackgroundSyncEvents(
     blink::mojom::BackgroundSyncType sync_type,
     const base::android::JavaRef<jobject>& j_runnable) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto* profile = ProfileManager::GetLastUsedProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   content::BackgroundSyncContext::FireBackgroundSyncEventsAcrossPartitions(
       profile, sync_type, j_runnable);
 }
 
 BackgroundSyncLauncherAndroid::BackgroundSyncLauncherAndroid() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -151,7 +151,7 @@ BackgroundSyncLauncherAndroid::BackgroundSyncLauncherAndroid() {
 }
 
 BackgroundSyncLauncherAndroid::~BackgroundSyncLauncherAndroid() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 DEFINE_JNI(BackgroundSyncBackgroundTaskScheduler)

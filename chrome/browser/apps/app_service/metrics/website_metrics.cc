@@ -243,7 +243,7 @@ void WebsiteMetrics::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  DCHECK(tab_strip_model);
+  CHECK(tab_strip_model, base::NotFatalUntil::M161);
   auto* window = GetWindowWithTabStripModel(tab_strip_model);
   if (!window || !window_to_web_contents_.contains(window)) {
     // Skip the app browser window.
@@ -306,7 +306,8 @@ void WebsiteMetrics::OnWindowDestroying(aura::Window* window) {
 
 void WebsiteMetrics::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  DCHECK(history_observation_.IsObservingSource(history_service));
+  CHECK(history_observation_.IsObservingSource(history_service),
+        base::NotFatalUntil::M161);
   history_observation_.Reset();
 }
 
@@ -643,7 +644,7 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
   }
 
   const auto current_time = tick_clock_->NowTicks();
-  DCHECK_GE(current_time, it->second.start_time);
+  CHECK_GE(current_time, it->second.start_time, base::NotFatalUntil::M161);
   it->second.running_time_in_five_minutes +=
       current_time - it->second.start_time;
   it->second.is_activated = false;
@@ -655,7 +656,7 @@ void WebsiteMetrics::SaveUsageTime() {
     if (it.second.is_activated) {
       // Continued usage of active web content.
       const auto current_time = tick_clock_->NowTicks();
-      DCHECK_GE(current_time, it.second.start_time);
+      CHECK_GE(current_time, it.second.start_time, base::NotFatalUntil::M161);
       it.second.running_time_in_five_minutes +=
           current_time - it.second.start_time;
       it.second.start_time = current_time;

@@ -20,7 +20,7 @@ bool ContainsExpectedScopeIntentFilter(GURL scope,
   apps::IntentFilterPtr expected =
       apps_util::MakeIntentFilterForUrlScope(scope);
   for (auto& intent_filter : update.IntentFilters()) {
-    DCHECK(!intent_filter->IsBrowserFilter());
+    CHECK(!intent_filter->IsBrowserFilter(), base::NotFatalUntil::M161);
     if (*intent_filter == *expected) {
       return true;
     }
@@ -138,7 +138,7 @@ AppWindowModeWaiter::AppWindowModeWaiter(Profile* profile,
                 return update.WindowMode() == expected_mode;
               },
               window_mode)) {
-  DCHECK_NE(window_mode, apps::WindowMode::kUnknown);
+  CHECK_NE(window_mode, apps::WindowMode::kUnknown, base::NotFatalUntil::M161);
 }
 
 }  // namespace apps

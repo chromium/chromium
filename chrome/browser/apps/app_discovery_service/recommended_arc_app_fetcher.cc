@@ -19,7 +19,7 @@ RecommendedArcAppFetcher::~RecommendedArcAppFetcher() = default;
 
 void RecommendedArcAppFetcher::GetApps(ResultCallback callback) {
   // Only one request can ever be made at a time.
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M161);
   callback_ = std::move(callback);
   recommend_apps_fetcher_ = RecommendAppsFetcher::Create(profile_, this);
   recommend_apps_fetcher_->Start();

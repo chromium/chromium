@@ -40,7 +40,7 @@ void RestoreEntityTrackerAndroid::RegisterCollection(
     const tabs_pb::Children& children,
     std::optional<base::Token> collection_specific_id,
     base::PassKey<TabStateStorageDatabase>) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M161);
 
   if (type == TabStorageType::kPinned) {
     if (pinned_collection_id_) {
@@ -64,10 +64,10 @@ void RestoreEntityTrackerAndroid::RegisterCollection(
     }
     tab_strip_collection_id_ = storage_id;
   } else if (type == TabStorageType::kSplit) {
-    DCHECK(collection_specific_id.has_value());
+    CHECK(collection_specific_id.has_value(), base::NotFatalUntil::M161);
     split_tab_id_to_storage_id_[*collection_specific_id] = storage_id;
   } else if (type == TabStorageType::kGroup) {
-    DCHECK(collection_specific_id.has_value());
+    CHECK(collection_specific_id.has_value(), base::NotFatalUntil::M161);
     tab_group_id_to_storage_id_[*collection_specific_id] = storage_id;
   }
 }
@@ -76,12 +76,12 @@ void RestoreEntityTrackerAndroid::RegisterTab(
     StorageId storage_id,
     const tabs_pb::TabState& tab_state,
     base::PassKey<TabStateStorageDatabase>) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M161);
   tab_android_id_to_storage_id_[tab_state.tab_id()] = storage_id;
 }
 
 bool RestoreEntityTrackerAndroid::AssociateTab(const TabInterface* tab) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M161);
 
   const TabAndroid* tab_android = TabAndroid::FromTabInterface(tab);
   TabHandle handle = tab->GetHandle();
@@ -102,7 +102,7 @@ bool RestoreEntityTrackerAndroid::AssociateTab(const TabInterface* tab) {
 
 bool RestoreEntityTrackerAndroid::AssociateCollection(
     const TabCollection* collection) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M161);
 
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   if (type == TabStorageType::kPinned) {
@@ -189,7 +189,7 @@ bool RestoreEntityTrackerAndroid::AssociateSplitTabCollection(
 
 bool RestoreEntityTrackerAndroid::HasCollectionBeenAssociated(
     TabCollection::Handle handle) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M161);
   return associated_nodes_.contains(handle);
 }
 

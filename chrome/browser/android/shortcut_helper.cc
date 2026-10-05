@@ -137,7 +137,8 @@ void ShortcutHelper::StoreWebappSplashImage(const std::string& webapp_id,
 
 // static
 bool ShortcutHelper::DoesOriginContainAnyInstalledWebApk(const GURL& origin) {
-  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
+  CHECK_EQ(origin, origin.DeprecatedGetOriginAsURL(),
+           base::NotFatalUntil::M161);
   return Java_ShortcutHelper_doesOriginContainAnyInstalledWebApk(
       base::android::AttachCurrentThread(),
       url::Origin::Create(origin).Serialize());
@@ -145,7 +146,8 @@ bool ShortcutHelper::DoesOriginContainAnyInstalledWebApk(const GURL& origin) {
 
 bool ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
     const GURL& origin) {
-  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
+  CHECK_EQ(origin, origin.DeprecatedGetOriginAsURL(),
+           base::NotFatalUntil::M161);
   return Java_ShortcutHelper_doesOriginContainAnyInstalledTwa(
       base::android::AttachCurrentThread(),
       url::Origin::Create(origin).Serialize());

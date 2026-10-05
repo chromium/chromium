@@ -59,27 +59,27 @@ AppInstallSurface PreloadAppDefinition::GetInstallSurface() const {
 }
 
 std::string PreloadAppDefinition::GetAndroidPackageName() const {
-  DCHECK_EQ(GetPlatform(), PackageType::kArc);
-  DCHECK(package_id_.has_value());
+  CHECK_EQ(GetPlatform(), PackageType::kArc, base::NotFatalUntil::M161);
+  CHECK(package_id_.has_value(), base::NotFatalUntil::M161);
 
   return package_id_->identifier();
 }
 
 GURL PreloadAppDefinition::GetWebAppManifestUrl() const {
-  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
+  CHECK_EQ(GetPlatform(), PackageType::kWeb, base::NotFatalUntil::M161);
 
   return GURL(app_proto_.web_extras().manifest_url());
 }
 
 GURL PreloadAppDefinition::GetWebAppOriginalManifestUrl() const {
-  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
+  CHECK_EQ(GetPlatform(), PackageType::kWeb, base::NotFatalUntil::M161);
 
   return GURL(app_proto_.web_extras().original_manifest_url());
 }
 
 GURL PreloadAppDefinition::GetWebAppManifestId() const {
-  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
-  DCHECK(package_id_.has_value());
+  CHECK_EQ(GetPlatform(), PackageType::kWeb, base::NotFatalUntil::M161);
+  CHECK(package_id_.has_value(), base::NotFatalUntil::M161);
 
   return GURL(package_id_->identifier());
 }

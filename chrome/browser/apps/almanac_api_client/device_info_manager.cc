@@ -197,7 +197,7 @@ void DeviceInfoManager::GetDeviceInfo(
 
   // Locale
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M161);
   device_info.locale = prefs->GetString(language::prefs::kApplicationLocale);
   // If there's no stored locale preference, fall back to the current UI
   // language.

@@ -213,7 +213,7 @@ class OpenFileSelectListener : public content::FileSelectListener {
                     blink::mojom::FileChooserParams::Mode mode) override {
     // The Ctrl+O shortcut requests Mode::kOpen, which never enables
     // multi-selection in the Android file picker, so only one file is expected.
-    DCHECK_LE(files.size(), 1u);
+    CHECK_LE(files.size(), 1u, base::NotFatalUntil::M161);
 
     if (!web_contents_ || files.empty() || !files[0]->is_native_file()) {
       return;
@@ -653,9 +653,11 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
     bool user_gesture,
     bool* was_blocked) {
   // No code for this yet.
-  DCHECK_NE(disposition, WindowOpenDisposition::SAVE_TO_DISK);
+  CHECK_NE(disposition, WindowOpenDisposition::SAVE_TO_DISK,
+           base::NotFatalUntil::M161);
   // Can't create a new contents for the current tab - invalid case.
-  DCHECK_NE(disposition, WindowOpenDisposition::CURRENT_TAB);
+  CHECK_NE(disposition, WindowOpenDisposition::CURRENT_TAB,
+           base::NotFatalUntil::M161);
 
   if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
     const GURL& opener_url = source ? source->GetLastCommittedURL() : GURL();

@@ -36,7 +36,7 @@ bool IsKioskSessionProfile(Profile* profile) {
 }  // anonymous namespace
 
 PublisherHostImpl::PublisherHostImpl(AppServiceProxy* proxy) : proxy_(proxy) {
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M161);
   Initialize();
 }
 
@@ -52,7 +52,7 @@ void PublisherHostImpl::ReInitializeCrostiniForTesting() {
 }
 
 void PublisherHostImpl::RegisterPublishersForTesting() {
-  DCHECK(proxy_);
+  CHECK(proxy_, base::NotFatalUntil::M161);
   if (crostini_apps_) {
     proxy_->RegisterPublisher(AppType::kCrostini, crostini_apps_.get());
   }

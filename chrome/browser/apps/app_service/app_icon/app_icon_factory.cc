@@ -74,7 +74,7 @@ bool IsConsistentPixelSize(const gfx::ImageSkiaRep& rep,
 // remove paddings. Otherwise, the image_rep doesn't have padding, and should
 // not be chopped.
 bool ShouldExtractSubset(const gfx::ImageSkia& image_skia) {
-  DCHECK(!image_skia.image_reps().empty());
+  CHECK(!image_skia.image_reps().empty(), base::NotFatalUntil::M161);
   for (const auto& rep : image_skia.image_reps()) {
     if (!IsConsistentPixelSize(rep, image_skia)) {
       return true;
@@ -105,7 +105,7 @@ gfx::ImageSkia ExtractSubsetForArcImage(const gfx::ImageSkia& image_skia) {
         RectToSkIRect(gfx::Rect(padding_width, padding_height,
                                 rep.pixel_width() - 2 * padding_width,
                                 rep.pixel_height() - 2 * padding_height)));
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M161);
 
     // Resize |rep| to roundf(size_hint_in_dip * rep.scale()), to keep
     // consistency with ArcAppIconDescriptor::GetSizeInPixels.
@@ -137,7 +137,7 @@ const SkBitmap& GetMaskBitmap() {
                             .GetImageNamed(IDR_ICON_MASK)
                             .ToSkBitmap();
   }
-  DCHECK(!mask_cache.first.empty());
+  CHECK(!mask_cache.first.empty(), base::NotFatalUntil::M161);
   return mask_cache.first;
 }
 
@@ -520,7 +520,7 @@ void LoadIconFromExtension(IconType icon_type,
                            IconEffects icon_effects,
                            LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::LoadIconFromExtension");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   constexpr bool is_placeholder_icon = false;
   scoped_refptr<AppIconLoader> icon_loader =
@@ -540,7 +540,7 @@ void LoadIconFromWebApp(Profile* profile,
                         IconEffects icon_effects,
                         LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::LoadIconFromWebApp");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile);
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
@@ -565,12 +565,12 @@ void GetWebAppCompressedIconData(Profile* profile,
                                  ui::ResourceScaleFactor scale_factor,
                                  LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::GetWebAppCompressedIconData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile);
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 
-  DCHECK(web_app_provider);
+  CHECK(web_app_provider, base::NotFatalUntil::M161);
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
           profile, /*app_id=*/std::nullopt, IconType::kCompressed, size_in_dip,
@@ -586,7 +586,7 @@ void GetChromeAppCompressedIconData(Profile* profile,
                                     ui::ResourceScaleFactor scale_factor,
                                     LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::GetChromeAppCompressedIconData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
@@ -605,7 +605,7 @@ void GetArcAppCompressedIconData(Profile* profile,
                                  ui::ResourceScaleFactor scale_factor,
                                  LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::GetArcAppCompressedIconData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile);
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
@@ -628,7 +628,7 @@ void GetGuestOSAppCompressedIconData(Profile* profile,
                                      ui::ResourceScaleFactor scale_factor,
                                      LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::GetGuestOSAppCompressedIconData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile);
 
   scoped_refptr<AppIconLoader> icon_loader =
@@ -649,7 +649,7 @@ void LoadIconFromFileWithFallback(
     LoadIconCallback callback,
     base::OnceCallback<void(LoadIconCallback)> fallback) {
   TRACE_EVENT0("ui", "apps::LoadIconFromFileWithFallback");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   constexpr bool is_placeholder_icon = false;
 
   scoped_refptr<AppIconLoader> icon_loader =
@@ -666,7 +666,7 @@ void LoadIconFromCompressedData(IconType icon_type,
                                 const std::string& compressed_icon_data,
                                 LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::LoadIconFromCompressedData");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   constexpr bool is_placeholder_icon = false;
 
   scoped_refptr<AppIconLoader> icon_loader =
@@ -686,7 +686,7 @@ void LoadIconFromResource(Profile* profile,
                           IconEffects icon_effects,
                           LoadIconCallback callback) {
   TRACE_EVENT0("ui", "apps::LoadIconFromResource");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // There is no fallback icon for a resource.
   constexpr int fallback_icon_resource = 0;
 

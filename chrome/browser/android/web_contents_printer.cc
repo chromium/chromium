@@ -62,7 +62,7 @@ static bool JNI_WebContentsPrinter_InitiatePrint(
     int32_t render_process_id,
     int32_t render_frame_id,
     bool print_selection_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -87,7 +87,7 @@ static bool JNI_WebContentsPrinter_Print(
     int32_t render_process_id,
     int32_t render_frame_id,
     bool print_selection_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -113,7 +113,7 @@ static void JNI_WebContentsPrinter_FinishPrint(
     int32_t render_process_id,
     int32_t render_frame_id,
     bool print_selection_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);

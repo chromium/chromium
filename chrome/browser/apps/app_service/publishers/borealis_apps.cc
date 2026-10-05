@@ -193,8 +193,10 @@ void BorealisApps::CreateAppOverrides(
     App* app) {
   // The special apps are not GuestOs apps, they don't have a registration and
   // can't be converted.
-  DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
-  DCHECK_NE(registration.app_id(), borealis::kLauncherSearchAppId);
+  CHECK_NE(registration.app_id(), borealis::kInstallerAppId,
+           base::NotFatalUntil::M161);
+  CHECK_NE(registration.app_id(), borealis::kLauncherSearchAppId,
+           base::NotFatalUntil::M161);
 
   // Borealis apps don't handle intents (like "open with").
   app->handles_intents = false;

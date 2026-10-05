@@ -37,7 +37,7 @@ void GuestOSApps::InitializeForTesting() {
 }
 
 void GuestOSApps::Initialize() {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   if (!CouldBeAllowed()) {
     // Set the publisher unavailable to remove apps saved in the AppStorage
     // file, and related launch requests.
@@ -154,7 +154,7 @@ void GuestOSApps::OnAppLastLaunchTimeUpdated(
 AppPtr GuestOSApps::CreateApp(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool generate_new_icon_key) {
-  DCHECK_EQ(registration.VmType(), VmType());
+  CHECK_EQ(registration.VmType(), VmType(), base::NotFatalUntil::M161);
   auto app = AppPublisher::MakeApp(
       AppType(), registration.app_id(), Readiness::kReady, registration.Name(),
       InstallReason::kUser, InstallSource::kUnknown);

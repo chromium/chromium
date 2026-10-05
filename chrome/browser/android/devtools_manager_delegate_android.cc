@@ -258,7 +258,7 @@ bool DevToolsManagerDelegateAndroid::IsCreatedByDevTools(
 
 void DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(
     WebContents& web_contents) {
-  DCHECK(!IsCreatedByDevTools(web_contents));
+  CHECK(!IsCreatedByDevTools(web_contents), base::NotFatalUntil::M161);
   web_contents.SetUserData(kCreatedByDevTools,
                            std::make_unique<base::SupportsUserData::Data>());
 }
@@ -378,7 +378,7 @@ void DevToolsManagerDelegateAndroid::HandleCommand(
 
 void DevToolsManagerDelegateAndroid::ClientAttached(
     content::DevToolsAgentHostClientChannel* channel) {
-  DCHECK(sessions_.find(channel) == sessions_.end());
+  CHECK(sessions_.find(channel) == sessions_.end(), base::NotFatalUntil::M161);
   sessions_.emplace(channel,
                     std::make_unique<ChromeDevToolsSessionAndroid>(channel));
 }

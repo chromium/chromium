@@ -86,7 +86,7 @@ TabStateStorageServiceFactory::~TabStateStorageServiceFactory() = default;
 std::unique_ptr<KeyedService>
 TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M161);
 
   Profile* profile = static_cast<Profile*>(context);
   std::unique_ptr<TabStoragePackager> packager;

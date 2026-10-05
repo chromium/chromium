@@ -231,10 +231,10 @@ void ExtensionAppsBase::LaunchAppWithParamsImpl(AppLaunchParams&& params,
 
 const extensions::Extension* ExtensionAppsBase::MaybeGetExtension(
     const std::string& app_id) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   const extensions::Extension* extension =
       registry->GetInstalledExtension(app_id);
   if (!extension || !Accepts(extension)) {
@@ -250,7 +250,7 @@ void ExtensionAppsBase::Initialize() {
   prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
   registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
 
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
 
   // Publish apps after all extensions have been loaded, to include all apps
   // including the disabled apps.
@@ -496,7 +496,7 @@ void ExtensionAppsBase::OnExtensionLastLaunchTimeChanged(
 
 void ExtensionAppsBase::OnExtensionPrefsWillBeDestroyed(
     extensions::ExtensionPrefs* prefs) {
-  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  CHECK(prefs_observation_.IsObservingSource(prefs), base::NotFatalUntil::M161);
   prefs_observation_.Reset();
 }
 

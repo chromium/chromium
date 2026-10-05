@@ -40,7 +40,7 @@ void FakeRecommendAppsFetcherDelegate::OnLoadSuccess(base::Value app_list) {
 }
 
 void FakeRecommendAppsFetcherDelegate::SetResult(Result result) {
-  DCHECK_EQ(Result::UNKNOWN, result_);
+  CHECK_EQ(Result::UNKNOWN, result_, base::NotFatalUntil::M161);
   result_ = result;
   if (result_callback_) {
     std::move(result_callback_).Run();

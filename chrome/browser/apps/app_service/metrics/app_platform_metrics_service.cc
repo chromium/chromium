@@ -47,7 +47,7 @@ AppPlatformMetricsService::AppPlatformMetricsService(
     : profile_(profile),
       clock_(CHECK_DEREF(clock)),
       tick_clock_(CHECK_DEREF(tick_clock)) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   timer_.SetTaskRunner(task_runner);
   five_minutes_timer_.SetTaskRunner(task_runner);
   noisy_appkm_reporting_interval_timer_.SetTaskRunner(task_runner);
@@ -135,7 +135,7 @@ void AppPlatformMetricsService::SetWebsiteMetricsForTesting(
 void AppPlatformMetricsService::CheckForNewDay() {
   base::Time now = clock_->Now();
 
-  DCHECK(app_platform_app_metrics_);
+  CHECK(app_platform_app_metrics_, base::NotFatalUntil::M161);
   app_platform_app_metrics_->OnTenMinutes();
 
   if (day_id_ < GetDayId(now)) {

@@ -59,7 +59,7 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
 // static
 void RecommendAppsFetcher::SetFactoryCallbackForTesting(
     FactoryCallback* callback) {
-  DCHECK(!g_factory_callback || !callback);
+  CHECK(!g_factory_callback || !callback, base::NotFatalUntil::M161);
 
   g_factory_callback = callback;
 }

@@ -20,7 +20,7 @@ namespace {
 
 Profile* GetProfile() {
   Profile* profile = ProfileManager::GetLastUsedProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return profile;
 }
 
@@ -30,7 +30,7 @@ ProfileKey* GetLastUsedRegularProfileKey() {
   ProfileKey* key = ProfileKeyStartupAccessor::GetInstance()->profile_key();
   if (!key)
     key = GetProfile()->GetProfileKey();
-  DCHECK(key && !key->IsOffTheRecord());
+  CHECK(key && !key->IsOffTheRecord(), base::NotFatalUntil::M161);
   return key;
 }
 

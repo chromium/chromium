@@ -102,8 +102,8 @@ void AppShimHost::ChannelError(uint32_t custom_reason,
 void AppShimHost::LaunchShimInternal(
     web_app::LaunchShimUpdateBehavior update_behavior,
     web_app::ShimLaunchMode launch_mode) {
-  DCHECK(launch_shim_has_been_called_);
-  DCHECK(!bootstrap_);
+  CHECK(launch_shim_has_been_called_, base::NotFatalUntil::M161);
+  CHECK(!bootstrap_, base::NotFatalUntil::M161);
   launch_weak_factory_.InvalidateWeakPtrs();
   pending_chrome_initiated_launch_mode_ = launch_mode;
   client_->OnShimLaunchRequested(

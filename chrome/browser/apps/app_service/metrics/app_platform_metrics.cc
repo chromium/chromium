@@ -659,7 +659,7 @@ void AppPlatformMetrics::OnTenMinutes() {
                                                 kAppActivatedCount);
     for (auto it : activated_count_) {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
-      DCHECK(!app_type_name.empty());
+      CHECK(!app_type_name.empty(), base::NotFatalUntil::M161);
       activated_count_update->Set(app_type_name, it.second);
     }
   }
@@ -670,7 +670,7 @@ void AppPlatformMetrics::OnTenMinutes() {
                                                  kAppRunningDuration);
     for (auto it : running_duration_) {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
-      DCHECK(!app_type_name.empty());
+      CHECK(!app_type_name.empty(), base::NotFatalUntil::M161);
       running_duration_update->SetByDottedPath(
           app_type_name, base::TimeDeltaToValue(it.second));
     }
@@ -890,7 +890,7 @@ void AppPlatformMetrics::GetBrowserInstanceInfo(
     std::string& browser_app_id,
     InstanceState& state) const {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M161);
   browser_id = base::UnguessableToken();
   browser_app_id = std::string();
   state = InstanceState::kUnknown;
@@ -922,7 +922,7 @@ void AppPlatformMetrics::UpdateBrowserWindowStatus(
   }
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M161);
   InstanceState state;
   base::UnguessableToken browser_id;
   std::string browser_app_id;
@@ -1156,7 +1156,7 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
   for (auto& it : usage_time_per_two_hours_) {
     apps::AppTypeName app_type_name = it.second.app_type_name;
     ukm::SourceId source_id = it.second.source_id;
-    DCHECK_NE(source_id, ukm::kInvalidSourceId);
+    CHECK_NE(source_id, ukm::kInvalidSourceId, base::NotFatalUntil::M161);
     if (!it.second.running_time.is_zero()) {
       if (ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(),
                                     it.second.app_id)) {

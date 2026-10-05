@@ -56,7 +56,7 @@ void AppShimHostBootstrap::CreateForChannelAndPeerAuditToken(
   // AppShimHostBootstrap is initially owned by itself until it receives a
   // OnShimConnected message or a channel error. In OnShimConnected, ownership
   // is transferred to a unique_ptr.
-  DCHECK(endpoint.platform_handle().is_mach_send());
+  CHECK(endpoint.platform_handle().is_mach_send(), base::NotFatalUntil::M161);
   (new AppShimHostBootstrap(audit_token))->ServeChannel(std::move(endpoint));
 }
 
@@ -64,7 +64,7 @@ AppShimHostBootstrap::AppShimHostBootstrap(audit_token_t audit_token)
     : audit_token_(audit_token) {}
 
 AppShimHostBootstrap::~AppShimHostBootstrap() {
-  DCHECK(!shim_connected_callback_);
+  CHECK(!shim_connected_callback_, base::NotFatalUntil::M161);
   LogToNSLog("AppShim: Closing pid %d", GetAppShimPid());
 }
 
@@ -143,7 +143,7 @@ void AppShimHostBootstrap::OnShimConnected(
     OnShimConnectedCallback callback) {
   LogToNSLog("AppShim: Received OnShimConnected from pid %d", GetAppShimPid());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!app_shim_info_);
+  CHECK(!app_shim_info_, base::NotFatalUntil::M161);
   // Only one app launch message per channel.
   if (app_shim_info_)
     return;

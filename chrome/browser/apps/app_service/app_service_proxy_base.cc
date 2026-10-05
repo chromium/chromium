@@ -550,7 +550,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     const apps::IntentFilters& filters = update.IntentFilters();
     for (size_t i = 0; i < filters.size(); i++) {
       const IntentFilterPtr& filter = filters[i];
-      DCHECK(filter);
+      CHECK(filter, base::NotFatalUntil::M161);
       if (exclude_browsers && filter->IsBrowserFilter()) {
         continue;
       }
@@ -611,7 +611,7 @@ void AppServiceProxyBase::SetSupportedLinksPreference(
 void AppServiceProxyBase::SetSupportedLinksPreference(
     const std::string& app_id,
     IntentFilters all_link_filters) {
-  DCHECK(!app_id.empty());
+  CHECK(!app_id.empty(), base::NotFatalUntil::M161);
 
   // If the app is a user-installed Web App, we must ensure it cannot be set
   // as preferred if a non-web app (such as an ARC app) or a System Web App
@@ -635,7 +635,7 @@ void AppServiceProxyBase::SetSupportedLinksPreference(
 
 void AppServiceProxyBase::RemoveSupportedLinksPreference(
     const std::string& app_id) {
-  DCHECK(!app_id.empty());
+  CHECK(!app_id.empty(), base::NotFatalUntil::M161);
 
   preferred_apps_impl_->RemoveSupportedLinksPreference(app_id);
 }

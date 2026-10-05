@@ -33,7 +33,7 @@ ProfileKeyStartupAccessor* ProfileKeyStartupAccessor::GetInstance() {
 }
 
 void ProfileKeyStartupAccessor::SetProfileKey(ProfileKey* key) {
-  DCHECK(!key_);
+  CHECK(!key_, base::NotFatalUntil::M161);
   key_ = key;
 }
 

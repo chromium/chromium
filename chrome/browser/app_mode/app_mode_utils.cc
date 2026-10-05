@@ -71,7 +71,7 @@ bool IsOriginAllowedByPermissionFeatureFlag(
 }  // namespace
 
 bool IsCommandAllowedInAppMode(int command_id, bool is_popup) {
-  DCHECK(IsRunningInForcedAppMode());
+  CHECK(IsRunningInForcedAppMode(), base::NotFatalUntil::M161);
 
   constexpr int kAllowed[] = {
       IDC_BACK,
@@ -111,7 +111,7 @@ bool IsRunningInForcedAppMode() {
 }
 
 bool IsRunningInForcedAppModeForApp(const std::string& app_id) {
-  DCHECK(!app_id.empty());
+  CHECK(!app_id.empty(), base::NotFatalUntil::M161);
 
   std::optional<std::string> forced_app_mode_app = GetForcedAppModeApp();
   if (!forced_app_mode_app.has_value()) {

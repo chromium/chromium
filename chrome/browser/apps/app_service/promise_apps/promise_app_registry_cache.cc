@@ -23,7 +23,7 @@ PromiseAppRegistryCache::~PromiseAppRegistryCache() {
 }
 
 void PromiseAppRegistryCache::AddObserver(Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M161);
   observers_.AddObserver(observer);
 }
 
@@ -37,7 +37,7 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   // Check that there isn't an update currently being processed. We do not allow
   // an update to trigger an observer to send and execute another update before
   // the current call completes.
-  DCHECK(!update_in_progress_);
+  CHECK(!update_in_progress_, base::NotFatalUntil::M161);
   update_in_progress_ = true;
 
   // Retrieve the current promise app state.

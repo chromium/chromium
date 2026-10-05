@@ -70,7 +70,7 @@ void SetAppIdForWebContents(Profile* profile,
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id);
   if (extension) {
-    DCHECK(extension->is_app());
+    CHECK(extension->is_app(), base::NotFatalUntil::M161);
     web_app_helper->SetAppId(std::nullopt);
     extensions_app_tab_helper->SetExtensionAppById(app_id);
   } else {

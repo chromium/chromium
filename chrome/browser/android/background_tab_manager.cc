@@ -17,7 +17,7 @@ namespace android {
 BackgroundTabManager::BackgroundTabManager(content::WebContents* web_contents,
                                            Profile* profile)
     : content::WebContentsUserData<BackgroundTabManager>(*web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   profile_ = profile;
 }
 
@@ -29,19 +29,19 @@ void BackgroundTabManager::UnregisterBackgroundTab() {
 }
 
 Profile* BackgroundTabManager::GetProfile() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return profile_;
 }
 
 void BackgroundTabManager::CacheHistory(
     const history::HistoryAddPageArgs& history_item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   cached_history_.push_back(history_item);
 }
 
 void BackgroundTabManager::CommitHistory(
     history::HistoryService* history_service) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // History service can be null in non exceptional conditions, e.g. incognito
   // mode. We clear the cached history in any case.
   if (history_service) {

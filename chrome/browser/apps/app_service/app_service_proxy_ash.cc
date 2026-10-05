@@ -572,7 +572,7 @@ void AppServiceProxyAsh::UninstallImpl(const std::string& app_id,
                                          &callback](
                                             const apps::AppUpdate& update) {
     auto icon_key = update.IconKey();
-    DCHECK(icon_key.has_value());
+    CHECK(icon_key.has_value(), base::NotFatalUntil::M161);
     auto app_type = update.AppType();
     auto uninstall_dialog_ptr = std::make_unique<UninstallDialog>(
         profile_, app_type, update.AppId(), update.Name(), parent_window,
@@ -599,14 +599,14 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
     UninstallDialog* uninstall_dialog) {
   if (uninstall) {
     auto* publisher = GetPublisher(app_type);
-    DCHECK(publisher);
+    CHECK(publisher, base::NotFatalUntil::M161);
     publisher->Uninstall(app_id, uninstall_source, clear_site_data,
                          report_abuse);
 
     PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }
 
-  DCHECK(uninstall_dialog);
+  CHECK(uninstall_dialog, base::NotFatalUntil::M161);
   auto it = uninstall_dialogs_.find(app_id);
   CHECK(it != uninstall_dialogs_.end());
   uninstall_dialogs_.erase(it);
@@ -648,7 +648,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
       pending_pause_requests_.IsPaused(update.AppId())) {
     ash::app_time::AppTimeLimitInterface* app_limit =
         ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
-    DCHECK(app_limit);
+    CHECK(app_limit, base::NotFatalUntil::M161);
     auto time_limit =
         app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
     if (!time_limit.has_value()) {

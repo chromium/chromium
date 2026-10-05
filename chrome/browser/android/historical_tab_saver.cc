@@ -125,7 +125,7 @@ void CreateHistoricalGroup(
     int group_color,
     std::vector<TabAndroid*> tabs,
     std::vector<WebContentsStateByteBuffer> web_contents_state) {
-  DCHECK(model);
+  CHECK(model, base::NotFatalUntil::M161);
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(model->GetProfile());
   if (!service) {
@@ -134,7 +134,7 @@ void CreateHistoricalGroup(
 
   base::flat_map<int, tab_groups::TabGroupId> tab_id_to_group_id;
   for (const TabAndroid* tab : tabs) {
-    DCHECK(tab);
+    CHECK(tab, base::NotFatalUntil::M161);
     tab_id_to_group_id.insert(
         std::make_pair(tab->GetAndroidId(), tab_group_id));
   }
@@ -173,11 +173,15 @@ void CreateHistoricalBulkClosure(
         per_tab_optional_tab_group_ids,
     std::vector<TabAndroid*> tabs,
     std::vector<WebContentsStateByteBuffer> web_contents_state) {
-  DCHECK(model);
-  DCHECK_EQ(tab_group_ids.size(), group_titles.size());
-  DCHECK_EQ(tab_group_ids.size(), group_colors.size());
-  DCHECK_EQ(tab_group_ids.size(), saved_tab_group_ids.size());
-  DCHECK_EQ(per_tab_optional_tab_group_ids.size(), tabs.size());
+  CHECK(model, base::NotFatalUntil::M161);
+  CHECK_EQ(tab_group_ids.size(), group_titles.size(),
+           base::NotFatalUntil::M161);
+  CHECK_EQ(tab_group_ids.size(), group_colors.size(),
+           base::NotFatalUntil::M161);
+  CHECK_EQ(tab_group_ids.size(), saved_tab_group_ids.size(),
+           base::NotFatalUntil::M161);
+  CHECK_EQ(per_tab_optional_tab_group_ids.size(), tabs.size(),
+           base::NotFatalUntil::M161);
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(model->GetProfile());
@@ -193,7 +197,7 @@ void CreateHistoricalBulkClosure(
       saved_tab_group_ids_map;
 
   for (size_t i = 0; i < tab_group_ids.size(); ++i) {
-    DCHECK(tab_group_ids[i]);
+    CHECK(tab_group_ids[i], base::NotFatalUntil::M161);
     auto group_id = *tab_group_ids[i];
 
     auto saved_tab_group_id = saved_tab_group_ids[i];
@@ -310,8 +314,9 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
   std::optional<base::Uuid> saved_tab_group_id =
       StringToUuid(serialized_saved_tab_group_id);
   size_t tabs_android_count = tabs_android.size();
-  DCHECK_EQ(tabs_android_count, byte_buffers.size());
-  DCHECK_EQ(tabs_android_count, saved_state_versions.size());
+  CHECK_EQ(tabs_android_count, byte_buffers.size(), base::NotFatalUntil::M161);
+  CHECK_EQ(tabs_android_count, saved_state_versions.size(),
+           base::NotFatalUntil::M161);
 
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(byte_buffers, saved_state_versions);
@@ -340,8 +345,9 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
       per_tab_optional_tab_group_ids =
           TokensToTabGroupIds(per_tab_optional_tab_group_token_ids);
   size_t tabs_android_count = tabs.size();
-  DCHECK_EQ(tabs_android_count, byte_buffers.size());
-  DCHECK_EQ(tabs_android_count, saved_state_versions.size());
+  CHECK_EQ(tabs_android_count, byte_buffers.size(), base::NotFatalUntil::M161);
+  CHECK_EQ(tabs_android_count, saved_state_versions.size(),
+           base::NotFatalUntil::M161);
 
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(byte_buffers, saved_state_versions);

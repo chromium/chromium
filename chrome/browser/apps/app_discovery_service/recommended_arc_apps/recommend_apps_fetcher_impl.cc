@@ -246,7 +246,7 @@ void RecordUmaResponseCode(int code) {
 
 RecommendAppsFetcherImpl::ScopedGpuInfoForTest::ScopedGpuInfoForTest(
     const gpu::GPUInfo* gpu_info) {
-  DCHECK(!g_gpu_info_for_test);
+  CHECK(!g_gpu_info_for_test, base::NotFatalUntil::M161);
   g_gpu_info_for_test = gpu_info;
 }
 

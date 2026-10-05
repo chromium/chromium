@@ -63,7 +63,7 @@ apps::IntentFilterPtr CreateFileURLFilter(
     const std::vector<std::string>& patterns,
     const std::string& activity_name,
     const std::string& activity_label) {
-  DCHECK(!patterns.empty());
+  CHECK(!patterns.empty(), base::NotFatalUntil::M161);
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   // kAction == View.
@@ -179,7 +179,7 @@ apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
       // prefixes. Detect and convert these, since prefix matching is easier &
       // cheaper.
       if (IsPrefixOnlyGlob(path.pattern())) {
-        DCHECK_GE(path.pattern().size(), 2u);
+        CHECK_GE(path.pattern().size(), 2u, base::NotFatalUntil::M161);
         return std::make_unique<apps::ConditionValue>(
             path.pattern().substr(0, path.pattern().size() - 2),
             apps::PatternMatchType::kPrefix);
@@ -291,7 +291,8 @@ apps::IntentFilterPtr CreateFileFilter(
     const std::vector<std::string>& file_extensions,
     const std::string& activity_name,
     bool include_directories) {
-  DCHECK(!mime_types.empty() || !file_extensions.empty());
+  CHECK(!mime_types.empty() || !file_extensions.empty(),
+        base::NotFatalUntil::M161);
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   // kAction == View, Share etc.
@@ -322,7 +323,7 @@ apps::IntentFilterPtr CreateFileFilter(
         "", apps::PatternMatchType::kIsDirectory));
   }
 
-  DCHECK(!file_condition_values.empty());
+  CHECK(!file_condition_values.empty(), base::NotFatalUntil::M161);
   if (!file_condition_values.empty()) {
     intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
         apps::ConditionType::kFile, std::move(file_condition_values)));
@@ -391,7 +392,7 @@ apps::IntentFilters CreateIntentFiltersForExtension(
     const extensions::Extension* extension) {
 #if BUILDFLAG(IS_CHROMEOS)
   // MV3+ manifest support for the `file_handlers` key.
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
   const extensions::WebFileHandlersInfo* intent_filter_data =
       extensions::WebFileHandlers::GetFileHandlers(*extension);
   if (intent_filter_data && !intent_filter_data->empty()) {
@@ -611,7 +612,7 @@ std::string CreateLaunchIntent(const std::string& package_name,
   }
 
   ret += arc::kEndSuffix;
-  DCHECK(!ret.empty());
+  CHECK(!ret.empty(), base::NotFatalUntil::M161);
   return ret;
 }
 

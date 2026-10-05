@@ -231,7 +231,7 @@ ExtensionAppsChromeOs::ExtensionAppsChromeOs(AppServiceProxy* proxy,
       web_file_handlers_permission_handler_(
           std::make_unique<extensions::WebFileHandlersPermissionHandler>(
               profile())) {
-  DCHECK(instance_registry_);
+  CHECK(instance_registry_, base::NotFatalUntil::M161);
 }
 
 ExtensionAppsChromeOs::~ExtensionAppsChromeOs() {
@@ -329,7 +329,7 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
     content::WebContents* web_contents = LaunchImpl(std::move(params));
     MaybeAssociateWebContentsWithArcContext(launch_source, web_contents);
   } else {
-    DCHECK(extension->is_extension());
+    CHECK(extension->is_extension(), base::NotFatalUntil::M161);
     // TODO(petermarshall): Set Arc flag as above?
     auto event_flags = apps::GetEventFlags(params.disposition,
                                            /*prefer_container=*/false);
@@ -408,7 +408,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
   }
 
   // Launch extension.
-  DCHECK(extension->is_extension());
+  CHECK(extension->is_extension(), base::NotFatalUntil::M161);
   // TODO(petermarshall): Set Arc flag as above?
   LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
                   std::move(window_info), std::move(callback));
@@ -454,7 +454,7 @@ void ExtensionAppsChromeOs::GetMenuModel(
 
   const extensions::ManagementPolicy* policy =
       extensions::ExtensionSystem::Get(profile())->management_policy();
-  DCHECK(policy);
+  CHECK(policy, base::NotFatalUntil::M161);
   if (policy->UserMayModifySettings(extension, nullptr) &&
       !policy->MustRemainInstalled(extension, nullptr)) {
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
@@ -475,7 +475,7 @@ void ExtensionAppsChromeOs::LaunchExtension(const std::string& app_id,
                                             WindowInfoPtr window_info,
                                             LaunchCallback callback) {
   const auto* extension = MaybeGetExtension(app_id);
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   std::vector<storage::FileSystemURL> file_urls;
   if (!intent->files.empty()) {
@@ -488,7 +488,7 @@ void ExtensionAppsChromeOs::LaunchExtension(const std::string& app_id,
     }
   }
 
-  DCHECK(intent->activity_name);
+  CHECK(intent->activity_name, base::NotFatalUntil::M161);
   std::string action_id = intent->activity_name.value_or("");
 
   file_manager::file_browser_handlers::ExecuteFileBrowserHandler(
@@ -517,7 +517,7 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
 
   ash::app_time::AppTimeLimitInterface* app_limit =
       ash::ChildUserServiceFactory::GetForBrowserContext(profile());
-  DCHECK(app_limit);
+  CHECK(app_limit, base::NotFatalUntil::M161);
   app_limit->PauseWebActivity(app_id);
 }
 
@@ -531,7 +531,7 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
 
   ash::app_time::AppTimeLimitInterface* app_time =
       ash::ChildUserServiceFactory::GetForBrowserContext(profile());
-  DCHECK(app_time);
+  CHECK(app_time, base::NotFatalUntil::M161);
   app_time->ResumeWebActivity(app_id);
 }
 
@@ -558,7 +558,7 @@ void ExtensionAppsChromeOs::OnAppWindowAdded(
   }
 
   auto* window = app_window->GetNativeWindow();
-  DCHECK(!instance_registry_->Exists(window));
+  CHECK(!instance_registry_->Exists(window), base::NotFatalUntil::M161);
 
   app_window_to_aura_window_[app_window] = window;
 
@@ -667,7 +667,7 @@ void ExtensionAppsChromeOs::OnIsCapturingVideoChanged(
   std::string app_id = app_constants::kChromeAppId;
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile());
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   const extensions::Extension* extension =
       extensions.GetAppByURL(web_contents->GetVisibleURL());
@@ -694,7 +694,7 @@ void ExtensionAppsChromeOs::OnIsCapturingAudioChanged(
   std::string app_id = app_constants::kChromeAppId;
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile());
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   const extensions::Extension* extension =
       extensions.GetAppByURL(web_contents->GetVisibleURL());
@@ -741,7 +741,8 @@ void ExtensionAppsChromeOs::OnNotificationClosed(
 
 void ExtensionAppsChromeOs::OnNotificationDisplayServiceDestroyed(
     NotificationDisplayService* service) {
-  DCHECK(notification_display_service_.IsObservingSource(service));
+  CHECK(notification_display_service_.IsObservingSource(service),
+        base::NotFatalUntil::M161);
   notification_display_service_.Reset();
 }
 
@@ -778,7 +779,7 @@ void ExtensionAppsChromeOs::MaybeAddWebPageNotifications(
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile());
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   const extensions::Extension* extension = extensions.GetAppByURL(url);
   if (extension) {
@@ -899,7 +900,7 @@ AppLaunchParams ExtensionAppsChromeOs::ModifyAppLaunchParams(
 
     // Set an override URL to include the source.
     const auto* extension = MaybeGetExtension(app_id);
-    DCHECK(extension);
+    CHECK(extension, base::NotFatalUntil::M161);
     GURL extension_url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
     params.override_url = net::AppendQueryParameter(
         extension_url, extension_urls::kWebstoreSourceField, source_value);
@@ -1013,7 +1014,7 @@ void ExtensionAppsChromeOs::SetIconEffect(const std::string& app_id) {
 
 bool ExtensionAppsChromeOs::ShouldRecordAppWindowActivity(
     extensions::AppWindow* app_window) {
-  DCHECK(app_window);
+  CHECK(app_window, base::NotFatalUntil::M161);
 
   const extensions::Extension* extension = app_window->GetExtension();
   if (!extension) {
@@ -1046,7 +1047,8 @@ void ExtensionAppsChromeOs::RegisterInstance(extensions::AppWindow* app_window,
   }
 
   if (new_state == InstanceState::kDestroyed) {
-    DCHECK(app_window_to_aura_window_.contains(app_window));
+    CHECK(app_window_to_aura_window_.contains(app_window),
+          base::NotFatalUntil::M161);
     window = app_window_to_aura_window_[app_window];
   }
   InstanceParams params(app_window->extension_id(), window);

@@ -19,7 +19,7 @@
 namespace apps {
 
 AppPublisher::AppPublisher(AppServiceProxy* proxy) : proxy_(proxy) {
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M161);
 }
 
 AppPublisher::~AppPublisher() = default;

@@ -251,7 +251,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
 static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
     const std::string& update_request_path,
     const JavaRef<jobject>& java_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   ScopedJavaGlobalRef<jobject> callback_ref(java_callback);
 

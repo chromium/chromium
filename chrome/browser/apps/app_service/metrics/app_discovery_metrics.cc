@@ -61,7 +61,7 @@ AppDiscoveryMetrics::AppDiscoveryMetrics(
     : profile_(profile),
       app_registry_cache_(app_registry_cache),
       app_platform_metrics_(app_platform_metrics) {
-  DCHECK(app_platform_metrics);
+  CHECK(app_platform_metrics, base::NotFatalUntil::M161);
 
   // Unwrap the prefs into a set in-memory for faster look-ups.
   for (const base::Value& id :
@@ -386,7 +386,7 @@ void AppDiscoveryMetrics::RecordAppInactive(
 
 void AppDiscoveryMetrics::RecordAppClosed(
     const InstanceUpdate& instance_update) {
-  DCHECK(instance_update.IsDestruction());
+  CHECK(instance_update.IsDestruction(), base::NotFatalUntil::M161);
   auto prev_instances = app_id_to_instance_ids_[instance_update.AppId()];
 
   // If instance_update is the only instance of the app.

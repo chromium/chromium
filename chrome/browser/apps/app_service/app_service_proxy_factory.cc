@@ -74,15 +74,16 @@ AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
     LOG(ERROR) << "Called AppServiceProxyFactory::GetForProfile() on a profile "
                   "which does not contain an AppServiceProxy";
     // Fail tests that would trigger DumpWithoutCrashing.
-    DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kTestType));
+    CHECK(
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType),
+        base::NotFatalUntil::M161);
     base::debug::DumpWithoutCrashing();
   }
 
   AppServiceProxy* proxy = static_cast<AppServiceProxy*>(
       AppServiceProxyFactory::GetInstance()->GetServiceForBrowserContext(
           profile, true /* create */));
-  DCHECK_NE(nullptr, proxy);
+  CHECK_NE(nullptr, proxy, base::NotFatalUntil::M161);
   return proxy;
 }
 

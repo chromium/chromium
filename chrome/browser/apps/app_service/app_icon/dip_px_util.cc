@@ -33,7 +33,7 @@ int ConvertBetweenDipAndPx(int value,
     scale = ui::GetScaleForResourceScaleFactor(
         ui::GetSupportedResourceScaleFactor(scale));
   }
-  DCHECK_NE(0.0f, scale);
+  CHECK_NE(0.0f, scale, base::NotFatalUntil::M161);
   if (invert) {
     scale = 1 / scale;
   }

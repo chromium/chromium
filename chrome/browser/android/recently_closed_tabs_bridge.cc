@@ -245,12 +245,12 @@ bool TabIterator::operator==(const TabIterator& other) const {
 }
 
 const sessions::tab_restore::Tab& TabIterator::operator*() const {
-  DCHECK(current_tab_ptr_);
+  CHECK(current_tab_ptr_, base::NotFatalUntil::M161);
   return *current_tab_ptr_;
 }
 
 const sessions::tab_restore::Tab* TabIterator::operator->() const {
-  DCHECK(current_tab_ptr_);
+  CHECK(current_tab_ptr_, base::NotFatalUntil::M161);
   return current_tab_ptr_;
 }
 

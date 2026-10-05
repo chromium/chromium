@@ -23,7 +23,7 @@ MachBootstrapAcceptor::MachBootstrapAcceptor(const std::string& name_fragment,
     : server_name_(
           base::StrCat({base::apple::BaseBundleID(), ".", name_fragment})),
       delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M161);
 }
 
 MachBootstrapAcceptor::~MachBootstrapAcceptor() {
@@ -88,7 +88,7 @@ void MachBootstrapAcceptor::HandleRequest() {
 }
 
 mach_port_t MachBootstrapAcceptor::port() {
-  DCHECK(endpoint_.is_valid());
+  CHECK(endpoint_.is_valid(), base::NotFatalUntil::M161);
   return endpoint_.platform_handle().GetMachReceiveRight().get();
 }
 

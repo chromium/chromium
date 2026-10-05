@@ -56,7 +56,7 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
   // IDMap requires a pointer, so we move |callback| into a heap pointer.
   int request_id = tab_launched_callbacks_.Add(
       std::make_unique<TabLaunchedCallback>(std::move(callback)));
-  DCHECK_GE(request_id, 1);
+  CHECK_GE(request_id, 1, base::NotFatalUntil::M161);
 
   Java_ServiceTabLauncher_launchTab(
       env, request_id, browser_context->IsOffTheRecord(), params.url,

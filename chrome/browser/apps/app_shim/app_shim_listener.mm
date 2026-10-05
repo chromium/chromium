@@ -32,7 +32,7 @@ AppShimListener::AppShimListener() = default;
 void AppShimListener::Init() {
   has_initialized_ = true;
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // Initialize the instance of AppShimTerminationManager, to ensure that it
   // registers for its notifications.
   apps::AppShimTerminationManager::Get();

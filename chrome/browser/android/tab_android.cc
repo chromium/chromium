@@ -155,7 +155,7 @@ TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
 
 // static
 void TabAndroid::AttachTabHelpers(content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   TabHelpers::AttachTabHelpers(web_contents);
 }
 
@@ -403,7 +403,7 @@ void TabAndroid::InitWebContents(
     const JavaRef<jobject>& jweb_contents_delegate,
     const JavaRef<jobject>& jcontext_menu_populator_factory) {
   web_contents_.reset(web_contents);
-  DCHECK(web_contents_.get());
+  CHECK(web_contents_.get(), base::NotFatalUntil::M161);
 
   night_mode::WebContentsThemeClient::CreateForWebContents(web_contents_.get());
 
@@ -527,8 +527,9 @@ void TabAndroid::GetMemoryUsageBytes(
 }
 
 void TabAndroid::InitializeAutofillIfNecessary() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()));
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()),
+        base::NotFatalUntil::M161);
   if (autofill::ContentAutofillClient::FromWebContents(web_contents_.get())) {
     // We need to initialize the keyboard suppressor before creating any
     // AutofillManagers and after the autofill client is available.
@@ -690,7 +691,7 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
 std::unique_ptr<content::WebContents> TabAndroid::TakeWebContentsAndDestroyTab(
     TabAndroid* tab,
     base::PassKey<TabModelJniBridge>) {
-  DCHECK(tab);
+  CHECK(tab, base::NotFatalUntil::M161);
   content::WebContents* raw_contents = tab->web_contents();
   JNIEnv* env = base::android::AttachCurrentThread();
   // WARNING: This call synchronously deletes `tab`. Do not access `tab` after
@@ -718,7 +719,7 @@ void TabAndroid::OnPhysicalBackingSizeChanged(
 
 void TabAndroid::SetActiveNavigationEntryTitleForUrl(const std::string& url,
                                                      std::u16string title) {
-  DCHECK(web_contents());
+  CHECK(web_contents(), base::NotFatalUntil::M161);
 
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();

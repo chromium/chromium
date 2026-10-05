@@ -27,11 +27,11 @@ void AppFetcherManager::GetApps(ResultType result_type,
                                 ResultCallback callback) {
   switch (result_type) {
     case ResultType::kTestType:
-      DCHECK(g_test_fetcher_);
+      CHECK(g_test_fetcher_, base::NotFatalUntil::M161);
       g_test_fetcher_->GetApps(std::move(callback));
       return;
     case ResultType::kRecommendedArcApps:
-      DCHECK(recommended_arc_app_fetcher_);
+      CHECK(recommended_arc_app_fetcher_, base::NotFatalUntil::M161);
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
       return;
   }

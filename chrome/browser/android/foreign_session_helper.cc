@@ -83,8 +83,9 @@ static void JNI_ForeignSessionHelper_CopyTabToJava(
     const sessions::SessionTab& tab,
     ScopedJavaLocalRef<jobject>& j_window) {
   int selected_index = tab.normalized_navigation_index();
-  DCHECK_GE(selected_index, 0);
-  DCHECK_LT(selected_index, static_cast<int>(tab.navigations.size()));
+  CHECK_GE(selected_index, 0, base::NotFatalUntil::M161);
+  CHECK_LT(selected_index, static_cast<int>(tab.navigations.size()),
+           base::NotFatalUntil::M161);
 
   const sessions::SerializedNavigationEntry& current_navigation =
       tab.navigations.at(selected_index);

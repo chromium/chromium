@@ -157,7 +157,7 @@ AppLaunchParams CreateAppLaunchParamsForIntent(
     std::vector<GURL> file_urls;
     for (const auto& intent_file : intent->files) {
       if (intent_file->url.SchemeIsFile()) {
-        DCHECK(file_urls.empty());
+        CHECK(file_urls.empty(), base::NotFatalUntil::M161);
         break;
       }
       file_urls.push_back(intent_file->url);

@@ -77,7 +77,7 @@ void OverlayPanelContent::SetWebContents(
 }
 
 void OverlayPanelContent::DestroyWebContents(JNIEnv* env) {
-  DCHECK(web_contents_.get());
+  CHECK(web_contents_.get(), base::NotFatalUntil::M161);
   // At the time this is called we may be deeply nested in a callback from
   // WebContents. WebContents does not support being deleted from a callback
   // (crashes). To avoid this problem DeleteSoon() is used. See

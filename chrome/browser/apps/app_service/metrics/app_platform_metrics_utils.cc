@@ -83,10 +83,10 @@ apps::AppTypeName GetAppTypeNameForChromeApp(Profile* profile,
     return apps::AppTypeName::kChromeBrowser;
   }
 
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   const extensions::Extension* extension =
       registry->GetInstalledExtension(app_id);
 
@@ -147,8 +147,9 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
   WindowMode window_mode = WindowMode::kBrowser;
   AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache().ForOneApp(
       app_id, [&type_name, &window_mode](const AppUpdate& update) {
-        DCHECK(update.AppType() == AppType::kWeb ||
-               update.AppType() == AppType::kSystemWeb);
+        CHECK(update.AppType() == AppType::kWeb ||
+                  update.AppType() == AppType::kSystemWeb,
+              base::NotFatalUntil::M161);
 
         // For system web apps, the install source is |kSystem|.
         // The app type may be kSystemWeb (system web apps in Ash when
@@ -204,10 +205,10 @@ bool IsAppOpenedWithBrowserWindow(Profile* profile,
     return false;
   }
 
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   const extensions::Extension* extension =
       registry->GetInstalledExtension(app_id);
 
@@ -378,7 +379,7 @@ bool ShouldRecordAppKMForAppTypeName(AppType app_type) {
 int GetUserTypeByDeviceTypeMetrics() {
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
+  CHECK(primary_user, base::NotFatalUntil::M161);
   UserTypeByDeviceTypeMetricsProvider::UserSegment user_segment =
       UserTypeByDeviceTypeMetricsProvider::UserSegment::kUnmanaged;
   // In some tast tests, primary_user->is_profile_created() might return false
@@ -386,7 +387,7 @@ int GetUserTypeByDeviceTypeMetrics() {
   if (primary_user->is_profile_created()) {
     Profile* profile =
         ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M161);
 
     user_segment = UserTypeByDeviceTypeMetricsProvider::GetUserSegment(profile);
   }
@@ -431,7 +432,8 @@ AppTypeName GetAppTypeName(Profile* profile,
 }
 
 AppType GetAppType(Profile* profile, const std::string& app_id) {
-  DCHECK(AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  CHECK(AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile),
+        base::NotFatalUntil::M161);
   auto type = apps::AppServiceProxyFactory::GetForProfile(profile)
                   ->AppRegistryCache()
                   .GetAppType(app_id);

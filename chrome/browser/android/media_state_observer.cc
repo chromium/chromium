@@ -95,7 +95,7 @@ void MediaStateObserver::UpdateAudibleState(bool audible) {
 }
 
 void MediaStateObserver::UpdateMediaState() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   tabs::MediaState new_state = tabs::MediaState::kNone;
   if (is_being_mirrored_) {
     new_state = tabs::MediaState::kSharing;
