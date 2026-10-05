@@ -152,7 +152,12 @@
   width: 100%;
 }
 
-:host-context(.focus-outline-visible) .tile a:focus,
+:host-context(.focus-outline-visible):host(
+    :not([hide-title]):not([non-editable])) .tile a:focus,
+:host-context(.focus-outline-visible):host([hide-title])
+    .tile a:focus ~ .tile-icon,
+:host-context(.focus-outline-visible):host([non-editable])
+    .tile a:focus ~ .tile-icon,
 :host-context(.focus-outline-visible) #addShortcut:focus,
 :host-context(.focus-outline-visible) #showMore:focus,
 :host-context(.focus-outline-visible) #showLess:focus {
@@ -160,7 +165,12 @@
 }
 
 @media (forced-colors: active) {
-  :host-context(.focus-outline-visible) .tile a:focus,
+  :host-context(.focus-outline-visible):host(
+      :not([hide-title]):not([non-editable])) .tile a:focus,
+  :host-context(.focus-outline-visible):host([hide-title])
+      .tile a:focus ~ .tile-icon,
+  :host-context(.focus-outline-visible):host([non-editable])
+      .tile a:focus ~ .tile-icon,
   :host-context(.focus-outline-visible) #addShortcut:focus,
   :host-context(.focus-outline-visible) #showMore:focus,
   :host-context(.focus-outline-visible) #showLess:focus {
@@ -282,14 +292,6 @@ cr-policy-indicator {
 
 :host([hide-title]) .tile-icon {
   margin: 0;
-}
-
-:host([hide-title]) .tile a {
-  border-radius: 50%;
-  height: var(--icon-size);
-  inset: 0;
-  margin: auto;
-  width: var(--icon-size);
 }
 
 .tile.dragging {
