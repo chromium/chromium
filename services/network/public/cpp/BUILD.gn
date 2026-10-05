@@ -840,6 +840,7 @@ source_set("tests") {
     "headers_matcher_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "http_request_headers_mojom_traits_unittest.cc",
+    "http_request_headers_update_params_unittest.cc",
     "http_response_headers_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",
     "integrity_policy_parser_unittest.cc",
