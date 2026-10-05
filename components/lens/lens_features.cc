@@ -155,6 +155,14 @@ const base::FeatureParam<bool> kLensOnlySendAaiExcludeRawAndDriveFiles{
 BASE_FEATURE(kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensWakeHiddenTabForPageContentExtraction,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 BASE_FEATURE(kLensDeleteContextOnPageNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
