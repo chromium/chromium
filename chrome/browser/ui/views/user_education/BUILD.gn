@@ -109,6 +109,7 @@ source_set("impl") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/performance_controls",
+    "//chrome/browser/ui/send_tab_to_self",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",

@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -32,6 +33,17 @@ class SendTabToSelfIphController : public TabStripModelObserver,
 
   static SendTabToSelfIphController* From(BrowserWindowInterface* interface);
 
+  // Returns true if `tab` is the tab most recently chosen as the promo anchor.
+  bool IsPromoTab(tabs::TabHandle tab) const;
+
+  // Records `promo_tab` as the promo anchor. Called by the promo's anchor
+  // filter, which may run more than once before the promo shows.
+  void SetPromoTab(tabs::TabHandle promo_tab);
+
+  // Returns true if the Send Tab to Self entry point for `tab` would offer the
+  // feature, i.e. GetEntryPointDisplayReason() returns kOfferFeature.
+  static bool IsTabEligible(const tabs::TabInterface* tab);
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -51,6 +63,7 @@ class SendTabToSelfIphController : public TabStripModelObserver,
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
       model_observation_{this};
   bool promo_attempted_ = false;
+  tabs::TabHandle promo_tab_;
 };
 
 }  // namespace send_tab_to_self

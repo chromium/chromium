@@ -53,6 +53,23 @@ SendTabToSelfIphController* SendTabToSelfIphController::From(
                    : nullptr;
 }
 
+bool SendTabToSelfIphController::IsPromoTab(tabs::TabHandle tab) const {
+  return promo_tab_ != tabs::TabHandle::Null() && tab == promo_tab_;
+}
+
+void SendTabToSelfIphController::SetPromoTab(tabs::TabHandle promo_tab) {
+  promo_tab_ = promo_tab;
+}
+
+// static
+bool SendTabToSelfIphController::IsTabEligible(const tabs::TabInterface* tab) {
+  if (!tab) {
+    return false;
+  }
+  return GetEntryPointDisplayReason(tab->GetContents()) ==
+         EntryPointDisplayReason::kOfferFeature;
+}
+
 void SendTabToSelfIphController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

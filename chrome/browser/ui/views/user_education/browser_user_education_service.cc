@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_iph_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
@@ -186,8 +187,8 @@ constexpr std::initializer_list<Platforms> kComposePlatforms{
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 constexpr char kChromeThemeBackElementName[] = "ChromeThemeBackElement";
 constexpr char kLastInactiveTabElementName[] = "LastInactiveTab";
-constexpr char kSendTabToSelfActiveTabElementName[] =
-    "SendTabToSelfActiveTabElement";
+constexpr char kSendTabToSelfPromoTabElementName[] =
+    "SendTabToSelfPromoTabElement";
 
 class IfView : public user_education::TutorialDescription::If {
  public:
@@ -271,24 +272,79 @@ bool IsInVerticalTabsMode(const BrowserView* browser_view) {
   return browser_view->ShouldDrawVerticalTabStrip();
 }
 
-ui::TrackedElement* FilterToActiveTab(
-    const ui::ElementTracker::ElementList& elements) {
-  for (ui::TrackedElement* const element : elements) {
-    if (const auto* const tracked_views =
-            element->AsA<views::TrackedElementViews>()) {
-      const views::View* const view = tracked_views->view();
-      if (const auto* const tab = views::AsViewClass<Tab>(view)) {
-        if (tab->IsActive()) {
-          return element;
-        }
-      } else if (const auto* const tab_view =
-                     views::AsViewClass<TabView>(view)) {
-        if (tab_view->IsActive()) {
-          return element;
-        }
-      }
+// Returns the handle of the tab represented by `element`, or a null handle.
+// `Tab` is the legacy horizontal tab strip's tab view. `TabView` is used by the
+// vertical tab strip, and by the horizontal one when kTabStripUnification is
+// enabled.
+tabs::TabHandle GetTabHandle(const ui::TrackedElement* const element) {
+  const auto* const tracked_view = element->AsA<views::TrackedElementViews>();
+  const views::View* const view = tracked_view ? tracked_view->view() : nullptr;
+  if (const auto* const tab = views::AsViewClass<Tab>(view)) {
+    return tab->tab_handle();
+  }
+  if (const auto* const tab_view = views::AsViewClass<TabView>(view)) {
+    if (const tabs::TabInterface* const tab = tab_view->GetTabInterface()) {
+      return tab->GetHandle();
     }
   }
+  return tabs::TabHandle::Null();
+}
+
+// Chooses the anchor for the Send Tab to Self tutorial promo: the active tab,
+// if it is eligible. Records the chosen tab on SendTabToSelfIphController so
+// that Step 1 of the tutorial can anchor to the same tab. May run more than
+// once before the promo shows; the most recent choice wins.
+ui::TrackedElement* ChooseSendTabToSelfPromoAnchorTab(
+    const ui::ElementTracker::ElementList& elements) {
+  for (ui::TrackedElement* const element : elements) {
+    const tabs::TabHandle handle = GetTabHandle(element);
+    tabs::TabInterface* const tab = handle.Get();
+    if (!tab || !tab->IsActivated()) {
+      continue;
+    }
+
+    if (!send_tab_to_self::SendTabToSelfIphController::IsTabEligible(tab)) {
+      return nullptr;
+    }
+
+    auto* const controller = send_tab_to_self::SendTabToSelfIphController::From(
+        tab->GetBrowserWindowInterface());
+    if (!controller) {
+      return nullptr;
+    }
+
+    controller->SetPromoTab(handle);
+    return element;
+  }
+
+  return nullptr;
+}
+
+// Finds the anchor for Step 1 of the Send Tab to Self tutorial: the tab the
+// intro promo was shown on. Returns nullptr if there is no such tab (e.g. it
+// was closed) or it is no longer eligible, which aborts the tutorial.
+ui::TrackedElement* FindSendTabToSelfPromoTab(
+    const ui::ElementTracker::ElementList& elements) {
+  for (ui::TrackedElement* const element : elements) {
+    const tabs::TabHandle handle = GetTabHandle(element);
+    tabs::TabInterface* const tab = handle.Get();
+    if (!tab) {
+      continue;
+    }
+
+    const auto* const controller =
+        send_tab_to_self::SendTabToSelfIphController::From(
+            tab->GetBrowserWindowInterface());
+    if (controller && controller->IsPromoTab(handle)) {
+      // The promo stays open if its tab navigates, so the tab may have become
+      // ineligible (e.g. now showing the NTP). Its context menu then lacks the
+      // Send Tab to Self item, so abort rather than strand the user on Step 1.
+      return send_tab_to_self::SendTabToSelfIphController::IsTabEligible(tab)
+                 ? element
+                 : nullptr;
+    }
+  }
+
   return nullptr;
 }
 
@@ -1388,7 +1444,8 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForTutorialPromo(
           feature_engagement::kIPHSendTabToSelfTutorialFeature, kTabElementId,
           IDS_SEND_TAB_TO_SELF_IPH_TUTORIAL_BODY, kSendTabToSelfTutorialId)
-          .SetAnchorElementFilter(base::BindRepeating(&FilterToActiveTab))
+          .SetAnchorElementFilter(
+              base::BindRepeating(&ChooseSendTabToSelfPromoAnchorTab))
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
           .SetBubbleIcon(&(features::IsRoundedIconsEnabled() ? kDevicesIcon
                                                              : kDevicesOldIcon))
@@ -2619,7 +2676,7 @@ void MaybeRegisterChromeTutorials(
   {  // Send Tab to Self tutorial
     auto send_tab_to_self_tutorial =
         TutorialDescription::Create<kSendTabToSelfTutorialMetricPrefix>(
-            // Hidden step - name the active tab (horizontal or vertical)
+            // Hidden step - name the promo tab (horizontal or vertical)
             HiddenStep::WaitForShown(kBrowserViewElementId)
                 .NameElements(
                     base::BindRepeating([](ui::InteractionSequence* sequence,
@@ -2628,17 +2685,15 @@ void MaybeRegisterChromeTutorials(
                           ui::ElementTracker::GetElementTracker()
                               ->GetAllMatchingElements(kTabElementId,
                                                        element->context());
-                      if (ui::TrackedElement* const active_tab =
-                              FilterToActiveTab(elements)) {
-                        sequence->NameElement(
-                            active_tab, kSendTabToSelfActiveTabElementName);
-                        return true;
-                      }
-                      return false;
+                      ui::TrackedElement* const promo_tab =
+                          FindSendTabToSelfPromoTab(elements);
+                      sequence->NameElement(promo_tab,
+                                            kSendTabToSelfPromoTabElementName);
+                      return promo_tab != nullptr;
                     })),
 
-            // Bubble step - Right-click on the active tab
-            BubbleStep(kSendTabToSelfActiveTabElementName)
+            // Bubble step - Right-click on the promo tab
+            BubbleStep(kSendTabToSelfPromoTabElementName)
                 .SetBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_1_BODY)
                 .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
                 .InAnyContext(),

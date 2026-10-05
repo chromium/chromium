@@ -23,6 +23,7 @@ source_set("send_tab_to_self") {
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/send_tab_to_self",
+    "//components/tabs:public",
     "//ui/base/unowned_user_data",
     "//ui/menus",
   ]
@@ -115,6 +116,7 @@ source_set("interactive_ui_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser/sync",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/send_tab_to_self",

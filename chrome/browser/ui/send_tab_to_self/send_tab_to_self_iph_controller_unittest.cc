@@ -435,6 +435,61 @@ TEST_F(SendTabToSelfIphControllerTest, DestructorSafelyUnregistersObserver) {
   tab_strip_model()->CloseAllTabs();
 }
 
+TEST_F(SendTabToSelfIphControllerTest, PromoTabInitiallyNotSet) {
+  // Keep the promo from showing; only the recorded promo tab matters here.
+  SetEntryPointDisplayReason(std::nullopt);
+  tabs::TabInterface* tab = AddTab(kEligibleUrl);
+  SendTabToSelfIphController controller(browser_window_interface());
+  EXPECT_FALSE(controller.IsPromoTab(tab->GetHandle()));
+  EXPECT_FALSE(controller.IsPromoTab(tabs::TabHandle::Null()));
+}
+
+TEST_F(SendTabToSelfIphControllerTest, SetPromoTabUpdatesRecordedTab) {
+  // Keep the promo from showing; only the recorded promo tab matters here.
+  SetEntryPointDisplayReason(std::nullopt);
+  tabs::TabInterface* tab_a = AddTab(kEligibleUrl);
+  tabs::TabInterface* tab_b = AddTab(kEligibleUrl);
+  SendTabToSelfIphController controller(browser_window_interface());
+
+  controller.SetPromoTab(tab_a->GetHandle());
+  EXPECT_TRUE(controller.IsPromoTab(tab_a->GetHandle()));
+  EXPECT_FALSE(controller.IsPromoTab(tab_b->GetHandle()));
+}
+
+TEST_F(SendTabToSelfIphControllerTest, PromoTabStaysRecordedAfterTabClosed) {
+  // Keep the promo from showing; only the recorded promo tab matters here.
+  SetEntryPointDisplayReason(std::nullopt);
+  tabs::TabInterface* tab_a = AddTab(kEligibleUrl);
+  tabs::TabInterface* tab_b = AddTab(kEligibleUrl);
+  const tabs::TabHandle handle_a = tab_a->GetHandle();
+  SendTabToSelfIphController controller(browser_window_interface());
+
+  controller.SetPromoTab(handle_a);
+  ASSERT_TRUE(controller.IsPromoTab(handle_a));
+
+  // Closing tab A invalidates its handle, but it stays recorded and no other
+  // tab becomes the promo tab.
+  tab_strip_model()->CloseWebContentsAt(tab_strip_model()->GetIndexOfTab(tab_a),
+                                        TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(handle_a.Get(), nullptr);
+  EXPECT_TRUE(controller.IsPromoTab(handle_a));
+  EXPECT_FALSE(controller.IsPromoTab(tab_b->GetHandle()));
+}
+
+TEST_F(SendTabToSelfIphControllerTest, IsTabEligible) {
+  // Keep the promo from showing; only eligibility matters here.
+  SetEntryPointDisplayReason(std::nullopt);
+  tabs::TabInterface* tab = AddTab(kEligibleUrl);
+  EXPECT_FALSE(SendTabToSelfIphController::IsTabEligible(nullptr));
+  EXPECT_FALSE(SendTabToSelfIphController::IsTabEligible(tab));
+
+  SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferReauth);
+  EXPECT_FALSE(SendTabToSelfIphController::IsTabEligible(tab));
+
+  SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  EXPECT_TRUE(SendTabToSelfIphController::IsTabEligible(tab));
+}
+
 }  // namespace
 
 }  // namespace send_tab_to_self
