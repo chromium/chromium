@@ -20,7 +20,18 @@ and Web App Manifest processing in Chromium.
   [Security Notes](SECURITY.md) Cross-platform installability, promotion, and
   identifiers shared by Desktop and Android (delegates via `WebappsClient`).
   `browser/installable/` · `browser/banners/` · `browser/android/` · `common/` ·
-  `renderer/` · `isolated_web_apps/`
+  `renderer/`
+- **Isolated Web Apps Component** (`components/webapps/isolated_web_apps/`):
+  [Rules](isolated_web_apps/AGENTS.md) · [README](isolated_web_apps/README.md)
+  Core browser-agnostic IWA runtime, bundle operations, reader registry, key
+  distribution, `isolated-app://` URL loading, and cryptographic identity
+  verification.
+- **Web Packaging & Signed Web Bundles** (`components/web_package/`):
+  [Rules](/components/web_package/AGENTS.md) ·
+  [Signed Web Bundles](/components/web_package/signed_web_bundles/AGENTS.md) ·
+  [README](/components/web_package/README.md) Memory-safe Rust/C++ Web Bundle
+  (`.wbn`) and Signed Web Bundle (`.swbn`) parsing, Integrity Block v2, and
+  signature verification.
 - **Desktop Engine** (`chrome/browser/web_applications/`):
   [Rules](/chrome/browser/web_applications/AGENTS.md) ·
   [README](/chrome/browser/web_applications/README.md) ·

@@ -8,3 +8,6 @@ custom app frame toolbars, and the cross-platform integration test driver.
 ## Canonical Docs
 
 - [README.md](README.md)
+- [Isolated Web Apps Installer](isolated_web_apps/README.md) ·
+  [IWA Rules](isolated_web_apps/AGENTS.md)
+- [Sub Apps Install Dialog](sub_apps/README.md)
