@@ -7,6 +7,7 @@
 
 #include <Accelerate/Accelerate.h>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -127,26 +128,30 @@ ALWAYS_INLINE static float Vsvesq(base::span<const float> source) {
   return sum;
 }
 
-ALWAYS_INLINE static void Zvmul(const float* real1p,
-                                const float* imag1p,
-                                const float* real2p,
-                                const float* imag2p,
-                                float* real_dest_p,
-                                float* imag_dest_p,
-                                size_t frames_to_process) {
+ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
+                                base::span<const float> imag1,
+                                base::span<const float> real2,
+                                base::span<const float> imag2,
+                                base::span<float> real_dest,
+                                base::span<float> imag_dest) {
+  DCHECK_EQ(real1.size(), real_dest.size());
+  DCHECK_EQ(imag1.size(), real_dest.size());
+  DCHECK_EQ(real2.size(), real_dest.size());
+  DCHECK_EQ(imag2.size(), real_dest.size());
+  DCHECK_EQ(imag_dest.size(), real_dest.size());
   DSPSplitComplex sc1;
   DSPSplitComplex sc2;
   DSPSplitComplex dest;
-  sc1.realp = const_cast<float*>(real1p);
-  sc1.imagp = const_cast<float*>(imag1p);
-  sc2.realp = const_cast<float*>(real2p);
-  sc2.imagp = const_cast<float*>(imag2p);
-  dest.realp = real_dest_p;
-  dest.imagp = imag_dest_p;
+  sc1.realp = const_cast<float*>(real1.data());
+  sc1.imagp = const_cast<float*>(imag1.data());
+  sc2.realp = const_cast<float*>(real2.data());
+  sc2.imagp = const_cast<float*>(imag2.data());
+  dest.realp = real_dest.data();
+  dest.imagp = imag_dest.data();
 #if defined(ARCH_CPU_X86)
-  ::zvmul(&sc1, 1, &sc2, 1, &dest, 1, frames_to_process, 1);
+  ::zvmul(&sc1, 1, &sc2, 1, &dest, 1, real_dest.size(), 1);
 #else
-  vDSP_zvmul(&sc1, 1, &sc2, 1, &dest, 1, frames_to_process, 1);
+  vDSP_zvmul(&sc1, 1, &sc2, 1, &dest, 1, real_dest.size(), 1);
 #endif
 }
 

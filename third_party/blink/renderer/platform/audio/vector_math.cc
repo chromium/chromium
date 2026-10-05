@@ -174,8 +174,10 @@ void Zvmul(base::span<const float> real1,
            base::span<float> real_dest,
            base::span<float> imag_dest,
            size_t frames_to_process) {
-  impl::Zvmul(real1.data(), imag1.data(), real2.data(), imag2.data(),
-              real_dest.data(), imag_dest.data(), frames_to_process);
+  impl::Zvmul(real1.first(frames_to_process), imag1.first(frames_to_process),
+              real2.first(frames_to_process), imag2.first(frames_to_process),
+              real_dest.first(frames_to_process),
+              imag_dest.first(frames_to_process));
 }
 
 }  // namespace blink::vector_math

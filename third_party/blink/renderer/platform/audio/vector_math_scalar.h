@@ -395,23 +395,26 @@ ALWAYS_INLINE static float Vsvesq(base::span<const float> source) {
   return sum;
 }
 
-ALWAYS_INLINE static void Zvmul(const float* real1p,
-                                const float* imag1p,
-                                const float* real2p,
-                                const float* imag2p,
-                                float* real_dest_p,
-                                float* imag_dest_p,
-                                size_t frames_to_process) {
-  for (size_t i = 0u; i < frames_to_process; ++i) {
+ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
+                                base::span<const float> imag1,
+                                base::span<const float> real2,
+                                base::span<const float> imag2,
+                                base::span<float> real_dest,
+                                base::span<float> imag_dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(real1.size(), real_dest.size());
+  CHECK_EQ(imag1.size(), real_dest.size());
+  CHECK_EQ(real2.size(), real_dest.size());
+  CHECK_EQ(imag2.size(), real_dest.size());
+  CHECK_EQ(imag_dest.size(), real_dest.size());
+  for (size_t i = 0; i < real_dest.size(); ++i) {
     // Read and compute result before storing them, in case the
     // destination is the same as one of the sources.
-    float real_result =
-        UNSAFE_TODO(real1p[i] * real2p[i] - imag1p[i] * imag2p[i]);
-    float imag_result =
-        UNSAFE_TODO(real1p[i] * imag2p[i] + imag1p[i] * real2p[i]);
+    float real_result = real1[i] * real2[i] - imag1[i] * imag2[i];
+    float imag_result = real1[i] * imag2[i] + imag1[i] * real2[i];
 
-    UNSAFE_TODO(real_dest_p[i] = real_result);
-    UNSAFE_TODO(imag_dest_p[i] = imag_result);
+    real_dest[i] = real_result;
+    imag_dest[i] = imag_result;
   }
 }
 

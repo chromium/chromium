@@ -259,36 +259,52 @@ ALWAYS_INLINE static float Vsvesq(base::span<const float> source) {
   return sum;
 }
 
-ALWAYS_INLINE static void Zvmul(const float* real1p,
-                                const float* imag1p,
-                                const float* real2p,
-                                const float* imag2p,
-                                float* real_dest_p,
-                                float* imag_dest_p,
-                                size_t frames_to_process) {
-  size_t i = 0;
+ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
+                                base::span<const float> imag1,
+                                base::span<const float> real2,
+                                base::span<const float> imag2,
+                                base::span<float> real_dest,
+                                base::span<float> imag_dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(real1.size(), real_dest.size());
+  CHECK_EQ(imag1.size(), real_dest.size());
+  CHECK_EQ(real2.size(), real_dest.size());
+  CHECK_EQ(imag2.size(), real_dest.size());
+  CHECK_EQ(imag_dest.size(), real_dest.size());
 
-  size_t end_size =
-      frames_to_process - frames_to_process % kPackedFloatsPerRegister;
-  while (i < end_size) {
-    float32x4_t real1 = UNSAFE_TODO(vld1q_f32(real1p + i));
-    float32x4_t real2 = UNSAFE_TODO(vld1q_f32(real2p + i));
-    float32x4_t imag1 = UNSAFE_TODO(vld1q_f32(imag1p + i));
-    float32x4_t imag2 = UNSAFE_TODO(vld1q_f32(imag2p + i));
+  const size_t n = real_dest.size();
+  const size_t tail_frames = n % kPackedFloatsPerRegister;
+  const size_t aligned_frames = n - tail_frames;
 
-    float32x4_t real_result = vmlsq_f32(vmulq_f32(real1, real2), imag1, imag2);
-    float32x4_t imag_result = vmlaq_f32(vmulq_f32(real1, imag2), imag1, real2);
+  for (size_t i = 0; i < aligned_frames; i += kPackedFloatsPerRegister) {
+    float32x4_t real1_vec =
+        vld1q_f32(real1.subspan(i, kPackedFloatsPerRegister).data());
+    float32x4_t real2_vec =
+        vld1q_f32(real2.subspan(i, kPackedFloatsPerRegister).data());
+    float32x4_t imag1_vec =
+        vld1q_f32(imag1.subspan(i, kPackedFloatsPerRegister).data());
+    float32x4_t imag2_vec =
+        vld1q_f32(imag2.subspan(i, kPackedFloatsPerRegister).data());
 
-    UNSAFE_TODO(vst1q_f32(real_dest_p + i, real_result));
-    UNSAFE_TODO(vst1q_f32(imag_dest_p + i, imag_result));
+    float32x4_t real_result =
+        vmlsq_f32(vmulq_f32(real1_vec, real2_vec), imag1_vec, imag2_vec);
+    float32x4_t imag_result =
+        vmlaq_f32(vmulq_f32(real1_vec, imag2_vec), imag1_vec, real2_vec);
 
-    i += kPackedFloatsPerRegister;
+    vst1q_f32(real_dest.subspan(i, kPackedFloatsPerRegister).data(),
+              real_result);
+    vst1q_f32(imag_dest.subspan(i, kPackedFloatsPerRegister).data(),
+              imag_result);
   }
 
-  scalar::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
-                UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
-                UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
-                frames_to_process - i);
+  if (tail_frames > 0u) {
+    scalar::Zvmul(real1.subspan(aligned_frames, tail_frames),
+                  imag1.subspan(aligned_frames, tail_frames),
+                  real2.subspan(aligned_frames, tail_frames),
+                  imag2.subspan(aligned_frames, tail_frames),
+                  real_dest.subspan(aligned_frames, tail_frames),
+                  imag_dest.subspan(aligned_frames, tail_frames));
+  }
 }
 
 }  // namespace neon

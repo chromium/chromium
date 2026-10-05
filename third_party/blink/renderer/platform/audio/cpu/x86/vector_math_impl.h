@@ -390,35 +390,47 @@ float Vsvesq(base::span<const float> source) {
 
 // real_dest[k] = real1[k] * real2[k] - imag1[k] * imag2[k]
 // imag_dest[k] = real1[k] * imag2[k] + imag1[k] * real2[k]
-void Zvmul(const float* real1p,
-           const float* imag1p,
-           const float* real2p,
-           const float* imag2p,
-           float* real_dest_p,
-           float* imag_dest_p,
-           size_t frames_to_process) {
-  DCHECK(IsAligned(real1p));
-  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+void Zvmul(base::span<const float> real1,
+           base::span<const float> imag1,
+           base::span<const float> real2,
+           base::span<const float> imag2,
+           base::span<float> real_dest,
+           base::span<float> imag_dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(real1.size(), real_dest.size());
+  CHECK_EQ(imag1.size(), real_dest.size());
+  CHECK_EQ(real2.size(), real_dest.size());
+  CHECK_EQ(imag2.size(), real_dest.size());
+  CHECK_EQ(imag_dest.size(), real_dest.size());
+  DCHECK(IsAligned(real1.data()));
+  DCHECK_EQ(0u, real_dest.size() % kPackedFloatsPerRegister);
 
-#define MULTIPLY_ALL(loadOtherThanReal1, storeDest)                           \
-  for (size_t i = 0u; i < frames_to_process; i += kPackedFloatsPerRegister) { \
-    MType real1 = MM_PS(load)(real1p + i);                                    \
-    MType real2 = MM_PS(loadOtherThanReal1)(real2p + i);                      \
-    MType imag1 = MM_PS(loadOtherThanReal1)(imag1p + i);                      \
-    MType imag2 = MM_PS(loadOtherThanReal1)(imag2p + i);                      \
-    MType real =                                                              \
-        MM_PS(sub)(MM_PS(mul)(real1, real2), MM_PS(mul)(imag1, imag2));       \
-    MType imag =                                                              \
-        MM_PS(add)(MM_PS(mul)(real1, imag2), MM_PS(mul)(imag1, real2));       \
-    MM_PS(storeDest)(real_dest_p + i, real);                                  \
-    MM_PS(storeDest)(imag_dest_p + i, imag);                                  \
+#define MULTIPLY_ALL(loadOtherThanReal1, storeDest)                         \
+  for (size_t i = 0; i < real_dest.size(); i += kPackedFloatsPerRegister) { \
+    MType m_real1 =                                                         \
+        MM_PS(load)(real1.subspan(i, kPackedFloatsPerRegister).data());     \
+    MType m_real2 = MM_PS(loadOtherThanReal1)(                              \
+        real2.subspan(i, kPackedFloatsPerRegister).data());                 \
+    MType m_imag1 = MM_PS(loadOtherThanReal1)(                              \
+        imag1.subspan(i, kPackedFloatsPerRegister).data());                 \
+    MType m_imag2 = MM_PS(loadOtherThanReal1)(                              \
+        imag2.subspan(i, kPackedFloatsPerRegister).data());                 \
+    MType m_real = MM_PS(sub)(MM_PS(mul)(m_real1, m_real2),                 \
+                              MM_PS(mul)(m_imag1, m_imag2));                \
+    MType m_imag = MM_PS(add)(MM_PS(mul)(m_real1, m_imag2),                 \
+                              MM_PS(mul)(m_imag1, m_real2));                \
+    MM_PS(storeDest)(real_dest.subspan(i, kPackedFloatsPerRegister).data(), \
+                     m_real);                                               \
+    MM_PS(storeDest)(imag_dest.subspan(i, kPackedFloatsPerRegister).data(), \
+                     m_imag);                                               \
   }
 
-  if (IsAligned(imag1p) && IsAligned(real2p) && IsAligned(imag2p) &&
-      IsAligned(real_dest_p) && IsAligned(imag_dest_p)) {
-    UNSAFE_TODO(MULTIPLY_ALL(load, store));
+  if (IsAligned(imag1.data()) && IsAligned(real2.data()) &&
+      IsAligned(imag2.data()) && IsAligned(real_dest.data()) &&
+      IsAligned(imag_dest.data())) {
+    MULTIPLY_ALL(load, store);
   } else {
-    UNSAFE_TODO(MULTIPLY_ALL(loadu, storeu));
+    MULTIPLY_ALL(loadu, storeu);
   }
 
 #undef MULTIPLY_ALL

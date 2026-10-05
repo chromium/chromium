@@ -41,12 +41,11 @@ static size_t GetAVXAlignmentOffsetInNumberOfFloats(const float* source_p) {
 }
 
 ALWAYS_INLINE static FrameCounts SplitFramesToProcess(
-    const float* source_p,
-    size_t frames_to_process) {
+    base::span<const float> source) {
   FrameCounts counts = {0u, 0u, 0u, 0u, 0u};
 
   const size_t avx_alignment_offset =
-      GetAVXAlignmentOffsetInNumberOfFloats(source_p);
+      GetAVXAlignmentOffsetInNumberOfFloats(source.data());
 
   // If the first frame is not AVX aligned, the first several frames (at most
   // seven) must be processed separately for proper alignment.
@@ -57,6 +56,8 @@ ALWAYS_INLINE static FrameCounts SplitFramesToProcess(
       total_for_alignment & ~sse::kFramesToProcessMask;
   const size_t sse_for_alignment =
       total_for_alignment & sse::kFramesToProcessMask;
+
+  size_t frames_to_process = source.size();
 
   // Check which CPU features can be used based on the number of frames to
   // process and based on CPU support.
@@ -72,14 +73,15 @@ ALWAYS_INLINE static FrameCounts SplitFramesToProcess(
     counts.scalar_for_alignment = scalar_for_alignment;
     frames_to_process -= counts.scalar_for_alignment;
     // The remaining frames are SSE aligned.
-    UNSAFE_TODO(DCHECK(sse::IsAligned(source_p + counts.scalar_for_alignment)));
+    DCHECK(sse::IsAligned(source.subspan(counts.scalar_for_alignment).data()));
 
     if (use_at_least_avx) {
       counts.sse_for_alignment = sse_for_alignment;
       frames_to_process -= counts.sse_for_alignment;
       // The remaining frames are AVX aligned.
-      UNSAFE_TODO(DCHECK(avx::IsAligned(source_p + counts.scalar_for_alignment +
-                                        counts.sse_for_alignment)));
+      DCHECK(avx::IsAligned(
+          source.subspan(counts.scalar_for_alignment + counts.sse_for_alignment)
+              .data()));
 
       // Process as many as possible of the remaining frames using AVX.
       counts.avx = frames_to_process & avx::kFramesToProcessMask;
@@ -145,8 +147,7 @@ ALWAYS_INLINE static void Vadd(base::span<const float> source1,
   DCHECK_EQ(source1.size(), dest.size());
   DCHECK_EQ(source2.size(), dest.size());
 
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source1.data(), dest.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source1);
 
   size_t offset = 0;
   if (frame_counts.scalar_for_alignment > 0u) {
@@ -188,8 +189,7 @@ ALWAYS_INLINE static void Vsub(base::span<const float> source1,
   DCHECK_EQ(source1.size(), dest.size());
   DCHECK_EQ(source2.size(), dest.size());
 
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source1.data(), dest.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source1);
 
   size_t offset = 0;
   if (frame_counts.scalar_for_alignment > 0u) {
@@ -231,8 +231,7 @@ ALWAYS_INLINE static void Vclip(base::span<const float> source,
                                 base::span<float> dest) {
   DCHECK_EQ(source.size(), dest.size());
 
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source.data(), dest.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source);
 
   size_t offset = 0;
   if (frame_counts.scalar_for_alignment > 0u) {
@@ -266,8 +265,7 @@ ALWAYS_INLINE static void Vclip(base::span<const float> source,
 }
 
 ALWAYS_INLINE static float Vmaxmgv(base::span<const float> source) {
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source.data(), source.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source);
 
   float max = 0;
   size_t offset = 0;
@@ -304,8 +302,7 @@ ALWAYS_INLINE static void Vmul(base::span<const float> source1,
   DCHECK_EQ(source1.size(), dest.size());
   DCHECK_EQ(source2.size(), dest.size());
 
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source1.data(), dest.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source1);
 
   size_t offset = 0;
   if (frame_counts.scalar_for_alignment > 0u) {
@@ -345,8 +342,7 @@ ALWAYS_INLINE static void Vsma(base::span<const float> source,
                                float scale,
                                base::span<float> dest) {
   DCHECK_EQ(source.size(), dest.size());
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source.data(), dest.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source);
 
   size_t offset = 0;
   if (frame_counts.scalar_for_alignment > 0u) {
@@ -382,8 +378,7 @@ ALWAYS_INLINE static void Vsmul(base::span<const float> source,
                                 float scale,
                                 base::span<float> dest) {
   DCHECK_EQ(source.size(), dest.size());
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source.data(), dest.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source);
 
   size_t offset = 0;
   if (frame_counts.scalar_for_alignment > 0u) {
@@ -419,8 +414,7 @@ ALWAYS_INLINE static void Vsadd(base::span<const float> source,
                                 float addend,
                                 base::span<float> dest) {
   DCHECK_EQ(source.size(), dest.size());
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source.data(), dest.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source);
 
   size_t offset = 0;
   if (frame_counts.scalar_for_alignment > 0u) {
@@ -453,8 +447,7 @@ ALWAYS_INLINE static void Vsadd(base::span<const float> source,
 }
 
 ALWAYS_INLINE static float Vsvesq(base::span<const float> source) {
-  const FrameCounts frame_counts =
-      SplitFramesToProcess(source.data(), source.size());
+  const FrameCounts frame_counts = SplitFramesToProcess(source);
 
   float sum = 0;
   size_t offset = 0;
@@ -483,44 +476,67 @@ ALWAYS_INLINE static float Vsvesq(base::span<const float> source) {
   return sum;
 }
 
-ALWAYS_INLINE static void Zvmul(const float* real1p,
-                                const float* imag1p,
-                                const float* real2p,
-                                const float* imag2p,
-                                float* real_dest_p,
-                                float* imag_dest_p,
-                                size_t frames_to_process) {
-  FrameCounts frame_counts = SplitFramesToProcess(real1p, frames_to_process);
+ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
+                                base::span<const float> imag1,
+                                base::span<const float> real2,
+                                base::span<const float> imag2,
+                                base::span<float> real_dest,
+                                base::span<float> imag_dest) {
+  DCHECK_EQ(real1.size(), real_dest.size());
+  DCHECK_EQ(imag1.size(), real_dest.size());
+  DCHECK_EQ(real2.size(), real_dest.size());
+  DCHECK_EQ(imag2.size(), real_dest.size());
+  DCHECK_EQ(imag_dest.size(), real_dest.size());
 
-  scalar::Zvmul(real1p, imag1p, real2p, imag2p, real_dest_p, imag_dest_p,
-                frame_counts.scalar_for_alignment);
-  size_t i = frame_counts.scalar_for_alignment;
+  const FrameCounts frame_counts = SplitFramesToProcess(real1);
+
+  size_t offset = 0;
+  if (frame_counts.scalar_for_alignment > 0u) {
+    scalar::Zvmul(real1.subspan(offset, frame_counts.scalar_for_alignment),
+                  imag1.subspan(offset, frame_counts.scalar_for_alignment),
+                  real2.subspan(offset, frame_counts.scalar_for_alignment),
+                  imag2.subspan(offset, frame_counts.scalar_for_alignment),
+                  real_dest.subspan(offset, frame_counts.scalar_for_alignment),
+                  imag_dest.subspan(offset, frame_counts.scalar_for_alignment));
+    offset += frame_counts.scalar_for_alignment;
+  }
   if (frame_counts.sse_for_alignment > 0u) {
-    sse::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
-               UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
-               UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
-               frame_counts.sse_for_alignment);
-    i += frame_counts.sse_for_alignment;
+    sse::Zvmul(real1.subspan(offset, frame_counts.sse_for_alignment),
+               imag1.subspan(offset, frame_counts.sse_for_alignment),
+               real2.subspan(offset, frame_counts.sse_for_alignment),
+               imag2.subspan(offset, frame_counts.sse_for_alignment),
+               real_dest.subspan(offset, frame_counts.sse_for_alignment),
+               imag_dest.subspan(offset, frame_counts.sse_for_alignment));
+    offset += frame_counts.sse_for_alignment;
   }
   if (frame_counts.avx > 0u) {
-    avx::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
-               UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
-               UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
-               frame_counts.avx);
-    i += frame_counts.avx;
+    avx::Zvmul(real1.subspan(offset, frame_counts.avx),
+               imag1.subspan(offset, frame_counts.avx),
+               real2.subspan(offset, frame_counts.avx),
+               imag2.subspan(offset, frame_counts.avx),
+               real_dest.subspan(offset, frame_counts.avx),
+               imag_dest.subspan(offset, frame_counts.avx));
+    offset += frame_counts.avx;
   }
   if (frame_counts.sse > 0u) {
-    sse::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
-               UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
-               UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
-               frame_counts.sse);
-    i += frame_counts.sse;
+    sse::Zvmul(real1.subspan(offset, frame_counts.sse),
+               imag1.subspan(offset, frame_counts.sse),
+               real2.subspan(offset, frame_counts.sse),
+               imag2.subspan(offset, frame_counts.sse),
+               real_dest.subspan(offset, frame_counts.sse),
+               imag_dest.subspan(offset, frame_counts.sse));
+    offset += frame_counts.sse;
   }
-  scalar::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
-                UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
-                UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
-                frame_counts.scalar);
-  DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
+  if (frame_counts.scalar > 0u) {
+    scalar::Zvmul(real1.subspan(offset, frame_counts.scalar),
+                  imag1.subspan(offset, frame_counts.scalar),
+                  real2.subspan(offset, frame_counts.scalar),
+                  imag2.subspan(offset, frame_counts.scalar),
+                  real_dest.subspan(offset, frame_counts.scalar),
+                  imag_dest.subspan(offset, frame_counts.scalar));
+    offset += frame_counts.scalar;
+  }
+  DCHECK_EQ(real_dest.size(), offset);
 }
 
 }  // namespace x86

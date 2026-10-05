@@ -76,13 +76,12 @@ float Vsvesq(base::span<const float> source);
 
 // real_dest[k] = real1[k] * real2[k] - imag1[k] * imag2[k]
 // imag_dest[k] = real1[k] * imag2[k] + imag1[k] * real2[k]
-void Zvmul(const float* real1p,
-           const float* imag1p,
-           const float* real2p,
-           const float* imag2p,
-           float* real_dest_p,
-           float* imag_dest_p,
-           size_t frames_to_process);
+void Zvmul(base::span<const float> real1,
+           base::span<const float> imag1,
+           base::span<const float> real2,
+           base::span<const float> imag2,
+           base::span<float> real_dest,
+           base::span<float> imag_dest);
 
 }  // namespace sse
 }  // namespace vector_math
