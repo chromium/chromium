@@ -4,7 +4,11 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -107,8 +111,101 @@ void RecordFirstSelectedDevice(OrtHardwareDeviceType device_type) {
 }
 
 // The feature flag allows us to try using device allocator to create device
-// tensors for EPs, e.g. OpenVINO EP.
+// tensors for EPs, e.g. OpenVINO and NVidia TRT EP.
 BASE_FEATURE(kUseDeviceTensor, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Upper bound on the host memory staged to zero a device-only tensor. Copying
+// a whole zeroed host buffer would double peak memory for a large tensor such
+// as a KV cache, so the copy is chunked through a buffer of at most this size.
+constexpr size_t kZeroStagingChunkBytes = 4u * 1024 * 1024;
+
+// Zero-initializes `tensor`. A fresh allocation otherwise holds arbitrary
+// memory, which the renderer must not be able to observe.
+//
+// Host-accessible memory is filled in place. Device-only memory is not
+// mappable, so it is written through ORT's copy path instead, one bounded
+// chunk at a time. Both sides of each copy are viewed as bytes, so a single
+// staging buffer serves every data type and shape.
+// TODO(crbug.com/461303833): check whether fast HW clears can be used instead.
+// `device_allocator` is the allocator `tensor` came from, or null when it came
+// from the default CPU allocator.
+ScopedOrtStatus ZeroInitializeOrtTensor(const OrtApi* ort_api,
+                                        const OrtEnv* ort_env,
+                                        size_t size,
+                                        const DeviceAllocator* device_allocator,
+                                        OrtValue* tensor) {
+  CHECK(tensor);
+  if (size == 0) {
+    return ScopedOrtStatus();
+  }
+
+  void* tensor_data = nullptr;
+  CHECK_STATUS(ort_api->GetTensorMutableData(tensor, &tensor_data));
+  CHECK(tensor_data);
+
+  // SAFETY: ORT allocated `size` bytes at `tensor_data`. When the tensor lives
+  // in device-only memory this is a device address, so the bytes are never read
+  // or written below; the span only serves to address chunks of it.
+  auto tensor_address =
+      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(tensor_data), size));
+
+  if (!device_allocator || device_allocator->CanAccessOnCpu()) {
+    std::ranges::fill(tensor_address, 0);
+    return ScopedOrtStatus();
+  }
+
+  // The OrtValue owns the lifetime of this OrtMemoryInfo.
+  const OrtMemoryInfo* device_memory_info = nullptr;
+  CHECK_STATUS(ort_api->GetTensorMemoryInfo(tensor, &device_memory_info));
+
+  ScopedOrtMemoryInfo cpu_memory_info;
+  CHECK_STATUS(ort_api->CreateCpuMemoryInfo(
+      OrtDeviceAllocator, OrtMemTypeCPU,
+      ScopedOrtMemoryInfo::Receiver(cpu_memory_info).get()));
+
+  const size_t staging_bytes = std::min(size, kZeroStagingChunkBytes);
+  std::vector<uint8_t> zeros(staging_bytes, 0);
+
+  // The staging chunk only needs rebuilding when the chunk length changes,
+  // which happens at most once, for a trailing partial chunk.
+  ScopedOrtValue zero_staging_chunk;
+  size_t staged_bytes = 0;
+  int64_t chunk_shape = 0;
+
+  for (size_t offset = 0; offset < size; offset += staging_bytes) {
+    base::span<uint8_t> destination_chunk =
+        tensor_address.subspan(offset, std::min(staging_bytes, size - offset));
+    if (destination_chunk.size() != staged_bytes) {
+      staged_bytes = destination_chunk.size();
+      chunk_shape = base::checked_cast<int64_t>(staged_bytes);
+      zero_staging_chunk.reset();
+      CHECK_STATUS(ort_api->CreateTensorWithDataAsOrtValue(
+          cpu_memory_info.get(), zeros.data(), staged_bytes, &chunk_shape,
+          /*shape_len=*/1, ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
+          ScopedOrtValue::Receiver(zero_staging_chunk).get()));
+    }
+
+    // A byte view of the destination chunk. This aliases `tensor`'s allocation
+    // rather than owning it, so it must not outlive this iteration.
+    ScopedOrtValue destination_device_chunk;
+    CHECK_STATUS(ort_api->CreateTensorWithDataAsOrtValue(
+        device_memory_info, destination_chunk.data(), destination_chunk.size(),
+        &chunk_shape,
+        /*shape_len=*/1, ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
+        ScopedOrtValue::Receiver(destination_device_chunk).get()));
+
+    const OrtValue* src_tensors[] = {zero_staging_chunk.get()};
+    OrtValue* dst_tensors[] = {destination_device_chunk.get()};
+    if (ScopedOrtStatus status = CALL_ORT_FUNC(
+            ort_api->CopyTensors(ort_env, src_tensors, dst_tensors,
+                                 /*stream=*/nullptr, /*num_tensors=*/1));
+        status.is_valid()) {
+      return status;
+    }
+  }
+
+  return ScopedOrtStatus();
+}
 
 }  // namespace
 
@@ -500,17 +597,30 @@ ContextImplOrt::CreateTensorImpl(
     mojom::TensorInfoPtr tensor_info) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
+  // Prefer the device allocator when it is present and willing to take this
+  // tensor, which keeps the tensor resident on the accelerator and avoids
+  // copying it in and out on every graph execution. Null means the tensor uses
+  // the default allocator, which is CPU based and non-arena.
+  scoped_refptr<DeviceAllocator> tensor_allocator =
+      device_allocator_ && device_allocator_->ShouldUse(*tensor_info)
+          ? device_allocator_
+          : nullptr;
+
   OrtAllocator* allocator = nullptr;
-  // Use the device allocator if it's present. Otherwise, use the default
-  // allocator which is CPU based and non-arena.
-  if (device_allocator_) {
-    allocator = device_allocator_->get();
+  if (tensor_allocator) {
+    allocator = tensor_allocator->get();
   } else {
     // `GetAllocatorWithDefaultOptions()` always returns the same pointer to the
     // same default allocator and its returned value should NOT be freed.
     CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
   }
   CHECK(allocator);
+
+  // `ShouldUse()` declines device-only memory for a tensor the renderer reads
+  // or writes, so readTensor() and writeTensor() always have mappable memory.
+  CHECK(!tensor_allocator || tensor_allocator->CanAccessOnCpu() ||
+        (!tensor_info->usage.Has(MLTensorUsageFlags::kRead) &&
+         !tensor_info->usage.Has(MLTensorUsageFlags::kWrite)));
 
   ONNXTensorElementDataType ort_data_type =
       WebnnToOnnxDataType(tensor_info->descriptor.data_type());
@@ -519,12 +629,17 @@ ContextImplOrt::CreateTensorImpl(
 
   // TODO(crbug.com/453420646): Implement context lost handling for ORT tensor
   // creation failures.
-  // TODO(crbug.com/445971854): Emit mojom::Error since CreateTensorAsOrtValue()
-  // could malloc and fail if OOM.
+  // The requested allocation size comes from renderer-provided `tensor_info`,
+  // so an allocation failure is reported to the renderer instead of crashing
+  // the GPU process.
   ScopedOrtValue tensor;
-  CHECK_STATUS(ort_api->CreateTensorAsOrtValue(
-      allocator, ort_shape.data(), ort_shape.size(), ort_data_type,
-      ScopedOrtValue::Receiver(tensor).get()));
+  if (ScopedOrtStatus status = CALL_ORT_FUNC(ort_api->CreateTensorAsOrtValue(
+          allocator, ort_shape.data(), ort_shape.size(), ort_data_type,
+          ScopedOrtValue::Receiver(tensor).get()));
+      status.is_valid()) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create tensor."));
+  }
   CHECK(tensor.get());
 
   size_t size;
@@ -533,9 +648,20 @@ ContextImplOrt::CreateTensorImpl(
   // Invalid values are rejected in GraphBuilder.
   CHECK(base::IsValueInRangeForNumericType<int>(size));
 
+  if (ScopedOrtStatus status = ZeroInitializeOrtTensor(
+          ort_api, env_->get(), size, tensor_allocator.get(), tensor.get());
+      status.is_valid()) {
+    // The allocation already succeeded, so a failure to clear it is a device
+    // failure. Same handling as a failed graph dispatch.
+    HandleContextLostOrCrash("Failed to initialize tensor.",
+                             ort_api->GetErrorCode(status.get()));
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create tensor."));
+  }
+
   return base::MakeRefCounted<TensorImplOrt>(
       std::move(receiver), *this, std::move(tensor_info), size,
-      std::move(tensor), device_allocator_);
+      std::move(tensor), std::move(tensor_allocator));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

@@ -25,15 +25,9 @@ TensorImplOrt::TensorImplOrt(
     ScopedOrtValue tensor,
     scoped_refptr<DeviceAllocator> device_allocator)
     : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
-      device_allocator_((std::move(device_allocator))),
+      device_allocator_(std::move(device_allocator)),
       tensor_(std::move(tensor)),
-      size_(size) {
-  // Initialize the tensor with zeros, otherwise, reading uninitialized memory
-  // will get random values.
-  // TODO(crbug.com/461303833): check whether fast HW clears can be used
-  // instead.
-  std::ranges::fill(AsSpan(), 0);
-}
+      size_(size) {}
 
 TensorImplOrt::TensorImplOrt(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -62,6 +56,11 @@ TensorImplOrt::~TensorImplOrt() = default;
 
 base::span<uint8_t> TensorImplOrt::AsSpan() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Tensor creation keeps a tensor the renderer can read or write out of
+  // device-only memory, and rejects the combination outright for an exportable
+  // tensor, so a caller can never reach here without mappable memory.
+  CHECK(!device_allocator_ || device_allocator_->CanAccessOnCpu())
+      << "[WebNN] ORT tensor is not CPU-accessible.";
 
   void* ort_tensor_raw_data = nullptr;
   CHECK_STATUS(

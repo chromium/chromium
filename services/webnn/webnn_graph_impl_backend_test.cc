@@ -409,6 +409,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "FuseStandaloneActivationIntoLayerNormalization",
       "FuseStandaloneOperationsIntoMatmul",
       // "MultipleOutputsCanNotFuseStandaloneActivation",
+      "NewGraphInputTensorIsZeroInitialized",
   });
 
   if (!kSupportedTests.contains(GetBaseTestName(current_test_name))) {
@@ -3845,6 +3846,73 @@ TEST_P(WebNNGraphImplBackendTest, DestroyContextDuringBuild) {
   // Destroy the context and wait for any pending tasks to complete.
   context().reset();
   webnn_test_environment_.RunUntilIdle();
+}
+
+// A tensor the renderer never writes must read as zeros, so a renderer cannot
+// observe whatever the allocation previously held. A tensor without read or
+// write usage is the one that may live in device-only memory, and that same
+// lack of read usage means it cannot be read back directly, so a graph copies
+// it into a tensor that can be.
+TEST_P(WebNNGraphImplBackendTest, NewGraphInputTensorIsZeroInitialized) {
+  // The staging chunk is 4 MiB, so these cover a partial chunk, exactly one
+  // chunk, and several chunks followed by a partial one.
+  for (uint32_t elements :
+       {uint32_t{1}, uint32_t{1024 * 1024}, uint32_t{2 * 1024 * 1024 + 2}}) {
+    SCOPED_TRACE(elements);
+
+    mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
+    GraphInfoBuilder builder(remote);
+    const OperandId input_operand_id =
+        builder.BuildInput("input", {elements}, OperandDataType::kFloat32);
+    const OperandId output_operand_id =
+        builder.BuildOutput("output", {elements, 1}, OperandDataType::kFloat32);
+    builder.BuildReshape(input_operand_id, output_operand_id);
+
+    base::test::TestFuture<
+        base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+        create_graph_future;
+    remote->CreateGraph(builder.TakeGraphInfo(),
+                        create_graph_future.GetCallback());
+    auto create_graph_result = create_graph_future.Take();
+    ASSERT_TRUE(create_graph_result.has_value())
+        << create_graph_result.error()->message;
+
+    // Never written, and without read or write usage so that a backend with
+    // device-only memory places it there.
+    TensorRemoteAndHandle input = CreateTensor(
+        context(),
+        mojom::TensorInfo::New(
+            OperandDescriptor::UnsafeCreateForTesting(
+                OperandDataType::kFloat32, std::array<uint32_t, 1>{elements}),
+            MLTensorUsage()));
+
+    // Filled with a non-zero pattern first, so a dispatch that never wrote the
+    // output could not be mistaken for a zeroed input.
+    const std::vector<uint8_t> non_zero(elements * sizeof(float), 0xff);
+    TensorRemoteAndHandle output = CreateTensorWithValues(
+        context(),
+        mojom::TensorInfo::New(OperandDescriptor::UnsafeCreateForTesting(
+                                   OperandDataType::kFloat32,
+                                   std::array<uint32_t, 2>{elements, 1}),
+                               MLTensorUsage{MLTensorUsageFlags::kRead,
+                                             MLTensorUsageFlags::kWrite}),
+        non_zero);
+
+    context()->Dispatch(create_graph_result.value()->graph_token,
+                        {{"input", input.handle}}, {{"output", output.handle}});
+
+    base::test::TestFuture<mojom::ReadTensorResultPtr> read_tensor_future;
+    output.remote->ReadTensor(read_tensor_future.GetCallback());
+    mojom::ReadTensorResultPtr read_tensor_result = read_tensor_future.Take();
+    ASSERT_FALSE(read_tensor_result->is_error());
+
+    // Checked as bytes rather than floats because -0.0f compares equal to 0.
+    const mojo_base::BigBuffer buffer =
+        std::move(read_tensor_result->get_buffer());
+    ASSERT_EQ(buffer.size(), non_zero.size());
+    EXPECT_TRUE(std::ranges::all_of(base::span(buffer),
+                                    [](uint8_t byte) { return byte == 0; }));
+  }
 }
 
 }  // namespace webnn::test

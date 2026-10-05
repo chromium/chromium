@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "services/webnn/ort/ort_session_options.h"
 #include "services/webnn/ort/scoped_ort_types.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 
 namespace webnn::ort {
 
@@ -37,6 +38,17 @@ class DeviceAllocator final : public base::RefCounted<DeviceAllocator> {
 
   OrtAllocator* get() const { return device_allocator_.get(); }
 
+  // Returns whether tensors from this allocator can be read and written
+  // directly by the CPU. Device-only memory is not mappable, so callers must
+  // consult this before taking a span over a tensor's contents.
+  bool CanAccessOnCpu() const { return can_access_on_cpu_; }
+
+  // Returns whether `tensor_info` should be allocated on the device. Tensors
+  // the renderer reads or writes need CPU-reachable memory, so they stay on
+  // the default CPU allocator when this allocator hands out device-only
+  // memory. Everything else, notably KV caches, stays device resident.
+  bool ShouldUse(const mojom::TensorInfo& tensor_info) const;
+
  private:
   friend class base::RefCounted<DeviceAllocator>;
 
@@ -55,6 +67,7 @@ class DeviceAllocator final : public base::RefCounted<DeviceAllocator> {
   // does.
   ScopedOrtSession trivial_session_;
   ScopedOrtAllocator device_allocator_;
+  const bool can_access_on_cpu_;
 };
 
 }  // namespace webnn::ort

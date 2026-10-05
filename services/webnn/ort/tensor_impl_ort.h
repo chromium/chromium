@@ -20,6 +20,11 @@ class Environment;
 
 class TensorImplOrt final : public WebNNTensorImpl {
  public:
+  // `tensor` must already be zero-initialized. That is left to the caller
+  // because device-only memory has to be cleared through ORT's copy path,
+  // which `AsSpan()` cannot reach.
+  // CPU accessibility is taken from `device_allocator`, which is null when the
+  // tensor came from the default CPU allocator.
   TensorImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 WebNNContextImpl& context,
                 mojom::TensorInfoPtr tensor_info,
