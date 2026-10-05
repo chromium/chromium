@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInf
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -260,7 +259,6 @@ public class StaticLayout extends Layout {
                         if (!mIsShowing) return;
 
                         setStaticTab(tab);
-                        requestFocus(tab);
                     }
                 };
 
@@ -341,15 +339,6 @@ public class StaticLayout extends Layout {
     }
 
     @Override
-    public void doneShowing() {
-        super.doneShowing();
-        assumeNonNull(mTabModelSelector);
-        Tab tab = mTabModelSelector.getCurrentTab();
-        if (tab == null) return;
-        requestFocus(tab);
-    }
-
-    @Override
     public void doneHiding() {
         mIsShowing = false;
         mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
@@ -358,20 +347,6 @@ public class StaticLayout extends Layout {
         // super.doneHiding() the layout might become unexpectedly inactive or have an
         // incorrect tab id. See crbug.com/40068199.
         super.doneHiding();
-    }
-
-    private void requestFocus(Tab tab) {
-        // We will restrict avoidance of tab focus request only on tablet devices, since this is
-        // known to cause regressions on phones - see https://crbug.com/40069240 for details.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-            return;
-        }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT)) {
-            return;
-        }
-
-        if (mIsShowing && tab.getView() != null) tab.getView().requestFocus();
     }
 
     private void updateVisibleIdsCheckingLiveLayer(int tabId, boolean useLiveTexture) {

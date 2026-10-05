@@ -751,8 +751,6 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_WEBSITE_SETS_UI = "RelatedWebsiteSetsUi";
     public static final String REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT =
             "RemoveExtraHeadersOnCrossOriginRedirect";
-    public static final String REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT =
-            "RemoveTabFocusOnShowingAndSelect";
     public static final String REPORT_NOTIFICATION_CONTENT_DETECTION_DATA =
             "ReportNotificationContentDetectionData";
     public static final String RESET_NATIVE_POINTER_IN_CREDIT_CARD_AUTH_DIALOG =
