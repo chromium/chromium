@@ -1162,6 +1162,12 @@ const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
      kNewTabPageUICleanupFakeboxBackgroundAndShadow, nullptr},
 };
 
+constexpr FeatureEntry::FeatureParam kAim3pEntrypointDebugEnabled[] = {
+    {"Aim3pEntrypointDebug", "true"}};
+
+constexpr FeatureEntry::FeatureVariation kAim3pEntrypointVariations[] = {
+    {"with debug config", kAim3pEntrypointDebugEnabled, nullptr}};
+
 constexpr FeatureEntry::FeatureParam
     kAimButtonRefactorFocusComposeboxAimQuickAction[] = {
         {ntp_tiles::kAimButtonRefactorArmParam, "1"}};
@@ -2787,6 +2793,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"saas-usage-reporting", flag_descriptions::kSaasUsageReportingName,
      flag_descriptions::kSaasUsageReportingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(enterprise_reporting::kSaasUsageReporting)},
+    {"aim-3p-entrypoint", flag_descriptions::kAim3pEntrypointName,
+     flag_descriptions::kAim3pEntrypointDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kAim3pEntrypoint,
+                                    kAim3pEntrypointVariations,
+                                    "Aim3pEntrypoint")},
     {"aim-button-refactor", flag_descriptions::kAimButtonRefactorName,
      flag_descriptions::kAimButtonRefactorDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kAimButtonRefactor,

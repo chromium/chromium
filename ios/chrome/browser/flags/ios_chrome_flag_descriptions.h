@@ -59,6 +59,10 @@ inline constexpr char kAiSubscriptionAvatarRingIosDescription[] =
     "Display a ring around the avatar in the NTP and Account Menu if the "
     "primary account has a AI Tier";
 
+inline constexpr char kAim3pEntrypointName[] = "AIM 3P entrypoint";
+inline constexpr char kAim3pEntrypointDescription[] =
+    "Enables AIM entrypoint for third-party search engines that support it.";
+
 inline constexpr char kAimButtonRefactorName[] = "AIM Button Refactor";
 inline constexpr char kAimButtonRefactorDescription[] =
     "When enabled, the location and presentation of the AI Mode button on the "

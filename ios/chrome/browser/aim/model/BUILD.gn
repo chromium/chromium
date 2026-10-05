@@ -8,6 +8,8 @@ source_set("aim_button_service") {
     "ai_mode_button_service_ios.mm",
     "ai_mode_button_service_ios_factory.h",
     "ai_mode_button_service_ios_factory.mm",
+    "ios_chrome_ai_mode_button_service_factory.h",
+    "ios_chrome_ai_mode_button_service_factory.mm",
   ]
   deps = [
     ":aim_availability",
