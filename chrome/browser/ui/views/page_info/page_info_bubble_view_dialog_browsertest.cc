@@ -966,13 +966,12 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             browser()->GetProfile());
-    optimization_guide_decider->AddHintForTesting(
-        GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
-        GetAboutThisSiteMetadata());
-    optimization_guide_decider->AddHintForTesting(
+    optimization_guide_decider->AddHintWithMultipleOptimizationsForTesting(
         GetUrl(kAboutThisSiteUrl),
-        optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
-        GetMerchantTrustMetadata());
+        {{optimization_guide::proto::ABOUT_THIS_SITE,
+          GetAboutThisSiteMetadata()},
+         {optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
+          GetMerchantTrustMetadata()}});
     optimization_guide_decider->AddHintForTesting(
         GetUrl(kMerchantTrustUrl),
         optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
@@ -1049,10 +1048,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/383355629): Optimization guide doesn't support setting hints
-// for two optimization types.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
-                       DISABLED_InvokeUi_MerchantTrustAndAboutThisSite) {
+                       InvokeUi_MerchantTrustAndAboutThisSite) {
   set_baseline("6070208");
   ShowAndVerifyUi();
 }
