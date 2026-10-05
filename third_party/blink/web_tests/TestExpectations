@@ -134,12 +134,6 @@ crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 # available in child/sibling frames.  This assumption doesn't hold with User
 # Activation v2 (UAv2).
 
-# With --enable-display-compositor-pixel-dump enabled by default, these three
-# tests fail. See crbug.com/887140 for more info.
-crbug.com/887140 virtual/hdr/color-jpeg-with-color-profile.html [ Failure ]
-crbug.com/887140 virtual/hdr/color-profile-video.html [ Failure ]
-crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
-
 # ====== Synchronous, budgeted HTML parser tests from here ========================
 # See crbug.com/1254921 for details.
 # These tests either started failing outright, or became flaky, when the new HTML
