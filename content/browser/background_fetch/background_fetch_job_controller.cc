@@ -187,8 +187,9 @@ void BackgroundFetchJobController::DidStartRequest(
     std::unique_ptr<BackgroundFetchResponse> response) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
-  CHECK(active_request_map_.count(guid), base::NotFatalUntil::M158);
-  const auto& request = active_request_map_[guid];
+  auto it = active_request_map_.find(guid);
+  CHECK(it != active_request_map_.end(), base::NotFatalUntil::M158);
+  const auto& request = it->second;
   CHECK(request, base::NotFatalUntil::M158);
 
   request->PopulateWithResponse(std::move(response));
@@ -206,8 +207,9 @@ void BackgroundFetchJobController::DidUpdateRequest(const std::string& guid,
                                                     uint64_t bytes_downloaded) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
-  CHECK(active_request_map_.count(guid), base::NotFatalUntil::M158);
-  const auto& request = active_request_map_[guid];
+  auto it = active_request_map_.find(guid);
+  CHECK(it != active_request_map_.end(), base::NotFatalUntil::M158);
+  const auto& request = it->second;
   CHECK(request, base::NotFatalUntil::M158);
   InProgressRequestBytes& in_progress_bytes = active_bytes_map_[guid];
 
@@ -235,8 +237,9 @@ void BackgroundFetchJobController::DidCompleteRequest(
     std::unique_ptr<BackgroundFetchResult> result) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
-  CHECK(active_request_map_.count(guid), base::NotFatalUntil::M158);
-  const auto& request = active_request_map_[guid];
+  auto it = active_request_map_.find(guid);
+  CHECK(it != active_request_map_.end(), base::NotFatalUntil::M158);
+  auto& request = it->second;
   CHECK(request, base::NotFatalUntil::M158);
 
   request->SetResult(std::move(result));
@@ -245,9 +248,9 @@ void BackgroundFetchJobController::DidCompleteRequest(
     complete_requests_downloaded_bytes_cache_ += request->GetResponseSize();
   complete_requests_uploaded_bytes_cache_ += request->request_body_size();
 
-  NotifyDownloadComplete(request);
+  NotifyDownloadComplete(std::move(request));
   active_bytes_map_.erase(guid);
-  active_request_map_.erase(guid);
+  active_request_map_.erase(it);
 }
 
 blink::mojom::BackgroundFetchRegistrationDataPtr
