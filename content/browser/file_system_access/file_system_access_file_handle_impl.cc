@@ -183,6 +183,28 @@ void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    RunWithSensitiveEntryAccess(
+        url(), display_name(), HandleType::kFile,
+        AccessTrigger::kProgrammaticRead,
+        base::BindOnce(&FileSystemAccessFileHandleImpl::DoAsBlob,
+                       weak_factory_.GetWeakPtr()),
+        base::BindOnce([](AsBlobCallback callback) {
+          std::move(callback).Run(file_system_access_error::FromStatus(
+                                      FileSystemAccessStatus::kSecurityError),
+                                  base::File::Info(), nullptr);
+        }),
+        std::move(callback));
+    return;
+  }
+
+  DoAsBlob(std::move(callback));
+}
+
+void FileSystemAccessFileHandleImpl::DoAsBlob(AsBlobCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // TODO(mek): Check backend::SupportsStreaming and create snapshot file if
   // streaming is not supported.
   manager()->DoFileSystemOperation(

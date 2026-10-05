@@ -456,6 +456,21 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     // Check to see if the resulting FileSystemAccessFileHandle can read the
     // contents of the file at `file_path`.
+    if (base::FeatureList::IsEnabled(
+            features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+      const storage::FileSystemURL file_url =
+          manager_->CreateFileSystemURLFromPath(file_path_info);
+      EXPECT_CALL(permission_context_,
+                  ConfirmSensitiveEntryAccess_(
+                      kTestStorageKey.origin(),
+                      PathInfo(file_url.path(), file_path_info.display_name),
+                      HandleType::kFile,
+                      FileSystemAccessPermissionContext::AccessTrigger::
+                          kProgrammaticRead,
+                      frame_id_, testing::_))
+          .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
+                                           SensitiveEntryResult::kAllowed));
+    }
     EXPECT_EQ(ReadStringFromFileRemote(std::move(file_handle)),
               expected_file_contents);
   }
@@ -1976,6 +1991,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   DCHECK_EQ(get_entry_future.Get<0>()->status,
             blink::mojom::FileSystemAccessStatus::kOk);
   auto file_system_access_entry = std::get<1>(get_entry_future.Take());
+  testing::Mock::VerifyAndClearExpectations(&permission_context_);
 
   EXPECT_FALSE(file_system_access_entry.is_null());
   ASSERT_TRUE(file_system_access_entry->entry_handle->is_file());
@@ -1983,7 +1999,19 @@ TEST_F(FileSystemAccessManagerImplTest,
       std::move(file_system_access_entry->entry_handle->get_file()));
 
   // Check to see if the resulting FileSystemAccessFileHandle can read the
-  // contents of the file at `file_path`.
+  // contents of the file at `file_path`. Reading via `AsBlob()` performs a
+  // programmatic read sensitive entry access check.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    EXPECT_CALL(
+        permission_context_,
+        ConfirmSensitiveEntryAccess_(
+            kTestStorageKey.origin(), file_info, HandleType::kFile,
+            FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+            frame_id_, testing::_))
+        .WillOnce(RunOnceCallback<5>(
+            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
+  }
   EXPECT_EQ(ReadStringFromFileRemote(std::move(file_handle)), file_contents);
 }
 

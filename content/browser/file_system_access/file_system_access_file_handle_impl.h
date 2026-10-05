@@ -94,6 +94,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   bool CanUseCowSwapFile() const;
 #endif  // BUILDFLAG(IS_MAC)
 
+  void DoAsBlob(AsBlobCallback callback);
   void DidGetMetaDataForBlob(AsBlobCallback callback,
                              base::File::Error result,
                              const base::File::Info& info);

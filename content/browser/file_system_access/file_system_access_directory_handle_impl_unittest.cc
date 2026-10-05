@@ -755,8 +755,9 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
                 ConfirmSensitiveEntryAccess_(
                     _, _, HandleType::kFile, AccessTrigger::kProgrammaticRead,
                     kThirdPartyBindingContext.frame_id, _))
-        .WillOnce(
-            base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+        .Times(2)
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<5>(
+            SensitiveEntryResult::kAllowed));
   }
 
   base::test::TestFuture<

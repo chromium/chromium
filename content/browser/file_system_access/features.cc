@@ -15,8 +15,8 @@ namespace content::features {
 // TODO(b/354661640): Temporarily disable this flag while investigating CrOS
 // file saving issue.
 //
-// When enabled, GetFile() and GetEntries() on a directory handle performs
-// the blocklist check on child file handles.
+// When enabled, GetFile() and GetEntries() on a directory handle, as well as
+// AsBlob() on a file handle, perform the blocklist check.
 BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
