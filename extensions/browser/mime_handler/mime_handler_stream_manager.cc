@@ -634,8 +634,8 @@ void MimeHandlerStreamManager::DidFinishNavigation(
         iter->second->navigation_id() == navigation_handle->GetNavigationId()) {
       // This call may delete `this`.
       DeleteUnclaimedStreamInfo(frame_tree_node_id);
-      return;
     }
+    return;
   }
 
   // Maybe set up postMessage support after the PDF content host finishes
@@ -668,7 +668,6 @@ void MimeHandlerStreamManager::DidFinishNavigation(
     if (url == pdf_extension_url &&
         stream_info->extension_host_frame_tree_node_id() ==
             frame_tree_node_id &&
-        navigation_handle->HasCommitted() &&
         !navigation_handle->IsErrorPage()) {
       stream_info->SetDidExtensionFinishNavigation();
       stream_info->delegate()->OnExtensionFrameFinished(navigation_handle,

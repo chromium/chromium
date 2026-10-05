@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -23,8 +24,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
@@ -1192,6 +1195,7 @@ TEST_P(MimeHandlerStreamManagerPostMessageTest,
 
   NiceMock<content::MockNavigationHandle> navigation_handle(
       stream_info->stream()->original_url(), content_host);
+  navigation_handle.set_has_committed(true);
 
   ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
   ON_CALL(*delegate_ptr, ShouldSetUpPostMessage())
@@ -1220,6 +1224,51 @@ TEST_F(MimeHandlerStreamManagerTest,
   manager->DidFinishNavigation(&navigation_handle);
 
   EXPECT_FALSE(manager->DidExtensionFrameFinishNavigation(embedder_host));
+}
+
+// An uncommitted about:blank navigation in a child frame of the embedder host
+// aborted when its renderer process exits must not be treated as the
+// placeholder extension frame or trigger a navigation to the handler URL
+// (which would discard and free the speculative RenderFrameHost while
+// RenderFrameHostImpl::RenderProcessGone() is still on the stack).
+TEST_F(MimeHandlerStreamManagerTest,
+       DidFinishNavigationIgnoresUncommittedAboutBlankChildNavigation) {
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  auto* initiator_host =
+      CreateAndNavigateChild(embedder_host, GURL(kOriginalUrl2));
+  auto* child_host =
+      CreateAndNavigateChild(embedder_host, GURL("https://original_url3"));
+  ASSERT_NE(embedder_host->GetProcess(), initiator_host->GetProcess());
+  ASSERT_NE(initiator_host->GetProcess(), child_host->GetProcess());
+
+  SetUpSimpleStream(embedder_host, /*container_number=*/1, /*embedded=*/true);
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+
+  // Start a cross-process about:blank navigation in `child_host` with
+  // `initiator_host`'s SiteInstance and origin. Because about:blank does not
+  // use a URL loader, LoadURLWithParams() synchronously advances it to
+  // ReadyToCommitNavigation() on a speculative RenderFrameHost in
+  // `initiator_host`'s process.
+  content::NavigationController::LoadURLParams params{
+      GURL(url::kAboutBlankURL)};
+  params.frame_tree_node_id = child_host->GetFrameTreeNodeId();
+  params.source_site_instance = initiator_host->GetSiteInstance();
+  params.initiator_origin = initiator_host->GetLastCommittedOrigin();
+  params.is_renderer_initiated = true;
+  web_contents()->GetController().LoadURLWithParams(params);
+
+  // Simulate `initiator_host`'s renderer process (which hosts `child_host`'s
+  // speculative RenderFrameHost) crashing while the about:blank navigation is
+  // uncommitted.
+  static_cast<content::MockRenderProcessHost*>(initiator_host->GetProcess())
+      ->SimulateCrash();
+
+  EXPECT_FALSE(stream_info->DidExtensionStartNavigation());
+  EXPECT_FALSE(stream_info->extension_host_frame_tree_node_id());
+  EXPECT_FALSE(web_contents()->GetController().GetPendingEntry());
 }
 
 // Verify `MimeHandlerStreamManager::PluginCanSave()` defaults to false
