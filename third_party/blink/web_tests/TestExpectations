@@ -1493,10 +1493,6 @@ crbug.com/1218721 fast/borders/border-radius-mask-video.html [ Failure ]
 
 crbug.com/637055 fast/css/outline-offset-large.html [ Crash Failure Pass Timeout ]
 
-# Either "combo" or split should run: http://testthewebforward.org/docs/css-naming.html
-crbug.com/410320 [ Debug Linux ] external/wpt/css/css-writing-modes/orthogonal-parent-shrink-to-fit-001.html [ Crash Failure Pass Timeout ]
-crbug.com/410320 [ Debug Mac13 ] external/wpt/css/css-writing-modes/orthogonal-parent-shrink-to-fit-001.html [ Crash Failure Pass Timeout ]
-
 # These tests pass but images do not match because of wrong half-leading in vertical-lr
 
 # These tests pass but images do not match because tests are stricter than the spec.
