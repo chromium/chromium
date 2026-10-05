@@ -60,8 +60,8 @@ void NonPersistentNotificationHandler::OnClick(
     base::OnceClosure completed_closure) {
   // Non persistent notifications don't allow buttons or replies.
   // https://notifications.spec.whatwg.org/#create-a-notification
-  DCHECK(!action_index.has_value());
-  DCHECK(!reply.has_value());
+  CHECK(!action_index.has_value(), base::NotFatalUntil::M161);
+  CHECK(!reply.has_value(), base::NotFatalUntil::M161);
 
   content::NotificationEventDispatcher::GetInstance()
       ->DispatchNonPersistentClickEvent(

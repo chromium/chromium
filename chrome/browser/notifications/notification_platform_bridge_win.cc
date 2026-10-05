@@ -122,7 +122,7 @@ void ForwardNotificationOperationOnUiThread(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     const std::optional<bool>& by_user) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!g_browser_process || g_browser_process->IsShuttingDown()) {
     return;
   }
@@ -132,7 +132,7 @@ void ForwardNotificationOperationOnUiThread(
   // this NotificationPlatformBridge.
   // When transient notifications are supported, this should route the
   // notification response to the system NotificationDisplayService.
-  DCHECK(!profile_id.empty());
+  CHECK(!profile_id.empty(), base::NotFatalUntil::M161);
 
   g_browser_process->profile_manager()->LoadProfile(
       NotificationPlatformBridge::GetProfileBaseNameFromProfileId(profile_id),
@@ -190,7 +190,7 @@ class NotificationPlatformBridgeWinImpl
         image_retainer_(std::make_unique<NotificationImageRetainer>()) {
     // Delete any remaining temp files in the image folder from the previous
     // sessions.
-    DCHECK(notification_task_runner_);
+    CHECK(notification_task_runner_, base::NotFatalUntil::M161);
     content::BrowserThread::PostBestEffortTask(
         FROM_HERE, notification_task_runner_,
         image_retainer_->GetCleanupTask());
@@ -433,7 +433,8 @@ class NotificationPlatformBridgeWinImpl
                std::unique_ptr<NotificationCommon::Metadata> metadata) {
     // TODO(finnur): Move this to a RoInitialized thread, as per
     // crbug.com/40538006.
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     const std::wstring app_user_model_id = GetAppIdForNotification(
         notification.get(), profile_id, profile_path, app_name);
@@ -509,7 +510,8 @@ class NotificationPlatformBridgeWinImpl
   void Close(const std::string& profile_id,
              bool incognito,
              const std::string& notification_id) {
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     mswr::ComPtr<winui::Notifications::IToastNotificationHistory> history =
         GetIToastNotificationHistory();
@@ -625,7 +627,8 @@ class NotificationPlatformBridgeWinImpl
     std::set<std::wstring> app_user_model_ids;
     for (const auto& notification : displayed_notifications_) {
       // Make sure app_user_model_id gets set.
-      DCHECK(!notification.first.app_user_model_id.empty());
+      CHECK(!notification.first.app_user_model_id.empty(),
+            base::NotFatalUntil::M161);
       app_user_model_ids.insert(notification.first.app_user_model_id);
     }
     GetDisplayedStatus status = GetDisplayedStatus::kSuccess;
@@ -680,7 +683,8 @@ class NotificationPlatformBridgeWinImpl
                     bool incognito,
                     std::optional<GURL> origin,
                     GetDisplayedNotificationsCallback callback) const {
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     std::vector<mswr::ComPtr<winui::Notifications::IToastNotification>>
         notifications = GetNotifications();
@@ -714,7 +718,8 @@ class NotificationPlatformBridgeWinImpl
   }
 
   void SynchronizeNotifications() {
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     if (NotificationPlatformBridgeWinImpl::
             expected_displayed_notifications_for_testing_) {
@@ -765,13 +770,15 @@ class NotificationPlatformBridgeWinImpl
   }
 
   void InitializeOnTaskRunner() {
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
     LogSettingPolicyAtStartup();
     InitializeExpectedDisplayedNotification();
   }
 
   void InitializeExpectedDisplayedNotification() {
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     std::vector<mswr::ComPtr<winui::Notifications::IToastNotification>>
         notifications = GetNotifications();
@@ -794,7 +801,8 @@ class NotificationPlatformBridgeWinImpl
   }
 
   void LogSettingPolicyAtStartup() {
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     if (!notifier_for_testing_ && !notifier_.Get() &&
         FAILED(InitializeToastNotifier(GetBrowserAppId()))) {
@@ -829,7 +837,8 @@ class NotificationPlatformBridgeWinImpl
 
   void SetReadyCallback(
       NotificationPlatformBridge::NotificationBridgeReadyCallback callback) {
-    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(notification_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     bool activator_registered = IsToastActivatorRegistered();
     bool shortcut_installed =
@@ -853,7 +862,7 @@ class NotificationPlatformBridgeWinImpl
 
     bool success = content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), enabled));
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M161);
   }
 
   void HandleEvent(NotificationLaunchId launch_id,
@@ -1058,7 +1067,7 @@ void NotificationPlatformBridgeWin::Display(
     Profile* profile,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Make a deep copy of the notification as its resources cannot safely
   // be passed between threads.
@@ -1090,7 +1099,7 @@ void NotificationPlatformBridgeWin::Display(
 
 void NotificationPlatformBridgeWin::Close(Profile* profile,
                                           const std::string& notification_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   notification_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&NotificationPlatformBridgeWinImpl::Close,
                                 impl_, GetProfileId(profile),
@@ -1100,7 +1109,7 @@ void NotificationPlatformBridgeWin::Close(Profile* profile,
 void NotificationPlatformBridgeWin::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   notification_task_runner_->PostTask(
       FROM_HERE,
@@ -1113,7 +1122,7 @@ void NotificationPlatformBridgeWin::GetDisplayedForOrigin(
     Profile* profile,
     const GURL& origin,
     GetDisplayedNotificationsCallback callback) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   notification_task_runner_->PostTask(
       FROM_HERE,
@@ -1124,7 +1133,7 @@ void NotificationPlatformBridgeWin::GetDisplayedForOrigin(
 
 void NotificationPlatformBridgeWin::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   notification_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NotificationPlatformBridgeWinImpl::SetReadyCallback,
@@ -1132,7 +1141,7 @@ void NotificationPlatformBridgeWin::SetReadyCallback(
 }
 
 void NotificationPlatformBridgeWin::SynchronizeNotificationsForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   notification_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -1144,7 +1153,7 @@ void NotificationPlatformBridgeWin::DisplayServiceShutDown(Profile* profile) {}
 // static
 bool NotificationPlatformBridgeWin::HandleActivation(
     const base::CommandLine& command_line) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   NotificationLaunchId launch_id(base::WideToUTF8(
       command_line.GetSwitchValueNative(switches::kNotificationLaunchId)));
@@ -1199,7 +1208,7 @@ void NotificationPlatformBridgeWin::ForwardHandleEventForTesting(
     winui::Notifications::IToastNotification* notification,
     winui::Notifications::IToastActivatedEventArgs* args,
     const std::optional<bool>& by_user) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   notification_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

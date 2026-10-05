@@ -187,7 +187,8 @@ void NotificationPlatformBridgeChromeOs::DisableNotification(
   if (!notification)
     return;
 
-  DCHECK_NE(NotificationHandler::Type::TRANSIENT, notification->type());
+  CHECK_NE(NotificationHandler::Type::TRANSIENT, notification->type(),
+           base::NotFatalUntil::M161);
   NotificationDisplayServiceImpl::GetForProfile(notification->profile())
       ->ProcessNotificationOperation(
           NotificationOperation::kDisablePermission, notification->type(),

@@ -34,7 +34,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
       : profile_(profile),
         notification_(notification),
         notification_type_(notification_type) {
-    DCHECK_NE(notification_type, NotificationHandler::Type::TRANSIENT);
+    CHECK_NE(notification_type, NotificationHandler::Type::TRANSIENT,
+             base::NotFatalUntil::M161);
   }
   PassThroughDelegate(const PassThroughDelegate&) = delete;
   PassThroughDelegate& operator=(const PassThroughDelegate&) = delete;

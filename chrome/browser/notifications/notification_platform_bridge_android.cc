@@ -156,7 +156,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     action_index = java_action_index;
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M161);
 
   NotificationHandler::Type notification_type =
       JavaToNotificationType(java_notification_type);
@@ -199,7 +199,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
   regenerated_notification_infos_.erase(notification_id);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M161);
 
   NotificationHandler::Type notification_type =
       JavaToNotificationType(java_notification_type);
@@ -225,7 +225,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
     bool incognito,
     bool is_suspicious) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M161);
 
   NotificationHandler::Type notification_type =
       JavaToNotificationType(java_notification_type);
@@ -345,7 +345,7 @@ void NotificationPlatformBridgeAndroid::Display(
     Profile* profile,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
-  DCHECK(CanHandleType(notification_type));
+  CHECK(CanHandleType(notification_type), base::NotFatalUntil::M161);
 
   JNIEnv* env = AttachCurrentThread();
 
@@ -462,7 +462,7 @@ void NotificationPlatformBridgeAndroid::SetReadyCallback(
 
 void NotificationPlatformBridgeAndroid::OnNotificationProcessed(
     const std::string& notification_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NotificationPlatformBridge_onNotificationProcessed(env, java_object_,
                                                           notification_id);

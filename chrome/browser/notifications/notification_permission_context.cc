@@ -144,7 +144,7 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusForExtension(
   NotifierStateTracker* notifier_state_tracker =
       NotifierStateTrackerFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
-  DCHECK(notifier_state_tracker);
+  CHECK(notifier_state_tracker, base::NotFatalUntil::M161);
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::APPLICATION, extension->id());
@@ -157,7 +157,7 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusForExtension(
 void NotificationPermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Permission requests for either Web Notifications and Push Notifications may
   // only happen on top-level frames and same-origin iframes. Usage will

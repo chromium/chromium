@@ -17,7 +17,7 @@
 NotificationSystemObserver::NotificationSystemObserver(
     NotificationUIManager* ui_manager)
     : ui_manager_(ui_manager) {
-  DCHECK(ui_manager_);
+  CHECK(ui_manager_, base::NotFatalUntil::M161);
   // base::Unretained(this) is safe here as this object owns
   // |on_app_terminating_subscription_| and the callback won't be invoked
   // after the subscription is destroyed.
@@ -34,7 +34,7 @@ NotificationSystemObserver::NotificationSystemObserver(
 
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);
-    DCHECK(registry);
+    CHECK(registry, base::NotFatalUntil::M161);
     extension_registry_observations_.AddObservation(registry);
   }
 
@@ -50,14 +50,14 @@ void NotificationSystemObserver::OnAppTerminating() {
 }
 
 void NotificationSystemObserver::OnProfileAdded(Profile* profile) {
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   if (extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(profile)) {
     return;
   }
   auto* registry = extensions::ExtensionRegistry::Get(profile);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   // If |this| was created after the profile was created but before the
   // ADDED notification was sent, we may be already observing it. |this| is
   // created lazily so it's not easy to predict construction order.

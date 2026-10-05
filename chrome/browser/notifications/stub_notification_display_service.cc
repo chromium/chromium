@@ -86,7 +86,7 @@ void StubNotificationDisplayService::SimulateClick(
 
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   if (notification_type == NotificationHandler::Type::TRANSIENT) {
-    DCHECK(!handler);
+    CHECK(!handler, base::NotFatalUntil::M161);
 
     auto* delegate = iter->notification.delegate();
     if (delegate)
@@ -94,7 +94,7 @@ void StubNotificationDisplayService::SimulateClick(
     return;
   }
 
-  DCHECK(handler);
+  CHECK(handler, base::NotFatalUntil::M161);
   base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   handler->OnClick(profile_, iter->notification.origin_url(), notification_id,
                    action_index, reply, run_loop.QuitClosure());
@@ -110,11 +110,11 @@ void StubNotificationDisplayService::SimulateSettingsClick(
 
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   if (notification_type == NotificationHandler::Type::TRANSIENT) {
-    DCHECK(!handler);
+    CHECK(!handler, base::NotFatalUntil::M161);
     if (iter->notification.delegate())
       iter->notification.delegate()->SettingsClick();
   } else {
-    DCHECK(handler);
+    CHECK(handler, base::NotFatalUntil::M161);
     handler->OpenSettings(profile_, iter->notification.origin_url());
   }
 }
@@ -133,7 +133,7 @@ void StubNotificationDisplayService::RemoveNotification(
   if (!silent) {
     NotificationHandler* handler = GetNotificationHandler(notification_type);
     if (notification_type == NotificationHandler::Type::TRANSIENT) {
-      DCHECK(!handler);
+      CHECK(!handler, base::NotFatalUntil::M161);
       if (data.notification.delegate())
         data.notification.delegate()->Close(by_user);
     } else {
@@ -149,8 +149,8 @@ void StubNotificationDisplayService::RemoveAllNotifications(
     NotificationHandler::Type notification_type,
     bool by_user) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
-  DCHECK_NE(!!handler,
-            notification_type == NotificationHandler::Type::TRANSIENT);
+  CHECK_NE(!!handler, notification_type == NotificationHandler::Type::TRANSIENT,
+           base::NotFatalUntil::M161);
   for (auto iter = notifications_.begin(); iter != notifications_.end();) {
     if (iter->type == notification_type) {
       NotificationData data = std::move(*iter);

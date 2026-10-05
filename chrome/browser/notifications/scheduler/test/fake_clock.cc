@@ -11,7 +11,7 @@ namespace test {
 base::Time FakeClock::GetTime(const char* time_str) {
   base::Time time;
   bool success = base::Time::FromString(time_str, &time);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
   return time;
 }
 

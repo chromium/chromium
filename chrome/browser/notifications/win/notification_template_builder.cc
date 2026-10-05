@@ -97,7 +97,7 @@ std::string FormatOrigin(const GURL& origin) {
   std::u16string origin_string = url_formatter::FormatOriginForSecurityDisplay(
       url::Origin::Create(origin),
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  DCHECK(!origin_string.empty());
+  CHECK(!origin_string.empty(), base::NotFatalUntil::M161);
 
   // If the origin exceeds the max allowed length, reduce it to the registrable
   // domain (eTLD+1) to prevent tail truncation of the domain.
@@ -400,7 +400,7 @@ std::wstring BuildNotificationTemplate(
     NotificationImageRetainer* image_retainer,
     const NotificationLaunchId& launch_id,
     const message_center::Notification& notification) {
-  DCHECK(image_retainer);
+  CHECK(image_retainer, base::NotFatalUntil::M161);
 
   XmlWriter xml_writer;
   xml_writer.StartWriting();
@@ -470,8 +470,9 @@ std::wstring BuildNotificationTemplate(
   xml_writer.StopWriting();
 
   std::string template_xml = xml_writer.GetWrittenString();
-  DCHECK(base::StartsWith(template_xml, kXmlVersionHeader,
-                          base::CompareCase::SENSITIVE));
+  CHECK(base::StartsWith(template_xml, kXmlVersionHeader,
+                         base::CompareCase::SENSITIVE),
+        base::NotFatalUntil::M161);
 
   // The |kXmlVersionHeader| is automatically appended by libxml, but the toast
   // system in the Windows Action Center expects it to be absent.

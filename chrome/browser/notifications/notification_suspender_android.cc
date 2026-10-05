@@ -45,7 +45,7 @@ std::vector<blink::NotificationResources> ParseResources(
   // Resources is an array of bitmaps with the following order:
   // [icon, badge, image, icon, badge, image, ...]
   int resource_count = env->GetArrayLength(j_resources.obj());
-  DCHECK(resource_count % 3 == 0);
+  CHECK(resource_count % 3 == 0, base::NotFatalUntil::M161);
 
   std::vector<blink::NotificationResources> resources;
   for (int i = 0; i < resource_count; i += 3) {
@@ -61,7 +61,7 @@ std::vector<blink::NotificationResources> ParseResources(
 PlatformNotificationContext* GetContext(Profile* profile, const GURL& origin) {
   auto* partition = profile->GetStoragePartitionForUrl(origin);
   auto* context = partition->GetPlatformNotificationContext();
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M161);
   return context;
 }
 
@@ -78,8 +78,8 @@ static void JNI_NotificationSuspender_StoreNotificationResources(
     const JavaRef<jobjectArray>& j_notification_ids,
     const JavaRef<jobjectArray>& j_origins,
     const JavaRef<jobjectArray>& j_resources) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   std::vector<std::string> id_strings;
   AppendJavaStringArrayToStringVector(env, j_notification_ids, &id_strings);
@@ -88,8 +88,8 @@ static void JNI_NotificationSuspender_StoreNotificationResources(
   std::vector<blink::NotificationResources> resources =
       ParseResources(env, j_resources);
 
-  DCHECK(id_strings.size() == origin_strings.size());
-  DCHECK(id_strings.size() == resources.size());
+  CHECK(id_strings.size() == origin_strings.size(), base::NotFatalUntil::M161);
+  CHECK(id_strings.size() == resources.size(), base::NotFatalUntil::M161);
 
   // Group resources by context.
   std::map<PlatformNotificationContext*, std::vector<NotificationResourceData>>
@@ -115,8 +115,8 @@ static void JNI_NotificationSuspender_ReDisplayNotifications(
     JNIEnv* env,
     Profile* profile,
     const std::vector<std::string>& origin_strings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   // Group origins by context.
   std::map<PlatformNotificationContext*, std::vector<GURL>> origins_by_context;

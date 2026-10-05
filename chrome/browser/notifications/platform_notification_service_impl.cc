@@ -218,15 +218,15 @@ PlatformNotificationServiceImpl::PlatformNotificationServiceImpl(
     Profile* profile)
     : profile_(profile),
       trigger_scheduler_(NotificationTriggerScheduler::Create()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile_, base::NotFatalUntil::M161);
   HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 }
 
 PlatformNotificationServiceImpl::~PlatformNotificationServiceImpl() = default;
 
 void PlatformNotificationServiceImpl::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(this);
   // Clear the profile as we're not supposed to use it anymore.
   profile_ = nullptr;
@@ -236,7 +236,7 @@ void PlatformNotificationServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS))
     return;
@@ -262,7 +262,7 @@ void PlatformNotificationServiceImpl::DisplayNotification(
     const GURL& document_url,
     const blink::PlatformNotificationData& notification_data,
     const blink::NotificationResources& notification_resources) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Posted tasks can request notifications to be added, which would cause a
   // crash (see |ScopedKeepAlive|). We just do nothing here, the user would not
@@ -270,8 +270,9 @@ void PlatformNotificationServiceImpl::DisplayNotification(
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
 
-  DCHECK_EQ(0u, notification_data.actions.size());
-  DCHECK_EQ(0u, notification_resources.action_icons.size());
+  CHECK_EQ(0u, notification_data.actions.size(), base::NotFatalUntil::M161);
+  CHECK_EQ(0u, notification_resources.action_icons.size(),
+           base::NotFatalUntil::M161);
 
   message_center::Notification notification =
       CreateNotificationFromData(origin, notification_id, notification_data,
@@ -310,7 +311,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
     const GURL& origin,
     const blink::PlatformNotificationData& notification_data,
     const blink::NotificationResources& notification_resources) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   closed_notifications_.erase(notification_id);
 
@@ -382,7 +383,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
 
 void PlatformNotificationServiceImpl::CloseNotification(
     const std::string& notification_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
 
@@ -392,7 +393,7 @@ void PlatformNotificationServiceImpl::CloseNotification(
 
 void PlatformNotificationServiceImpl::ClosePersistentNotification(
     const std::string& notification_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
 
@@ -404,7 +405,7 @@ void PlatformNotificationServiceImpl::ClosePersistentNotification(
 
 void PlatformNotificationServiceImpl::GetDisplayedNotifications(
     DisplayedNotificationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
 
@@ -422,7 +423,7 @@ void PlatformNotificationServiceImpl::GetDisplayedNotifications(
 void PlatformNotificationServiceImpl::GetDisplayedNotificationsForOrigin(
     const GURL& origin,
     DisplayedNotificationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_) {
     return;
   }
@@ -439,7 +440,7 @@ void PlatformNotificationServiceImpl::GetDisplayedNotificationsForOrigin(
 }
 
 void PlatformNotificationServiceImpl::ScheduleTrigger(base::Time timestamp) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
 
@@ -453,7 +454,7 @@ void PlatformNotificationServiceImpl::ScheduleTrigger(base::Time timestamp) {
 }
 
 base::Time PlatformNotificationServiceImpl::ReadNextTriggerTimestamp() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_)
     return base::Time::Max();
 
@@ -462,7 +463,7 @@ base::Time PlatformNotificationServiceImpl::ReadNextTriggerTimestamp() {
 }
 
 int64_t PlatformNotificationServiceImpl::ReadNextPersistentNotificationId() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_)
     return 0;
 
@@ -477,7 +478,7 @@ int64_t PlatformNotificationServiceImpl::ReadNextPersistentNotificationId() {
 
 void PlatformNotificationServiceImpl::RecordNotificationUkmEvent(
     const NotificationDatabaseData& data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
 
@@ -687,7 +688,7 @@ std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
             origin.GetHost(), extensions::ExtensionRegistry::EVERYTHING);
-    DCHECK(extension);
+    CHECK(extension, base::NotFatalUntil::M161);
 
     return base::UTF8ToUTF16(extension->name());
   }

@@ -33,7 +33,7 @@ const char kMuteNotificationId[] = "notifications_muted";
 ScreenCaptureNotificationBlocker::ScreenCaptureNotificationBlocker(
     NotificationDisplayService* notification_display_service)
     : notification_display_service_(notification_display_service) {
-  DCHECK(notification_display_service_);
+  CHECK(notification_display_service_, base::NotFatalUntil::M161);
   observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
                            ->GetMediaStreamCaptureIndicator()
                            .get());
@@ -82,7 +82,7 @@ void ScreenCaptureNotificationBlocker::OnClosedNotification(
 
 void ScreenCaptureNotificationBlocker::OnAction(
     MutedNotificationHandler::Action action) {
-  DCHECK(state_ == NotifyState::kNotifyMuted);
+  CHECK(state_ == NotifyState::kNotifyMuted, base::NotFatalUntil::M161);
   CloseMuteNotification();
 
   switch (action) {

@@ -336,7 +336,7 @@ void IconEntryToProto(IconEntry* entry, notifications::proto::Icon* proto) {
 }
 
 void IconEntryFromProto(proto::Icon* proto, notifications::IconEntry* entry) {
-  DCHECK(proto->has_icon());
+  CHECK(proto->has_icon(), base::NotFatalUntil::M161);
   entry->data.swap(*proto->mutable_icon());
 }
 
@@ -398,14 +398,14 @@ void ClientStateToProto(ClientState* client_state,
 
 void ClientStateFromProto(proto::ClientState* proto,
                           notifications::ClientState* client_state) {
-  DCHECK(proto->has_type());
-  DCHECK(proto->has_current_max_daily_show());
+  CHECK(proto->has_type(), base::NotFatalUntil::M161);
+  CHECK(proto->has_current_max_daily_show(), base::NotFatalUntil::M161);
   client_state->type = FromSchedulerClientType(proto->type());
   client_state->current_max_daily_show = proto->current_max_daily_show();
 
   for (const auto& proto_impression : proto->impressions()) {
     Impression impression;
-    DCHECK(proto_impression.has_create_time());
+    CHECK(proto_impression.has_create_time(), base::NotFatalUntil::M161);
     impression.create_time = MillisecondsToTime(proto_impression.create_time());
     impression.feedback = FromUserFeedback(proto_impression.feedback());
     impression.impression = FromImpressionResult(proto_impression.impression());
@@ -437,9 +437,9 @@ void ClientStateFromProto(proto::ClientState* proto,
 
   if (proto->has_suppression_info()) {
     const auto& proto_suppression = proto->suppression_info();
-    DCHECK(proto_suppression.has_last_trigger_time());
-    DCHECK(proto_suppression.has_duration_ms());
-    DCHECK(proto_suppression.has_recover_goal());
+    CHECK(proto_suppression.has_last_trigger_time(), base::NotFatalUntil::M161);
+    CHECK(proto_suppression.has_duration_ms(), base::NotFatalUntil::M161);
+    CHECK(proto_suppression.has_recover_goal(), base::NotFatalUntil::M161);
 
     SuppressionInfo suppression_info(
         MillisecondsToTime(proto_suppression.last_trigger_time()),

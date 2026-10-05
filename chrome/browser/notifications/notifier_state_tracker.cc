@@ -111,7 +111,8 @@ bool NotifierStateTracker::IsNotifierEnabled(
 void NotifierStateTracker::SetNotifierEnabled(
     const NotifierId& notifier_id,
     bool enabled) {
-  DCHECK_NE(message_center::NotifierType::WEB_PAGE, notifier_id.type);
+  CHECK_NE(message_center::NotifierType::WEB_PAGE, notifier_id.type,
+           base::NotFatalUntil::M161);
 
   bool add_new_item = false;
   const char* pref_name = nullptr;
@@ -130,7 +131,7 @@ void NotifierStateTracker::SetNotifierEnabled(
     default:
       NOTREACHED();
   }
-  DCHECK(pref_name != nullptr);
+  CHECK(pref_name != nullptr, base::NotFatalUntil::M161);
 
   ScopedListPrefUpdate update(profile_->GetPrefs(), pref_name);
   base::ListValue& update_list = update.Get();
@@ -171,7 +172,8 @@ void NotifierStateTracker::OnExtensionUninstalled(
 
 void NotifierStateTracker::FirePermissionLevelChangedEvent(
     const NotifierId& notifier_id, bool enabled) {
-  DCHECK_EQ(message_center::NotifierType::APPLICATION, notifier_id.type);
+  CHECK_EQ(message_center::NotifierType::APPLICATION, notifier_id.type,
+           base::NotFatalUntil::M161);
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   if (!event_router) {

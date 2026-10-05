@@ -101,7 +101,7 @@ void OfflinePageShareHelper::OnPagePublished(const base::FilePath& file_path,
 void OfflinePageShareHelper::NotifyCompletion(
     ShareResult result,
     std::unique_ptr<OfflineItemShareInfo> share_info) {
-  DCHECK(result_cb_);
+  CHECK(result_cb_, base::NotFatalUntil::M161);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_cb_), result, content_id_,
                                 std::move(share_info)));

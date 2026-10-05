@@ -37,7 +37,7 @@ NotificationTriggerScheduler::Create() {
 
 // static
 void NotificationTriggerScheduler::TriggerNotifications() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // Skip if the browser process is already in shutdown path.
   if (!g_browser_process || g_browser_process->IsShuttingDown())
     return;

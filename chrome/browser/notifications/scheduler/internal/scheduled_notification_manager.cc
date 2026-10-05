@@ -32,7 +32,7 @@ namespace {
 // Comparator used to sort notification entries based on creation time.
 bool CreateTimeCompare(const NotificationEntry* lhs,
                        const NotificationEntry* rhs) {
-  DCHECK(lhs && rhs);
+  CHECK(lhs && rhs, base::NotFatalUntil::M161);
   return lhs->create_time < rhs->create_time;
 }
 
@@ -76,9 +76,9 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   void ScheduleNotification(
       std::unique_ptr<NotificationParams> notification_params,
       ScheduleCallback callback) override {
-    DCHECK(notification_params);
+    CHECK(notification_params, base::NotFatalUntil::M161);
     std::string guid = notification_params->guid;
-    DCHECK(!guid.empty());
+    CHECK(!guid.empty(), base::NotFatalUntil::M161);
     auto type = notification_params->type;
     stats::LogNotificationLifeCycleEvent(
         stats::NotificationLifeCycleEvent::kScheduleRequest, type);
@@ -144,7 +144,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   }
 
   void GetAllNotifications(Notifications* notifications) const override {
-    DCHECK(notifications);
+    CHECK(notifications, base::NotFatalUntil::M161);
     notifications->clear();
 
     for (auto it = notifications_.begin(); it != notifications_.end(); it++) {
@@ -163,7 +163,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   void GetNotifications(SchedulerClientType type,
                         std::vector<raw_ptr<const NotificationEntry>>*
                             notifications) const override {
-    DCHECK(notifications);
+    CHECK(notifications, base::NotFatalUntil::M161);
     notifications->clear();
     const auto it = notifications_.find(type);
     if (it == notifications_.end())
@@ -315,7 +315,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
     // Glue the icon data to entry.
     std::unique_ptr<NotificationEntry> entry =
         std::move(notifications_[client_type][guid]);
-    DCHECK(entry);
+    CHECK(entry, base::NotFatalUntil::M161);
     for (const auto& pair : entry->icons_uuid) {
       auto icon_bundle = IconBundle(std::move(loaded_icons_map[pair.second]));
       entry->notification_data.icons.emplace(pair.first,

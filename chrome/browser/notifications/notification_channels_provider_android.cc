@@ -79,7 +79,7 @@ NotificationChannel CreatePendingChannel(const std::string& origin_string,
 
 std::string GetOriginStringFromPattern(const ContentSettingsPattern& pattern) {
   url::Origin origin = url::Origin::Create(GURL(pattern.ToString()));
-  DCHECK(!origin.opaque());
+  CHECK(!origin.opaque(), base::NotFatalUntil::M161);
   return origin.Serialize();
 }
 
@@ -179,9 +179,10 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
   bool HasNext() const override { return index_ < channels_.size(); }
 
   std::unique_ptr<content_settings::Rule> Next() override {
-    DCHECK(HasNext());
+    CHECK(HasNext(), base::NotFatalUntil::M161);
     auto& channel = channels_[index_];
-    DCHECK_NE(channels_[index_].status, NotificationChannelStatus::UNAVAILABLE);
+    CHECK_NE(channels_[index_].status, NotificationChannelStatus::UNAVAILABLE,
+             base::NotFatalUntil::M161);
     content_settings::RuleMetaData metadata;
     metadata.set_last_modified(channel.timestamp);
     std::unique_ptr<content_settings::Rule> rule =
@@ -481,10 +482,12 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   }
 
   // These constraints are not supported for notifications on Android.
-  DCHECK_EQ(constraints.expiration(), base::Time());
-  DCHECK_EQ(constraints.session_model(),
-            content_settings::mojom::SessionModel::DURABLE);
-  DCHECK_EQ(constraints.track_last_visit_for_autoexpiration(), false);
+  CHECK_EQ(constraints.expiration(), base::Time(), base::NotFatalUntil::M161);
+  CHECK_EQ(constraints.session_model(),
+           content_settings::mojom::SessionModel::DURABLE,
+           base::NotFatalUntil::M161);
+  CHECK_EQ(constraints.track_last_visit_for_autoexpiration(), false,
+           base::NotFatalUntil::M161);
 
   ContentSetting setting = content_settings::ValueToContentSetting(value);
   if (setting != CONTENT_SETTING_DEFAULT && setting != CONTENT_SETTING_ALLOW &&
@@ -560,7 +563,7 @@ void NotificationChannelsProviderAndroid::UpdateChannelForWebsiteImpl(
   // If this is the last pending update for this origin, we no longer need to
   // keep it in `pending_channels_` and can move it to `cached_channels_`.
   auto iter = pending_channels_.find(pending_channel.origin);
-  DCHECK(iter != pending_channels_.end());
+  CHECK(iter != pending_channels_.end(), base::NotFatalUntil::M161);
   if (iter->second == pending_channel &&
       iter->second.timestamp == pending_channel.timestamp) {
     pending_channels_.erase(pending_channel.origin);
@@ -810,7 +813,7 @@ void NotificationChannelsProviderAndroid::ProcessPendingOperations() {
 }
 
 void NotificationChannelsProviderAndroid::OnCurrentOperationFinished() {
-  DCHECK(is_processing_pending_operations_);
+  CHECK(is_processing_pending_operations_, base::NotFatalUntil::M161);
   is_processing_pending_operations_ = false;
   ProcessPendingOperations();
 }

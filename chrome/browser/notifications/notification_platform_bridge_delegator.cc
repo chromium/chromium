@@ -117,7 +117,7 @@ void NotificationPlatformBridgeDelegator::Display(
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
   NotificationPlatformBridge* bridge = GetBridgeForType(notification_type);
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M161);
   bridge->Display(notification_type, profile_, notification,
                   std::move(metadata));
 }
@@ -126,7 +126,7 @@ void NotificationPlatformBridgeDelegator::Close(
     NotificationHandler::Type notification_type,
     const std::string& notification_id) {
   NotificationPlatformBridge* bridge = GetBridgeForType(notification_type);
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M161);
   bridge->Close(profile_, notification_id);
 }
 
@@ -137,7 +137,7 @@ void NotificationPlatformBridgeDelegator::GetDisplayed(
   // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =
       system_bridge_ ? system_bridge_.get() : message_center_bridge_.get();
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M161);
   bridge->GetDisplayed(profile_, std::move(callback));
 }
 
@@ -149,7 +149,7 @@ void NotificationPlatformBridgeDelegator::GetDisplayedForOrigin(
   // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =
       system_bridge_ ? system_bridge_.get() : message_center_bridge_.get();
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M161);
   bridge->GetDisplayedForOrigin(profile_, origin, std::move(callback));
 }
 
@@ -174,7 +174,7 @@ void NotificationPlatformBridgeDelegator::
   if (!success) {
     // Fall back to the message center if initialization failed. Initialization
     // must always succeed on platforms where the message center is unavailable.
-    DCHECK(message_center_bridge_);
+    CHECK(message_center_bridge_, base::NotFatalUntil::M161);
     system_bridge_ = nullptr;
   }
 

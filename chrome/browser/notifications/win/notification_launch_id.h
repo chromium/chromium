@@ -41,62 +41,62 @@ class NotificationLaunchId {
   std::string Serialize() const;
 
   void set_button_index(int index) {
-    DCHECK(!is_for_context_menu_);
+    CHECK(!is_for_context_menu_, base::NotFatalUntil::M161);
     button_index_ = index;
   }
 
   void set_is_for_context_menu() {
-    DCHECK_EQ(-1, button_index_);
+    CHECK_EQ(-1, button_index_, base::NotFatalUntil::M161);
     is_for_context_menu_ = true;
   }
 
   void set_is_for_dismiss_button() {
-    DCHECK_EQ(-1, button_index_);
+    CHECK_EQ(-1, button_index_, base::NotFatalUntil::M161);
     is_for_dismiss_button_ = true;
   }
 
   NotificationHandler::Type notification_type() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return notification_type_;
   }
 
   const std::string& notification_id() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return notification_id_;
   }
 
   const std::string& profile_id() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return profile_id_;
   }
 
   const std::wstring& app_user_model_id() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return app_user_model_id_;
   }
 
   bool incognito() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return incognito_;
   }
 
   const GURL& origin_url() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return origin_url_;
   }
 
   int button_index() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return button_index_;
   }
 
   bool is_for_context_menu() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return is_for_context_menu_;
   }
 
   bool is_for_dismiss_button() const {
-    DCHECK(is_valid());
+    CHECK(is_valid(), base::NotFatalUntil::M161);
     return is_for_dismiss_button_;
   }
 

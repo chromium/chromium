@@ -111,10 +111,11 @@ bool NotificationUIManagerImpl::Update(
 
     // The ID should uniquely identify the notification, but as a sanity check
     // make sure we got the right origin URL and profile.
-    DCHECK_EQ(old_notification->notification().origin_url(),
-              notification.origin_url());
-    DCHECK_EQ(old_notification->profile_id(),
-              ProfileNotification::GetProfileID(profile));
+    CHECK_EQ(old_notification->notification().origin_url(),
+             notification.origin_url(), base::NotFatalUntil::M161);
+    CHECK_EQ(old_notification->profile_id(),
+             ProfileNotification::GetProfileID(profile),
+             base::NotFatalUntil::M161);
 
     // Changing the type from non-progress to progress does not count towards
     // the immediate update allowed in the message center.
@@ -278,7 +279,8 @@ void NotificationUIManagerImpl::AddProfileNotification(
       profile_notification->notification();
   std::string id = notification.id();
   // Notification ids should be unique.
-  DCHECK(profile_notifications_.find(id) == profile_notifications_.end());
+  CHECK(profile_notifications_.find(id) == profile_notifications_.end(),
+        base::NotFatalUntil::M161);
   profile_notifications_[id] = std::move(profile_notification);
 }
 

@@ -248,7 +248,7 @@ void ImpressionHistoryTrackerImpl::HandleIgnoredImpressions(
 
 void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
     ClientState* client_state) {
-  DCHECK(client_state);
+  CHECK(client_state, base::NotFatalUntil::M161);
   HandleIgnoredImpressions(client_state);
   base::circular_deque<Impression*> dismisses;
   for (auto it = client_state->impressions.begin();
@@ -291,7 +291,7 @@ void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
 void ImpressionHistoryTrackerImpl::PruneImpressionByCreateTime(
     base::circular_deque<Impression*>* impressions,
     const base::Time& start_time) {
-  DCHECK(impressions);
+  CHECK(impressions, base::NotFatalUntil::M161);
   while (!impressions->empty()) {
     if (impressions->front()->create_time > start_time)
       break;
@@ -304,7 +304,7 @@ void ImpressionHistoryTrackerImpl::PruneImpressionByCreateTime(
 
 void ImpressionHistoryTrackerImpl::GenerateImpressionResult(
     Impression* impression) {
-  DCHECK(impression);
+  CHECK(impression, base::NotFatalUntil::M161);
   auto it = impression->impression_mapping.find(impression->feedback);
   if (it != impression->impression_mapping.end()) {
     // Use client defined impression mapping.
@@ -331,8 +331,8 @@ void ImpressionHistoryTrackerImpl::GenerateImpressionResult(
 
 void ImpressionHistoryTrackerImpl::UpdateThrottling(ClientState* client_state,
                                                     Impression* impression) {
-  DCHECK(client_state);
-  DCHECK(impression);
+  CHECK(client_state, base::NotFatalUntil::M161);
+  CHECK(impression, base::NotFatalUntil::M161);
 
   // Affect the notification throttling.
   switch (impression->impression) {
@@ -374,8 +374,9 @@ void ImpressionHistoryTrackerImpl::OnCustomNegativeActionCountQueried(
   // Suppress the notification if the user performed consecutive operations
   // that generates negative impressions.
   for (auto* impression : *impressions) {
-    DCHECK(impression->feedback == UserFeedback::kDismiss ||
-           impression->feedback == UserFeedback::kIgnore);
+    CHECK(impression->feedback == UserFeedback::kDismiss ||
+              impression->feedback == UserFeedback::kIgnore,
+          base::NotFatalUntil::M161);
     if (impression->integrated)
       continue;
 
@@ -388,11 +389,12 @@ void ImpressionHistoryTrackerImpl::OnCustomNegativeActionCountQueried(
 void ImpressionHistoryTrackerImpl::ApplyPositiveImpression(
     ClientState* client_state,
     Impression* impression) {
-  DCHECK(impression);
+  CHECK(impression, base::NotFatalUntil::M161);
   if (impression->integrated)
     return;
 
-  DCHECK_EQ(impression->impression, ImpressionResult::kPositive);
+  CHECK_EQ(impression->impression, ImpressionResult::kPositive,
+           base::NotFatalUntil::M161);
   SetNeedsUpdate(client_state->type, true);
   impression->integrated = true;
 
@@ -416,7 +418,8 @@ void ImpressionHistoryTrackerImpl::ApplyNegativeImpression(
   if (impression->integrated)
     return;
 
-  DCHECK_EQ(impression->impression, ImpressionResult::kNegative);
+  CHECK_EQ(impression->impression, ImpressionResult::kNegative,
+           base::NotFatalUntil::M161);
   SetNeedsUpdate(client_state->type, true);
   impression->integrated = true;
 
@@ -459,7 +462,7 @@ void ImpressionHistoryTrackerImpl::CheckSuppressionExpiration(
     return;
 
   // Recover from suppression and increase |current_max_daily_show|.
-  DCHECK_EQ(client_state->current_max_daily_show, 0);
+  CHECK_EQ(client_state->current_max_daily_show, 0, base::NotFatalUntil::M161);
   client_state->current_max_daily_show = suppression.recover_goal;
 
   // Clear suppression if fully recovered.

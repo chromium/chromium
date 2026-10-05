@@ -14,12 +14,12 @@ using content::BrowserThread;
 
 // static
 static void JNI_NotificationTriggerScheduler_TriggerNotifications(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   NotificationTriggerScheduler::TriggerNotifications();
 }
 
 NotificationTriggerSchedulerAndroid::NotificationTriggerSchedulerAndroid() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   JNIEnv* env = base::android::AttachCurrentThread();
 
   java_notification_trigger_scheduler_.Reset(

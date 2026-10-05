@@ -75,12 +75,12 @@ class ForwardingNotificationDelegate
 ChromeAshMessageCenterClient::ChromeAshMessageCenterClient(
     NotificationPlatformBridgeDelegate* delegate)
     : delegate_(delegate) {
-  DCHECK(!g_chrome_ash_message_center_client);
+  CHECK(!g_chrome_ash_message_center_client, base::NotFatalUntil::M161);
   g_chrome_ash_message_center_client = this;
 }
 
 ChromeAshMessageCenterClient::~ChromeAshMessageCenterClient() {
-  DCHECK_EQ(this, g_chrome_ash_message_center_client);
+  CHECK_EQ(this, g_chrome_ash_message_center_client, base::NotFatalUntil::M161);
   g_chrome_ash_message_center_client = nullptr;
 }
 

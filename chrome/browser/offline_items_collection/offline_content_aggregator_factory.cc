@@ -34,7 +34,7 @@ OfflineContentAggregatorFactory::~OfflineContentAggregatorFactory() = default;
 std::unique_ptr<KeyedService>
 OfflineContentAggregatorFactory::BuildServiceInstanceFor(
     SimpleFactoryKey* key) const {
-  DCHECK(!key->IsOffTheRecord());
+  CHECK(!key->IsOffTheRecord(), base::NotFatalUntil::M161);
   return std::make_unique<offline_items_collection::OfflineContentAggregator>();
 }
 

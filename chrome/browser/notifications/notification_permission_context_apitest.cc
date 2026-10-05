@@ -36,11 +36,11 @@ class ExtensionPermissionUpdater : public ExtensionRegistryObserver {
   // ExtensionRegistryObserver overrides:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override {
-    DCHECK(extension);
+    CHECK(extension, base::NotFatalUntil::M161);
 
     NotifierStateTracker* notifier_state_tracker =
         NotifierStateTrackerFactory::GetForProfile(profile_);
-    DCHECK(notifier_state_tracker);
+    CHECK(notifier_state_tracker, base::NotFatalUntil::M161);
 
     notifier_state_tracker->SetNotifierEnabled(
         message_center::NotifierId(message_center::NotifierType::APPLICATION,

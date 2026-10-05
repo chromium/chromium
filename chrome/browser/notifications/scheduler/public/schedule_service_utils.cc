@@ -20,9 +20,9 @@ bool ToLocalHour(int hour,
                  const base::Time& today,
                  int day_delta,
                  base::Time* out) {
-  DCHECK_GE(hour, 0);
-  DCHECK_LE(hour, 23);
-  DCHECK(out);
+  CHECK_GE(hour, 0, base::NotFatalUntil::M161);
+  CHECK_LE(hour, 23, base::NotFatalUntil::M161);
+  CHECK(out, base::NotFatalUntil::M161);
 
   // Gets the local time at |hour| in yesterday.
   base::Time another_day = today + base::Days(day_delta);

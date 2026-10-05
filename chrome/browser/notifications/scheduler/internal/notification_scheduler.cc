@@ -172,7 +172,7 @@ class DisplayHelper {
         std::move(updated_notification_data), std::move(system_data));
 
     auto* client = context_->client_registrar()->GetClient(entry->type);
-    DCHECK(client);
+    CHECK(client, base::NotFatalUntil::M161);
     client->OnShowNotification(std::move(updated_notification_data));
 
     MaybeFinish(entry->guid, true /*shown*/);
@@ -281,12 +281,12 @@ class NotificationSchedulerImpl : public NotificationScheduler,
     context_->notification_manager()->GetNotifications(type, &notifications);
     std::set<std::string> guids;
     for (const notifications::NotificationEntry* notification : notifications) {
-      DCHECK(notification);
+      CHECK(notification, base::NotFatalUntil::M161);
       guids.emplace(notification->guid);
     }
 
     auto* client = context_->client_registrar()->GetClient(type);
-    DCHECK(client);
+    CHECK(client, base::NotFatalUntil::M161);
     client->OnSchedulerInitialized(success, std::move(guids));
   }
 

@@ -17,7 +17,7 @@
 
 MutedNotificationHandler::MutedNotificationHandler(Delegate* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M161);
 }
 
 MutedNotificationHandler::~MutedNotificationHandler() = default;

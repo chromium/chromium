@@ -15,7 +15,8 @@ std::string NotificationPlatformBridge::GetProfileId(Profile* profile) {
   const base::FilePath basename = profile->GetBaseName();
   const std::string profile_id = basename.AsUTF8Unsafe();
   // The conversion must be reversible.
-  DCHECK_EQ(basename, GetProfileBaseNameFromProfileId(profile_id));
+  CHECK_EQ(basename, GetProfileBaseNameFromProfileId(profile_id),
+           base::NotFatalUntil::M161);
   return profile_id;
 }
 

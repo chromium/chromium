@@ -255,7 +255,7 @@ void DownloadAsFile(content::WebContents* web_contents, const GURL& url) {
       web_contents->GetController().GetLastCommittedEntry();
   // |entry| should not be null since otherwise an empty URL is returned from
   // calling GetLastCommittedURL and we should bail out earlier.
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M161);
   content::Referrer referrer =
       content::Referrer::SanitizeForRequest(url, entry->GetReferrer());
   dl_params->set_referrer(referrer.url);
@@ -272,7 +272,7 @@ void InitializeBackendOnProfileCreated(Profile* profile) {
   profile = profile->GetOriginalProfile();
   OfflinePageModel* offline_page_model =
       OfflinePageModelFactory::GetForBrowserContext(profile);
-  DCHECK(offline_page_model);
+  CHECK(offline_page_model, base::NotFatalUntil::M161);
 
   DownloadUIAdapter* adapter =
       DownloadUIAdapter::FromOfflinePageModel(offline_page_model);
@@ -280,10 +280,10 @@ void InitializeBackendOnProfileCreated(Profile* profile) {
   if (!adapter) {
     RequestCoordinator* request_coordinator =
         RequestCoordinatorFactory::GetForBrowserContext(profile);
-    DCHECK(request_coordinator);
+    CHECK(request_coordinator, base::NotFatalUntil::M161);
     offline_items_collection::OfflineContentAggregator* aggregator =
         OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
-    DCHECK(aggregator);
+    CHECK(aggregator, base::NotFatalUntil::M161);
     adapter = new DownloadUIAdapter(
         aggregator, offline_page_model, request_coordinator,
         std::make_unique<VisualsDecoderImpl>(

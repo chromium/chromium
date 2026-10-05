@@ -212,8 +212,8 @@ OfflinePageEvaluationBridge::OfflinePageEvaluationBridge(
       browser_context_(browser_context),
       offline_page_model_(offline_page_model),
       request_coordinator_(request_coordinator) {
-  DCHECK(offline_page_model_);
-  DCHECK(request_coordinator_);
+  CHECK(offline_page_model_, base::NotFatalUntil::M161);
+  CHECK(request_coordinator_, base::NotFatalUntil::M161);
   NotifyIfDoneLoading();
   offline_page_model_->AddObserver(this);
   request_coordinator_->AddObserver(this);
@@ -232,7 +232,7 @@ void OfflinePageEvaluationBridge::Destroy() {
 // Implement OfflinePageModel::Observer
 void OfflinePageEvaluationBridge::OfflinePageModelLoaded(
     OfflinePageModel* model) {
-  DCHECK_EQ(offline_page_model_, model);
+  CHECK_EQ(offline_page_model_, model, base::NotFatalUntil::M161);
   NotifyIfDoneLoading();
 }
 
@@ -293,8 +293,8 @@ void OfflinePageEvaluationBridge::GetAllPages(
     JNIEnv* env,
     const JavaRef<jobject>& j_result_obj,
     const JavaRef<jobject>& j_callback_obj) {
-  DCHECK(j_result_obj);
-  DCHECK(j_callback_obj);
+  CHECK(j_result_obj, base::NotFatalUntil::M161);
+  CHECK(j_callback_obj, base::NotFatalUntil::M161);
 
   ScopedJavaGlobalRef<jobject> j_result_ref(j_result_obj);
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
@@ -307,7 +307,7 @@ bool OfflinePageEvaluationBridge::PushRequestProcessing(
     JNIEnv* env,
     const JavaRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
-  DCHECK(request_coordinator_);
+  CHECK(request_coordinator_, base::NotFatalUntil::M161);
   base::android::RunBooleanCallbackAndroid(j_callback_obj, false);
 
   return request_coordinator_->StartImmediateProcessing(base::BindRepeating(

@@ -26,9 +26,9 @@ namespace {
 
 notifications::UserActionHandler* GetUserActionHandler() {
   ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
-  DCHECK(profile_key);
+  CHECK(profile_key, base::NotFatalUntil::M161);
   auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   return service->GetUserActionHandler();
 }
 
@@ -68,10 +68,10 @@ void DisplayAgentAndroid::ShowNotification(
     std::unique_ptr<notifications::NotificationData> notification_data,
     std::unique_ptr<SystemData> system_data) {
   // TODO(xingliu): Refactor and hook to NotificationDisplayService.
-  DCHECK(notification_data);
+  CHECK(notification_data, base::NotFatalUntil::M161);
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  DCHECK(!notification_data->title.empty());
-  DCHECK(!notification_data->message.empty());
+  CHECK(!notification_data->title.empty(), base::NotFatalUntil::M161);
+  CHECK(!notification_data->message.empty(), base::NotFatalUntil::M161);
 
   // Wrap button info. Retrieving class name in run time must be guarded with
   // test.
