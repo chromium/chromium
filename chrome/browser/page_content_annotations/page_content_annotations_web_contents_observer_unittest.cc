@@ -40,6 +40,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -205,14 +206,15 @@ class PageContentAnnotationsWebContentsObserverTest
     history_service()->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
-    PageContentAnnotationsWebContentsObserver::CreateForWebContents(
-        web_contents(),
+    observer_ = std::make_unique<PageContentAnnotationsWebContentsObserver>(
+        tab_, web_contents(),
         *PageContentAnnotationsServiceFactory::GetForProfile(profile()));
   }
 
   void TearDown() override {
     task_environment()->RunUntilIdle();
 
+    observer_.reset();
     DeleteContents();
 
     content::RenderViewHostTestHarness::TearDown();
@@ -241,8 +243,7 @@ class PageContentAnnotationsWebContentsObserverTest
   }
 
   PageContentAnnotationsWebContentsObserver* helper() {
-    return PageContentAnnotationsWebContentsObserver::FromWebContents(
-        web_contents());
+    return observer_.get();
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -252,6 +253,8 @@ class PageContentAnnotationsWebContentsObserverTest
   base::HistogramTester histogram_tester_;
   optimization_guide::TestOptimizationGuideModelProvider
       optimization_guide_model_provider_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<PageContentAnnotationsWebContentsObserver> observer_;
 };
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,

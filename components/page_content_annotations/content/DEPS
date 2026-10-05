@@ -22,6 +22,7 @@ include_rules = [
     "+components/pdf/browser",
     "+components/pdf/common",
     "+components/services/paint_preview_compositor",
+    "+components/tabs/public",
     "+components/viz/common/frame_sinks",
     "+components/viz/common/surfaces",
     "+content/public/browser",
@@ -39,6 +40,7 @@ include_rules = [
     "+third_party/blink/public/mojom/content_extraction",
     "+third_party/blink/public/mojom/opengraph",
     "+third_party/skia",
+    "+ui/base/unowned_user_data",
     "+ui/gfx",
 ]
 

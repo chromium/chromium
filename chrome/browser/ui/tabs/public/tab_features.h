@@ -273,6 +273,10 @@ namespace page_actions {
 class PageActionController;
 }  // namespace page_actions
 
+namespace page_content_annotations {
+class PageContentAnnotationsWebContentsObserver;
+}  // namespace page_content_annotations
+
 namespace payments {
 class WebPaymentsObserver;
 }  // namespace payments
@@ -1013,6 +1017,10 @@ class TabFeatures {
 
   std::unique_ptr<blocked_content::PopupOpenerTabHelper>
       popup_opener_tab_helper_;
+
+  std::unique_ptr<
+      page_content_annotations::PageContentAnnotationsWebContentsObserver>
+      page_content_annotations_web_contents_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

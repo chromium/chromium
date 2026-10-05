@@ -228,6 +228,7 @@ source_set("tabs_impl") {
     "//components/lens",
     "//components/metrics:content",
     "//components/metrics_services_manager",
+    "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
     "//components/payments/core",
     "//components/safe_browsing:buildflags",

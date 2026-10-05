@@ -53,6 +53,7 @@
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/payments/web_payments_observer.h"
@@ -221,6 +222,7 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -1153,6 +1155,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab, tab, tab.GetContents(),
               base::DefaultTickClock::GetInstance(),
               HostContentSettingsMapFactory::GetForProfile(profile));
+
+  if (auto* page_content_annotations_service =
+          PageContentAnnotationsServiceFactory::GetForProfile(profile)) {
+    page_content_annotations_web_contents_observer_ =
+        GetUserDataFactory()
+            .CreateInstance<page_content_annotations::
+                                PageContentAnnotationsWebContentsObserver>(
+                tab, tab, tab.GetContents(), *page_content_annotations_service);
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1645,6 +1656,16 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
           .CreateInstance<blocked_content::PopupOpenerTabHelper>(
               *tab, *tab, new_contents, base::DefaultTickClock::GetInstance(),
               HostContentSettingsMapFactory::GetForProfile(profile));
+
+  page_content_annotations_web_contents_observer_.reset();
+  if (auto* page_content_annotations_service =
+          PageContentAnnotationsServiceFactory::GetForProfile(profile)) {
+    page_content_annotations_web_contents_observer_ =
+        GetUserDataFactory()
+            .CreateInstance<page_content_annotations::
+                                PageContentAnnotationsWebContentsObserver>(
+                *tab, *tab, new_contents, *page_content_annotations_service);
+  }
 }
 
 customize_chrome::SidePanelController*

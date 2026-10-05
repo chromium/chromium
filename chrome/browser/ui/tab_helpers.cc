@@ -73,7 +73,6 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
-#include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/page_info/core/features.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -271,9 +270,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       page_content_annotations_service =
           PageContentAnnotationsServiceFactory::GetForProfile(profile);
   if (page_content_annotations_service) {
-    page_content_annotations::PageContentAnnotationsWebContentsObserver::
-        CreateForWebContents(web_contents, *page_content_annotations_service);
-
     // TODO(b/478883979): Consider decoupling this from
     // PageContentAnnotationsService.
     auto* page_content_extraction_service = page_content_annotations::

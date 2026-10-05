@@ -109,6 +109,10 @@ namespace metrics {
 class MetricsServicesWebContentsObserver;
 }  // namespace metrics
 
+namespace page_content_annotations {
+class PageContentAnnotationsWebContentsObserver;
+}  // namespace page_content_annotations
+
 namespace payments {
 class WebPaymentsObserver;
 }  // namespace payments
@@ -320,6 +324,9 @@ class TabFeatures {
       metrics_services_web_contents_observer_;
   std::unique_ptr<blocked_content::PopupOpenerTabHelper>
       popup_opener_tab_helper_;
+  std::unique_ptr<
+      page_content_annotations::PageContentAnnotationsWebContentsObserver>
+      page_content_annotations_web_contents_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

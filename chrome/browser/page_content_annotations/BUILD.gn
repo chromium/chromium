@@ -289,12 +289,14 @@ source_set("unit_tests") {
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
     "//components/search_engines",
+    "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common",
+    "//ui/base/unowned_user_data",
   ]
 }
 

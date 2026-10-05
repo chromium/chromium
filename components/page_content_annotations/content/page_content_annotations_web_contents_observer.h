@@ -14,7 +14,11 @@
 #include "components/continuous_search/common/search_result_extractor_client_status.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace page_content_annotations {
 
@@ -24,10 +28,15 @@ class PageContentAnnotationsService;
 // PageContentAnnotationsService to be annotated.
 class PageContentAnnotationsWebContentsObserver
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<
-          PageContentAnnotationsWebContentsObserver>,
       public PageContentAnnotationsService::PageContentAnnotationsObserver {
  public:
+  DECLARE_USER_DATA(PageContentAnnotationsWebContentsObserver);
+
+  PageContentAnnotationsWebContentsObserver(
+      tabs::TabInterface& tab,
+      content::WebContents* web_contents,
+      PageContentAnnotationsService& page_content_annotations_service);
+
   ~PageContentAnnotationsWebContentsObserver() override;
 
   PageContentAnnotationsWebContentsObserver(
@@ -35,19 +44,18 @@ class PageContentAnnotationsWebContentsObserver
   PageContentAnnotationsWebContentsObserver& operator=(
       const PageContentAnnotationsWebContentsObserver&) = delete;
 
+  static PageContentAnnotationsWebContentsObserver* From(
+      tabs::TabInterface* tab);
+  static PageContentAnnotationsWebContentsObserver* FromWebContents(
+      content::WebContents* web_contents);
+
   // Returns the content visibility score for this web contents. Will be nullopt
   // if not calculated yet.
   std::optional<float> content_visibility_score() {
     return content_visibility_score_;
   }
 
-  PageContentAnnotationsWebContentsObserver(
-      content::WebContents* web_contents,
-      PageContentAnnotationsService& page_content_annotations_service);
-
  private:
-  friend class content::WebContentsUserData<
-      PageContentAnnotationsWebContentsObserver>;
   friend class PageContentAnnotationsWebContentsObserverTest;
 
   // content::WebContentsObserver:
@@ -77,10 +85,11 @@ class PageContentAnnotationsWebContentsObserver
 
   std::optional<float> content_visibility_score_;
 
+  ui::ScopedUnownedUserData<PageContentAnnotationsWebContentsObserver>
+      scoped_unowned_user_data_;
+
   base::WeakPtrFactory<PageContentAnnotationsWebContentsObserver>
       weak_ptr_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace page_content_annotations

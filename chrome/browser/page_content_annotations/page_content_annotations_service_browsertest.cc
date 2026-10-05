@@ -694,13 +694,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
             observer.last_page_content_annotations_result()->GetType());
   EXPECT_NE(-1.0, observer.last_page_content_annotations_result()
                       ->GetContentVisibilityScore());
-  EXPECT_TRUE(
-      PageContentAnnotationsWebContentsObserver::GetOrCreateForWebContents(
-          browser()->GetTabStripModel()->GetActiveWebContents(),
-          *PageContentAnnotationsServiceFactory::GetForProfile(
-              browser()->GetProfile()))
-          ->content_visibility_score()
-          .has_value());
+  EXPECT_TRUE(PageContentAnnotationsWebContentsObserver::FromWebContents(
+                  browser()->GetTabStripModel()->GetActiveWebContents())
+                  ->content_visibility_score()
+                  .has_value());
 }
 
 class PageContentAnnotationsServiceRemoteMetadataBrowserTest

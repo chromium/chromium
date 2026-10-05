@@ -112,6 +112,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/payments/core/features.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
@@ -516,6 +517,15 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
           .CreateInstance<blocked_content::PopupOpenerTabHelper>(
               *tab, *tab, web_contents, base::DefaultTickClock::GetInstance(),
               HostContentSettingsMapFactory::GetForProfile(profile));
+
+  if (auto* page_content_annotations_service =
+          PageContentAnnotationsServiceFactory::GetForProfile(profile)) {
+    page_content_annotations_web_contents_observer_ =
+        GetUserDataFactory()
+            .CreateInstance<page_content_annotations::
+                                PageContentAnnotationsWebContentsObserver>(
+                *tab, *tab, web_contents, *page_content_annotations_service);
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

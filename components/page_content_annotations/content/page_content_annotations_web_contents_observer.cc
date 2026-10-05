@@ -12,6 +12,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,14 +27,16 @@ base::Time GetTimestampFromWebContents(content::WebContents* web_contents) {
 
 }  // namespace
 
+DEFINE_USER_DATA(PageContentAnnotationsWebContentsObserver);
+
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
+        tabs::TabInterface& tab,
         content::WebContents* web_contents,
         PageContentAnnotationsService& page_content_annotations_service)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
-          *web_contents),
-      page_content_annotations_service_(page_content_annotations_service) {
+      page_content_annotations_service_(page_content_annotations_service),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   page_content_annotations_service_->AddObserver(
       AnnotationType::kContentVisibility, this);
 }
@@ -42,6 +45,21 @@ PageContentAnnotationsWebContentsObserver::
     ~PageContentAnnotationsWebContentsObserver() {
   page_content_annotations_service_->RemoveObserver(
       AnnotationType::kContentVisibility, this);
+}
+
+// static
+PageContentAnnotationsWebContentsObserver*
+PageContentAnnotationsWebContentsObserver::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+PageContentAnnotationsWebContentsObserver*
+PageContentAnnotationsWebContentsObserver::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
 }
 
 void PageContentAnnotationsWebContentsObserver::
@@ -94,7 +112,5 @@ void PageContentAnnotationsWebContentsObserver::OnPageContentAnnotated(
 
   content_visibility_score_ = result.GetContentVisibilityScore();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver);
 
 }  // namespace page_content_annotations
