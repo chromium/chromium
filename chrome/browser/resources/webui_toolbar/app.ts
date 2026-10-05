@@ -27,7 +27,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
-import {HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
+import {getHelpBubbleAnchor, HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
@@ -217,6 +217,9 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
     id: 'kToolbarPerformanceInterventionButtonElementId',
   },
   {selector: '#media', id: 'kToolbarMediaButtonElementId'},
+  {selector: '#glic-button', id: 'kGlicButtonElementId'},
+  {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
+  {selector: '#app-menu', id: 'kToolbarAppMenuButtonElementId'},
 ];
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
@@ -687,7 +690,7 @@ export class ToolbarAppElement extends AppElementBase {
       const el = this.shadowRoot.querySelector<HTMLElement>(selector);
       if (el) {
         const tracker = (el as {highlightTracker?: unknown}).highlightTracker;
-        this.registerHelpBubble(id, el, {
+        this.registerHelpBubble(id, getHelpBubbleAnchor(el), {
           onHighlightChanged: (highlighted: boolean) => {
             el.classList.toggle('anchor-highlight', highlighted);
             if (tracker instanceof HighlightTracker) {

@@ -69,6 +69,14 @@ export function setHasHelpBubble(el: Element, value: boolean) {
 }
 
 /**
+ * Returns the element help bubbles should be anchored to for `el`: the inner
+ * toolbar-chip-button if present, or `el` otherwise.
+ */
+export function getHelpBubbleAnchor(el: HTMLElement): HTMLElement {
+  return el.shadowRoot?.querySelector<HTMLElement>('toolbar-chip-button') ?? el;
+}
+
+/**
  * Tracks whether a bubble is anchored to an element, as indicated by the
  * TrackedElementManager highlighting the element, in order to avoid reopening
  * a bubble when the pointerdown that dismissed it (due to focus loss) turns

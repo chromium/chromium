@@ -9,7 +9,7 @@ import '/shared/icon_from_table.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {HelpBubbleAnchorMixin, HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
+import {HelpBubbleAnchorMixin, HighlightTracker} from '/shared/toolbar_button.js';
 import type {AvatarControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {AvatarToolbarButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -51,19 +51,6 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.classList.add('initial-load');
-    this.registerHelpBubble('kToolbarAvatarButtonElementId', this.$.button, {
-      onHighlightChanged: (highlighted: boolean) => {
-        this.classList.toggle('anchor-highlight', highlighted);
-        this.highlightTracker.onHighlightChanged(highlighted);
-      },
-      onHelpBubbleShown: () => setHasHelpBubble(this, true),
-      onHelpBubbleHidden: () => setHasHelpBubble(this, false),
-    });
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.unregisterHelpBubble('kToolbarAvatarButtonElementId');
   }
 
   override updated(changedProperties: PropertyValues<this>) {

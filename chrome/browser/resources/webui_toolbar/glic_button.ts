@@ -8,7 +8,7 @@ import './icons.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, setHasHelpBubble} from '/shared/toolbar_button.js';
+import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
 import type {GlicButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
@@ -56,22 +56,6 @@ export class GlicButtonElement extends GlicButtonElementBase {
   accessor label: string = loadTimeData.getString('glicButtonLabel');
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.registerHelpBubble('kGlicButtonElementId', this.$.button, {
-      onHighlightChanged: (highlighted: boolean) => {
-        this.classList.toggle('anchor-highlight', highlighted);
-      },
-      onHelpBubbleShown: () => setHasHelpBubble(this, true),
-      onHelpBubbleHidden: () => setHasHelpBubble(this, false),
-    });
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.unregisterHelpBubble('kGlicButtonElementId');
-  }
 
   override focus() {
     this.$.button.focus();

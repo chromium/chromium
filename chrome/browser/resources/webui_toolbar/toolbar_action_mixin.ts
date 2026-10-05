@@ -5,7 +5,7 @@
 import {assertNotReached} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HelpBubbleAnchor} from '/shared/toolbar_button.js';
-import {HelpBubbleAnchorMixin, HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
+import {getHelpBubbleAnchor, HelpBubbleAnchorMixin, HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_interface.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -136,12 +136,7 @@ export const ToolbarActionMixin =
             return;
           }
 
-          // Anchor help bubbles to the inner toolbar-chip-button if present, or
-          // this element otherwise.
-          const anchor = this.shadowRoot?.querySelector(
-                             'toolbar-chip-button') as HTMLElement ??
-              this;
-          this.registerHelpBubble(newId, anchor, {
+          this.registerHelpBubble(newId, getHelpBubbleAnchor(this), {
             secondaryId: this.getSecondaryElementId(),
             onHighlightChanged: (highlighted: boolean) => {
               this.highlightTracker.onHighlightChanged(highlighted);

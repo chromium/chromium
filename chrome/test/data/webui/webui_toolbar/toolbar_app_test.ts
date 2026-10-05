@@ -431,7 +431,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     // Verify it is not initialized yet (since it's waiting for Mojo update)
-    assertEquals(11, startTrackingCalls.length);
+    assertEquals(10, startTrackingCalls.length);
     assertEquals(
         1, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
 
@@ -439,7 +439,7 @@ suite('ToolbarAppTest', () => {
     browserProxy.fireToolbarStateListener([], createMockToolbarState());
     await microtasksFinished();
 
-    assertEquals(20, startTrackingCalls.length);
+    assertEquals(19, startTrackingCalls.length);
     assertEquals(
         2, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
   });
