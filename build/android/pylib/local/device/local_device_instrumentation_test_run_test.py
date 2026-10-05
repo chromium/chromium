@@ -210,6 +210,42 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         ]
         self.assertListEqual(actual_retry, expected_retry)
 
+    def test_ResetLeftoverCtsMockIme_otherImeIsUntouched(self):
+        device = mock.MagicMock()
+        device.RunShellCommand.return_value = (
+            'com.google.android.inputmethod.latin/'
+            'com.android.inputmethod.latin.LatinIME'
+        )
+        self._obj._ResetLeftoverCtsMockIme(device)
+        device.RunShellCommand.assert_called_once_with(
+            ['settings', 'get', 'secure', 'default_input_method'],
+            single_line=True,
+            check_return=True,
+        )
+        device.Uninstall.assert_not_called()
+
+    def test_ResetLeftoverCtsMockIme_mockImeIsReset(self):
+        device = mock.MagicMock()
+        device.RunShellCommand.side_effect = [
+            'com.android.cts.mockime/.MockIme',
+            [],
+        ]
+        self._obj._ResetLeftoverCtsMockIme(device)
+        device.RunShellCommand.assert_called_with(
+            ['ime', 'reset'], check_return=True
+        )
+        # MockIme must stay installed: CTS suites install it themselves.
+        device.Uninstall.assert_not_called()
+
+    def test_ResetLeftoverCtsMockIme_failureIsSwallowed(self):
+        device = mock.MagicMock()
+        device_errors = local_device_instrumentation_test_run.device_errors
+        device.RunShellCommand.side_effect = device_errors.CommandFailedError(
+            'boom'
+        )
+        # Must not raise.
+        self._obj._ResetLeftoverCtsMockIme(device)
+
     @mock.patch.object(
         local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun,
         '_ArchiveLogcat',

@@ -124,6 +124,9 @@ _EXTRA_PACKAGE_UNDER_TEST = (
 
 _EXTRA_WEBVIEW_PROCESS_MODE = 'AwJUnit4ClassRunner.ProcessMode'
 
+# IME id prefix of the CTS MockIme (CtsMockInputMethod.apk).
+_CTS_MOCK_IME_ID_PREFIX = 'com.android.cts.mockime/'
+
 # LINT.IfChange
 _EXTRA_WEBVIEW_REBASELINE_MODE = (
     'org.chromium.android_webview.test.RebaselineMode'
@@ -762,6 +765,7 @@ class LocalDeviceInstrumentationTestRun(
             @measures.timed_func('device_setup', 'setup_soft_keyboard')
             @trace_event.traced
             def setup_soft_keyboard(dev):
+                self._ResetLeftoverCtsMockIme(dev)
                 flags = self._test_instance.flags
                 # Treat as desktop if the flag is present.
                 is_desktop = dev.is_desktop or any(
@@ -918,6 +922,9 @@ class LocalDeviceInstrumentationTestRun(
 
             self._ClearDefaultBrowserApp(dev)
 
+            # Don't leave CTS MockIme as the default IME for the next task.
+            self._ResetLeftoverCtsMockIme(dev)
+
             # Remove package-specific configuration
             dev.RunShellCommand(['am', 'clear-debug-app'], check_return=True)
 
@@ -935,6 +942,34 @@ class LocalDeviceInstrumentationTestRun(
                 context.__exit__(*sys.exc_info())
 
         self._env.parallel_devices.pMap(individual_device_tear_down)
+
+    def _ResetLeftoverCtsMockIme(self, dev):
+        """Resets the default IME if it was left as the CTS MockIme.
+
+        Prior tasks on shared Swarming devices can leave
+        com.android.cts.mockime/.MockIme as Settings.Secure.DEFAULT_INPUT_METHOD
+        without an active MockImeSession. MockIme then crashes in onCreate()
+        whenever an input field is focused, so the soft keyboard never shows
+        (https://crbug.com/567650995).
+
+        This only resets the IME settings; it does not uninstall MockIme, since
+        CTS suites install it as an additional APK and set it up themselves via
+        MockImeSession (https://crrev.com/c/8494669).
+        """
+        try:
+            default_ime = dev.RunShellCommand(
+                ['settings', 'get', 'secure', 'default_input_method'],
+                single_line=True,
+                check_return=True,
+            )
+            if not default_ime.startswith(_CTS_MOCK_IME_ID_PREFIX):
+                return
+            logging.warning(
+                'Resetting leftover CTS MockIme default IME: %s', default_ime
+            )
+            dev.RunShellCommand(['ime', 'reset'], check_return=True)
+        except device_errors.CommandFailedError as e:
+            logging.warning('Failed to reset CTS MockIme default IME: %s', e)
 
     def _SetDefaultBrowserApp(self, dev):
         # Safely granting the browser role requires the
