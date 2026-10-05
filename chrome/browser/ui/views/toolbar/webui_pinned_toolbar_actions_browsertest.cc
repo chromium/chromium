@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 
+#include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -41,7 +44,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -121,10 +125,54 @@ class AXAnnouncementObserver : public views::AXUpdateObserver {
       observation_{this};
 };
 
+// Returns a copy of the first node in the accessibility tree of `web_contents`
+// that satisfies `predicate`, or std::nullopt if there is none. A copy is
+// returned so that callers can keep it across accessibility tree updates.
+std::optional<ui::AXNodeData> FindAccessibilityNodeData(
+    content::WebContents* web_contents,
+    base::FunctionRef<bool(const ui::AXNodeData&)> predicate) {
+  ui::AXTreeUpdate snapshot =
+      content::GetAccessibilityTreeSnapshot(web_contents);
+  auto it = std::ranges::find_if(snapshot.nodes, predicate);
+  if (it == snapshot.nodes.end()) {
+    return std::nullopt;
+  }
+  return *it;
+}
+
 }  // namespace
 
 class WebUIPinnedToolbarActionsBrowserTest
-    : public WebUIPinnedToolbarActionsTestBase {};
+    : public WebUIPinnedToolbarActionsTestBase {
+ protected:
+  // Polls the accessibility tree of `web_contents` until the node with
+  // `node_id` is a button exposing `expected_name` and `expected_description`.
+  testing::AssertionResult WaitForButtonAccessibleState(
+      content::WebContents* web_contents,
+      ui::AXNodeID node_id,
+      std::string_view expected_name,
+      std::string_view expected_description) {
+    std::optional<ui::AXNodeData> node;
+    if (base::test::RunUntil([&]() {
+          node = FindAccessibilityNodeData(
+              web_contents, [node_id](const ui::AXNodeData& data) {
+                return data.id == node_id;
+              });
+          return node && node->role == ax::mojom::Role::kButton &&
+                 node->GetStringAttribute(ax::mojom::StringAttribute::kName) ==
+                     expected_name &&
+                 node->GetStringAttribute(
+                     ax::mojom::StringAttribute::kDescription) ==
+                     expected_description;
+        })) {
+      return testing::AssertionSuccess();
+    }
+    return testing::AssertionFailure()
+           << "Expected name=\"" << expected_name << "\" description=\""
+           << expected_description
+           << "\". Actual: " << (node ? node->ToString() : "<missing>");
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                        PinUnpinIndividually) {
@@ -516,14 +564,8 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {
   EXPECT_FALSE(view->IsActionPoppedOut(kActionPrint));
 }
 
-// TODO(crbug.com/545042573): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TextAndAriaLabelAttributes DISABLED_TextAndAriaLabelAttributes
-#else
-#define MAYBE_TextAndAriaLabelAttributes TextAndAriaLabelAttributes
-#endif
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
-                       MAYBE_TextAndAriaLabelAttributes) {
+                       TextAndAriaLabelAttributes) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
@@ -549,61 +591,40 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   std::string default_description =
       base::UTF16ToUTF8(action_item->GetTooltipText());
 
-  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
-                                                         default_name);
-  content::FindAccessibilityNodeCriteria find_criteria;
-  find_criteria.role = ax::mojom::Role::kButton;
-  find_criteria.name = default_name;
-  ui::AXPlatformNodeDelegate* print_node =
-      content::FindAccessibilityNode(web_contents, find_criteria);
-  ASSERT_TRUE(print_node);
+  // Locate the print button once by its default name and remember its AX node
+  // id. Later lookups use the id rather than the name, since an empty name
+  // would match unrelated nodes and would not prove the update has landed.
+  std::optional<ui::AXNodeData> print_node;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    print_node = FindAccessibilityNodeData(
+        web_contents, [&](const ui::AXNodeData& data) {
+          return data.role == ax::mojom::Role::kButton &&
+                 data.GetStringAttribute(ax::mojom::StringAttribute::kName) ==
+                     default_name;
+        });
+    return print_node.has_value();
+  })) << "No button named \""
+      << default_name << "\" found.";
+  const ui::AXNodeID print_node_id = print_node->id;
 
-  EXPECT_EQ(default_name,
-            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ(default_description, print_node->GetStringAttribute(
-                                     ax::mojom::StringAttribute::kDescription));
+  ASSERT_TRUE(WaitForButtonAccessibleState(web_contents, print_node_id,
+                                           default_name, default_description));
 
   // Test all values are provided.
   action_item->SetTooltipText(u"tooltip");
   action_item->SetAccessibleName(u"accessible_name");
-
-  content::WaitForAccessibilityTreeToChange(web_contents);
-  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
-                                                         "accessible_name");
-  find_criteria.name = "accessible_name";
-  print_node = content::FindAccessibilityNode(web_contents, find_criteria);
-  ASSERT_TRUE(print_node);
-  EXPECT_EQ("accessible_name",
-            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ("tooltip", print_node->GetStringAttribute(
-                           ax::mojom::StringAttribute::kDescription));
+  ASSERT_TRUE(WaitForButtonAccessibleState(web_contents, print_node_id,
+                                           "accessible_name", "tooltip"));
 
   // Test accessible_name is empty (Fallback to Tooltip).
   action_item->SetAccessibleName(u"");
-
-  content::WaitForAccessibilityTreeToChange(web_contents);
-  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
-                                                         "tooltip");
-  find_criteria.name = "tooltip";
-  print_node = content::FindAccessibilityNode(web_contents, find_criteria);
-  ASSERT_TRUE(print_node);
-  EXPECT_EQ("tooltip",
-            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ("tooltip", print_node->GetStringAttribute(
-                           ax::mojom::StringAttribute::kDescription));
+  ASSERT_TRUE(WaitForButtonAccessibleState(web_contents, print_node_id,
+                                           "tooltip", "tooltip"));
 
   // Test tooltip and accessible_name are empty.
   action_item->SetTooltipText(u"");
-
-  content::WaitForAccessibilityTreeToChange(web_contents);
-  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents, "");
-  find_criteria.name = "";
-  print_node = content::FindAccessibilityNode(web_contents, find_criteria);
-  ASSERT_TRUE(print_node);
-  EXPECT_EQ("",
-            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ("", print_node->GetStringAttribute(
-                    ax::mojom::StringAttribute::kDescription));
+  ASSERT_TRUE(
+      WaitForButtonAccessibleState(web_contents, print_node_id, "", ""));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ToolbarDivider) {
