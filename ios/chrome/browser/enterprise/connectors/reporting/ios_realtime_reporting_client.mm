@@ -87,11 +87,14 @@ IOSRealtimeReportingClient::InitProfileReportingClient(
     return {GetProfilePolicyClientDescription(), nullptr};
   }
 
-  profile_private_client_ = std::make_unique<policy::CloudPolicyClient>(
-      policy_manager->core()->client()->service(),
-      GetApplicationContext()->GetSharedURLLoaderFactory(),
-      policy::CloudPolicyClient::DeviceDMTokenCallback());
-  policy::CloudPolicyClient* client = profile_private_client_.get();
+  SetOwnedReportingClient(
+      /*per_profile=*/true,
+      std::make_unique<policy::CloudPolicyClient>(
+          policy_manager->core()->client()->service(),
+          GetApplicationContext()->GetSharedURLLoaderFactory(),
+          policy::CloudPolicyClient::DeviceDMTokenCallback()));
+  policy::CloudPolicyClient* client =
+      GetOwnedReportingClient(/*per_profile=*/true);
 
   client->SetupRegistration(dm_token,
                             policy_manager->core()->client()->client_id(),

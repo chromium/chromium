@@ -175,6 +175,21 @@ class RealtimeReportingClientBase : public KeyedService,
       base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result);
 
+  // Helper method to get the reporting client. If the client is not
+  // initialized, it will attempt to initialize it. If initialization fails or
+  // the DM token is rejected, it returns nullptr.
+  policy::CloudPolicyClient* GetReportingClient(const std::string& dm_token,
+                                                bool per_profile);
+
+  // Replaces the cloud policy client owned by this class for the given scope,
+  // unregistering the observer and clearing `browser_client_`/`profile_client_`
+  // before destroying any previously owned client.
+  void SetOwnedReportingClient(
+      bool per_profile,
+      std::unique_ptr<policy::CloudPolicyClient> client);
+
+  policy::CloudPolicyClient* GetOwnedReportingClient(bool per_profile) const;
+
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
       nullptr;
 
@@ -205,11 +220,6 @@ class RealtimeReportingClientBase : public KeyedService,
   raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> profile_client_ =
       nullptr;
 
-  // The private clients are used on platforms where we cannot just get a
-  // client and we create our own (used through the above client pointers).
-  std::unique_ptr<policy::CloudPolicyClient> browser_private_client_;
-  std::unique_ptr<policy::CloudPolicyClient> profile_private_client_;
-
   // When a request is rejected for a given DM token, wait 24 hours before
   // trying again for this specific DM Token.
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
@@ -223,15 +233,16 @@ class RealtimeReportingClientBase : public KeyedService,
   std::pair<std::string, policy::CloudPolicyClient*> InitBrowserReportingClient(
       const std::string& dm_token);
 
-  // Helper method to get the reporting client. If the client is not
-  // initialized, it will attempt to initialize it. If initialization fails or
-  // the DM token is rejected, it returns nullptr.
-  policy::CloudPolicyClient* GetReportingClient(const std::string& dm_token,
-                                                bool per_profile);
-
   // Handle the availability of a cloud policy client.
   void OnCloudPolicyClientAvailable(const std::string& policy_client_desc,
                                     policy::CloudPolicyClient* client);
+
+  // The private clients are used on platforms where we cannot just get a
+  // client and we create our own (used through `browser_client_` and
+  // `profile_client_`). Always modified via SetOwnedReportingClient() so that
+  // the observer registration and raw pointers are cleared before destruction.
+  std::unique_ptr<policy::CloudPolicyClient> browser_private_client_;
+  std::unique_ptr<policy::CloudPolicyClient> profile_private_client_;
 
   raw_ptr<policy::DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
