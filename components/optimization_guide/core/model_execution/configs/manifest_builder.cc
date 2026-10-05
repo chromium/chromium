@@ -73,13 +73,18 @@ proto::SafetyModelRecipe SafetyModelRecipe(
   return recipe;
 }
 
-proto::SolutionRecipe SolutionRecipe(const std::string& model_recipe_id,
-                                     const std::string& safety_model_recipe_id,
-                                     proto::FileReference config_file) {
+proto::SolutionRecipe SolutionRecipe(
+    const std::string& model_recipe_id,
+    const std::string& safety_model_recipe_id,
+    proto::FileReference config_file,
+    const std::string& postprocessor_model_recipe_id) {
   proto::SolutionRecipe recipe;
   recipe.set_model_recipe_id(model_recipe_id);
   if (!safety_model_recipe_id.empty()) {
     recipe.set_safety_model_recipe_id(safety_model_recipe_id);
+  }
+  if (!postprocessor_model_recipe_id.empty()) {
+    recipe.set_postprocessor_model_recipe_id(postprocessor_model_recipe_id);
   }
   *recipe.mutable_config_file() = std::move(config_file);
   return recipe;

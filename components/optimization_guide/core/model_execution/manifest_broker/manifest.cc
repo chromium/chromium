@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -16,6 +17,9 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace optimization_guide {
+
+BASE_FEATURE(kOnDeviceWebSpeechPolisherModel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -100,6 +104,11 @@ std::optional<Manifest::ParseError> ValidateReferences(
         !recipes.safety_models().contains(solution.safety_model_recipe_id())) {
       return Manifest::ParseError::kMissingIdentifier;
     }
+    if (!solution.postprocessor_model_recipe_id().empty() &&
+        !recipes.base_models().contains(
+            solution.postprocessor_model_recipe_id())) {
+      return Manifest::ParseError::kMissingIdentifier;
+    }
     if (!is_valid_asset(solution.config_file().asset_id())) {
       return Manifest::ParseError::kMissingIdentifier;
     }
@@ -181,6 +190,10 @@ struct References {
       if (solution.has_safety_model_recipe_id()) {
         safety_models.insert(solution.safety_model_recipe_id());
       }
+      if (solution.has_postprocessor_model_recipe_id() &&
+          base::FeatureList::IsEnabled(kOnDeviceWebSpeechPolisherModel)) {
+        base_models.insert(solution.postprocessor_model_recipe_id());
+      }
       assets.insert(solution.config_file().asset_id());
     }
     for (const auto& id : adaptations) {
@@ -204,7 +217,12 @@ struct References {
   proto::Recipes CopyReferencedRecipes(const proto::Recipes& original) {
     proto::Recipes referenced;
     for (const auto& id : solutions) {
-      referenced.mutable_solutions()->emplace(id, original.solutions().at(id));
+      proto::SolutionRecipe solution = original.solutions().at(id);
+      if (solution.has_postprocessor_model_recipe_id() &&
+          !base_models.contains(solution.postprocessor_model_recipe_id())) {
+        solution.clear_postprocessor_model_recipe_id();
+      }
+      referenced.mutable_solutions()->emplace(id, std::move(solution));
     }
     for (const auto& id : adaptations) {
       referenced.mutable_adaptations()->emplace(id,

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/model_execution/configs/manifest_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,6 +12,8 @@
 namespace optimization_guide {
 
 namespace {
+
+using ::testing::UnorderedElementsAre;
 
 using ManifestTest = testing::Test;
 
@@ -130,6 +133,68 @@ TEST_F(ManifestTest, InvalidWithMissingSolutionReference) {
                            "valid_base", kNoSafetyModel,
                            FileReference("missing_component", "config.pb")))),
             base::unexpected(Manifest::ParseError::kMissingIdentifier));
+  EXPECT_EQ(
+      CreateCpuManifest(ValidManifest().Add(
+          "foo", SolutionRecipe("valid_base", kNoSafetyModel,
+                                FileReference(kManifestAssetName, "config.pb"),
+                                "missing_postprocessor"))),
+      base::unexpected(Manifest::ParseError::kMissingIdentifier));
+  EXPECT_EQ(
+      CreateCpuManifest(ValidManifest().Add(
+          "foo", SolutionRecipe("valid_base", kNoSafetyModel,
+                                FileReference(kManifestAssetName, "config.pb"),
+                                "valid_adaptation"))),
+      base::unexpected(Manifest::ParseError::kMissingIdentifier));
+}
+
+TEST_F(ManifestTest, PostprocessorModelExcludedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kOnDeviceWebSpeechPolisherModel);
+
+  auto result = CreateCpuManifest(
+      ValidManifest()
+          .Add("polisher_component", OnDemandComponent("polisher_key", "1.0"))
+          .Add("polisher_base",
+               BaseModelRecipe(
+                   FileReference("polisher_component", "polisher.bin"),
+                   GenericRecipeArgs()))
+          .Add({DeviceCategory::kCpu, "speech_feature"},
+               SolutionRecipe("valid_base", kNoSafetyModel,
+                              FileReference(kManifestAssetName, "config.pb"),
+                              "polisher_base")));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(result->GetRecipes().base_models().contains("polisher_base"));
+  EXPECT_FALSE(result->GetAssets().on_demand_components().contains(
+      "polisher_component"));
+  auto required_assets = result->GetRequiredAssets("speech_feature");
+  ASSERT_TRUE(required_assets.has_value());
+  EXPECT_THAT(*required_assets,
+              UnorderedElementsAre(kManifestAssetName, "valid_component"));
+}
+
+TEST_F(ManifestTest, PostprocessorModelIncludedWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(kOnDeviceWebSpeechPolisherModel);
+
+  auto result = CreateCpuManifest(
+      ValidManifest()
+          .Add("polisher_component", OnDemandComponent("polisher_key", "1.0"))
+          .Add("polisher_base",
+               BaseModelRecipe(
+                   FileReference("polisher_component", "polisher.bin"),
+                   GenericRecipeArgs()))
+          .Add({DeviceCategory::kCpu, "speech_feature"},
+               SolutionRecipe("valid_base", kNoSafetyModel,
+                              FileReference(kManifestAssetName, "config.pb"),
+                              "polisher_base")));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->GetRecipes().base_models().contains("polisher_base"));
+  EXPECT_TRUE(result->GetAssets().on_demand_components().contains(
+      "polisher_component"));
+  auto required_assets = result->GetRequiredAssets("speech_feature");
+  ASSERT_TRUE(required_assets.has_value());
+  EXPECT_THAT(*required_assets,
+              UnorderedElementsAre(kManifestAssetName, "valid_component",
+                                   "polisher_component"));
 }
 
 TEST_F(ManifestTest, InvalidWithConflictingOnDemandComponents) {

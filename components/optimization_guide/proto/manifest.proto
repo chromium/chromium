@@ -94,6 +94,10 @@ message SolutionRecipe {
   string safety_model_recipe_id = 2 [features.field_presence = EXPLICIT];
   // Which file contains a serialized SolutionConfig for this use case.
   FileReference config_file = 3;
+  // The identifier of a BaseModelRecipe that provides the optional
+  // postprocessor model for this use case. May be empty if no postprocessor
+  // model is required.
+  string postprocessor_model_recipe_id = 4 [features.field_presence = EXPLICIT];
 }
 
 // Contents of a SolutionRecipe's config file. These messages are opaque to the
