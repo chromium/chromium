@@ -203,7 +203,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
- private:
   CanvasNon2DResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,
@@ -213,6 +212,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProviderDelegate*);
+
+ private:
   CanvasNon2DResourceProvider(gfx::Size,
                               viz::SharedImageFormat,
                               SkAlphaType,
