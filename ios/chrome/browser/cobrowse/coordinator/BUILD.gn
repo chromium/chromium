@@ -47,6 +47,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/web/model:delegate",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",

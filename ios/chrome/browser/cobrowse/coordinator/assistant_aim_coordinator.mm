@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -151,13 +152,15 @@ class AssistantAIMUIStateProvider
   AttachTabHelpers(webState.get(), TabHelperFilter::kAssistantAim);
 
   _mediator = [[AssistantAIMMediator alloc]
-            initWithWebState:std::move(webState)
-        cobrowseBrowserAgent:agent
-            containerHandler:_containerHandler
-      contextualTasksService:contextualTasksService
-                   URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
-       authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                 self.browser->GetProfile())];
+             initWithWebState:std::move(webState)
+      browserWebStateDelegate:WebStateDelegateBrowserAgent::FromBrowser(
+                                  self.browser)
+         cobrowseBrowserAgent:agent
+             containerHandler:_containerHandler
+       contextualTasksService:contextualTasksService
+                    URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
+        authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                  self.browser->GetProfile())];
 
   _mediator.delegate = self;
   _mediator.sceneHandler =

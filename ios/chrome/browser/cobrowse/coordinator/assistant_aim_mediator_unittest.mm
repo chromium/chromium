@@ -48,6 +48,7 @@
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -57,6 +58,7 @@
 #import "net/base/mock_network_change_notifier.h"
 #import "net/base/network_change_notifier.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/lens_server_proto/aim_communication.pb.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -120,13 +122,14 @@ class AssistantAIMMediatorTest : public PlatformTest {
         CobrowseBrowserAgent::FromBrowser(browser_.get());
 
     mediator_ = [[AssistantAIMMediator alloc]
-              initWithWebState:std::move(fake_web_state)
-          cobrowseBrowserAgent:agent
-              containerHandler:mock_container_handler_
-        contextualTasksService:nullptr
-                     URLLoader:url_loader_
-         authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                   profile_)];
+               initWithWebState:std::move(fake_web_state)
+        browserWebStateDelegate:&browser_web_state_delegate_
+           cobrowseBrowserAgent:agent
+               containerHandler:mock_container_handler_
+         contextualTasksService:nullptr
+                      URLLoader:url_loader_
+          authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                    profile_)];
     mediator_.sceneHandler = mock_scene_handler_;
 
     mock_delegate_ = OCMProtocolMock(@protocol(AssistantAIMMediatorDelegate));
@@ -137,6 +140,7 @@ class AssistantAIMMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    browser_web_state_delegate_.ClearLastProxyAuthenticationRequest();
     fake_web_state_ = nullptr;
     [mediator_ disconnect];
     mediator_ = nil;
@@ -172,6 +176,7 @@ class AssistantAIMMediatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   raw_ptr<web::FakeWebState> fake_web_state_ = nullptr;
+  web::FakeWebStateDelegate browser_web_state_delegate_;
   AssistantAIMMediator* mediator_;
   id mock_delegate_;
   id mock_consumer_;
@@ -948,4 +953,62 @@ TEST_F(AssistantAIMMediatorTest,
       static_cast<web::FakeNavigationManager*>(
           fake_web_state_->GetNavigationManager());
   EXPECT_FALSE(navigation_manager->LoadURLWithParamsWasCalled());
+}
+
+// Test that proxy auth challenges are forwarded to the browser
+// `WebStateDelegate`.
+TEST_F(AssistantAIMMediatorTest, ForwardsProxyAuthToBrowserWebStateDelegate) {
+  if (@available(iOS 18.1, *)) {
+    static constexpr int kProxyPort = 8080;
+    NSString* const kProxyHost = @"proxy.example.com";
+    NSString* const kProxyRealm = @"proxy_realm";
+    NSString* const kProposedUser = @"proxy_user";
+    NSString* const kProposedPassword = @"proxy_pass";
+    NSString* const kResponseURL = @"https://www.google.com";
+    NSString* const kMimeType = @"text/html";
+    NSString* const kOAuthUser = @"oauth_user";
+    NSString* const kOAuthToken = @"oauth_token";
+
+    id<CRWWebStateDelegate> delegate = (id<CRWWebStateDelegate>)mediator_;
+    NSURLProtectionSpace* protection_space = [[NSURLProtectionSpace alloc]
+           initWithProxyHost:kProxyHost
+                        port:kProxyPort
+                        type:NSURLProtectionSpaceHTTPSProxy
+                       realm:kProxyRealm
+        authenticationMethod:NSURLAuthenticationMethodDefault];
+    NSURLCredential* credential =
+        [NSURLCredential credentialWithUser:kProposedUser
+                                   password:kProposedPassword
+                                persistence:NSURLCredentialPersistenceNone];
+    NSURLResponse* failure_response =
+        [[NSURLResponse alloc] initWithURL:[NSURL URLWithString:kResponseURL]
+                                  MIMEType:kMimeType
+                     expectedContentLength:0
+                          textEncodingName:nil];
+
+    base::test::TestFuture<NSString*, NSString*, NSError*> future;
+    [delegate webState:fake_web_state_
+        didRequestProxyAuthForProtectionSpace:protection_space
+                           proposedCredential:credential
+                              failureResponse:failure_response
+                            completionHandler:base::CallbackToBlock(
+                                                  future.GetCallback())];
+
+    web::FakeProxyAuthenticationRequest* proxy_request =
+        browser_web_state_delegate_.last_proxy_authentication_request();
+    ASSERT_TRUE(proxy_request);
+    EXPECT_EQ(proxy_request->web_state, fake_web_state_);
+    EXPECT_NSEQ(proxy_request->protection_space, protection_space);
+    EXPECT_NSEQ(proxy_request->proposed_credential, credential);
+    EXPECT_NSEQ(proxy_request->failure_response, failure_response);
+    ASSERT_TRUE(proxy_request->proxy_auth_callback);
+
+    std::move(proxy_request->proxy_auth_callback)
+        .Run(kOAuthUser, kOAuthToken, nil);
+    EXPECT_NSEQ(future.Get<0>(), kOAuthUser);
+    EXPECT_NSEQ(future.Get<1>(), kOAuthToken);
+    EXPECT_EQ(future.Get<2>(), nil);
+  } else {
+    GTEST_SKIP() << "Requires iOS 18.1+";
+  }
 }

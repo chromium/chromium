@@ -7,7 +7,9 @@
 #import <algorithm>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -45,6 +47,7 @@
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
@@ -68,6 +71,7 @@
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   // Bridge to observe network changes and reload the page on reconnect.
   std::unique_ptr<NetworkChangeObserverBridge> _networkChangeObserver;
+  raw_ptr<web::WebStateDelegate> _browserWebStateDelegate;
   __weak id<AssistantAIMConsumer> _consumer;
   CobrowseContext* _context;
   id<AssistantContainerCommands> _containerHandler;
@@ -99,6 +103,7 @@
 @synthesize consumer = _consumer;
 
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
+         browserWebStateDelegate:(web::WebStateDelegate*)browserWebStateDelegate
             cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
                 containerHandler:
                     (id<AssistantContainerCommands>)containerHandler
@@ -111,6 +116,7 @@
     DCHECK(webState);
     DCHECK(!webState->GetDelegate());
     _webState = std::move(webState);
+    _browserWebStateDelegate = browserWebStateDelegate;
     _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
         _webState.get(), self);
     _webState->SetUserAgentOverride(
@@ -214,6 +220,7 @@
     _webState->RemoveObserver(_webStateObserverBridge.get());
   }
   _webState.reset();
+  _browserWebStateDelegate = nullptr;
   _urlLoader = nullptr;
   _context = nil;
   _cobrowseBrowserAgent = nullptr;
@@ -295,6 +302,26 @@
   if (_webState && _webState->GetNavigationManager()) {
     _webState->GetNavigationManager()->LoadIfNecessary();
   }
+}
+
+- (void)webState:(web::WebState*)webState
+    didRequestProxyAuthForProtectionSpace:(NSURLProtectionSpace*)protectionSpace
+                       proposedCredential:(NSURLCredential*)proposedCredential
+                          failureResponse:(NSURLResponse*)failureResponse
+                        completionHandler:(void (^)(NSString* username,
+                                                    NSString* password,
+                                                    NSError* error))handler
+    API_AVAILABLE(ios(18.1)) {
+  if (!handler) {
+    return;
+  }
+  if (!_browserWebStateDelegate) {
+    handler(nil, nil, nil);
+    return;
+  }
+  _browserWebStateDelegate->OnProxyAuthChallenge(
+      webState, protectionSpace, proposedCredential, failureResponse,
+      base::BindOnce(handler));
 }
 
 #pragma mark - Private helpers

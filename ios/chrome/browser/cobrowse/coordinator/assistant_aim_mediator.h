@@ -33,6 +33,7 @@ class CobrowseBrowserAgent;
 class AuthenticationService;
 namespace web {
 class WebState;
+class WebStateDelegate;
 }
 
 @class AssistantAIMMediator;
@@ -74,10 +75,12 @@ class WebState;
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AssistantAIMMediatorDelegate> delegate;
 
-// Initializes the mediator with a web state and a cobrowse browser agent that
-// defines the AI mode assistant state, a container handler, the contextual
-// tasks service, the URL loader, and the authentication service.
+// Initializes the mediator with a `webState`, a `browserWebStateDelegate`, a
+// `cobrowseBrowserAgent` that defines the AI mode assistant state, a
+// `containerHandler`, the `contextualTasksService`, the `URLLoader`, and the
+// `authenticationService`.
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
+         browserWebStateDelegate:(web::WebStateDelegate*)browserWebStateDelegate
             cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
                 containerHandler:
                     (id<AssistantContainerCommands>)containerHandler

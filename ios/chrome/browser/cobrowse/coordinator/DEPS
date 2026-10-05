@@ -7,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
-  "+ios/chrome/browser/signin/model/system_identity.h"
+  "+ios/chrome/browser/signin/model/system_identity.h",
+  "+ios/chrome/browser/web/model/web_state_delegate_browser_agent.h",
   # keep-sorted end
 ]
