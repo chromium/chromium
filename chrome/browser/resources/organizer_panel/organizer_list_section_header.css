@@ -8,7 +8,17 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: block;
+  align-items: center;
+  display: flex;
+}
+
+:host(:not([disabled]):hover),
+:host(.hovered:not([disabled])) {
+  background-color: var(--cr-hover-background-color);
+}
+
+:host(:not([disabled]):active) {
+  background-color: var(--cr-active-background-color);
 }
 
 #expandButton {
@@ -16,6 +26,7 @@
   --cr-expand-button-size: 24px;
   --cr-section-vertical-padding: 0;
   color: var(--cr-secondary-text-color);
+  flex: 1;
   font-size: 9px;
   font-weight: 700;
   line-height: 16px;
@@ -38,6 +49,21 @@
   display: none;
 }
 
-:host-context(html:not(.focus-outline-visible)) #expandButton::part(icon) {
+#menuButton {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-end: 12px;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 24px;
+  display: none;
+  margin-block: -4px;
+}
+
+:host([expanded]:not([disabled]):hover) #menuButton,
+:host([expanded]:not([disabled]).hovered) #menuButton {
+  display: inline-flex;
+}
+
+:host-context(html:not(.focus-outline-visible)) #expandButton::part(icon),
+:host-context(html:not(.focus-outline-visible)) #menuButton {
   --cr-icon-button-focus-outline-color: transparent;
 }
