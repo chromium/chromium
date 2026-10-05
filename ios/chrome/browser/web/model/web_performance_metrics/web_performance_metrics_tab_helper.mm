@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/web/public/navigation/navigation_context.h"
 
 WebPerformanceMetricsTabHelper::WebPerformanceMetricsTabHelper(
     web::WebState* web_state) {
@@ -18,6 +19,13 @@ WebPerformanceMetricsTabHelper::~WebPerformanceMetricsTabHelper() = default;
 void WebPerformanceMetricsTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  // Same-document navigations (fragment changes, `history.pushState()`) keep
+  // the current document alive, so its metrics must keep accumulating and must
+  // not be reset.
+  if (navigation_context->IsSameDocument()) {
+    return;
+  }
+
   FlushInteractionToNextPaintMetrics();
   SetAggregateAbsoluteFirstContentfulPaint(std::numeric_limits<double>::max());
   SetFirstInputDelayLoggingStatus(false);
