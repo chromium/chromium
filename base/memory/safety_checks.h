@@ -9,7 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/stack_allocated.h"
 #include "base/pending_task.h"
 #include "partition_alloc/buildflags.h"

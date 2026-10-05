@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
@@ -90,7 +90,7 @@ class WebContents;
 class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // Execution mode for the beforeunload handling.

@@ -14,8 +14,8 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -46,7 +46,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     : public DownloadItem,
       public DownloadDestinationObserver {
   // TODO(crbug.com/422045023): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // Information about the initial request that triggers the download. Most of

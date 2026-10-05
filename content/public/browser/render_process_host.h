@@ -17,7 +17,7 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/supports_user_data.h"
@@ -134,7 +134,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
                                          public base::SupportsUserData {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   using iterator = base::IDMap<RenderProcessHost*, ChildProcessId>::iterator;

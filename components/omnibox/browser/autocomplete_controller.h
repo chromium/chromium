@@ -12,8 +12,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -85,7 +85,7 @@ inline constexpr char kOmniboxGeminiHeader[] = "X-Omnibox-Gemini";
 class AutocompleteController : public AutocompleteProviderListener,
                                public base::trace_event::MemoryDumpProvider {
   // TODO(crbug.com/449894891): Remove this macro once it gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // Describes an autocomplete pass.

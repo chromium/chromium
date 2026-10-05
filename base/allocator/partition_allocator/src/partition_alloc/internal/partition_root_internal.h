@@ -759,10 +759,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
 
   // memset() can be really expensive.
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-  if constexpr (
-      ContainsFlags(
-          flags,
-          FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks)) {
+  if constexpr (ContainsFlags(
+                    flags,
+                    FreeFlags::kSchedulerLoopQuarantineForSanitizedObject)) {
     internal::DebugMemset(slot_start.ToObject(), internal::kFreedByte,
                           GetSlotUsableSize(size_details, slot_span));
   } else {
@@ -773,11 +772,11 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
 
   if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
     return SchedulerLoopQuarantine(slot_start, slot_span, size_details);
-  } else if constexpr (
-      ContainsFlags(
-          flags,
-          FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks)) {
-    scheduler_loop_quarantine_for_advanced_memory_safety_checks_.Quarantine(
+  } else if constexpr (ContainsFlags(
+                           flags,
+                           FreeFlags::
+                               kSchedulerLoopQuarantineForSanitizedObject)) {
+    scheduler_loop_quarantine_for_sanitized_object_.Quarantine(
         slot_start, slot_span, size_details);
     return;
   }

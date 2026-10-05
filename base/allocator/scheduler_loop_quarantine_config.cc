@@ -28,7 +28,8 @@ constexpr char kBranchTypeGlobalStr[] = "global";
 constexpr char kBranchTypeThreadLocalDefaultStr[] = "*";
 constexpr char kBranchTypeMainStr[] = "main";
 constexpr char kBranchTypeIOStr[] = "io";
-constexpr char kBranchTypeAdvancedMemorySafetyChecksStr[] = "amsc";
+// Named "amsc" (Advanced Memory Safety Checks) for historical reasons.
+constexpr char kBranchTypeSanitizedObjectStr[] = "amsc";
 constexpr char kBranchTypeVizCompositorStr[] = "viz-compositor";
 constexpr char kBranchTypeCompositorGpuStr[] = "compositor-gpu";
 
@@ -43,8 +44,8 @@ constexpr std::string_view GetSchedulerLoopQuarantineBranchTypeStr(
       return kBranchTypeMainStr;
     case SchedulerLoopQuarantineBranchType::kIO:
       return kBranchTypeIOStr;
-    case SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks:
-      return kBranchTypeAdvancedMemorySafetyChecksStr;
+    case SchedulerLoopQuarantineBranchType::kSanitizedObject:
+      return kBranchTypeSanitizedObjectStr;
     case SchedulerLoopQuarantineBranchType::kVizCompositor:
       return kBranchTypeVizCompositorStr;
     case SchedulerLoopQuarantineBranchType::kCompositorGpu:
@@ -185,8 +186,7 @@ GetSchedulerLoopQuarantineConfiguration(
     // Falls back to thread-local default unless global nor AMSC.
     if (!config_entry &&
         branch_type != SchedulerLoopQuarantineBranchType::kGlobal &&
-        branch_type !=
-            SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks) {
+        branch_type != SchedulerLoopQuarantineBranchType::kSanitizedObject) {
       config_entry = config_process->FindDict(kBranchTypeThreadLocalDefaultStr);
     }
 

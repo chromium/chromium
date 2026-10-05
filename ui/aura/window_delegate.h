@@ -5,7 +5,7 @@
 #ifndef UI_AURA_WINDOW_DELEGATE_H_
 #define UI_AURA_WINDOW_DELEGATE_H_
 
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
@@ -29,7 +29,7 @@ namespace aura {
 // Delegate interface for aura::Window.
 class AURA_EXPORT WindowDelegate : public ui::EventHandler {
   // TODO(crbug.com/429093189): Remove this macro once it gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // Returns the window's minimum size, or size 0,0 if there is no limit.

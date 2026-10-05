@@ -152,10 +152,10 @@ struct PartitionOptions {
   internal::SchedulerLoopQuarantineConfig
       scheduler_loop_quarantine_thread_local_config;
   // Configuration for the AMSC quarantine branch. Used when
-  // `FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks` is
+  // `FreeFlags::kSchedulerLoopQuarantineForSanitizedObject` is
   // specified.
   internal::SchedulerLoopQuarantineConfig
-      scheduler_loop_quarantine_for_advanced_memory_safety_checks_config;
+      scheduler_loop_quarantine_for_sanitized_object_config;
 
   // As the name implies, this is not a security measure, as there is no
   // guarantee that memorys has been zeroed out when handed back to the
@@ -383,7 +383,7 @@ class alignas(internal::kPartitionCachelineSize)
   internal::SchedulerLoopQuarantineRoot scheduler_loop_quarantine_root_;
   internal::GlobalSchedulerLoopQuarantineBranch scheduler_loop_quarantine_;
   internal::SanitizedObjectSchedulerLoopQuarantineBranch
-      scheduler_loop_quarantine_for_advanced_memory_safety_checks_;
+      scheduler_loop_quarantine_for_sanitized_object_;
 
   static constexpr internal::base::TimeDelta kMaxPurgeDuration =
       internal::base::Milliseconds(2);

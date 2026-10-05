@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -84,7 +84,7 @@ class GPU_GLES2_EXPORT SharedImageFactoryRef
 
 class GPU_GLES2_EXPORT SharedImageFactory {
   // TODO(crbug.com/497136403): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // All objects passed are expected to outlive this class.

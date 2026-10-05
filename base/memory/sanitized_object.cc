@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 
 #include "partition_alloc/buildflags.h"
 
@@ -44,8 +44,8 @@ constexpr partition_alloc::AllocFlags GetAllocFlags(MemorySafetyCheck checks) {
 constexpr partition_alloc::FreeFlags GetFreeFlags(MemorySafetyCheck checks) {
   auto flags = partition_alloc::FreeFlags::kNone;
   if (static_cast<bool>(checks & MemorySafetyCheck::kSchedulerLoopQuarantine)) {
-    flags |= partition_alloc::FreeFlags::
-        kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks;
+    flags |=
+        partition_alloc::FreeFlags::kSchedulerLoopQuarantineForSanitizedObject;
   }
   if (static_cast<bool>(checks & MemorySafetyCheck::kInfiniteQuarantine)) {
     flags |= partition_alloc::FreeFlags::kIntendedLeak |

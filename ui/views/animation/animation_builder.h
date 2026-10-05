@@ -12,8 +12,8 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -52,7 +52,7 @@ class VIEWS_EXPORT AnimationBuilder {
  public:
   class Observer : public ui::LayerAnimationObserver {
     // TODO(crbug.com/428196026): Remove this macro once it gets fixed.
-    ADVANCED_MEMORY_SAFETY_CHECKS();
+    SANITIZED_OBJECT();
 
    public:
     Observer();

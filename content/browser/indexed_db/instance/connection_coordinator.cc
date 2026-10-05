@@ -19,8 +19,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/callback_tags.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -68,7 +68,7 @@ enum class RequestState {
 // callback.
 class ConnectionCoordinator::ConnectionRequest {
   // TODO(crbug.com/498738402): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   ConnectionRequest(
@@ -177,7 +177,7 @@ class ConnectionCoordinator::ConnectionRequest {
 class ConnectionCoordinator::OpenRequest
     : public ConnectionCoordinator::ConnectionRequest {
   // TODO(crbug.com/498738402): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   OpenRequest(BucketContext& bucket_context,
@@ -501,7 +501,7 @@ class ConnectionCoordinator::OpenRequest
 class ConnectionCoordinator::DeleteRequest
     : public ConnectionCoordinator::ConnectionRequest {
   // TODO(crbug.com/498738402): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   DeleteRequest(

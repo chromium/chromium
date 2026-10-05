@@ -11,8 +11,8 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
 #include "components/input/gesture_event_queue.h"
@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
       public TouchActionFilterClient,
       public blink::mojom::WidgetInputHandlerHost {
   // TODO(crbug.com/422044720): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   InputRouterImpl(InputRouterClient* client,

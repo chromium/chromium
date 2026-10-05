@@ -34,12 +34,12 @@ namespace {
 //   void(PermissionDecision setting,
 //        bool is_final_decision)>;
 //
-// and remove ADVANCED_MEMORY_SAFETY_CHECKS() once https://crbug.com/391248369
+// and remove SANITIZED_OBJECT() once https://crbug.com/391248369
 // is fixed.
 class PermissionCallbackWithAMSC
     : public base::OnceCallback<void(PermissionDecision setting,
                                      bool is_final_decision)> {
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 };
 
 base::IDMap<std::unique_ptr<PermissionCallbackWithAMSC>, int64_t>&

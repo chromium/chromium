@@ -31,7 +31,7 @@ namespace content {
 // use which one.
 class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   // TODO(https://crbug.com/495782021): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   using ChangeEvent = FilePathWatcherFSEventsChangeTracker::ChangeEvent;

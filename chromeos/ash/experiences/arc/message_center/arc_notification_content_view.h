@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_item.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_surface_manager.h"
 #include "ui/aura/window_observer.h"
@@ -48,7 +48,7 @@ class ArcNotificationContentView
       public ArcNotificationSurfaceManager::Observer,
       public views::WidgetObserver {
   // TODO(crbug.com/449882589): Remove this macro once it gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
   METADATA_HEADER(ArcNotificationContentView, views::NativeViewHost)
 

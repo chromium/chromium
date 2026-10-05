@@ -177,7 +177,7 @@ void ConfigurePartitions(
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_thread_local_config,
     partition_alloc::internal::SchedulerLoopQuarantineConfig
-        scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
+        scheduler_loop_quarantine_for_sanitized_object_config,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
     EnableTighterAlignedAllocBound enable_tighter_aligned_alloc_bound =
         EnableTighterAlignedAllocBound(false));

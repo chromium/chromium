@@ -13,8 +13,8 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -51,7 +51,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   METADATA_HEADER(Button, View)
 
   // TODO(crbug.com/451373711): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // Button states for various button sub-types.

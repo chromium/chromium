@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
@@ -36,7 +36,7 @@ namespace gpu {
 class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
                                             public RefCountedLockHelperDrDc {
   // TODO(https://crbug.com/496519208): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   ImageReaderGLOwner(base::PassKey<TextureOwner>,

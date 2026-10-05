@@ -12,8 +12,8 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/base/win/internal_constants.h"
@@ -59,7 +59,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
     : public gfx::WindowImpl,
       public ui::AXFragmentRootDelegateWin {
   // TODO(https://crbug.com/497066659): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
 

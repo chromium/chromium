@@ -9,8 +9,8 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/sanitized_object.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 
 namespace gpu::gles2 {
@@ -34,7 +34,7 @@ static T RoundUpToMultipleOf4(T size) {
 
 class GLES2_IMPL_EXPORT VertexArrayObject {
   // TODO(https://crbug.com/496284494): Remove this macro if the issue is fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // Info about Vertex Attributes. This is used to track what the user currently

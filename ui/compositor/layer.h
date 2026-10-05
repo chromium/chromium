@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -78,7 +78,7 @@ class LayerThreadedAnimationDelegate;
 class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
                                 public SafeCastable {
   // TODO(crbug.com/453831486): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   using ShapeRects = std::vector<gfx::Rect>;

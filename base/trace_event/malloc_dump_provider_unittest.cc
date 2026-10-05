@@ -18,7 +18,7 @@
 #endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "partition_alloc/partition_root.h"
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

@@ -7,8 +7,8 @@
 #define NET_QUIC_QUIC_CHROMIUM_PACKET_READER_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
@@ -31,7 +31,7 @@ const int kQuicYieldAfterDurationMilliseconds = 2;
 class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   // TODO(crbug.com/422045782): Remove this macro once we identified the cause
   // of the bug.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   class NET_EXPORT_PRIVATE Visitor {

@@ -21,9 +21,9 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/sanitized_object.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -139,7 +139,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
       public EmbeddedWorkerInstance::Listener {
   // TODO(crbug.com/40864997): Remove this macro once we identified the cause of
   // the bug.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   using StatusCallback =
@@ -945,7 +945,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   struct InflightRequest {
     // TODO(crbug.com/40864997): Remove this macro once we identified the cause
     // of the bug.
-    ADVANCED_MEMORY_SAFETY_CHECKS();
+    SANITIZED_OBJECT();
 
    public:
     InflightRequest(StatusCallback error_callback,

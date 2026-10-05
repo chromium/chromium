@@ -7,8 +7,8 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "content/browser/service_worker/service_worker_installed_script_reader.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,7 +37,7 @@ class ServiceWorkerVersion;
 class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
     : public blink::mojom::ServiceWorkerInstalledScriptsManagerHost,
       public ServiceWorkerInstalledScriptReader::Client {
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // |owner| must be an installed service worker.

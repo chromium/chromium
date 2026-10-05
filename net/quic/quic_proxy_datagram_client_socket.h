@@ -10,7 +10,7 @@
 #include <queue>
 #include <string_view>
 
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -40,7 +40,7 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
     : public DatagramClientSocket,
       public quic::QuicSpdyStream::Http3DatagramVisitor {
   // TODO(crbug.com/495798630): Remove this macro once it gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // Initializes a QuicProxyDatagramClientSocket with the provided network

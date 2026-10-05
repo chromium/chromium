@@ -5607,21 +5607,21 @@ class AssertAshOnlyCodeTest(unittest.TestCase):
         self.assertEqual(0, len(errors))
 
 
-class CheckAdvancedMemorySafetyChecksUsageTest(unittest.TestCase):
+class CheckSanitizedObjectUsageTest(unittest.TestCase):
 
     def testAllowedCases(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
             # Non-C++ files are allowed.
             MockAffectedFile('test20/renderer/foo.md',
-                             ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+                             ['SANITIZED_OBJECT()']),
 
             # Mentions in a comment are allowed.
             MockAffectedFile('test30/renderer/foo.cc',
-                             ['//ADVANCED_MEMORY_SAFETY_CHECKS()']),
+                             ['//SANITIZED_OBJECT()']),
         ]
         mock_output_api = MockOutputApi()
-        errors = PRESUBMIT.CheckAdvancedMemorySafetyChecksUsage(
+        errors = PRESUBMIT.CheckSanitizedObjectUsage(
             mock_input_api, mock_output_api)
         self.assertFalse(errors)
 
@@ -5629,15 +5629,15 @@ class CheckAdvancedMemorySafetyChecksUsageTest(unittest.TestCase):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
             MockAffectedFile('test1/foo.h',
-                             ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+                             ['SANITIZED_OBJECT()']),
             MockAffectedFile('test2/foo.cc',
-                             ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+                             ['SANITIZED_OBJECT()']),
         ]
         mock_output_api = MockOutputApi()
-        errors = PRESUBMIT.CheckAdvancedMemorySafetyChecksUsage(
+        errors = PRESUBMIT.CheckSanitizedObjectUsage(
             mock_input_api, mock_output_api)
         self.assertEqual(1, len(errors))
-        self.assertIn('ADVANCED_MEMORY_SAFETY_CHECKS() macro is managed by',
+        self.assertIn('SANITIZED_OBJECT() macro is managed by',
                       errors[0].message)
 
 

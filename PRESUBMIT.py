@@ -7938,17 +7938,17 @@ def CheckAssertAshOnlyCode(input_api, output_api):
 
 
 
-def CheckAdvancedMemorySafetyChecksUsage(input_api, output_api):
-    """Checks that ADVANCED_MEMORY_SAFETY_CHECKS() macro is neither added nor
+def CheckSanitizedObjectUsage(input_api, output_api):
+    """Checks that SANITIZED_OBJECT() macro is neither added nor
     removed as it is managed by the memory safety team internally.
     Do not add / remove it manually."""
     if not _HasCPlusPlusFiles(input_api):
         return []
     paths = set([])
-    # The regex below matches "ADVANCED_MEMORY_SAFETY_CHECKS(" following a word
+    # The regex below matches "SANITIZED_OBJECT(" following a word
     # boundary, but not in a C++ comment.
     macro_matcher = input_api.re.compile(
-        r'^((?!//).)*\bADVANCED_MEMORY_SAFETY_CHECKS\(',
+        r'^((?!//).)*\bSANITIZED_OBJECT\(',
         input_api.re.MULTILINE)
     for f in input_api.AffectedFiles():
         if not _IsCPlusPlusFile(input_api, f.LocalPath()):
@@ -7959,7 +7959,7 @@ def CheckAdvancedMemorySafetyChecksUsage(input_api, output_api):
         return []
     return [
         output_api.PresubmitPromptWarning(
-            'ADVANCED_MEMORY_SAFETY_CHECKS() macro is managed by '
+            'SANITIZED_OBJECT() macro is managed by '
             'the memory safety team (chrome-memory-safety@). '
             'Please contact us to add/delete the uses of the macro.', paths)
     ]

@@ -10,8 +10,8 @@
 #include <optional>
 #include <vector>
 
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -30,7 +30,7 @@ class CONTENT_EXPORT NavigationThrottleRunner
     : public NavigationThrottleRunnerBase {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // `registry` should outlive this instance.

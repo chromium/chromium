@@ -10,8 +10,8 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/client/focus_client.h"
@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(UI_WM) FocusController : public ActivationClient,
                                                 public aura::WindowObserver {
   // TODO(crbug.com/497548800): This macro mitigates the issue. after fixing
   // the issue, remove the marco.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // |rules| cannot be NULL.

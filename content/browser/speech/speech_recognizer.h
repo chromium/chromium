@@ -6,9 +6,9 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 
 #include "base/check.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/sanitized_object.h"
 #include "content/common/content_export.h"
 
 namespace media {
@@ -23,7 +23,7 @@ class SpeechRecognitionEventListener;
 class CONTENT_EXPORT SpeechRecognizer
     : public base::RefCountedThreadSafe<SpeechRecognizer> {
   // TODO(b/495229724): Remove this once the bug is fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id);

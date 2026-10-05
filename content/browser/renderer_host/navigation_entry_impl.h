@@ -60,7 +60,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // history item.
   struct TreeNode {
     // TODO(https://crbug.com/495931147): Remove this macro.
-    ADVANCED_MEMORY_SAFETY_CHECKS();
+    SANITIZED_OBJECT();
 
    public:
     TreeNode(TreeNode* parent, scoped_refptr<FrameNavigationEntry> frame_entry);

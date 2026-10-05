@@ -11,8 +11,8 @@
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/shared_worker_info.h"
@@ -36,7 +36,7 @@ class StoragePartition;
 // associated with in UI surfaces.
 class BrowsingDataModel {
   // TODO(crbug.com/467904023): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // The entity that logically owns a set of data. All browsing data will be

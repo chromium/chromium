@@ -5,12 +5,12 @@
 #ifndef CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_NS_VIEW_BRIDGE_H_
 #define CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_NS_VIEW_BRIDGE_H_
 
+#import <Cocoa/Cocoa.h>
+
 #include <utility>
 #include <vector>
 
-#import <Cocoa/Cocoa.h>
-
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/popup_window_mac.h"
@@ -33,7 +33,7 @@ namespace remote_cocoa {
 class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
                                      public display::DisplayObserver {
   // TODO(https://crbug.com/496217775): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   RenderWidgetHostNSViewBridge(mojom::RenderWidgetHostNSViewHost* client,

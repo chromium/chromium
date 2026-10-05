@@ -211,7 +211,7 @@ enum class FreeFlags {
   // Quarantine for a while to ensure no UaF from on-stack pointers.
   kSchedulerLoopQuarantine = 1 << 2,
   // Quarantine for a while to ensure no UaF from on-stack pointers.
-  kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks = 1 << 3,
+  kSchedulerLoopQuarantineForSanitizedObject = 1 << 3,
   // `kWith[A-Za-z]+Hint` shows whether `FreeHint`'s member is available or not.
   kWithSizeHint = 1 << 4,       // `FreeHint::size` is available.
   kWithAlignmentHint = 1 << 5,  // `FreeHint::alignment` is available.

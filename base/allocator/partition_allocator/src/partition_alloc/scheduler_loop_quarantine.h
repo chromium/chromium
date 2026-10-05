@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Scheduler-loop Quarantine is a quarantine pool behind PartitionAlloc with
-// Advanced Checks and `ADVANCED_MEMORY_SAFETY_CHECKS()`.
+// Advanced Checks and `SANITIZED_OBJECT()`.
 // Both requests to prevent `free()`d allocation getting released to free-list,
 // by passing `FreeFlags::kSchedulerLoopQuarantine` at time of `free()`.
 // This will keep these allocations in Scheduler-Loop Quarantine for while.

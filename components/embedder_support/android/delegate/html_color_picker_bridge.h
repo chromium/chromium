@@ -26,7 +26,7 @@ namespace web_contents_delegate_android {
 // Glues the Java (ColorPickerDialogView.java) picker with the native part.
 class HtmlColorPickerBridge : public content::ColorChooser {
   // TODO(https://crbug.com/495898193): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   HtmlColorPickerBridge(

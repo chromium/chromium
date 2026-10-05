@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager_delegate.h"
@@ -42,7 +42,7 @@ class TabModalDialogManager
       public content::WebContentsObserver,
       public content::WebContentsUserData<TabModalDialogManager> {
   // TODO(crbug.com/493445322): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   enum class DismissalCause {

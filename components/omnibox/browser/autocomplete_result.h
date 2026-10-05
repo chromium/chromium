@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -41,7 +41,7 @@ class TemplateURLService;
 // match.
 class AutocompleteResult {
   // TODO(crbug.com/449894891): Remove this macro once it gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   typedef ACMatches::const_iterator const_iterator;

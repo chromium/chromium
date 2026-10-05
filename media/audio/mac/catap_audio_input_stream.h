@@ -12,8 +12,8 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -53,7 +53,7 @@ struct MEDIA_EXPORT AudioDeviceIdentity {
 // The current implementation supports mono and stereo capture.
 class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
   // TODO(b/495779613): Remove once the underlying UaF issue is fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   using Error = AudioInputStream::AudioInputCallback::Error;

@@ -51,8 +51,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/376575664): Remove this include directive when the
-// ADVANCED_MEMORY_SAFETY_CHECKS macro is removed.
-#include "base/memory/advanced_memory_safety_checks.h"
+// SANITIZED_OBJECT macro is removed.
+#include "base/memory/sanitized_object.h"
 #endif
 
 namespace cc {
@@ -120,7 +120,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                            public viz::HostFrameSinkClient {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/376575664): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 #endif
 
  public:

@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/sanitized_object.h"
 #include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 #include "content/common/content_export.h"
 
@@ -20,7 +20,7 @@ class CONTENT_EXPORT NavigationThrottleRunner2
     : public NavigationThrottleRunnerBase {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   // `registry` should outlive this instance.

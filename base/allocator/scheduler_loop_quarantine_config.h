@@ -24,8 +24,8 @@ enum class SchedulerLoopQuarantineBranchType {
   kMain,
   // Specialized configuration for the IO thread of a process.
   kIO,
-  // One for `ADVANCED_MEMORY_SAFETY_CHECKS()` objects.
-  kAdvancedMemorySafetyChecks,
+  // One for `SANITIZED_OBJECT()` objects.
+  kSanitizedObject,
   // Specialized configuration for the VizCompositorThread.
   kVizCompositor,
   // Specialized configuration for the CompositorGpuThread.

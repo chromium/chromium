@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
@@ -120,7 +120,7 @@ class StoragePartitionConfig;
 class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   //////////////////////////////////////////////////////////////////////////////

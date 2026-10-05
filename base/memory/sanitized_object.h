@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MEMORY_ADVANCED_MEMORY_SAFETY_CHECKS_H_
-#define BASE_MEMORY_ADVANCED_MEMORY_SAFETY_CHECKS_H_
+#ifndef BASE_MEMORY_SANITIZED_OBJECT_H_
+#define BASE_MEMORY_SANITIZED_OBJECT_H_
 
-// This header provides `ADVANCED_MEMORY_SAFETY_CHECKS` macro, which may be used
+// This header provides `SANITIZED_OBJECT` macro, which may be used
 // in any class that needs lifetime investigations. Hence, this header may be
 // included in many translation units, and the build time may be impacted by the
 // total size of this header including the size of the headers directly or
@@ -21,13 +21,13 @@
 #include "base/export_template.h"
 #include "partition_alloc/fnv1a_consteval.h"  // nogncheck
 
-// This header defines `ADVANCED_MEMORY_SAFETY_CHECKS()` macro.
+// This header defines `SANITIZED_OBJECT()` macro.
 // They can be used to specify a class/struct that is targeted to perform
 // additional CHECKS across variety of memory safety mechanisms such as
 // PartitionAllocator.
 //   ```
 //   class Foo {
-//     ADVANCED_MEMORY_SAFETY_CHECKS();
+//     SANITIZED_OBJECT();
 //   }
 //   ```
 // Checks here are disabled by default because of their performance cost.
@@ -36,25 +36,25 @@
 //
 // Additional checks here are categorized into either one of enum
 // `MemorySafetyCheck`. Some of them are too costly and disabled even for
-// `ADVANCED_MEMORY_SAFETY_CHECKS()` annotated types. These checks can be
+// `SANITIZED_OBJECT()` annotated types. These checks can be
 // enabled by passing optional arguments to the macro.
 //   ```
 //   class Foo {
-//     ADVANCED_MEMORY_SAFETY_CHECKS(
+//     SANITIZED_OBJECT(
 //       /*enable=*/ kFoo | kBar);
 //   }
 //   ```
 // It is also possible to disable default checks for annotated types.
 //   ```
 //   class Foo {
-//     ADVANCED_MEMORY_SAFETY_CHECKS(
+//     SANITIZED_OBJECT(
 //       /*enable=*/  kFoo,
 //       /*disable=*/ kBaz);
 //   }
 //   ```
 
 // Macros to annotate class/struct's default memory safety check.
-// ADVANCED_MEMORY_SAFETY_CHECKS(): Enable Check |kAdvancedChecks| for this
+// SANITIZED_OBJECT(): Enable Check |kAdvancedChecks| for this
 // object.
 //
 // Note that if you use this macro at the top of struct declaration, the
@@ -62,7 +62,7 @@
 // |public| manually if needed.
 //
 //   struct ObjectWithAdvancedChecks {
-//     ADVANCED_MEMORY_SAFETY_CHECKS();
+//     SANITIZED_OBJECT();
 //   public:
 //     int public_field;
 //   };
@@ -113,11 +113,11 @@
 // `MemorySafetyCheck::kNone` serves a default value for `DISABLED_CHECKS`.
 // When 0 arg provided, both of `MemorySafetyCheck::kNone`s serve as default
 // values for `ENABLED_CHECKS` and `DISABLED_CHECKS` accordingly.
-#define ADVANCED_MEMORY_SAFETY_CHECKS(...)                                    \
-  MEMORY_SAFETY_CHECKS_INTERNAL(                                              \
-      NOINLINE NOT_TAIL_CALLED,                                               \
-      base::internal::kAdvancedMemorySafetyChecks __VA_OPT__(, ) __VA_ARGS__, \
-      kNone, kNone)
+#define SANITIZED_OBJECT(...)                                             \
+  MEMORY_SAFETY_CHECKS_INTERNAL(                                          \
+      NOINLINE NOT_TAIL_CALLED,                                           \
+      base::internal::kSanitizedObject __VA_OPT__(, ) __VA_ARGS__, kNone, \
+      kNone)
 
 #define LEAKED_SANITIZED_OBJECT(...)                                     \
   MEMORY_SAFETY_CHECKS_INTERNAL(                                         \
@@ -125,11 +125,11 @@
       base::internal::kLeakedSanitizedObject __VA_OPT__(, ) __VA_ARGS__, \
       kNone, kNone)
 #else
-#define ADVANCED_MEMORY_SAFETY_CHECKS(...)                                    \
-  MEMORY_SAFETY_CHECKS_INTERNAL(                                              \
-      ALWAYS_INLINE,                                                          \
-      base::internal::kAdvancedMemorySafetyChecks __VA_OPT__(, ) __VA_ARGS__, \
-      kNone, kNone)
+#define SANITIZED_OBJECT(...)                                             \
+  MEMORY_SAFETY_CHECKS_INTERNAL(                                          \
+      ALWAYS_INLINE,                                                      \
+      base::internal::kSanitizedObject __VA_OPT__(, ) __VA_ARGS__, kNone, \
+      kNone)
 
 #define LEAKED_SANITIZED_OBJECT(...)                                     \
   MEMORY_SAFETY_CHECKS_INTERNAL(                                         \
@@ -138,44 +138,44 @@
       kNone, kNone)
 #endif  // DCHECK_IS_ON()
 
-// When a struct/class with `ADVANCED_MEMORY_SAFETY_CHECKS()` is inherited, a
+// When a struct/class with `SANITIZED_OBJECT()` is inherited, a
 // derived struct/class operator will use customized `operator new()` and
 // `operator delete()` too. If a class has multiple base classes with the macro,
 // a compiler may complain ambiguity between multiple `operator new()`s. On the
 // other hand, if a class uses private inheritance, a compiler may report
 // private `operator new()` that is making impossible to `new` that class. We
 // have two utility macros to resolve these issues:
-// - `INHERIT_MEMORY_SAFETY_CHECKS(BaseClass)`
+// - `INHERIT_SANITIZED_OBJECT(BaseClass)`
 //       Explicitly exports operators from given `BaseClass` to re-apply
 //       checks specified in the parent class. This is the recommended option as
 //       a derived class is likely to have the same characteristics to its baes
 //       class. This macro accepts additional arguments to overwrite
 //       `BaseClass`'s opted-in checks.
 //         ```
-//         INHERIT_MEMORY_SAFETY_CHECKS(BaseClass,
+//         INHERIT_SANITIZED_OBJECT(BaseClass,
 //           /*enable=*/  kFoo | kBar,
 //           /*disable=*/ kBaz);
 //         ```
-// - `DEFAULT_MEMORY_SAFETY_CHECKS()`
+// - `NO_SANITIZED_OBJECT()`
 //       Re-define default `operator new()` and `operator delete()` using
 //       global operators that comes with default checks. This macro accepts
 //       additional arguments to enable some checks manually.
 //         ```
-//         DEFAULT_MEMORY_SAFETY_CHECKS(BaseClass,
+//         NO_SANITIZED_OBJECT(BaseClass,
 //           /*enable=*/ kFoo | kBar);
 //         ```
 //
 // Note that if you use these macros at the top of struct declaration, the
 // declaration context would be left as |private|. Please switch it back to
 // |public| manually if needed.
-#define INHERIT_MEMORY_SAFETY_CHECKS(BASE_CLASS, ...)                          \
+#define INHERIT_SANITIZED_OBJECT(BASE_CLASS, ...)                              \
   MEMORY_SAFETY_CHECKS_INTERNAL(ALWAYS_INLINE,                                 \
                                 BASE_CLASS::kMemorySafetyChecks __VA_OPT__(, ) \
                                     __VA_ARGS__,                               \
                                 kNone, kNone)
 
-#define DEFAULT_MEMORY_SAFETY_CHECKS(...) \
-  MEMORY_SAFETY_CHECKS_INTERNAL(          \
+#define NO_SANITIZED_OBJECT(...) \
+  MEMORY_SAFETY_CHECKS_INTERNAL( \
       ALWAYS_INLINE, kNone __VA_OPT__(, ) __VA_ARGS__, kNone, kNone)
 
 namespace partition_alloc {
@@ -190,7 +190,7 @@ namespace base::internal {
 enum class MemorySafetyCheck : uint32_t {
   kNone = 0,
   kForcePartitionAlloc = (1u << 0),
-  // Enables |FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks|.
+  // Enables |FreeFlags::kSchedulerLoopQuarantineForSanitizedObject|.
   // Requires PA-E.
   kSchedulerLoopQuarantine = (1u << 1),
   // Enables |FreeFlags::kInfiniteQuarantine|. Requires PA-E.
@@ -237,8 +237,8 @@ template <typename T, MemorySafetyCheck c>
 inline constexpr bool is_memory_safety_checked =
     (get_memory_safety_checks<T> & c) == c;
 
-// Set of checks for ADVANCED_MEMORY_SAFETY_CHECKS() annotated objects.
-inline constexpr auto kAdvancedMemorySafetyChecks =
+// Set of checks for SANITIZED_OBJECT() annotated objects.
+inline constexpr auto kSanitizedObject =
     MemorySafetyCheck::kForcePartitionAlloc |
     MemorySafetyCheck::kSchedulerLoopQuarantine;
 
@@ -283,4 +283,4 @@ BASE_EXPORT partition_alloc::PartitionRoot* LeakedSecurityObjectAllocator();
 
 }  // namespace base::internal
 
-#endif  // BASE_MEMORY_ADVANCED_MEMORY_SAFETY_CHECKS_H_
+#endif  // BASE_MEMORY_SANITIZED_OBJECT_H_

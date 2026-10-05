@@ -148,7 +148,7 @@ EXPORT_TEMPLATE void
 PartitionRoot::FreeInline<FreeFlags::kSchedulerLoopQuarantine>(void*);
 EXPORT_TEMPLATE void PartitionRoot::FreeInline<FreeFlags::kNoHooks>(void*);
 EXPORT_TEMPLATE void PartitionRoot::FreeInline<
-    FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks>(void*);
+    FreeFlags::kSchedulerLoopQuarantineForSanitizedObject>(void*);
 EXPORT_TEMPLATE void PartitionRoot::FreeInline<FreeFlags::kIntendedLeak>(void*);
 EXPORT_TEMPLATE
 void PartitionRoot::FreeInline<FreeFlags::kWithSizeHint>(

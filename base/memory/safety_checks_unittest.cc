@@ -26,17 +26,17 @@ struct DefaultChecks {
   char data[16];
 };
 
-// Annotated object: should have |base::internal::kAdvancedMemorySafetyChecks|.
+// Annotated object: should have |base::internal::kSanitizedObject|.
 struct AdvancedChecks {
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   char data[16];
 };
 
-// Annotated object: should have |base::internal::kAdvancedMemorySafetyChecks|.
+// Annotated object: should have |base::internal::kSanitizedObject|.
 struct AnotherAdvancedChecks {
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   char data[16];
@@ -45,21 +45,21 @@ struct AnotherAdvancedChecks {
 // Annotated and aligned object for testing aligned allocations.
 constexpr int kLargeAlignment = 2 * __STDCPP_DEFAULT_NEW_ALIGNMENT__;
 struct alignas(kLargeAlignment) AlignedAdvancedChecks {
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   char data[16];
 };
 
 struct PrivateInheritanceWithInheritMacro : private AdvancedChecks {
-  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks);
+  INHERIT_SANITIZED_OBJECT(AdvancedChecks);
 };
 static_assert(
     is_memory_safety_checked<PrivateInheritanceWithInheritMacro,
                              MemorySafetyCheck::kForcePartitionAlloc>);
 
 struct PrivateInheritanceWithDefaultMacro : private AdvancedChecks {
-  DEFAULT_MEMORY_SAFETY_CHECKS();
+  NO_SANITIZED_OBJECT();
 };
 static_assert(
     !is_memory_safety_checked<PrivateInheritanceWithDefaultMacro,
@@ -67,7 +67,7 @@ static_assert(
 
 struct MultipleInheritanceWithInheritMacro : AdvancedChecks,
                                              AnotherAdvancedChecks {
-  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks);
+  INHERIT_SANITIZED_OBJECT(AdvancedChecks);
 };
 static_assert(
     is_memory_safety_checked<MultipleInheritanceWithInheritMacro,
@@ -75,14 +75,14 @@ static_assert(
 
 struct MultipleInheritanceWithDefaultMacro : AdvancedChecks,
                                              AnotherAdvancedChecks {
-  DEFAULT_MEMORY_SAFETY_CHECKS();
+  NO_SANITIZED_OBJECT();
 };
 static_assert(
     !is_memory_safety_checked<MultipleInheritanceWithDefaultMacro,
                               MemorySafetyCheck::kForcePartitionAlloc>);
 
 struct AdvancedChecksWithPartialOverwrite {
-  ADVANCED_MEMORY_SAFETY_CHECKS(kNone, kForcePartitionAlloc);
+  SANITIZED_OBJECT(kNone, kForcePartitionAlloc);
 
  public:
   char data[16];
@@ -92,7 +92,7 @@ static_assert(
                               MemorySafetyCheck::kForcePartitionAlloc>);
 
 struct InheritanceWithPartialOverwrite : private AdvancedChecks {
-  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks, kNone, kForcePartitionAlloc);
+  INHERIT_SANITIZED_OBJECT(AdvancedChecks, kNone, kForcePartitionAlloc);
 };
 static_assert(
     !is_memory_safety_checked<InheritanceWithPartialOverwrite,
@@ -168,8 +168,7 @@ TEST(MemorySafetyCheckTest, AllocatorFunctions) {
 
 TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
   auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
-  auto& branch =
-      root->scheduler_loop_quarantine_for_advanced_memory_safety_checks_;
+  auto& branch = root->scheduler_loop_quarantine_for_sanitized_object_;
 
   // Skip if AMSC quarantine is not configured. `base::ScopedFeatureList` does
   // not work here because the default `PartitionRoot` is configured before

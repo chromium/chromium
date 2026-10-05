@@ -1200,11 +1200,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       GetSchedulerLoopQuarantineConfiguration(
           process_type_identifier,
           SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
-  const auto
-      scheduler_loop_quarantine_for_advanced_memory_safety_checks_config =
-          GetSchedulerLoopQuarantineConfiguration(
-              process_type_identifier,
-              SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks);
+  const auto scheduler_loop_quarantine_for_sanitized_object_config =
+      GetSchedulerLoopQuarantineConfiguration(
+          process_type_identifier,
+          SchedulerLoopQuarantineBranchType::kSanitizedObject);
 
   if (HasSchedulerLoopQuarantineTaskControl(process_type_identifier)) {
     base::EnableSchedulerLoopQuarantineTaskControlledPurge();
@@ -1312,7 +1311,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       memory_tagging_reporting_mode, bucket_distribution,
       scheduler_loop_quarantine_global_config,
       scheduler_loop_quarantine_thread_local_config,
-      scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
+      scheduler_loop_quarantine_for_sanitized_object_config,
       allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
       allocator_shim::EnableTighterAlignedAllocBound(
           enable_tighter_aligned_alloc_bound));

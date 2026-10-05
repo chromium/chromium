@@ -22,9 +22,9 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/sanitized_object.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/types/pass_key.h"
@@ -302,7 +302,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                           public ui::metadata::MetaDataProvider {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   class OwnedByClientPassKey {

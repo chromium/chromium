@@ -1044,9 +1044,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
     scheduler_loop_quarantine_.Configure(
         scheduler_loop_quarantine_root_,
         opts.scheduler_loop_quarantine_global_config);
-    scheduler_loop_quarantine_for_advanced_memory_safety_checks_.Configure(
+    scheduler_loop_quarantine_for_sanitized_object_.Configure(
         scheduler_loop_quarantine_root_,
-        opts.scheduler_loop_quarantine_for_advanced_memory_safety_checks_config);
+        opts.scheduler_loop_quarantine_for_sanitized_object_config);
     settings_.scheduler_loop_quarantine_thread_local_config =
         opts.scheduler_loop_quarantine_thread_local_config;
 
@@ -1182,12 +1182,12 @@ PartitionRoot::Settings::Settings() = default;
 PartitionRoot::PartitionRoot()
     : scheduler_loop_quarantine_root_(*this),
       scheduler_loop_quarantine_(this),
-      scheduler_loop_quarantine_for_advanced_memory_safety_checks_(this) {}
+      scheduler_loop_quarantine_for_sanitized_object_(this) {}
 
 PartitionRoot::PartitionRoot(PartitionOptions opts)
     : scheduler_loop_quarantine_root_(*this),
       scheduler_loop_quarantine_(this),
-      scheduler_loop_quarantine_for_advanced_memory_safety_checks_(this) {
+      scheduler_loop_quarantine_for_sanitized_object_(this) {
   Init(opts);
 }
 
@@ -1848,7 +1848,7 @@ void PartitionRoot::ResetForTesting(bool allow_leaks) {
   // must explicitly purge them here before executing the teardown/leak
   // assertions.
   scheduler_loop_quarantine_.Purge();
-  scheduler_loop_quarantine_for_advanced_memory_safety_checks_.Purge();
+  scheduler_loop_quarantine_for_sanitized_object_.Purge();
 
   ::partition_alloc::internal::ScopedGuard guard{
       internal::PartitionRootLock(this)};

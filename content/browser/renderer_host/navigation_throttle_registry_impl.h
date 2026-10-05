@@ -10,9 +10,9 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/sanitized_object.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -97,7 +97,7 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
     : public NavigationThrottleRegistryBase {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   explicit NavigationThrottleRegistryImpl(

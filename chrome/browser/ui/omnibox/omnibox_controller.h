@@ -10,7 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/sanitized_object.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -25,7 +25,7 @@ class OmniboxView;
 // omnibox, including `AutocompleteController` and `OmniboxEditModel`.
 class OmniboxController : public AutocompleteController::Observer {
   // TODO(crbug.com/392015004): Remove this macro once it gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
+  SANITIZED_OBJECT();
 
  public:
   explicit OmniboxController(
