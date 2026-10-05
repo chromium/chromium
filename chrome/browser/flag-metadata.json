@@ -7787,6 +7787,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "omnibox-prerender-on-touch-down",
+    "owners": [ "olivierrobin@chromium.org", "stkhapugin@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "omnibox-rich-autocompletion-promising",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 140

@@ -183,10 +183,15 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
   // goal of this code is to cancel prerenders when the omnibox loses focus.
   // Otherwise, they will live forever in cases where the user navigates to a
   // different URL than what is prerendered.
-  if (state == OMNIBOX_FOCUS_NONE) {
-    PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
-    if (agent) {
+  PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+  if (agent) {
+    if (state == OMNIBOX_FOCUS_NONE) {
       agent->CancelPrerender();
+      if (IsOmniboxPrerenderOnTouchDownEnabled()) {
+        agent->SetWebStatePrecloningNeeded(false);
+      }
+    } else if (IsOmniboxPrerenderOnTouchDownEnabled()) {
+      agent->SetWebStatePrecloningNeeded(true);
     }
   }
 }
@@ -233,6 +238,22 @@ void ChromeOmniboxClientIOS::OnResultChanged(
             ? PrerenderBrowserAgent::PrerenderPolicy::kNoDelay
             : PrerenderBrowserAgent::PrerenderPolicy::kDefaultDelay);
   } else {
+    agent->CancelPrerender();
+  }
+}
+
+void ChromeOmniboxClientIOS::StartPrerender(const GURL& url,
+                                            ui::PageTransition transition) {
+  PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+  if (agent) {
+    agent->StartPrerender(url, web::Referrer(), transition,
+                          PrerenderBrowserAgent::PrerenderPolicy::kNoDelay);
+  }
+}
+
+void ChromeOmniboxClientIOS::CancelPrerender() {
+  PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+  if (agent) {
     agent->CancelPrerender();
   }
 }

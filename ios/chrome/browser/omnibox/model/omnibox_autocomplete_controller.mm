@@ -28,6 +28,7 @@
 #import "components/omnibox/browser/page_classification_functions.h"
 #import "components/omnibox/browser/verbatim_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
@@ -73,6 +74,11 @@ using base::UserMetricsAction;
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
   /// Where the omnibox is presented from.
   OmniboxPresentationContext _omniboxPresentationContext;
+  /// Match of the suggestion that was prerendered on touch down.
+  std::optional<AutocompleteMatch> _prerenderedMatch;
+  /// Original URL of the suggestion that was prerendered on touch down before
+  /// modifications.
+  GURL _prerenderedOriginalURL;
 }
 
 - (instancetype)
@@ -116,13 +122,20 @@ using base::UserMetricsAction;
   _autocompleteController = nullptr;
   _omniboxTextModel = nullptr;
   _omniboxClient = nullptr;
+  [self clearPrerenderOnTouchDown];
 }
 
 - (AutocompleteController*)autocompleteController {
   return _autocompleteController;
 }
 
+- (void)clearPrerenderOnTouchDown {
+  _prerenderedMatch.reset();
+  _prerenderedOriginalURL = GURL();
+}
+
 - (void)updatePopupSuggestions {
+  [self clearPrerenderOnTouchDown];
   if (_autocompleteController) {
     BOOL isFocusing = _autocompleteController->input().focus_type() ==
                       metrics::OmniboxFocusType::INTERACTION_FOCUS;
@@ -138,6 +151,7 @@ using base::UserMetricsAction;
 }
 
 - (void)stopAutocompleteWithClearSuggestions:(BOOL)clearSuggestions {
+  [self clearPrerenderOnTouchDown];
   if (_autocompleteController) {
     TRACE_EVENT0("omnibox", "OmniboxAutocompleteController::StopAutocomplete");
     _autocompleteController->Stop(clearSuggestions
@@ -378,7 +392,95 @@ using base::UserMetricsAction;
   }
 }
 
+- (BOOL)canPrerenderMatch:(const AutocompleteMatch&)match
+                    inRow:(NSUInteger)row {
+  if (!_autocompleteController || !_omniboxClient ||
+      row >= _autocompleteController->result().size()) {
+    return NO;
+  }
+  if (_autocompleteController->result().match_at(row).destination_url !=
+      match.destination_url) {
+    return NO;
+  }
+  if (match.type == omnibox::AutocompleteMatchType::kNullResultMessage) {
+    return NO;
+  }
+  if ((match.destination_url.is_empty() &&
+       AutocompleteMatch::IsClipboardType(match.type)) ||
+      match.takeover_action) {
+    return NO;
+  }
+  if (!AutocompleteMatch::IsSearchType(match.type) ||
+      AutocompleteMatch::IsClipboardType(match.type) ||
+      match.type == omnibox::AutocompleteMatchType::kSearchOtherEngine) {
+    return NO;
+  }
+  TemplateURLService* templateURLService =
+      _omniboxClient->GetTemplateURLService();
+  if (!templateURLService ||
+      !templateURLService->IsSearchResultsPageFromDefaultSearchProvider(
+          match.destination_url)) {
+    return NO;
+  }
+  return YES;
+}
+
+- (void)updateDestinationURLForMatch:(AutocompleteMatch&)match
+                        isPastedText:(BOOL)isPastedText {
+  if (IsOmniboxPrerenderOnTouchDownEnabled() && _prerenderedMatch.has_value() &&
+      match.destination_url == _prerenderedOriginalURL &&
+      match.provider == _prerenderedMatch->provider &&
+      match.type == _prerenderedMatch->type) {
+    match = _prerenderedMatch.value();
+    [self clearPrerenderOnTouchDown];
+    return;
+  }
+  base::TimeDelta elapsedTimeSinceUserFirstModifiedOmnibox =
+      [self.omniboxMetricsRecorder
+          elapsedTimeSinceUserFirstModifiedOmniboxWithPastedText:isPastedText];
+  _autocompleteController
+      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
+          elapsedTimeSinceUserFirstModifiedOmnibox, &match);
+}
+
+- (void)prerenderMatchForOpening:(const AutocompleteMatch&)match
+                           inRow:(NSUInteger)row {
+  if (!IsOmniboxPrerenderOnTouchDownEnabled() ||
+      ![self canPrerenderMatch:match inRow:row]) {
+    return;
+  }
+
+  AutocompleteMatch prerenderMatch =
+      _autocompleteController->result().match_at(row);
+  GURL originalDestinationURL = prerenderMatch.destination_url;
+  [self updateDestinationURLForMatch:prerenderMatch isPastedText:NO];
+
+  GURL destinationURL = prerenderMatch.destination_url;
+  if (!destinationURL.is_valid() || !destinationURL.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  TemplateURLService* templateURLService =
+      _omniboxClient->GetTemplateURLService();
+  if (!templateURLService ||
+      !templateURLService->IsSearchResultsPageFromDefaultSearchProvider(
+          destinationURL)) {
+    return;
+  }
+
+  _prerenderedMatch = prerenderMatch;
+  _prerenderedOriginalURL = originalDestinationURL;
+  ui::PageTransition transition = ui::PageTransitionFromInt(
+      prerenderMatch.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  _omniboxClient->StartPrerender(destinationURL, transition);
+}
+
 - (void)onScroll {
+  if (IsOmniboxPrerenderOnTouchDownEnabled() && _prerenderedMatch.has_value() &&
+      _omniboxClient) {
+    _omniboxClient->CancelPrerender();
+    [self clearPrerenderOnTouchDown];
+  }
   [self.omniboxTextController onScroll];
 }
 
@@ -769,17 +871,12 @@ using base::UserMetricsAction;
               match, "disposition", disposition, "altenate_nav_url",
               alternateNavURL, "pasted_text", pastedText);
 
-  // Update the match with the final destination URL.
+  // Update the match with the final destination URL, or reuse the one computed
+  // during touch down prerendering if the selection row matches.
   const BOOL isPastedText = !pastedText.empty();
-  base::TimeDelta elapsedTimeSinceUserFirstModifiedOmnibox =
-      [self.omniboxMetricsRecorder
-          elapsedTimeSinceUserFirstModifiedOmniboxWithPastedText:isPastedText];
-  self.autocompleteController
-      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
-          elapsedTimeSinceUserFirstModifiedOmnibox, &match);
+  [self updateDestinationURLForMatch:match isPastedText:isPastedText];
 
   GURL destinationURL = action ? action->getUrl() : match.destination_url;
-
   std::u16string inputText(pastedText);
   if (inputText.empty()) {
     inputText = _omniboxTextModel->user_input_in_progress
@@ -955,7 +1052,6 @@ using base::UserMetricsAction;
             },
             weakSelf, disposition, timestamp));
       }
-
       break;
     }
     default:

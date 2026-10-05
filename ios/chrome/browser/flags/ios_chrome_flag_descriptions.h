@@ -1563,6 +1563,12 @@ inline constexpr char kOmniboxPastePromoExperimentDescription[] =
     "Enables non-modal default browser promo experiment arms for Omnibox "
     "navigation.";
 
+inline constexpr char kOmniboxPrerenderOnTouchDownName[] =
+    "Omnibox Prerender on Touch Down";
+inline constexpr char kOmniboxPrerenderOnTouchDownDescription[] =
+    "Prerenders compatible omnibox suggestions when touching down on the "
+    "suggestion row.";
+
 inline constexpr char kOmniboxUIMaxAutocompleteMatchesName[] =
     "Omnibox UI Max Autocomplete Matches";
 inline constexpr char kOmniboxUIMaxAutocompleteMatchesDescription[] =

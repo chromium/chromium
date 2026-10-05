@@ -19,6 +19,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
@@ -275,6 +276,9 @@ class PrerenderBrowserAgent::Observer final : public web::WebStateObserver {
 
   ~Observer() final { web_state_->RemoveObserver(this); }
 
+  // Resets the start time when pre-rendering starts for a pre-cloned WebState.
+  void ResetStartTime() { start_time_ = base::TimeTicks::Now(); }
+
   // Returns whether the load was successfully completed.
   bool load_completed() const { return load_completed_; }
 
@@ -323,7 +327,7 @@ class PrerenderBrowserAgent::Observer final : public web::WebStateObserver {
   const raw_ref<web::WebState> web_state_;
   const raw_ref<PrerenderBrowserAgent> agent_;
 
-  const base::TimeTicks start_time_;
+  base::TimeTicks start_time_;
   base::TimeDelta time_saved_;
   bool load_completed_ = false;
 };
@@ -420,6 +424,7 @@ PrerenderBrowserAgent::PrerenderBrowserAgent(
 PrerenderBrowserAgent::~PrerenderBrowserAgent() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   CancelPrerender();
+  ClearPreclonedWebState();
 }
 
 void PrerenderBrowserAgent::SetDelegate(
@@ -506,6 +511,7 @@ bool PrerenderBrowserAgent::ValidatePrerender(const GURL& url,
     web_state_list->ReplaceWebStateAt(active_index, std::move(new_web_state));
     active_web_state = web_state_list->GetWebStateAt(active_index);
   }
+  ClearPreclonedWebState();
 
   if (PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) ||
       PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED)) {
@@ -526,6 +532,108 @@ bool PrerenderBrowserAgent::IsInsertingPrerender() const {
 void PrerenderBrowserAgent::CancelPrerender() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CancelPrerenderInternal(PrerenderFinalStatus::kCancelled);
+}
+
+void PrerenderBrowserAgent::SetWebStatePrecloningNeeded(bool needed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (needed && precloned_web_state_needed_) {
+    ClearPreclonedWebState();
+  }
+  precloned_web_state_needed_ = needed;
+  if (precloned_web_state_needed_) {
+    PrepareWebStateInAdvance();
+  } else {
+    ClearPreclonedWebState();
+  }
+}
+
+void PrerenderBrowserAgent::PrepareWebStateInAdvance() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!precloned_web_state_needed_ || !Enabled()) {
+    return;
+  }
+  if (precloned_web_state_ &&
+      precloned_source_web_state_.get() !=
+          browser_->GetWebStateList()->GetActiveWebState()) {
+    ClearPreclonedWebState();
+  }
+  if (precloned_web_state_) {
+    return;
+  }
+  precloned_web_state_ = CreateWebState(true);
+}
+
+void PrerenderBrowserAgent::ClearPreclonedWebState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  precloned_source_web_state_.reset();
+  if (precloned_web_state_) {
+    crash_report_helper::StopMonitoringURLsForPreloadWebState(
+        precloned_web_state_.get());
+    precloned_web_state_delegate_.reset();
+    precloned_web_state_observer_.reset();
+    precloned_policy_decider_.reset();
+    precloned_web_state_.reset();
+  }
+}
+
+std::unique_ptr<web::WebState> PrerenderBrowserAgent::GetWebStateToUse() {
+  if (precloned_web_state_ &&
+      precloned_source_web_state_.get() !=
+          browser_->GetWebStateList()->GetActiveWebState()) {
+    ClearPreclonedWebState();
+  }
+  std::unique_ptr<web::WebState> web_state;
+  if (precloned_web_state_) {
+    web_state_delegate_ = std::move(precloned_web_state_delegate_);
+    web_state_observer_ = std::move(precloned_web_state_observer_);
+    web_state_observer_->ResetStartTime();
+    policy_decider_ = std::move(precloned_policy_decider_);
+    precloned_source_web_state_.reset();
+    web_state = std::move(precloned_web_state_);
+  } else {
+    web_state = CreateWebState(false);
+  }
+
+  if (precloned_web_state_needed_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PrerenderBrowserAgent::PrepareWebStateInAdvance,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Milliseconds(500));
+  }
+  return web_state;
+}
+
+std::unique_ptr<web::WebState> PrerenderBrowserAgent::CreateWebState(
+    bool precloned) {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  if (!active_web_state) {
+    return nullptr;
+  }
+  std::unique_ptr<web::WebState> web_state = active_web_state->Clone();
+  if (precloned) {
+    precloned_source_web_state_ = active_web_state->GetWeakPtr();
+    precloned_web_state_delegate_ =
+        std::make_unique<Delegate>(web_state.get(), this);
+    precloned_web_state_observer_ =
+        std::make_unique<Observer>(web_state.get(), this);
+    precloned_policy_decider_ =
+        std::make_unique<PolicyDecider>(web_state.get(), this);
+  } else {
+    web_state_delegate_ = std::make_unique<Delegate>(web_state.get(), this);
+    web_state_observer_ = std::make_unique<Observer>(web_state.get(), this);
+    policy_decider_ = std::make_unique<PolicyDecider>(web_state.get(), this);
+  }
+
+  // Create the PrerenderTabHelper before any other TabHelpers to ensure
+  // they all correctly see this WebState as used for pre-rendering.
+  PrerenderTabHelper::CreateForWebState(web_state.get(), this);
+
+  AttachTabHelpers(web_state.get(), TabHelperFilter::kPrerender);
+  crash_report_helper::MonitorURLsForPreloadWebState(web_state.get());
+
+  return web_state;
 }
 
 bool PrerenderBrowserAgent::Enabled() const {
@@ -583,29 +691,15 @@ void PrerenderBrowserAgent::StartPendingRequest() {
     return;
   }
 
-  // To avoid losing the navigation history when the user navigates to the
-  // pre-rendered tab, clone the tab that will be replaced, and start the
-  // pre-rendered navigation in the new tab.
   CHECK(!prerender_request_);
+  std::unique_ptr<web::WebState> web_state_to_use = GetWebStateToUse();
+  if (!web_state_to_use) {
+    return;
+  }
   prerender_request_ =
       std::make_unique<Request<std::unique_ptr<web::WebState>>>(
-          active_web_state->Clone(), request->infos());
+          std::move(web_state_to_use), request->infos());
   web::WebState* web_state = prerender_request_->web_state();
-
-  // Create the delegate, observer and policy decider before any tab helper
-  // to ensure they will be the first notified of the respective changes to
-  // the WebState and can act before any tab helper can have any side-effect
-  // (e.g. AppLauncherTabHelper launching an external application).
-  web_state_delegate_ = std::make_unique<Delegate>(web_state, this);
-  web_state_observer_ = std::make_unique<Observer>(web_state, this);
-  policy_decider_ = std::make_unique<PolicyDecider>(web_state, this);
-
-  // Create the PrerenderTabHelper before any other TabHelpers to ensure
-  // they all correctly see this WebState as used for pre-rendering.
-  PrerenderTabHelper::CreateForWebState(web_state, this);
-
-  AttachTabHelpers(web_state, TabHelperFilter::kPrerender);
-  crash_report_helper::MonitorURLsForPreloadWebState(web_state);
 
   ProfileIOS* profile = browser_->GetProfile();
   if (AccountConsistencyService* service =
@@ -653,6 +747,9 @@ void PrerenderBrowserAgent::CancelPrerenderInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CancelScheduledRequest();
   DestroyPrerender(reason);
+  if (reason == PrerenderFinalStatus::kMemoryLimitExceeded) {
+    ClearPreclonedWebState();
+  }
 }
 
 void PrerenderBrowserAgent::DestroyPrerender(PrerenderFinalStatus reason) {
@@ -700,6 +797,7 @@ void PrerenderBrowserAgent::OnNetworkPredictionSettingChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!Enabled()) {
     CancelPrerender();
+    ClearPreclonedWebState();
   }
 }
 
@@ -708,5 +806,6 @@ void PrerenderBrowserAgent::OnNetworkChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!Enabled()) {
     CancelPrerender();
+    ClearPreclonedWebState();
   }
 }

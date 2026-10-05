@@ -75,6 +75,8 @@ class ComposeboxOmniboxClient final : public OmniboxClientIOS {
                        bool default_match_changed,
                        bool should_prerender,
                        const BitmapFetchedCallback& on_bitmap_fetched) override;
+  void StartPrerender(const GURL& url, ui::PageTransition transition) override;
+  void CancelPrerender() override;
   void OnTextChanged(const AutocompleteMatch& current_match,
                      bool user_input_in_progress,
                      const std::u16string& user_text,

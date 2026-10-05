@@ -7,6 +7,7 @@
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
@@ -21,12 +22,15 @@
 #import "components/omnibox/browser/search_provider.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/omnibox/model/fake_omnibox_client.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller+Testing.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -101,6 +105,11 @@ class MockFakeOmniboxClient : public FakeOmniboxClient {
                const AutocompleteMatch&,
                const AutocompleteMatch&),
               (override));
+  MOCK_METHOD(void,
+              StartPrerender,
+              (const GURL&, ui::PageTransition),
+              (override));
+  MOCK_METHOD(void, CancelPrerender, (), (override));
 };
 
 }  // namespace
@@ -126,7 +135,11 @@ class MockFakeOmniboxClient : public FakeOmniboxClient {
 class OmniboxAutocompleteControllerTest : public PlatformTest {
  public:
   OmniboxAutocompleteControllerTest() {
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
 
     auto clipboard = std::make_unique<FakeClipboardRecentContent>();
     clipboard_ = clipboard.get();
@@ -168,10 +181,11 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_text_model_ = nullptr;
     omnibox_client_ = nullptr;
     controller_delegate_ = nil;
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
-    local_state_.reset();
     [omnibox_metrics_recorder_ disconnect];
     omnibox_metrics_recorder_ = nil;
+    profile_.reset();
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
+    local_state_.reset();
   }
 
   ACMatches SampleMatches() const {
@@ -504,4 +518,118 @@ TEST_F(OmniboxAutocompleteControllerTest, IPv4AddressPartsCount) {
       histogram_tester.GetAllSamples(kIPv4AddressPartsCountHistogramName),
       testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),
                            base::Bucket(4, 1)));
+}
+
+// Tests that prerendering is started on touch down when the feature flag is
+// enabled and the match is a search suggestion pointing to the default search
+// engine.
+TEST_F(OmniboxAutocompleteControllerTest, PrerenderOnTouchDown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOmniboxPrerenderOnTouchDown);
+
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+  GURL search_url =
+      template_url_service->GenerateSearchURLForDefaultSearchProvider(
+          u"touchdown");
+
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          omnibox::AutocompleteMatchType::kSearchSuggest);
+  match.destination_url = search_url;
+  autocomplete_controller_->SetAutocompleteMatches({match});
+
+  EXPECT_CALL(*omnibox_client_, StartPrerender(match.destination_url, _))
+      .Times(1);
+  [controller_ prerenderMatchForOpening:match inRow:0];
+
+  EXPECT_CALL(*omnibox_client_, CancelPrerender()).Times(1);
+  [controller_ onScroll];
+}
+
+// Tests that prerendering on touch down does not run when the feature flag is
+// disabled.
+TEST_F(OmniboxAutocompleteControllerTest, PrerenderOnTouchDownDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kOmniboxPrerenderOnTouchDown);
+
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+  GURL search_url =
+      template_url_service->GenerateSearchURLForDefaultSearchProvider(
+          u"touchdown");
+
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          omnibox::AutocompleteMatchType::kSearchSuggest);
+  match.destination_url = search_url;
+  autocomplete_controller_->SetAutocompleteMatches({match});
+
+  EXPECT_CALL(*omnibox_client_, StartPrerender(testing::_, testing::_))
+      .Times(0);
+  [controller_ prerenderMatchForOpening:match inRow:0];
+}
+
+// Tests that a search suggestion not pointing to the default search engine is
+// rejected from touch down prerendering.
+TEST_F(OmniboxAutocompleteControllerTest,
+       PrerenderOnTouchDownNonDefaultSearchEngineRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOmniboxPrerenderOnTouchDown);
+
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          omnibox::AutocompleteMatchType::kSearchSuggest);
+  match.destination_url = GURL("https://example.com/touchdown");
+  autocomplete_controller_->SetAutocompleteMatches({match});
+
+  EXPECT_CALL(*omnibox_client_, StartPrerender(testing::_, testing::_))
+      .Times(0);
+  [controller_ prerenderMatchForOpening:match inRow:0];
+}
+
+// Tests that a history URL match is rejected from touch down prerendering.
+TEST_F(OmniboxAutocompleteControllerTest,
+       PrerenderOnTouchDownHistoryURLRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOmniboxPrerenderOnTouchDown);
+
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          omnibox::AutocompleteMatchType::kHistoryUrl);
+  match.destination_url = GURL("https://example.com/touchdown");
+  autocomplete_controller_->SetAutocompleteMatches({match});
+
+  EXPECT_CALL(*omnibox_client_, StartPrerender(testing::_, testing::_))
+      .Times(0);
+  [controller_ prerenderMatchForOpening:match inRow:0];
+}
+
+// Tests that a clipboard search match is rejected from touch down prerendering.
+TEST_F(OmniboxAutocompleteControllerTest,
+       PrerenderOnTouchDownClipboardSearchRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOmniboxPrerenderOnTouchDown);
+
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          omnibox::AutocompleteMatchType::kClipboardText);
+  match.destination_url = GURL("https://example.com/touchdown");
+  autocomplete_controller_->SetAutocompleteMatches({match});
+
+  EXPECT_CALL(*omnibox_client_, StartPrerender(testing::_, testing::_))
+      .Times(0);
+  [controller_ prerenderMatchForOpening:match inRow:0];
+}
+
+// Tests that a search on other engine match is rejected from touch down
+// prerendering.
+TEST_F(OmniboxAutocompleteControllerTest,
+       PrerenderOnTouchDownSearchOtherEngineRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOmniboxPrerenderOnTouchDown);
+
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          omnibox::AutocompleteMatchType::kSearchOtherEngine);
+  match.destination_url = GURL("https://example.com/touchdown");
+  autocomplete_controller_->SetAutocompleteMatches({match});
+
+  EXPECT_CALL(*omnibox_client_, StartPrerender(testing::_, testing::_))
+      .Times(0);
+  [controller_ prerenderMatchForOpening:match inRow:0];
 }

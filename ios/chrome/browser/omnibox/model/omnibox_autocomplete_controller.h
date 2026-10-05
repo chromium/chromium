@@ -117,6 +117,10 @@ struct OmniboxTextModel;
                         inRow:(NSUInteger)row
                        openIn:(WindowOpenDisposition)disposition;
 
+/// Prerenders `match` in `row` when highlighted on touch down.
+- (void)prerenderMatchForOpening:(const AutocompleteMatch&)match
+                           inRow:(NSUInteger)row;
+
 /// Selects `match` for appending.
 - (void)selectMatchForAppending:(const AutocompleteMatch&)match;
 

@@ -73,6 +73,14 @@ class PrerenderBrowserAgent final
   // PrerenderTabHelperDelegate implementation.
   void CancelPrerender() final;
 
+  // Sets whether a WebState should be precloned and prepared in advance.
+  void SetWebStatePrecloningNeeded(bool needed);
+
+  // Returns the pre-cloned WebState for testing.
+  web::WebState* precloned_web_state_for_testing() const {
+    return precloned_web_state_.get();
+  }
+
  private:
   // Helper classes used to store information about prerender requests.
   template <typename WebStatePtr>
@@ -158,6 +166,29 @@ class PrerenderBrowserAgent final
 
   // Is the pre-render tab being converted to a real tab?
   bool loading_prerender_ = false;
+
+  // Is a precloned WebState needed/active.
+  bool precloned_web_state_needed_ = false;
+
+  // Precloned WebState to be used for the next prerender request, and the
+  // active WebState it was cloned from.
+  std::unique_ptr<web::WebState> precloned_web_state_;
+  base::WeakPtr<web::WebState> precloned_source_web_state_;
+  std::unique_ptr<Delegate> precloned_web_state_delegate_;
+  std::unique_ptr<Observer> precloned_web_state_observer_;
+  std::unique_ptr<PolicyDecider> precloned_policy_decider_;
+
+  // Pre-clones the active WebState in advance to speed up prerendering.
+  void PrepareWebStateInAdvance();
+
+  // Clears the pre-cloned WebState.
+  void ClearPreclonedWebState();
+
+  // Helper function to retrieve the `WebState` to use for prerendering.
+  std::unique_ptr<web::WebState> GetWebStateToUse();
+
+  // Helper function to create and initialize a new `WebState`.
+  std::unique_ptr<web::WebState> CreateWebState(bool precloned);
 
   raw_ptr<signin::SigninEnabledDataSource> signin_enabled_data_source_;
 

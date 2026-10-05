@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_swift.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/suggest_action.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
@@ -200,6 +201,24 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     DUMP_WILL_BE_NOTREACHED()
         << "Suggestion type " << NSStringFromClass(suggestion.class)
         << " not handled for selection.";
+  }
+}
+
+- (void)prerenderSuggestion:(id<AutocompleteSuggestion>)suggestion
+                      inRow:(NSUInteger)row {
+  if (!IsOmniboxPrerenderOnTouchDownEnabled()) {
+    return;
+  }
+  if (suggestion.pedal) {
+    return;
+  }
+  if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
+    AutocompleteMatchFormatter* autocompleteMatchFormatter =
+        static_cast<AutocompleteMatchFormatter*>(suggestion);
+    const AutocompleteMatch& match =
+        autocompleteMatchFormatter.autocompleteMatch;
+    [self.omniboxAutocompleteController prerenderMatchForOpening:match
+                                                           inRow:row];
   }
 }
 

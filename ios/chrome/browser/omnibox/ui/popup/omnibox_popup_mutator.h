@@ -55,6 +55,11 @@
 - (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
             isFirstUpdate:(BOOL)isFirstUpdate;
 
+/// Tells the mutator when `suggestion` in `row` was highlighted on touch
+/// down to attempt prerendering.
+- (void)prerenderSuggestion:(id<AutocompleteSuggestion>)suggestion
+                      inRow:(NSUInteger)row;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_POPUP_OMNIBOX_POPUP_MUTATOR_H_

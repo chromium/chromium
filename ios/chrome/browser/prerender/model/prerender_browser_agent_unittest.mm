@@ -142,7 +142,8 @@ std::string_view ToString(net::NetworkChangeNotifier::ConnectionType value) {
 
 class PrerenderBrowserAgentTest : public PlatformTest {
  public:
-  PrerenderBrowserAgentTest() {
+  PrerenderBrowserAgentTest()
+      : task_environment_(web::WebTaskEnvironment::TimeSource::MOCK_TIME) {
     // Setup a mock NetworkChangeNotifier to simulate different network
     // connection types.
     network_change_notifier_ = net::test::MockNetworkChangeNotifier::Create();
@@ -247,6 +248,11 @@ class PrerenderBrowserAgentTest : public PlatformTest {
   void SimulateOffline() {
     SimulateNetworkConnectionType(
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
+  }
+
+  // Fast-forwards the task environment's clock by the given duration.
+  void FastForwardBy(base::TimeDelta duration) {
+    task_environment_.FastForwardBy(duration);
   }
 
  private:
@@ -462,4 +468,60 @@ TEST_F(PrerenderBrowserAgentTest, DisabledForSupervisedUsers) {
 
   StartPrerender(url, transition);
   EXPECT_FALSE(agent()->ValidatePrerender(url, transition));
+}
+
+// Check that PrepareWebStateInAdvance pre-clones the active WebState and it is
+// successfully used when starting a prerender.
+TEST_F(PrerenderBrowserAgentTest, PrepareWebStateInAdvance) {
+  PrerenderEnabledOnWiFiAndCellular();
+  SimulateWiFiConnection();
+
+  const GURL url("https://www.google.com/");
+  const auto transition = ui::PageTransition::PAGE_TRANSITION_TYPED;
+
+  agent()->SetWebStatePrecloningNeeded(true);
+  StartPrerender(url, transition);
+
+  EXPECT_TRUE(agent()->ValidatePrerender(url, transition));
+}
+
+// Check that after a pre-cloned WebState is consumed, a new one is prepared
+// automatically after a 500ms delay.
+TEST_F(PrerenderBrowserAgentTest, AutoReprepareWebStateAfterUse) {
+  PrerenderEnabledOnWiFiAndCellular();
+  SimulateWiFiConnection();
+
+  const GURL url1("https://www.google.com/");
+  const GURL url2("https://www.youtube.com/");
+  const auto transition = ui::PageTransition::PAGE_TRANSITION_TYPED;
+
+  agent()->SetWebStatePrecloningNeeded(true);
+  StartPrerender(url1, transition);
+
+  // Fast-forward the task environment's clock by 500ms to allow the
+  // auto-repreparation task to run.
+  FastForwardBy(base::Milliseconds(500));
+
+  StartPrerender(url2, transition);
+  EXPECT_TRUE(agent()->ValidatePrerender(url2, transition));
+}
+
+// Check that CancelPrerender does not clear the pre-cloned WebState, but
+// ClearPreclonedWebState does clear it.
+TEST_F(PrerenderBrowserAgentTest, CancelPrerenderLifecycleWithPreclonedState) {
+  PrerenderEnabledOnWiFiAndCellular();
+  SimulateWiFiConnection();
+
+  EXPECT_EQ(agent()->precloned_web_state_for_testing(), nullptr);
+
+  agent()->SetWebStatePrecloningNeeded(true);
+  EXPECT_NE(agent()->precloned_web_state_for_testing(), nullptr);
+
+  // CancelPrerender should not clear the precloned state.
+  agent()->CancelPrerender();
+  EXPECT_NE(agent()->precloned_web_state_for_testing(), nullptr);
+
+  // ClearPreclonedWebState should clear the precloned state.
+  agent()->SetWebStatePrecloningNeeded(false);
+  EXPECT_EQ(agent()->precloned_web_state_for_testing(), nullptr);
 }

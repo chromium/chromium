@@ -205,10 +205,16 @@ void ComposeboxOmniboxClient::OnFocusChanged(OmniboxFocusState state,
   // goal of this code is to cancel prerenders when the omnibox loses focus.
   // Otherwise, they will live forever in cases where the user navigates to a
   // different URL than what is prerendered.
-  if (state == OMNIBOX_FOCUS_NONE) {
-    PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
-    if (agent) {
+  PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+  if (agent) {
+    if (state == OMNIBOX_FOCUS_NONE) {
       agent->CancelPrerender();
+      if (IsOmniboxPrerenderOnTouchDownEnabled()) {
+        agent->SetWebStatePrecloningNeeded(false);
+      }
+    } else if (IsOmniboxPrerenderOnTouchDownEnabled() &&
+               [delegate_ composeboxMode] == ComposeboxMode::kRegularSearch) {
+      agent->SetWebStatePrecloningNeeded(true);
     }
   }
 }
@@ -245,7 +251,8 @@ void ComposeboxOmniboxClient::OnResultChanged(
   // Only prerender HISTORY_URL matches, which come from the history DB.  Do
   // not prerender other types of matches, including matches from the search
   // provider.
-  if (is_inline_autocomplete &&
+  if ([delegate_ composeboxMode] == ComposeboxMode::kRegularSearch &&
+      is_inline_autocomplete &&
       match.type == omnibox::AutocompleteMatchType::kHistoryUrl) {
     ui::PageTransition transition = ui::PageTransitionFromInt(
         match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
@@ -255,6 +262,25 @@ void ComposeboxOmniboxClient::OnResultChanged(
             ? PrerenderBrowserAgent::PrerenderPolicy::kNoDelay
             : PrerenderBrowserAgent::PrerenderPolicy::kDefaultDelay);
   } else {
+    agent->CancelPrerender();
+  }
+}
+
+void ComposeboxOmniboxClient::StartPrerender(const GURL& url,
+                                             ui::PageTransition transition) {
+  if ([delegate_ composeboxMode] != ComposeboxMode::kRegularSearch) {
+    return;
+  }
+  PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+  if (agent) {
+    agent->StartPrerender(url, web::Referrer(), transition,
+                          PrerenderBrowserAgent::PrerenderPolicy::kNoDelay);
+  }
+}
+
+void ComposeboxOmniboxClient::CancelPrerender() {
+  PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
+  if (agent) {
     agent->CancelPrerender();
   }
 }

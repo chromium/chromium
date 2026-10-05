@@ -20,4 +20,10 @@ BASE_DECLARE_FEATURE(kOmniboxZPSOnClobber);
 // Returns whether on clobber suggestions are enabled.
 bool IsZPSOnClobberEnabled();
 
+// Feature flag to prerender URL suggestions on touch down in the omnibox popup.
+BASE_DECLARE_FEATURE(kOmniboxPrerenderOnTouchDown);
+
+// Returns whether prerender on touch down is enabled.
+bool IsOmniboxPrerenderOnTouchDownEnabled();
+
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_UI_FEATURES_H_

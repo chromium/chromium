@@ -229,6 +229,12 @@ class OmniboxClientIOS {
                                const BitmapFetchedCallback& on_bitmap_fetched) {
   }
 
+  // Starts prerendering `url` with `transition` immediately (no delay).
+  virtual void StartPrerender(const GURL& url, ui::PageTransition transition) {}
+
+  // Cancels any ongoing prerender.
+  virtual void CancelPrerender() {}
+
   // These two methods fetch favicons if the embedder supports it. Not all
   // embedders do. These methods return the favicon synchronously if possible.
   // Otherwise, they return an empty gfx::Image and `on_favicon_fetched` may or

@@ -17,3 +17,9 @@ BASE_FEATURE(kOmniboxZPSOnClobber, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsZPSOnClobberEnabled() {
   return base::FeatureList::IsEnabled(kOmniboxZPSOnClobber);
 }
+
+BASE_FEATURE(kOmniboxPrerenderOnTouchDown, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOmniboxPrerenderOnTouchDownEnabled() {
+  return base::FeatureList::IsEnabled(kOmniboxPrerenderOnTouchDown);
+}

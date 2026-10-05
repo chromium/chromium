@@ -693,6 +693,22 @@ const CGFloat kCloseButtonPadding = 16.0f;
 }
 
 - (void)tableView:(UITableView*)tableView
+    didHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (!IsOmniboxPrerenderOnTouchDownEnabled()) {
+    return;
+  }
+  NSUInteger row = indexPath.row;
+  NSUInteger section = indexPath.section;
+  if (section >= self.currentResult.count ||
+      row >= self.currentResult[section].suggestions.count) {
+    return;
+  }
+  NSInteger absoluteRow = [self absoluteRowIndexForIndexPath:indexPath];
+  [self.mutator prerenderSuggestion:[self suggestionAtIndexPath:indexPath]
+                              inRow:absoluteRow];
+}
+
+- (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSUInteger row = indexPath.row;
   NSUInteger section = indexPath.section;
