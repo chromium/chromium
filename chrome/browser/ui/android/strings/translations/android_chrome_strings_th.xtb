@@ -123,7 +123,6 @@
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
 <translation id="1435593198351412143">เปิด PDF โดยอัตโนมัติ</translation>
 <translation id="1437543266176261764">ทำงานใน "<ph name="APP_NAME" />"</translation>
-<translation id="1448440926884431741">จัดระเบียบสินค้าที่ติดตามในบุ๊กมาร์ก</translation>
 <translation id="1452651021404174820">เลือกอุปกรณ์</translation>
 <translation id="1455845192930279203">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) จาก <ph name="DOWNLOAD_DOMAIN" /> ต่อไปไหม</translation>
 <translation id="1460751212339734034">ประหยัดเวลาด้วยการพิมพ์น้อยลง</translation>
@@ -775,6 +774,7 @@
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, แท็บการบันทึกเสียงที่ปักหมุดซึ่งเลือกไว้หลายแท็บ</translation>
 <translation id="4137746084635924146">ภาษาปัจจุบันของอุปกรณ์</translation>
 <translation id="414128724510021958">เว็บไซต์เวอร์ชันเดสก์ท็อปเปิดใช้งานโดยค่าเริ่มต้น</translation>
+<translation id="4150837143272125910">ดาวน์โหลดอัปเดตแล้ว</translation>
 <translation id="4162867837470729563">รายการตัวเลือกการแชร์ที่ระดับเต็มความสูงของหน้าจอ</translation>
 <translation id="4164642020717536140">ท่องเว็บอย่างรวดเร็วและปลอดภัย</translation>
 <translation id="4165077084524712774">เครื่องมืออื่นๆ</translation>
@@ -1401,6 +1401,7 @@
 <translation id="6565959834589222080">ระบบจะใช้ Wi-Fi เมื่อพร้อมใช้งาน</translation>
 <translation id="657177046675873214">หากต้องการรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่อง ให้เปิด "บุ๊กมาร์ก" ในการตั้งค่า</translation>
 <translation id="6573096386450695060">อนุญาตเสมอ</translation>
+<translation id="657480975869429144">Chrome รุ่นใหม่พร้อมให้บริการแล้ว</translation>
 <translation id="658099107946526506">ปกป้องการท่องเว็บแบบส่วนตัวด้วย PIN เพื่อป้องกันการเข้าถึงที่ไม่พึงประสงค์</translation>
 <translation id="6583199322650523874">บุ๊กมาร์กหน้าปัจจุบัน</translation>
 <translation id="6588043302623806746">ใช้ DNS ที่ปลอดภัย</translation>

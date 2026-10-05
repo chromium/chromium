@@ -494,7 +494,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5899008323405946573">Folosește cele mai bune instrumente AI de la Google cu aplicația Chrome pe telefon</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – conectare la rețea</translation>
 <translation id="5924017743176219022">Se conectează la internet…</translation>
-<translation id="5925596746603389877">Descarcă programul de instalare Chrome</translation>
 <translation id="5940385492829620908">Experiența web personalizată, marcajele și celelalte date Chrome chiar aici.</translation>
 <translation id="5941711191222866238">Minimizează</translation>
 <translation id="5941830788786076944">Setează Google Chrome ca browser prestabilit</translation>
@@ -556,6 +555,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6360449101159168105">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chrome. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa lista de lecturi și alte date de pe toate dispozitivele.</translation>
 <translation id="6388799252195623474">ajută-mă cu asta</translation>
+<translation id="6401458660421980302">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe dispozitivul respectiv</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizația ta închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
@@ -584,6 +584,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="659498884637196217">În Manager de parole Google pe acest dispozitiv</translation>
 <translation id="6612152958212564387">Nu trimiți statistici de utilizare și rapoarte de blocare la Google. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Păstrează parolele, marcajele și istoricul perfect sincronizate pe toate dispozitivele setând Chrome ca browser prestabilit.</translation>
+<translation id="6621391692573306628">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe ambele dispozitive</translation>
 <translation id="6631524303639368205">Continuă de unde ai rămas: Chrome a restabilit filele din ultima sesiune. Poți dezactiva această opțiune în</translation>
 <translation id="6632012506031284914">pentru a căuta cu Chrome.</translation>
 <translation id="6632473616050862500">ChromeOS Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
@@ -771,6 +772,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8260086374035800939">Dacă Gemini în Chrome este deschis, panoul lateral rămâne deschis când creezi file noi</translation>
 <translation id="8267953129876836456">Chrome a găsit câteva recomandări privind siguranța pe care să le examinezi</translation>
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
+<translation id="8291415872436043161">Descarcă Chrome</translation>
 <translation id="829923460755755423">Adaugă o comandă rapidă către Managerul de parole Google</translation>
 <translation id="8313851650939857356">Eroare la pornire: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Salvează ca imagine</translation>

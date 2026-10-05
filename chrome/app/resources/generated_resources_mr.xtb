@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">अ‍ॅक्सेस काढून टाका</translation>
 <translation id="1791662854739702043">इंस्टॉल केले</translation>
 <translation id="1792619191750875668">एक्स्टेंशनित डिस्प्ले</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> चा पासवर्ड लपवा</translation>
 <translation id="1794791083288629568">या समस्येचे निराकरण करण्यात आम्हाला मदत करण्यासाठी अभिप्राय पाठवा.</translation>
 <translation id="1795214765651529549">क्लासिक वापरा</translation>
@@ -2869,7 +2870,6 @@
 <translation id="3166443275568926403">परफॉर्मन्स आणि बॅटरी स्थिती</translation>
 <translation id="3167446923957429259">तुमचे तोंड डावीकडे हलवा</translation>
 <translation id="3167562202484086668"><ph name="BRAND" /> चा सर्व डेटा हटवा</translation>
-<translation id="3169504125849131369">Windows सेटिंग्ज उघडा</translation>
 <translation id="3175067642577044620">मुख्य भाग</translation>
 <translation id="3175862692832442091">जंगल</translation>
 <translation id="3176347586396987181">माउस बटण प्रेस करून धरून ठेवण्यासाठी “z” वापरा</translation>
@@ -2955,6 +2955,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> संपादित करण्यासाठी किंवा हटवण्यासाठी आणखी पर्याय</translation>
 <translation id="3232754137068452469">वेब अ‍ॅप</translation>
 <translation id="3233271424239923319">Linux अ‍ॅप्स आणि फायलींचा बॅकअप घ्या</translation>
+<translation id="3233577317461669428">इतर कोणतेही डिव्हाइस आढळले नाही</translation>
 <translation id="3234251228180563751">वापरकर्ता नावामध्ये १००० पेक्षा जास्त वर्ण आहेत</translation>
 <translation id="3234978181857588512">डिव्हाइसमध्ये सेव्ह करा</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> वर विभागणी केलेल्या <ph name="SITE_NAME" /> चा साइट डेटा हटवायचा आहे का?</translation>
@@ -4762,7 +4763,6 @@
 <translation id="4610493438923139095">विश्वसनीय नसलेले</translation>
 <translation id="4610637590575890427">तुम्हाला <ph name="SITE" /> कडे जायचे असे म्हणायचे होते काय?</translation>
 <translation id="4611619000650855880">डावे माउस बटण निवडले जाते, तेव्हा डबल-क्लिक करण्यासाठी “/” वापरा</translation>
-<translation id="4612841084470706111">सर्व विनंती केलेल्या साइटचा अ‍ॅक्सेस द्या.</translation>
 <translation id="4613271546271159013">तुम्ही नवीन टॅब उघडता तेव्हा कोणते पेज दर्शविले जाते हे एक्स्टेंशनने बदलले आहे.</translation>
 <translation id="461613135510474570">वाक्य</translation>
 <translation id="461661862154729886">ऊर्जा स्रोत</translation>
@@ -7007,6 +7007,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6356893102071098867">तुम्ही योग्य खाते निवडले आहे का हे तपासा</translation>
 <translation id="6357305427698525450">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> किंवा  <ph name="APP_NAME_2" /> मध्ये उघडतील.</translation>
 <translation id="6357750620525943720">इतर स्थिर आयडेंटिफायर (उदा., हॅश किंवा UUIDs)</translation>
+<translation id="6357830294871526418">इतर डिव्हाइसवरील टॅब</translation>
 <translation id="6358884629796491903">ड्रॅगन</translation>
 <translation id="6359640073754977254">शेवटच्या टॅबवर स्क्रोल करा</translation>
 <translation id="6361850914223837199">एरर तपशील:</translation>
@@ -7057,7 +7058,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6400360390396538896">नेहमी सुरू <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">टॅब गट यावरील फोकस काढून टाका</translation>
 <translation id="6401118106417399952">तुमच्या डिव्हाइसचे EID <ph name="EID_NUMBER" /> आहे आणि डिव्हाइसचा सिरीअल नंबर <ph name="SERIAL_NUMBER" /> आहे. हे नंबर सेवा ॲक्टिव्हेट करण्यात मदत करण्यासाठी वापरले जाऊ शकतात.</translation>
-<translation id="6401458660421980302">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, तेथे Chrome मध्ये साइन इन करा</translation>
 <translation id="6402042774506839496">कारण जाणून घेण्यासाठी, अ‍ॅप डेव्हलपरशी संपर्क साधा</translation>
 <translation id="6402921224457714577">साइट या तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्याची विनंती करू शकतात</translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
@@ -7347,7 +7347,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6619801788773578757">कियोस्क ॲप्लिकेशन जोडा</translation>
 <translation id="6619990499523117484">आपल्या पिन ची पुष्टी करा</translation>
 <translation id="6621282332208609777">Google ला विचारा किंवा URL टाइप करा</translation>
-<translation id="6621391692573306628">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा</translation>
 <translation id="6622980291894852883">इमेज ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="6624036901798307345">प्रत्येक टॅबचे थंबनेल दाखवणारी नवीन टॅब स्ट्रिप उघडण्यासाठी टॅबलेट मोडमध्ये, टॅब काउंटर टूलबार बटणवर टॅप करा.</translation>
 <translation id="6624538059730609162">उजवीकडील दृश्य बंद करा</translation>

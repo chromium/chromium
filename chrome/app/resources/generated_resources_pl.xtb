@@ -2850,7 +2850,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3166443275568926403">Wydajność i stan baterii</translation>
 <translation id="3167446923957429259">Porusz ustami w lewo</translation>
 <translation id="3167562202484086668">Usuń wszystkie dane z aplikacji <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Otwórz ustawienia systemu Windows</translation>
 <translation id="3175067642577044620">Treść</translation>
 <translation id="3175862692832442091">Las</translation>
 <translation id="3176347586396987181">Aby nacisnąć i przytrzymać przycisk myszy, użyj klawisza „Z”</translation>
@@ -4739,7 +4738,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4610493438923139095">Niezaufany</translation>
 <translation id="4610637590575890427">Czy chodziło o przejście do witryny <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Gdy wybrany jest lewy przycisk myszy, do dwukrotnego kliknięcia używaj „/”</translation>
-<translation id="4612841084470706111">Przyznaj dostęp do wszystkich żądanych witryn.</translation>
 <translation id="4613271546271159013">Rozszerzenie zmieniło stronę pokazywaną po otwarciu nowej karty.</translation>
 <translation id="461613135510474570">Zdanie</translation>
 <translation id="461661862154729886">Źródło energii</translation>
@@ -7029,7 +7027,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6400360390396538896">Zawsze na <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Usuń zaznaczenie grupy kart</translation>
 <translation id="6401118106417399952">EID urządzenia to <ph name="EID_NUMBER" />, a jego numer seryjny to <ph name="SERIAL_NUMBER" />. Tych numerów można użyć do aktywowania usługi.</translation>
-<translation id="6401458660421980302">Aby wysłać tę kartę na inne urządzenie, zaloguj się na nim w Chrome</translation>
 <translation id="6402042774506839496">Aby dowiedzieć się, dlaczego, skontaktuj się z deweloperem aplikacji</translation>
 <translation id="6402921224457714577">Witryny mogą prosić o uprawnienia do przeprogramowywania urządzeń MIDI i sterowania nimi</translation>
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
@@ -7323,7 +7320,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6619801788773578757">Dodaj aplikację kiosku</translation>
 <translation id="6619990499523117484">Potwierdź kod PIN</translation>
 <translation id="6621282332208609777">Zapytaj Google lub wpisz adres URL</translation>
-<translation id="6621391692573306628">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome</translation>
 <translation id="6622980291894852883">Nadal blokuj pokazywanie grafik</translation>
 <translation id="6624036901798307345">W trybie tabletu kliknij przycisk licznika kart na pasku narzędzi, aby otworzyć nowy pasek kart z miniaturą każdej karty.</translation>
 <translation id="6624538059730609162">Zamknij widok po prawej stronie</translation>

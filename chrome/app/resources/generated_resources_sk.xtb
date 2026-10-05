@@ -2855,7 +2855,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3166443275568926403">Výkonnosť a stav batérie</translation>
 <translation id="3167446923957429259">Pohnite ústami doľava</translation>
 <translation id="3167562202484086668">Odstrániť všetky údaje v službe <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Otvoriť nastavenia systému Windows</translation>
 <translation id="3175067642577044620">Text</translation>
 <translation id="3175862692832442091">Les</translation>
 <translation id="3176347586396987181">Tlačidlo myši stlačíte a pridržíte klávesom Z</translation>
@@ -4750,7 +4749,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4610493438923139095">Nedôveryhodný</translation>
 <translation id="4610637590575890427">Chceli ste prejsť na adresu <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Keď je vybrané ľavé tlačidlo myši, na dvojité kliknutie použite kláves lomky</translation>
-<translation id="4612841084470706111">Udeliť prístup všetkým požadovaným webom</translation>
 <translation id="4613271546271159013">Rozšírenie zmenilo stránku, ktorá sa vám zobrazí po otvorení novej karty.</translation>
 <translation id="461613135510474570">Veta</translation>
 <translation id="461661862154729886">Zdroj napájania</translation>
@@ -7041,7 +7039,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6400360390396538896">Vždy na <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Zrušiť zameranie skupiny kariet</translation>
 <translation id="6401118106417399952">EID zariadenia je <ph name="EID_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Pomocou týchto čísel je možné aktivovať službu.</translation>
-<translation id="6401458660421980302">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v ňom do Chromu</translation>
 <translation id="6402042774506839496">Ak chcete zistiť prečo, kontaktujte vývojára aplikácie</translation>
 <translation id="6402921224457714577">Weby môžu žiadať o povolenie ovládať a preprogramovávať vaše zariadenia MIDI</translation>
 <translation id="6404511346730675251">Upraviť záložku</translation>
@@ -7335,7 +7332,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6619801788773578757">Pridať aplikáciu pre režim kiosku</translation>
 <translation id="6619990499523117484">Potvrďte kód PIN</translation>
 <translation id="6621282332208609777">Opýtajte sa Googlu alebo napíšte webovú adresu</translation>
-<translation id="6621391692573306628">Ak chcete túto kartu odoslať do iného zariadenia, prihláste v oboch zariadeniach do Chromu</translation>
 <translation id="6622980291894852883">Pokračovať v blokovaní obrázkov</translation>
 <translation id="6624036901798307345">V režime tabletu klepnite na paneli s nástrojmi na tlačidlo počítadla kariet a otvorte tak nový panel kariet s miniatúrami všetkých kariet.</translation>
 <translation id="6624538059730609162">Zavrieť pravé zobrazenie</translation>

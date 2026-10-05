@@ -867,6 +867,7 @@
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
 <translation id="243815215670139125">此卡無法儲存至 Google 帳戶，因此已改為儲存至此裝置上的 Chrome。</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
+<translation id="2442033148418774391">閂咗「自動填入更智能，確保資料保密」通知</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />你的瀏覽記錄
@@ -879,6 +880,7 @@
 <translation id="2451607499823206582">正在追蹤</translation>
 <translation id="2452837234288608067">無法提供協助，請再試一次。</translation>
 <translation id="2453045048779611513">你的機構對可儲存的內容設有限制</translation>
+<translation id="2456490423293803882">「自動填入更智能，確保資料保密」通知宜家顯示喺成個畫面</translation>
 <translation id="2459882793359532780">已套用的瀏覽器政策 (機器和設定檔政策)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core 提供一站式工具，讓你從雲端設定瀏覽器政策</translation>
 <translation id="2461822463642141190">電流</translation>
@@ -1108,6 +1110,7 @@
 <translation id="2878197950673342043">十字摺</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">使用螢幕鎖定功能填入密碼</translation>
+<translation id="2880119244122776372">建立並編碼</translation>
 <translation id="2881276955470682203">要儲存付款卡嗎？</translation>
 <translation id="2882280148032777436">刪除已知的旅客編號</translation>
 <translation id="2882949212241984732">雙摺頁</translation>
@@ -3913,6 +3916,7 @@
 <translation id="753713322968419914">要從 Chrome 自動填入功能中移除住宅地址嗎？</translation>
 <translation id="753714465667062283">登入以儲存相片</translation>
 <translation id="7537536606612762813">強制</translation>
+<translation id="7540924742308928499">集思廣益並撮要</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>
 <translation id="7548892272833184391">修正連線錯誤</translation>

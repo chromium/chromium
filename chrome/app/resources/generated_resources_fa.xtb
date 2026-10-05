@@ -2867,7 +2867,6 @@
 <translation id="3166443275568926403">وضعیت باتری و عملکرد</translation>
 <translation id="3167446923957429259">حرکت دادن دهان به‌سمت چپ</translation>
 <translation id="3167562202484086668">حذف همه داده‌های <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">‏باز کردن تنظیمات Windows</translation>
 <translation id="3175067642577044620">نوشتار اصلی</translation>
 <translation id="3175862692832442091">جنگل</translation>
 <translation id="3176347586396987181">‏از «z» برای فشار دادن و نگه داشتن دکمه موشواره استفاده کنید</translation>
@@ -4762,7 +4761,6 @@
 <translation id="4610493438923139095">غیرقابل‌اعتماد</translation>
 <translation id="4610637590575890427">آیا می‌خواستید به <ph name="SITE" /> بروید؟</translation>
 <translation id="4611619000650855880">وقتی دکمه سمت چپ موشواره انتخاب شده است، از «/» برای دوکلیک کردن استفاده کنید</translation>
-<translation id="4612841084470706111">موافقت با دسترسی همه سایت‌های درخواست‌شده.</translation>
 <translation id="4613271546271159013">یک برنامه افزودنی صفحه‌ای را که موقع باز کردن برگه جدید نشان داده می‌شود، تغییر داده است.</translation>
 <translation id="461613135510474570">جمله</translation>
 <translation id="461661862154729886">منبع انرژی</translation>
@@ -7055,7 +7053,6 @@
 <translation id="6400360390396538896">همیشه در <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">غیرکانونی کردن گروه زبانه‌ها</translation>
 <translation id="6401118106417399952">‏شماره EID دستگاه شما <ph name="EID_NUMBER" /> و شماره سریال آن <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
-<translation id="6401458660421980302">‏برای ارسال این زبانه به دستگاهی دیگر، در آنجا به سیستم Chrome وارد شوید</translation>
 <translation id="6402042774506839496">برای اطلاع از دلیل آن، با توسعه‌دهنده نرم‌افزار تماس بگیرید</translation>
 <translation id="6402921224457714577">‏سایت‌ها می‌توانند برای کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI شما درخواست دهند</translation>
 <translation id="6404511346730675251">ویرایش نشانک</translation>
@@ -7347,7 +7344,6 @@
 <translation id="6619801788773578757">افزودن برنامه کیوسک</translation>
 <translation id="6619990499523117484">پین را تأیید کنید</translation>
 <translation id="6621282332208609777">‏از Google بپرسید یا نشانی وبی تایپ کنید</translation>
-<translation id="6621391692573306628">‏برای ارسال این زبانه به دستگاهی دیگر، در هردو دستگاه به سیستم Chrome وارد شوید</translation>
 <translation id="6622980291894852883">ادامه مسدودکردن تصاویر</translation>
 <translation id="6624036901798307345">در حالت رایانه لوحی، روی دکمه شمارنده زبانه در نوارابزار تک‌ضرب بزنید تا نوار زبانه جدید که ریزعکس هر زبانه را نشان می‌دهد باز شود.</translation>
 <translation id="6624538059730609162">بستن نمای راست</translation>

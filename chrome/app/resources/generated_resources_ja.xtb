@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">アクセスを削除</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792619191750875668">拡張ディスプレイ</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" />（<ph name="KEYBOARD_SHORTCUT" />）</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> のパスワードを非表示にする</translation>
 <translation id="1794791083288629568">フィードバックを送信して問題解決に協力する。</translation>
 <translation id="1795214765651529549">クラシックを使用</translation>
@@ -2854,7 +2855,6 @@
 <translation id="3166443275568926403">パフォーマンスとバッテリーの状態</translation>
 <translation id="3167446923957429259">口を左に動かす</translation>
 <translation id="3167562202484086668"><ph name="BRAND" />のデータをすべて削除</translation>
-<translation id="3169504125849131369">Windows の設定を開いてください</translation>
 <translation id="3175067642577044620">本文</translation>
 <translation id="3175862692832442091">森</translation>
 <translation id="3176347586396987181">Z　キーを使用してマウスボタンを長押しする</translation>
@@ -2938,6 +2938,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" /> の <ph name="ENTITY_INSTANCE_SUBLABEL" /> の編集または削除のその他のオプション</translation>
 <translation id="3232754137068452469">ウェブアプリ</translation>
 <translation id="3233271424239923319">Linux のアプリとファイルをバックアップします</translation>
+<translation id="3233577317461669428">他のデバイスが見つかりません</translation>
 <translation id="3234251228180563751">ユーザー名が 1,000 文字を超えています</translation>
 <translation id="3234978181857588512">デバイスに保存</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> で分割された <ph name="SITE_NAME" /> のサイトデータを削除しますか？</translation>
@@ -4747,7 +4748,6 @@
 <translation id="4610493438923139095">信頼不可</translation>
 <translation id="4610637590575890427">もしかして: <ph name="SITE" /></translation>
 <translation id="4611619000650855880">マウスの左ボタンを選択した状態で「/」キーを使用してダブルクリックする</translation>
-<translation id="4612841084470706111">リクエストされたすべてのサイトへのアクセスを許可</translation>
 <translation id="4613271546271159013">拡張機能によって、新しいタブを開いたときに表示されるページが変更されました。</translation>
 <translation id="461613135510474570">文</translation>
 <translation id="461661862154729886">電源</translation>
@@ -6986,6 +6986,7 @@
 <translation id="6356893102071098867">正しいアカウントを選択していることを確認してください</translation>
 <translation id="6357305427698525450">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> または <ph name="APP_NAME_2" /> で開かれます。</translation>
 <translation id="6357750620525943720">その他の不変の識別子（例: ハッシュまたは UUID）</translation>
+<translation id="6357830294871526418">他のデバイスのタブ</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
 <translation id="6359640073754977254">最後のタブまでスクロール</translation>
 <translation id="6361850914223837199">エラーの詳細:</translation>
@@ -7036,7 +7037,6 @@
 <translation id="6400360390396538896"><ph name="ORIGIN" /> では常に許可</translation>
 <translation id="6400714103322134861">タブグループへのフォーカスを解除</translation>
 <translation id="6401118106417399952">デバイスの EID は <ph name="EID_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
-<translation id="6401458660421980302">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください</translation>
 <translation id="6402042774506839496">理由については、アプリ デベロッパーにお問い合わせください</translation>
 <translation id="6402921224457714577">サイトによる MIDI デバイスの操作と再プログラムを許可する</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
@@ -7326,7 +7326,6 @@
 <translation id="6619801788773578757">キオスク アプリケーションを追加</translation>
 <translation id="6619990499523117484">PIN を確認してください</translation>
 <translation id="6621282332208609777">Google に質問または URL を入力</translation>
-<translation id="6621391692573306628">このタブを別のデバイスに送信するには、両方のデバイスで Chrome にログインしてください</translation>
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
 <translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>
 <translation id="6624538059730609162">右のビューを閉じる</translation>

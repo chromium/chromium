@@ -123,7 +123,6 @@
 <translation id="1432581352905426595">Upravljanje iskalnikov</translation>
 <translation id="1435593198351412143">Samodejno odpiranje datotek PDF</translation>
 <translation id="1437543266176261764">Izvaja se v aplikaciji <ph name="APP_NAME" /></translation>
-<translation id="1448440926884431741">Organizirajte spremljane izdelke v zaznamkih.</translation>
 <translation id="1452651021404174820">Izbira naprave</translation>
 <translation id="1455845192930279203">Ali želite vseeno prenesti datoteko »<ph name="FILE_NAME" />« (<ph name="FILE_SIZE" />) iz domene <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Prihranite čas in manj vnašajte</translation>
@@ -775,6 +774,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, večkrat izbrani pripeti zavihek za snemanje</translation>
 <translation id="4137746084635924146">Trenutni jezik naprave</translation>
 <translation id="414128724510021958">Namizna spletna mesta so privzeto zahtevana</translation>
+<translation id="4150837143272125910">Posodobitev je prenesena</translation>
 <translation id="4162867837470729563">Seznam možnosti deljenja z drugimi je odprt pri polni višini.</translation>
 <translation id="4164642020717536140">Hitro in varno spletno brskanje</translation>
 <translation id="4165077084524712774">Več orodij</translation>
@@ -1402,6 +1402,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6565959834589222080">Wi-Fi se uporablja, ko je na voljo</translation>
 <translation id="657177046675873214">Če želite dostopati do zaznamkov v vseh napravah, v nastavitvah vklopite »Zaznamke«</translation>
 <translation id="6573096386450695060">Vedno dovoli</translation>
+<translation id="657480975869429144">Na voljo je nova različica Chroma</translation>
 <translation id="658099107946526506">Zavarujte zasebno brskanje s kodo PIN, da preprečite neželen dostop</translation>
 <translation id="6583199322650523874">Dodajanje trenutne strani med zaznamke</translation>
 <translation id="6588043302623806746">Uporaba varnega DNS-ja</translation>

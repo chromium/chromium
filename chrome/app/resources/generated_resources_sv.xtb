@@ -2870,7 +2870,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3166443275568926403">Prestanda och batteristatus</translation>
 <translation id="3167446923957429259">Rör på munnen åt vänster</translation>
 <translation id="3167562202484086668">Radera all data för <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Öppna Windows-inställningar</translation>
 <translation id="3175067642577044620">Brödtext</translation>
 <translation id="3175862692832442091">Skog</translation>
 <translation id="3176347586396987181">Håll ned en musknapp med z</translation>
@@ -4766,7 +4765,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4610493438923139095">Inte betrodd</translation>
 <translation id="4610637590575890427">Ville du besöka <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">När vänster musknapp har valts kan du använda / för att dubbelklicka</translation>
-<translation id="4612841084470706111">Bevilja åtkomst till alla begärda webbplatser.</translation>
 <translation id="4613271546271159013">Vilken sida som visas när du öppnar en ny flik har ändrats av ett tillägg.</translation>
 <translation id="461613135510474570">Mening</translation>
 <translation id="461661862154729886">Energikälla</translation>
@@ -7060,7 +7058,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6400360390396538896">Alltid på <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Ta bort fokus för flikgruppen</translation>
 <translation id="6401118106417399952">Enhetens EID är <ph name="EID_NUMBER" /> och enhetens serienummer är <ph name="SERIAL_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
-<translation id="6401458660421980302">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på den enheten</translation>
 <translation id="6402042774506839496">Kontakta apputvecklaren om du vill veta varför</translation>
 <translation id="6402921224457714577">Webbplatser kan begära tillstånd att styra och omprogrammera MIDI-enheter</translation>
 <translation id="6404511346730675251">Redigera bokmärke</translation>
@@ -7350,7 +7347,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6619801788773578757">Lägg till en kioskapp</translation>
 <translation id="6619990499523117484">Bekräfta pinkoden</translation>
 <translation id="6621282332208609777">Fråga Google eller ange en webbadress</translation>
-<translation id="6621391692573306628">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på båda enheterna</translation>
 <translation id="6622980291894852883">Fortsätt att blockera bilder</translation>
 <translation id="6624036901798307345">Öppna det nya flikhuvudet med miniatyrer av alla flikar genom att trycka på flikräknaren i verktygsfältet i surfplatteläge.</translation>
 <translation id="6624538059730609162">Stäng höger vy</translation>

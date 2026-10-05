@@ -2866,7 +2866,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3166443275568926403">Teljesítmény- és akkumulátorállapot</translation>
 <translation id="3167446923957429259">Száj elhúzása balra</translation>
 <translation id="3167562202484086668"><ph name="BRAND" /> minden adatának törlése</translation>
-<translation id="3169504125849131369">Windows-beállítások megnyitása</translation>
 <translation id="3175067642577044620">Szöveg</translation>
 <translation id="3175862692832442091">Erdő</translation>
 <translation id="3176347586396987181">A „z” billentyűvel nyomva tarthatja az egérgombot.</translation>
@@ -4760,7 +4759,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4610493438923139095">Nem megbízható</translation>
 <translation id="4610637590575890427">Valójában ide szeretett volna menni: <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Ha a bal egérgomb van kiválasztva, a „/” karakterrel duplán kattinthat.</translation>
-<translation id="4612841084470706111">Hozzáférés megadása az összes kért webhelyhez.</translation>
 <translation id="4613271546271159013">Egy bővítmény módosította az új lap megnyitásakor megjelenített oldalt.</translation>
 <translation id="461613135510474570">Mondat</translation>
 <translation id="461661862154729886">Energiaforrás</translation>
@@ -7054,7 +7052,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6400360390396538896">Mindig itt: <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Lapcsoport fókuszának megszüntetése</translation>
 <translation id="6401118106417399952">Eszköze EID-azonosítója <ph name="EID_NUMBER" />, sorozatszáma pedig <ph name="SERIAL_NUMBER" />. Ezek a számok a szolgáltatás aktiválására használhatók.</translation>
-<translation id="6401458660421980302">Ha szeretné elküldeni ezt a lapot másik eszközre, jelentkezzen be a Chrome-ba az adott eszközön</translation>
 <translation id="6402042774506839496">Ha szeretné megtudni, hogy miért, forduljon az alkalmazás fejlesztőjéhez</translation>
 <translation id="6402921224457714577">A webhelyek engedélyt kérhetnek a MIDI-eszközök vezérlésére és átprogramozására</translation>
 <translation id="6404511346730675251">Könyvjelző szerkesztése</translation>
@@ -7344,7 +7341,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6619801788773578757">Kioszkalkalmazás hozzáadása</translation>
 <translation id="6619990499523117484">PIN-kód megerősítése</translation>
 <translation id="6621282332208609777">Kérdezzen a Google-tól, vagy írjon be egy URL-t</translation>
-<translation id="6621391692573306628">A lap másik eszközre való elküldéséhez jelentkezzen be a Chrome-ba mindkét eszközön</translation>
 <translation id="6622980291894852883">Képek letiltásának fenntartása</translation>
 <translation id="6624036901798307345">Táblagép módban kattintson az eszköztár lapszámláló gombjára: ekkor az egyes lapok indexképeit megjelenítő új lapsor nyílik meg.</translation>
 <translation id="6624538059730609162">Jobb oldali nézet bezárása</translation>

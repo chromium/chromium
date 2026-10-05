@@ -2856,7 +2856,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3166443275568926403">Rendemento e estado da batería</translation>
 <translation id="3167446923957429259">Mover a boca cara á esquerda</translation>
 <translation id="3167562202484086668">Eliminar todos os datos de <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Abrir configuración de Windows</translation>
 <translation id="3175067642577044620">Corpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa a tecla Z para manter premido un botón do rato</translation>
@@ -4754,7 +4753,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4610493438923139095">Non fiable</translation>
 <translation id="4610637590575890427">Talvez querías acceder a <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Cando o botón esquerdo do rato estea seleccionado, usa a tecla / para facer dobre clic</translation>
-<translation id="4612841084470706111">Conceder acceso a todos os sitios solicitados.</translation>
 <translation id="4613271546271159013">Unha extensión cambiou a páxina que se mostra ao abrir unha pestana nova.</translation>
 <translation id="461613135510474570">Frase</translation>
 <translation id="461661862154729886">Fonte de alimentación</translation>
@@ -7044,7 +7042,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6400360390396538896">Sempre en <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Deixar de enfocar grupo de pestanas</translation>
 <translation id="6401118106417399952">O EID do teu dispositivo é <ph name="EID_NUMBER" /> e o número de serie é <ph name="SERIAL_NUMBER" />. Estes números poden usarse para axudar a activar o servizo.</translation>
-<translation id="6401458660421980302">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nel</translation>
 <translation id="6402042774506839496">Para saber o motivo, ponte en contacto con quen programou a aplicación</translation>
 <translation id="6402921224457714577">Os sitios poden solicitar permiso para controlar e volver programar os teus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -7334,7 +7331,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6619801788773578757">Engadir aplicación de quiosco</translation>
 <translation id="6619990499523117484">Confirma o PIN</translation>
 <translation id="6621282332208609777">Pregúntalle a Google ou escribe un URL</translation>
-<translation id="6621391692573306628">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos</translation>
 <translation id="6622980291894852883">Continuar bloqueando as imaxes</translation>
 <translation id="6624036901798307345">No modo de tableta, toca o botón do contador de pestanas que se atopa na barra de ferramentas para abrir a nova franxa de pestanas na que se mostra cadansúa miniatura.</translation>
 <translation id="6624538059730609162">Pechar vista dereita</translation>

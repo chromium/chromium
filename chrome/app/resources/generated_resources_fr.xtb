@@ -2855,7 +2855,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3166443275568926403">Performances et état de la batterie</translation>
 <translation id="3167446923957429259">Bouger votre bouche vers la gauche</translation>
 <translation id="3167562202484086668">Supprimer toutes les données du <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Ouvrir les paramètres Windows</translation>
 <translation id="3175067642577044620">Corps</translation>
 <translation id="3175862692832442091">Forêt</translation>
 <translation id="3176347586396987181">Utiliser "Z" pour appuyer de manière prolongée sur un bouton de la souris</translation>
@@ -4748,7 +4747,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4610493438923139095">Non approuvé</translation>
 <translation id="4610637590575890427">Vouliez-vous accéder à <ph name="SITE" /> ?</translation>
 <translation id="4611619000650855880">Lorsque le bouton gauche de la souris est sélectionné, utiliser "/" pour double-cliquer</translation>
-<translation id="4612841084470706111">Accorder l'accès à tous les sites demandés</translation>
 <translation id="4613271546271159013">Une extension a modifié la page qui s'affiche lorsque vous ouvrez un nouvel onglet.</translation>
 <translation id="461613135510474570">Navigation par phrase</translation>
 <translation id="461661862154729886">Source d'énergie</translation>
@@ -7040,7 +7038,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6400360390396538896">Toujours sur <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Désélectionner le groupe d'onglets</translation>
 <translation id="6401118106417399952">L'EID de votre appareil est <ph name="EID_NUMBER" /> et son numéro de série est <ph name="SERIAL_NUMBER" />. Ces numéros peuvent servir à activer le service.</translation>
-<translation id="6401458660421980302">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil</translation>
 <translation id="6402042774506839496">Pour en savoir plus, contactez le développeur de l'appli</translation>
 <translation id="6402921224457714577">Les sites peuvent demander à contrôler et à reprogrammer vos appareils MIDI</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
@@ -7332,7 +7329,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6619801788773578757">Ajouter une application kiosque</translation>
 <translation id="6619990499523117484">Confirmez votre code.</translation>
 <translation id="6621282332208609777">Poser une question à Google ou saisir une URL</translation>
-<translation id="6621391692573306628">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil et celui-ci</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, appuyez sur le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle barre d'onglets qui affiche une vignette de chaque onglet.</translation>
 <translation id="6624538059730609162">Fermer la vue de droite</translation>

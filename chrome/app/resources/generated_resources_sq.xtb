@@ -2856,7 +2856,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3166443275568926403">Performanca dhe gjendja e baterisë</translation>
 <translation id="3167446923957429259">Lëviz gojën majtas</translation>
 <translation id="3167562202484086668">Fshi të gjitha të dhënat e "<ph name="BRAND" />"</translation>
-<translation id="3169504125849131369">Hap "Cilësimet" e Windows</translation>
 <translation id="3175067642577044620">Trupi</translation>
 <translation id="3175862692832442091">Pyll</translation>
 <translation id="3176347586396987181">Përdor “z” për të shtypur një buton të miut dhe mbaje shtypur</translation>
@@ -4751,7 +4750,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4610493438923139095">Jo e besuar</translation>
 <translation id="4610637590575890427">Mos dëshiron të shkosh te <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Kur butoni i majtë i miut është i zgjedhur, përdor “/” për të klikuar dy herë</translation>
-<translation id="4612841084470706111">Lejo qasjen për të gjitha sajtet e kërkuara</translation>
 <translation id="4613271546271159013">Një shtesë ka ndryshuar atë që tregon faqja kur hap një skedë të re.</translation>
 <translation id="461613135510474570">Fjalia</translation>
 <translation id="461661862154729886">Burimi i energjisë</translation>
@@ -7042,7 +7040,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6400360390396538896">Gjithmonë në <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Anulo fokusimin e grupit të skedave</translation>
 <translation id="6401118106417399952">Numri EID i pajisjes sate është <ph name="EID_NUMBER" />, ndërsa numri i serisë së pajisjes është <ph name="SERIAL_NUMBER" />. Këta numra mund të përdoren për të ndihmuar në aktivizimin e shërbimit.</translation>
-<translation id="6401458660421980302">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të</translation>
 <translation id="6402042774506839496">Për të mësuar se pse, kontakto me zhvilluesin e aplikacionit</translation>
 <translation id="6402921224457714577">Sajtet mund të kërkojnë të kontrollojnë dhe riprogramojnë pajisjet e tua MIDI</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
@@ -7332,7 +7329,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6619801788773578757">Shto aplikacionin "kioskë"</translation>
 <translation id="6619990499523117484">Konfirmo kodin tënd PIN</translation>
 <translation id="6621282332208609777">Pyet Google ose shkruaj një URL</translation>
-<translation id="6621391692573306628">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të dyja pajisjet</translation>
 <translation id="6622980291894852883">Vazhdo bllokimin e imazheve</translation>
 <translation id="6624036901798307345">Në modalitetin e tabletit, trokit në butonin e shiritit të veglave të numëruesit të skedave për të hapur një shirit të ri skedash që shfaq miniaturat e çdo skede.</translation>
 <translation id="6624538059730609162">Mbyll pamjen djathtas</translation>

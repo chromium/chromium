@@ -2855,7 +2855,6 @@
 <translation id="3166443275568926403">效能與電池狀態</translation>
 <translation id="3167446923957429259">將嘴角向左移</translation>
 <translation id="3167562202484086668">刪除所有 <ph name="BRAND" />的資料</translation>
-<translation id="3169504125849131369">開啟 Windows 設定</translation>
 <translation id="3175067642577044620">內文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下「z」表示按住滑鼠按鍵</translation>
@@ -4743,7 +4742,6 @@
 <translation id="4610493438923139095">不信任</translation>
 <translation id="4610637590575890427">你的意思是想瀏覽 <ph name="SITE" /> 嗎?</translation>
 <translation id="4611619000650855880">選取滑鼠左鍵後，按下「/」表示按兩下</translation>
-<translation id="4612841084470706111">允許存取所有要求的網站。</translation>
 <translation id="4613271546271159013">擴充功能已變更開啟新分頁時所顯示的頁面。</translation>
 <translation id="461613135510474570">句子</translation>
 <translation id="461661862154729886">電源</translation>
@@ -7031,7 +7029,6 @@
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6400714103322134861">將焦點移出分頁群組</translation>
 <translation id="6401118106417399952">裝置 EID 為 <ph name="EID_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
-<translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6402042774506839496">如要瞭解原因，請與應用程式開發人員聯絡</translation>
 <translation id="6402921224457714577">網站可以要求控制 MIDI 裝置及重設程式</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
@@ -7321,7 +7318,6 @@
 <translation id="6619801788773578757">新增 Kiosk 應用程式</translation>
 <translation id="6619990499523117484">確認你的 PIN 碼</translation>
 <translation id="6621282332208609777">問問 Google 或輸入網址</translation>
-<translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕觸分頁計數器的工具列按鈕即可開啟新的分頁列，當中會顯示各分頁的縮圖。</translation>
 <translation id="6624538059730609162">關閉右側畫面</translation>

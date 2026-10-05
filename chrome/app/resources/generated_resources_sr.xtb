@@ -1715,6 +1715,7 @@
 <translation id="2322622365472107569">Време завршетка <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Сачуване WiFi мреже</translation>
 <translation id="2323685460575935191">Сакриј дугмад за скроловање</translation>
+<translation id="2325004050205455346">Недавна историја</translation>
 <translation id="2325444234681128157">Запамти лозинку</translation>
 <translation id="2326188115274135041">Потврдите PIN да бисте укључили аутоматско откључавање</translation>
 <translation id="2326583548923775947">Ово није Google налог. Ставке које сачувате у Chrome-у неће бити доступне на другим уређајима.</translation>
@@ -2854,7 +2855,6 @@
 <translation id="3166443275568926403">Перформансе и стање батерије</translation>
 <translation id="3167446923957429259">Померите уста улево</translation>
 <translation id="3167562202484086668">Избриши све податке типа <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Отвори подешавања Windows-а</translation>
 <translation id="3175067642577044620">Садржај</translation>
 <translation id="3175862692832442091">Шума</translation>
 <translation id="3176347586396987181">Користите „z“ да бисте притиснули и задржали тастер миша</translation>
@@ -4749,7 +4749,6 @@
 <translation id="4610493438923139095">Непоуздано</translation>
 <translation id="4610637590575890427">Да ли сте желели да одете на <ph name="SITE" /></translation>
 <translation id="4611619000650855880">Када је изабран леви тастер миша, користите „/“ да бисте кликнули двапут</translation>
-<translation id="4612841084470706111">Одобри приступ за све захтеване сајтове.</translation>
 <translation id="4613271546271159013">Додатак је променио страницу која се приказује када отворите нову картицу.</translation>
 <translation id="461613135510474570">Реченица</translation>
 <translation id="461661862154729886">Извор енергије</translation>
@@ -7041,7 +7040,6 @@
 <translation id="6400360390396538896">Увек на <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Уклони фокус са групе картица</translation>
 <translation id="6401118106417399952">EID уређаја је <ph name="EID_NUMBER" />, а серијски број уређаја је <ph name="SERIAL_NUMBER" />. Ове бројеве можете да користите да бисте активирали услугу.</translation>
-<translation id="6401458660421980302">Да бисте послали ову картицу на други уређај, пријавите се у Chrome на том уређају</translation>
 <translation id="6402042774506839496">Да бисте сазнали зашто, обратите се програмеру апликације</translation>
 <translation id="6402921224457714577">Сајтови могу да траже да контролишу и репрограмирају MIDI уређаје</translation>
 <translation id="6404511346730675251">Измена обележивача</translation>
@@ -7335,7 +7333,6 @@
 <translation id="6619801788773578757">Додајте киоск апликацију</translation>
 <translation id="6619990499523117484">Потврдите PIN</translation>
 <translation id="6621282332208609777">Питајте Google или унесите URL</translation>
-<translation id="6621391692573306628">Да бисте послали ову картицу на други уређај, пријавите се у Chrome на оба уређаја</translation>
 <translation id="6622980291894852883">Настави блокирање слика</translation>
 <translation id="6624036901798307345">У режиму таблета додирните дугме бројача картица на траци с алаткама да бисте отворили нову траку са картицама која приказује сличице сваке картице.</translation>
 <translation id="6624538059730609162">Затвори десни приказ</translation>

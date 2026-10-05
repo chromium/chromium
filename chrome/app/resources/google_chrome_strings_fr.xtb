@@ -501,7 +501,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5899008323405946573">Utilisez les meilleurs outils IA de Google avec l'appli Chrome sur votre téléphone</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Connexion au réseau</translation>
 <translation id="5924017743176219022">Connexion à Internet…</translation>
-<translation id="5925596746603389877">Télécharger le programme d'installation de Chrome</translation>
 <translation id="5940385492829620908">Votre contenu Web, vos favoris et toutes vos données Chrome sont conservés ici.</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5941830788786076944">Définir Google Chrome comme navigateur par défaut</translation>
@@ -563,6 +562,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6360449101159168105">Lorsque cet onglet était inactif, de la mémoire a été libérée pour préserver la rapidité de Chrome. Si vous le souhaitez, vous pouvez exclure définitivement ce site de la liste des sites inactifs.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> est déjà connecté(e). Pour séparer votre navigation, connectez-vous à Chrome avec votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous pourrez aussi accéder à votre liste de lecture et à d'autres données sur tous vos appareils.</translation>
 <translation id="6388799252195623474">aide-moi avec ça</translation>
+<translation id="6401458660421980302">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil</translation>
 <translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}one{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minute. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}other{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}}</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant ?</translation>
@@ -591,6 +591,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="659498884637196217">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="6612152958212564387">Vous n'envoyez pas de statistiques d'utilisation ni de rapports d'erreur à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Synchronisez parfaitement vos mots de passe, vos favoris et votre historique sur tous vos appareils en définissant Chrome comme navigateur par défaut.</translation>
+<translation id="6621391692573306628">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil et celui-ci</translation>
 <translation id="6631524303639368205">Reprenez là où vous en étiez : Chrome a restauré les onglets de votre dernière session. Vous pouvez désactiver cette option dans les</translation>
 <translation id="6632012506031284914">pour rechercher avec Chrome.</translation>
 <translation id="6632473616050862500">ChromeOS Flex dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source <ph name="END_LINK_CROS_OSS" />.</translation>
@@ -778,6 +779,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8260086374035800939">Si Gemini dans Chrome est ouvert, le panneau latéral reste ouvert lorsque vous créez des onglets</translation>
 <translation id="8267953129876836456">Chrome a identifié des recommandations de sécurité à examiner</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
+<translation id="8291415872436043161">Téléchargez Chrome</translation>
 <translation id="829923460755755423">Ajoutez un raccourci au Gestionnaire de mots de passe de Google</translation>
 <translation id="8313851650939857356">Erreur au démarrage : <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>

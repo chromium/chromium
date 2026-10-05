@@ -2855,7 +2855,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3166443275568926403">Performanță și starea bateriei</translation>
 <translation id="3167446923957429259">Mișcă-ți gura spre stânga</translation>
 <translation id="3167562202484086668">Șterge toate datele despre <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Deschide setările Windows</translation>
 <translation id="3175067642577044620">Corp</translation>
 <translation id="3175862692832442091">Pădure</translation>
 <translation id="3176347586396987181">Folosește „z” pentru a apăsa lung un buton al mouse-ului</translation>
@@ -4749,7 +4748,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4610493438923139095">Nu este de încredere</translation>
 <translation id="4610637590575890427">Ai vrut să accesezi <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Când butonul stâng al mouse-ului este selectat, folosește „/” pentru a da dublu clic</translation>
-<translation id="4612841084470706111">Permite accesul la toate site-urile solicitate.</translation>
 <translation id="4613271546271159013">O extensie a schimbat pagina afișată când deschideți o filă nouă.</translation>
 <translation id="461613135510474570">Propoziție</translation>
 <translation id="461661862154729886">Sursa de energie</translation>
@@ -7040,7 +7038,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6400360390396538896">Activat permanent <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Anulează focalizarea pentru grupul de file</translation>
 <translation id="6401118106417399952">Numărul EID al dispozitivului este <ph name="EID_NUMBER" />, iar numărul de serie al dispozitivului este <ph name="SERIAL_NUMBER" />. Aceste numere se pot folosi pentru activarea serviciului.</translation>
-<translation id="6401458660421980302">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe dispozitivul respectiv</translation>
 <translation id="6402042774506839496">Pentru a afla de ce, contactează dezvoltatorul aplicației</translation>
 <translation id="6402921224457714577">Site-urile pot solicita permisiunea de a controla și reprograma dispozitivele MIDI</translation>
 <translation id="6404511346730675251">Modifică marcajul</translation>
@@ -7332,7 +7329,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6619801788773578757">Adaugă o aplicație de tip chioșc</translation>
 <translation id="6619990499523117484">Confirmă codul PIN</translation>
 <translation id="6621282332208609777">Întreabă Google sau introdu o adresă URL</translation>
-<translation id="6621391692573306628">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe ambele dispozitive</translation>
 <translation id="6622980291894852883">Continuă blocarea imaginilor</translation>
 <translation id="6624036901798307345">În modul tabletă, atinge butonul contorului de file din bara de instrumente pentru a deschide noua bară de file care afișează miniaturi pentru fiecare filă.</translation>
 <translation id="6624538059730609162">Închide afișarea din dreapta</translation>

@@ -493,7 +493,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5899008323405946573">Usa i migliori strumenti AI di Google con l'app di Chrome sul tuo smartphone</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
-<translation id="5925596746603389877">Scarica il programma di installazione di Chrome</translation>
 <translation id="5940385492829620908">Il tuoi siti web, i tuoi segnalibri e gli altri contenuti Chrome sempre disponibili e aggiornati qui.</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5941830788786076944">Imposta Google Chrome come browser predefinito</translation>
@@ -555,6 +554,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6360449101159168105">Mentre questa scheda non era attiva, la memoria è stata liberata per mantenere Chrome veloce. Puoi scegliere di escludere sempre il sito dall'inattività.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> ha già fatto l’accesso. Per tenere separata la tua navigazione, accedi a Chrome con il tuo profilo personale come <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere all'elenco di lettura e molto altro su tutti i tuoi dispositivi.</translation>
 <translation id="6388799252195623474">Aiutami con questo</translation>
+<translation id="6401458660421980302">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo</translation>
 <translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
@@ -583,6 +583,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
 <translation id="6612152958212564387">Non stai inviando a Google le statistiche sull'utilizzo e i report sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mantieni password, preferiti e cronologia perfettamente sincronizzati tra i dispositivi impostando Chrome come browser predefinito.</translation>
+<translation id="6621391692573306628">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi</translation>
 <translation id="6631524303639368205">Continua da dove avevi interrotto: Chrome ha ripristinato le schede dell'ultima sessione. Puoi disattivare questa opzione in</translation>
 <translation id="6632012506031284914">per fare ricerche con Chrome.</translation>
 <translation id="6632473616050862500">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo.</translation>
@@ -769,6 +770,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="8260086374035800939">Se Gemini in Chrome è aperto, il riquadro laterale rimane aperto quando crei nuove schede</translation>
 <translation id="8267953129876836456">Chrome ha trovato alcuni consigli per la sicurezza che puoi esaminare</translation>
 <translation id="8286862437124483331">Google Chrome sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
+<translation id="8291415872436043161">Scarica Chrome</translation>
 <translation id="829923460755755423">Aggiungi una scorciatoia a Gestore delle password di Google</translation>
 <translation id="8313851650939857356">Errore di avvio: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8321888067342493336">Salva come immagine</translation>

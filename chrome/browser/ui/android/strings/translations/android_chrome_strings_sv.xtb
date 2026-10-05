@@ -123,7 +123,6 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1432581352905426595">Hantera sökmotorer</translation>
 <translation id="1435593198351412143">Öppna PDF-filer automatiskt</translation>
 <translation id="1437543266176261764">Körs i <ph name="APP_NAME" /></translation>
-<translation id="1448440926884431741">Organisera bevakade produkter under Bokmärken</translation>
 <translation id="1452651021404174820">Välj en enhet</translation>
 <translation id="1455845192930279203">Vill du ladda ned <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) från <ph name="DOWNLOAD_DOMAIN" /> ändå?</translation>
 <translation id="1460751212339734034">Skriv mindre och spara tid</translation>
@@ -1243,6 +1242,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="604124094241169006">Automatisk</translation>
+<translation id="6041959688070413372">Hantera anslutningen mellan söktjänster och Google Workspace-appar, till exempel Google Drive</translation>
 <translation id="6042308850641462728">Mer</translation>
 <translation id="6047066316630165190">Öppna flikbytaren i rutnät</translation>
 <translation id="604996488070107836">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av ett okänt fel.</translation>

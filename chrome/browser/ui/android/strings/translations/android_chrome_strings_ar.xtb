@@ -123,7 +123,6 @@
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1435593198351412143">‏فتح ملفات PDF تلقائيًا</translation>
 <translation id="1437543266176261764">سيتم التشغيل في <ph name="APP_NAME" /></translation>
-<translation id="1448440926884431741">يمكنك تنظيم منتجاتك التي تتتبّع سعرها في "إشارات مرجعية".</translation>
 <translation id="1452651021404174820">اختيار جهاز</translation>
 <translation id="1455845192930279203">هل المطلوب تنزيل "<ph name="FILE_NAME" />" ‏(<ph name="FILE_SIZE" />) من <ph name="DOWNLOAD_DOMAIN" /> على أي حال؟</translation>
 <translation id="1460751212339734034">وقت أكثر، كتابة أقلّ</translation>
@@ -776,6 +775,7 @@
 <translation id="4136632885151622181">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تسجِّل وسائط وتم اختيارها مع علامات تبويب أخرى</translation>
 <translation id="4137746084635924146">لغة الجهاز الحالية</translation>
 <translation id="414128724510021958">المواقع الإلكترونية المتوافقة مع أجهزة الكمبيوتر المكتبي يتم طلبها تلقائيًا</translation>
+<translation id="4150837143272125910">تم تنزيل تحديث</translation>
 <translation id="4162867837470729563">قائمة خيارات المشاركة مفتوحة بطول الشاشة.</translation>
 <translation id="4164642020717536140">تصفُّح سريع وآمن للويب</translation>
 <translation id="4165077084524712774">مزيد من الأدوات</translation>
@@ -1402,6 +1402,7 @@
 <translation id="6565959834589222080">‏يتم استخدام شبكة Wi-Fi في حال توفّرها.</translation>
 <translation id="657177046675873214">يمكنك تفعيل ميزة مزامنة "الإشارات المرجعية" من خلال الإعدادات للحصول عليها على جميع أجهزتك</translation>
 <translation id="6573096386450695060">السماح دومًا</translation>
+<translation id="657480975869429144">‏يتوفّر إصدار جديد من Chrome</translation>
 <translation id="658099107946526506">يمكنك حماية جلسات التصفح المتخفي باستخدام رقم تعريف شخصي لمنع الوصول إليها بشكل غير مصرح به</translation>
 <translation id="6583199322650523874">وضع إشارة مرجعية على الصفحة الحالية</translation>
 <translation id="6588043302623806746">‏استخدام "نظام أسماء النطاقات" (DNS) الآمن</translation>

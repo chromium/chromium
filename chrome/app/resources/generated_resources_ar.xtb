@@ -1719,6 +1719,7 @@
 <translation id="2322622365472107569">وقت الانتهاء: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏شبكات Wi-Fi المحفوظة</translation>
 <translation id="2323685460575935191">إخفاء أزرار الانتقال</translation>
+<translation id="2325004050205455346">السجلّ الأخير</translation>
 <translation id="2325444234681128157">تذكّر كلمة المرور</translation>
 <translation id="2326188115274135041">يُرجى تأكيد رقم التعريف الشخصي لتفعيل فتح القفل التلقائي.</translation>
 <translation id="2326583548923775947">‏هذا ليس حساب على Google، ولن تكون البيانات التي تحفظها في Chrome متاحة على الأجهزة الأخرى.</translation>
@@ -2858,7 +2859,6 @@
 <translation id="3166443275568926403">حالة البطارية والأداء</translation>
 <translation id="3167446923957429259">تحريك الفم لليسار</translation>
 <translation id="3167562202484086668">حذف كل بيانات "<ph name="BRAND" />"</translation>
-<translation id="3169504125849131369">‏فتح إعدادات Windows</translation>
 <translation id="3175067642577044620">القسم العلوي</translation>
 <translation id="3175862692832442091">غابة</translation>
 <translation id="3176347586396987181">‏للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "z"</translation>
@@ -4751,7 +4751,6 @@
 <translation id="4610493438923139095">غير موثوق بها</translation>
 <translation id="4610637590575890427">هل تقصد الانتقال إلى <ph name="SITE" />؟</translation>
 <translation id="4611619000650855880">في حال اختيار زر الماوس الأيسر، يجب استخدام مفتاح "/" للنقر مرّتين</translation>
-<translation id="4612841084470706111">منح إمكانية الوصول إلى كل المواقع الإلكترونية المطلوبة</translation>
 <translation id="4613271546271159013">لقد غيّرت الإضافة الصفحة المعروضة عندما فتحت علامة تبويب جديدة.</translation>
 <translation id="461613135510474570">جملة</translation>
 <translation id="461661862154729886">مصدر الطاقة</translation>
@@ -7044,7 +7043,6 @@
 <translation id="6400360390396538896">على <ph name="ORIGIN" /> دائمًا</translation>
 <translation id="6400714103322134861">إلغاء التركيز على مجموعة علامات التبويب</translation>
 <translation id="6401118106417399952">‏معرِّف شريحة SIM المضمّنة (EID) للجهاز هو <ph name="EID_NUMBER" /> والرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذه الأرقام للمساعدة في تفعيل الخدمة.</translation>
-<translation id="6401458660421980302">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="6402042774506839496">لمعرفة السبب، يُرجى التواصل مع مطوّر التطبيقات</translation>
 <translation id="6402921224457714577">‏السماح للمواقع الإلكترونية بطلب التحكُّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
@@ -7342,7 +7340,6 @@
 <translation id="6619801788773578757">إضافة تطبيق الكشك</translation>
 <translation id="6619990499523117484">تأكيد رقم التعريف الشخصي</translation>
 <translation id="6621282332208609777">‏سؤال Google أو إدخال عنوان URL</translation>
-<translation id="6621391692573306628">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
 <translation id="6622980291894852883">متابعة منع عرض الصور</translation>
 <translation id="6624036901798307345">في وضع الجهاز اللوحي، انقر على زر شريط أدوات عدّاد علامات التبويب لفتح شريط علامات التبويب الجديد الذي يعرض الصور المصغّرة لكل علامة تبويب.</translation>
 <translation id="6624538059730609162">إغلاق العرض الأيمن</translation>

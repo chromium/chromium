@@ -502,7 +502,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5899008323405946573">Gebruik Google se beste KI-nutsgoed met die Chrome-app op jou foon</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Netwerkaanmelding</translation>
 <translation id="5924017743176219022">Koppel tans aan die internet …</translation>
-<translation id="5925596746603389877">Laai Chrome-installeerder af</translation>
 <translation id="5940385492829620908">Jou web, boekmerke en ander Chrome-goed woon hier.</translation>
 <translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5941830788786076944">Maak Google Chrome die verstekblaaier</translation>
@@ -564,6 +563,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6360449101159168105">Geheue is beskikbaar gemaak terwyl hierdie oortjie onaktief was om Chrome vinnig te hou. Jy kan kies om hierdie werf altyd daarvan uit te sluit om onaktief te wees.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> is reeds aangemeld. Meld in jou eie profiel as <ph name="USER_EMAIL_ADDRESS" /> by Chrome aan om jou blaai-aktiwiteit apart te hou. Jy sal ook jou leeslys en meer op al jou toestelle kry.</translation>
 <translation id="6388799252195623474">help my hiermee</translation>
+<translation id="6401458660421980302">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy daar by Chrome aanmeld</translation>
 <translation id="6412673304250309937">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg word. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Jou organisasie maak Chrome outomaties toe nadat dit 1 minuut lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}other{Jou organisasie maak Chrome outomaties toe nadat dit # minute lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}}</translation>
 <translation id="6418662306461808273">Skakel oor na bestaande Chrome-profiel?</translation>
@@ -592,6 +592,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="659498884637196217">In Google Wagwoordbestuurder op hierdie toestel</translation>
 <translation id="6612152958212564387">Jy stuur nie tans gebruikstatistieke en omvalverslae na Google toe nie. <ph name="BEGIN_LINK" />Bestuur<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hou jou wagwoorde, boekmerke en geskiedenis perfek gesinkroniseer op alle toestelle deur Chrome as jou verstekblaaier te stel.</translation>
+<translation id="6621391692573306628">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy op albei toestelle by Chrome aanmeld</translation>
 <translation id="6631524303639368205">Gaan voort waar jy opgehou het: Chrome het jou oortjies van jou laaste sessie teruggestel. Jy kan dit afskakel in</translation>
 <translation id="6632012506031284914">om met Chrome te soek.</translation>
 <translation id="6632473616050862500">Chrome OS Flex word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -779,6 +780,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8260086374035800939">As Gemini in Chrome oop is, bly die kantpaneel oop wanneer nuwe oortjies geskep word</translation>
 <translation id="8267953129876836456">Chrome het ’n paar veiligheidsaanbevelings vir jou hersiening gekry</translation>
 <translation id="8286862437124483331">Google Chrome probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
+<translation id="8291415872436043161">Laai Chrome af</translation>
 <translation id="829923460755755423">Voeg ’n kortpad na Google Wagwoordbestuurder by</translation>
 <translation id="8313851650939857356">Aanskakelingfout: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Stoor as prent</translation>

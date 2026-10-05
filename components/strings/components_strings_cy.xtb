@@ -867,6 +867,7 @@ Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael 
 <translation id="2436186046335138073">Rhoi caniatâd i <ph name="HANDLER_HOSTNAME" /> agor pob dolen <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Ni fu modd cadw'r cerdyn hwn yn eich Cyfrif Google. Mae wedi'i gadw i Chrome ar y ddyfais hon yn lle hynny.</translation>
 <translation id="2438874542388153331">Pedwar twll ar y dde</translation>
+<translation id="2442033148418774391">Hysbysiad awtolenwi clyfrach, wedi'i gadw'n breifat wedi'i gau</translation>
 <translation id="2442865686365739754"><ph name="BEGIN_EMPHASIS" />Ni fydd<ph name="END_EMPHASIS" /> Chrome yn cadw:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Eich hanes pori
@@ -879,6 +880,7 @@ Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael 
 <translation id="2451607499823206582">Dilyn</translation>
 <translation id="2452837234288608067">Methu â helpu gyda hynny. Rhowch gynnig arall arni.</translation>
 <translation id="2453045048779611513">Mae eich sefydliad yn cyfyngu ar yr hyn y gallwch ei gadw</translation>
+<translation id="2456490423293803882">Hysbysiad awtolenwi clyfrach, wedi'i gadw'n breifat wedi'i agor ar uchder llawn</translation>
 <translation id="2459882793359532780">Polisïau porwr cymhwysol (polisïau peiriant a phroffil)</translation>
 <translation id="2461385121573678775">Mae Chrome Enterprise Core yn rhoi offeryn canolog i chi ar gyfer ffurfweddu polisïau porwr o'r cwmwl</translation>
 <translation id="2461822463642141190">Presennol</translation>
@@ -1108,6 +1110,7 @@ Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael 
 <translation id="2878197950673342043">Plyg poster</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">defnyddio'ch clo sgrin ar gyfer llenwi cyfrineiriau</translation>
+<translation id="2880119244122776372">Adeiladu a chodio</translation>
 <translation id="2881276955470682203">Cadw'r cerdyn?</translation>
 <translation id="2882280148032777436">Dileu'r Rhif Teithiwr Hysbys</translation>
 <translation id="2882949212241984732">Plyg giât ddwbl</translation>
@@ -3913,6 +3916,7 @@ Manylion ychwanegol:
 <translation id="753713322968419914">Tynnu cyfeiriad cartref o awtolenwi Chrome?</translation>
 <translation id="753714465667062283">Mewngofnodwch i gadw'ch llun</translation>
 <translation id="7537536606612762813">Gorfodol</translation>
+<translation id="7540924742308928499">Taflu syniadau a chrynhoi</translation>
 <translation id="7543525346216957623">Gofyn i'ch rhiant</translation>
 <translation id="7546409722674205727">Yn dechrau <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Trwsio gwallau cysylltu</translation>

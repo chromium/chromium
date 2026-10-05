@@ -2869,7 +2869,6 @@
 <translation id="3166443275568926403">성능 및 배터리 상태</translation>
 <translation id="3167446923957429259">입을 왼쪽으로 움직이기</translation>
 <translation id="3167562202484086668">모든 <ph name="BRAND" /> 데이터 삭제</translation>
-<translation id="3169504125849131369">Windows 설정 열기</translation>
 <translation id="3175067642577044620">본문</translation>
 <translation id="3175862692832442091">숲</translation>
 <translation id="3176347586396987181">마우스 버튼을 길게 누르려면 'z' 키를 사용하세요.</translation>
@@ -4762,7 +4761,6 @@
 <translation id="4610493438923139095">신뢰할 수 없음</translation>
 <translation id="4610637590575890427"><ph name="SITE" />(으)로 이동하려고 하셨나요?</translation>
 <translation id="4611619000650855880">왼쪽 마우스 버튼이 선택된 경우 더블클릭하려면 ‘/’ 키를 사용하세요.</translation>
-<translation id="4612841084470706111">요청된 모든 사이트에 대한 액세스 권한 부여</translation>
 <translation id="4613271546271159013">새 탭을 열면 표시되는 페이지가 확장 프로그램에 의해 변경되었습니다.</translation>
 <translation id="461613135510474570">문장</translation>
 <translation id="461661862154729886">전원</translation>
@@ -7055,7 +7053,6 @@
 <translation id="6400360390396538896"><ph name="ORIGIN" />에서 항상 사용</translation>
 <translation id="6400714103322134861">탭 그룹 포커스 해제</translation>
 <translation id="6401118106417399952">기기 EID는 <ph name="EID_NUMBER" />이며 기기 일련번호는 <ph name="SERIAL_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
-<translation id="6401458660421980302">이 탭을 다른 기기로 보내려면 해당 기기에서 Chrome에 로그인하세요.</translation>
 <translation id="6402042774506839496">이유를 알아보려면 앱 개발자에게 문의하세요.</translation>
 <translation id="6402921224457714577">사이트에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 요청할 수 있음</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
@@ -7345,7 +7342,6 @@
 <translation id="6619801788773578757">키오스크 애플리케이션 추가</translation>
 <translation id="6619990499523117484">PIN 확인</translation>
 <translation id="6621282332208609777">Google에 물어보거나 URL을 입력하세요</translation>
-<translation id="6621391692573306628">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="6622980291894852883">이미지 계속 차단</translation>
 <translation id="6624036901798307345">태블릿 모드에서 탭 카운터 툴바 버튼을 탭하여 각 탭의 썸네일을 보여주는 새로운 탭 표시줄을 엽니다.</translation>
 <translation id="6624538059730609162">오른쪽 뷰 닫기</translation>

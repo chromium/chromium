@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">沒有開啟的分頁</translation>
 <translation id="1469381646033328562">你的帳戶由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">自完成「建立分頁群組」起</translation>
 <translation id="147982357559798527">已變更</translation>
 <translation id="1481450969185702334">尋找並填入</translation>
 <translation id="1483493594462132177">傳送</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">報告問題</translation>
 <translation id="2222149859067335623">「<ph name="SITE_DOMAIN" />」無法取用你的鏡頭</translation>
 <translation id="2223461067862937305">建立 QR 碼</translation>
+<translation id="222798989929574238">你使用了超過 20 張相片搜尋</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="2237869114829007407">取得任何網頁或主題的概覽和重要分析資料</translation>
@@ -780,6 +782,7 @@
 <translation id="3459644598174926977">「使用 Gemini Live」功能可讓你就網頁內容提問、盡情集思廣益，甚至與 Gemini 來回對話。</translation>
 <translation id="3462768334899086950">這樣會遺失未儲存的檔案和當前分頁</translation>
 <translation id="3464194322481586217">無法追蹤價格。</translation>
+<translation id="3468009081835548033">允許一次</translation>
 <translation id="3469117812148449995">儲存密碼選項</translation>
 <translation id="3472469028191701821">喺新分頁度打開</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{來自 {COUNT} 個網站或應用程式}other{來自 {COUNT} 個網站或應用程式}}</translation>
@@ -1310,6 +1313,7 @@
 <translation id="512533434554095351">你有幾個密碼問題。</translation>
 <translation id="5128788795241319992">探索新選單</translation>
 <translation id="5132942445612118989">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
+<translation id="5137568953923142260">允許一次</translation>
 <translation id="5141363746588976328">隱藏「分頁上有商品降價」資訊卡</translation>
 <translation id="514154868070499296">字型：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">退出分頁切換工具</translation>
@@ -1763,6 +1767,7 @@
 <translation id="6525550806864373485">編輯選單</translation>
 <translation id="6527208859483186860">第 {position} 個背景，共 {total} 個</translation>
 <translation id="6527303717912515753">分享</translation>
+<translation id="6529706885792457023">你已整理超過 15 個分頁</translation>
 <translation id="6532106788206463496">儲存變更</translation>
 <translation id="6536759809440150308">開啟<ph name="GROUP_TITLE" />，一組 <ph name="NUMBER_OF_TABS" />，<ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1813,7 @@
 <translation id="6642362222295953972">切換至現有的分頁</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">二維條碼：<ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">你已檢查超過 25 個密碼</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659660757330712663">在工具列上滑動即可切換分頁。</translation>
 <translation id="6663529247339810546">無法儲存圖片</translation>
@@ -1964,6 +1970,7 @@
 <translation id="7145337554745942724">更新駕駛執照</translation>
 <translation id="7146301801400584641">有可用的日曆檔案</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
+<translation id="7151361008641622036">{count,plural, =1{你已整理 1 個分頁}other{你已整理 # 個分頁}}</translation>
 <translation id="7154417656353909837">移除地址</translation>
 <translation id="7161230316646448869">將您的書籤、記錄等資料同步至所有裝置</translation>
 <translation id="7165323152084385463">車輛識別碼</translation>
@@ -1987,6 +1994,7 @@
 <translation id="722339453342442311">立即檢查</translation>
 <translation id="7227235818314667565">管理共用設定</translation>
 <translation id="7233006041370588369">揀要填入嘅密碼。</translation>
+<translation id="7238074332967840767">安全</translation>
 <translation id="723874023660911012">切換設定檔</translation>
 <translation id="7241135764990439166">無法使用無痕模式</translation>
 <translation id="7245288034498365666">井井有條，節省時間</translation>
@@ -2394,6 +2402,7 @@
 <translation id="8481184073299279701">輕按「開始記錄」按鈕即可收集未來的 JavaScript 控制器和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
 <translation id="8487667956631253959">開</translation>
 <translation id="8487700953926739672">可離線使用</translation>
+<translation id="8488065047914929586">自完成「儲存密碼」起</translation>
 <translation id="8488923644885757471">開啟新視窗</translation>
 <translation id="8490629238792920282">無法建立連結</translation>
 <translation id="8501469528283376592">自動刪除下載項目</translation>
@@ -2541,6 +2550,7 @@
 <translation id="8890516388109605451">來源</translation>
 <translation id="8893208530912252670">影片</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
+<translation id="890009681345348416">已自動填入超過 40 個密碼</translation>
 <translation id="8900845556227858314">瀏覽器應用程式</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8907722425137681851">在網頁中搜尋…</translation>

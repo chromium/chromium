@@ -780,6 +780,7 @@
 <translation id="3459644598174926977">Gemini と Live で会話して、ページについての質問やブレインストーミングを声でやり取りできます。</translation>
 <translation id="3462768334899086950">未保存のファイルと現在のタブは失われます</translation>
 <translation id="3464194322481586217">価格をトラッキングできませんでした。</translation>
+<translation id="3468009081835548033">今回だけ許可</translation>
 <translation id="3469117812148449995">パスワードの保存オプション</translation>
 <translation id="3472469028191701821">新しいタブで開く</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} 件のサイトまたはアプリ}other{{COUNT} 件のサイトとアプリ}}</translation>
@@ -1310,6 +1311,7 @@
 <translation id="512533434554095351">パスワードにいくつかの問題があります。</translation>
 <translation id="5128788795241319992">新しいメニューを確認する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
+<translation id="5137568953923142260">今回だけ許可</translation>
 <translation id="5141363746588976328">タブの値下げ情報カードを非表示にする</translation>
 <translation id="514154868070499296">フォント: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">タブ切り替え機能を終了</translation>
@@ -1989,6 +1991,7 @@
 <translation id="722339453342442311">今すぐ確認</translation>
 <translation id="7227235818314667565">共有を管理</translation>
 <translation id="7233006041370588369">入力するパスワードを選択してください。</translation>
+<translation id="7238074332967840767">安全性</translation>
 <translation id="723874023660911012">プロファイルを切り替える</translation>
 <translation id="7241135764990439166">シークレット モードは使用できません</translation>
 <translation id="7245288034498365666">スマートに整理して時間を節約</translation>

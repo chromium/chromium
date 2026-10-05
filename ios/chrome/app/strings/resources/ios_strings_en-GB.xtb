@@ -782,6 +782,7 @@
 <translation id="3459644598174926977">Go Live with Gemini to ask about a page, brainstorm out loud and talk back and forth.</translation>
 <translation id="3462768334899086950">This means that you will lose your unsaved file and current tabs</translation>
 <translation id="3464194322481586217">Couldn't track the price.</translation>
+<translation id="3468009081835548033">Allowed once</translation>
 <translation id="3469117812148449995">Options to save password</translation>
 <translation id="3472469028191701821">Opens in new tab</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
@@ -1312,6 +1313,7 @@
 <translation id="512533434554095351">You have several password issues.</translation>
 <translation id="5128788795241319992">Explore the new menu</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
+<translation id="5137568953923142260">Allow once</translation>
 <translation id="5141363746588976328">Hide price drops on your tabs card</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Leave Tab Switcher</translation>
@@ -1994,6 +1996,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="722339453342442311">Check now</translation>
 <translation id="7227235818314667565">Manage sharing</translation>
 <translation id="7233006041370588369">Select a password to fill.</translation>
+<translation id="7238074332967840767">Safety</translation>
 <translation id="723874023660911012">Switch profiles</translation>
 <translation id="7241135764990439166">Incognito mode is unavailable</translation>
 <translation id="7245288034498365666">Get organised and save time</translation>

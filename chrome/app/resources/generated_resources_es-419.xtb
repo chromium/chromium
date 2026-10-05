@@ -2855,7 +2855,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3166443275568926403">Rendimiento y estado de la batería</translation>
 <translation id="3167446923957429259">Mueve la boca hacia la izquierda</translation>
 <translation id="3167562202484086668">Borrar todos los datos del <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Abrir la configuración de Windows</translation>
 <translation id="3175067642577044620">Cuerpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa “z” para presionar y mantener presionado un botón del mouse</translation>
@@ -4750,7 +4749,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4610493438923139095">No confiable</translation>
 <translation id="4610637590575890427">¿Tal vez quieres ir a <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Cuando se selecciona el botón izquierdo del mouse, usa “/” para hacer doble clic</translation>
-<translation id="4612841084470706111">Otorgar acceso a todos los sitios que lo solicitaron</translation>
 <translation id="4613271546271159013">Una extensión cambió la página que se muestra al abrir una nueva pestaña.</translation>
 <translation id="461613135510474570">Frase</translation>
 <translation id="461661862154729886">Fuente de energía</translation>
@@ -7043,7 +7041,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6400360390396538896">Siempre activada en <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Dejar de enfocar el grupo de pestañas</translation>
 <translation id="6401118106417399952">El EID de tu dispositivo es <ph name="EID_NUMBER" /> y el número de serie es <ph name="SERIAL_NUMBER" />. Estos números se pueden usar para activar el servicio.</translation>
-<translation id="6401458660421980302">Para enviar esta pestaña a otro dispositivo, accede a Chrome allí.</translation>
 <translation id="6402042774506839496">Para saber por qué, comunícate con el desarrollador de la app</translation>
 <translation id="6402921224457714577">Los sitios pueden solicitar permiso para controlar y reprogramar tus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -7333,7 +7330,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6619801788773578757">Agregar aplicación de kiosco</translation>
 <translation id="6619990499523117484">Confirma el PIN</translation>
 <translation id="6621282332208609777">Pregúntale a Google o escribe una URL</translation>
-<translation id="6621391692573306628">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
 <translation id="6622980291894852883">Continuar con el bloqueo de imágenes</translation>
 <translation id="6624036901798307345">En el modo tablet, presiona el botón de la barra de herramientas del contador de pestañas para abrir la nueva barra de pestañas que muestra miniaturas de cada pestaña.</translation>
 <translation id="6624538059730609162">Cerrar vista derecha</translation>

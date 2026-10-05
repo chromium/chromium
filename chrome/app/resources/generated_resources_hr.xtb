@@ -2856,7 +2856,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3166443275568926403">Izvedba i stanje baterije</translation>
 <translation id="3167446923957429259">Pomaknite usta ulijevo</translation>
 <translation id="3167562202484086668">Izbriši sve podatke aplikacije <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Otvorite postavke Windowsa</translation>
 <translation id="3175067642577044620">Glavni tekst</translation>
 <translation id="3175862692832442091">Šuma</translation>
 <translation id="3176347586396987181">Pomoću tipke z pritisnite i zadržite tipku miša</translation>
@@ -4750,7 +4749,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4610493438923139095">Nepouzdano</translation>
 <translation id="4610637590575890427">Jeste li mislili <ph name="SITE" /></translation>
 <translation id="4611619000650855880">Kad je odabrana lijeva tipka miša, upotrijebite tipku / da biste dvaput kliknuli</translation>
-<translation id="4612841084470706111">Odobrite pristup svim zatraženim web-lokacijama.</translation>
 <translation id="4613271546271159013">Proširenje je promijenilo stranicu koja se prikazuje kada otvorite novu karticu.</translation>
 <translation id="461613135510474570">Rečenica</translation>
 <translation id="461661862154729886">Izvor energije</translation>
@@ -7038,7 +7036,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6400360390396538896">Uvijek na <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Ukloni fokus s grupe kartica</translation>
 <translation id="6401118106417399952">EID vašeg uređaja je <ph name="EID_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Pomoću tih brojeva možete aktivirati uslugu.</translation>
-<translation id="6401458660421980302">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na tom uređaju</translation>
 <translation id="6402042774506839496">Da biste saznali zašto, obratite se razvojnom programeru aplikacije</translation>
 <translation id="6402921224457714577">Web-lokacije mogu tražiti dopuštenje za upravljanje i reprogramiranje vaših MIDI uređaja</translation>
 <translation id="6404511346730675251">Uredi oznaku</translation>
@@ -7332,7 +7329,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6619801788773578757">Dodaj aplikaciju kioska</translation>
 <translation id="6619990499523117484">Potvrdite PIN</translation>
 <translation id="6621282332208609777">Postavite pitanje Googleu ili unesite URL</translation>
-<translation id="6621391692573306628">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja</translation>
 <translation id="6622980291894852883">Nastavi blokirati slike</translation>
 <translation id="6624036901798307345">U načinu rada tableta dodirnite na gumb alatne trake brojača kartica da biste otvorili novu vrpcu kartica koja prikazuje minijature svake kartice.</translation>
 <translation id="6624538059730609162">Zatvori desni prikaz</translation>

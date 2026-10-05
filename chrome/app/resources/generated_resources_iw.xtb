@@ -1728,6 +1728,7 @@
 <translation id="2322622365472107569">שעת הסיום: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏רשתות Wi-Fi שמורות</translation>
 <translation id="2323685460575935191">הסתרת כפתורי הגלילה</translation>
+<translation id="2325004050205455346">היסטוריה מהזמן האחרון</translation>
 <translation id="2325444234681128157">שמירת סיסמה</translation>
 <translation id="2326188115274135041">יש לאשר את קוד האימות כדי להפעיל את ביטול הנעילה האוטומטי</translation>
 <translation id="2326583548923775947">‏כתובת האימייל הזו לא שייכת לחשבון Google. פריטים ששמרת ב-Chrome לא יהיו זמינים במכשירים אחרים.</translation>
@@ -2867,7 +2868,6 @@
 <translation id="3166443275568926403">ביצועים ומצב הסוללה</translation>
 <translation id="3167446923957429259">מזיזים את הפה שמאלה</translation>
 <translation id="3167562202484086668">מחיקת כל הנתונים מ<ph name="BRAND" /></translation>
-<translation id="3169504125849131369">‏לפתיחת ההגדרות של Windows</translation>
 <translation id="3175067642577044620">גוף ההודעה</translation>
 <translation id="3175862692832442091">יער</translation>
 <translation id="3176347586396987181">‏משתמשים במקש Z כדי ללחוץ לחיצה ארוכה על כפתור העכבר</translation>
@@ -4763,7 +4763,6 @@
 <translation id="4610493438923139095">לא מהימן</translation>
 <translation id="4610637590575890427">האם התכוונת לעבור אל <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">כשבוחרים בכפתור השמאלי של העכבר, משתמשים במקש ”/” כדי ללחוץ לחיצה כפולה</translation>
-<translation id="4612841084470706111">הענקת גישה לכל האתרים המבוקשים.</translation>
 <translation id="4613271546271159013">תוסף מסוים שינה את הדף המוצג בעת פתיחת כרטיסייה חדשה.</translation>
 <translation id="461613135510474570">משפט</translation>
 <translation id="461661862154729886">מקור חשמל</translation>
@@ -7056,7 +7055,6 @@
 <translation id="6400360390396538896">תמיד ב-<ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">ביטול ההתמקדות בקבוצת הכרטיסיות</translation>
 <translation id="6401118106417399952">‏ה-EID של המכשיר הוא <ph name="EID_NUMBER" /> והמספר הסידורי של המכשיר הוא <ph name="SERIAL_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
-<translation id="6401458660421980302">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, צריך להיכנס ל-Chrome במכשיר האחר</translation>
 <translation id="6402042774506839496">כדי לברר למה, צריך לפנות למפתח האפליקציה</translation>
 <translation id="6402921224457714577">‏אתרים יכולים לבקש הרשאה לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
@@ -7350,7 +7348,6 @@
 <translation id="6619801788773578757">הוספת אפליקציית "קיוסק"</translation>
 <translation id="6619990499523117484">אישור קוד האימות</translation>
 <translation id="6621282332208609777">‏אפשר לשאול את Google או להקליד כתובת URL</translation>
-<translation id="6621391692573306628">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, צריך להיכנס ל-Chrome בשני המכשירים</translation>
 <translation id="6622980291894852883">המשך לחסום תמונות</translation>
 <translation id="6624036901798307345">במצב טאבלט, לוחצים על הכפתור בסרגל הכלים של מונה הכרטיסיות כדי לפתוח שורת כרטיסיות חדשה עם תצוגה המכילה תמונות ממוזערות של כל כרטיסייה.</translation>
 <translation id="6624538059730609162">סגירת התצוגה הימנית</translation>
@@ -9283,6 +9280,7 @@
 <translation id="8081989000209387414">‏להשבית ניפוי באגים באמצעות ADB?</translation>
 <translation id="8082132721957920509">הכרטיס נשמר</translation>
 <translation id="8082390128630131497">‏השבתה של ניפוי באגים באמצעות ADB יאפס את ה<ph name="DEVICE_TYPE" /> הזה להגדרות היצרן. כל חשבונות המשתמש והנתונים המקומיים יימחקו.</translation>
+<translation id="8082737802704584539">‏הארגון שלך השבית את האפשרות לשמור את ההיסטוריה בחשבון Google</translation>
 <translation id="8084114998886531721">סיסמה שמורה</translation>
 <translation id="8084417885464859041">‏שימוש בטוח ב-Gemini</translation>
 <translation id="8084429490152575036">‏הגדרות APN סלולרי</translation>

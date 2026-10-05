@@ -867,6 +867,7 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2436186046335138073">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar?</translation>
 <translation id="243815215670139125">Kortet kunde inte sparas i ditt Google-konto. Det har sparats i Chrome på den här enheten i stället.</translation>
 <translation id="2438874542388153331">Fyra hål till höger</translation>
+<translation id="2442033148418774391">Meddelande om smartare autofyll som hålls privat har stängts</translation>
 <translation id="2442865686365739754">Följande sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chrome:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />din webbhistorik
@@ -879,6 +880,7 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2451607499823206582">Spårning</translation>
 <translation id="2452837234288608067">Det gick inte att hjälpa till med det. Försök igen.</translation>
 <translation id="2453045048779611513">Organisationen begränsar vad du kan spara</translation>
+<translation id="2456490423293803882">Meddelande om smartare autofyll som hålls privat har öppnats över hela skärmen</translation>
 <translation id="2459882793359532780">Tillämpade webbläsarpolicyer (dator- och profilpolicyer)</translation>
 <translation id="2461385121573678775">Med Chrome Enterprise Core får du ett centraliserat verktyg för att konfigurera webbläsarprinciper från molnet</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
@@ -1108,6 +1110,7 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2878197950673342043">Korsfalsning</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">fylla i lösenord med skärmlåset.</translation>
+<translation id="2880119244122776372">Bygg och koda</translation>
 <translation id="2881276955470682203">Vill du spara kortet?</translation>
 <translation id="2882280148032777436">Radera ditt Known Traveler Number</translation>
 <translation id="2882949212241984732">Altarskåpsfalsning</translation>
@@ -3914,6 +3917,7 @@ Mer information.
 <translation id="753713322968419914">Vill du ta bort hemadressen från Autofyll i Chrome?</translation>
 <translation id="753714465667062283">Logga in för att spara fotot</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
+<translation id="7540924742308928499">Brainstorma och sammanfatta</translation>
 <translation id="7543525346216957623">Fråga en förälder</translation>
 <translation id="7546409722674205727">Startar <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Åtgärda anslutningsproblem</translation>

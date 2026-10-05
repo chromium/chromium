@@ -2869,7 +2869,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3166443275568926403">Ydeevne og batteristatus</translation>
 <translation id="3167446923957429259">Spids munden mod venstre</translation>
 <translation id="3167562202484086668">Slet alle data fra <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Åbn Windows-indstillinger</translation>
 <translation id="3175067642577044620">Brødtekst</translation>
 <translation id="3175862692832442091">Skov</translation>
 <translation id="3176347586396987181">Brug “z” til at holde en museknap nede</translation>
@@ -4764,7 +4763,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4610493438923139095">Upålidelig</translation>
 <translation id="4610637590575890427">Ville du gå til <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Når venstre museknap er valgt, kan du bruge "/" til at dobbeltklikke</translation>
-<translation id="4612841084470706111">Giv adgang til alle anmodede websites.</translation>
 <translation id="4613271546271159013">En udvidelse har ændret, hvilken side der vises, når du åbner en ny fane.</translation>
 <translation id="461613135510474570">Sætning</translation>
 <translation id="461661862154729886">Energikilde</translation>
@@ -7057,7 +7055,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6400360390396538896">Altid på <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Fjern fokus fra fanegruppe</translation>
 <translation id="6401118106417399952">Din enheds EID-nummer er <ph name="EID_NUMBER" />, og enhedens serienummer er <ph name="SERIAL_NUMBER" />. Disse numre kan bruges til at aktivere tjenesten.</translation>
-<translation id="6401458660421980302">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på den pågældende enhed</translation>
 <translation id="6402042774506839496">Kontakt appudvikleren for at få flere oplysninger</translation>
 <translation id="6402921224457714577">Websites kan anmode om at styre og omprogrammere dine MIDI-enheder</translation>
 <translation id="6404511346730675251">Rediger bogmærke</translation>
@@ -7349,7 +7346,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6619801788773578757">Tilføj terminalapp</translation>
 <translation id="6619990499523117484">Bekræft din pinkode</translation>
 <translation id="6621282332208609777">Spørg Google, eller angiv en webadresse</translation>
-<translation id="6621391692573306628">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder</translation>
 <translation id="6622980291894852883">Fortsæt blokering af billeder</translation>
 <translation id="6624036901798307345">I tablettilstand skal du trykke på knappen til faneoptælling på værktøjslinjen for at åbne den nye fanelinje, der viser miniaturebilleder af hver fane.</translation>
 <translation id="6624538059730609162">Luk højre visning</translation>

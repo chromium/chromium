@@ -2857,7 +2857,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3166443275568926403">Performance et état de la pile</translation>
 <translation id="3167446923957429259">Bougez votre bouche vers la gauche</translation>
 <translation id="3167562202484086668">Supprimer toutes les données du <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Ouvrir les paramètres Windows</translation>
 <translation id="3175067642577044620">Corps</translation>
 <translation id="3175862692832442091">Forêt</translation>
 <translation id="3176347586396987181">Utilisez « z » pour appuyer sur un bouton de la souris et le maintenir enfoncé</translation>
@@ -4752,7 +4751,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4610493438923139095">Non fiable</translation>
 <translation id="4610637590575890427">Vouliez-vous accéder à <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Lorsque le bouton gauche de la souris est sélectionné, utilisez « / » pour double-cliquer</translation>
-<translation id="4612841084470706111">Accordez l'accès à tous les sites demandés.</translation>
 <translation id="4613271546271159013">Une extension a changé la page qui s'affiche lorsque vous ouvrez un nouvel onglet.</translation>
 <translation id="461613135510474570">Phrase</translation>
 <translation id="461661862154729886">Source d'alimentation</translation>
@@ -7043,7 +7041,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6400360390396538896">Toujours sur <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Annuler la mise en évidence du groupe d'onglets</translation>
 <translation id="6401118106417399952">L'EID de votre appareil est <ph name="EID_NUMBER" /> et le numéro de série de l'appareil est <ph name="SERIAL_NUMBER" />. Ces numéros peuvent être utilisés pour aider à activer le service.</translation>
-<translation id="6401458660421980302">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur ce dernier</translation>
 <translation id="6402042774506839496">Pour en savoir plus, communiquez avec le développeur de l'appli</translation>
 <translation id="6402921224457714577">Les sites peuvent demander de contrôler et de reprogrammer vos appareils MIDI</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
@@ -7335,7 +7332,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6619801788773578757">Ajouter une application de kiosque</translation>
 <translation id="6619990499523117484">Confirmez votre NIP</translation>
 <translation id="6621282332208609777">Demandez à Google ou entrez une URL</translation>
-<translation id="6621391692573306628">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, touchez le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle bande d'onglets qui affiche les miniatures de chaque onglet.</translation>
 <translation id="6624538059730609162">Fermer l'affichage de droite</translation>

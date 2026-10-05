@@ -2868,7 +2868,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3166443275568926403">Hiệu suất và trạng thái pin</translation>
 <translation id="3167446923957429259">Đưa miệng sang trái</translation>
 <translation id="3167562202484086668">Xoá tất cả dữ liệu <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Mở phần cài đặt Windows</translation>
 <translation id="3175067642577044620">Nội dung</translation>
 <translation id="3175862692832442091">Rừng</translation>
 <translation id="3176347586396987181">Dùng phím "z" để nhấn và giữ nút chuột</translation>
@@ -4763,7 +4762,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4610493438923139095">Không đáng tin cậy</translation>
 <translation id="4610637590575890427">Có phải ý bạn là chuyển đến <ph name="SITE" /> không?</translation>
 <translation id="4611619000650855880">Khi nút chuột trái được chọn, hãy dùng dấu "/" để nhấp đúp</translation>
-<translation id="4612841084470706111">Cấp quyền truy cập vào tất cả trang web được yêu cầu.</translation>
 <translation id="4613271546271159013">Tiện ích đã thay đổi trang nào sẽ được hiển thị khi bạn mở một thẻ mới.</translation>
 <translation id="461613135510474570">Câu</translation>
 <translation id="461661862154729886">Nguồn điện</translation>
@@ -7056,7 +7054,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6400360390396538896">Luôn cho phép trên <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Xoá tiêu điểm khỏi nhóm thẻ</translation>
 <translation id="6401118106417399952">Số EID (mã định danh dành cho eSIM) thiết bị của bạn là <ph name="EID_NUMBER" /> và số sê-ri thiết bị là <ph name="SERIAL_NUMBER" />. Những số này có thể được dùng để giúp kích hoạt dịch vụ.</translation>
-<translation id="6401458660421980302">Để gửi thẻ này cho một thiết bị khác, hãy đăng nhập vào Chrome trên thiết bị đó</translation>
 <translation id="6402042774506839496">Để tìm hiểu lý do, hãy liên hệ với nhà phát triển ứng dụng</translation>
 <translation id="6402921224457714577">Các trang web có thể yêu cầu cấp quyền điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="6404511346730675251">Chỉnh sửa dấu trang</translation>
@@ -7346,7 +7343,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6619801788773578757">Thêm ứng dụng kiosk</translation>
 <translation id="6619990499523117484">Xác nhận mã PIN của bạn</translation>
 <translation id="6621282332208609777">Hỏi Google hoặc nhập một URL</translation>
-<translation id="6621391692573306628">Để gửi thẻ này cho một thiết bị khác, hãy đăng nhập vào Chrome trên cả hai thiết bị</translation>
 <translation id="6622980291894852883">Tiếp tục chặn hình ảnh</translation>
 <translation id="6624036901798307345">Ở chế độ máy tính bảng, hãy nhấn vào nút trên thanh công cụ của bộ đếm thẻ để mở dải thẻ mới cho thấy hình thu nhỏ của mỗi thẻ.</translation>
 <translation id="6624538059730609162">Đóng dạng xem bên phải</translation>

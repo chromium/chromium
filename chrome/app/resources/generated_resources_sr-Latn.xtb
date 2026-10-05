@@ -1715,6 +1715,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2322622365472107569">Vreme završetka <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Sačuvane WiFi mreže</translation>
 <translation id="2323685460575935191">Sakrij dugmad za skrolovanje</translation>
+<translation id="2325004050205455346">Nedavna istorija</translation>
 <translation id="2325444234681128157">Zapamti lozinku</translation>
 <translation id="2326188115274135041">Potvrdite PIN da biste uključili automatsko otključavanje</translation>
 <translation id="2326583548923775947">Ovo nije Google nalog. Stavke koje sačuvate u Chrome-u neće biti dostupne na drugim uređajima.</translation>
@@ -2854,7 +2855,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3166443275568926403">Performanse i stanje baterije</translation>
 <translation id="3167446923957429259">Pomerite usta ulevo</translation>
 <translation id="3167562202484086668">Izbriši sve podatke tipa <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">Otvori podešavanja Windows-a</translation>
 <translation id="3175067642577044620">Sadržaj</translation>
 <translation id="3175862692832442091">Šuma</translation>
 <translation id="3176347586396987181">Koristite „z“ da biste pritisnuli i zadržali taster miša</translation>
@@ -4749,7 +4749,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4610493438923139095">Nepouzdano</translation>
 <translation id="4610637590575890427">Da li ste želeli da odete na <ph name="SITE" /></translation>
 <translation id="4611619000650855880">Kada je izabran levi taster miša, koristite „/“ da biste kliknuli dvaput</translation>
-<translation id="4612841084470706111">Odobri pristup za sve zahtevane sajtove.</translation>
 <translation id="4613271546271159013">Dodatak je promenio stranicu koja se prikazuje kada otvorite novu karticu.</translation>
 <translation id="461613135510474570">Rečenica</translation>
 <translation id="461661862154729886">Izvor energije</translation>
@@ -7041,7 +7040,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6400360390396538896">Uvek na <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Ukloni fokus sa grupe kartica</translation>
 <translation id="6401118106417399952">EID uređaja je <ph name="EID_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Ove brojeve možete da koristite da biste aktivirali uslugu.</translation>
-<translation id="6401458660421980302">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome na tom uređaju</translation>
 <translation id="6402042774506839496">Da biste saznali zašto, obratite se programeru aplikacije</translation>
 <translation id="6402921224457714577">Sajtovi mogu da traže da kontrolišu i reprogramiraju MIDI uređaje</translation>
 <translation id="6404511346730675251">Izmena obeleživača</translation>
@@ -7335,7 +7333,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6619801788773578757">Dodajte kiosk aplikaciju</translation>
 <translation id="6619990499523117484">Potvrdite PIN</translation>
 <translation id="6621282332208609777">Pitajte Google ili unesite URL</translation>
-<translation id="6621391692573306628">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome na oba uređaja</translation>
 <translation id="6622980291894852883">Nastavi blokiranje slika</translation>
 <translation id="6624036901798307345">U režimu tableta dodirnite dugme brojača kartica na traci s alatkama da biste otvorili novu traku sa karticama koja prikazuje sličice svake kartice.</translation>
 <translation id="6624538059730609162">Zatvori desni prikaz</translation>

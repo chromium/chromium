@@ -123,7 +123,6 @@
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
 <translation id="1435593198351412143">‏פתיחה אוטומטית של קובצי PDF</translation>
 <translation id="1437543266176261764">הפעילות מתבצעת ב-<ph name="APP_NAME" /></translation>
-<translation id="1448440926884431741">‏יש לך אפשרות לארגן את המוצרים שבמעקב ב-Bookmarks</translation>
 <translation id="1452651021404174820">בחירת מכשיר</translation>
 <translation id="1455845192930279203">רוצה להוריד את <ph name="FILE_NAME" /> ‏(<ph name="FILE_SIZE" />) מ-<ph name="DOWNLOAD_DOMAIN" /> בכל זאת?</translation>
 <translation id="1460751212339734034">חוסכים זמן, מקלידים פחות</translation>
@@ -775,6 +774,7 @@
 <translation id="4136632885151622181">‫<ph name="TAB_TITLE" />, כרטיסייה מתוך סדרת כרטיסיות שנבחרו והוצמדו, והתוכן בה מוקלט</translation>
 <translation id="4137746084635924146">שפת המכשיר הנוכחית</translation>
 <translation id="414128724510021958">כברירת מחדל, מתבקשים אתרים שמותאמים למחשב</translation>
+<translation id="4150837143272125910">הורדת עדכון הושלמה והוא מוכן להתקנה</translation>
 <translation id="4162867837470729563">רשימת אפשרויות השיתוף נפתחה בגובה מלא.</translation>
 <translation id="4164642020717536140">גלישה מהירה ומאובטחת באינטרנט</translation>
 <translation id="4165077084524712774">כלים נוספים</translation>
@@ -1401,6 +1401,7 @@
 <translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="657177046675873214">כדי שהסימניות יופיעו בכל המכשירים, צריך להפעיל את האפשרות "סימניות" בהגדרות</translation>
 <translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>
+<translation id="657480975869429144">‏גרסה חדשה של Chrome זמינה להורדה</translation>
 <translation id="658099107946526506">כדי למנוע גישה לא רצויה, אפשר להגן על הגלישה הפרטית באמצעות קוד אימות</translation>
 <translation id="6583199322650523874">סימון הדף הנוכחי בסימנייה</translation>
 <translation id="6588043302623806746">‏שימוש ב-DNS מאובטח</translation>

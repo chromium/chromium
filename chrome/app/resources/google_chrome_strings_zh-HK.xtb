@@ -501,7 +501,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5899008323405946573">透過手機的 Chrome 應用程式使用 Google 最強大的 AI 工具</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 網絡登入</translation>
 <translation id="5924017743176219022">正在連線至互聯網…</translation>
-<translation id="5925596746603389877">下載 Chrome 安裝程式</translation>
 <translation id="5940385492829620908">您的網頁、書籤和其他 Chrome 資料在這裡直播。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">將 Google Chrome 設為預設瀏覽器</translation>
@@ -563,6 +562,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6360449101159168105">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可在你的所有裝置上取用閱讀清單及其他內容。</translation>
 <translation id="6388799252195623474">幫幫我</translation>
+<translation id="6401458660421980302">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6412673304250309937">使用儲存在 Chrome 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}}</translation>
 <translation id="6418662306461808273">要切換至現有 Chrome 設定檔嗎？</translation>
@@ -591,6 +591,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="659498884637196217">前往此裝置的「Google 密碼管理工具」進行更新</translation>
 <translation id="6612152958212564387">你的使用情況統計和當機報告不會傳送給 Google。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">將 Chrome 設定為預設瀏覽器，在所有裝置上同步更新密碼、書籤和記錄。</translation>
+<translation id="6621391692573306628">如要將此分頁傳送至其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6631524303639368205">開啟上次瀏覽的內容：Chrome 已還原上個工作階段的分頁。如要關閉此功能，請前往</translation>
 <translation id="6632012506031284914">即可使用 Chrome 搜尋。</translation>
 <translation id="6632473616050862500">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
@@ -778,6 +779,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8260086374035800939">建立新分頁時，如果 Chrome 版 Gemini 已開啟，側面板亦會保持開啟</translation>
 <translation id="8267953129876836456">Chrome 發現一些安全性建議需要你審核</translation>
 <translation id="8286862437124483331">Google Chrome 正在嘗試顯示密碼。如果您同意，請輸入您的 Windows 密碼。</translation>
+<translation id="8291415872436043161">下載 Chrome</translation>
 <translation id="829923460755755423">新增「Google 密碼管理工具」的捷徑</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8321888067342493336">儲存為圖片</translation>

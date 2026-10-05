@@ -2866,7 +2866,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3166443275568926403">Ytelse og batteritilstand</translation>
 <translation id="3167446923957429259">Beveg munnen til venstre</translation>
 <translation id="3167562202484086668">Slett alle <ph name="BRAND" />-dataene dine</translation>
-<translation id="3169504125849131369">Åpne Windows-innstillingene</translation>
 <translation id="3175067642577044620">Hoveddel</translation>
 <translation id="3175862692832442091">Skog</translation>
 <translation id="3176347586396987181">Bruk «Z» for å trykke på en museknapp og holde den inne</translation>
@@ -4759,7 +4758,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4610493438923139095">Ikke klarert</translation>
 <translation id="4610637590575890427">Vil du gå til <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Når venstre museknapp er valgt, bruker du «/» for å dobbeltklikke</translation>
-<translation id="4612841084470706111">Gi tilgang til alle forespurte nettsteder.</translation>
 <translation id="4613271546271159013">En utvidelse har endret hvilken siden som vises når du åpner en ny fane.</translation>
 <translation id="461613135510474570">Setning</translation>
 <translation id="461661862154729886">Energikilde</translation>
@@ -7049,7 +7047,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6400360390396538896">Alltid på <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Avslutt fokusering på fanegruppen</translation>
 <translation id="6401118106417399952">Enhetens EID er <ph name="EID_NUMBER" />, og enhetens serienummer er <ph name="SERIAL_NUMBER" />. Disse numrene kan brukes til å aktivere tjenesten.</translation>
-<translation id="6401458660421980302">For å sende denne fanen til en annen enhet, logg på Chrome der</translation>
 <translation id="6402042774506839496">Kontakt apputvikleren for å finne ut hvorfor</translation>
 <translation id="6402921224457714577">Nettsteder kan be om å få kontrollere og omprogrammere MIDI-enhetene dine</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
@@ -7339,7 +7336,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6619801788773578757">Legg til kioskapp</translation>
 <translation id="6619990499523117484">Bekreft PIN-koden din</translation>
 <translation id="6621282332208609777">Spør Google, eller skriv inn en nettadresse</translation>
-<translation id="6621391692573306628">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene</translation>
 <translation id="6622980291894852883">Fortsett blokkering av bilder</translation>
 <translation id="6624036901798307345">I nettbrettmodus kan du trykke på fanetellerknappen på verktøyraden for å åpne den nye faneraden som viser miniatyrbilder av alle fanene.</translation>
 <translation id="6624538059730609162">Lukk høyre visning</translation>

@@ -2855,7 +2855,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3166443275568926403">Performans ve Pil Durumu</translation>
 <translation id="3167446923957429259">Ağzınızı sola doğru hareket ettirin</translation>
 <translation id="3167562202484086668">Tüm <ph name="BRAND" /> verilerini sil</translation>
-<translation id="3169504125849131369">Windows ayarlarını aç</translation>
 <translation id="3175067642577044620">Metin</translation>
 <translation id="3175862692832442091">Orman</translation>
 <translation id="3176347586396987181">Bir fare düğmesini basılı tutmak için "z" tuşunu kullanın</translation>
@@ -4748,7 +4747,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4610493438923139095">Güvenilir değil</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> sitesine mi gitmek istediniz?</translation>
 <translation id="4611619000650855880">Sol fare düğmesi seçiliyken çift tıklamak için "/" tuşunu kullanın</translation>
-<translation id="4612841084470706111">Erişim isteyen tüm sitelere izin ver.</translation>
 <translation id="4613271546271159013">Bir uzantı, yeni sekme açtığınızda hangi sayfanın görüntüleneceğini değiştirdi.</translation>
 <translation id="461613135510474570">Cümle</translation>
 <translation id="461661862154729886">Enerji kaynağı</translation>
@@ -7041,7 +7039,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6400360390396538896">Her zaman açık <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Sekme grubunun odağını kaldır</translation>
 <translation id="6401118106417399952">Cihazınızın SIM kimliği <ph name="EID_NUMBER" /> ve seri numarası <ph name="SERIAL_NUMBER" />. Bu numaralar, hizmeti etkinleştirmek için kullanılabilir.</translation>
-<translation id="6401458660421980302">Bu sekmeyi başka bir cihaza göndermek için ilgili cihazda Chrome'da oturum açın.</translation>
 <translation id="6402042774506839496">Nedenini öğrenmek için uygulama geliştiriciyle iletişime geçin</translation>
 <translation id="6402921224457714577">Siteler MIDI cihazlarınızı kontrol etmek ve yeniden programlamak için izin isteyebilir</translation>
 <translation id="6404511346730675251">Yer işaretini düzenle</translation>
@@ -7331,7 +7328,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6619801788773578757">Kiosk uygulaması ekle</translation>
 <translation id="6619990499523117484">PIN'inizi onaylayın</translation>
 <translation id="6621282332208609777">Google'a sorun veya URL'yi yazın</translation>
-<translation id="6621391692573306628">Bu sekmeyi başka bir cihaza göndermek için her iki cihazda da Chrome'da oturum açın.</translation>
 <translation id="6622980291894852883">Görselleri engellemeye devam et</translation>
 <translation id="6624036901798307345">Tablet modunda, her sekmenin küçük resimlerini gösteren yeni sekme şeridini açmak için sekme sayacı araç çubuğu düğmesine dokunun.</translation>
 <translation id="6624538059730609162">Sağ görünümü kapat</translation>

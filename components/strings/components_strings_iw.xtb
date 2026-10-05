@@ -212,6 +212,7 @@
 <translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1348779747280417563">אישור השם</translation>
+<translation id="1353546633704510580">האזור שנבחר</translation>
 <translation id="1357195169723583938">מי השתמש במכשיר לאחרונה ומתי</translation>
 <translation id="1358187717814494928">יצירת גיליון</translation>
 <translation id="1358223345833465883">‏מנוע החיפוש שלך ב-Chromium</translation>
@@ -352,6 +353,7 @@
 <translation id="1574714699824202614">מתבצע אימות של אמצעי התשלום</translation>
 <translation id="1576277203042721907">תובנות בנושא קניות</translation>
 <translation id="1579189948231786790">האתר הזה נחסם על ידי הארגון שלך</translation>
+<translation id="1579940597679293608">סגירת כל החלונות המבודדים</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">קרתה תקלה כשניסינו לטעון את דף האינטרנט הזה.</translation>
 <translation id="1585306568496579337">התוסף "<ph name="EXTENSION_NAME" />" רוצה לפתוח קישורים מסוג <ph name="PROTOCOL" /> דרך <ph name="HANDLER_HOSTNAME" /></translation>
@@ -1281,6 +1283,7 @@
 <translation id="3162559335345991374">‏ייתכן שרשת ה-Wi-Fi דורשת כניסה לדף ההתחברות שלה.</translation>
 <translation id="316542773973815724">ניווט</translation>
 <translation id="316638481603975524">אתרים יכולים לבקש הרשאה להתקין אפליקציות אינטרנט</translation>
+<translation id="3166688462674378969">כפתור לסגירת החלונות המבודדים, מפעילים אותו כדי לסגור את כל החלונות המבודדים שפתוחים כרגע</translation>
 <translation id="3166788340998560642">‏בפעם הבאה שייעשה שימוש במידע, Chrome יציע לשמור אותו ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">‏יש לבדוק את הגדרות שרת ה-proxy או לפנות למנהל הרשת
@@ -1309,6 +1312,7 @@
 <translation id="3211727636285361260">לפתוח קישורי <ph name="PROTOCOL" /> באמצעות <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">ההורדה התחילה. כדי לראות אותה, צריך לגרור מלמעלה וללחוץ על הכפתור ה"קודם".</translation>
 <translation id="3212581601480735796">הפעילות שלך ב-<ph name="HOSTNAME" /> מנוטרת</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{‏‫Chrome יפסיק להציע את המידע הזה. המקור לא יימחק.}one{‏‫Chrome יפסיק להציע את המידע הזה. המקורות לא יימחקו.}two{‏‫Chrome יפסיק להציע את המידע הזה. המקורות לא יימחקו.}other{‏‫Chrome יפסיק להציע את המידע הזה. המקורות לא יימחקו.}}</translation>
 <translation id="3215092763954878852">‏לא ניתן להשתמש ב-WebAuthn</translation>
 <translation id="3215311088819828484">התוצאה עודכנה</translation>
 <translation id="3218181027817787318">יחסי</translation>
@@ -1460,6 +1464,7 @@
 <translation id="3474392552865647225">‏הכפתור להתאמה אישית של הגופנים ב-Chrome, מפעילים אותו כדי להתאים אישית את הגופנים וגודל הטקסט ב-Chrome</translation>
 <translation id="3478033058537426179">לפי קבוצה</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
+<translation id="3481315707647070701">המחשה ועריכה</translation>
 <translation id="3484560055331845446">‏ייתכן שמישהו אחר ישלול את הגישה שלך לחשבון Google. לגלישה בטוחה ב-Chrome, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="3484861421501147767">תזכורת: יש קוד הטבה שמור</translation>
 <translation id="3485901585646640838">‏כדי להשתמש בסיסמאות ובפרטים נוספים ששמורים בחשבון Google, צריך לאמת את הזהות שלך</translation>
@@ -1545,6 +1550,7 @@
 <translation id="3614001939154393113">יכול להיות שתוקפים מנסים לגנוב את המידע שלך מ-<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (לדוגמה: סיסמאות, הודעות או פרטי כרטיסי אשראי). <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">רשומה ברשימה "<ph name="LANGUAGE_ID" />": שפה לא מוכרת או לא נתמכת.</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">‏לא ניתן לשמור את הכרטיס הזה ב-Google Wallet. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה. בפעם הבאה שייעשה שימוש ב-IBAN הזה, תוצג לך שאלה מ-Chrome שוב.</translation>
 <translation id="3621401353678567613">כדי לקבל התראות על ירידות במחיר של המוצרים שבמעקב, צריך להפעיל את ההתראות בהגדרות.</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
@@ -1711,6 +1717,7 @@
 <translation id="3865339060090354361">אפשר לעיין כאן בתנאים של <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">הקבצים המקומיים שלך יימחקו בעוד <ph name="MINUTES" /> דקות</translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
+<translation id="3877021395754842994">סגירת כל החלונות המבודדים שפתוחים כרגע</translation>
 <translation id="3877603629930976930">לא לשתף</translation>
 <translation id="3878445208930547646">אין לך הרשאה להעתיק מהאתר הזה</translation>
 <translation id="3879674895057686427">לאיזו שפה לתרגם?</translation>
@@ -2055,6 +2062,7 @@
 <translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="4409556632583862731">שרשור חדש</translation>
 <translation id="4410614037742891410">‏עדכון התעודה המזהה באופן מאובטח ב-Google Wallet</translation>
+<translation id="441152911646545600">‏‫<ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, כדי לסגור את כל החלונות המבודדים שפתוחים כרגע, צריך ללחוץ על Tab ואז על Enter</translation>
 <translation id="4412074349188076601">ההגדרה הזו מסומנת כניתנת להתקנה, אבל אין תמונה לארכיטקטורה הזו, לכן לא ניתן להתקין אותה.</translation>
 <translation id="4412377069090572315">מה אנשים אומרים</translation>
 <translation id="4414515549596849729">‏קובצי Cookie ונתונים מאתרים</translation>
@@ -2332,6 +2340,7 @@ Del</translation>
 <translation id="4887435305021446590">‏לפתיחת Gmail</translation>
 <translation id="4887785555357166111">שמירת הפריים</translation>
 <translation id="4891425819480327855">‏‫<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי למחוק את היסטוריית הגלישה, קובצי ה-Cookie, המטמון ועוד בהגדרות של Chrome</translation>
+<translation id="4892391379033030113">כפתור לפתיחת חלון מבודד, מפעילים אותו כדי לפתוח חלון מבודד חדש לגלישה פרטית</translation>
 <translation id="4892518386797173871">חלק אחורי</translation>
 <translation id="4894390983254799375">למשל מזהה המכשיר, שם המכשיר, גרסת מערכת ההפעלה ושם המשתמש במערכת ההפעלה</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3010,6 +3019,7 @@ Del</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (מסונכרנים)</translation>
 <translation id="6025471531651464742">הוספת קבצים</translation>
 <translation id="6028591542479806248">ניהול של ההתראות בנייד ובאימייל</translation>
+<translation id="6029805223627823735">‏‫<ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, כדי לפתוח חלון מבודד חדש לגלישה פרטית, צריך ללחוץ על Tab ואז על Enter</translation>
 <translation id="603068602130820122">שתי סיכות הידוק בצד ימין</translation>
 <translation id="6031824805267965302">להשתמש בחיישני התנועה</translation>
 <translation id="6032524144326295339">תיבת דואר 2</translation>
@@ -3767,6 +3777,7 @@ Del</translation>
 <translation id="7316521168101843192">‏הקובץ נשמר ב-OneDrive של מיקרוסופט</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">עזרה בחיבור</translation>
+<translation id="7328315434053660512">פתיחת חלון מבודד</translation>
 <translation id="733354035281974745">ביטול עקב סשן חשבון מקומי במכשיר</translation>
 <translation id="7334320624316649418">&amp;ביצוע מחדש של שינוי סדר</translation>
 <translation id="7335157162773372339">האתר יכול לבקש הרשאה להשתמש במצלמה</translation>
@@ -3815,6 +3826,7 @@ Del</translation>
 <translation id="7402375256128852434">הוספת כרטיסיות מהזמן האחרון</translation>
 <translation id="7403392780200267761">‏שיתוף הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, הפעלת Cast ועוד</translation>
 <translation id="7403591733719184120">מכשיר <ph name="DEVICE_NAME" /> זה מנוהל</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{ההצעה הוסרה. המקור לא יימחק.}one{ההצעה הוסרה. המקורות לא יימחקו.}two{ההצעה הוסרה. המקורות לא יימחקו.}other{ההצעה הוסרה. המקורות לא יימחקו.}}</translation>
 <translation id="7405878640835614059">מהדומיין <ph name="ENROLLMENT_DOMAIN" /> הותקנו אפליקציות שמספקות פונקציות נוספות. לאפליקציות יש גישה לחלק מהנתונים שלך.</translation>
 <translation id="740691708085211707">‏להסיר את הכתובת בעבודה מהמילוי האוטומטי של Chrome?</translation>
 <translation id="7407424307057130981">‏&lt;p&gt;השגיאה הזו תופיע אם תוכנת Superfish מותקנת במחשב Windows שלך.&lt;/p&gt;
@@ -4033,6 +4045,7 @@ Del</translation>
 <translation id="7718626066800460799">לא ניתן לשמור את הסריקה</translation>
 <translation id="772128550427553158">‏קוד האימות (CVC) מופיע בצד הקדמי של הכרטיס.</translation>
 <translation id="7724603315864178912">חיתוך</translation>
+<translation id="7726402116075326231">פתיחה של חלון מבודד חדש לגלישה פרטית</translation>
 <translation id="7730057435797792985">מיון</translation>
 <translation id="7734285854693414638">‏יצירה מהירה של טופס חדש ב-Google Forms</translation>
 <translation id="773466115871691567">תמיד לתרגם דפים ב<ph name="SOURCE_LANGUAGE" /></translation>
@@ -4224,6 +4237,7 @@ Del</translation>
 <translation id="8075898834294118863">ניהול ההגדרות לאתרים</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8076880883123051368">‏יכול להיות שבחשבון שלך ב-Google יש סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו למשל <ph name="BEGIN_LINK_GAA" />הפעילות בממשקי Gemini<ph name="END_LINK_GAA" /></translation>
+<translation id="8077465698530018904">ביטול הבחירה</translation>
 <translation id="8077669823243888800">מעטפה – סינית 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{להעלות את הקובץ הסודי?}one{להעלות את הקבצים הסודיים?}two{להעלות את הקבצים הסודיים?}other{להעלות את הקבצים הסודיים?}}</translation>
 <translation id="8079031581361219619">לטעון את האתר מחדש?</translation>

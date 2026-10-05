@@ -2855,7 +2855,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3166443275568926403">Leistung und Akkustatus</translation>
 <translation id="3167446923957429259">Mund nach links bewegen</translation>
 <translation id="3167562202484086668">Alle <ph name="BRAND" />-Daten löschen</translation>
-<translation id="3169504125849131369">Windows-Einstellungen öffnen</translation>
 <translation id="3175067642577044620">Text</translation>
 <translation id="3175862692832442091">Wald</translation>
 <translation id="3176347586396987181">Verwende „z“, um eine Maustaste zu drücken und gedrückt zu halten</translation>
@@ -4748,7 +4747,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4610493438923139095">Nicht vertrauenswürdig</translation>
 <translation id="4610637590575890427">Wolltest du <ph name="SITE" /> aufrufen?</translation>
 <translation id="4611619000650855880">Wenn die linke Maustaste ausgewählt ist, verwende „/“, um doppelzuklicken</translation>
-<translation id="4612841084470706111">Zugriff auf alle angeforderten Websites erlauben.</translation>
 <translation id="4613271546271159013">Die Seite, die beim Öffnen eines neuen Tabs angezeigt wird, wurde durch eine Erweiterung geändert.</translation>
 <translation id="461613135510474570">Satz</translation>
 <translation id="461661862154729886">Energiequelle</translation>
@@ -7036,7 +7034,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6400360390396538896">Immer auf <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Fokus auf Tabgruppe aufheben</translation>
 <translation id="6401118106417399952">Die Geräte-EID lautet <ph name="EID_NUMBER" /> und die Geräte-Seriennummer <ph name="SERIAL_NUMBER" />. Diese Nummern können zur Aktivierung des Diensts verwendet werden.</translation>
-<translation id="6401458660421980302">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chrome an</translation>
 <translation id="6402042774506839496">Wende dich an den App-Entwickler, um den Grund zu erfahren</translation>
 <translation id="6402921224457714577">Websites dürfen darum bitten, meine MIDI-Geräte zu steuern und neu zu programmieren</translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
@@ -7326,7 +7323,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6619801788773578757">Kioskanwendung hinzufügen</translation>
 <translation id="6619990499523117484">PIN bestätigen</translation>
 <translation id="6621282332208609777">Google fragen oder URL eingeben</translation>
-<translation id="6621391692573306628">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich auf beiden Geräten in Chrome an</translation>
 <translation id="6622980291894852883">Bilder weiterhin blockieren</translation>
 <translation id="6624036901798307345">Tippe im Tablet-Modus auf den Tab-Zähler-Button in der Symbolleiste, um die neue Tableiste zu öffnen, die Miniaturansichten der einzelnen Tabs anzeigt.</translation>
 <translation id="6624538059730609162">Rechte Ansicht schließen</translation>

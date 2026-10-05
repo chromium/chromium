@@ -1716,6 +1716,7 @@
 <translation id="2322622365472107569">เวลาสิ้นสุด <ph name="TIME" /></translation>
 <translation id="2323018538045954000">เครือข่าย Wi-Fi ที่บันทึกไว้</translation>
 <translation id="2323685460575935191">ซ่อนปุ่มเลื่อน</translation>
+<translation id="2325004050205455346">ประวัติล่าสุด</translation>
 <translation id="2325444234681128157">จำรหัสผ่าน</translation>
 <translation id="2326188115274135041">ยืนยัน PIN เพื่อเปิดการปลดล็อกอัตโนมัติ</translation>
 <translation id="2326583548923775947">อีเมลนี้ไม่ใช่บัญชี Google รายการที่คุณบันทึกไว้ใน Chrome จะไม่พร้อมใช้งานบนอุปกรณ์เครื่องอื่นๆ</translation>
@@ -2855,7 +2856,6 @@
 <translation id="3166443275568926403">สถานะประสิทธิภาพและแบตเตอรี่</translation>
 <translation id="3167446923957429259">ขยับปากไปทางซ้าย</translation>
 <translation id="3167562202484086668">ลบข้อมูล<ph name="BRAND" />ทั้งหมด</translation>
-<translation id="3169504125849131369">เปิดการตั้งค่า Windows</translation>
 <translation id="3175067642577044620">เนื้อความ</translation>
 <translation id="3175862692832442091">ป่า</translation>
 <translation id="3176347586396987181">ใช้ปุ่ม "z" เพื่อกดปุ่มเมาส์ค้างไว้</translation>
@@ -4748,7 +4748,6 @@
 <translation id="4610493438923139095">ไม่น่าเชื่อถือ</translation>
 <translation id="4610637590575890427">คุณหมายความว่าต้องการไปที่ <ph name="SITE" /> หรือไม่</translation>
 <translation id="4611619000650855880">เมื่อเลือกปุ่มซ้ายของเมาส์ ให้ใช้ปุ่ม "/" เพื่อดับเบิลคลิก</translation>
-<translation id="4612841084470706111">ให้สิทธิ์เข้าถึงเว็บไซต์ที่ขอทั้งหมด</translation>
 <translation id="4613271546271159013">ส่วนขยายได้เปลี่ยนแปลงหน้าที่แสดงขึ้นเมื่อคุณเปิดแท็บใหม่</translation>
 <translation id="461613135510474570">ประโยค</translation>
 <translation id="461661862154729886">แหล่งพลังงาน</translation>
@@ -7036,7 +7035,6 @@
 <translation id="6400360390396538896">ตลอดเวลาใน <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">เลิกโฟกัสกลุ่มแท็บ</translation>
 <translation id="6401118106417399952">EID ของอุปกรณ์คือ <ph name="EID_NUMBER" /> และหมายเลขซีเรียลของอุปกรณ์คือ <ph name="SERIAL_NUMBER" /> คุณใช้หมายเลขเหล่านี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
-<translation id="6401458660421980302">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์นั้น</translation>
 <translation id="6402042774506839496">หากต้องการทราบเหตุผล โปรดติดต่อนักพัฒนาแอป</translation>
 <translation id="6402921224457714577">เว็บไซต์ขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
@@ -7326,7 +7324,6 @@
 <translation id="6619801788773578757">เพิ่มแอปพลิเคชันคีออสก์</translation>
 <translation id="6619990499523117484">ยืนยัน PIN</translation>
 <translation id="6621282332208609777">ถาม Google หรือพิมพ์ URL</translation>
-<translation id="6621391692573306628">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="6622980291894852883">บล็อกการแสดงภาพ</translation>
 <translation id="6624036901798307345">ในโหมดแท็บเล็ต ให้แตะปุ่มแถบเครื่องมือตัวนับแท็บเพื่อเปิดแนวแท็บใหม่ซึ่งแสดงภาพขนาดย่อของแต่ละแท็บ</translation>
 <translation id="6624538059730609162">ปิดมุมมองด้านขวา</translation>

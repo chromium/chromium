@@ -502,7 +502,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5899008323405946573">Använd Googles bästa AI-verktyg med Chrome-appen på telefonen</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nätverksinloggning</translation>
 <translation id="5924017743176219022">Ansluter till internet …</translation>
-<translation id="5925596746603389877">Ladda ned installationsprogrammet för Chrome</translation>
 <translation id="5940385492829620908">Här finns webben, bokmärken och allt annat du använder Chrome till.</translation>
 <translation id="5941711191222866238">Minimera</translation>
 <translation id="5941830788786076944">Använd Google Chrome som standardwebbläsare</translation>
@@ -564,6 +563,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6360449101159168105">När den här fliken var inaktiv frigjordes minne för att hålla Chrome snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även din läslista med mera på alla dina enheter.</translation>
 <translation id="6388799252195623474">hjälp mig med det här</translation>
+<translation id="6401458660421980302">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på den enheten</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisationen avslutar Chrome automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chrome automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>
@@ -592,6 +592,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="659498884637196217">I Google Lösenordshantering på den här enheten</translation>
 <translation id="6612152958212564387">Du skickar inte användningsstatistik eller felrapporter till Google. <ph name="BEGIN_LINK" />Hantera detta<ph name="END_LINK" />.</translation>
 <translation id="6613949864921837107">Håll dina lösenord, bokmärken och din historik helt synkroniserade på alla enheter genom att ställa in Chrome som standardwebbläsare.</translation>
+<translation id="6621391692573306628">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på båda enheterna</translation>
 <translation id="6631524303639368205">Fortsätt där du slutade: Chrome har återställt dina flikar från din senaste session. Du kan inaktivera detta i</translation>
 <translation id="6632012506031284914">för att söka med Chrome.</translation>
 <translation id="6632473616050862500">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />,.</translation>
@@ -779,6 +780,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8260086374035800939">Om Gemini i Chrome är öppet förblir sidopanelen öppen när du skapar nya flikar</translation>
 <translation id="8267953129876836456">Chrome har hittat några säkerhetsrekommendationer som du bör granska</translation>
 <translation id="8286862437124483331">Skriv ditt Windows-lösenord om du vill tillåta att lösenord visas i Google Chrome.</translation>
+<translation id="8291415872436043161">Ladda ned Chrome</translation>
 <translation id="829923460755755423">Lägg till en genväg till Google Lösenordshantering</translation>
 <translation id="8313851650939857356">Startfel: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Spara som bild</translation>

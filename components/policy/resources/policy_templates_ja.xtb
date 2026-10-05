@@ -1072,6 +1072,17 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 ユーザーが無効になっている Chrome アプリを起動しようとすると、アプリが起動されなかった理由を説明するメッセージが表示され、IT 部門に連絡するよう促されます。
 
 ChromeOS M184 は、Chrome アプリをサポートする最後の ChromeOS マイルストーンとなります。</translation>
+<translation id="1726477280489844651">ユーザーが <ph name="MS_WIN_NAME" /> にログインしたときに、<ph name="PRODUCT_NAME" /> でブラウザ ウィンドウを開くかどうかを制御します。
+
+<ph name="PRODUCT_NAME" /> の [<ph name="MS_WIN_NAME" /> へのログイン時に <ph name="PRODUCT_NAME" /> を起動する] 設定を使うと、ユーザーがログインしたときに起動するよう登録でき、ブラウザをすぐに使用できます。この設定の変更を促すメッセージがユーザーに表示されることもあります。
+
+このポリシーを有効に設定した場合、ユーザーがログインすると <ph name="PRODUCT_NAME" /> が起動し、ブラウザ ウィンドウが開きます。ユーザーはこの設定を変更できず、変更を促すメッセージも表示されません。
+
+このポリシーを無効に設定した場合、ユーザーがログインしても <ph name="PRODUCT_NAME" /> は起動しません。ユーザーはこの設定を変更できず、変更を促すメッセージも表示されません。
+
+このポリシーを設定しない場合、ユーザーはこの設定を変更できます。
+
+このポリシーは、[<ph name="MS_WIN_NAME" /> へのログイン時に <ph name="PRODUCT_NAME" /> を起動する] 設定が利用できないバージョンの <ph name="PRODUCT_NAME" /> には影響しません。</translation>
 <translation id="1729169799290004131">このポリシーでは、画面の明るさの割合（%）を指定できます。このとき、明るさの自動調整機能は無効になります。初期画面の明るさはポリシーの値に調整されますが、ユーザーはこの設定を変更できます。
 
       このポリシーを未設定のままにした場合、ユーザーによる画面制御と明るさの自動調整機能には影響しません。
@@ -1397,6 +1408,7 @@ Click-to-Call 機能を有効にします。この機能により、ログイン
       このポリシーでは、トップレベルのドキュメントのオリジン（通常、アドレスバーにも表示されるページの URL）がいずれかのパターンに一致するかどうかに基づいて、JavaScript がブロックされます。そのため、このポリシーはウェブ サプライ チェーン攻撃の軽減には適していません。たとえば、パターン「https://[*.]foo.com/」を指定した場合、https://example.com でホストされているページで https://www.foo.com/example.js から読み込まれたスクリプトの実行を防ぐことはできません。また、パターン「https://example.com/」を指定した場合、https://example.com のドキュメントが最上位のドキュメントでなく、別のオリジン（https://www.bar.com）でホストされているページにサブフレームとして埋め込まれている場合、スクリプトの実行を防ぐことはできません。</translation>
 <translation id="1942015922182679826">復号できないパスワードの削除を有効にする</translation>
 <translation id="1942626390957213764">デスクトップ共有ハブを無効にする</translation>
+<translation id="1943628907052340534">ユーザーが <ph name="MS_WIN_NAME" /> にログインしたときに <ph name="PRODUCT_NAME" /> を開かない</translation>
 <translation id="194407941132272412">すべてのウェブサイトでサイト分離を無効にするが、ユーザーが有効化できるようにする</translation>
 <translation id="1945994447126139909">この企業向けのポリシーは一時的な適用を想定しており、<ph name="PRODUCT_NAME" /> バージョン 88 で削除される予定です。Chrome のデフォルトのリファラー ポリシーは、Chrome 85 安定版の公開に向けた段階的措置として、現在の「no-referrer-when-downgrade」からさらに安全な「strict-origin-when-cross-origin」に変更され、セキュリティが強化されます。
 
@@ -2028,6 +2040,13 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
 注: ブラウザの実行中にこのポリシーを変更した場合は、新たに開始したレンダラ プロセスにのみ変更が反映されます。</translation>
 <translation id="2354439478396602136"><ph name="PRODUCT_OS_NAME" /> ランチャーにおすすめのアプリを表示する</translation>
+<translation id="2355126045573728327">このポリシーでは、ユーザーが <ph name="PRODUCT_OS_NAME" /> にログインしたときに自動的に起動する <ph name="ANDROID_NAME" /> アプリケーション パッケージ名（例: <ph name="EXAMPLE_PACKAGE_NAME" />）のリストを指定します。
+
+また、アプリケーションが自動インストールされるよう、<ph name="ARC_POLICY_NAME" /> で設定する必要もあります。インストールが完了すると、アプリケーションは自動的に起動します。
+
+現在、リストの最初のアプリケーションのみが起動されます。
+
+このポリシーを未設定のままにするか空にした場合、ログイン時に <ph name="ANDROID_NAME" /> アプリケーションは自動起動しません。</translation>
 <translation id="2355876547176311490">リモート アクセスホストで中継サーバーを使用できないようにする</translation>
 <translation id="2358176879566587521">このポリシーは削除されました。このバージョンの <ph name="PRODUCT_NAME" /> には対応していません。詳しくは、https://support.google.com/chrome/a/answer/7643500 をご覧ください。</translation>
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior は <ph name="PRODUCT_NAME" /> の機能で、<ph name="ABOUT_BLANK_PAGE" /> と <ph name="ABOUT_SRCDOC_PAGE" />　のフレームがイニシエータのベース URL のスナップショットを介して、ベース URL の値を一貫して継承するようにします。詳しくは https://chromestatus.com/feature/5161101671530496 をご覧ください。
@@ -2612,6 +2631,7 @@ WebSocket 以外のリクエストの上限を変更するには、<ph name="MAX
       </translation>
 <translation id="2697717608663878828">TLS 暗号化 ClientHello テストを有効にする</translation>
 <translation id="2699836109975228367">ログイン画面でモノラル音声を有効にする</translation>
+<translation id="2701554183194485203">ログイン時に自動的に起動する <ph name="ANDROID_NAME" /> アプリケーション</translation>
 <translation id="2702023190395322609">おすすめメディアを有効にする</translation>
 <translation id="2702682139813393777">Windows ネイティブ メッセージング ホストを cmd.exe で強制的に起動する</translation>
 <translation id="270582584528242502">ユーザーが終了しようとしたときに警告ダイアログを表示しない</translation>
@@ -3411,6 +3431,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName バリエーションでは、
 <translation id="322359555555487980"><ph name="PRODUCT_OS_NAME" /> に適用可能なバリエーションを管理する</translation>
 <translation id="3229163415739929305">ポリシーを有効に設定するか未設定のままにした場合、ブラウジングの利便性向上を目的としたページ読み込みメタデータと機械学習モデルの取得を許可します。
       このポリシーを無効に設定した場合、一部の機能が正常に動作しない可能性があります。</translation>
+<translation id="3230956492238004242">子モジュールの動的なパッチ適用を有効にする</translation>
 <translation id="3231311173895401135">サポートするかどうかをブラウザが判断する</translation>
 <translation id="3231837273069128027">このポリシーでは、<ph name="TPM_FIRMWARE_UPDATE_TPM" /> ファームウェアの更新処理について設定します。
 
@@ -4105,6 +4126,7 @@ HTTPS 用の RSA 証明書に両方を含める必要があります。</transla
 コンテンツ移行アプリが正しく機能するには、データ エクスポートを使用したデータ転送も有効にする必要があります。詳しくは、https://support.google.com/a/answer/6364687 をご覧ください。</translation>
 <translation id="3702518095257671450">リモート認証</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（1 行入力欄はサポートを終了し、今後削除する予定です。下の複数行入力欄を使用するようにしてください）。</translation>
+<translation id="370314752761795411"><ph name="MS_WIN_NAME" /> へのログイン時に <ph name="PRODUCT_NAME" /> を起動する</translation>
 <translation id="3711895659073496551">停止する</translation>
 <translation id="3712861436661566358">プロファイル分離を強制適用する</translation>
 <translation id="3719826155360621982">ホームページ</translation>
@@ -5011,6 +5033,7 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> では特定の Bluetooth サービスへの接続のみをユーザーに許可します。ただし、リストが空の場合はあらゆるサービスの使用が許可されます。Bluetooth SIG で予約されている UUIDは、<ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> または <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" /> の形式で指定できます。独自の UUID は <ph name="BLUETOOTH_CUSTOM_UUID" /> の形式で指定できます。UUID では大文字と小文字は区別されません。このポリシーを未設定のままにした場合、ユーザーはあらゆる Bluetooth サービスに接続できます。</translation>
 <translation id="4332177773549877617">Android アプリのインストール中に発生したイベントを記録する</translation>
 <translation id="4333940819293342439">アプリ使用状況のテレメトリーの収集間隔（ミリ秒単位）。</translation>
+<translation id="4336096948197154521">ユーザーが <ph name="MS_WIN_NAME" /> にログインしたときに <ph name="PRODUCT_NAME" /> を開く</translation>
 <translation id="4340121900958123942"><ph name="PRODUCT_OS_NAME" /> の位置情報システムの可用性レベルを設定します。
 
 これはアプリとウェブサイトの権限レイヤの下で、追加の制御レイヤとして機能します。たとえば、このポリシーを <ph name="GLS_BLOCKED" /> または <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" /> に設定した場合は、個別の位置情報の利用許可にかかわらず、どのアプリやウェブサイトも位置情報を解決できません。<ph name="GLS_ALLOWED" /> に設定した場合は、許可されているアプリとウェブサイトが個別に位置情報を取得できます。
@@ -6029,6 +6052,13 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 <translation id="4947257516265472776"><ph name="YOUTUBE_PRODUCT_NAME" /> で制限付きモードを強制的に適用する</translation>
 <translation id="494924690085329212">Android が起動している場合、ユーザーのログアウト時に再起動します。</translation>
 <translation id="4950447493143157880">組み込みの DNS クライアントを使用しない</translation>
+<translation id="4953257833692039804"><ph name="PRODUCT_NAME" /> が、ブラウザを完全に再起動することなく、新しく起動した子プロセス（レンダラ プロセスなど）に、ステージングされたセキュリティ アップデートを動的に適用するかどうかを制御します。
+
+<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> を無効にすると、新しいモジュールはインストールされません。
+
+このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は、動的にステージングされた子モジュール バイナリが利用可能であれば、それを使用して新しい子プロセスを起動することがあります。
+
+このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> は、動的にステージングされた子モジュール バイナリ（すでにダウンロードまたはローカルにステージングされた更新も含む）を、新しく起動した子プロセスに適用することを直ちに停止します。更新を適用するにはブラウザの完全な再起動が必要になります。すでに実行されている子プロセスはそのまま継続されます。この設定を使用すると、すべてのコンポーネントの更新を無効にすることなく、動的なパッチ適用を無効にできます。</translation>
 <translation id="4953541641325278286">ユーザーのアイドル状態の検出をどのサイトにも許可しない</translation>
 <translation id="4954352279763128540">事前入力されたドメインを Kerberos 認証ダイアログに追加します。このポリシーを設定すると、[Kerberos ユーザー名] 欄の右側に事前入力されたドメインが表示されます。ユーザーが自分のユーザー名を入力すると、事前入力されたドメインと連結されます。ユーザーの入力に「@」が含まれている場合、事前入力されたドメインは表示されず、入力には影響しません。このポリシーを未設定のままにすると、追加情報は表示されず、通常どおりにチケットの作成が行われます。</translation>
 <translation id="4960597185231686653">画面キーボードで音声入力を有効にするかどうかを示すブール値のフラグです。</translation>
@@ -6370,6 +6400,7 @@ Attribution Reporting API のサポート終了により、このポリシーは
           有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="5182483318861266793">シェルフを画面の右側に配置する</translation>
 <translation id="51859390023061147">完全復元機能を無効にする</translation>
+<translation id="5188507662885416844">子モジュールの動的なパッチ適用を無効にする</translation>
 <translation id="5189360528842591274">接続を許可する Bluetooth サービスのリストを指定する</translation>
 <translation id="5191007233343702012">標準のタブの優先度を使用する</translation>
 <translation id="5191476996923842491">setTimeout() 関数のタイムアウト処理にデフォルトの動作を使用する。</translation>

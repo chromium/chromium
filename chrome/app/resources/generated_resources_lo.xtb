@@ -1728,6 +1728,7 @@
 <translation id="2322622365472107569">ເວລາສິ້ນສຸດ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ເຄືອຂ່າຍ Wi-Fi ທີ່ບັນທຶກໄວ້</translation>
 <translation id="2323685460575935191">ເຊື່ອງປຸ່ມເລື່ອນ</translation>
+<translation id="2325004050205455346">ປະຫວັດຫຼ້າສຸດ</translation>
 <translation id="2325444234681128157">ຈື່ລະຫັດຜ່ານ</translation>
 <translation id="2326188115274135041">ຢືນຢັນ PIN ເພື່ອເປີດການປົດລັອກອັດຕະໂນມັດ</translation>
 <translation id="2326583548923775947">ນີ້ບໍ່ແມ່ນບັນຊີ Google. ລາຍການທີ່ທ່ານບັນທຶກໄປໃສ່ Chrome ຈະບໍ່ສາມາດໃຊ້ໄດ້ຢູ່ອຸປະກອນອື່ນ.</translation>
@@ -2867,7 +2868,6 @@
 <translation id="3166443275568926403">ປະສິດທິພາບ ແລະ ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="3167446923957429259">ຫຍັບປາກຂອງທ່ານໄປທາງຊ້າຍ</translation>
 <translation id="3167562202484086668">ລຶບຂໍ້ມູນ <ph name="BRAND" /> ທັງໝົດ</translation>
-<translation id="3169504125849131369">ເປີດການຕັ້ງຄ່າ Windows</translation>
 <translation id="3175067642577044620">ສ່ວນເນື້ອຫາ</translation>
 <translation id="3175862692832442091">ປ່າ</translation>
 <translation id="3176347586396987181">ໃຊ້ປຸ່ມ “z” ເພື່ອກົດປຸ່ມເມົ້າຄ້າງໄວ້</translation>
@@ -4762,7 +4762,6 @@
 <translation id="4610493438923139095">ບໍ່ເຊື່ອຖື</translation>
 <translation id="4610637590575890427">ທ່ານໝາຍຄວາມວ່າຈະໄປຫາ <ph name="SITE" /> ບໍ?</translation>
 <translation id="4611619000650855880">ເມື່ອເລືອກປຸ່ມຊ້າຍຂອງເມົ້າໄວ້ແລ້ວ, ໃຫ້ໃຊ້ປຸ່ມ “/” ເພື່ອຄລິກສອງເທື່ອ</translation>
-<translation id="4612841084470706111">ໃຫ້ສິດເຂົ້າເຖິງເວັບໄຊທີ່ຮ້ອງຂໍທັງໝົດ.</translation>
 <translation id="4613271546271159013">ສ່ວນຂະຫຍາຍໄດ້ປ່ຽນແປງສິ່ງທີ່ໜ້າສະແດງຂຶ້ນ ເມື່ອທ່ານເປີດແຖບໃໝ່.</translation>
 <translation id="461613135510474570">ປະ​ໂຫຍກ</translation>
 <translation id="461661862154729886">ແຫຼ່ງພະລັງງານ</translation>
@@ -7054,7 +7053,6 @@
 <translation id="6400360390396538896">ເປີດຕະຫຼອດຢູ່ <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">ຍົກເລີກການໂຟກັສກຸ່ມແຖບ</translation>
 <translation id="6401118106417399952">EID ຂອງອຸປະກອນຂອງທ່ານແມ່ນ <ph name="EID_NUMBER" /> ແລະ ໝາຍເລກຊີຣຽວອຸປະກອນແມ່ນ <ph name="SERIAL_NUMBER" />. ໝາຍເລກເຫຼົ່ານີ້ສາມາດຖືກນຳໃຊ້ເພື່ອຊ່ວຍເປີດການນຳໃຊ້ບໍລິການໄດ້.</translation>
-<translation id="6401458660421980302">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ບ່ອນນັ້ນ</translation>
 <translation id="6402042774506839496">ເພື່ອສຶກສາເຫດຜົນ, ກະລຸນາຕິດຕໍ່ນັກພັດທະນາແອັບໄດ້</translation>
 <translation id="6402921224457714577">ເວັບໄຊສາມາດຂໍຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ຂອງທ່ານໄດ້</translation>
 <translation id="6404511346730675251">ແກ້​ໄຂບຸກມາກສ໌</translation>
@@ -7344,7 +7342,6 @@
 <translation id="6619801788773578757">ເພີ່ມແອັບພລິເຄຊັນ kiosk</translation>
 <translation id="6619990499523117484">ຢືນຢັນ​ລະຫັດ PIN ຂອງທ່ານ</translation>
 <translation id="6621282332208609777">ຖາມ Google ຫຼື ພິມ URL</translation>
-<translation id="6621391692573306628">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ທັງສອງອຸປະກອນ</translation>
 <translation id="6622980291894852883">ສືບ​ຕໍ່​ບລັອກຮູບ​</translation>
 <translation id="6624036901798307345">ໃນໂໝດແທັບເລັດ, ໃຫ້ແຕະໃສ່ປຸ່ມແຖບເຄື່ອງມືຕົວນັບແຖບເພື່ອເປີດລາຍແຖບໃໝ່ທີ່ສະແດງຮູບຕົວຢ່າງຂອງແຕ່ລະແຖບ.</translation>
 <translation id="6624538059730609162">ປິດມຸມມອງທາງຂວາ</translation>

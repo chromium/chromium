@@ -123,7 +123,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1432581352905426595">Rheoli peiriannau chwilio</translation>
 <translation id="1435593198351412143">Agor ffeiliau PDF yn awtomatig</translation>
 <translation id="1437543266176261764">Yn rhedeg yn <ph name="APP_NAME" /></translation>
-<translation id="1448440926884431741">Trefnu eich cynhyrchion sy'n cael eu dilyn yn Nodau tudalen</translation>
 <translation id="1452651021404174820">Dewiswch ddyfais</translation>
 <translation id="1455845192930279203">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) o <ph name="DOWNLOAD_DOMAIN" /> beth bynnag?</translation>
 <translation id="1460751212339734034">Arbed amser, teipio llai</translation>
@@ -776,6 +775,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Tab Recordio wedi'i Binio a Aml-ddewisir</translation>
 <translation id="4137746084635924146">Iaith ddyfais bresennol</translation>
 <translation id="414128724510021958">Gofynnir am wefannau bwrdd gwaith yn ddiofyn</translation>
+<translation id="4150837143272125910">Mae diweddariad wedi'i lawrlwytho</translation>
 <translation id="4162867837470729563">Rhestr o ddewisiadau rhannu ar uchder llawn.</translation>
 <translation id="4164642020717536140">Pori'r we yn gyflym ac yn ddiogel</translation>
 <translation id="4165077084524712774">Rhagor o offer</translation>
@@ -1242,6 +1242,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6039379616847168523">Neidio i'r tab nesaf</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="604124094241169006">Awtomatig</translation>
+<translation id="6041959688070413372">Rheoli'r cysylltiad rhwng gwasanaethau Search ac apiau Google Workspace, megis Google Drive</translation>
 <translation id="6042308850641462728">Mwy</translation>
 <translation id="6047066316630165190">Agorwch y newidiwr tabiau grid</translation>
 <translation id="604996488070107836">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwall anhysbys.</translation>
@@ -1402,6 +1403,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6565959834589222080">Defnyddir Wi-Fi pan fydd ar gael</translation>
 <translation id="657177046675873214">I gael eich nodau tudalen ar eich holl ddyfeisiau, trowch 'Nodau tudalen' ymlaen yn y gosodiadau</translation>
 <translation id="6573096386450695060">Caniatáu bob amser</translation>
+<translation id="657480975869429144">Mae fersiwn newydd o Chrome ar gael</translation>
 <translation id="658099107946526506">Diogelwch eich pori preifat gyda phin i atal mynediad diangen</translation>
 <translation id="6583199322650523874">Creu nod tudalen ar gyfer y dudalen hon</translation>
 <translation id="6588043302623806746">Defnyddio DNS diogel</translation>

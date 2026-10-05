@@ -1041,6 +1041,7 @@
 <translation id="1790976235243700817">移除存取權</translation>
 <translation id="1791662854739702043">已安裝</translation>
 <translation id="1792619191750875668">延伸顯示屏</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">隱藏 <ph name="DOMAIN" /> 嘅密碼</translation>
 <translation id="1794791083288629568">請提供寶貴意見，協助我們修正此問題。</translation>
 <translation id="1795214765651529549">使用經典主題</translation>
@@ -1728,6 +1729,7 @@
 <translation id="2322622365472107569">結束時間：<ph name="TIME" /></translation>
 <translation id="2323018538045954000">已儲存的 Wi-Fi 網絡</translation>
 <translation id="2323685460575935191">隱藏捲動按鈕</translation>
+<translation id="2325004050205455346">近期記錄</translation>
 <translation id="2325444234681128157">記住密碼</translation>
 <translation id="2326188115274135041">確認 PIN 以開啟自動解鎖</translation>
 <translation id="2326583548923775947">這並非 Google 帳戶。你儲存到 Chrome 的項目無法在其他裝置上查看。</translation>
@@ -2867,7 +2869,6 @@
 <translation id="3166443275568926403">效能和電池狀態</translation>
 <translation id="3167446923957429259">嘴戚向左邊</translation>
 <translation id="3167562202484086668">刪除所有「<ph name="BRAND" />」資料</translation>
-<translation id="3169504125849131369">開啟 Windows 設定</translation>
 <translation id="3175067642577044620">內文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下「z」代表按住滑鼠按鍵</translation>
@@ -2951,6 +2952,7 @@
 <translation id="323262942975422760">更多編輯或者刪除「<ph name="ENTITY_INSTANCE_LABEL" />」，「<ph name="ENTITY_INSTANCE_SUBLABEL" />」嘅選項</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3233271424239923319">備份 Linux 應用程式和檔案</translation>
+<translation id="3233577317461669428">找不到其他裝置</translation>
 <translation id="3234251228180563751">使用者名稱超過 1000 個字元</translation>
 <translation id="3234978181857588512">儲存至裝置</translation>
 <translation id="3237871032310650497">要刪除 <ph name="SITE_NAME" /> 在 <ph name="PARTITION_SITE_NAME" /> 上分割的網站資料嗎？</translation>
@@ -4760,7 +4762,6 @@
 <translation id="4610493438923139095">不信任</translation>
 <translation id="4610637590575890427">您的意思是想瀏覽 <ph name="SITE" /> 嗎？</translation>
 <translation id="4611619000650855880">選取滑鼠左鍵後，按下「/」代表連按兩下</translation>
-<translation id="4612841084470706111">向所有要求的網站授予存取權。</translation>
 <translation id="4613271546271159013">擴充功能已變更開啟新分頁時所顯示的頁面。</translation>
 <translation id="461613135510474570">句子</translation>
 <translation id="461661862154729886">電源</translation>
@@ -6998,6 +6999,7 @@
 <translation id="6356893102071098867">請確認所選的帳戶是否正確</translation>
 <translation id="6357305427698525450">部分支援連結將仍會在 <ph name="APP_NAME" /> 或 <ph name="APP_NAME_2" /> 中開啟。</translation>
 <translation id="6357750620525943720">其他穩定識別碼 (例如：雜湊或 UUID)</translation>
+<translation id="6357830294871526418">其他裝置上的分頁</translation>
 <translation id="6358884629796491903">龍</translation>
 <translation id="6359640073754977254">捲動至最後一個分頁</translation>
 <translation id="6361850914223837199">錯誤詳情：</translation>
@@ -7048,7 +7050,6 @@
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6400714103322134861">取消聚焦分頁群組</translation>
 <translation id="6401118106417399952">你嘅裝置 EID 係 <ph name="EID_NUMBER" />，而裝置序號係 <ph name="SERIAL_NUMBER" />。呢啲數字可以用嚟啟用服務。</translation>
-<translation id="6401458660421980302">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6402042774506839496">請聯絡應用程式開發人員瞭解原因</translation>
 <translation id="6402921224457714577">可要求控制 MIDI 裝置及將其重新編程</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
@@ -7338,7 +7339,6 @@
 <translation id="6619801788773578757">新增 Kiosk 應用程式</translation>
 <translation id="6619990499523117484">確認您的 PIN</translation>
 <translation id="6621282332208609777">問 Google 或輸入網址</translation>
-<translation id="6621391692573306628">如要將此分頁傳送至其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕按分頁計數器工具列按鈕便可開啟新的分頁列，並顯示每個分頁的縮圖。</translation>
 <translation id="6624538059730609162">關閉右邊檢視畫面</translation>

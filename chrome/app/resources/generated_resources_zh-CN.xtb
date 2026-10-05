@@ -2855,7 +2855,6 @@
 <translation id="3166443275568926403">性能和电池状态</translation>
 <translation id="3167446923957429259">将嘴向左移</translation>
 <translation id="3167562202484086668">删除所有 <ph name="BRAND" />数据</translation>
-<translation id="3169504125849131369">打开 Windows 设置</translation>
 <translation id="3175067642577044620">正文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下“z”键表示按住鼠标按键</translation>
@@ -4747,7 +4746,6 @@
 <translation id="4610493438923139095">不可信</translation>
 <translation id="4610637590575890427">您是不是要访问 <ph name="SITE" />？</translation>
 <translation id="4611619000650855880">选择鼠标左键后，按下“/”键表示双击</translation>
-<translation id="4612841084470706111">授权访问所请求的全部网站。</translation>
 <translation id="4613271546271159013">某个扩展程序更改了您打开新标签页时系统显示的页面。</translation>
 <translation id="461613135510474570">逐句</translation>
 <translation id="461661862154729886">电源</translation>
@@ -7035,7 +7033,6 @@
 <translation id="6400360390396538896">在 <ph name="ORIGIN" /> 上始终允许</translation>
 <translation id="6400714103322134861">取消聚焦标签页分组</translation>
 <translation id="6401118106417399952">您的设备 EID 为 <ph name="EID_NUMBER" />，设备序列号为 <ph name="SERIAL_NUMBER" />。这些号码可用于帮助激活服务。</translation>
-<translation id="6401458660421980302">若要将此标签页发送到另一设备，请在该设备上登录 Chrome</translation>
 <translation id="6402042774506839496">如需了解原因，请与应用开发者联系</translation>
 <translation id="6402921224457714577">网站可以请求控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="6404511346730675251">修改书签</translation>
@@ -7325,7 +7322,6 @@
 <translation id="6619801788773578757">添加自助服务终端应用</translation>
 <translation id="6619990499523117484">确认您的 PIN 码</translation>
 <translation id="6621282332208609777">问问 Google 或输入网址</translation>
-<translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>
 <translation id="6622980291894852883">继续拦截图片</translation>
 <translation id="6624036901798307345">在平板电脑模式下，只需点按工具栏中的标签页计数器按钮，即可打开会显示每个标签页的缩略图的新标签页栏。</translation>
 <translation id="6624538059730609162">关闭右侧视图</translation>
