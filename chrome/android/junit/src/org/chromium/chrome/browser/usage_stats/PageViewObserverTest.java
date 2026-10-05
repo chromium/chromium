@@ -34,7 +34,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -53,7 +52,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for PageViewObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class PageViewObserverTest {
     private static final GURL STARTING_URL = JUnitTestGURLs.URL_1;
     private static final GURL STARTING_URL_WITH_PATH = JUnitTestGURLs.URL_1_WITH_PATH;
@@ -62,21 +60,19 @@ public final class PageViewObserverTest {
     private static final String DIFFERENT_FQDN = "www.two.com";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Activity mActivity;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
     @Mock private EventTracker mEventTracker;
     @Mock private TokenTracker mTokenTracker;
     @Mock private SuspensionTracker mSuspensionTracker;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ChromeActivity mChromeActivity;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
 
+    private Activity mActivity;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private UserDataHost mUserDataHost;
     private UserDataHost mUserDataHostTab2;
     private UserDataHost mDestroyedUserDataHost;
-    private WeakReference<Activity> mActivityRef;
 
     private static class MockTabViewManager implements TabViewManager {
         private TabViewProvider mTabViewProvider;
@@ -106,12 +102,12 @@ public final class PageViewObserverTest {
         mDestroyedUserDataHost = new UserDataHost();
         mDestroyedUserDataHost.destroy();
 
-        Activity activity = Robolectric.buildActivity(TestActivity.class).get();
+        mActivity = Robolectric.buildActivity(TestActivity.class).get();
 
         doReturn(false).when(mTab).isIncognito();
         doReturn(null).when(mTab).getUrl();
-        doReturn(activity).when(mTab).getContext();
-        doReturn(activity).when(mTab2).getContext();
+        doReturn(mActivity).when(mTab).getContext();
+        doReturn(mActivity).when(mTab2).getContext();
         doReturn(new MockTabViewManager()).when(mTab).getTabViewManager();
         doReturn(new MockTabViewManager()).when(mTab2).getTabViewManager();
         doReturn(true).when(mTab).isInitialized();
@@ -120,10 +116,9 @@ public final class PageViewObserverTest {
         doReturn(mUserDataHostTab2).when(mTab2).getUserDataHost();
         doReturn(Promise.fulfilled("1")).when(mTokenTracker).getTokenForFqdn(anyString());
 
-        mActivityRef = new WeakReference<>(mChromeActivity);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab2.getWindowAndroid()).thenReturn(mWindowAndroid);
-        when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
     }
 
     @Test
