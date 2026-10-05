@@ -1326,7 +1326,6 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
-          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1362,7 +1361,6 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
-          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1398,7 +1396,6 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
-          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1435,7 +1432,6 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
-          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1472,7 +1468,6 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
-          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1508,7 +1503,6 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
-          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {

@@ -63,9 +63,6 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
-        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -99,9 +96,6 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
-        ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -137,9 +131,6 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
-        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -170,9 +161,6 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
-        ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -209,9 +197,6 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
-        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -245,9 +230,6 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
-        ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -287,9 +269,6 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
-        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -328,9 +307,6 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
-        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -364,9 +340,6 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
-        ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -402,9 +375,6 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
-        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -435,9 +405,6 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
-        ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -473,9 +440,6 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
-        ],
-        'linux_args': [
-          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
