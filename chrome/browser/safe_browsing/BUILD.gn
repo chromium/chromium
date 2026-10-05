@@ -1259,18 +1259,37 @@ if (safe_browsing_mode != 0) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "client_side_detection_service_browsertest.cc" ]
+    sources = [
+      "client_side_detection_service_browsertest.cc",
+      "safe_browsing_blocking_page_platform_test.cc",
+    ]
 
     deps = [
+      ":blocking_page_platform_test_support",
+      ":metrics_collector",
       ":safe_browsing",
+      ":verdict_cache_manager_factory",
+      "//base",
+      "//base/test:test_support",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_utils",
+      "//components/enterprise/connectors/core",
       "//components/metrics:content",
+      "//components/policy:generated",
+      "//components/prefs",
       "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/core/browser:client_side_detection_service_base",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
+      "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/common:features",
       "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/security_interstitials/core",
+      "//components/unified_consent",
+      "//content/test:test_support",
+      "//net:test_support",
       "//testing/gtest",
     ]
   }
