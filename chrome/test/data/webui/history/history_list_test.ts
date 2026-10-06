@@ -87,6 +87,21 @@ suite('HistoryListTest', function() {
     return element.$.infiniteList.items;
   }
 
+  // Scrolls `app`'s scroll target to `distanceFromBottom` px above the bottom,
+  // asserting first that `scrollHeight` is large enough to actually scroll.
+  // Callers testing the 500px continuation threshold should include a 10px
+  // buffer (e.g. 510px) to prevent fractional CSS-to-device-pixel rounding on
+  // high-DPI displays (e.g. Android Desktop or Mac Retina) from calculating
+  // lowerScroll < 500 and prematurely triggering a continuation query.
+  function scrollToDistanceFromBottom(distanceFromBottom: number) {
+    const scrollTarget = app.getScrollTargetForTesting();
+    assertGT(
+        scrollTarget.scrollHeight,
+        scrollTarget.offsetHeight + distanceFromBottom);
+    scrollTarget.scrollTop = scrollTarget.scrollHeight -
+        scrollTarget.offsetHeight - distanceFromBottom;
+  }
+
   test('IsEmpty', async () => {
     await finishSetup([]);
     assertTrue(element.isEmpty);
@@ -1054,15 +1069,8 @@ suite('HistoryListTest', function() {
     // Make scroll debounce shorter to shorten some wait times below.
     element.setScrollDebounceForTest(1);
 
-    // This check ensures the line below actually scrolls.
-    assertGT(
-        app.getScrollTargetForTesting().scrollHeight,
-        app.getScrollTargetForTesting().offsetHeight + 500);
-
     // Scroll to just under the threshold to make sure more results don't load.
-    app.getScrollTargetForTesting().scrollTop =
-        app.getScrollTargetForTesting().scrollHeight -
-        app.getScrollTargetForTesting().offsetHeight - 500;
+    scrollToDistanceFromBottom(510);
     // Wait for the scroll observer to trigger.
     await eventToPromise('scroll-timeout-for-test', element);
     assertEquals(0, testProxy.handler.getCallCount('queryHistoryContinuation'));
@@ -1082,9 +1090,7 @@ suite('HistoryListTest', function() {
 
     // Scroll to within 500px of the scroll height. More results should be
     // requested.
-    app.getScrollTargetForTesting().scrollTop =
-        app.getScrollTargetForTesting().scrollHeight -
-        app.getScrollTargetForTesting().offsetHeight - 400;
+    scrollToDistanceFromBottom(400);
     await testProxy.handler.whenCalled('queryHistoryContinuation');
     await microtasksFinished();
     assertEquals(1, testProxy.handler.getCallCount('queryHistoryContinuation'));
@@ -1092,13 +1098,7 @@ suite('HistoryListTest', function() {
 
     // Should not respond to scroll when inactive.
     element.isActive = false;
-    // This check ensures the line below actually scrolls.
-    assertGT(
-        app.getScrollTargetForTesting().scrollHeight,
-        app.getScrollTargetForTesting().offsetHeight + 500);
-    app.getScrollTargetForTesting().scrollTop =
-        app.getScrollTargetForTesting().scrollHeight -
-        app.getScrollTargetForTesting().offsetHeight - 400;
+    scrollToDistanceFromBottom(400);
     // Wait longer than scroll debounce.
     await new Promise(resolve => setTimeout(resolve, 10));
     assertEquals(0, testProxy.handler.getCallCount('queryHistoryContinuation'));

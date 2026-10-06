@@ -98,8 +98,6 @@ source_set("browser_tests") {
       "glic/glic_browsertest.cc",
       "glic/selection_overlay/selection_overlay_browsertest.cc",
       "histograms/histograms_internals_browsertest.cc",
-      "history/history_supervised_user_browsertest.cc",
-      "history/history_ui_browsertest.cc",
       "history_clusters_internals/history_clusters_internals_browsertest.cc",
       "inspect/inspect_ui_browsertest.cc",
       "iwa_dev/iwa_dev_browsertest.cc",
@@ -159,9 +157,15 @@ source_set("browser_tests") {
   }
 
   if (!is_android || is_desktop_android) {
-    sources += [ "cr_components/cr_components_browsertest.cc" ]
+    sources += [
+      "cr_components/cr_components_browsertest.cc",
+      "history/history_supervised_user_browsertest.cc",
+      "history/history_ui_browsertest.cc",
+    ]
     deps += [
+      "//chrome/test/base:chrome_test_utils",
       "//components/contextual_tasks/public:feature_list",
+      "//components/history/core/test",
       "//components/history_clusters/core",
       "//components/history_embeddings/core",
       "//components/lens:features",
@@ -597,9 +601,15 @@ webui_ts_library("build_ts") {
     in_files += [
       "fake_settings_private.ts",
       "mocked_metrics_reporter.ts",
-      "mouse_mock_interactions.ts",
       "test_api.ts",
       "test_store.ts",
+    ]
+  }
+
+  # Imported by the History WebUI tests, which run on Android Desktop.
+  if (!is_android || is_desktop_android) {
+    in_files += [
+      "mouse_mock_interactions.ts",
       "test_user_education_mixed_trust_handler.ts",
     ]
   }
@@ -616,8 +626,13 @@ webui_ts_library("build_ts") {
     deps += [ "//third_party/polymer/v3_0:library" ]
   }
 
-  if (!is_android) {
+  # Needed by test_user_education_mixed_trust_handler.ts, which the History
+  # WebUI tests import and which runs on Android Desktop.
+  if (!is_android || is_desktop_android) {
     deps += [ "//ui/webui/resources/mojo:build_ts" ]
+  }
+
+  if (!is_android) {
     definitions += [
       "//tools/typescript/definitions/chrome_event.d.ts",
       "//tools/typescript/definitions/chrome_send.d.ts",
@@ -717,7 +732,6 @@ generate_grd("build_grd") {
       "glic:build_grdp",
       "glic/selection_overlay:build_grdp",
       "histograms:build_grdp",
-      "history:build_grdp",
       "history_clusters_internals:build_grdp",
       "inspect:build_grdp",
       "iwa_dev:build_grdp",
@@ -782,7 +796,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/glic/resources.grdp",
       "$target_gen_dir/glic/selection_overlay/resources.grdp",
       "$target_gen_dir/histograms/resources.grdp",
-      "$target_gen_dir/history/resources.grdp",
       "$target_gen_dir/history_clusters_internals/resources.grdp",
       "$target_gen_dir/inspect/resources.grdp",
       "$target_gen_dir/iwa_dev/resources.grdp",
@@ -828,10 +841,12 @@ generate_grd("build_grd") {
     deps += [
       "cr_components:build_grdp",
       "cr_components/composebox:build_grdp",
+      "history:build_grdp",
     ]
     grdp_files += [
       "$target_gen_dir/cr_components/composebox/resources.grdp",
       "$target_gen_dir/cr_components/resources.grdp",
+      "$target_gen_dir/history/resources.grdp",
     ]
   }
 
