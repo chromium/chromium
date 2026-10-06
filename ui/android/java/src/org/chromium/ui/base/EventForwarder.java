@@ -31,6 +31,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -1150,7 +1151,9 @@ public class EventForwarder {
     }
 
     private static int getInitialTouchSlop() {
-        return ViewConfiguration.get(ContextUtils.getApplicationContext()).getScaledTouchSlop();
+        try (StrictModeContext ignored = StrictModeContext.allowAllVmPolicies()) {
+            return ViewConfiguration.get(ContextUtils.getApplicationContext()).getScaledTouchSlop();
+        }
     }
 
     private static boolean hasExceededTouchSlop(
