@@ -3633,6 +3633,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.HistoryPage.TimeToFirstVisibleContent" units="ms"
+    expires_after="2027-09-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the time (in milliseconds) from when the iOS browsing history UI
+    initiates loading items to when initial non-empty history content is
+    populated into the table view. Serves as the native iOS UI equivalent of
+    Time to First Contentful Paint. Recorded at most once per History UI
+    instance, for the initial full-history load. Not recorded if history is
+    empty or a search is started first. Includes the loading indicator's minimum
+    display time (shown after 300ms, kept for at least 1s), so slow loads are
+    reported as &gt;= ~1.3s. See History.BrowsingHistory.QueryDuration for
+    backend query latency.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Home.Click" enum="IOSHomeActionType"
     expires_after="2027-06-02">
   <owner>thegreenfrog@chromium.org</owner>

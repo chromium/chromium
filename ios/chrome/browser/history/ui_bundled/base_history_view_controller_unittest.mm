@@ -11,10 +11,13 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/callback_helpers.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/history/core/browser/features.h"
+#import "ios/chrome/browser/history/ui_bundled/base_history_view_controller+subclassing.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -31,6 +34,15 @@ namespace {
 // Test section identifier.
 const NSInteger kTestSectionIdentifier = kSectionIdentifierEnumZero + 1;
 
+// Fake BrowsingHistoryService for testing query callbacks without backend I/O.
+class FakeBrowsingHistoryService : public history::BrowsingHistoryService {
+ public:
+  FakeBrowsingHistoryService() = default;
+  ~FakeBrowsingHistoryService() override = default;
+  void QueryHistory(const std::u16string& search_text,
+                    const history::QueryOptions& options) override {}
+};
+
 }  // namespace
 
 @interface BaseHistoryViewController (Testing)
@@ -39,6 +51,8 @@ const NSInteger kTestSectionIdentifier = kSectionIdentifierEnumZero + 1;
 // carries the visits that deleting the item should remove.
 - (std::vector<BrowsingHistoryService::HistoryEntry>)
     entriesForItemsAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths;
+
+- (void)fetchHistoryForQuery:(NSString*)query continuation:(BOOL)continuation;
 
 @end
 
@@ -63,6 +77,7 @@ class BaseHistoryViewControllerTest
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     favicon_data_source_ = [[FakeFaviconDataSource alloc] init];
+    browsing_history_service_ = std::make_unique<FakeBrowsingHistoryService>();
 
     CreateController();
 
@@ -70,9 +85,12 @@ class BaseHistoryViewControllerTest
         base::apple::ObjCCastStrict<BaseHistoryViewController>(controller());
     history_controller_.browser = browser_.get();
     history_controller_.imageDataSource = favicon_data_source_;
+    history_controller_.historyService = browsing_history_service_.get();
   }
 
   void TearDown() override {
+    history_controller_.historyService = nullptr;
+    browsing_history_service_.reset();
     [history_controller_ detachFromBrowser];
     LegacyChromeTableViewControllerTest::TearDown();
   }
@@ -112,6 +130,7 @@ class BaseHistoryViewControllerTest
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeFaviconDataSource* favicon_data_source_;
+  std::unique_ptr<FakeBrowsingHistoryService> browsing_history_service_;
   BaseHistoryViewController* history_controller_;
 };
 
@@ -198,4 +217,110 @@ TEST_F(BaseHistoryViewControllerTest,
         {{GURL(example_url), {visit_time}}};
     EXPECT_EQ(expected_timestamps, entries.front().all_timestamps);
   }
+}
+
+// Tests that IOS.HistoryPage.TimeToFirstVisibleContent is recorded upon
+// receiving non-empty history results on initial load, and not on subsequent
+// continuation batches.
+TEST_F(BaseHistoryViewControllerTest,
+       RecordsTimeToFirstVisibleContentOnInitialLoad) {
+  CheckController();
+  base::HistogramTester histogram_tester;
+
+  [history_controller_ showHistoryMatchingQuery:nil];
+
+  BrowsingHistoryService::HistoryEntry entry;
+  entry.url = GURL("http://example.com");
+  entry.time = base::Time::Now();
+  BrowsingHistoryService::QueryResultsInfo query_results_info;
+  [history_controller_ historyQueryWasCompletedWithResults:{entry}
+                                          queryResultsInfo:query_results_info
+                                       continuationClosure:base::DoNothing()];
+
+  histogram_tester.ExpectTotalCount("IOS.HistoryPage.TimeToFirstVisibleContent",
+                                    1);
+
+  // Request next batch via continuation.
+  [history_controller_ fetchHistoryForQuery:nil continuation:YES];
+
+  // Subsequent batch should not record the histogram again.
+  [history_controller_ historyQueryWasCompletedWithResults:{entry}
+                                          queryResultsInfo:query_results_info
+                                       continuationClosure:base::DoNothing()];
+  histogram_tester.ExpectTotalCount("IOS.HistoryPage.TimeToFirstVisibleContent",
+                                    1);
+}
+
+// Tests that IOS.HistoryPage.TimeToFirstVisibleContent is not recorded when
+// history query returns empty results.
+TEST_F(BaseHistoryViewControllerTest,
+       DoesNotRecordTimeToFirstVisibleContentOnEmptyResults) {
+  CheckController();
+  base::HistogramTester histogram_tester;
+
+  [history_controller_ showHistoryMatchingQuery:nil];
+
+  BrowsingHistoryService::QueryResultsInfo query_results_info;
+  [history_controller_ historyQueryWasCompletedWithResults:{}
+                                          queryResultsInfo:query_results_info
+                                       continuationClosure:base::DoNothing()];
+
+  histogram_tester.ExpectTotalCount("IOS.HistoryPage.TimeToFirstVisibleContent",
+                                    0);
+}
+
+// Tests that IOS.HistoryPage.TimeToFirstVisibleContent is recorded only once
+// per controller, even when the user clears a search and history is fetched
+// again.
+TEST_F(BaseHistoryViewControllerTest,
+       ClearingSearchDoesNotRecordTimeToFirstVisibleContentAgain) {
+  CheckController();
+  base::HistogramTester histogram_tester;
+
+  BrowsingHistoryService::HistoryEntry entry;
+  entry.url = GURL("http://example.com");
+  entry.time = base::Time::Now();
+  BrowsingHistoryService::QueryResultsInfo query_results_info;
+
+  [history_controller_ showHistoryMatchingQuery:nil];
+  [history_controller_ historyQueryWasCompletedWithResults:{entry}
+                                          queryResultsInfo:query_results_info
+                                       continuationClosure:base::DoNothing()];
+  histogram_tester.ExpectTotalCount("IOS.HistoryPage.TimeToFirstVisibleContent",
+                                    1);
+
+  // Search, then clear the search.
+  [history_controller_ showHistoryMatchingQuery:@"foo"];
+  [history_controller_ historyQueryWasCompletedWithResults:{entry}
+                                          queryResultsInfo:query_results_info
+                                       continuationClosure:base::DoNothing()];
+  [history_controller_ showHistoryMatchingQuery:@""];
+  [history_controller_ historyQueryWasCompletedWithResults:{entry}
+                                          queryResultsInfo:query_results_info
+                                       continuationClosure:base::DoNothing()];
+
+  histogram_tester.ExpectTotalCount("IOS.HistoryPage.TimeToFirstVisibleContent",
+                                    1);
+}
+
+// Tests that IOS.HistoryPage.TimeToFirstVisibleContent is not recorded if a
+// search is started before the initial history results arrive.
+TEST_F(BaseHistoryViewControllerTest,
+       DoesNotRecordTimeToFirstVisibleContentIfSearchStartedBeforeResults) {
+  CheckController();
+  base::HistogramTester histogram_tester;
+
+  [history_controller_ showHistoryMatchingQuery:nil];
+  [history_controller_ showHistoryMatchingQuery:@"foo"];
+
+  BrowsingHistoryService::HistoryEntry entry;
+  entry.url = GURL("http://example.com");
+  entry.time = base::Time::Now();
+  BrowsingHistoryService::QueryResultsInfo query_results_info;
+  [history_controller_ historyQueryWasCompletedWithResults:{entry}
+                                          queryResultsInfo:query_results_info
+                                       continuationClosure:base::DoNothing()];
+
+  histogram_tester.ExpectTotalCount("IOS.HistoryPage.TimeToFirstVisibleContent",
+                                    0);
 }
