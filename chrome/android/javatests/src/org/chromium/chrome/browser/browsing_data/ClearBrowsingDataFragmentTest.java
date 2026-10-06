@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHel
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -106,6 +107,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
 import org.chromium.chrome.browser.settings.SettingsInTab;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
@@ -116,6 +118,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
@@ -159,6 +162,8 @@ public class ClearBrowsingDataFragmentTest {
     @Mock private TemplateUrlService mTemplateUrlServiceMock;
 
     @Mock private TemplateUrl mTemplateUrlMock;
+
+    @Mock private SettingsNavigation mSettingsNavigationMock;
 
     private UserActionTester mUserActionTester;
 
@@ -406,6 +411,28 @@ public class ClearBrowsingDataFragmentTest {
         verify(mBrowsingDataBridgeMock)
                 .setBrowsingDataDeletionPreference(
                         eq(expectedProfile), eq(BrowsingDataType.CACHE), eq(true));
+    }
+
+    /**
+     * Tests that the page names Privacy as the page to return to once the deletion completes, so
+     * that it does not depend on navigation history the deletion itself may have removed.
+     */
+    @Test
+    @MediumTest
+    public void testDeletionFinishesToPrivacySettings() throws Exception {
+        setDataTypesToClear(DialogOption.CLEAR_CACHE);
+
+        final ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
+
+        waitForProgressToComplete(preferences);
+        mCallbackHelper.waitForOnly();
+
+        verify(mSettingsNavigationMock)
+                .finishCurrentSettings(preferences, PrivacySettings.class, /* parentArgs= */ null);
     }
 
     /**
