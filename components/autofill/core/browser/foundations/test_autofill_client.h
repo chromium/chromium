@@ -1034,7 +1034,8 @@ class TestAutofillClientTemplate : public T {
 
   bool is_glic_enabled_ = false;
 
-  SuggestionHidingReason popup_hidden_reason_;
+  SuggestionHidingReason popup_hidden_reason_ =
+      SuggestionHidingReason::kNoSuggestions;
 
   std::optional<AutofillClient::IphFeature> autofill_iph_showing_;
 
