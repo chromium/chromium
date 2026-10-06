@@ -492,6 +492,7 @@ public class StripLayoutUtils {
     /**
      * Get the x and y coordinates of the position of the hover card, in px.
      *
+     * @param hoverCardView The {@link TabHoverCardView} being positioned.
      * @param isSelectedTab Whether the tab is the selected tab, {@code true} if the hovered tab is
      *     also the selected tab, {@code false} otherwise.
      * @param tabX The tab x-position to compute hover card positioning.

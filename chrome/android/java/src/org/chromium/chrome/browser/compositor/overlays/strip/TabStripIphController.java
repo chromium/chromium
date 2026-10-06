@@ -192,6 +192,7 @@ public class TabStripIphController {
      * @param tab The tab to show the IPH on. Pass in {@code null} if the IPH is not tied to a
      *     particular tab.
      * @param iphType The type of the IPH to be shown.
+     * @param tabStripHeight The height of the tab strip in dp.
      * @return the anchor area where the IPH should be positioned underneath.
      */
     private Rect calculateAnchorRect(

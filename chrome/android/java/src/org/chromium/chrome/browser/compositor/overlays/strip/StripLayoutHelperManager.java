@@ -442,9 +442,7 @@ public class StripLayoutHelperManager
         }
     }
 
-    /**
-     * @return Returns layout observer for tab switcher.
-     */
+    /** Returns layout observer for tab switcher. */
     public LayoutStateObserver getTabSwitcherObserver() {
         return mTabSwitcherLayoutObserver;
     }
@@ -1305,9 +1303,7 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().shouldShowTabOutline(tab);
     }
 
-    /**
-     * @return The touch target offset to be applied to the new tab button.
-     */
+    /** Returns the touch target offset to be applied to the new tab button. */
     public float getNewTabBtnVisualOffset() {
         return getActiveStripLayoutHelper().getNewTabButtonVisualOffset();
     }
@@ -1423,16 +1419,12 @@ public class StripLayoutHelperManager
         mControlContainer.setSystemGestureExclusionRects(rects);
     }
 
-    /**
-     * @return The opacity to use for the fade on the left side of the tab strip.
-     */
+    /** Returns the opacity to use for the fade on the left side of the tab strip. */
     public float getLeftFadeOpacity() {
         return getActiveStripLayoutHelper().getLeftFadeOpacity();
     }
 
-    /**
-     * @return The opacity to use for the fade on the right side of the tab strip.
-     */
+    /** Returns the opacity to use for the fade on the right side of the tab strip. */
     public float getRightFadeOpacity() {
         return getActiveStripLayoutHelper().getRightFadeOpacity();
     }
@@ -1544,9 +1536,7 @@ public class StripLayoutHelperManager
 
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(modelSelector) {
-                    /**
-                     * @return The actual current time of the app in ms.
-                     */
+                    /** Returns the actual current time of the app in ms. */
                     public long time() {
                         return SystemClock.uptimeMillis();
                     }
@@ -1863,9 +1853,7 @@ public class StripLayoutHelperManager
         return incognito ? mIncognitoHelper : mNormalHelper;
     }
 
-    /**
-     * @return The currently visible strip layout helper.
-     */
+    /** Returns the currently visible strip layout helper. */
     @VisibleForTesting
     public StripLayoutHelper getActiveStripLayoutHelper() {
         return getStripLayoutHelper(mIsIncognito);
@@ -1941,9 +1929,7 @@ public class StripLayoutHelperManager
         mManagerHost.requestKeyboardFocus(this);
     }
 
-    /**
-     * @return Whether the tab strip contains keyboard focus.
-     */
+    /** Returns whether the tab strip contains keyboard focus. */
     public boolean containsKeyboardFocus() {
         return mManagerHost.containsKeyboardFocus(this);
     }

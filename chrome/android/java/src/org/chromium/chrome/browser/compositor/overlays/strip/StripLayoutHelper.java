@@ -734,6 +734,7 @@ public class StripLayoutHelper
      *     TabGroupListBottomSheetCoordinator}.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
      * @param activityResultTracker The {@link ActivityResultTracker}.
+     * @param canActivateTabLayoutToggleMenuSupplier Whether the tab layout toggle menu can open.
      */
     public StripLayoutHelper(
             Context context,
@@ -1131,40 +1132,40 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The gradient width of the left fade layer. When a button is visible on this side (LTR
-     *     for Tab Search button, RTL for trailing buttons), it returns the button-side gradient
-     *     width to ensure a sharper fade transition. Otherwise, it returns the standard edge fade
-     *     gradient width.
+     * Returns the gradient width of the left fade layer. When a button is visible on this side (LTR
+     * for Tab Search button, RTL for trailing buttons), it returns the button-side gradient width
+     * to ensure a sharper fade transition. Otherwise, it returns the standard edge fade gradient
+     * width.
      */
     public float getLeftFadeGradientWidth() {
         return mLeftFadeGradientWidth;
     }
 
     /**
-     * @return The gradient width of the right fade layer. When a button is visible on this side
-     *     (RTL for Tab Search button, LTR for trailing buttons), it returns the button-side
-     *     gradient width to ensure a sharper fade transition. Otherwise, it returns the standard
-     *     edge fade gradient width.
+     * Returns the gradient width of the right fade layer. When a button is visible on this side
+     * (RTL for Tab Search button, LTR for trailing buttons), it returns the button-side gradient
+     * width to ensure a sharper fade transition. Otherwise, it returns the standard edge fade
+     * gradient width.
      */
     public float getRightFadeGradientWidth() {
         return mRightFadeGradientWidth;
     }
 
     /**
-     * @return The opaque width of the left fade layer. When a button is visible on this side (LTR
-     *     for Tab Search button, RTL for trailing buttons), the opaque width covers the button's
-     *     touch target and a padding buffer to prevent scrolling tabs from showing behind the
-     *     button. Otherwise, it covers the standard margin width.
+     * Returns the opaque width of the left fade layer. When a button is visible on this side (LTR
+     * for Tab Search button, RTL for trailing buttons), the opaque width covers the button's touch
+     * target and a padding buffer to prevent scrolling tabs from showing behind the button.
+     * Otherwise, it covers the standard margin width.
      */
     public float getLeftFadeOpaqueWidth() {
         return mLeftFadeOpaqueWidth;
     }
 
     /**
-     * @return The opaque width of the right fade layer. When a button is visible on this side (RTL
-     *     for Tab Search button, LTR for trailing buttons), the opaque width covers the button's
-     *     touch target and a padding buffer to prevent scrolling tabs from showing behind the
-     *     button. Otherwise, it covers the standard margin width.
+     * Returns the opaque width of the right fade layer. When a button is visible on this side (RTL
+     * for Tab Search button, LTR for trailing buttons), the opaque width covers the button's touch
+     * target and a padding buffer to prevent scrolling tabs from showing behind the button.
+     * Otherwise, it covers the standard margin width.
      */
     public float getRightFadeOpaqueWidth() {
         return mRightFadeOpaqueWidth;
@@ -5102,6 +5103,7 @@ public class StripLayoutHelper
 
     /**
      * @param id The id of the selected tab.
+     * @param shouldShowOutline Whether the tab outline should be shown.
      * @return The outline color if the selected tab will show its Tab Group Indicator outline.
      *     {@code Color.TRANSPARENT} otherwise.
      */
@@ -5333,7 +5335,7 @@ public class StripLayoutHelper
         bringViewToVisibleArea(getSelectedStripTab(), time, animate);
     }
 
-    /** Scrolls to {@param view} if it's not fully visible. */
+    /** Scrolls to {@code view} if it's not fully visible. */
     private void bringViewToVisibleArea(
             @Nullable StripLayoutView view, long time, boolean animate) {
         if (mWidth == 0) return;

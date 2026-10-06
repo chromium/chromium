@@ -63,9 +63,7 @@ public class TabLoadTracker {
         mHandler.postDelayed(mLoadFinishedRunnable, LOAD_FINISHED_VISUAL_DELAY_MS);
     }
 
-    /**
-     * @return Whether or not this tab should be visually represented as loading.
-     */
+    /** Returns whether or not this tab should be visually represented as loading. */
     public boolean isLoading() {
         return mLoading;
     }

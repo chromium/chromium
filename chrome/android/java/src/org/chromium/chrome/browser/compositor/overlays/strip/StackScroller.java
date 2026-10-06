@@ -222,6 +222,7 @@ public class StackScroller {
      * @param dx Horizontal distance to travel. Positive numbers will scroll the content to the
      *     left.
      * @param dy Vertical distance to travel. Positive numbers will scroll the content up.
+     * @param startTime Start time of the scroll in milliseconds.
      * @param duration Duration of the scroll in milliseconds.
      */
     public void startScroll(int startX, int startY, int dx, int dy, long startTime, int duration) {
@@ -233,12 +234,13 @@ public class StackScroller {
     /**
      * Call this when you want to 'spring back' into a valid coordinate range.
      *
-     * @param startX Starting X coordinate
-     * @param startY Starting Y coordinate
-     * @param minX Minimum valid X value
-     * @param maxX Maximum valid X value
-     * @param minY Minimum valid Y value
-     * @param maxY Minimum valid Y value
+     * @param startX Starting X coordinate.
+     * @param startY Starting Y coordinate.
+     * @param minX Minimum valid X value.
+     * @param maxX Maximum valid X value.
+     * @param minY Minimum valid Y value.
+     * @param maxY Minimum valid Y value.
+     * @param time Current time in milliseconds.
      * @return true if a springback was initiated, false if startX and startY were already within
      *     the valid range.
      */
@@ -256,10 +258,10 @@ public class StackScroller {
      * Start scrolling based on a fling gesture. The distance traveled will depend on the initial
      * velocity of the fling.
      *
-     * @param startX Starting point of the scroll (X)
-     * @param startY Starting point of the scroll (Y)
+     * @param startX Starting point of the scroll (X).
+     * @param startY Starting point of the scroll (Y).
      * @param velocityX Initial velocity of the fling (X) measured in pixels per second.
-     * @param velocityY Initial velocity of the fling (Y) measured in pixels per second
+     * @param velocityY Initial velocity of the fling (Y) measured in pixels per second.
      * @param minX Minimum X value. The scroller will not scroll past this point unless overX > 0.
      *     If overfling is allowed, it will use minX as a springback boundary.
      * @param maxX Maximum X value. The scroller will not scroll past this point unless overX > 0.
@@ -272,6 +274,7 @@ public class StackScroller {
      *     possible.
      * @param overY Overfling range. If > 0, vertical overfling in either direction will be
      *     possible.
+     * @param time Current time in milliseconds.
      */
     public void fling(
             int startX,

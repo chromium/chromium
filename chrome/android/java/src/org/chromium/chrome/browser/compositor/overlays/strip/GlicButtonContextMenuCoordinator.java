@@ -53,8 +53,9 @@ public class GlicButtonContextMenuCoordinator {
     /**
      * Shows the Glic button context menu.
      *
-     * @param anchorRectProvider The {@link RectProvider} for the anchor view.
+     * @param anchorViewRectProvider The {@link RectProvider} for the anchor view.
      * @param activity The {@link Activity} in which the menu is shown.
+     * @param profile The {@link Profile} associated with the menu.
      * @param menuWidth The width of the menu in dp.
      */
     public void showMenu(

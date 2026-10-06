@@ -567,6 +567,7 @@ public class StripLayoutTab extends StripLayoutView {
      *
      * @param description A description for accessibility events.
      * @param title The title of the tab.
+     * @param newA11yTabstripIdentifierResId The String resource ID the description uses.
      */
     public void setAccessibilityDescription(
             String description,
@@ -643,16 +644,12 @@ public class StripLayoutTab extends StripLayoutView {
         mTabId = id;
     }
 
-    /**
-     * @return The id of the {@link Tab} this {@link StripLayoutTab} represents.
-     */
+    /** Returns the id of the {@link Tab} this {@link StripLayoutTab} represents. */
     public int getTabId() {
         return mTabId;
     }
 
-    /**
-     * @return The Android resource that represents the tab background.
-     */
+    /** Returns the Android resource that represents the tab background. */
     public @DrawableRes int getResourceId() {
         if (!mFolioAttached || mIsPlaceholder) {
             return TabUiThemeUtil.getDetachedResource();
@@ -661,16 +658,12 @@ public class StripLayoutTab extends StripLayoutView {
         }
     }
 
-    /**
-     * @return The Android resource that represents the tab outline.
-     */
+    /** Returns the Android resource that represents the tab outline. */
     public @DrawableRes int getOutlineResourceId() {
         return R.drawable.tab_group_outline;
     }
 
-    /**
-     * @return The Android resource that represents the tab divider.
-     */
+    /** Returns the Android resource that represents the tab divider. */
     public @DrawableRes int getDividerResourceId() {
         return R.drawable.bg_tabstrip_tab_divider;
     }
@@ -705,9 +698,7 @@ public class StripLayoutTab extends StripLayoutView {
         }
     }
 
-    /**
-     * @return The tint color resource for the tab divider.
-     */
+    /** Returns the tint color resource for the tab divider. */
     public @ColorInt int getDividerTint() {
         return TabUiThemeUtil.getDividerTint(mContext, isIncognito());
     }
@@ -719,9 +710,7 @@ public class StripLayoutTab extends StripLayoutView {
         mStartDividerVisible = visible;
     }
 
-    /**
-     * @return Visibility of tab's start divider.
-     */
+    /** Returns visibility of tab's start divider. */
     public boolean isStartDividerVisible() {
         return mStartDividerVisible;
     }
@@ -733,9 +722,7 @@ public class StripLayoutTab extends StripLayoutView {
         mEndDividerVisible = visible;
     }
 
-    /**
-     * @return Visibility of tab's end divider.
-     */
+    /** Returns visibility of tab's end divider. */
     public boolean isEndDividerVisible() {
         return mEndDividerVisible;
     }
@@ -767,16 +754,12 @@ public class StripLayoutTab extends StripLayoutView {
         assert false : "Incognito state of a tab cannot change";
     }
 
-    /**
-     * @return Whether or not this tab should be visually represented as loading.
-     */
+    /** Returns whether or not this tab should be visually represented as loading. */
     public boolean isLoading() {
         return mLoadTracker.isLoading();
     }
 
-    /**
-     * @return The rotation of the loading spinner in degrees.
-     */
+    /** Returns the rotation of the loading spinner in degrees. */
     public float getLoadingSpinnerRotation() {
         return mLoadingSpinnerRotationDegrees;
     }
@@ -812,23 +795,17 @@ public class StripLayoutTab extends StripLayoutView {
         mContainerOpacity = opacity;
     }
 
-    /**
-     * @return The fraction (from 0.f to 1.f) of how opaque the tab container should be.
-     */
+    /** Returns the fraction (from 0.f to 1.f) of how opaque the tab container should be. */
     public float getContainerOpacity() {
         return mContainerOpacity;
     }
 
-    /**
-     * @return How far to vertically offset the tab content.
-     */
+    /** Returns how far to vertically offset the tab content. */
     public static float getContentOffsetY() {
         return FOLIO_CONTENT_OFFSET_Y - (TOP_MARGIN_DP / 2);
     }
 
-    /**
-     * @return The trailing offset for the tab divider.
-     */
+    /** Returns the trailing offset for the tab divider. */
     public float getDividerOffsetX() {
         return DIVIDER_OFFSET_X;
     }
@@ -840,30 +817,22 @@ public class StripLayoutTab extends StripLayoutView {
         mBottomMargin = bottomMargin;
     }
 
-    /**
-     * @return How far to offset the bottom of the tab container from the toolbar.
-     */
+    /** Returns how far to offset the bottom of the tab container from the toolbar. */
     public float getBottomMargin() {
         return mBottomMargin;
     }
 
-    /**
-     * @return How far to offset the top of the tab container from the top of the tab strip.
-     */
+    /** Returns how far to offset the top of the tab container from the top of the tab strip. */
     public static float getTopMargin() {
         return TOP_MARGIN_DP;
     }
 
-    /**
-     * @return The horizontal padding between the edges of a tab and its contents.
-     */
+    /** Returns the horizontal padding between the edges of a tab and its contents. */
     public float getContentPaddingX() {
         return CONTENT_PADDING_X;
     }
 
-    /**
-     * @return The size of the tab favicon.
-     */
+    /** Returns the size of the tab favicon. */
     public float getFaviconSize() {
         return FAVICON_WIDTH;
     }
@@ -937,23 +906,17 @@ public class StripLayoutTab extends StripLayoutView {
         mCloseButton.setHovered(closeHovered);
     }
 
-    /**
-     * @return The current hovered state of the close button.
-     */
+    /** Returns the current hovered state of the close button. */
     public boolean isCloseHovered() {
         return mCloseButton.isHovered();
     }
 
-    /**
-     * @return The current pressed state of the close button.
-     */
+    /** Returns the current pressed state of the close button. */
     public boolean getClosePressed() {
         return mCloseButton.isPressed();
     }
 
-    /**
-     * @return The close button for this tab.
-     */
+    /** Returns the close button for this tab. */
     public TintedCompositorButton getCloseButton() {
         return mCloseButton;
     }
@@ -1000,16 +963,12 @@ public class StripLayoutTab extends StripLayoutView {
         setEndDividerVisible(/* visible= */ false);
     }
 
-    /**
-     * @return The left-side of the tab's touch target.
-     */
+    /** Returns the left-side of the tab's touch target. */
     public float getTouchTargetLeft() {
         return getTouchTargetBounds().left;
     }
 
-    /**
-     * @return The right-side of the tab's touch target.
-     */
+    /** Returns the right-side of the tab's touch target. */
     public float getTouchTargetRight() {
         return getTouchTargetBounds().right;
     }

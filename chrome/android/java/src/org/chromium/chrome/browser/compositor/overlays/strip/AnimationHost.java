@@ -17,9 +17,7 @@ import java.util.List;
 /** Host for animations in the tab strip. */
 @NullMarked
 public interface AnimationHost {
-    /**
-     * @return The {@link CompositorAnimationHandler} associated with this animation host.
-     */
+    /** Returns the {@link CompositorAnimationHandler} associated with this animation host. */
     CompositorAnimationHandler getAnimationHandler();
 
     /** Finishes any outstanding animations. */

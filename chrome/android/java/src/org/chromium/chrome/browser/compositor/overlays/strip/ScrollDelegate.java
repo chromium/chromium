@@ -130,9 +130,7 @@ public class ScrollDelegate {
         mScroller = new StackScroller(context);
     }
 
-    /**
-     * @return The current scroll offset under the dynamic coordinate system (see class doc).
-     */
+    /** Returns the current scroll offset under the dynamic coordinate system (see class doc). */
     public float getScrollOffset() {
         return mScrollOffset;
     }
@@ -395,16 +393,12 @@ public class ScrollDelegate {
         mScrollOffsetLimit = scrollOffsetLimit;
     }
 
-    /**
-     * @return The scroll offset limit under the dynamic coordinate system (see class doc).
-     */
+    /** Returns the scroll offset limit under the dynamic coordinate system (see class doc). */
     float getScrollOffsetLimitForTesting() {
         return mScrollOffsetLimit;
     }
 
-    /**
-     * @return The scroller.
-     */
+    /** Returns the scroller. */
     StackScroller getScrollerForTesting() {
         return mScroller;
     }

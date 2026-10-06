@@ -412,9 +412,7 @@ public class TabStripContextMenuCoordinator {
         mMenuWindow = null;
     }
 
-    /**
-     * @return Whether the context menu is currently showing.
-     */
+    /** Returns whether the context menu is currently showing. */
     public boolean isMenuShowing() {
         return mMenuWindow != null && mMenuWindow.isShowing();
     }
