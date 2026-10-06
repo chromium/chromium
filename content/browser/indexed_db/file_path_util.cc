@@ -35,6 +35,18 @@ constexpr base::FilePath::CharType kBlobExtension[] =
 
 // The file name used for databases that have an empty name.
 constexpr char kSqliteEmptyDatabaseNameFileName[] = "0";
+
+bool IsDatabaseFile(const base::FilePath& path) {
+  if (path.BaseName() ==
+      base::FilePath::FromASCII(kSqliteEmptyDatabaseNameFileName)) {
+    return true;
+  }
+
+  std::string ascii_name = path.BaseName().MaybeAsASCII();
+  return !ascii_name.empty() && base32::Base32Decode(ascii_name).size() ==
+                                    crypto::hash::DigestSizeForHashKind(
+                                        crypto::hash::HashKind::kSha256);
+}
 }  // namespace
 
 bool ShouldUseLegacyFilePath(const storage::BucketLocator& bucket_locator) {
@@ -149,29 +161,27 @@ base::FilePath DatabaseNameToFileName(std::u16string_view db_name) {
                    base32::Base32EncodePolicy::OMIT_PADDING));
 }
 
+bool DoesAnyDatabaseExistInDirectory(const base::FilePath& directory) {
+  base::FileEnumerator enumerator(directory, /*recursive=*/false,
+                                  base::FileEnumerator::FILES);
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    if (IsDatabaseFile(path)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void EnumerateDatabasesInDirectory(
     const base::FilePath& directory,
     base::FunctionRef<void(const base::FilePath& path)> ref) {
   base::FileEnumerator enumerator(directory, /*recursive=*/false,
                                   base::FileEnumerator::FILES);
   enumerator.ForEach([&](const base::FilePath& path) {
-    if (path.BaseName() ==
-        base::FilePath::FromASCII(kSqliteEmptyDatabaseNameFileName)) {
+    if (IsDatabaseFile(path)) {
       ref(path);
-      return;
     }
-
-    std::string ascii_name = path.BaseName().MaybeAsASCII();
-    if (ascii_name.empty()) {
-      return;
-    }
-
-    if (base32::Base32Decode(ascii_name).size() !=
-        crypto::hash::DigestSizeForHashKind(crypto::hash::HashKind::kSha256)) {
-      return;
-    }
-
-    ref(path);
   });
 }
 

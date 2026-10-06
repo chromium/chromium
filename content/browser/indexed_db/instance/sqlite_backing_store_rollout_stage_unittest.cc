@@ -333,6 +333,24 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbOnly) {
        {StoreType::kLevelDbBackingStoreCorruption, kCreatedWithSqlite}});
 }
 
+TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbForNewStores) {
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseLevelDbForNewStores,
+      {{StoreType::kNone, kCreatedWithLevelDb},
+       {StoreType::kLevelDb, kOpenedLevelDb},
+       {StoreType::kSqlite, kOpenedSqlite},
+       {StoreType::kEmptyLevelDbDirectory, kCreatedWithLevelDb},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
+       {StoreType::kLevelDbFilesMissing,
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}}});
+}
+
 TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbAsControl) {
   ValidateExpectationsForStage(
       SqliteRolloutStage::kUseLevelDbAsControl,

@@ -86,6 +86,7 @@ namespace {
 constexpr base::FeatureParam<SqliteRolloutStage>::Option
     kIdbSqliteOnDiskRolloutStages[] = {
         {SqliteRolloutStage::kUseLevelDbOnly, "UseLevelDbOnly"},
+        {SqliteRolloutStage::kUseLevelDbForNewStores, "UseLevelDbForNewStores"},
         {SqliteRolloutStage::kUseLevelDbAsControl, "UseLevelDbAsControl"},
         {SqliteRolloutStage::kUseSqliteForNewStores, "UseSqliteForNewStores"},
         {SqliteRolloutStage::kUseSqliteOnly, "UseSqliteOnly"},
@@ -97,7 +98,7 @@ BASE_FEATURE_ENUM_PARAM(SqliteRolloutStage,
                         kIdbSqliteOnDiskRolloutStage,
                         &features::kIdbSqliteOnDiskRollout,
                         "stage",
-                        SqliteRolloutStage::kUseLevelDbOnly,
+                        SqliteRolloutStage::kUseLevelDbForNewStores,
                         &kIdbSqliteOnDiskRolloutStages);
 
 // Time after the last connection to a database is closed and when we destroy
@@ -248,6 +249,13 @@ bool DoesLevelDbStoreExist(const storage::BucketLocator& bucket_locator,
       data_path.Append(GetLevelDBFileName(bucket_locator)));
 }
 
+bool DoesAnySqliteDbExist(const storage::BucketLocator& bucket_locator,
+                          const base::FilePath& data_path) {
+  CHECK(!data_path.empty());
+  return DoesAnyDatabaseExistInDirectory(
+      data_path.Append(GetSqliteDbDirectory(bucket_locator)));
+}
+
 base::FilePath GetLevelDbExperimentalTagPath(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_path) {
@@ -262,9 +270,12 @@ bool ShouldUseSqlite(SqliteRolloutStage stage,
                      const base::FilePath& data_path) {
   switch (stage) {
     case SqliteRolloutStage::kUseLevelDbOnly:
-      return false;
     case SqliteRolloutStage::kUseLevelDbAsControl:
       return false;
+    case SqliteRolloutStage::kUseLevelDbForNewStores:
+      // Use SQLite only if it already exists and LevelDB does not exist.
+      return !DoesLevelDbStoreExist(bucket_locator, data_path) &&
+             DoesAnySqliteDbExist(bucket_locator, data_path);
     case SqliteRolloutStage::kUseSqliteForNewStores:
     case SqliteRolloutStage::kMigrateDataToSqliteGentle:
       return !DoesLevelDbStoreExist(bucket_locator, data_path);
@@ -282,6 +293,7 @@ std::string_view DetermineHistogramSuffix(
   }
   switch (stage) {
     case SqliteRolloutStage::kUseLevelDbOnly:
+    case SqliteRolloutStage::kUseLevelDbForNewStores:
     case SqliteRolloutStage::kMigrateDataToSqliteGentle:
     case SqliteRolloutStage::kUseSqliteOnly:
       return ".OnDisk";
