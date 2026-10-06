@@ -70,6 +70,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:custom_corners_background",
     "//chrome/browser/ui/views/frame:shadow",
+    "//chrome/browser/ui/views/frame:vertical_tab_strip_region_view",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",

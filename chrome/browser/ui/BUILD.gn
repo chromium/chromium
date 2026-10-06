@@ -3612,19 +3612,9 @@ static_library("ui") {
   }
 
   if (toolkit_views) {
-    sources += [
-      "views/frame/base_tab_strip_region_view.cc",
-      "views/frame/base_tab_strip_region_view.h",
-      "views/frame/browser_view.cc",
-      "views/frame/horizontal_tab_strip_region_view.cc",
-      "views/frame/horizontal_tab_strip_region_view.h",
-      "views/frame/vertical_tab_strip_region_view.cc",
-      "views/frame/vertical_tab_strip_region_view.h",
-    ]
+    sources += [ "views/frame/browser_view.cc" ]
 
     sources += get_target_outputs(":webui_name_variants")
-
-    public_deps += [ "//chrome/browser/ui/views/tabs/common:impl" ]
 
     deps += [
       ":browser_init_state",
@@ -3813,6 +3803,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:app_menu_button",
       "//chrome/browser/ui/views/frame:app_menu_button_impl",
       "//chrome/browser/ui/views/frame:app_menu_button_observer",
+      "//chrome/browser/ui/views/frame:base_tab_strip_region_view",
       "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host",
       "//chrome/browser/ui/views/frame:browser_frame_view",
       "//chrome/browser/ui/views/frame:browser_frame_view_impl",
@@ -3850,6 +3841,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:find_bar_owner_views",
       "//chrome/browser/ui/views/frame:find_bar_owner_views_impl",
       "//chrome/browser/ui/views/frame:frame_separator",
+      "//chrome/browser/ui/views/frame:horizontal_tab_strip_region_view",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_factory_views",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_stub",
       "//chrome/browser/ui/views/frame:main_background_region_view",
@@ -3884,6 +3876,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:top_container_view",
       "//chrome/browser/ui/views/frame:top_container_view_impl",
       "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
+      "//chrome/browser/ui/views/frame:vertical_tab_strip_region_view",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/frame:windows_icon_painter",
       "//chrome/browser/ui/views/fullscreen_control",
@@ -4072,33 +4065,6 @@ static_library("ui") {
       # following header gets componentized:
       # - c/b/ui/browser_tabstrip.h
       "//chrome/browser/ui/views/location_bar:impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following headers get componentized:
-      # - c/b/ui/views/frame/base_tab_strip_region_view.h
-      # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      "//chrome/browser/ui/views/tabs/common:impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following headers get componentized:
-      # - c/b/ui/browser_tabstrip.h
-      # - c/b/ui/views/frame/horizontal_tab_strip_region_view.h
-      "//chrome/browser/ui/views/tabs:tab_strip_impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/views/tabs/groups:impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      "//chrome/browser/ui/views/tabs/hovercard:impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      "//chrome/browser/ui/views/tabs/vertical:impl",
 
       # TODO(crbug.com/512979192): Remove this circular dependency when the
       # following header gets componentized:
@@ -4904,7 +4870,10 @@ if (!is_android) {
     }
 
     if (toolkit_views) {
-      deps += [ "//chrome/browser/ui/views:tab_search_bubble_host" ]
+      deps += [
+        "//chrome/browser/ui/views:tab_search_bubble_host",
+        "//chrome/browser/ui/views/frame:base_tab_strip_region_view",
+      ]
     }
 
     if (toolkit_views && !is_chromeos) {
@@ -5304,6 +5273,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:browser_frame_view",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:horizontal_tab_strip_region_view",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/common",
       "//chrome/test:test_support",

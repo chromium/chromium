@@ -452,6 +452,138 @@ source_set("frame") {
   ]
 }
 
+source_set("base_tab_strip_region_view") {
+  public = [ "base_tab_strip_region_view.h" ]
+  sources = [ "base_tab_strip_region_view.cc" ]
+  public_deps = [
+    ":frame",
+    "//base",
+    "//chrome/browser/ui/views/tabs/hovercard",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//components/tabs:public",
+    "//ui/base/metadata",
+  ]
+  deps = [
+    ":browser_view_header",
+    ":safe_invoke",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/tabs/common",
+    "//chrome/browser/ui/views/tabs/common:impl",
+    "//components/tab_groups",
+    "//content/public/browser",
+    "//ui/base/clipboard",
+    "//ui/base/dragdrop:types",
+    "//ui/display",
+    "//ui/views",
+  ]
+}
+
+source_set("horizontal_tab_strip_region_view") {
+  public = [ "horizontal_tab_strip_region_view.h" ]
+  sources = [ "horizontal_tab_strip_region_view.cc" ]
+  public_deps = [
+    ":base_tab_strip_region_view",
+    ":frame",
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs:tab_strip",
+    "//chrome/common:buildflags",
+    "//components/tabs:public",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":browser_view_header",
+    ":safe_invoke",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/glic",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_commands",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/frame",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views:tab_search_bubble_host",
+    "//chrome/browser/ui/views/tabs:base",
+    "//chrome/browser/ui/views/tabs:new_tab_button",
+    "//chrome/browser/ui/views/tabs:tab_strip_button",
+    "//chrome/browser/ui/views/tabs:tab_style_views",
+    "//chrome/browser/ui/views/tabs/common",
+    "//chrome/browser/ui/views/tabs/dragging",
+    "//chrome/browser/ui/views/tabs/hovercard",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/web_applications",
+    "//components/tab_groups",
+    "//components/vector_icons",
+    "//ui/base/clipboard",
+    "//ui/base/dragdrop:types",
+    "//ui/compositor",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("vertical_tab_strip_region_view") {
+  public = [ "vertical_tab_strip_region_view.h" ]
+  sources = [ "vertical_tab_strip_region_view.cc" ]
+  public_deps = [
+    ":base_tab_strip_region_view",
+    "//base",
+    "//chrome/browser/ui/animation",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs/common",
+    "//chrome/browser/ui/views/tabs/hovercard",
+    "//chrome/browser/ui/views/tabs/organizer:organizer_panel_host",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//chrome/browser/ui/views/tabs/vertical",
+    "//components/tabs:public",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/events",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  deps = [
+    ":browser_view_header",
+    ":custom_corners_background",
+    ":frame",
+    ":frame_separator",
+    ":safe_invoke",
+    ":shadow",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/tabs/common:impl",
+    "//chrome/browser/ui/views/tabs/organizer",
+    "//chrome/browser/ui/web_applications",
+    "//ui/base/dragdrop:types",
+    "//ui/compositor",
+    "//ui/display",
+  ]
+}
+
 source_set("app_menu_button_observer") {
   sources = [ "app_menu_button_observer.h" ]
 }
@@ -1928,11 +2060,13 @@ source_set("browser_tests") {
     ":browser_view_layout_delegate_impl",
     ":custom_corners_background",
     ":custom_floating_corner",
+    ":horizontal_tab_strip_region_view",
     ":immersive_mode_controller_stub",
     ":multi_contents_view_delegate",
     ":multi_contents_view_drop_target_controller",
     ":scrim_view",
     ":top_container_view",
+    ":vertical_tab_strip_region_view",
     "//chrome/browser/devtools",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/glic/test_support",
@@ -2064,6 +2198,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":app_menu_button_observer",
+    ":base_tab_strip_region_view",
     ":browser_view_header",
     ":browser_view_tabbed_layout_impl",
     ":contents_container_outline",
@@ -2073,6 +2208,7 @@ source_set("interactive_ui_tests") {
     ":custom_floating_corner",
     ":frame",
     ":glass_frame_service",
+    ":horizontal_tab_strip_region_view",
     ":multi_contents_background_view",
     ":multi_contents_drop_target_view",
     ":multi_contents_resize_area",
@@ -2082,6 +2218,7 @@ source_set("interactive_ui_tests") {
     ":picture_in_picture_browser_frame_view",
     ":scrim_view",
     ":top_container_view",
+    ":vertical_tab_strip_region_view",
     "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/focus",
@@ -2692,6 +2829,7 @@ source_set("browser_view_tabbed_layout_impl") {
     ":multi_contents_view",
     ":shadow",
     ":vertical_tab_strip_background_blur_backdrop",
+    ":vertical_tab_strip_region_view",
     "//base",
     "//build:buildflag_header_h",
     "//chrome/browser/ui:layout_constants",

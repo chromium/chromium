@@ -135,6 +135,7 @@ source_set("test_support") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:base_tab_strip_region_view",
     "//chrome/browser/ui/views/tabs:tab",
     "//chrome/browser/ui/views/tabs:tab_strip",
     "//chrome/browser/ui/views/tabs/common:impl",
