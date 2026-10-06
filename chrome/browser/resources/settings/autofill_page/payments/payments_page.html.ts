@@ -9,7 +9,6 @@ import type {SettingsPaymentsPageElement} from './payments_page.js';
 export function getHtml(this: SettingsPaymentsPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{paymentsTitle}"
-    route-path="${this.routePath}"
     learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
     class="multi-card">
 
@@ -22,32 +21,28 @@ export function getHtml(this: SettingsPaymentsPageElement) {
     sub-label="$i18n{enableCreditCardsSublabel}"
     .pref="${this.creditCardEnabledSyntheticPref_}"
     @settings-boolean-control-change="${
-      this.onCreditCardToggleSettingsBooleanControlChange_}">
+        this.onCreditCardToggleSettingsBooleanControlChange_}">
 </settings-toggle-button>
 
 <!-- Extension-override indicator for payments autofill enable/disable; this
      MUST come immediately after the autofillCreditCardToggle toggle. -->
-${
-      this.creditCardEnabledSyntheticPref_.extensionId ?
-      html`
+${this.creditCardEnabledSyntheticPref_.extensionId ? html`
   <div class="cr-row continuation">
     <extension-controlled-indicator class="flex"
         id="autofillExtensionIndicator"
         .extensionId="${this.creditCardEnabledSyntheticPref_.extensionId}"
         .extensionName="${
-          this.creditCardEnabledSyntheticPref_.controlledByName || ''}"
+            this.creditCardEnabledSyntheticPref_.controlledByName || ''}"
         .extensionCanBeDisabled="${
-  !!this.creditCardEnabledSyntheticPref_.extensionCanBeDisabled}">
+            !!this.creditCardEnabledSyntheticPref_.extensionCanBeDisabled}">
     </extension-controlled-indicator>
   </div>
-`: ''}
+` : ''}
 
 <!-- Toggle to enable/disable mandatory re-authentication when user attempts to
      view or autofill payment methods. -->
 <if expr="is_win or is_macosx or is_chromeos">
-${
-      this.mandatoryReauthFeatureFlagEnabled_ ?
-      html`
+${this.mandatoryReauthFeatureFlagEnabled_ ? html`
   <settings-toggle-button id="mandatoryAuthToggle"
       no-extension-indicator label="$i18n{enableMandatoryAuthToggleLabel}"
       sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
@@ -56,14 +51,11 @@ ${
       @settings-boolean-control-change="${
           this.onMandatoryAuthToggleSettingsBooleanControlChange_}">
   </settings-toggle-button>
-` :
-      ''}
+` : ''}
 </if>
 
 <!-- Toggle to enable/disable CVC storage. -->
-${
-      this.cvcStorageAvailable_ ?
-      html`
+${this.cvcStorageAvailable_ ? html`
   <settings-toggle-button id="cvcStorageToggle"
       no-extension-indicator label="$i18n{enableCvcStorageLabel}"
       .ariaLabel="${this.getCvcStorageAriaLabel_()}"
@@ -72,8 +64,7 @@ ${
       @sub-label-link-clicked="${this.onCvcStorageSubLabelLinkClicked_}"
       pref-key="autofill.payment_cvc_storage">
   </settings-toggle-button>
-` :
-      ''}
+` : ''}
 
 <!-- Toggle to enable/disable showing card benefits/rewards in autofill. -->
 <settings-toggle-button id="cardBenefitsToggle"
@@ -85,9 +76,7 @@ ${
 </settings-toggle-button>
 
 <!-- Toggle to enable/disable Buy Now, Pay Later (BNPL) in autofill. -->
-${
-      this.shouldShowPayOverTimeSettings_ ?
-      html`
+${this.shouldShowPayOverTimeSettings_ ? html`
   <settings-toggle-button id="payOverTimeToggle"
       no-extension-indicator label="$i18n{autofillPayOverTimeSettingsLabel}"
       sub-label-with-link="$i18n{autofillPayOverTimeSettingsSublabel}"
@@ -95,8 +84,7 @@ ${
       ?disabled="${!this.creditCardEnabledSyntheticPref_.value}"
       pref-key="autofill.bnpl_enabled">
   </settings-toggle-button>
-` :
-      ''}
+` : ''}
 
 <!-- Toggle to allow/disallow certain behavior for the Payment Request API. Note
      that this setting does *NOT* relate to payments autofill, but lives in
@@ -107,7 +95,7 @@ ${
     label="$i18n{canMakePaymentToggleLabel}"
     pref-key="payments.can_make_payment_enabled"
     @settings-boolean-control-change="${
-      this.onCanMakePaymentSettingsBooleanControlChange_}">
+        this.onCanMakePaymentSettingsBooleanControlChange_}">
 </settings-toggle-button>
 
 <div id="manageLink" class="cr-row">
@@ -120,17 +108,14 @@ ${
 
 <div class="cr-row continuation">
   <h2 class="flex">$i18n{creditCards}</h2>
-  ${
-      !this.shouldShowIbanSettings_() ?
-      html`
+  ${!this.shouldShowIbanSettings_() ? html`
     <cr-button id="addCreditCard" class="header-aligned-button"
         @click="${this.onAddCreditCardClick_}"
         aria-label="$i18n{addCreditCardTitle}"
         ?disabled="${!this.creditCardEnabledSyntheticPref_.value}">
       $i18n{add}
     </cr-button>
-  ` :
-      html`
+  ` : html`
     <cr-button class="header-aligned-button"
         id="addPaymentMethods" @click="${this.onAddPaymentMethodClick_}"
         aria-label="$i18n{addPaymentMethods}"
@@ -203,70 +188,52 @@ ${
     `}">
 </cr-lazy-render-lit>
 
-${
-      this.showCreditCardDialog_ ?
-      html`
+${this.showCreditCardDialog_ ? html`
   <settings-credit-card-edit-dialog .creditCard="${this.activeCreditCard_!}"
       @close="${this.onCreditCardDialogClose_}"
       @save-credit-card="${this.onSaveCreditCard_}">
   </settings-credit-card-edit-dialog>
-` :
-      ''}
-${
-      this.showIbanDialog_ ?
-      html`
+` : ''}
+${this.showIbanDialog_ ? html`
   <settings-iban-edit-dialog .iban="${this.activeIban_}"
       @close="${this.onIbanDialogClose_}" @save-iban="${this.onSaveIban_}">
   </settings-iban-edit-dialog>
-` :
-      ''}
+` : ''}
 
-${
-      this.showVirtualCardUnenrollDialog_ ?
-      html`
+${this.showVirtualCardUnenrollDialog_ ? html`
   <settings-virtual-card-unenroll-dialog
       .creditCard="${this.activeCreditCard_!}"
       @close="${this.onVirtualCardUnenrollDialogClose_}"
       @unenroll-virtual-card="${this.onUnenrollVirtualCard_}">
   </settings-virtual-card-unenroll-dialog>
-` :
-      ''}
+` : ''}
 
-${
-      this.showLocalCreditCardRemoveConfirmationDialog_ ?
-      html`
+${this.showLocalCreditCardRemoveConfirmationDialog_ ? html`
   <settings-simple-confirmation-dialog id="localCardDeleteConfirmDialog"
       title-text="$i18n{removeLocalCreditCardConfirmationTitle}"
       body-text="$i18n{removeLocalPaymentMethodConfirmationDescription}"
       confirm-text="$i18n{delete}"
       @close="${this.onLocalCreditCardRemoveConfirmationDialogClose_}">
   </settings-simple-confirmation-dialog>
-` :
-      ''}
+` : ''}
 
-${
-      this.showLocalIbanRemoveConfirmationDialog_ ?
-      html`
+${this.showLocalIbanRemoveConfirmationDialog_ ? html`
   <settings-simple-confirmation-dialog id="localIbanDeleteConfirmationDialog"
       title-text="$i18n{removeLocalIbanConfirmationTitle}"
       body-text="$i18n{removeLocalPaymentMethodConfirmationDescription}"
       confirm-text="$i18n{delete}"
       @close="${this.onLocalIbanRemoveConfirmationDialogClose_}">
   </settings-simple-confirmation-dialog>
-` :
-      ''}
+` : ''}
 
-${
-      this.showBulkRemoveCvcConfirmationDialog_ ?
-      html`
+${this.showBulkRemoveCvcConfirmationDialog_ ? html`
   <settings-simple-confirmation-dialog id="bulkDeleteCvcConfirmDialog"
       title-text="$i18n{bulkRemoveCvcConfirmationTitle}"
       body-text="${this.getCvcDeletionDialogBodyText_()}"
       confirm-text="$i18n{delete}"
       @close="${this.onShowBulkRemoveCvcConfirmationDialogClose_}">
   </settings-simple-confirmation-dialog>
-` :
-      ''}
+` : ''}
 
 </div>
 

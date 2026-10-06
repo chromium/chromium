@@ -48,11 +48,8 @@ export class SettingsGlicLoginPermissionsPageElement extends
       actorLoginPermissions_: {type: Array},
       isOnline_: {type: Boolean},
       selectedPermissionToRemove_: {type: Object},
-      routePath: {type: String},
     };
   }
-
-  accessor routePath: string = '';
 
   protected accessor actorLoginPermissions_: LoginPermission[] = [];
   protected accessor selectedPermissionToRemove_: LoginPermission|null = null;
