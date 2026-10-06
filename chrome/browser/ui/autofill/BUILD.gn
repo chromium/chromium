@@ -96,6 +96,7 @@ source_set("autofill") {
       "autofill_snackbar_controller_impl.h",
       "autofill_snackbar_type.h",
       "autofill_snackbar_view.h",
+      "autofill_tapjacking_protector_impl.h",
     ]
     public_deps += [
       "//components/autofill/android:autofill_core_browser_java_enums",
@@ -251,6 +252,7 @@ source_set("impl") {
       "autofill_message_controller_impl.cc",
       "autofill_message_model.cc",
       "autofill_snackbar_controller_impl.cc",
+      "autofill_tapjacking_protector_impl.cc",
     ]
     deps += [
       "//chrome/browser/autofill/android:jni_headers",
@@ -414,6 +416,7 @@ source_set("unit_tests") {
       "autofill_message_controller_impl_unittest.cc",
       "autofill_message_model_unittest.cc",
       "autofill_snackbar_controller_impl_unittest.cc",
+      "autofill_tapjacking_protector_impl_unittest.cc",
     ]
     deps += [
       "//chrome/browser/autofill/android:jni_test_headers",

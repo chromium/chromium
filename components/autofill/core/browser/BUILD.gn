@@ -1416,6 +1416,8 @@ static_library("browser") {
       "ui/addresses/android/dropdown_key_value_android.h",
       "ui/addresses/android/supported_countries_cache.cc",
       "ui/addresses/android/supported_countries_cache.h",
+      "ui/autofill_tapjacking_protector.cc",
+      "ui/autofill_tapjacking_protector.h",
     ]
   }
 
@@ -1970,6 +1972,13 @@ static_library("test_support") {
     deps += [
       "//components/webauthn/core/browser",
       "//third_party/blink/public/common",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "ui/mock_autofill_tapjacking_protector.cc",
+      "ui/mock_autofill_tapjacking_protector.h",
     ]
   }
 
