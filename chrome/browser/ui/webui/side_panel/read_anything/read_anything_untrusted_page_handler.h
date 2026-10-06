@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
@@ -338,8 +339,14 @@ class ReadAnythingUntrustedPageHandler :
                       content::WebContents* old_contents,
                       content::WebContents* new_contents);
 
-  // Used to verify that an incoming action request is for the currently
-  // observed tree. If it's not, it may be a malicious request.
+  // Returns whether `tree_id` belongs to a frame whose accessibility data may
+  // be sent to, and whose nodes may be acted on by, the Reading Mode page.
+  // Allowed frames are:
+  //  - the primary main frame of the observed tab;
+  //  - subframes of the primary page that are same-origin with the main frame
+  //    (not when the main frame's origin is opaque or file://);
+  //  - the direct https://www.google.com child of chrome://whats-new;
+  //  - for full-page PDFs, the PDF extension host and PDF content frame.
   bool IsObservingTree(const ui::AXTreeID& tree_id) const;
 
   // Used to verify if an incoming action request (e.g. clicking a link or
@@ -499,6 +506,12 @@ class ReadAnythingUntrustedPageHandler :
   // itself has not necessarily loaded in yet, so wait for that frame before
   // notifying of the new tree using the info from the pdf frame itself.
   bool is_waiting_for_pdf_frame_ = false;
+
+  // IDs of trees whose data has been sent to `page_`, either through
+  // AccessibilityEventReceived or OnActiveAXTreeIDChanged. Used to forward
+  // only removals of those trees, because AXActionHandlerRegistry reports tree
+  // removals for every tree in the browser.
+  base::flat_set<ui::AXTreeID> forwarded_tree_ids_;
 
   // Subscription for tab discard events.
   base::CallbackListSubscription tab_discard_subscription_;
