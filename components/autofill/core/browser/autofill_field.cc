@@ -24,7 +24,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -551,7 +550,7 @@ FieldType AutofillField::server_type() const {
 }
 
 void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
-  CHECK(ToSafeFieldType(type).has_value(), base::NotFatalUntil::M142);
+  CHECK(ToSafeFieldType(type).has_value());
   local_type_predictions_[static_cast<size_t>(s)] = type;
   if (s == GetActiveHeuristicSource()) {
     overall_type_ = std::nullopt;

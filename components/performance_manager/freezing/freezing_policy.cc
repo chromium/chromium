@@ -16,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
@@ -649,7 +648,7 @@ void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
 void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
   if (page_node->GetType() == PageType::kTab) {
     if (page_node->IsVisible()) {
-      CHECK_GT(num_visible_tabs_, 0, base::NotFatalUntil::M140);
+      CHECK_GT(num_visible_tabs_, 0);
       --num_visible_tabs_;
     } else {
       std::erase(most_recently_used_, page_node);
@@ -657,14 +656,13 @@ void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
   }
 
   CHECK(page_node->GetMainFrameNodes().empty());
-  CHECK(!std::ranges::contains(most_recently_used_, page_node),
-        base::NotFatalUntil::M140);
+  CHECK(!std::ranges::contains(most_recently_used_, page_node));
   CheckMostRecentlyUsedListSize();
 }
 
 void FreezingPolicy::OnTypeChanged(const PageNode* page_node,
                                    PageType previous_type) {
-  CHECK_EQ(previous_type, PageType::kUnknown, base::NotFatalUntil::M140);
+  CHECK_EQ(previous_type, PageType::kUnknown);
   if (page_node->GetType() != PageType::kTab) {
     return;
   }
@@ -708,9 +706,8 @@ void FreezingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
   } else {
     // Page becomes hidden.
     if (page_node->GetType() == PageType::kTab) {
-      CHECK(!std::ranges::contains(most_recently_used_, page_node),
-            base::NotFatalUntil::M140);
-      CHECK_GT(num_visible_tabs_, 0, base::NotFatalUntil::M140);
+      CHECK(!std::ranges::contains(most_recently_used_, page_node));
+      CHECK_GT(num_visible_tabs_, 0);
       --num_visible_tabs_;
       most_recently_used_.push_front(page_node);
       OnCannotFreezeReasonChange(page_node, /*add=*/true,
@@ -894,8 +891,7 @@ void FreezingPolicy::OnFrameNodeAdded(const FrameNode* frame_node) {
 
   // Clear `per_origin_pmf_after_freezing` since not all pages in the
   // browsing instance are frozen when a new page is added.
-  CHECK_EQ(frame_node->GetLifecycleState(), FrameNode::LifecycleState::kRunning,
-           base::NotFatalUntil::M140);
+  CHECK_EQ(frame_node->GetLifecycleState(), FrameNode::LifecycleState::kRunning);
   browsing_instance_state.per_origin_pmf_after_freezing.clear();
 
   // Update frozen state for browsing instances associated with the frame's
@@ -1085,8 +1081,7 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
     } else {
       // Should have been cleared by OnPageLifecycleStateChanged() or
       // OnFrameNodeAdded().
-      CHECK(state.per_origin_pmf_after_freezing.empty(),
-            base::NotFatalUntil::M140);
+      CHECK(state.per_origin_pmf_after_freezing.empty());
     }
   }
 
@@ -1285,8 +1280,7 @@ void FreezingPolicy::CheckMostRecentlyUsedListSize() {
   // visible tabs must be below or at the limit.
   CHECK_LE(
       num_visible_tabs_ + base::checked_cast<int>(most_recently_used_.size()),
-      features::kInfiniteTabsFreezing_NumProtectedTabs.Get(),
-      base::NotFatalUntil::M140);
+      features::kInfiniteTabsFreezing_NumProtectedTabs.Get());
 }
 
 bool FreezingPolicy::IsPeriodicUnfreezingActive() const {
@@ -1333,7 +1327,7 @@ void FreezingPolicy::StartPeriodicUnfreezeTimer(const PageNode* page_node,
     return;
   }
   auto& state = GetFreezingState(page_node);
-  CHECK(!state.periodic_unfreeze_timer.IsRunning(), base::NotFatalUntil::M141);
+  CHECK(!state.periodic_unfreeze_timer.IsRunning());
   state.periodic_unfreeze_timer.Start(
       FROM_HERE, state.GetDelayUntilNextUnfreezeStateChange(now),
       base::BindOnce(&FreezingPolicy::OnPeriodicUnfreezeTimer,

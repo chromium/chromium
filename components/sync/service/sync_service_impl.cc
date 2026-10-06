@@ -2042,7 +2042,7 @@ void SyncServiceImpl::OnPrimaryAccountChanged(
 void SyncServiceImpl::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   // Needs to be shutdown before IdentityManager.
-  NOTREACHED(base::NotFatalUntil::M142);
+  NOTREACHED();
 }
 
 bool SyncServiceImpl::IsDeviceStatisticsMetricReportingEnabled() {

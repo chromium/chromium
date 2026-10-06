@@ -85,7 +85,7 @@ void IdentityManagerObserverBridge::OnEndBatchOfPrimaryAccountChanges() {
 
 void IdentityManagerObserverBridge::OnIdentityManagerShutdown(
     IdentityManager* identity_manager) {
-  CHECK_EQ(identity_manager, identity_manager_, base::NotFatalUntil::M142);
+  CHECK_EQ(identity_manager, identity_manager_);
   identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
   if ([target_ respondsToSelector:@selector(identityManagerDidShutdown:)]) {

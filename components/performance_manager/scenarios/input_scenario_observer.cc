@@ -46,7 +46,7 @@ void InputScenarioObserver::OnInputScenarioChanged(
     InputScenario previous_scenario) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* data = FrameInputStateDecorator::Data::Get(frame_node);
-  CHECK(data, base::NotFatalUntil::M136);
+  CHECK(data);
 
   const ProcessNode* process_node = frame_node->GetProcessNode();
   auto& process_input_counts = process_input_scenarios_count_[process_node];

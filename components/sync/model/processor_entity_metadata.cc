@@ -11,7 +11,6 @@
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/time.h"
@@ -110,13 +109,13 @@ ClientTagHash ProcessorEntityMetadata::GetClientTagHash() const {
 }
 
 void ProcessorEntityMetadata::IncrementSequenceNumber() {
-  CHECK(metadata_.has_sequence_number(), base::NotFatalUntil::M141);
+  CHECK(metadata_.has_sequence_number());
   if (!IsUnsynced()) {
     // Update the base specifics hash if this entity wasn't already out of sync.
     metadata_.set_base_specifics_hash(metadata_.specifics_hash());
   }
   metadata_.set_sequence_number(metadata_.sequence_number() + 1);
-  CHECK(IsUnsynced(), base::NotFatalUntil::M141);
+  CHECK(IsUnsynced());
 }
 
 bool ProcessorEntityMetadata::MatchesData(const EntityData& data) const {

@@ -270,7 +270,7 @@ void DataTypeController::GetUnsyncedDataCount(
   }
   CHECK(it->second);
   // This should only be triggered for transport-only mode.
-  CHECK(!delegate_ || delegate_ == it->second.get(), base::NotFatalUntil::M138);
+  CHECK(!delegate_ || delegate_ == it->second.get());
   it->second->GetUnsyncedDataCount(std::move(callback));
 }
 

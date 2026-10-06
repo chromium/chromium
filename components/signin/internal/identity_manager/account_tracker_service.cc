@@ -938,8 +938,7 @@ void AccountTrackerService::SeedAccountsInfo(
   if (primary_account_id) {
     // The primary account must be present in the account list.
     CHECK(std::ranges::contains(accounts, *primary_account_id,
-                                &AccountInfo::GetAccountId),
-          base::NotFatalUntil::M148);
+                                &AccountInfo::GetAccountId));
   }
 
   if (should_remove_stale_accounts) {

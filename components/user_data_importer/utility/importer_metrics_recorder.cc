@@ -30,9 +30,8 @@ BookmarksImportError ConvertBookmarkError(
     case BookmarkParser::BookmarkParsingError::kOther:
       return BookmarksImportError::kOther;
     default:
-      NOTREACHED(base::NotFatalUntil::M145)
+      NOTREACHED()
           << "Unknown error: " << static_cast<int>(error);
-      return BookmarksImportError::kOther;
   }
 }
 

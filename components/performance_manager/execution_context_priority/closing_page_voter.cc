@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
@@ -28,7 +27,7 @@ void ClosingPageVoter::SetPageIsClosing(const PageNode* page_node,
     }
   } else {
     size_t num_removed = closing_pages_.erase(page_node);
-    CHECK_EQ(num_removed, 1U, base::NotFatalUntil::M145);
+    CHECK_EQ(num_removed, 1U);
   }
 
   const std::optional<Vote> vote =
@@ -56,7 +55,7 @@ void ClosingPageVoter::TearDownOnGraph(Graph* graph) {
 
 void ClosingPageVoter::OnBeforePageNodeRemoved(const PageNode* page_node) {
   // Assume that the page has no more frames.
-  CHECK(page_node->GetMainFrameNodes().empty(), base::NotFatalUntil::M145);
+  CHECK(page_node->GetMainFrameNodes().empty());
 
   // Stop tracking the closing state for the page on removal.
   closing_pages_.erase(page_node);

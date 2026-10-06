@@ -653,8 +653,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
 
   const gfx::ColorSpace& color_space = image_context->color_space();
   // There should be no usages of RGB matrix for color space here.
-  CHECK(color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB,
-        base::NotFatalUntil::M139);
+  CHECK(color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB);
   SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
   SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
   // TODO(crbug.com/41380578): This should really default to rec709.

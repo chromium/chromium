@@ -616,7 +616,7 @@ void AccountReconcilor::OnAccountsCookieDeletedByUserAction() {
 void AccountReconcilor::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   // Needs to be shutdown before IdentityManager.
-  NOTREACHED(base::NotFatalUntil::M142);
+  NOTREACHED();
 }
 
 std::vector<CoreAccountId>

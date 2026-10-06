@@ -87,7 +87,7 @@ void AccountTracker::OnRefreshTokenRemovedForAccount(
 void AccountTracker::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   // Needs to be shutdown before IdentityManager.
-  NOTREACHED(base::NotFatalUntil::M142);
+  NOTREACHED();
 }
 
 void AccountTracker::OnPrimaryAccountChanged(

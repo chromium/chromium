@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -133,8 +132,7 @@ void IdentityManager::Shutdown() {
 
 #if BUILDFLAG(IS_IOS)
 base::ScopedClosureRunner IdentityManager::StartBatchOfPrimaryAccountChanges() {
-  CHECK(!batch_of_primary_account_changes_in_progress_,
-        base::NotFatalUntil::M140);
+  CHECK(!batch_of_primary_account_changes_in_progress_);
   batch_of_primary_account_changes_in_progress_ = true;
   return base::ScopedClosureRunner(base::BindOnce(
       &IdentityManager::BatchOfPrimaryAccountChangesDone, GetWeakPtr()));
@@ -845,15 +843,13 @@ bool IdentityManager::IsBatchOfPrimaryAccountChangesInProgress() {
 }
 
 void IdentityManager::BatchOfPrimaryAccountChangesDone() {
-  CHECK(batch_of_primary_account_changes_in_progress_,
-        base::NotFatalUntil::M140);
+  CHECK(batch_of_primary_account_changes_in_progress_);
   batch_of_primary_account_changes_in_progress_ = false;
   FireOnEndBatchOfPrimaryAccountChanges();
 }
 
 void IdentityManager::FireOnEndBatchOfPrimaryAccountChanges() {
-  CHECK(!batch_of_primary_account_changes_in_progress_,
-        base::NotFatalUntil::M140);
+  CHECK(!batch_of_primary_account_changes_in_progress_);
   for (auto& observer : observer_list_) {
     observer.OnEndBatchOfPrimaryAccountChanges();
   }

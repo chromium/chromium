@@ -230,11 +230,10 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
     case RequiredUserAction::kKeystoreKeysRequired:
       // Cryptographer has pending keys.
-      // TODO(crbug.com/40904402): verify this is not reachable anymore and
-      // remove NotFatalUntil.
-      NOTREACHED(base::NotFatalUntil::M140)
+      // TODO(crbug.com/40904402): This still fails at a low crash rate (1-5
+      // crashes per milestone): http://shortn/_07INk7Gzht
+      NOTREACHED()
           << "Can not set explicit passphrase when decryption is needed.";
-      return;
   }
 
   DVLOG(1) << "Setting explicit passphrase for encryption.";

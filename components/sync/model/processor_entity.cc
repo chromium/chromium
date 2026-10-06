@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
@@ -158,7 +157,7 @@ void ProcessorEntity::RecordForcedRemoteUpdate(
     const UpdateResponseData& update,
     sync_pb::EntitySpecifics trimmed_specifics,
     std::optional<sync_pb::UniquePosition> unique_position) {
-  CHECK(IsUnsynced(), base::NotFatalUntil::M141);
+  CHECK(IsUnsynced());
   commit_data_.reset();
   metadata_.RecordForcedRemoteUpdate(update, std::move(trimmed_specifics),
                                      std::move(unique_position));
@@ -235,10 +234,8 @@ void ProcessorEntity::InitializeCommitRequestData(CommitRequestData* request) {
 
 void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
                                             bool commit_only) {
-  CHECK_EQ(metadata().client_tag_hash(), data.client_tag_hash.value(),
-           base::NotFatalUntil::M141);
-  CHECK_GT(data.sequence_number, metadata().acked_sequence_number(),
-           base::NotFatalUntil::M141);
+  CHECK_EQ(metadata().client_tag_hash(), data.client_tag_hash.value());
+  CHECK_GT(data.sequence_number, metadata().acked_sequence_number());
   // Version is not valid for commit only types, as it's stripped before being
   // sent to the server, so it cannot behave correctly.
   // Ignore the response if the server responds with an unexpected version.

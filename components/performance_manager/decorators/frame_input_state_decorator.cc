@@ -141,17 +141,15 @@ FrameInputStateDecorator::InputObserver::InputObserver(
     // In tests a FrameNode might not be backed by a RenderFrameHost, in which
     // case this observer does nothing. The test can simulate input by calling
     // UpdateInputScenario() directly.
-    CHECK_IS_TEST(base::NotFatalUntil::M136);
+    CHECK_IS_TEST();
     return;
   }
 
   // Observes the RenderWidgetHost's input events.
   content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
   // `rfh` should not be detached, so it should have a `RenderWidgetHost`.
-  CHECK(rwh, base::NotFatalUntil::M136);
-  if (rwh) {
-    input_observation_.Observe(rwh);
-  }
+  CHECK(rwh);
+  input_observation_.Observe(rwh);
 }
 
 FrameInputStateDecorator::InputObserver::~InputObserver() = default;

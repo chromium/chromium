@@ -7,7 +7,6 @@
 #include <cstring>
 
 #include "base/compiler_specific.h"
-#include "base/not_fatal_until.h"
 #include "components/performance_manager/execution_context_priority/closing_page_voter.h"
 #include "components/performance_manager/public/performance_manager.h"
 
@@ -44,7 +43,7 @@ void SetPageIsClosing(content::WebContents* contents, bool is_closing) {
 
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
-  CHECK(page_node, base::NotFatalUntil::M145);
+  CHECK(page_node);
   if (page_node) {
     voter->SetPageIsClosing(page_node.get(), is_closing);
   }
