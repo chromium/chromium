@@ -501,11 +501,39 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithWarmAndCold) {
 TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateVisible) {
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
   // Test initial state.
-  EXPECT_EQ(SigninPromoViewState::kNotYetDisplayed,
+  EXPECT_EQ(SigninPromoViewState::kNotOrPartiallyDisplayed,
             mediator_.signinPromoViewState);
   [mediator_ signinPromoDidBecomeVisible];
   // Test state once the sign-in promo view is visible.
-  EXPECT_EQ(SigninPromoViewState::kHadNoInteraction,
+  EXPECT_EQ(SigninPromoViewState::kDisplayedWithNoInteraction,
+            mediator_.signinPromoViewState);
+}
+
+// Test signing in from the top-of-feed promo before
+// `-[SigninPromoViewMediator signinPromoDidBecomeVisible]` is called.
+TEST_F(SigninPromoViewMediatorTest,
+       TopOfFeedSigninPromoViewStateSignedinBeforeMostlyVisible) {
+  CreateMediator(signin_metrics::AccessPoint::kNtpFeedTopPromo);
+  EXPECT_EQ(SigninPromoViewState::kNotOrPartiallyDisplayed,
+            mediator_.signinPromoViewState);
+  __block ShowSigninCommand* command;
+  ShowSigninCommand* command_arg = AssignValueToVariable(command);
+  // Start sign-in.
+  OCMExpect([signin_promo_mediator_delegate_ showSignin:mediator_
+                                                command:command_arg]);
+  OCMExpect([consumer_ promoProgressStateDidChange]);
+  [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
+  EXPECT_NE(nil, GetConfigurator());
+  EXPECT_TRUE(mediator_.spinnerVisible);
+  EXPECT_EQ(SigninPromoViewState::kUserInteracted,
+            mediator_.signinPromoViewState);
+  // Stop sign-in.
+  OCMExpect([consumer_ promoProgressStateDidChange]);
+
+  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
+  EXPECT_NE(nil, GetConfigurator());
+  EXPECT_FALSE(mediator_.spinnerVisible);
+  EXPECT_EQ(SigninPromoViewState::kUserInteracted,
             mediator_.signinPromoViewState);
 }
 

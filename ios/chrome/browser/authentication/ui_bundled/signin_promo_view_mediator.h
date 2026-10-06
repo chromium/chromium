@@ -41,17 +41,21 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 // Enums for the sign-in promo view state. Those states are sequential, with no
-// way to go backwards. All states can be skipped except `kNotYetDisplayed` and
-// `kDisconnected`.
+// way to go backwards. All states can be skipped except
+// `kNotOrPartiallyDisplayed` and `kDisconnected`.
 enum class SigninPromoViewState {
-  // Initial state, before the first time the view is displayed. If the state
-  // is still `kNotYetDisplayed` when -[SigninPromoViewMediator disconnect] is
-  // called, it means the view was never displayed, thus no metrics are
-  // recorded.
-  kNotYetDisplayed,
-  // None of the buttons has been used yet. The view has been displayed, but may
-  // have been removed again if the promo is not useful anymore.
-  kHadNoInteraction,
+  // Initial state, before the first time the view is mostly displayed enough to
+  // log the promo as printed. If the state is still `kNotOrPartiallyDisplayed`
+  // when
+  // `-[SigninPromoViewMediator disconnect]` is consider it worth logging this
+  // metric. Note that it can still be partially displayed and the buttons may
+  // be interacted with.
+  kNotOrPartiallyDisplayed,
+  // None of the buttons has been used yet. The view has been displayed enough
+  // to be considered logging the promo as printed. Note that the view may
+  // have been removed again if the promo is not useful anymore (e.g. the user
+  // signed-in or sign-in got disabled).
+  kDisplayedWithNoInteraction,
   // Sign-in buttons have been used at least once.
   kUserInteracted,
   // The user tapped on the button to remove the sign-in promo from the view
@@ -107,7 +111,7 @@ enum class SigninPromoAction {
 // the default one).
 @property(nonatomic, strong, readonly) id<SystemIdentity> displayedIdentity;
 
-// Sign-in promo view state. kNeverVisible by default.
+// Sign-in promo view state. kNotOrPartiallyDisplayed by default.
 @property(nonatomic, assign, readonly)
     SigninPromoViewState signinPromoViewState;
 

@@ -701,10 +701,6 @@ id<SystemIdentity> GetDisplayedIdentity(
 // The avatar of `displayedIdentity`.
 @property(nonatomic, strong) UIImage* displayedIdentityAvatar;
 
-// YES if the sign-in promo is either invalid or closed.
-@property(nonatomic, assign, readonly, getter=isInvalidOrClosed)
-    BOOL invalidOrClosed;
-
 // Redeclared to be assign.
 @property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
 
@@ -841,7 +837,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     _accountPreviewDataService = accountPreviewDataService;
     _syncService = syncService;
     _accessPoint = accessPoint;
-    _signinPromoViewState = SigninPromoViewState::kNotYetDisplayed;
+    _signinPromoViewState = SigninPromoViewState::kNotOrPartiallyDisplayed;
     _signinPromoAction = SigninPromoAction::kInstantSignin;
     _dataTypeToWaitForInitialSync = syncer::DataType::UNSPECIFIED;
     _delegate = delegate;
@@ -941,13 +937,15 @@ id<SystemIdentity> GetDisplayedIdentity(
   // Increments the "shown" counter used for histograms. Called when the signin
   // promo view is visible. If the sign-in promo is already visible, this method
   // does nothing.
-  CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M156)
+  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   if (_signinPromoViewVisibleOnScreen) {
     return;
   }
-  if (self.signinPromoViewState == SigninPromoViewState::kNotYetDisplayed) {
-    self.signinPromoViewState = SigninPromoViewState::kHadNoInteraction;
+  if (self.signinPromoViewState ==
+      SigninPromoViewState::kNotOrPartiallyDisplayed) {
+    self.signinPromoViewState =
+        SigninPromoViewState::kDisplayedWithNoInteraction;
   }
   signin_metrics::LogSignInOffered(
       self.accessPoint,
@@ -1008,10 +1006,10 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)signinPromoViewIsHidden {
-  if (![self isUsable]) {
+  if (!_signinPromoViewVisibleOnScreen) {
     return;
   }
-  CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M156)
+  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   _signinPromoViewVisibleOnScreen = NO;
 }
@@ -1058,30 +1056,18 @@ id<SystemIdentity> GetDisplayedIdentity(
          self.initialSyncInProgress;
 }
 
+#pragma mark - Private properties
+
 // Returns YES if the sign-in promo view is in a state where its buttons may be
 // used.
 - (BOOL)isUsable {
   switch (self.signinPromoViewState) {
-    case SigninPromoViewState::kClosed:
-    case SigninPromoViewState::kDisconnected:
-    case SigninPromoViewState::kNotYetDisplayed:
-      return NO;
-    case SigninPromoViewState::kHadNoInteraction:
+    case SigninPromoViewState::kNotOrPartiallyDisplayed:
+    case SigninPromoViewState::kDisplayedWithNoInteraction:
     case SigninPromoViewState::kUserInteracted:
       return YES;
-  }
-}
-
-#pragma mark - Private properties
-
-- (BOOL)isClosedOrDisconnected {
-  switch (self.signinPromoViewState) {
     case SigninPromoViewState::kClosed:
     case SigninPromoViewState::kDisconnected:
-      return YES;
-    case SigninPromoViewState::kNotYetDisplayed:
-    case SigninPromoViewState::kHadNoInteraction:
-    case SigninPromoViewState::kUserInteracted:
       return NO;
   }
 }
@@ -1151,6 +1137,8 @@ id<SystemIdentity> GetDisplayedIdentity(
 // Records in histogram, the number of time the sign-in promo is displayed
 // before the sign-in button is pressed, if the current access point supports
 // it.
+// Note that this number may be zero if the user tap on a promo’s button before
+// the promo is entirely displayed.
 - (void)sendImpressionsTillSigninButtonsHistogram {
   CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
@@ -1338,6 +1326,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {
   CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
+  _signinPromoViewVisibleOnScreen = NO;
   base::RecordAction(base::UserMetricsAction("Signin_Promo_Close"));
   self.signinPromoViewState = SigninPromoViewState::kClosed;
   const char* alreadySeenSigninViewPreferenceKey =
