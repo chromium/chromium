@@ -58,6 +58,8 @@ std::unique_ptr<KeyedService> BuildBocaManagerWithIdentity(
   identity_adaptor->identity_test_env()->MakePrimaryAccountAvailable(
       "teacher@gmail.com", signin::ConsentLevel::kSignin);
   identity_adaptor->identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  signin::IdentityManager* const identity_manager =
+      identity_adaptor->identity_test_env()->identity_manager();
   *adaptor_out = std::move(identity_adaptor);
 
   return std::make_unique<ash::BocaManager>(
@@ -65,7 +67,8 @@ std::unique_ptr<KeyedService> BuildBocaManagerWithIdentity(
       g_browser_process->GetApplicationLocale(),
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-          ->driver());
+          ->driver(),
+      identity_manager);
 }
 
 std::string GetRequestBodyString(

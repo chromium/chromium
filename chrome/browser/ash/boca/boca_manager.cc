@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/boca/spotlight/spotlight_oauth_token_fetcher_impl.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher_impl.h"
@@ -42,6 +41,7 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/live_caption/google_api_translation_dispatcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/soda/constants.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,7 +58,8 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     babelorca::SodaInstaller* soda_installer,
     const std::string& application_locale,
     const std::string& caption_language,
-    bool is_consumer) {
+    bool is_consumer,
+    signin::IdentityManager* identity_manager) {
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
   auto caption_bubble_context =
       std::make_unique<babelorca::CaptionBubbleContextBoca>(base::DoNothing());
@@ -77,9 +78,8 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
                                       ->GetUserByBrowserContext(profile)
                                       ->GetAccountId();
     return boca::BabelOrcaManager::CreateAsConsumer(
-        IdentityManagerFactory::GetForProfile(profile),
-        profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
-        account_id.GetGaiaId(),
+        identity_manager, profile->GetURLLoaderFactory(),
+        std::move(caption_bubble_context), account_id.GetGaiaId(),
         boca::BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
         std::move(babel_orca_translator), on_caption_disabled_cb,
         profile->GetPrefs(), application_locale, caption_language);
@@ -101,11 +101,10 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
             profile, soda_installer, application_locale, caption_language);
   }
   auto babel_orca_manager = boca::BabelOrcaManager::CreateAsProducer(
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
-      std::move(speech_recognizer), std::move(babel_orca_translator),
-      on_caption_disabled_cb, profile->GetPrefs(), application_locale,
-      caption_language);
+      identity_manager, profile->GetURLLoaderFactory(),
+      std::move(caption_bubble_context), std::move(speech_recognizer),
+      std::move(babel_orca_translator), on_caption_disabled_cb,
+      profile->GetPrefs(), application_locale, caption_language);
   // Safe to use base::Unretained since the callback is removed in
   // `BocaManager::Shutdown()` before `babel_orca_manager_` destruction.
   auto session_caption_initializer =
@@ -130,7 +129,8 @@ BocaManager::BocaManager(
     std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
     std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
     std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager,
-    Profile* profile)
+    Profile* profile,
+    signin::IdentityManager* identity_manager)
     : session_client_impl_(std::move(session_client_impl)),
       boca_session_manager_(std::move(boca_session_manager)),
       on_task_session_manager_(std::move(on_task_session_manager)),
@@ -138,7 +138,8 @@ BocaManager::BocaManager(
       babel_orca_manager_(std::move(babel_orca_manager)),
       boca_metrics_manager_(std::move(boca_metrics_manager)),
       spotlight_session_manager_(std::move(spotlight_session_manager)),
-      profile_(profile) {
+      profile_(profile),
+      identity_manager_(CHECK_DEREF(identity_manager)) {
   AddObservers(nullptr);
 }
 
@@ -146,11 +147,13 @@ BocaManager::BocaManager(Profile* profile,
                          PrefService* global_prefs,
                          const std::string& application_locale,
                          gcm::GCMDriver* gcm_driver,
-                         instance_id::InstanceIDDriver* instance_id_driver)
+                         instance_id::InstanceIDDriver* instance_id_driver,
+                         signin::IdentityManager* identity_manager)
     : session_client_impl_(std::make_unique<boca::SessionClientImpl>(
           profile->GetURLLoaderFactory(),
-          IdentityManagerFactory::GetForProfile(profile))),
-      profile_(profile) {
+          identity_manager)),
+      profile_(profile),
+      identity_manager_(CHECK_DEREF(identity_manager)) {
   auto* user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   bool is_consumer = ash::boca_util::IsConsumer(user);
@@ -164,14 +167,13 @@ BocaManager::BocaManager(Profile* profile,
   }
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetProfilePrefs(), user->GetAccountId(),
-      IdentityManagerFactory::GetForProfile(profile),
+      identity_manager,
       /*is_producer=*/!is_consumer, std::move(remoting_client_manager));
   if (!is_consumer && (ash::features::IsBocaScreenSharingStudentEnabled() ||
                        ash::features::IsBocaScreenSharingTeacherEnabled())) {
     boca_session_manager_->SetScreenPresenterFactory(
         std::make_unique<boca::ScreenPresenterFactoryImpl>(
-            profile->GetURLLoaderFactory(),
-            IdentityManagerFactory::GetForProfile(profile)));
+            profile->GetURLLoaderFactory(), identity_manager));
   }
   if (ash::features::IsBabelOrcaAvailable()) {
     std::string_view caption_language = speech::GetDefaultLiveCaptionLanguage(
@@ -184,7 +186,7 @@ BocaManager::BocaManager(Profile* profile,
     babel_orca_manager_ = CreateBabelOrcaManager(
         boca_session_manager_.get(), profile, global_prefs,
         soda_installer_.get(), application_locale,
-        std::string(caption_language), is_consumer);
+        std::string(caption_language), is_consumer, identity_manager);
   }
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
@@ -225,8 +227,7 @@ BocaManager::GetGeminiStatusFetcher() {
   user_manager::User* const user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
   return std::make_unique<boca::GeminiStatusFetcher>(
-      user->GetAccountId().GetGaiaId().ToString(),
-      IdentityManagerFactory::GetForProfile(profile_),
+      user->GetAccountId().GetGaiaId().ToString(), &identity_manager_.get(),
       profile_->GetURLLoaderFactory(), profile_->GetPrefs());
 }
 

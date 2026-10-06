@@ -173,7 +173,7 @@ class BocaManagerProducerTest : public BocaManagerTest {
             boca_session_manager_ptr,
             /*spotlight_notification_handler=*/nullptr,
             /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
-        /*profile=*/nullptr);
+        /*profile=*/nullptr, identity_test_env_.identity_manager());
   }
 
   std::unique_ptr<BocaManager> boca_manager_;
@@ -236,7 +236,7 @@ class BocaManagerConsumerTest : public BocaManagerTest {
             boca_session_manager_ptr,
             /*spotlight_notification_handler=*/nullptr,
             /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
-        /*profile=*/nullptr);
+        /*profile=*/nullptr, identity_test_env_.identity_manager());
   }
 
   std::unique_ptr<BocaManager> boca_manager_;

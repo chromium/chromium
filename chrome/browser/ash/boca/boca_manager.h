@@ -29,6 +29,10 @@ namespace instance_id {
 class InstanceIDDriver;
 }  // namespace instance_id
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace user_manager {
 class User;
 }  // namespace user_manager
@@ -51,16 +55,18 @@ class BocaManager : public KeyedService {
       std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
       std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
       std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager,
-      Profile* profile);
+      Profile* profile,
+      signin::IdentityManager* identity_manager);
 
-  // `gcm_driver` and `instance_id_driver` are supplied by
+  // `gcm_driver`, `instance_id_driver` and `identity_manager` are supplied by
   // BocaManagerFactory, which owns the dependency on the //chrome
   // Profile-keyed factories that vend them.
   BocaManager(Profile* profile,
               PrefService* global_prefs,
               const std::string& application_locale,
               gcm::GCMDriver* gcm_driver,
-              instance_id::InstanceIDDriver* instance_id_driver);
+              instance_id::InstanceIDDriver* instance_id_driver,
+              signin::IdentityManager* identity_manager);
   ~BocaManager() override;
 
   // KeyedService:
@@ -99,6 +105,8 @@ class BocaManager : public KeyedService {
   std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager_;
   std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager_;
   const raw_ptr<Profile> profile_;
+  // Vended by IdentityManagerFactory; see the constructor comment above.
+  const raw_ref<signin::IdentityManager> identity_manager_;
 };
 }  // namespace ash
 

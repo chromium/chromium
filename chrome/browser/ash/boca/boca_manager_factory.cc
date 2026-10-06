@@ -59,7 +59,8 @@ BocaManagerFactory::BuildServiceInstanceForBrowserContext(
       g_browser_process->GetApplicationLocale(),
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-          ->driver());
+          ->driver(),
+      IdentityManagerFactory::GetForProfile(profile));
   return service;
 }
 
