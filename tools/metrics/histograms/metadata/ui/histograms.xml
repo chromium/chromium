@@ -1582,6 +1582,10 @@ features through Chrome Labs. -->
     <variant name=".SafetyHubNotificationManageExtensions"/>
     <variant name=".SafetyHubNotificationOpenSafetyHub"/>
     <variant name=".SafetyHubNotificationPasswordCheck"/>
+    <variant name=".SavedTabGroupDelete"/>
+    <variant name=".SavedTabGroupOpenInBrowser"/>
+    <variant name=".SavedTabGroupOpenInNewWindow"/>
+    <variant name=".SavedTabGroupPin"/>
     <variant name=".SavePage"/>
     <variant name=".SeeDeviceTabs"/>
     <variant name=".SendToDevices"/>

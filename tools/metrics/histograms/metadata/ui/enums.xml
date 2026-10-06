@@ -1290,6 +1290,10 @@ chromium-metrics-reviews@google.com.
   <int value="103" label="New isolated window"/>
   <int value="104" label="TTC app menu"/>
   <int value="105" label="Create new tab group"/>
+  <int value="106" label="Saved tab group: delete"/>
+  <int value="107" label="Saved tab group: open in browser"/>
+  <int value="108" label="Saved tab group: open in new window"/>
+  <int value="109" label="Saved tab group: pin"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
