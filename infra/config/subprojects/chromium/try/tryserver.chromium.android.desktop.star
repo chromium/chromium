@@ -136,6 +136,7 @@ try_.orchestrator_builder(
         equivalent_builder_percentage = 100,
         equivalent_builder_whitelist = "google/chrome-al-eng@google.com",
         on_default_cq = True,
+        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         # crbug.com/40617829
