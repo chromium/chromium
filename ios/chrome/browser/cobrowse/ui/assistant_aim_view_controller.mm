@@ -27,6 +27,7 @@ const CGFloat kBarricadeTapeHeight = 6.0;
 
 constexpr CGFloat kInputPlateMargin = 16.0f;
 constexpr CGFloat kTitleVerticalMargin = 12.0;
+constexpr CGFloat kHeaderTopPadding = 16.0f;
 constexpr CGFloat kHeaderCenteringVerticalMargin = 16.0;
 constexpr CGFloat kThresholdForHistoryDismissal = 0.001;
 constexpr CGFloat kThresholdForClosedState = 0.12;
@@ -157,8 +158,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   // This ensures the header end up centered in the collapsed state.
   _headerTopMargin.constant =
       kHeaderCenteringVerticalMargin +
-      effectPercentage *
-          (kTitleVerticalMargin - kHeaderCenteringVerticalMargin);
+      effectPercentage * (kHeaderTopPadding - kHeaderCenteringVerticalMargin);
 
   _inputViewController.view.alpha = effectPercentage;
   _webStateView.alpha = effectPercentage;
@@ -733,7 +733,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
   _headerTopMargin =
       [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                            constant:kTitleVerticalMargin];
+                                            constant:kHeaderTopPadding];
   [NSLayoutConstraint activateConstraints:@[
     _headerTopMargin,
     [_headerView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
