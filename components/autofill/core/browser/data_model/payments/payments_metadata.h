@@ -34,7 +34,7 @@ struct PaymentsMetadata {
   std::string id;
 
   // The number of times the model has been used.
-  size_t use_count;
+  size_t use_count = 0;
 
   // The last time the model was used.
   base::Time use_date;
