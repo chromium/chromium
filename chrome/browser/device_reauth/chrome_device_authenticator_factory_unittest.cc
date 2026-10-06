@@ -72,10 +72,10 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
   device_reauth::DeviceAuthParams device_authenticator_params_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<TestingProfile> profile_ptr1_;
-  raw_ptr<TestingProfile> profile_ptr2_;
-  raw_ptr<TestingProfile> guest_profile_ptr_;
-  gfx::NativeWindow window_;
+  raw_ptr<TestingProfile> profile_ptr1_ = nullptr;
+  raw_ptr<TestingProfile> profile_ptr2_ = nullptr;
+  raw_ptr<TestingProfile> guest_profile_ptr_ = nullptr;
+  gfx::NativeWindow window_ = gfx::NativeWindow();
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
@@ -83,17 +83,11 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 #endif
 };
 
-// TODO(crbug.com/570109023): Failing on MSAN builders.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_NeedAuthentication DISABLED_NeedAuthentication
-#else
-#define MAYBE_NeedAuthentication NeedAuthentication
-#endif
 // Checks if user can perform an operation without reauthenticating during
 // `kAuthValidityPeriod` since previous authentication. And if needs to
 // authenticate after that time.
 // Also checks that other profiles need to authenticate.
-TEST_F(ChromeDeviceAuthenticatorFactoryTest, MAYBE_NeedAuthentication) {
+TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
   static_cast<DeviceAuthenticatorCommon*>(
       ChromeDeviceAuthenticatorFactory::GetForProfile(
           profile1(), native_window(), GetDeviceAuthenticatorParams())
@@ -124,14 +118,8 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, MAYBE_NeedAuthentication) {
           ->NeedsToAuthenticate());
 }
 
-// TODO(crbug.com/570109023): Failing on MSAN builders.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_Guest DISABLED_Guest
-#else
-#define MAYBE_Guest Guest
-#endif
 // Checks whether factory is instantiated correctly on a Guest profile.
-TEST_F(ChromeDeviceAuthenticatorFactoryTest, MAYBE_Guest) {
+TEST_F(ChromeDeviceAuthenticatorFactoryTest, Guest) {
   ChromeDeviceAuthenticatorFactory::GetForProfile(
       guest_profile(), native_window(), GetDeviceAuthenticatorParams());
 }
