@@ -10,14 +10,13 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -34,6 +33,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -52,15 +52,6 @@ constexpr std::string_view kCrossDeviceHistoryPageCampaign =
     "XDeviceHistoryPage";
 constexpr std::string_view kCrossDeviceSendTabToSelfCampaign =
     "XDeviceSendTabToSelf";
-
-// Sub-dictionary serialization keys to be used per data type, defined in
-// `GetEntryPointPrefKey()` below.
-constexpr char kShownCountKey[] = "shown_count";
-constexpr char kLastDismissedTimeKey[] = "last_dismissed_time";
-constexpr char kShownAfterDismissalKey[] = "shown_after_dismissal";
-
-// Dictionary keys for data type specific promo data.
-constexpr char kHistoryDictionaryKey[] = "history";
 
 // Limits for the dismissible promo.
 constexpr int kMaxShownCount = 5;
@@ -94,20 +85,9 @@ void RecordShouldShowResult(CrossDeviceSigninPromoEntryPoint entry_point,
       result);
 }
 
-// Key used for the data type specific sub-dictionary that holds the promo data.
-std::string_view GetEntryPointPrefKey(
-    CrossDeviceSigninPromoEntryPoint entry_point) {
-  switch (entry_point) {
-    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
-      return kHistoryDictionaryKey;
-    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
-    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
-      NOTREACHED() << "Entry point does not have any promo data";
-  }
-}
-
-// Gets the main promo pref dictionary for the primary account.
-base::DictValue& GetCrossDevicePromoPrefsForPrimaryAccount(Profile* profile) {
+// Returns the primary account's GaiaId. Expects the profile to be signed in
+// with a valid non-empty GaiaId (CHECK-enforced).
+GaiaId GetPrimaryAccountGaiaId(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CHECK(identity_manager);
@@ -115,47 +95,55 @@ base::DictValue& GetCrossDevicePromoPrefsForPrimaryAccount(Profile* profile) {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
   CHECK(!gaia_id.empty());
-
-  SigninPrefs signin_prefs(*profile->GetPrefs());
-  return signin_prefs.GetOrCreateCrossDevicePromoPrefs(gaia_id);
+  return gaia_id;
 }
 
 // Returns empty/defaulted data if the sub-dictionary is not set yet.
 CrossDeviceSigninPromoData ReadDismissiblePromoData(
     Profile* profile,
     CrossDeviceSigninPromoEntryPoint entry_point) {
-  CrossDeviceSigninPromoData data;
-  base::DictValue& promo_prefs =
-      GetCrossDevicePromoPrefsForPrimaryAccount(profile);
-  const base::DictValue* entry_dict =
-      promo_prefs.FindDict(GetEntryPointPrefKey(entry_point));
-  if (!entry_dict) {
-    return data;
+  GaiaId gaia_id = GetPrimaryAccountGaiaId(profile);
+  SigninPrefs signin_prefs(*profile->GetPrefs());
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      return {
+          .shown_count =
+              signin_prefs.GetCrossDeviceHistoryPromoShownCount(gaia_id),
+          .last_dismissed_time =
+              signin_prefs.GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
+                  .value_or(base::Time()),
+          .shown_after_dismissal =
+              signin_prefs.GetCrossDeviceHistoryPromoShownAfterDismissal(
+                  gaia_id),
+      };
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      NOTREACHED() << "Entry point does not have any promo data";
   }
-  data.shown_count = entry_dict->FindInt(kShownCountKey).value_or(0);
-  data.shown_after_dismissal =
-      entry_dict->FindBool(kShownAfterDismissalKey).value_or(false);
-  const base::Value* time_val = entry_dict->Find(kLastDismissedTimeKey);
-  if (time_val) {
-    data.last_dismissed_time =
-        base::ValueToTime(time_val).value_or(base::Time());
-  }
-  return data;
 }
 
 void WriteDismissiblePromoData(Profile* profile,
                                CrossDeviceSigninPromoEntryPoint entry_point,
                                const CrossDeviceSigninPromoData& data) {
-  base::DictValue& promo_prefs =
-      GetCrossDevicePromoPrefsForPrimaryAccount(profile);
-  base::DictValue entry_dict;
-  entry_dict.Set(kShownCountKey, data.shown_count);
-  entry_dict.Set(kShownAfterDismissalKey, data.shown_after_dismissal);
-  if (!data.last_dismissed_time.is_null()) {
-    entry_dict.Set(kLastDismissedTimeKey,
-                   base::TimeToValue(data.last_dismissed_time));
+  GaiaId gaia_id = GetPrimaryAccountGaiaId(profile);
+  SigninPrefs signin_prefs(*profile->GetPrefs());
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      signin_prefs.SetCrossDeviceHistoryPromoShownCount(gaia_id,
+                                                        data.shown_count);
+      signin_prefs.SetCrossDeviceHistoryPromoShownAfterDismissal(
+          gaia_id, data.shown_after_dismissal);
+      if (!data.last_dismissed_time.is_null()) {
+        signin_prefs.SetCrossDeviceHistoryPromoLastDismissedTime(
+            gaia_id, data.last_dismissed_time);
+      } else {
+        signin_prefs.ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+      }
+      return;
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      NOTREACHED() << "Entry point does not have any promo data";
   }
-  promo_prefs.Set(GetEntryPointPrefKey(entry_point), std::move(entry_dict));
 }
 
 // Returns std::nullopt for non-dismissible promo entry points.
@@ -323,7 +311,7 @@ void OnCrossDeviceSigninPromoShown(CrossDeviceSigninPromoEntryPoint entry_point,
                     "non-dismissible entry point";
   }
 
-  data->shown_count++;
+  data->shown_count = base::ClampAdd(data->shown_count, 1);
   if (!data->last_dismissed_time.is_null()) {
     data->shown_after_dismissal = true;
   }

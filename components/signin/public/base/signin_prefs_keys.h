@@ -11,7 +11,9 @@
 namespace signin::internal {
 
 // Key names of the per-account preferences stored by `SigninPrefs`, i.e. the
-// keys of the dictionary that `SigninPrefs` keeps per `GaiaId`.
+// keys of the dictionary that `SigninPrefs` keeps per `GaiaId` (or within
+// specific sub-dictionaries under it, such as
+// `AvatarButtonPromoCountDictionary` or `CrossDevicePromoPrefs` -> `history`).
 //
 // Shared internally between `SigninPrefs`, `SigninPrefsAccessor`, and
 // `SigninPrefsRegistry`. External consumers must use the typed `SigninPrefs`
@@ -148,11 +150,64 @@ inline constexpr std::string_view kAccountMetricsIdIsCapped =
 // to store cross-device signin promo details.
 inline constexpr std::string_view kCrossDevicePromoPrefs =
     "CrossDevicePromoPrefs";
+// Dictionary keys for data type specific promo data.
+inline constexpr std::string_view kCrossDevicePromoHistoryDictKey = "history";
+// Sub-dictionary serialization keys to be used per data type.
+inline constexpr std::string_view kCrossDevicePromoShownCountKey =
+    "shown_count";
+inline constexpr std::string_view kCrossDevicePromoLastDismissedTimeKey =
+    "last_dismissed_time";
+inline constexpr std::string_view kCrossDevicePromoShownAfterDismissalKey =
+    "shown_after_dismissal";
+
+// Common parent path for cross-device history promo prefs within an account
+// dictionary.
+inline constexpr auto kCrossDeviceHistoryPromoParents =
+    std::to_array<std::string_view>(
+        {kCrossDevicePromoPrefs, kCrossDevicePromoHistoryDictKey});
 
 // Dictionary pref that contains all the values related to the avatar button
 // promo counts.
 inline constexpr std::string_view kAvatarButtonPromoCountDictionary =
     "AvatarButtonPromoCountDictionary";
+
+// Common parent path for avatar button promo prefs within an account
+// dictionary.
+inline constexpr auto kAvatarButtonPromoParents =
+    std::to_array<std::string_view>({kAvatarButtonPromoCountDictionary});
+
+// Shown and used counts for each avatar button promo variant, stored under
+// `kAvatarButtonPromoCountDictionary`.
+inline constexpr std::string_view kAvatarButtonHistorySyncPromoShownCount =
+    "AvatarButtonHistorySyncPromoShownCount";
+inline constexpr std::string_view kAvatarButtonHistorySyncPromoUsedCount =
+    "AvatarButtonHistorySyncPromoUsedCount";
+inline constexpr std::string_view kAvatarButtonBatchUploadPromoShownCount =
+    "AvatarButtonBatchUploadPromoShownCount";
+inline constexpr std::string_view kAvatarButtonBatchUploadPromoUsedCount =
+    "AvatarButtonBatchUploadPromoUsedCount";
+inline constexpr std::string_view
+    kAvatarButtonBatchUploadBookmarkPromoShownCount =
+        "AvatarButtonBatchUploadBookmarkPromoShownCount";
+inline constexpr std::string_view
+    kAvatarButtonBatchUploadBookmarkPromoUsedCount =
+        "AvatarButtonBatchUploadBookmarkPromoUsedCount";
+inline constexpr std::string_view
+    kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount =
+        "AvatarButtonBatchUploadWindows10DepreciationPromoShownCount";
+inline constexpr std::string_view
+    kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount =
+        "AvatarButtonBatchUploadWindows10DepreciationPromoUsedCount";
+// Shown count, used count, and last-shown timestamp for the avatar button
+// sign-in promo, stored per `GaiaId` under `kAvatarButtonPromoCountDictionary`
+// when an account is present (or in a separate profile-scoped dictionary when
+// signed out without an account).
+inline constexpr std::string_view kAvatarButtonSigninPromoShownCount =
+    "AvatarButtonSigninPromoShownCount";
+inline constexpr std::string_view kAvatarButtonSigninPromoUsedCount =
+    "AvatarButtonSigninPromoUsedCount";
+inline constexpr std::string_view kAvatarButtonSigninPromoLastShownTime =
+    "AvatarButtonSigninPromoLastShownTime";
 
 // -----------------------------------------------------------------------------
 // DEPRECATED prefs: Check `SigninPrefs::MigrateObsoleteSigninPrefs()`.

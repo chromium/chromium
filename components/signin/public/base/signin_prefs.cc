@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/json/values_util.h"
+#include "base/numerics/clamped_math.h"
 #include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -449,126 +450,396 @@ std::optional<int> SigninPrefs::GetBatchUploadLastUploadRemainingLocalDataCount(
       signin::internal::kBatchUploadLastUploadRemainingLocalDataCount);
 }
 
-base::DictValue& SigninPrefs::GetOrCreateAvatarButtonPromoCountDictionary(
+void SigninPrefs::IncrementAvatarButtonHistorySyncPromoShownCount(
     const GaiaId& gaia_id) {
-  CHECK(!gaia_id.empty());
-  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
-  // `EnsureDict` gets or create the dictionary.
-  return *scoped_update->EnsureDict(gaia_id.ToString())
-              ->EnsureDict(signin::internal::kAvatarButtonPromoCountDictionary);
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
 }
 
-base::DictValue& SigninPrefs::GetOrCreateCrossDevicePromoPrefs(
-    const GaiaId& gaia_id) {
-  CHECK(!gaia_id.empty());
-  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
-  // `EnsureDict` gets or create the dictionary.
-  return *scoped_update->EnsureDict(gaia_id.ToString())
-              ->EnsureDict(signin::internal::kCrossDevicePromoPrefs);
+int SigninPrefs::GetAvatarButtonHistorySyncPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
 }
 
-int SigninPrefs::IncrementIntPrefForAccount(const GaiaId& gaia_id,
-                                            std::string_view pref) {
+void SigninPrefs::IncrementAvatarButtonHistorySyncPromoUsedCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonHistorySyncPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonHistorySyncPromoUsedCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonHistorySyncPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::IncrementAvatarButtonBatchUploadPromoShownCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonBatchUploadPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonBatchUploadPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonBatchUploadPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::IncrementAvatarButtonBatchUploadPromoUsedCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonBatchUploadPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonBatchUploadPromoUsedCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonBatchUploadPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::IncrementAvatarButtonBatchUploadBookmarkPromoShownCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id,
+      signin::internal::kAvatarButtonBatchUploadBookmarkPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonBatchUploadBookmarkPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id,
+      signin::internal::kAvatarButtonBatchUploadBookmarkPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::IncrementAvatarButtonBatchUploadBookmarkPromoUsedCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonBatchUploadBookmarkPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonBatchUploadBookmarkPromoUsedCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonBatchUploadBookmarkPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::
+    IncrementAvatarButtonBatchUploadWindows10DepreciationPromoShownCount(
+        const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id,
+      signin::internal::
+          kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonBatchUploadWindows10DepreciationPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id,
+      signin::internal::
+          kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::
+    IncrementAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount(
+        const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id,
+      signin::internal::
+          kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id,
+      signin::internal::
+          kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::IncrementAvatarButtonSigninPromoShownCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonSigninPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonSigninPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonSigninPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::IncrementAvatarButtonSigninPromoUsedCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonSigninPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+int SigninPrefs::GetAvatarButtonSigninPromoUsedCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kAvatarButtonSigninPromoUsedCount,
+      signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::SetAvatarButtonSigninPromoLastShownTime(
+    const GaiaId& gaia_id,
+    base::Time last_shown_time) {
+  SetTimePref(last_shown_time, gaia_id,
+              signin::internal::kAvatarButtonSigninPromoLastShownTime,
+              signin::internal::kAvatarButtonPromoParents);
+}
+
+std::optional<base::Time> SigninPrefs::GetAvatarButtonSigninPromoLastShownTime(
+    const GaiaId& gaia_id) const {
+  return GetTimePref(gaia_id,
+                     signin::internal::kAvatarButtonSigninPromoLastShownTime,
+                     signin::internal::kAvatarButtonPromoParents);
+}
+
+void SigninPrefs::SetCrossDeviceHistoryPromoShownCount(const GaiaId& gaia_id,
+                                                       int count) {
+  SetIntPrefForAccount(gaia_id,
+                       signin::internal::kCrossDevicePromoShownCountKey, count,
+                       signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+int SigninPrefs::GetCrossDeviceHistoryPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+      signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+void SigninPrefs::SetCrossDeviceHistoryPromoShownAfterDismissal(
+    const GaiaId& gaia_id,
+    bool shown_after_dismissal) {
+  SetBooleanPrefForAccount(
+      gaia_id, signin::internal::kCrossDevicePromoShownAfterDismissalKey,
+      shown_after_dismissal, signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+bool SigninPrefs::GetCrossDeviceHistoryPromoShownAfterDismissal(
+    const GaiaId& gaia_id) const {
+  return GetBooleanPrefForAccount(
+      gaia_id, signin::internal::kCrossDevicePromoShownAfterDismissalKey,
+      signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+void SigninPrefs::SetCrossDeviceHistoryPromoLastDismissedTime(
+    const GaiaId& gaia_id,
+    base::Time last_dismissed_time) {
+  SetTimePref(last_dismissed_time, gaia_id,
+              signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+              signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+void SigninPrefs::ClearCrossDeviceHistoryPromoLastDismissedTime(
+    const GaiaId& gaia_id) {
+  ClearPref(gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+            signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+std::optional<base::Time>
+SigninPrefs::GetCrossDeviceHistoryPromoLastDismissedTime(
+    const GaiaId& gaia_id) const {
+  return GetTimePref(gaia_id,
+                     signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+                     signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+int SigninPrefs::IncrementIntPrefForAccount(
+    const GaiaId& gaia_id,
+    std::string_view pref,
+    base::span<const std::string_view> parents) {
   CHECK(!gaia_id.empty());
   ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
 
   // `EnsureDict` gets or create the dictionary.
-  base::DictValue* account_dict = scoped_update->EnsureDict(gaia_id.ToString());
+  base::DictValue* dict = scoped_update->EnsureDict(gaia_id.ToString());
+  for (std::string_view parent : parents) {
+    dict = dict->EnsureDict(parent);
+  }
   // Get the current value of the pref.
-  int new_value = account_dict->FindInt(pref).value_or(0) + 1;
+  int new_value = base::ClampAdd(dict->FindInt(pref).value_or(0), 1);
   // `Set` will add an entry if it doesn't already exists, or if it does, it
   // will overwrite it.
-  account_dict->Set(pref, new_value);
+  dict->Set(pref, new_value);
 
   return new_value;
 }
 
-int SigninPrefs::GetIntPrefForAccount(const GaiaId& gaia_id,
-                                      std::string_view pref) const {
+int SigninPrefs::GetIntPrefForAccount(
+    const GaiaId& gaia_id,
+    std::string_view pref,
+    base::span<const std::string_view> parents) const {
   CHECK(!gaia_id.empty());
-  const base::DictValue* account_dict =
+  const base::DictValue* dict =
       pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id.ToString());
-  // If the account dict does not exist yet; return the default value.
-  if (!account_dict) {
+  for (std::string_view parent : parents) {
+    if (!dict) {
+      return 0;
+    }
+    dict = dict->FindDict(parent);
+  }
+  // If the dict does not exist yet; return the default value.
+  if (!dict) {
     return 0;
   }
 
   // Return the pref value if it exists, otherwise return the default value.
-  return account_dict->FindInt(pref).value_or(0);
+  return dict->FindInt(pref).value_or(0);
 }
 
-void SigninPrefs::SetIntPrefForAccount(const GaiaId& gaia_id,
-                                       std::string_view pref,
-                                       int value) {
+void SigninPrefs::SetIntPrefForAccount(
+    const GaiaId& gaia_id,
+    std::string_view pref,
+    int value,
+    base::span<const std::string_view> parents) {
   CHECK(!gaia_id.empty());
   ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
-  base::DictValue* account_dict = scoped_update->EnsureDict(gaia_id.ToString());
-  account_dict->Set(pref, value);
+  base::DictValue* dict = scoped_update->EnsureDict(gaia_id.ToString());
+  for (std::string_view parent : parents) {
+    dict = dict->EnsureDict(parent);
+  }
+  dict->Set(pref, value);
 }
 
-void SigninPrefs::SetBooleanPrefForAccount(const GaiaId& gaia_id,
-                                           std::string_view pref,
-                                           bool enabled) {
+void SigninPrefs::SetBooleanPrefForAccount(
+    const GaiaId& gaia_id,
+    std::string_view pref,
+    bool enabled,
+    base::span<const std::string_view> parents) {
   CHECK(!gaia_id.empty());
   ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
   // `EnsureDict` gets or create the dictionary.
-  base::DictValue* account_dict = scoped_update->EnsureDict(gaia_id.ToString());
+  base::DictValue* dict = scoped_update->EnsureDict(gaia_id.ToString());
+  for (std::string_view parent : parents) {
+    dict = dict->EnsureDict(parent);
+  }
   // `Set` will add an entry if it doesn't already exists, or if it does, it
   // will overwrite it.
-  account_dict->Set(pref, enabled);
+  dict->Set(pref, enabled);
 }
 
-bool SigninPrefs::GetBooleanPrefForAccount(const GaiaId& gaia_id,
-                                           std::string_view pref) const {
+bool SigninPrefs::GetBooleanPrefForAccount(
+    const GaiaId& gaia_id,
+    std::string_view pref,
+    base::span<const std::string_view> parents) const {
   CHECK(!gaia_id.empty());
-  const base::DictValue* account_dict =
+  const base::DictValue* dict =
       pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id.ToString());
-  // If the account dict does not exist yet; return the default value.
-  if (!account_dict) {
+  for (std::string_view parent : parents) {
+    if (!dict) {
+      return false;
+    }
+    dict = dict->FindDict(parent);
+  }
+  // If the dict does not exist yet; return the default value.
+  if (!dict) {
     return false;
   }
 
   // Return the pref value if it exists, otherwise return the default value.
-  return account_dict->FindBool(pref).value_or(false);
+  return dict->FindBool(pref).value_or(false);
 }
 
 void SigninPrefs::SetTimePref(base::Time time,
                               const GaiaId& gaia_id,
-                              std::string_view pref) {
+                              std::string_view pref,
+                              base::span<const std::string_view> parents) {
   CHECK(!gaia_id.empty());
   ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
   // `EnsureDict` gets or create the dictionary.
-  base::DictValue* account_dict = scoped_update->EnsureDict(gaia_id.ToString());
+  base::DictValue* dict = scoped_update->EnsureDict(gaia_id.ToString());
+  for (std::string_view parent : parents) {
+    dict = dict->EnsureDict(parent);
+  }
   // `Set` will add an entry if it doesn't already exists, or if it does, it
   // will overwrite it.
-  account_dict->Set(pref, base::TimeToValue(time));
+  dict->Set(pref, base::TimeToValue(time));
 }
 
 std::optional<base::Time> SigninPrefs::GetTimePref(
     const GaiaId& gaia_id,
-    std::string_view pref) const {
+    std::string_view pref,
+    base::span<const std::string_view> parents) const {
   CHECK(!gaia_id.empty());
-  const base::DictValue* account_dict =
+  const base::DictValue* dict =
       pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id.ToString());
-  // If the account dict does not exist yet; return no time.
-  if (!account_dict) {
+  for (std::string_view parent : parents) {
+    if (!dict) {
+      return std::nullopt;
+    }
+    dict = dict->FindDict(parent);
+  }
+  // If the dict does not exist yet; return no time.
+  if (!dict) {
     return std::nullopt;
   }
   // Return the pref value if it exists, otherwise return no time.
-  const base::Value* value = account_dict->Find(pref);
+  const base::Value* value = dict->Find(pref);
   return value ? base::ValueToTime(value) : std::nullopt;
 }
 
-void SigninPrefs::ClearPref(const GaiaId& gaia_id, std::string_view pref) {
+void SigninPrefs::ClearPref(const GaiaId& gaia_id,
+                            std::string_view pref,
+                            base::span<const std::string_view> parents) {
   CHECK(!gaia_id.empty());
-  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
-  // Do not create an account dictionary if it does not already exist.
-  base::DictValue* account_dict = scoped_update->FindDict(gaia_id.ToString());
-  if (!account_dict) {
+  // Check whether the target key exists before opening `ScopedDictPrefUpdate`
+  // so that clearing an absent key or account does not dirty the pref store or
+  // fire `PrefChangeRegistrar` notifications. Only a value controlled by the
+  // user pref store is considered, because that is the store
+  // `ScopedDictPrefUpdate` mutates; values coming from other stores cannot be
+  // removed through it.
+  // `PrefService::GetUserPrefValue()` is deliberately not used: it asserts
+  // when the persisted value is not a dict, which corrupted on-disk data can
+  // trigger. `GetDict()` type-checks every store and falls back to the default
+  // (empty) dict instead, so a corrupted value is treated as having nothing to
+  // clear.
+  if (!pref_service_->FindPreference(kSigninAccountPrefs)->IsUserControlled()) {
+    return;
+  }
+  const base::DictValue* const_dict =
+      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id.ToString());
+  for (std::string_view parent : parents) {
+    if (!const_dict) {
+      return;
+    }
+    const_dict = const_dict->FindDict(parent);
+  }
+  if (!const_dict || !const_dict->contains(pref)) {
     return;
   }
 
-  account_dict->Remove(pref);
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  base::DictValue* dict = scoped_update->FindDict(gaia_id.ToString());
+  for (std::string_view parent : parents) {
+    CHECK(dict);
+    dict = dict->FindDict(parent);
+  }
+  CHECK(dict);
+  dict->Remove(pref);
 }
 
 void SigninPrefs::SetDeprecatedPrefForTesting(const GaiaId& gaia_id) {

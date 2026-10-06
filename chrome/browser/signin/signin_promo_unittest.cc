@@ -8,7 +8,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -34,6 +37,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -1613,6 +1617,91 @@ TEST_P(AvatarButtonPromoManagerPromoTypeParamTest,
       .SetBatchUploadLastUploadRemainingLocalDataCount(account.GetGaiaId(), 1);
 
   EXPECT_FALSE(manager.ShouldShowPromo(GetParam()));
+}
+
+TEST_P(AvatarButtonPromoManagerPromoTypeParamTest,
+       EmptyGaiaFallbackRecordPromoAcceptedAtShownCount) {
+  // Seed distinct non-zero counts per promo type in the profile-scoped
+  // dictionary so that each type's key mapping is verified on the empty-GaiaId
+  // fallback path.
+  {
+    ScopedDictPrefUpdate update(&pref_service(),
+                                "signin.avatar_button_promo_dict");
+    update->Set("AvatarButtonHistorySyncPromoShownCount", 1);
+    update->Set("AvatarButtonBatchUploadPromoShownCount", 2);
+    update->Set("AvatarButtonBatchUploadBookmarkPromoShownCount", 3);
+    update->Set("AvatarButtonBatchUploadWindows10DepreciationPromoShownCount",
+                4);
+    update->Set("AvatarButtonSigninPromoShownCount", 5);
+  }
+
+  base::HistogramTester histogram_tester;
+  RecordAvatarButtonPromoAcceptedAtPromoShownCount(GetParam(), GaiaId(),
+                                                   pref_service());
+
+  std::string_view promo_type_suffix;
+  int expected_count = 0;
+  switch (GetParam()) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+      promo_type_suffix = "HistorySync";
+      expected_count = 1;
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+      promo_type_suffix = "BatchUpload";
+      expected_count = 2;
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+      promo_type_suffix = "BatchUploadBookmarks";
+      expected_count = 3;
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+      promo_type_suffix = "BatchUploadWindows10Depreciation";
+      expected_count = 4;
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      promo_type_suffix = "Signin";
+      expected_count = 5;
+      break;
+  }
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"Signin.AvatarPillPromo.AcceptedAtShownCount.", promo_type_suffix}),
+      expected_count, 1);
+}
+
+TEST_F(AvatarButtonPromoManagerTest,
+       SigninPromoEmptyGaiaRecordPromoShownAndUsed) {
+  AvatarButtonPromoManager manager(
+      identity_manager(), /*account_preview_data_service=*/nullptr,
+      batch_upload_service(), &pref_service(), /*max_shown_count=*/10,
+      /*max_used_count=*/5);
+
+  ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignedOut);
+
+  const base::Time before_shown = base::Time::Now();
+  manager.RecordPromoShown(
+      ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo);
+  GaiaId returned_gaia = manager.RecordPromoUsed(
+      ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo);
+  EXPECT_TRUE(returned_gaia.empty());
+
+  const base::DictValue& profile_promo_dict =
+      pref_service().GetDict("signin.avatar_button_promo_dict");
+  EXPECT_EQ(profile_promo_dict.FindInt("AvatarButtonSigninPromoShownCount"), 1);
+  EXPECT_EQ(profile_promo_dict.FindInt("AvatarButtonSigninPromoUsedCount"), 1);
+  const base::Value* last_shown_value =
+      profile_promo_dict.Find("AvatarButtonSigninPromoLastShownTime");
+  ASSERT_TRUE(last_shown_value);
+  EXPECT_EQ(base::ValueToTime(*last_shown_value), before_shown);
+
+  base::HistogramTester histogram_tester;
+  RecordAvatarButtonPromoAcceptedAtPromoShownCount(
+      ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo, GaiaId(),
+      pref_service());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AvatarPillPromo.AcceptedAtShownCount.Signin", 1, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

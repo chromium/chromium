@@ -9,13 +9,13 @@
 #include <string_view>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
 namespace base {
-class DictValue;
 class Time;
 }
 
@@ -183,20 +183,60 @@ class SigninPrefs {
   bool GetHistoryPageHistorySyncPromoShownAfterDismissal(
       const GaiaId& gaia_id) const;
 
-  // Returns a dictionary of the avatar button promo count for `gaia_id`, if the
-  // dictionary didn't exist it will create it.
-  // The returned dictionary will not notify observers for underlying pref
-  // changes. If this will be required later on, consider returning a
-  // `ScopedDictPrefUpdate` instead.
-  base::DictValue& GetOrCreateAvatarButtonPromoCountDictionary(
-      const GaiaId& gaia_id);
+  // Avatar button promo prefs (nested under
+  // `AvatarButtonPromoCountDictionary`).
+  void IncrementAvatarButtonHistorySyncPromoShownCount(const GaiaId& gaia_id);
+  int GetAvatarButtonHistorySyncPromoShownCount(const GaiaId& gaia_id) const;
+  void IncrementAvatarButtonHistorySyncPromoUsedCount(const GaiaId& gaia_id);
+  int GetAvatarButtonHistorySyncPromoUsedCount(const GaiaId& gaia_id) const;
 
-  // Returns a dictionary of the cross-device promo preferences for `gaia_id`,
-  // if the dictionary didn't exist it will create it.
-  // The returned dictionary will not notify observers for underlying pref
-  // changes. If this will be required later on, consider returning a
-  // `ScopedDictPrefUpdate` instead.
-  base::DictValue& GetOrCreateCrossDevicePromoPrefs(const GaiaId& gaia_id);
+  void IncrementAvatarButtonBatchUploadPromoShownCount(const GaiaId& gaia_id);
+  int GetAvatarButtonBatchUploadPromoShownCount(const GaiaId& gaia_id) const;
+  void IncrementAvatarButtonBatchUploadPromoUsedCount(const GaiaId& gaia_id);
+  int GetAvatarButtonBatchUploadPromoUsedCount(const GaiaId& gaia_id) const;
+
+  void IncrementAvatarButtonBatchUploadBookmarkPromoShownCount(
+      const GaiaId& gaia_id);
+  int GetAvatarButtonBatchUploadBookmarkPromoShownCount(
+      const GaiaId& gaia_id) const;
+  void IncrementAvatarButtonBatchUploadBookmarkPromoUsedCount(
+      const GaiaId& gaia_id);
+  int GetAvatarButtonBatchUploadBookmarkPromoUsedCount(
+      const GaiaId& gaia_id) const;
+
+  void IncrementAvatarButtonBatchUploadWindows10DepreciationPromoShownCount(
+      const GaiaId& gaia_id);
+  int GetAvatarButtonBatchUploadWindows10DepreciationPromoShownCount(
+      const GaiaId& gaia_id) const;
+  void IncrementAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount(
+      const GaiaId& gaia_id);
+  int GetAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount(
+      const GaiaId& gaia_id) const;
+
+  void IncrementAvatarButtonSigninPromoShownCount(const GaiaId& gaia_id);
+  int GetAvatarButtonSigninPromoShownCount(const GaiaId& gaia_id) const;
+  void IncrementAvatarButtonSigninPromoUsedCount(const GaiaId& gaia_id);
+  int GetAvatarButtonSigninPromoUsedCount(const GaiaId& gaia_id) const;
+  void SetAvatarButtonSigninPromoLastShownTime(const GaiaId& gaia_id,
+                                               base::Time last_shown_time);
+  std::optional<base::Time> GetAvatarButtonSigninPromoLastShownTime(
+      const GaiaId& gaia_id) const;
+
+  // Cross-device history page signin promo (nested under
+  // `CrossDevicePromoPrefs` -> `history`).
+  void SetCrossDeviceHistoryPromoShownCount(const GaiaId& gaia_id, int count);
+  int GetCrossDeviceHistoryPromoShownCount(const GaiaId& gaia_id) const;
+  void SetCrossDeviceHistoryPromoShownAfterDismissal(
+      const GaiaId& gaia_id,
+      bool shown_after_dismissal);
+  bool GetCrossDeviceHistoryPromoShownAfterDismissal(
+      const GaiaId& gaia_id) const;
+  void SetCrossDeviceHistoryPromoLastDismissedTime(
+      const GaiaId& gaia_id,
+      base::Time last_dismissed_time);
+  void ClearCrossDeviceHistoryPromoLastDismissedTime(const GaiaId& gaia_id);
+  std::optional<base::Time> GetCrossDeviceHistoryPromoLastDismissedTime(
+      const GaiaId& gaia_id) const;
 
   // Updates the dismiss count of the promo and last time it was dismissed.
   void IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
@@ -236,37 +276,59 @@ class SigninPrefs {
   std::optional<int> GetDeprecatedPrefForTesting(const GaiaId& gaia_id);
 
  private:
+  // Helper methods for accessing preferences under `gaia_id`. If `parents` is
+  // non-empty, the preference is nested under intermediate dictionaries.
+  // Set/Increment helpers create missing intermediate dictionaries (overwriting
+  // non-dict values if necessary); read helpers return the default value if any
+  // intermediate dictionary is missing or not a dictionary.
+
   // Increments any specified `pref` of type int for the given `gaia_id`.
-  int IncrementIntPrefForAccount(const GaiaId& gaia_id, std::string_view pref);
+  int IncrementIntPrefForAccount(
+      const GaiaId& gaia_id,
+      std::string_view pref,
+      base::span<const std::string_view> parents = {});
   // Gets any specified `pref` of type int for the given `gaia_id`.
   // Returns 0 if the corresponding `pref` doesn't exist for `gaia_id`.
-  int GetIntPrefForAccount(const GaiaId& gaia_id, std::string_view pref) const;
+  int GetIntPrefForAccount(
+      const GaiaId& gaia_id,
+      std::string_view pref,
+      base::span<const std::string_view> parents = {}) const;
 
   // Sets any specified `pref` of type int for the given `gaia_id` to `value`.
   void SetIntPrefForAccount(const GaiaId& gaia_id,
                             std::string_view pref,
-                            int value);
+                            int value,
+                            base::span<const std::string_view> parents = {});
 
   // Sets any specified `pref` of type bool for the given `gaia_id` to
   // `enabled`.
-  void SetBooleanPrefForAccount(const GaiaId& gaia_id,
-                                std::string_view pref,
-                                bool enabled);
+  void SetBooleanPrefForAccount(
+      const GaiaId& gaia_id,
+      std::string_view pref,
+      bool enabled,
+      base::span<const std::string_view> parents = {});
   // Gets any specified `pref` of type bool for the given `gaia_id`.
   // Returns false if the corresponding `pref` doesn't exist for `gaia_id`.
-  bool GetBooleanPrefForAccount(const GaiaId& gaia_id,
-                                std::string_view pref) const;
+  bool GetBooleanPrefForAccount(
+      const GaiaId& gaia_id,
+      std::string_view pref,
+      base::span<const std::string_view> parents = {}) const;
 
   // Time pref related, returns by default std::nullopt if the pref is not
   // created yet for the given `gaia_id`.
   void SetTimePref(base::Time time,
                    const GaiaId& gaia_id,
-                   std::string_view pref);
-  std::optional<base::Time> GetTimePref(const GaiaId& gaia_id,
-                                        std::string_view pref) const;
+                   std::string_view pref,
+                   base::span<const std::string_view> parents = {});
+  std::optional<base::Time> GetTimePref(
+      const GaiaId& gaia_id,
+      std::string_view pref,
+      base::span<const std::string_view> parents = {}) const;
 
   // Clear any given account pref for the given `gaia_id`.
-  void ClearPref(const GaiaId& gaia_id, std::string_view pref);
+  void ClearPref(const GaiaId& gaia_id,
+                 std::string_view pref,
+                 base::span<const std::string_view> parents = {});
 
   const raw_ref<PrefService> pref_service_;
 };
