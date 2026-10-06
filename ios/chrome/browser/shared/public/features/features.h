@@ -989,4 +989,10 @@ BASE_DECLARE_FEATURE(kAppBarAssistantCustomization);
 // Returns true if the AppBarAssistantCustomization feature is enabled.
 bool IsAppBarAssistantCustomizationEnabled();
 
+// Enables the LightAppBar feature.
+BASE_DECLARE_FEATURE(kLightAppBar);
+
+// Returns true if the LightAppBar feature is enabled.
+bool IsLightAppBarEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

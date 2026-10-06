@@ -2946,6 +2946,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAppBarAssistantCustomizationName,
      flag_descriptions::kAppBarAssistantCustomizationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAppBarAssistantCustomization)},
+    {"light-app-bar", flag_descriptions::kLightAppBarName,
+     flag_descriptions::kLightAppBarDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLightAppBar)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -87,7 +87,14 @@ constexpr CGFloat kIPHAnimationDuration = 0.3;
 
 // Returns the color to be used as foreground color for the buttons.
 UIColor* ButtonsForegroundColor() {
-  return UIColor.whiteColor;
+  return IsLightAppBarEnabled() ? [UIColor colorNamed:kSolidBlackColor]
+                                : UIColor.whiteColor;
+}
+
+// Returns the inverted foreground color for the buttons.
+UIColor* InvertedButtonsForegroundColor() {
+  return IsLightAppBarEnabled() ? [UIColor colorNamed:kSolidWhiteColor]
+                                : UIColor.blackColor;
 }
 
 // Returns the configuration for all the symbols.
@@ -125,7 +132,10 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 // Returns the background color of the assistant button highlight.
 UIColor* AssistantHighlightBackgroundColor() {
-  return [UIColor colorWithWhite:1.0 alpha:0.15];
+  UIColor* color = IsLightAppBarEnabled()
+                       ? [UIColor colorNamed:kSolidBlackColor]
+                       : UIColor.whiteColor;
+  return [color colorWithAlphaComponent:0.15];
 }
 
 }  // namespace
@@ -481,6 +491,9 @@ UIColor* AssistantHighlightBackgroundColor() {
     _heightConstraint,
   ]];
 
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(updateForUserInterfaceStyle)];
+
   [self.layoutGuideCenter referenceView:_stackView underName:kAppBarGuide];
   [self updateAssistantButtonGuide];
 }
@@ -513,6 +526,7 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
   _isTabGridVisible = tabGridVisible;
+  [self updateInterfaceStyle];
   _backgroundView.hideColorBackground = tabGridVisible;
   [self updateTabGridButtonForTabGridVisibility];
   [self updateNewTabButtonForTabGroupsVisibility];
@@ -525,6 +539,7 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
   _incognito = incognito;
+  [self updateInterfaceStyle];
   _backgroundView.incognito = incognito;
   [self updateNewTabButtonAccessibilityLabel];
   [self updateAssistantButton];
@@ -1136,7 +1151,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   button.layer.shadowColor = [UIColor blackColor].CGColor;
   button.layer.shadowOffset = CGSizeMake(0, kButtonShadowOffset);
   button.layer.shadowRadius = kButtonShadowRadius;
-  button.layer.shadowOpacity = kButtonShadowOpacity;
+  [self updateShadowForButton:button];
   button.layer.masksToBounds = NO;
 
   return button;
@@ -1241,8 +1256,8 @@ UIColor* AssistantHighlightBackgroundColor() {
         activateConstraints:_tabGridButtonNormalStateConstraints];
   }
   UILabel* label = _tabCountLabel;
-  UIColor* labelColor =
-      _isTabGridVisible ? UIColor.blackColor : ButtonsForegroundColor();
+  UIColor* labelColor = _isTabGridVisible ? InvertedButtonsForegroundColor()
+                                          : ButtonsForegroundColor();
   [UIView transitionWithView:label
                     duration:kAppBarAnimationDuration
                      options:UIViewAnimationOptionTransitionCrossDissolve
@@ -1299,6 +1314,35 @@ UIColor* AssistantHighlightBackgroundColor() {
 - (BOOL)shouldHideButtonLabels {
   return _geminiFloatyInvoked || self.layoutState.assistantContainerInvoked ||
          self.layoutState.appBarPosition != AppBarPosition::kBottom;
+}
+
+// Updates the buttons for user interface style changes.
+- (void)updateForUserInterfaceStyle {
+  [self updateShadowForButton:_assistantButton];
+  [self updateShadowForButton:_openNewTabButton];
+  [self updateShadowForButton:_tabGridButton];
+}
+
+// Updates the shadow opacity for `button` based on the user interface style.
+- (void)updateShadowForButton:(UIButton*)button {
+  if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight &&
+      IsLightAppBarEnabled()) {
+    button.layer.shadowOpacity = 0;
+  } else {
+    button.layer.shadowOpacity = kButtonShadowOpacity;
+  }
+}
+
+// Updates the interface style of the app bar.
+- (void)updateInterfaceStyle {
+  if (!IsLightAppBarEnabled()) {
+    return;
+  }
+  if (_isTabGridVisible || _incognito) {
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  } else {
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+  }
 }
 
 #pragma mark - Actions
@@ -1392,9 +1436,21 @@ UIColor* AssistantHighlightBackgroundColor() {
   UIView* view = interaction.view;
   if ([view isKindOfClass:[UIButton class]]) {
     UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
-    parameters.backgroundColor =
-        _incognito ? [UIColor colorNamed:kAppBarIncognitoColor]
-                   : [UIColor colorNamed:kAppBarColor];
+    if (IsLightAppBarEnabled()) {
+      parameters.backgroundColor =
+          [UIColor colorWithDynamicProvider:^UIColor*(
+                       UITraitCollection* traitCollection) {
+            if (traitCollection.userInterfaceStyle ==
+                UIUserInterfaceStyleDark) {
+              return [UIColor colorNamed:kAppBarIncognitoColor];
+            }
+            return [UIColor colorNamed:kGrey200Color];
+          }];
+    } else {
+      parameters.backgroundColor =
+          _incognito ? [UIColor colorNamed:kAppBarIncognitoColor]
+                     : [UIColor colorNamed:kAppBarColor];
+    }
 
     return [[UITargetedPreview alloc] initWithView:view parameters:parameters];
   }

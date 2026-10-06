@@ -6783,6 +6783,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "light-app-bar",
+    "owners": [ "gambard@chromium.org", "meridian@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "linked-accounts",
     "owners": ["msalama@chromium.org", "chrome-signin-team@google.com"],
     "expiry_milestone": 160
