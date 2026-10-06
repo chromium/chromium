@@ -15,43 +15,44 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
+
+using ::testing::Optional;
 
 TEST(LogBuffer, JSONSerializeString) {
   LogBuffer buffer;
   buffer << "<foo><!--\"";
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
   // JSON takes care of serializing the <, we don't want &lt; as that would then
   // be escaped twice.
-  EXPECT_EQ(R"({"type":"text","value":"\u003Cfoo>\u003C!--\""})", json.value());
+  EXPECT_THAT(base::WriteJson(*buffer.RetrieveResult()),
+              Optional(std::string(
+                  R"({"type":"text","value":"\u003Cfoo>\u003C!--\""})")));
 }
 
 TEST(LogBuffer, JSONSerializeString16) {
   LogBuffer buffer;
   buffer << u"<foo><!--\"";
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
   // JSON takes care of serializing the <, we don't want &lt; as that would then
   // be escaped twice.
-  EXPECT_EQ(R"({"type":"text","value":"\u003Cfoo>\u003C!--\""})", json.value());
+  EXPECT_THAT(base::WriteJson(*buffer.RetrieveResult()),
+              Optional(std::string(
+                  R"({"type":"text","value":"\u003Cfoo>\u003C!--\""})")));
 }
 
 TEST(LogBuffer, SupportNumbers) {
   LogBuffer buffer;
   buffer << 42;
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"type":"text","value":"42"})", json.value());
+  EXPECT_THAT(base::WriteJson(*buffer.RetrieveResult()),
+              Optional(std::string(R"({"type":"text","value":"42"})")));
 }
 
 TEST(LogBuffer, SanitizeURLs) {
   LogBuffer buffer;
   buffer << GURL("https://user:pw@www.example.com:80/foo?bar=1#foo");
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
   // Verify that the url gets scrubbed.
-  EXPECT_EQ(R"({"type":"text","value":"https://www.example.com:80/"})",
-            json.value());
+  EXPECT_THAT(base::WriteJson(*buffer.RetrieveResult()),
+              Optional(std::string(
+                  R"({"type":"text","value":"https://www.example.com:80/"})")));
 }
 
 TEST(LogBuffer, Empty) {
@@ -62,82 +63,75 @@ TEST(LogBuffer, Empty) {
 TEST(LogBuffer, UnclosedTag) {
   LogBuffer buffer;
   buffer << Tag{"foo"};
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"type":"element","value":"foo"})", json.value());
+  EXPECT_THAT(base::WriteJson(*buffer.RetrieveResult()),
+              Optional(std::string(R"({"type":"element","value":"foo"})")));
 }
 
 TEST(LogBuffer, ClosedTag) {
   LogBuffer buffer;
   buffer << Tag{"foo"} << CTag{};
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"type":"element","value":"foo"})", json.value());
+  EXPECT_THAT(base::WriteJson(*buffer.RetrieveResult()),
+              Optional(std::string(R"({"type":"element","value":"foo"})")));
 }
 
 TEST(LogBuffer, NestedTag) {
   LogBuffer buffer;
   buffer << Tag{"foo"} << Tag{"bar"} << CTag{} << CTag{};
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[{"type":"element","value":"bar"}],)"
-            R"("type":"element","value":"foo"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(R"({"children":[{"type":"element","value":"bar"}],)"
+                           R"("type":"element","value":"foo"})")));
 }
 
 TEST(LogBuffer, NestedTagClosingTooOften) {
   LogBuffer buffer;
   buffer << Tag{"foo"} << Tag{"bar"} << CTag{} << CTag{} << CTag{};
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[{"type":"element","value":"bar"}],)"
-            R"("type":"element","value":"foo"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(R"({"children":[{"type":"element","value":"bar"}],)"
+                           R"("type":"element","value":"foo"})")));
 }
 
 TEST(LogBuffer, NestedTagClosingNotAtAll) {
   LogBuffer buffer;
   buffer << Tag{"foo"} << Tag{"bar"};
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[{"type":"element","value":"bar"}],)"
-            R"("type":"element","value":"foo"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(R"({"children":[{"type":"element","value":"bar"}],)"
+                           R"("type":"element","value":"foo"})")));
 }
 
 TEST(LogBuffer, NestedTagWithAttributes) {
   LogBuffer buffer;
   buffer << Tag{"foo"} << Tag{"bar"} << Attrib{"b1", "1"} << Attrib{"b2", "2"}
          << CTag{} << Attrib{"f1", "1"};
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(
-      R"({"attributes":{"f1":"1"},"children":[)"
-      R"({"attributes":{"b1":"1","b2":"2"},"type":"element","value":"bar"})"
-      R"(],"type":"element","value":"foo"})",
-      json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(
+          R"({"attributes":{"f1":"1"},"children":[)"
+          R"({"attributes":{"b1":"1","b2":"2"},"type":"element","value":"bar"})"
+          R"(],"type":"element","value":"foo"})")));
 }
 
 TEST(LogBuffer, DivWithBr) {
   LogBuffer buffer;
   buffer << Tag{"div"} << "foo" << Br{} << "bar" << CTag{};
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[{"type":"text","value":"foo"},)"
-            R"({"type":"element","value":"br"},{"type":"text","value":"bar"}],)"
-            R"("type":"element","value":"div"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(
+          R"({"children":[{"type":"text","value":"foo"},)"
+          R"({"type":"element","value":"br"},{"type":"text","value":"bar"}],)"
+          R"("type":"element","value":"div"})")));
 }
 
 TEST(LogBuffer, CoalesceStrings) {
   LogBuffer buffer;
   buffer << Tag{"div"} << "foo"
          << "bar";
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[{"type":"text","value":"foobar"}],)"
-            R"("type":"element","value":"div"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(R"({"children":[{"type":"text","value":"foobar"}],)"
+                           R"("type":"element","value":"div"})")));
 }
 
 struct SampleObject {
@@ -159,23 +153,23 @@ TEST(LogBuffer, CanStreamCustomObjects) {
   LogBuffer buffer;
   SampleObject o{42, "foobar<!--"};
   buffer << o;
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[)"                                      // table
-            /**/ R"({"children":[)"                                 // tr
-            /****/ R"({"children":[{"type":"text","value":"x"}],)"  // td
-            /******/ R"("type":"element","value":"td"},)"
-            /****/ R"({"children":[{"type":"text","value":"42"}],)"  // td
-            /******/ R"("type":"element","value":"td"}],)"
-            /****/ R"("type":"element","value":"tr"},)"  // continuation of tr
-            /**/ R"({"children":[)"                      // tr
-            /****/ R"({"children":[{"type":"text","value":"y"}],)"
-            /******/ R"("type":"element","value":"td"},)"
-            /****/ R"({"children":[{"type":"text","value":"foobar\u003C!--"}],)"
-            /******/ R"("type":"element","value":"td"}],)"
-            /**/ R"("type":"element","value":"tr"}],"type":"element",)"
-            /****/ R"("value":"table"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(
+          R"({"children":[)"                                      // table
+          /**/ R"({"children":[)"                                 // tr
+          /****/ R"({"children":[{"type":"text","value":"x"}],)"  // td
+          /******/ R"("type":"element","value":"td"},)"
+          /****/ R"({"children":[{"type":"text","value":"42"}],)"  // td
+          /******/ R"("type":"element","value":"td"}],)"
+          /****/ R"("type":"element","value":"tr"},)"  // continuation of tr
+          /**/ R"({"children":[)"                      // tr
+          /****/ R"({"children":[{"type":"text","value":"y"}],)"
+          /******/ R"("type":"element","value":"td"},)"
+          /****/ R"({"children":[{"type":"text","value":"foobar\u003C!--"}],)"
+          /******/ R"("type":"element","value":"td"}],)"
+          /**/ R"("type":"element","value":"tr"}],"type":"element",)"
+          /****/ R"("value":"table"})")));
 }
 
 TEST(LogBuffer, LogTableRowBuffer) {
@@ -195,12 +189,12 @@ TEST(LogBuffer, LogTableRowBuffer) {
 TEST(LogBuffer, CreateFragment) {
   LogBuffer buffer;
   buffer << "foo" << Br{} << "bar";
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[{"type":"text","value":"foo"},)"
-            R"({"type":"element","value":"br"},{"type":"text","value":"bar"}],)"
-            R"("type":"fragment"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(
+          R"({"children":[{"type":"text","value":"foo"},)"
+          R"({"type":"element","value":"br"},{"type":"text","value":"bar"}],)"
+          R"("type":"fragment"})")));
 }
 
 TEST(LogBuffer, AppendFragmentByInlining) {
@@ -208,12 +202,12 @@ TEST(LogBuffer, AppendFragmentByInlining) {
   tmp_buffer << "foo" << Br{} << "bar";
   LogBuffer buffer;
   buffer << std::move(tmp_buffer);
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"children":[{"type":"text","value":"foo"},)"
-            R"({"type":"element","value":"br"},{"type":"text","value":"bar"}],)"
-            R"("type":"fragment"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(
+          R"({"children":[{"type":"text","value":"foo"},)"
+          R"({"type":"element","value":"br"},{"type":"text","value":"bar"}],)"
+          R"("type":"fragment"})")));
 }
 
 TEST(LogBuffer, AppendSingleElementBuffer) {
@@ -221,9 +215,8 @@ TEST(LogBuffer, AppendSingleElementBuffer) {
   tmp_buffer << "foo";
   LogBuffer buffer;
   buffer << std::move(tmp_buffer);
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"type":"text","value":"foo"})", json.value());
+  EXPECT_THAT(base::WriteJson(*buffer.RetrieveResult()),
+              Optional(std::string(R"({"type":"text","value":"foo"})")));
 }
 
 TEST(LogBuffer, Highlight) {
@@ -274,4 +267,5 @@ TEST(LogBuffer, HighlightEmptyString) {
   EXPECT_EQ(expected.RetrieveResult(), actual.RetrieveResult());
 }
 
+}  // namespace
 }  // namespace autofill
