@@ -205,29 +205,50 @@ TEST_F(FuzzyFinderTest, CaseInsensitiveMatching) {
   EXPECT_LE(results.size(), 6u);
 }
 
-TEST_F(FuzzyFinderTest, AccentsAndDiacriticsIgnoring) {
+// FuzzyFind does not fold accents (see crbug.com/549169077). Accented and
+// unaccented text can still match through typo tolerance (substituting the
+// accented character) or by aligning the query against unaccented characters
+// elsewhere in the candidate. The match ranges below show which characters were
+// actually aligned.
+TEST_F(FuzzyFinderTest, AccentedTextMatchesViaTypoTolerance) {
   auto items = CreateItems({{u"Résumé Settings"}, {u"Café Mode"}});
   FuzzyFinder finder(items);
 
-  // Query without accents matches title with accents
+  // The trailing 'e' of "resume" aligns with the 'e' in "Settings" rather than
+  // with 'é'.
   auto results = finder.FuzzyFind(u"resume", /*max_results=*/1);
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Résumé Settings"));
-  EXPECT_LE(results.size(), 1u);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(
+      results[0].match_ranges,
+      ElementsAre(gfx::Range(0, 1), gfx::Range(2, 5), gfx::Range(8, 9)));
 
+  // The trailing 'e' of "cafe" aligns with the 'e' in "Mode" rather than with
+  // 'é'.
   results = finder.FuzzyFind(u"cafe", /*max_results=*/1);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Café Mode"));
-  EXPECT_LE(results.size(), 1u);
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Café Mode"));
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].match_ranges,
+              ElementsAre(gfx::Range(0, 3), gfx::Range(8, 9)));
 
   results = finder.FuzzyFind(u"CAFE", /*max_results=*/1);
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Café Mode"));
 
-  // Query with accents matches title without accents
+  // An accented query matches unaccented text by substituting 'é' for 'e',
+  // which is not an exact match and so is not highlighted.
   auto ascii_items = CreateItems({{u"Cafe Mode"}});
   FuzzyFinder ascii_finder(ascii_items);
   auto ascii_results = ascii_finder.FuzzyFind(u"café", /*max_results=*/1);
   EXPECT_THAT(ExtractResultTitles(ascii_results), ElementsAre(u"Cafe Mode"));
-  EXPECT_LE(ascii_results.size(), 1u);
+  ASSERT_EQ(ascii_results.size(), 1u);
+  EXPECT_THAT(ascii_results[0].match_ranges, ElementsAre(gfx::Range(0, 3)));
+
+  // Queries of 3 or fewer characters do not allow substitutions, so "ete"
+  // cannot match "Été", which has no unaccented 'e' to align with.
+  // TODO(crbug.com/549169077): This should match once accents are folded.
+  auto short_items = CreateItems({{u"Été"}});
+  FuzzyFinder short_finder(short_items);
+  EXPECT_THAT(short_finder.FuzzyFind(u"ete", /*max_results=*/1), IsEmpty());
 }
 
 TEST_F(FuzzyFinderTest, UnicodeAndNonLatinStrings) {
