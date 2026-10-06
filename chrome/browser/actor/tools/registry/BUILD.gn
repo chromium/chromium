@@ -27,10 +27,27 @@ source_set("impl") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "tool_definition_test_util.cc",
+    "tool_definition_test_util.h",
+  ]
+  public_deps = [
+    ":registry",
+    "//testing/gmock",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "tool_definition_builder_unittest.cc",
+    "tool_definition_test_util_unittest.cc",
     "tool_definition_unittest.cc",
     "tool_registry_unittest.cc",
     "tool_schema_builder_unittest.cc",
@@ -38,6 +55,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":registry",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/actor",
