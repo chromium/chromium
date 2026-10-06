@@ -12,7 +12,7 @@ Isolated Web Apps in `unit_tests` and `browser_tests`.
   signatures.
 - `IsolatedWebAppTest` (`isolated_web_app_test.{h,cc}`): Base unit test fixture
   wiring up `BrowserTaskEnvironment`, `TestingProfile`, `FakeWebAppProvider`,
-  `IwaTestServerConfigurator`, and `InProcessDataDecoder`.
+  and `IwaTestServerConfigurator`.
 - `IsolatedWebAppTestUpdateServer`
   (`isolated_web_app_test_update_server.{h,cc}`) & `IwaTestServerConfigurator`
   (`iwa_test_server_configurator.{h,cc}`): Local HTTP and `TestURLLoaderFactory`

@@ -16,7 +16,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,8 +68,6 @@ class IsolatedWebAppTest : public ::testing::Test {
   std::unique_ptr<web_app::OsIntegrationTestOverrideBlockingRegistration>
       os_integration_test_override_{std::make_unique<
           web_app::OsIntegrationTestOverrideBlockingRegistration>()};
-
-  data_decoder::test::InProcessDataDecoder decoder_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   IwaTestServerConfigurator test_update_server_{url_loader_factory()};

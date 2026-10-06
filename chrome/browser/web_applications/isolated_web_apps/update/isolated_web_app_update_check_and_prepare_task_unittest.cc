@@ -43,7 +43,6 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,7 +143,6 @@ class IsolatedWebAppUpdateCheckAndPrepareTaskTest : public WebAppTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  data_decoder::test::InProcessDataDecoder data_decoder_;
 
   GURL update_manifest_url_ = GURL("https://example.com/update_manifest.json");
   UpdateChannel beta_update_channel_ = UpdateChannel::Create("beta").value();
@@ -421,9 +419,6 @@ class IsolatedWebAppUpdateCheckAndPrepareTaskPrepareUpdateTest
 
     return manifest;
   }
-
- private:
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(IsolatedWebAppUpdateCheckAndPrepareTaskPrepareUpdateTest, Fails) {

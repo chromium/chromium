@@ -79,7 +79,6 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -336,8 +335,6 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
     ASSERT_FALSE(
         provider().registrar_unsafe().GetAppById(GetAppId(web_bundle_id)));
   }
-
-  data_decoder::test::InProcessDataDecoder data_decoder_;
 
   FakeIwaRuntimeDataProvider data_provider_;
   std::optional<base::AutoReset<IwaRuntimeDataProvider*>> resetter_;

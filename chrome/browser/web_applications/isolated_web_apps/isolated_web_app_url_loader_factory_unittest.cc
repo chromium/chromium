@@ -45,7 +45,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -214,7 +213,6 @@ class IsolatedWebAppURLLoaderFactoryTestBase : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<ScopedUrlHandler> url_handler_;
 };
 

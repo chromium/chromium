@@ -55,7 +55,6 @@
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -264,7 +263,6 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir scoped_temp_dir_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestingProfile> profile_;
   FakeIwaRuntimeDataProvider data_provider_;
   std::optional<base::AutoReset<IwaRuntimeDataProvider*>> resetter_;

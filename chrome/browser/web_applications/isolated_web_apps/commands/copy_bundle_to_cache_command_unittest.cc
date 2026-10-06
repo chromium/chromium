@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -127,7 +126,6 @@ class CopyBundleToCacheCommandTest
  private:
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_P(CopyBundleToCacheCommandTest, CopyBundleToCache) {

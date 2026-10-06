@@ -42,7 +42,6 @@
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -168,7 +167,6 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
     EXPECT_EQ(paths, installed_app_paths);
   }
 
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   IwaVersion installed_version_ = *IwaVersion::Create("1.0.0");
   IwaVersion update_version_ = *IwaVersion::Create("2.0.0");
   base::test::ScopedFeatureList scoped_feature_list_;

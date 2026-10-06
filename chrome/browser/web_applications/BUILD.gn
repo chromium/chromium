@@ -1179,6 +1179,7 @@ source_set("web_applications_unit_tests") {
     "//content/public/common",
     "//content/test:test_support",
     "//net:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/preferences/public/cpp",
     "//skia",
@@ -1623,7 +1624,6 @@ source_set("isolated_web_app_test") {
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//content/test:test_support",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gtest",
   ]

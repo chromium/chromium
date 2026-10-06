@@ -22,7 +22,6 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "url/gurl.h"
 
 using ::testing::UnorderedElementsAre;
@@ -72,8 +71,6 @@ class GetControlledFramePartitionCommandTest : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  // isolated web app builder uses json parser from the decoder
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(GetControlledFramePartitionCommandTest, CanRegisterPartition) {

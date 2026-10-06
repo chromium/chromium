@@ -31,7 +31,6 @@
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -126,7 +125,6 @@ class SignedWebBundleMetadataTest : public WebAppTest {
   }
 
  private:
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   IwaStorageOwnedBundle location_{"some_folder", /*dev_mode=*/false};
 };
 

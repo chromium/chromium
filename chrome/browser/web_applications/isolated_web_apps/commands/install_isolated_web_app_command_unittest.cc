@@ -69,7 +69,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -221,7 +220,6 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
@@ -854,7 +852,6 @@ class InstallIsolatedWebAppCommandBundleTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
   bool is_dev_mode_;
   BundleTestInfo bundle_info_;
@@ -939,10 +936,7 @@ struct BundleInstallSourceParam {
 
 class InstallIsolatedWebAppCommandBundleInstallSourceTest
     : public InstallIsolatedWebAppCommandTest,
-      public ::testing::WithParamInterface<BundleInstallSourceParam> {
- private:
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-};
+      public ::testing::WithParamInterface<BundleInstallSourceParam> {};
 
 TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
        BlocklistBlocksInstallationFromAllSources) {

@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_features.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -42,7 +41,6 @@ class IsolatedWebAppMetricsHelperTest : public WebAppTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
