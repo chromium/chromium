@@ -59,8 +59,7 @@ void PrepareFilterForConv(base::span<const float> filter,
                           AudioFloatArray& prepared_filter) {
   // Only contiguous convolution is implemented by all implementations.
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_MAC)
-  const float* filter_p = &filter.back();
-  x86::PrepareFilterForConv(filter_p, filter.size(), &prepared_filter);
+  x86::PrepareFilterForConv(filter, &prepared_filter);
 #endif
 }
 
@@ -70,9 +69,8 @@ void Conv(base::span<const float> source,
           size_t frames_to_process,
           const AudioFloatArray& prepared_filter) {
   // Only contiguous convolution is implemented by all implementations.
-  const float* filter_p = &filter.back();
-  impl::Conv(source, filter_p, dest, frames_to_process, filter.size(),
-             &prepared_filter);
+  impl::Conv(source, filter, dest.first(frames_to_process),
+             prepared_filter.as_span());
 }
 
 void Vadd(base::span<const float> source1,

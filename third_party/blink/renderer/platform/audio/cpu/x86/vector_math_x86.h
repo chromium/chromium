@@ -99,45 +99,39 @@ ALWAYS_INLINE static FrameCounts SplitFramesToProcess(
 }
 
 ALWAYS_INLINE static void PrepareFilterForConv(
-    const float* filter_p,
-    size_t filter_size,
+    base::span<const float> filter,
     AudioFloatArray* prepared_filter) {
   if (CPUSupportsAVX()) {
-    avx::PrepareFilterForConv(filter_p, filter_size, prepared_filter);
+    avx::PrepareFilterForConv(filter, prepared_filter);
   } else {
-    sse::PrepareFilterForConv(filter_p, filter_size, prepared_filter);
+    sse::PrepareFilterForConv(filter, prepared_filter);
   }
 }
 
 ALWAYS_INLINE static void Conv(base::span<const float> source,
-                               const float* filter_p,
+                               base::span<const float> filter,
                                base::span<float> dest,
-                               size_t frames_to_process,
-                               size_t filter_size,
-                               const AudioFloatArray* prepared_filter) {
-  const float* prepared_filter_p =
-      prepared_filter ? prepared_filter->Data() : nullptr;
+                               base::span<const float> prepared_filter) {
+  const size_t frames_to_process = dest.size();
+  const size_t filter_size = filter.size();
   size_t offset = 0;
-  if (prepared_filter_p) {
+  if (!prepared_filter.empty()) {
     if (CPUSupportsAVX() && (filter_size & ~avx::kFramesToProcessMask) == 0u) {
       const size_t avx_frames = frames_to_process & avx::kFramesToProcessMask;
       if (avx_frames > 0u) {
-        avx::Conv(source.data(), prepared_filter_p, dest.data(), avx_frames,
-                  filter_size);
+        avx::Conv(source, prepared_filter, dest.first(avx_frames), filter_size);
         offset = avx_frames;
       }
     } else if ((filter_size & ~sse::kFramesToProcessMask) == 0u) {
       const size_t sse_frames = frames_to_process & sse::kFramesToProcessMask;
       if (sse_frames > 0u) {
-        sse::Conv(source.data(), prepared_filter_p, dest.data(), sse_frames,
-                  filter_size);
+        sse::Conv(source, prepared_filter, dest.first(sse_frames), filter_size);
         offset = sse_frames;
       }
     }
   }
   if (offset < frames_to_process) {
-    scalar::Conv(source.subspan(offset), filter_p, dest.subspan(offset),
-                 frames_to_process - offset, filter_size, nullptr);
+    scalar::Conv(source.subspan(offset), filter, dest.subspan(offset), {});
   }
 }
 

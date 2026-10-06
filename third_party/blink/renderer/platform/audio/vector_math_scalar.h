@@ -18,26 +18,27 @@ namespace vector_math {
 namespace scalar {
 
 ALWAYS_INLINE static void Conv(base::span<const float> source,
-                               const float* filter_p,
+                               base::span<const float> filter,
                                base::span<float> dest,
-                               size_t frames_to_process,
-                               size_t filter_size,
-                               const AudioFloatArray* /*prepared_filter*/) {
-  const float* source_p = source.data();
-  float* dest_p = dest.data();
+                               base::span<const float> /*prepared_filter*/) {
   // Only contiguous convolution is implemented. Correlation (positive
   // |filter_stride|) and support for non-contiguous vectors are not
   // implemented.
+  const size_t frames_to_process = dest.size();
+  const size_t filter_size = filter.size();
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_GT(filter_size, 0u);
+  CHECK_GE(source.size(), frames_to_process + filter_size - 1u);
 
   size_t i = 0;
 
 // FIXME: The macro can be further optimized to avoid pipeline stalls. One
 // possibility is to maintain 4 separate sums and change the macro to
 // CONVOLVE_FOUR_SAMPLES.
-#define CONVOLVE_ONE_SAMPLE                                \
-  do {                                                     \
-    sum += UNSAFE_TODO(source_p[i + j] * *(filter_p - j)); \
-    j++;                                                   \
+#define CONVOLVE_ONE_SAMPLE                              \
+  do {                                                   \
+    sum += source[i + j] * filter[filter_size - 1u - j]; \
+    j++;                                                 \
   } while (0)
 
   while (i < frames_to_process) {
@@ -300,7 +301,7 @@ ALWAYS_INLINE static void Conv(base::span<const float> source,
         CONVOLVE_ONE_SAMPLE;
       }
     }
-    UNSAFE_TODO(dest_p[i++] = sum);
+    dest[i++] = sum;
   }
 #undef CONVOLVE_ONE_SAMPLE
 }

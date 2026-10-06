@@ -38,61 +38,66 @@ bool IsAligned(const float* p) {
   return (reinterpret_cast<size_t>(p) & kAlignmentOffsetMask) == 0u;
 }
 
-void PrepareFilterForConv(const float* filter_p,
-                          size_t filter_size,
+void PrepareFilterForConv(base::span<const float> filter,
                           AudioFloatArray* prepared_filter) {
   // Only contiguous convolution is implemented.
   DCHECK(prepared_filter);
+  const size_t filter_size = filter.size();
 
   // Reverse the filter and repeat each value across a vector
   prepared_filter->Allocate(kReversedFilterStride * kPackedFloatsPerRegister *
                             filter_size);
-  MType* reversed_filter = reinterpret_cast<MType*>(prepared_filter->Data());
+  base::span<float> reversed_filter = prepared_filter->as_span();
   for (size_t i = 0; i < filter_size; ++i) {
-    UNSAFE_TODO(reversed_filter[kReversedFilterStride * i]) =
-        MM_PS(set1)(*(UNSAFE_TODO(filter_p - i)));
+    MM_PS(store)(
+        reversed_filter
+            .subspan(kReversedFilterStride * kPackedFloatsPerRegister * i,
+                     kPackedFloatsPerRegister)
+            .data(),
+        MM_PS(set1)(filter[filter_size - 1u - i]));
   }
 }
 
 // Direct vector convolution:
-// dest[k] = sum(source[k+m]*filter[m*filter_stride]) for all m
-// provided that |prepared_filter_p| is |prepared_filter->Data()| and that
-// |prepared_filter| is prepared with |PrepareFilterForConv|.
-void Conv(const float* source_p,
-          const float* prepared_filter_p,
-          float* dest_p,
-          size_t frames_to_process,
+// dest[k] = sum(source[k+m]*filter[filter.size()-1-m]) for all m
+// provided that |prepared_filter| is prepared with |PrepareFilterForConv|.
+void Conv(base::span<const float> source,
+          base::span<const float> prepared_filter,
+          base::span<float> dest,
           size_t filter_size) {
-  const float* const dest_end_p = UNSAFE_TODO(dest_p + frames_to_process);
+  const size_t frames_to_process = dest.size();
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_GT(filter_size, 0u);
+  CHECK_GE(source.size(), frames_to_process + filter_size - 1u);
+  CHECK_EQ(prepared_filter.size(),
+           kReversedFilterStride * kPackedFloatsPerRegister * filter_size);
 
   DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
   DCHECK_EQ(0u, filter_size % kPackedFloatsPerRegister);
 
-  const MType* reversed_filter =
-      reinterpret_cast<const MType*>(prepared_filter_p);
-
   // Do convolution with kPackedFloatsPerRegister inputs at a time.
-  while (dest_p < dest_end_p) {
+  for (size_t frame = 0; frame < frames_to_process;
+       frame += kPackedFloatsPerRegister) {
     MType m_convolution_sum = MM_PS(setzero)();
 
     // |filter_size| is a multiple of kPackedFloatsPerRegister so we can unroll
     // the loop by kPackedFloatsPerRegister, manually.
     for (size_t i = 0; i < filter_size; i += kPackedFloatsPerRegister) {
       for (size_t j = 0; j < kPackedFloatsPerRegister; ++j) {
-        size_t k = i + j;
-        MType m_product;
-        MType m_source;
-
-        m_source = MM_PS(loadu)(UNSAFE_TODO(source_p + k));
-        m_product = MM_PS(mul)(
-            UNSAFE_TODO(reversed_filter[kReversedFilterStride * k]), m_source);
+        const size_t k = i + j;
+        const MType m_source = MM_PS(loadu)(
+            source.subspan(frame + k, kPackedFloatsPerRegister).data());
+        const MType m_reversed_filter = MM_PS(load)(
+            prepared_filter
+                .subspan(kReversedFilterStride * kPackedFloatsPerRegister * k,
+                         kPackedFloatsPerRegister)
+                .data());
+        const MType m_product = MM_PS(mul)(m_reversed_filter, m_source);
         m_convolution_sum = MM_PS(add)(m_convolution_sum, m_product);
       }
     }
-    MM_PS(storeu)(dest_p, m_convolution_sum);
-
-    UNSAFE_TODO(source_p += kPackedFloatsPerRegister);
-    UNSAFE_TODO(dest_p += kPackedFloatsPerRegister);
+    MM_PS(storeu)(dest.subspan(frame, kPackedFloatsPerRegister).data(),
+                  m_convolution_sum);
   }
 }
 
