@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.appearance.settings;
 
+import android.content.Context;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidth
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Fragment to manage tab position settings (Horizontal vs. Vertical). */
 @NullMarked
@@ -32,14 +35,20 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
     public static final String PREF_TAB_POSITION_CARD_SELECTOR = "tab_position_card_selector";
     public static final String PREF_EXPAND_TABS_ON_HOVER_SWITCH = "expand_tabs_on_hover_switch";
 
-    // TODO(crbug.com/542280452): Make the expand-on-hover switch searchable: index
-    // R.xml.tab_position_preferences and, in updateDynamicPreferences(), remove the entries for
-    // the description, the card selector, and the switch while it is hidden (i.e. vertical tabs
-    // are not selected or the "expand_on_hover" feature param is off).
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    TabPositionSettingsFragment.class.getName(),
-                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
+                    TabPositionSettingsFragment.class.getName(), R.xml.tab_position_preferences) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    String prefFragment = TabPositionSettingsFragment.class.getName();
+                    // The card selector has no title, so there is nothing to search for.
+                    indexData.removeEntryForKey(prefFragment, PREF_TAB_POSITION_CARD_SELECTOR);
+                    if (!shouldShowExpandOnHoverSwitch(context)) {
+                        indexData.removeEntryForKey(prefFragment, PREF_EXPAND_TABS_ON_HOVER_SWITCH);
+                    }
+                }
+            };
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -145,10 +154,17 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
         if (mExpandOnHoverSwitch == null) {
             return;
         }
-        mExpandOnHoverSwitch.setVisible(
-                VerticalTabUtils.isExpandOnHoverFeatureEnabled()
-                        && VerticalTabUtils.isVerticalTabsEnabled(getContext()));
+        mExpandOnHoverSwitch.setVisible(shouldShowExpandOnHoverSwitch(getContext()));
         mExpandOnHoverSwitch.setChecked(VerticalTabUtils.isExpandOnHoverEnabled());
+    }
+
+    /**
+     * Returns whether the expand-on-hover switch should be shown. Used by both the UI and the
+     * search index, so that the switch is only searchable while it is visible.
+     */
+    private static boolean shouldShowExpandOnHoverSwitch(@Nullable Context context) {
+        return VerticalTabUtils.isExpandOnHoverFeatureEnabled()
+                && VerticalTabUtils.isVerticalTabsEnabled(context);
     }
 
     @Nullable TabPositionCardPreference getCardPreferenceForTesting() {

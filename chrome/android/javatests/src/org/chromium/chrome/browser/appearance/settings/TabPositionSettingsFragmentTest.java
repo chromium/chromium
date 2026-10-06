@@ -8,6 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.appearance.settings.TabPositionSettingsFragment.PREF_EXPAND_TABS_ON_HOVER_SWITCH;
 import static org.chromium.chrome.browser.appearance.settings.TabPositionSettingsFragment.PREF_TAB_POSITION_CARD_SELECTOR;
@@ -25,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -35,11 +39,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHoverToggleEntryPoint;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Tests for {@link TabPositionSettingsFragment}. */
 @Batch(Batch.PER_CLASS)
@@ -48,6 +54,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 public class TabPositionSettingsFragmentTest {
     private static final int WIDE_WINDOW_WIDTH_DP = 800;
     private static final int NARROW_WINDOW_WIDTH_DP = 400;
+    private static final String SEARCH_PREF_FRAGMENT = TabPositionSettingsFragment.class.getName();
 
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsTestRule =
@@ -370,6 +377,53 @@ public class TabPositionSettingsFragmentTest {
                         VerticalTabUtils.setExpandOnHoverEnabled(
                                 true, ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU));
         CriteriaHelper.pollUiThread(expandOnHoverSwitch::isChecked);
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchIndex_ExpandOnHoverSwitchIndexedWhenVertical() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        ThreadUtils.runOnUiThreadBlocking(() -> VerticalTabUtils.setVerticalTabsEnabled(true));
+        SettingsIndexData indexData = mock(SettingsIndexData.class);
+
+        updateSearchIndex(indexData);
+
+        verify(indexData).removeEntryForKey(SEARCH_PREF_FRAGMENT, PREF_TAB_POSITION_CARD_SELECTOR);
+        verify(indexData, never())
+                .removeEntryForKey(SEARCH_PREF_FRAGMENT, PREF_EXPAND_TABS_ON_HOVER_SWITCH);
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchIndex_ExpandOnHoverSwitchRemovedWhenHorizontal() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        SettingsIndexData indexData = mock(SettingsIndexData.class);
+
+        updateSearchIndex(indexData);
+
+        verify(indexData).removeEntryForKey(SEARCH_PREF_FRAGMENT, PREF_TAB_POSITION_CARD_SELECTOR);
+        verify(indexData).removeEntryForKey(SEARCH_PREF_FRAGMENT, PREF_EXPAND_TABS_ON_HOVER_SWITCH);
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchIndex_ExpandOnHoverSwitchRemovedWhenFeatureDisabled() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+        ThreadUtils.runOnUiThreadBlocking(() -> VerticalTabUtils.setVerticalTabsEnabled(true));
+        SettingsIndexData indexData = mock(SettingsIndexData.class);
+
+        updateSearchIndex(indexData);
+
+        verify(indexData).removeEntryForKey(SEARCH_PREF_FRAGMENT, PREF_TAB_POSITION_CARD_SELECTOR);
+        verify(indexData).removeEntryForKey(SEARCH_PREF_FRAGMENT, PREF_EXPAND_TABS_ON_HOVER_SWITCH);
+    }
+
+    private void updateSearchIndex(SettingsIndexData indexData) {
+        TabPositionSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                ContextUtils.getApplicationContext(), indexData, mock(Profile.class));
     }
 
     @Test
