@@ -47,6 +47,7 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
+#include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
@@ -543,6 +544,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   // Configure find bar state for the tab.
   FindBarState::ConfigureWebContents(web_contents);
+
+  // Attach MediaEngagementService observer when enabled.
+  if (MediaEngagementService::IsEnabled()) {
+    MediaEngagementService::CreateWebContentsObserver(web_contents);
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

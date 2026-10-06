@@ -30,7 +30,6 @@
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
-#include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -253,9 +252,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   webapps::InstallableManager::CreateForWebContents(web_contents);
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
       web_contents);
-  if (MediaEngagementService::IsEnabled()) {
-    MediaEngagementService::CreateWebContentsObserver(web_contents);
-  }
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(web_contents);

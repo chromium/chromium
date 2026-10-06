@@ -45,6 +45,7 @@
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
+#include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
@@ -1180,6 +1181,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab, tab, tab.GetContents());
 
   FindBarState::ConfigureWebContents(tab.GetContents());
+
+  if (MediaEngagementService::IsEnabled()) {
+    MediaEngagementService::CreateWebContentsObserver(tab.GetContents());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1693,6 +1698,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                                                  new_contents);
 
   FindBarState::ConfigureWebContents(new_contents);
+
+  if (MediaEngagementService::IsEnabled()) {
+    MediaEngagementService::CreateWebContentsObserver(new_contents);
+  }
 }
 
 customize_chrome::SidePanelController*

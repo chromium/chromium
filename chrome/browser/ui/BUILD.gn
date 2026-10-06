@@ -1376,7 +1376,6 @@ source_set("tab_helpers_impl") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/login_detection",
     "//chrome/browser/lookalikes",
-    "//chrome/browser/media",
     "//chrome/browser/net",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations",

@@ -562,6 +562,7 @@ if (!is_android) {
       "//chrome/browser/image_fetcher",
       "//chrome/browser/indigo",
       "//chrome/browser/lifetime",
+      "//chrome/browser/media",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/metrics",
       "//chrome/browser/navigation_predictor",
