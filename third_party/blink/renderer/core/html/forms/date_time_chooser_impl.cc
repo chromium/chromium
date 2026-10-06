@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/chooser_resource_loader.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser_client.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -65,6 +66,9 @@ DateTimeChooserImpl::DateTimeChooserImpl(
   DCHECK(RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled());
   DCHECK(client_);
   popup_ = chrome_client_->OpenPagePopup(this);
+  if (popup_) {
+    To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(true);
+  }
   parameters_ = nullptr;
 }
 
@@ -289,6 +293,7 @@ void DateTimeChooserImpl::CancelPopup() {
 }
 
 void DateTimeChooserImpl::DidClosePopup() {
+  To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(false);
   DCHECK(client_);
   popup_ = nullptr;
   client_->DidEndChooser();

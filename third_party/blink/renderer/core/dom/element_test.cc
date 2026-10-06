@@ -2091,4 +2091,58 @@ TEST_F(ElementTest, DelegatesFocusWasLastFocusFromUserGesture) {
   EXPECT_TRUE(probe->WasLastFocusFromUserGesture());
 }
 
+TEST_F(ElementTest, FreezeHoverForOpenPopup) {
+  SetBodyContent("<select id=owner><option>One</option></select>");
+  auto* owner = To<HTMLSelectElement>(
+      GetDocument().getElementById(AtomicString("owner")));
+  ASSERT_NE(owner, nullptr);
+
+  GetDocument().UpdateHoverActiveState(/*is_active=*/false,
+                                       /*update_active_chain=*/true, owner);
+  EXPECT_TRUE(owner->IsHovered());
+
+  owner->SetFreezeHoverForOpenPopup(true);
+
+  // The cursor moves off the owner (e.g. over the owner window next to the
+  // popup); the frozen hover state must survive.
+  GetDocument().UpdateHoverActiveState(/*is_active=*/false,
+                                       /*update_active_chain=*/true,
+                                       GetDocument().body());
+  EXPECT_TRUE(owner->IsHovered());
+
+  // Closing the popup re-syncs with the document's hover chain, which no
+  // longer contains the owner.
+  owner->SetFreezeHoverForOpenPopup(false);
+  EXPECT_FALSE(owner->IsHovered());
+}
+
+// If the cursor is still over the owner when the popup closes, the hover state
+// must be preserved rather than cleared by the re-sync.
+TEST_F(ElementTest, FreezeHoverForOpenPopupKeepsHoverWhenStillHovered) {
+  SetBodyContent("<input id=owner type=color>");
+  auto* owner = To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("owner")));
+  ASSERT_NE(owner, nullptr);
+
+  GetDocument().UpdateHoverActiveState(/*is_active=*/false,
+                                       /*update_active_chain=*/true, owner);
+  owner->SetFreezeHoverForOpenPopup(true);
+  owner->SetFreezeHoverForOpenPopup(false);
+  EXPECT_TRUE(owner->IsHovered());
+}
+
+TEST_F(ElementTest,
+       FreezeHoverForOpenPopupKeepsHoverWhenStillHoveredDateInput) {
+  SetBodyContent("<input id=owner type=date>");
+  auto* owner = To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("owner")));
+  ASSERT_NE(owner, nullptr);
+
+  GetDocument().UpdateHoverActiveState(/*is_active=*/false,
+                                       /*update_active_chain=*/true, owner);
+  owner->SetFreezeHoverForOpenPopup(true);
+  owner->SetFreezeHoverForOpenPopup(false);
+  EXPECT_TRUE(owner->IsHovered());
+}
+
 }  // namespace blink

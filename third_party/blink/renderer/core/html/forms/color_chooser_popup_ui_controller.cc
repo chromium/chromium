@@ -32,11 +32,13 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/chooser_resource_loader.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser_client.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/color_page_popup_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -241,6 +243,7 @@ void ColorChooserPopupUIController::SetValue(const String& value) {
 
 void ColorChooserPopupUIController::DidClosePopup() {
   popup_ = nullptr;
+  To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(false);
 
   if (frame_ && frame_->GetPage() &&
       frame_->GetPage()
@@ -270,6 +273,9 @@ ChromeClient& ColorChooserPopupUIController::GetChromeClient() {
 void ColorChooserPopupUIController::OpenPopup() {
   DCHECK(!popup_);
   popup_ = chrome_client_->OpenPagePopup(this);
+  if (popup_) {
+    To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(true);
+  }
 }
 
 void ColorChooserPopupUIController::CancelPopup() {

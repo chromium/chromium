@@ -78,10 +78,6 @@ class SelectType : public GarbageCollected<SelectType> {
   virtual void HidePopup(SelectPopupHideBehavior);
   virtual void PopupDidHide();
   virtual bool PopupIsVisible() const;
-  // Returns true only if the native (out-of-page) menu-list popup is
-  // currently shown, unlike PopupIsVisible() which also covers the
-  // appearance:base-select popover picker.
-  virtual bool NativePopupIsVisible() const;
   virtual PopupMenu* PopupForTesting() const;
   virtual AXObject* PopupRootAXObject() const;
   virtual void ShowPicker();

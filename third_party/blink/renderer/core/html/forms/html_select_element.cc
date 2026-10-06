@@ -1360,18 +1360,6 @@ bool HTMLSelectElement::PopupIsVisible() const {
   return select_type_->PopupIsVisible();
 }
 
-void HTMLSelectElement::SetHovered(bool hovered) {
-  // While the native popup is showing, keep the select hovered. Depending on
-  // the platform, mouse moves over the popup window may not reach the owner
-  // document while moves next to it do, which would otherwise make the :hover
-  // style flicker (crbug.com/40774159). The hover state is re-synced when the
-  // popup hides, in MenuListSelectType::SetNativePopupIsVisible().
-  if (!hovered && select_type_->NativePopupIsVisible()) {
-    return;
-  }
-  HTMLFormControlElementWithState::SetHovered(hovered);
-}
-
 int HTMLSelectElement::ListIndexForOption(const HTMLOptionElement& option) {
   const ListItems& items = GetListItems();
   wtf_size_t length = items.size();

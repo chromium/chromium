@@ -159,6 +159,10 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   bool MatchesValidityPseudoClasses() const override;
 
+  // An open picker popup keeps its owner's :hover state until it closes.
+  void SetFreezeHoverForOpenPopup(bool popup_open);
+  void SetHovered(bool hovered) override;
+
   String GetWebMCPParameterName() const;
 
  protected:
@@ -196,6 +200,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   enum WebAutofillState autofill_state_;
 
   bool blocks_form_submission_ : 1;
+  bool freeze_hover_for_open_popup_ : 1;
 };
 
 template <>

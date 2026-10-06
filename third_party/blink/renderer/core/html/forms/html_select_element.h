@@ -451,7 +451,6 @@ class CORE_EXPORT HTMLSelectElement final
                          mojom::blink::FocusType,
                          InputDeviceCapabilities* source_capabilities) override;
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
-  void SetHovered(bool hovered) override;
 
   bool CanStartSelection() const override { return false; }
 
