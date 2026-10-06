@@ -47,7 +47,8 @@ enum class AutofillAiWalletNoticeFunnelEvents {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiWalletNoticeFunnelEvents)
 
-void LogWalletNoticeFunnelEvent(AutofillAiWalletNoticeFunnelEvents event);
+void LogWalletNoticeFunnelEvent(AutofillAiWalletNoticeFunnelEvents event,
+                                bool in_settings = false);
 
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&

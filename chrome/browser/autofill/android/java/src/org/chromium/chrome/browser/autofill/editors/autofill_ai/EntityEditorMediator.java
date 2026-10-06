@@ -50,6 +50,7 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.components.autofill.autofill_ai.AttributeType;
+import org.chromium.components.autofill.autofill_ai.AutofillAiWalletNoticeFunnelEvents;
 import org.chromium.components.autofill.autofill_ai.DataType;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.RecordType;
@@ -88,6 +90,10 @@ class EntityEditorMediator {
 
     @VisibleForTesting
     static final String ENTITY_DELETED_SETTINGS_HISTOGRAM = "Autofill.Ai.EntityDeleted.Settings.";
+
+    @VisibleForTesting
+    static final String WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM =
+            "Autofill.Ai.WalletNotice.Settings.Funnel";
 
     private final Context mContext;
     private final Delegate mDelegate;
@@ -175,6 +181,12 @@ class EntityEditorMediator {
     }
 
     private void onCancel() {
+        if (hasLegalMessage()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM,
+                    AutofillAiWalletNoticeFunnelEvents.ENTITY_NOT_SAVED,
+                    AutofillAiWalletNoticeFunnelEvents.MAX_VALUE + 1);
+        }
         assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
     }
 
@@ -183,16 +195,21 @@ class EntityEditorMediator {
             scrollToFieldWithErrorMessage(mEditorModel.get(EDITOR_FIELDS));
             return;
         }
+        if (hasLegalMessage()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM,
+                    AutofillAiWalletNoticeFunnelEvents.ENTITY_SAVED,
+                    AutofillAiWalletNoticeFunnelEvents.MAX_VALUE + 1);
+        }
         assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
         commitChanges();
-        final boolean hasLegalMessage = mLegalMessageLines != null && !mLegalMessageLines.isEmpty();
         mDelegate.onDone(
                 mEntityInstance,
                 mEntityInstance.getRecordType() == RecordType.LOCAL
                         ? R.string.autofill_ai_save_or_update_local_entity_source_notice
                         : R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice,
                 R.string.done,
-                hasLegalMessage ? mContextToken : null);
+                hasLegalMessage() ? mContextToken : null);
     }
 
     /**
@@ -468,7 +485,11 @@ class EntityEditorMediator {
         if (TextUtils.isEmpty(sourceNotice)) {
             return;
         }
-        if (mLegalMessageLines != null && !mLegalMessageLines.isEmpty()) {
+        if (hasLegalMessage()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM,
+                    AutofillAiWalletNoticeFunnelEvents.LEGAL_MESSAGE_SHOWN,
+                    AutofillAiWalletNoticeFunnelEvents.MAX_VALUE + 1);
             SpannableStringBuilder builder = new SpannableStringBuilder(sourceNotice);
             builder.append("\n\n");
             builder.append(
@@ -476,7 +497,13 @@ class EntityEditorMediator {
                             mContext,
                             mLegalMessageLines,
                             /* underlineLinks= */ true,
-                            url -> AutofillUiUtils.openLink(mContext, url)));
+                            url -> {
+                                RecordHistogram.recordEnumeratedHistogram(
+                                        WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM,
+                                        AutofillAiWalletNoticeFunnelEvents.LINK_CLICKED,
+                                        AutofillAiWalletNoticeFunnelEvents.MAX_VALUE + 1);
+                                AutofillUiUtils.openLink(mContext, url);
+                            }));
             sourceNotice = builder;
         }
         mEntitySourceNotice =
@@ -490,6 +517,11 @@ class EntityEditorMediator {
                                 .build(),
                         /* isFullLine= */ true);
         editorFields.add(mEntitySourceNotice);
+    }
+
+    @EnsuresNonNullIf("mLegalMessageLines")
+    private boolean hasLegalMessage() {
+        return mLegalMessageLines != null && !mLegalMessageLines.isEmpty();
     }
 
     private CharSequence getEntitySourceNotice(

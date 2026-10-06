@@ -29,6 +29,8 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/private_pass_conversion_util.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -235,6 +237,9 @@ void WalletPassAccessManagerImpl::PreloadDetailsForUpsertPass(
     return;
   }
 
+  LogWalletNoticeFunnelEvent(
+      AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails,
+      /*in_settings=*/true);
   FetchDetailsForUpsertPass(
       pass_type,
       base::BindOnce(
@@ -395,6 +400,12 @@ void WalletPassAccessManagerImpl::OnPreloadDetailsForUpsertPassComplete(
     base::expected<GetDetailsForUpsertPassResponse,
                    wallet::WalletHttpClient::WalletRequestError> response) {
   in_flight_preloads_.erase(pass_type);
+
+  LogWalletNoticeFunnelEvent(
+      response.has_value() && IsValidUpsertPassDetailsResponse(*response)
+          ? AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess
+          : AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError,
+      /*in_settings=*/true);
 
   if (response.has_value()) {
     upsert_details_cache_.insert_or_assign(pass_type,

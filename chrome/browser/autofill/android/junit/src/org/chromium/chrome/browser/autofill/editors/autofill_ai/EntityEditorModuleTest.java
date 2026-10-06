@@ -85,6 +85,7 @@ import org.chromium.components.autofill.autofill_ai.AttributeInstance.DateValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.StringValue;
 import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.AttributeTypeName;
+import org.chromium.components.autofill.autofill_ai.AutofillAiWalletNoticeFunnelEvents;
 import org.chromium.components.autofill.autofill_ai.DataType;
 import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
@@ -547,7 +548,12 @@ public class EntityEditorModuleTest {
         DetailsForUpsertPass response =
                 new DetailsForUpsertPass(List.of(legalMessageLine), "context_token");
 
+        HistogramWatcher shownWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        EntityEditorMediator.WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM,
+                        AutofillAiWalletNoticeFunnelEvents.LEGAL_MESSAGE_SHOWN);
         showEditorDialog(NEW_WALLET_VEHICLE, response);
+        shownWatcher.assertExpected();
 
         String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
         String expectedSourceNotice =
@@ -563,6 +569,13 @@ public class EntityEditorModuleTest {
         String expectedFullText = expectedSourceNotice + "\n\nLegal disclaimer with link.";
         PropertyModel model = mCoordinator.getEditorModelForTest();
         verifySourceNotice(model.get(EntityEditorProperties.EDITOR_FIELDS), expectedFullText);
+
+        HistogramWatcher cancelWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        EntityEditorMediator.WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM,
+                        AutofillAiWalletNoticeFunnelEvents.ENTITY_NOT_SAVED);
+        mContainerView.findViewById(R.id.payments_edit_cancel_button).performClick();
+        cancelWatcher.assertExpected();
     }
 
     @Test
@@ -573,6 +586,13 @@ public class EntityEditorModuleTest {
                 new DetailsForUpsertPass(
                         List.of(new LegalMessageLine("Legal disclaimer.")), "test_context_token");
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                EntityEditorMediator.WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM,
+                                AutofillAiWalletNoticeFunnelEvents.LEGAL_MESSAGE_SHOWN,
+                                AutofillAiWalletNoticeFunnelEvents.ENTITY_SAVED)
+                        .build();
         showEditorDialog(NEW_WALLET_VEHICLE, details);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
@@ -587,6 +607,7 @@ public class EntityEditorModuleTest {
                         anyInt(),
                         anyInt(),
                         eq("test_context_token"));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -596,6 +617,11 @@ public class EntityEditorModuleTest {
         DetailsForUpsertPass details =
                 new DetailsForUpsertPass(Collections.emptyList(), "test_context_token");
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                EntityEditorMediator.WALLET_NOTICE_SETTINGS_FUNNEL_HISTOGRAM)
+                        .build();
         showEditorDialog(NEW_WALLET_VEHICLE, details);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
@@ -605,6 +631,7 @@ public class EntityEditorModuleTest {
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), eq(null));
+        histogramWatcher.assertExpected();
     }
 
     @Test
