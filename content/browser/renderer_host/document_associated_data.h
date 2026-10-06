@@ -75,9 +75,12 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   void MarkDomContentLoaded() { dom_content_loaded_ = true; }
 
   // Indicates whether a discard request has been dispatched for the current
-  // document.
+  // document. Note that marking a document as discarded must not clear
+  // DocumentUserData or PageUserData, as the RenderFrameHostImpl and PageImpl
+  // remain the active primary frame/page of the WebContents until a subsequent
+  // navigation commits or the RenderFrameHostImpl is destroyed.
   bool is_discarded() const { return is_discarded_; }
-  void MarkDiscarded();
+  void MarkDiscarded() { is_discarded_ = true; }
 
   // Prerender2:
   //
@@ -243,8 +246,6 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   }
 
  private:
-  void ClearServicesAndUserData();
-
   const blink::DocumentToken token_;
   std::unique_ptr<PageImpl> owned_page_;
   bool dom_content_loaded_ = false;

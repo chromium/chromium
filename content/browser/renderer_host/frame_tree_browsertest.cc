@@ -23,7 +23,9 @@
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dedicated_worker_service.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -610,6 +612,119 @@ IN_PROC_BROWSER_TEST_P(FrameTreeDiscardPendingNavigationTest,
   RenderFrameHostImplWrapper final_rfh(wc->GetPrimaryMainFrame());
   EXPECT_NE(initial_rfh.get(), final_rfh.get());
   EXPECT_EQ(new_url, root->current_url());
+}
+
+namespace {
+
+class TestDiscardPageUserData : public PageUserData<TestDiscardPageUserData> {
+ public:
+  ~TestDiscardPageUserData() override = default;
+
+ private:
+  explicit TestDiscardPageUserData(Page& page) : PageUserData(page) {}
+  friend PageUserData<TestDiscardPageUserData>;
+  PAGE_USER_DATA_KEY_DECL();
+};
+
+PAGE_USER_DATA_KEY_IMPL(TestDiscardPageUserData);
+
+class TestDiscardDocumentUserData
+    : public DocumentUserData<TestDiscardDocumentUserData> {
+ public:
+  ~TestDiscardDocumentUserData() override = default;
+
+ private:
+  explicit TestDiscardDocumentUserData(RenderFrameHost* rfh)
+      : DocumentUserData(rfh) {}
+  friend DocumentUserData<TestDiscardDocumentUserData>;
+  DOCUMENT_USER_DATA_KEY_DECL();
+};
+
+DOCUMENT_USER_DATA_KEY_IMPL(TestDiscardDocumentUserData);
+
+class SubframeDiscardNavigationObserver : public WebContentsObserver {
+ public:
+  SubframeDiscardNavigationObserver(WebContentsImpl* web_contents,
+                                    const GURL& expected_subframe_url)
+      : WebContentsObserver(web_contents),
+        web_contents_(web_contents),
+        expected_subframe_url_(expected_subframe_url) {}
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() != expected_subframe_url_) {
+      return;
+    }
+    did_finish_subframe_navigation_ = true;
+    EXPECT_FALSE(navigation_handle->HasCommitted());
+    EXPECT_NE(nullptr, TestDiscardPageUserData::GetForPage(
+                           web_contents_->GetPrimaryPage()));
+    EXPECT_NE(nullptr, TestDiscardDocumentUserData::GetForCurrentDocument(
+                           web_contents_->GetPrimaryMainFrame()));
+  }
+
+  bool did_finish_subframe_navigation() const {
+    return did_finish_subframe_navigation_;
+  }
+
+ private:
+  raw_ptr<WebContentsImpl> web_contents_;
+  const GURL expected_subframe_url_;
+  bool did_finish_subframe_navigation_ = false;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/568895475 and crbug.com/569705669. Ensures
+// that PageUserData and DocumentUserData attached to the primary page and main
+// frame remain valid when in-flight subframe navigations are aborted during
+// Discard() and while the tab remains in the discarded state.
+IN_PROC_BROWSER_TEST_P(
+    FrameTreeDiscardPendingNavigationTest,
+    DiscardPreservesUserDataDuringAndAfterSubframeNavigationReset) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  const GURL original_url =
+      embedded_test_server()->GetURL("/frame_tree/top.html");
+  ASSERT_TRUE(NavigateToURL(shell(), original_url));
+  ASSERT_EQ(3UL, root->child_count());
+
+  TestDiscardPageUserData::CreateForPage(wc->GetPrimaryPage());
+  TestDiscardDocumentUserData::CreateForCurrentDocument(
+      wc->GetPrimaryMainFrame());
+  ASSERT_NE(nullptr, TestDiscardPageUserData::GetForPage(wc->GetPrimaryPage()));
+  ASSERT_NE(nullptr, TestDiscardDocumentUserData::GetForCurrentDocument(
+                         wc->GetPrimaryMainFrame()));
+
+  // Start a subframe navigation and pause it at request start so that
+  // ResetNavigationsForDiscard() synchronously aborts it during Discard().
+  const GURL subframe_url = embedded_test_server()->GetURL("/title1.html");
+  TestNavigationManager subframe_nav_manager(wc, subframe_url);
+  SubframeDiscardNavigationObserver discard_nav_observer(wc, subframe_url);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(root->child_at(0), subframe_url));
+  ASSERT_TRUE(subframe_nav_manager.WaitForRequestStart());
+
+  DiscardFrameTree(frame_tree);
+  EXPECT_TRUE(discard_nav_observer.did_finish_subframe_navigation());
+  ASSERT_TRUE(subframe_nav_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+
+  // While the tab is discarded, the primary PageImpl and RenderFrameHostImpl
+  // remain active, so PageUserData and DocumentUserData must still be present.
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_NE(nullptr, TestDiscardPageUserData::GetForPage(wc->GetPrimaryPage()));
+  EXPECT_NE(nullptr, TestDiscardDocumentUserData::GetForCurrentDocument(
+                         wc->GetPrimaryMainFrame()));
+
+  // Reloading the discarded tab commits a new document/page and clears the old
+  // user data.
+  wc->GetController().LoadIfNecessary();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_EQ(nullptr, TestDiscardPageUserData::GetForPage(wc->GetPrimaryPage()));
+  EXPECT_EQ(nullptr, TestDiscardDocumentUserData::GetForCurrentDocument(
+                         wc->GetPrimaryMainFrame()));
 }
 
 // Asserts that a process pinned with a keep-alive ref hosting only discarded

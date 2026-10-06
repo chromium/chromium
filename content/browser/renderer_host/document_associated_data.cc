@@ -67,31 +67,6 @@ DocumentAssociatedData::~DocumentAssociatedData() {
   TRACE_EVENT0("navigation", "DocumentAssociatedData::~DocumentAssociatedData");
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.DocumentAssociatedDataDestructor");
-  ClearServicesAndUserData();
-
-  // Remove any network restrictions for this document from the network service.
-  // The network_restrictions_id is ref-counted: multiple documents may share
-  // the same id (e.g. initial empty documents inherit their creator's id).
-  // Only the last document holding a reference should schedule the clearing.
-  if (network_restrictions_id_->HasOneRef()) {
-    StoragePartitionImpl* storage_partition =
-        GetWeakPtr()->GetStoragePartition();
-    storage_partition->ClearNetworkRestrictionsAfterDelay({
-        network_restrictions_id_->data,
-    });
-  }
-
-  // Last in case any DocumentService / DocumentUserData service destructors try
-  // to look up RenderFrameHosts by DocumentToken.
-  CHECK_EQ(1u, GetDocumentTokenMap().erase(token_));
-}
-
-void DocumentAssociatedData::MarkDiscarded() {
-  is_discarded_ = true;
-  ClearServicesAndUserData();
-}
-
-void DocumentAssociatedData::ClearServicesAndUserData() {
   decltype(services_) services;
   std::swap(services_, services);
   for (auto& service : services) {
@@ -112,6 +87,22 @@ void DocumentAssociatedData::ClearServicesAndUserData() {
   if (owned_page_) {
     owned_page_->ClearAllUserData();
   }
+
+  // Remove any network restrictions for this document from the network service.
+  // The network_restrictions_id is ref-counted: multiple documents may share
+  // the same id (e.g. initial empty documents inherit their creator's id).
+  // Only the last document holding a reference should schedule the clearing.
+  if (network_restrictions_id_->HasOneRef()) {
+    StoragePartitionImpl* storage_partition =
+        GetWeakPtr()->GetStoragePartition();
+    storage_partition->ClearNetworkRestrictionsAfterDelay({
+        network_restrictions_id_->data,
+    });
+  }
+
+  // Last in case any DocumentService / DocumentUserData service destructors try
+  // to look up RenderFrameHosts by DocumentToken.
+  CHECK_EQ(1u, GetDocumentTokenMap().erase(token_));
 }
 
 void DocumentAssociatedData::set_navigation_or_document_handle(

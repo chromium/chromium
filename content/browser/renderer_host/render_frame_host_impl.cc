@@ -13334,8 +13334,8 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
 void RenderFrameHostImpl::DiscardFrame(base::OnceClosure on_discarded_cb) {
   CHECK(is_main_frame());
   on_discarded_cb_ = std::move(on_discarded_cb);
-  document_associated_data_->MarkDiscarded();
   owner_->ResetNavigationsForDiscard();
+  document_associated_data_->MarkDiscarded();
   BackForwardCache::DisableForRenderFrameHost(
       this, BackForwardCacheDisable::DisabledReason(
                 BackForwardCacheDisable::DisabledReasonId::kDiscarded));
