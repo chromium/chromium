@@ -226,11 +226,13 @@ bool IsChromeSigninPage(content::RenderFrameHost* rfh) {
       web_contents ? DiceTabHelper::FromWebContents(web_contents) : nullptr;
   return tab_helper && tab_helper->IsChromeSigninPage();
 }
+#endif
 
 constexpr char kHybridPasskeyEngagementHistogram[] =
     "Signin.HybridPasskey.InlineQrEngagement";
-
-#endif
+constexpr char kSigninHybridPasskeyOutcomeHistogram[] =
+    "Signin.HybridPasskey.Outcome";
+constexpr char kHybridOutcomeHistogram[] = "WebAuthentication.Hybrid.Outcome";
 
 }  // namespace
 
@@ -304,10 +306,10 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
       model->Reset();
     }
   }
+#endif
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kOtherFailure);
   MaybeRecordHybridPasskeyEngagement();
-#endif
 
   if (g_observer) {
     g_observer->OnDestroy(this);
@@ -422,12 +424,10 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
   if (request_source != RequestSource::kWebAuthentication) {
     return;
   }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   MaybeRecordHybridPasskeyOutcome(
       authenticator_type == device::AuthenticatorType::kPhone
           ? HybridPasskeyOutcome::kSuccess
           : HybridPasskeyOutcome::kOtherAuthenticatorUsed);
-#endif
 #if BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
     base::Time::Exploded exploded;
@@ -470,7 +470,6 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
 void ChromeAuthenticatorRequestDelegate::OnTransactionFailed(
     std::optional<device::AuthenticatorType> authenticator_type,
     InterestingFailureReason reason) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Other authenticators keep running after a hybrid event is received. A
   // failure from one of them (e.g. a security key tapped after scanning the QR
   // code) ends the request, so it is recorded as `kOtherAuthenticatorUsed`
@@ -484,7 +483,6 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionFailed(
     MaybeRecordHybridPasskeyOutcome(
         HybridPasskeyOutcome::kOtherAuthenticatorUsed);
   }
-#endif
 }
 
 void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
@@ -534,6 +532,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     device::FidoDiscoveryFactory* discovery_factory) {
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
+  request_source_ = request_source;
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
@@ -866,13 +865,11 @@ void ChromeAuthenticatorRequestDelegate::OnRetryUserVerification(int attempts) {
 
 void ChromeAuthenticatorRequestDelegate::OnStartOver() {
   DCHECK(start_over_callback_);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // If the request is restarted within the same delegate, record the
   // outcome for the prior attempt before resetting for the new attempt.
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kUserCancelled);
   MaybeRecordHybridPasskeyEngagement();
-#endif
   dialog_model_->generation++;
   if (g_observer) {
     g_observer->PreStartOver();
@@ -886,10 +883,8 @@ void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
 }
 
 void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kUserCancelled);
-#endif
   // |cancel_callback_| must be invoked at most once as invocation of
   // |cancel_callback_| will destroy |this|.
   DCHECK(cancel_callback_);
@@ -1025,9 +1020,7 @@ bool ChromeAuthenticatorRequestDelegate::IsEnclaveReady() {
 
 void ChromeAuthenticatorRequestDelegate::OnCableEvent(
     device::cablev2::Event event) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   SetHybridPasskeyStageFromCableEvent(event);
-#endif
   if (event == device::cablev2::Event::kReady) {
     cable_device_ready_ = true;
   }
@@ -1312,7 +1305,6 @@ void ChromeAuthenticatorRequestDelegate::UpdateModelForTransportAvailability(
   dialog_model_->platform_has_biometrics = tai.platform_has_biometrics;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ChromeAuthenticatorRequestDelegate::SetHybridPasskeyStageFromCableEvent(
     device::cablev2::Event event) {
   switch (event) {
@@ -1391,10 +1383,13 @@ void ChromeAuthenticatorRequestDelegate::MaybeRecordHybridPasskeyOutcome(
     return;
   }
   hybrid_passkey_stage_.reset();
-  if (!is_chrome_signin_request_) {
-    return;
+  if (request_source_ == RequestSource::kWebAuthentication) {
+    base::UmaHistogramEnumeration(kHybridOutcomeHistogram, outcome);
   }
-  base::UmaHistogramEnumeration("Signin.HybridPasskey.Outcome", outcome);
+  if (is_chrome_signin_request_) {
+    base::UmaHistogramEnumeration(kSigninHybridPasskeyOutcomeHistogram,
+                                  outcome);
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::
@@ -1416,4 +1411,3 @@ void ChromeAuthenticatorRequestDelegate::MaybeRecordHybridPasskeyEngagement() {
                                     ? HybridPasskeyEngagement::kScanDetected
                                     : HybridPasskeyEngagement::kNoScanDetected);
 }
-#endif

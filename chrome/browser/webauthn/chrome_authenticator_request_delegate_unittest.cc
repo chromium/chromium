@@ -1006,11 +1006,13 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MagiChromeForceHybridDiscovery) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-class ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+class ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase
     : public ChromeAuthenticatorRequestDelegateTest {
- public:
-  void SetUp() override {
-    ChromeAuthenticatorRequestDelegateTest::SetUp();
+ protected:
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void SetUpChromeSigninPage() {
     feature_list_.InitAndEnableFeatureWithParameters(
         switches::kMagiChromePasskeySignIn, {{"flow_type", "autofill"}});
 
@@ -1023,6 +1025,7 @@ class ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest
             /*record_signin_started_metrics=*/false, base::DoNothing(),
             base::DoNothing(), base::DoNothing(), base::DoNothing());
   }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   std::unique_ptr<ChromeAuthenticatorRequestDelegate> CreateDelegate(
       MockCableDiscoveryFactory* discovery_factory) {
@@ -1042,12 +1045,83 @@ class ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest
     return delegate;
   }
 
- protected:
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest, Success) {
+// The context in which a hybrid request is made.
+enum class HybridOutcomeContext {
+  // A regular website.
+  kWebsite,
+  // The Chrome sign-in page, with the MagiChrome passkey feature enabled.
+  kChromeSignin,
+};
+
+// Tests `WebAuthentication.Hybrid.Outcome`, which is recorded in every context,
+// and `Signin.HybridPasskey.Outcome`, which is only recorded for Chrome sign-in
+// requests.
+class ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest
+    : public ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase,
+      public testing::WithParamInterface<HybridOutcomeContext> {
+ public:
+  void SetUp() override {
+    ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase::SetUp();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (GetParam() == HybridOutcomeContext::kChromeSignin) {
+      SetUpChromeSigninPage();
+    }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  }
+
+ protected:
+  static constexpr char kGeneralOutcome[] = "WebAuthentication.Hybrid.Outcome";
+  static constexpr char kSigninOutcome[] = "Signin.HybridPasskey.Outcome";
+
+  using Outcome = ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome;
+
+  bool IsChromeSignin() const {
+    return GetParam() == HybridOutcomeContext::kChromeSignin;
+  }
+
+  void ExpectUniqueOutcome(Outcome outcome, int count) {
+    histogram_tester_.ExpectUniqueSample(kGeneralOutcome, outcome, count);
+    if (IsChromeSignin()) {
+      histogram_tester_.ExpectUniqueSample(kSigninOutcome, outcome, count);
+    } else {
+      histogram_tester_.ExpectTotalCount(kSigninOutcome, 0);
+    }
+  }
+
+  void ExpectOutcomeBucketCount(Outcome outcome, int count) {
+    histogram_tester_.ExpectBucketCount(kGeneralOutcome, outcome, count);
+    if (IsChromeSignin()) {
+      histogram_tester_.ExpectBucketCount(kSigninOutcome, outcome, count);
+    } else {
+      histogram_tester_.ExpectTotalCount(kSigninOutcome, 0);
+    }
+  }
+
+  void ExpectTotalOutcomeCount(int count) {
+    histogram_tester_.ExpectTotalCount(kGeneralOutcome, count);
+    histogram_tester_.ExpectTotalCount(kSigninOutcome,
+                                       IsChromeSignin() ? count : 0);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+    testing::Values(
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+        HybridOutcomeContext::kChromeSignin,
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+        HybridOutcomeContext::kWebsite),
+    [](const testing::TestParamInfo<HybridOutcomeContext>& info) {
+      return info.param == HybridOutcomeContext::kWebsite ? "Website"
+                                                          : "ChromeSignin";
+    });
+
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest, Success) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
 
@@ -1061,12 +1135,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest, Success) {
       device::FidoRequestType::kGetAssertion,
       device::AuthenticatorType::kPhone);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::kSuccess, 1);
+  ExpectUniqueOutcome(Outcome::kSuccess, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        NonHybridSuccessDoesNotRecordOutcome) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1080,10 +1152,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       device::AuthenticatorType::kEnclave);
   delegate.reset();
 
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 0);
+  ExpectTotalOutcomeCount(0);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        NonPhoneFailureAfterScanRecordsOtherAuthenticatorUsed) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1109,18 +1181,14 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       device::AuthenticatorType::kOther,
       ChromeAuthenticatorRequestDelegate::InterestingFailureReason::
           kUserConsentDenied);
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kOtherAuthenticatorUsed,
-      1);
+  ExpectUniqueOutcome(Outcome::kOtherAuthenticatorUsed, 1);
 
   // Dismissing the resulting error dialog doesn't record another sample.
   delegate->OnCancelRequest();
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 1);
+  ExpectTotalOutcomeCount(1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        NoScanOnDestroyDoesNotRecordOutcome) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1129,10 +1197,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   // an outcome.
   delegate.reset();
 
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 0);
+  ExpectTotalOutcomeCount(0);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        NoScanOnCancelDoesNotRecordOutcome) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1154,10 +1222,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   // an outcome.
   delegate->OnCancelRequest();
 
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 0);
+  ExpectTotalOutcomeCount(0);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        CancelledAfterBleAdvertReceived) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1178,14 +1246,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   delegate->OnCableEventForTesting(device::cablev2::Event::kBLEAdvertReceived);
   delegate->OnCancelRequest();
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledAfterBleAdvertReceived,
-      1);
+  ExpectUniqueOutcome(Outcome::kCancelledAfterBleAdvertReceived, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        CancelledAfterPhoneConnected) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1207,14 +1271,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   delegate->OnCableEventForTesting(device::cablev2::Event::kPhoneConnected);
   delegate->OnCancelRequest();
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledAfterPhoneConnected,
-      1);
+  ExpectUniqueOutcome(Outcome::kCancelledAfterPhoneConnected, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        CancelledWhileWaitingForPhone) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1237,14 +1297,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   delegate->OnCableEventForTesting(device::cablev2::Event::kReady);
   delegate->OnCancelRequest();
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledWhileWaitingForPhone,
-      1);
+  ExpectUniqueOutcome(Outcome::kCancelledWhileWaitingForPhone, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        FailedAfterBleAdvertReceived) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1252,14 +1308,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   delegate->OnCableEventForTesting(device::cablev2::Event::kBLEAdvertReceived);
   delegate.reset();
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kFailedAfterBleAdvertReceived,
-      1);
+  ExpectUniqueOutcome(Outcome::kFailedAfterBleAdvertReceived, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        FailedAfterPhoneConnected) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1268,14 +1320,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   delegate->OnCableEventForTesting(device::cablev2::Event::kPhoneConnected);
   delegate.reset();
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kFailedAfterPhoneConnected,
-      1);
+  ExpectUniqueOutcome(Outcome::kFailedAfterPhoneConnected, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        FailedWhileWaitingForPhone) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1285,14 +1333,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   delegate->OnCableEventForTesting(device::cablev2::Event::kReady);
   delegate.reset();
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kFailedWhileWaitingForPhone,
-      1);
+  ExpectUniqueOutcome(Outcome::kFailedWhileWaitingForPhone, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        CancelledOrNoPasskeysOnPhone_UserConsentDenied) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1303,14 +1347,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       ChromeAuthenticatorRequestDelegate::InterestingFailureReason::
           kUserConsentDenied);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledOrNoPasskeysOnPhone,
-      1);
+  ExpectUniqueOutcome(Outcome::kCancelledOrNoPasskeysOnPhone, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        CancelledOrNoPasskeysOnPhone_NoPasskeys) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1320,14 +1360,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
                                 ChromeAuthenticatorRequestDelegate::
                                     InterestingFailureReason::kNoPasskeys);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledOrNoPasskeysOnPhone,
-      1);
+  ExpectUniqueOutcome(Outcome::kCancelledOrNoPasskeysOnPhone, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        CancelledOrNoPasskeysOnPhone_KeyNotRegistered) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1338,14 +1374,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       ChromeAuthenticatorRequestDelegate::InterestingFailureReason::
           kKeyNotRegistered);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledOrNoPasskeysOnPhone,
-      1);
+  ExpectUniqueOutcome(Outcome::kCancelledOrNoPasskeysOnPhone, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        PhoneConsentDeniedRecordsCancelledOnPhoneRegardlessOfStage) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1358,14 +1390,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       ChromeAuthenticatorRequestDelegate::InterestingFailureReason::
           kUserConsentDenied);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledOrNoPasskeysOnPhone,
-      1);
+  ExpectUniqueOutcome(Outcome::kCancelledOrNoPasskeysOnPhone, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        HybridTransportError) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1376,14 +1404,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       ChromeAuthenticatorRequestDelegate::InterestingFailureReason::
           kHybridTransportError);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kHybridTransportError,
-      1);
+  ExpectUniqueOutcome(Outcome::kHybridTransportError, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        NonPhoneSuccessAfterScanRecordsOtherAuthenticatorUsed) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1399,18 +1423,14 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       device::FidoRequestType::kGetAssertion,
       device::AuthenticatorType::kEnclave);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kOtherAuthenticatorUsed,
-      1);
+  ExpectUniqueOutcome(Outcome::kOtherAuthenticatorUsed, 1);
 
   // Teardown doesn't record another sample.
   delegate.reset();
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 1);
+  ExpectTotalOutcomeCount(1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        FailedTimeout) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1420,13 +1440,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       /*authenticator_type=*/std::nullopt,
       ChromeAuthenticatorRequestDelegate::InterestingFailureReason::kTimeout);
 
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::kFailedTimeout,
-      1);
+  ExpectUniqueOutcome(Outcome::kFailedTimeout, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        TimeoutWithoutScanDoesNotRecordOutcome) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1435,10 +1452,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       /*authenticator_type=*/std::nullopt,
       ChromeAuthenticatorRequestDelegate::InterestingFailureReason::kTimeout);
 
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 0);
+  ExpectTotalOutcomeCount(0);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
        RestartRequestRecordsPriorOutcome) {
   MockCableDiscoveryFactory discovery_factory;
   auto delegate = CreateDelegate(&discovery_factory);
@@ -1464,11 +1481,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
 
   // The first attempt should be recorded as cancelled after BLE advert
   // received.
-  histogram_tester_.ExpectBucketCount(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::
-          kCancelledAfterBleAdvertReceived,
-      1);
+  ExpectOutcomeBucketCount(Outcome::kCancelledAfterBleAdvertReceived, 1);
 
   // Discoveries are re-configured for the second attempt.
   delegate->ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
@@ -1492,14 +1505,12 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       device::FidoRequestType::kGetAssertion,
       device::AuthenticatorType::kPhone);
 
-  histogram_tester_.ExpectBucketCount(
-      "Signin.HybridPasskey.Outcome",
-      ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 2);
+  ExpectOutcomeBucketCount(Outcome::kSuccess, 1);
+  ExpectTotalOutcomeCount(2);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
-       NotChromeSigninRequestDoesNotRecordOutcome) {
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
+       NotChromeSigninRequestRecordsOnlyGeneralOutcome) {
   std::unique_ptr<content::WebContents> non_signin_web_contents =
       CreateTestWebContents();
   MockCableDiscoveryFactory discovery_factory;
@@ -1517,16 +1528,26 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       /*user_name=*/std::nullopt,
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
-  // Even though caBLE events advance the hybrid stage, non-Chrome sign-in
-  // requests do not record Signin.HybridPasskey.Outcome at the recording stage.
+  // Requests from a tab that is not the Chrome sign-in page record
+  // WebAuthentication.Hybrid.Outcome but not Signin.HybridPasskey.Outcome,
+  // regardless of the context the fixture was set up with.
   delegate->OnCableEventForTesting(device::cablev2::Event::kBLEAdvertReceived);
   delegate.reset();
 
-  histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 0);
+  histogram_tester_.ExpectUniqueSample(
+      kGeneralOutcome, Outcome::kFailedAfterBleAdvertReceived, 1);
+  histogram_tester_.ExpectTotalCount(kSigninOutcome, 0);
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest
-    : public ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest {
+    : public ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase {
+ public:
+  void SetUp() override {
+    ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase::SetUp();
+    SetUpChromeSigninPage();
+  }
+
  protected:
   static constexpr char kEngagement[] =
       "Signin.HybridPasskey.InlineQrEngagement";

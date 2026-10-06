@@ -722,6 +722,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Hybrid.Outcome"
+    enum="WebAuthenticationHybridPasskeyOutcome" expires_after="2027-04-01">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the final outcome and drop-off reasons for WebAuthn hybrid (caBLEv2)
+    requests once the hybrid connection has started (i.e. a BLE advert from the
+    phone was received). Recorded for all navigator.credentials requests,
+    including those made on the Chrome sign-in page (which additionally record
+    Signin.HybridPasskey.Outcome). Not recorded for Secure Payment Confirmation.
+    Recorded once per hybrid attempt; a request that is restarted or retried
+    emits one sample per attempt.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.IOS.ContentAreaEvent"
     enum="WebAuthenticationIOSContentAreaEvent" expires_after="2027-03-21">
   <owner>rgod@google.com</owner>

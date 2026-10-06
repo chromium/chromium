@@ -99,10 +99,9 @@ class ChromeAuthenticatorRequestDelegate
     virtual void PreStartOver() {}
   };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  // LINT.IfChange(SigninHybridPasskeyOutcome)
+  // LINT.IfChange(HybridPasskeyOutcome)
   enum class HybridPasskeyOutcome {
     kSuccess = 0,
     kCancelledAfterBleAdvertReceived = 1,
@@ -117,7 +116,7 @@ class ChromeAuthenticatorRequestDelegate
     kOtherAuthenticatorUsed = 10,
     kMaxValue = kOtherAuthenticatorUsed,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninHybridPasskeyOutcome)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationHybridPasskeyOutcome)
 
   enum class HybridPasskeySessionStage {
     kBLEAdvertReceived,
@@ -140,7 +139,6 @@ class ChromeAuthenticatorRequestDelegate
     kMaxValue = kNoScanDetected,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninHybridPasskeyEngagement)
-#endif
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   // The |render_frame_host| must outlive this instance.
@@ -260,7 +258,6 @@ class ChromeAuthenticatorRequestDelegate
   void SetPasswordFetcherForTesting(
       std::unique_ptr<PasswordCredentialFetcher> fetcher);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Called when the inline hybrid passkey QR code suggestion is shown in the
   // Autofill dropdown. May be called repeatedly within one attempt.
   void OnHybridPasskeyQrCodeShownInAutofill();
@@ -268,7 +265,6 @@ class ChromeAuthenticatorRequestDelegate
   void OnCableEventForTesting(device::cablev2::Event event) {
     OnCableEvent(event);
   }
-#endif
 
   // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
   // to the constructor.
@@ -397,7 +393,6 @@ class ChromeAuthenticatorRequestDelegate
 
   std::unique_ptr<UiReadinessBarrier> barrier_;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   enum class HybridPasskeyTerminationReason {
     kUserCancelled,
     kOtherFailure,
@@ -406,9 +401,10 @@ class ChromeAuthenticatorRequestDelegate
   // Updates `hybrid_passkey_stage_` as caBLEv2 connection events arrive.
   void SetHybridPasskeyStageFromCableEvent(device::cablev2::Event event);
 
-  // Records `Signin.HybridPasskey.Outcome` if this is a Chrome sign-in request
-  // and a hybrid session stage was reached (`hybrid_passkey_stage_` is set),
-  // then resets `hybrid_passkey_stage_` so only one outcome is emitted per
+  // If a hybrid session stage was reached (`hybrid_passkey_stage_` is set),
+  // records `WebAuthentication.Hybrid.Outcome` for WebAuthn requests and, on
+  // DICE builds, `Signin.HybridPasskey.Outcome` for Chrome sign-in requests.
+  // Then resets `hybrid_passkey_stage_` so only one outcome is emitted per
   // attempt.
   //
   // This overload is used when the request ends without a response from the
@@ -422,20 +418,22 @@ class ChromeAuthenticatorRequestDelegate
   // code) are recorded as `kOtherAuthenticatorUsed` instead.
   void MaybeRecordHybridPasskeyOutcome(InterestingFailureReason reason);
 
+  // The source of the current request, set in `ConfigureDiscoveries`.
+  std::optional<RequestSource> request_source_;
+  std::optional<HybridPasskeySessionStage> hybrid_passkey_stage_;
+
   // Records `Signin.HybridPasskey.InlineQrEngagement` if this is a Chrome
   // sign-in request and the inline QR code was shown, then clears the
   // per-attempt state so that at most one sample is emitted per attempt.
   void MaybeRecordHybridPasskeyEngagement();
 
   bool is_chrome_signin_request_ = false;
-  std::optional<HybridPasskeySessionStage> hybrid_passkey_stage_;
   bool hybrid_passkey_qr_shown_ = false;
 
   // Tracked separately from `hybrid_passkey_stage_` because that field is reset
   // when an outcome is recorded, which may happen before the engagement sample
   // is emitted.
   bool hybrid_passkey_scanned_ = false;
-#endif
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
