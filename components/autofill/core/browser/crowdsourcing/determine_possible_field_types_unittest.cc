@@ -82,6 +82,7 @@ using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::Pair;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
@@ -1672,10 +1673,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-us",
           form_structure->fields());
 
-  ASSERT_EQ(possible_types.size(), 3u);
-  EXPECT_TRUE(possible_types[1].types.contains(PHONE_HOME_COUNTRY_CODE));
-  EXPECT_FALSE(possible_types[1].types.contains(ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(possible_types[1].types.size(), 1u);
+  ASSERT_THAT(possible_types, SizeIs(3u));
+  EXPECT_THAT(possible_types[1].types, ElementsAre(PHONE_HOME_COUNTRY_CODE));
 }
 
 // Test that Autofill.Timing.DeterminePossibleFieldTypesForUpload is logged.
@@ -1694,7 +1693,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           /*loyalty_cards=*/{}, /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-US",
           form_structure->fields());
-  EXPECT_EQ(possible_types.size(), 1u);
+  EXPECT_THAT(possible_types, SizeIs(1u));
 
   histogram_tester.ExpectTotalCount(
       "Autofill.Timing.DeterminePossibleFieldTypesForUpload", 1);
