@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
@@ -26,6 +27,10 @@ class Profile;
 namespace chromeos {
 class PpdProvider;
 }
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -79,10 +84,11 @@ class CupsPrintersManager : public PrinterInstallationManager,
 
   // Factory function.
   // `application_locale_storage` must be non-null and must outlive the returned
-  // object.
+  // object. `url_loader_factory` must be non-null.
   static std::unique_ptr<CupsPrintersManager> Create(
       PrefService& local_state,
       const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile);
 
   // Factory function that allows injected dependencies, for testing.  Ownership

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/shell_observer.h"
 #include "ash/webui/settings/public/constants/setting.mojom-forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
@@ -27,6 +28,10 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace ash::settings {
 
 class SearchTagRegistry;
@@ -39,10 +44,13 @@ class DeviceSection : public OsSettingsSection,
                       public ash::CrosDisplayConfig::Observer,
                       public ash::ShellObserver {
  public:
-  DeviceSection(Profile* profile,
-                SearchTagRegistry* search_tag_registry,
-                CupsPrintersManager* printers_manager,
-                PrefService* pref_service);
+  // `url_loader_factory` must be non-null.
+  DeviceSection(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      Profile* profile,
+      SearchTagRegistry* search_tag_registry,
+      CupsPrintersManager* printers_manager,
+      PrefService* pref_service);
   ~DeviceSection() override;
 
   // ash::ShellObserver:

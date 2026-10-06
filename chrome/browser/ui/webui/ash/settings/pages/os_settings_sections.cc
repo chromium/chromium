@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/search/search_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/system_preferences_section.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::settings {
 
@@ -37,6 +38,7 @@ OsSettingsSections::OsSettingsSections(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
@@ -47,6 +49,8 @@ OsSettingsSections::OsSettingsSections(
     CupsPrintersManager* printers_manager,
     apps::AppServiceProxy* app_service_proxy,
     eche_app::EcheAppManager* eche_app_manager) {
+  CHECK(url_loader_factory);
+
   auto* prefs = profile->GetPrefs();
 
   // Special case: Main section does not have an associated enum value.
@@ -70,7 +74,8 @@ OsSettingsSections::OsSettingsSections(
                                              identity_manager, prefs));
 
   AddSection(mojom::Section::kDevice,
-             std::make_unique<DeviceSection>(profile, search_tag_registry,
+             std::make_unique<DeviceSection>(std::move(url_loader_factory),
+                                             profile, search_tag_registry,
                                              printers_manager, prefs));
 
   AddSection(mojom::Section::kPersonalization,

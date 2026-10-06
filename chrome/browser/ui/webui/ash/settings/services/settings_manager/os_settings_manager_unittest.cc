@@ -45,6 +45,8 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 
@@ -71,6 +73,8 @@ class OsSettingsManagerTest : public testing::Test {
         base::CommandLine::ForCurrentProcess());
 
     scoped_feature_list_.InitWithFeatures({arc::kPerAppLanguage}, {});
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     ASSERT_TRUE(profile_manager_.SetUp());
 
     // Log in user to ensure ARC PlayStore can be enabled.
@@ -109,6 +113,7 @@ class OsSettingsManagerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->browser_policy_connector_ash(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         profile, local_search_service_proxy_.get(),
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
             profile),
@@ -121,9 +126,16 @@ class OsSettingsManagerTest : public testing::Test {
         eche_app::EcheAppManagerFactory::GetForProfile(profile));
   }
 
+  void TearDown() override {
+    manager_.reset();
+    graduation_manager_.reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+  }
+
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<local_search_service::LocalSearchServiceProxy>

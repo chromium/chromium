@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//components/account_id",
     "//components/user_manager",
     "//content/test:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
   ]

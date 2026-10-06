@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 
@@ -69,7 +70,8 @@ CupsPrintersManagerFactory::BuildServiceInstanceForBrowserContext(
   // base::NoDestructor.
   std::unique_ptr<CupsPrintersManager> manager = CupsPrintersManager::Create(
       CHECK_DEREF(g_browser_process->local_state()),
-      g_browser_process->GetFeatures()->application_locale_storage(), profile);
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->shared_url_loader_factory(), profile);
   if (ProfileHelper::IsPrimaryProfile(profile)) {
     proxy_->SetManager(manager.get());
   }

@@ -8,12 +8,14 @@
 
 #include "ash/constants/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
@@ -90,11 +92,15 @@ base::span<const SearchConcept> GetScanningAppSearchConcepts() {
 
 }  // namespace
 
-PrintingSection::PrintingSection(Profile* profile,
-                                 SearchTagRegistry* search_tag_registry,
-                                 CupsPrintersManager* printers_manager)
+PrintingSection::PrintingSection(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry,
+    CupsPrintersManager* printers_manager)
     : OsSettingsSection(profile, search_tag_registry),
+      url_loader_factory_(std::move(url_loader_factory)),
       printers_manager_(printers_manager) {
+  CHECK(url_loader_factory_);
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrintingSearchConcepts());
   updater.AddSearchTags(GetPrintingManagementSearchConcepts());
@@ -318,8 +324,8 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(
-      std::make_unique<CupsPrintersHandler>(profile(), printers_manager_));
+  web_ui->AddMessageHandler(std::make_unique<CupsPrintersHandler>(
+      url_loader_factory_, profile(), printers_manager_));
 }
 
 int PrintingSection::GetSectionNameMessageId() const {

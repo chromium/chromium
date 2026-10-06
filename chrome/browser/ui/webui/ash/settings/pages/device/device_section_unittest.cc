@@ -20,6 +20,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
@@ -79,6 +81,8 @@ class DeviceSectionTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -101,6 +105,7 @@ class DeviceSectionTest : public testing::Test {
 
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile("name");
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
   }
 
   TestingProfile* profile() { return profile_; }
@@ -114,6 +119,7 @@ class DeviceSectionTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   ash::settings::SearchTagRegistry search_tag_registry_;
@@ -126,6 +132,7 @@ class DeviceSectionTest : public testing::Test {
 // Verify registry updated with Audio search tags.
 TEST_F(DeviceSectionTest, SearchResultIncludeAudio) {
   device_section_ = std::make_unique<DeviceSection>(
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
       profile(), search_tag_registry(), printers_manager(), pref_service());
 
   std::string result_id = GetSubpageSearchResultId(
@@ -136,6 +143,7 @@ TEST_F(DeviceSectionTest, SearchResultIncludeAudio) {
 // Verify registry updated with Printing search tags.
 TEST_F(DeviceSectionTest, SearchResultIncludePrinting) {
   device_section_ = std::make_unique<DeviceSection>(
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
       profile(), search_tag_registry(), printers_manager(), pref_service());
 
   std::string add_printer_result_id = GetSettingsSearchResultId(
@@ -158,6 +166,7 @@ TEST_F(DeviceSectionTest, SearchResultIncludePrinting) {
 // enabled.
 TEST_F(DeviceSectionTest, SearchResultChangeToSettingsSplitWithFlag) {
   device_section_ = std::make_unique<DeviceSection>(
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
       profile(), search_tag_registry(), printers_manager(), pref_service());
 
   std::string result_id = GetSubpageSearchResultId(

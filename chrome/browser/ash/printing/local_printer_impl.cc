@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
@@ -21,6 +22,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "components/account_id/account_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -185,8 +187,12 @@ void OnOAuthAccessTokenObtained(
 }  // namespace
 
 LocalPrinterImpl::LocalPrinterImpl(
-    const ApplicationLocaleStorage* application_locale_storage)
-    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      url_loader_factory_(std::move(url_loader_factory)) {
+  CHECK(url_loader_factory_);
+}
 
 LocalPrinterImpl::~LocalPrinterImpl() = default;
 
@@ -314,7 +320,7 @@ void LocalPrinterImpl::GetOAuthAccessToken(
 
 std::unique_ptr<chromeos::PpdProvider> LocalPrinterImpl::CreatePpdProvider(
     Profile* profile) {
-  return ash::CreatePpdProvider(profile);
+  return ash::CreatePpdProvider(url_loader_factory_, profile);
 }
 
 }  // namespace ash

@@ -60,6 +60,7 @@
 #include "net/base/ip_endpoint.h"
 #include "printing/backend/print_backend.h"
 #include "printing/printer_status.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -241,11 +242,14 @@ GURL GenerateHttpCupsServerUrl(const GURL& server_url) {
 
 }  // namespace
 
-CupsPrintersHandler::CupsPrintersHandler(Profile* profile,
-                                         CupsPrintersManager* printers_manager)
-    : CupsPrintersHandler(profile,
-                          CreatePpdProvider(profile),
-                          printers_manager) {}
+CupsPrintersHandler::CupsPrintersHandler(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    Profile* profile,
+    CupsPrintersManager* printers_manager)
+    : CupsPrintersHandler(
+          profile,
+          CreatePpdProvider(std::move(url_loader_factory), profile),
+          printers_manager) {}
 
 CupsPrintersHandler::CupsPrintersHandler(
     Profile* profile,

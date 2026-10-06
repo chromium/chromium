@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/printing/ppd_cache.h"
 #include "chromeos/printing/ppd_metadata_manager.h"
@@ -39,7 +38,9 @@ chromeos::PpdIndexChannel ToPpdIndexChannel(const std::string& channel) {
 
 }  // namespace
 
-std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
+std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    Profile* profile) {
   const chromeos::PpdIndexChannel channel = ToPpdIndexChannel(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ash::switches::kPrintingPpdChannel));
@@ -49,9 +50,6 @@ std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
   base::FilePath ppd_cache_path = profile->GetPath().Append(
       use_localhost_as_root ? FILE_PATH_LITERAL("PPDCacheLocalhost")
                             : FILE_PATH_LITERAL("PPDCache"));
-
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
 
   auto provider_config_cache = chromeos::PrinterConfigCache::Create(
       base::DefaultClock::GetInstance(), url_loader_factory,

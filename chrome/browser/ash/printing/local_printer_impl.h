@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/printing/local_printer.h"
 
 class ApplicationLocaleStorage;
@@ -19,13 +20,19 @@ namespace chromeos {
 class PpdProvider;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace ash {
 
 class LocalPrinterImpl : public LocalPrinter {
  public:
   // `application_locale_storage` must be non-null and outlive this.
-  explicit LocalPrinterImpl(
-      const ApplicationLocaleStorage* application_locale_storage);
+  // `url_loader_factory` must be non-null.
+  LocalPrinterImpl(
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   LocalPrinterImpl(const LocalPrinterImpl&) = delete;
   LocalPrinterImpl& operator=(const LocalPrinterImpl&) = delete;
   ~LocalPrinterImpl() override;
@@ -56,6 +63,7 @@ class LocalPrinterImpl : public LocalPrinter {
 
  private:
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 }  // namespace ash

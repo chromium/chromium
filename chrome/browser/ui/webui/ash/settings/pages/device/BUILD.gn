@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//device/udev_linux:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
     "//ui/events/devices",

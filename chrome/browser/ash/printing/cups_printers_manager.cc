@@ -64,6 +64,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/printer_query_result.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 
@@ -1313,13 +1314,15 @@ class CupsPrintersManagerImpl
 std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
     PrefService& local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile) {
   return std::make_unique<CupsPrintersManagerImpl>(
       application_locale_storage,
       SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
           profile),
       UsbPrinterDetector::Create(), ZeroconfPrinterDetector::Create(),
-      CreatePpdProvider(profile), DlcserviceClient::Get(),
+      CreatePpdProvider(std::move(url_loader_factory), profile),
+      DlcserviceClient::Get(),
       UsbPrinterNotificationController::Create(profile),
       PrintServersManager::Create(local_state, profile),
       EnterprisePrintersProvider::Create(CrosSettings::Get(), profile),

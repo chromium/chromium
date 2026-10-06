@@ -219,6 +219,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/filename_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-shared.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -2873,7 +2874,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetPrinterListFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   printers_manager_ = ash::CupsPrintersManager::Create(
       CHECK_DEREF(g_browser_process->local_state()),
-      g_browser_process->GetFeatures()->application_locale_storage(), profile);
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->shared_url_loader_factory(), profile);
   printers_manager_->AddObserver(this);
 
   // Set up a timer to finish waiting after 10 seconds

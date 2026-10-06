@@ -1248,7 +1248,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
 #if BUILDFLAG(USE_CUPS)
   local_printer_ = std::make_unique<LocalPrinterImpl>(
-      g_browser_process->GetFeatures()->application_locale_storage());
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->shared_url_loader_factory());
 #endif
 
   ash_web_ui_config_manager_ = std::make_unique<AshWebUIConfigManager>(

@@ -38,6 +38,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/display_features.h"
@@ -810,10 +811,12 @@ enum class TouchpadSensitivity {
 
 }  // namespace
 
-DeviceSection::DeviceSection(Profile* profile,
-                             SearchTagRegistry* search_tag_registry,
-                             CupsPrintersManager* printers_manager,
-                             PrefService* pref_service)
+DeviceSection::DeviceSection(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry,
+    CupsPrintersManager* printers_manager,
+    PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
       inputs_subsection_(
           profile,
@@ -823,7 +826,10 @@ DeviceSection::DeviceSection(Profile* profile,
               ? input_method::EditorMediatorFactory::GetInstance()
                     ->GetForProfile(profile)
               : nullptr),
-      printing_subsection_(profile, search_tag_registry, printers_manager) {
+      printing_subsection_(std::move(url_loader_factory),
+                           profile,
+                           search_tag_registry,
+                           printers_manager) {
   CHECK(profile);
   CHECK(search_tag_registry);
   CHECK(pref_service);
