@@ -185,7 +185,8 @@ TEST_F(ConnectionProxyTest, ProxyTokenFailure) {
                           future.GetCallback());
 
   // Fail token fetch.
-  token_manager_.RespondToGetAuthTokenForProxy(std::nullopt);
+  token_manager_.RespondToGetAuthTokenForProxy(
+      base::unexpected(phosphor::TokenManager::Error::kTokenFetchFailed));
 
   EXPECT_FALSE(inner_connection_);
   EXPECT_TRUE(on_disconnect_called_);
@@ -202,6 +203,26 @@ TEST_F(ConnectionProxyTest, ProxyTokenFailure) {
   auto result2 = future2.Get();
   EXPECT_FALSE(result2.has_value());
   EXPECT_EQ(result2.error(), StatusCode::kConnectionClosedByClient);
+}
+
+TEST_F(ConnectionProxyTest, ProxyTokenFailureNotSignedIn) {
+  CreateConnectionProxy();
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future;
+  connection_proxy_->Send(proto::PrivateAiRequest(), base::Seconds(10),
+                          future.GetCallback());
+
+  // Fail token fetch while not signed in.
+  token_manager_.RespondToGetAuthTokenForProxy(
+      base::unexpected(phosphor::TokenManager::Error::kAccountNotAvailable));
+
+  EXPECT_FALSE(inner_connection_);
+  EXPECT_TRUE(on_disconnect_called_);
+
+  auto result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), StatusCode::kAccountNotAvailable);
 }
 
 TEST_F(ConnectionProxyTest, ProxyConfigTokenFailure) {

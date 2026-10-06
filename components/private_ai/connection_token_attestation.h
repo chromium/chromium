@@ -6,22 +6,19 @@
 #define COMPONENTS_PRIVATE_AI_CONNECTION_TOKEN_ATTESTATION_H_
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/phosphor/data_types.h"
+#include "components/private_ai/phosphor/token_manager.h"
 #include "components/version_info/channel.h"
 
 namespace private_ai {
 
 class PrivateAiLogger;
-
-namespace phosphor {
-class TokenManager;
-}
 
 // A decorator for `Connection` that ensures that client attestation request
 // is sent first before sending any other requests.
@@ -76,7 +73,8 @@ class ConnectionTokenAttestation : public Connection {
   };
 
   void FetchToken();
-  void OnTokenFetched(std::optional<phosphor::BlindSignedAuthToken> auth_token);
+  void OnTokenFetched(base::expected<phosphor::BlindSignedAuthToken,
+                                     phosphor::TokenManager::Error> auth_token);
   void OnInnerConnectionResponse(
       OnRequestCallback original_callback,
       base::expected<proto::PrivateAiResponse, StatusCode> result);

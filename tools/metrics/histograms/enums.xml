@@ -25125,6 +25125,7 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Failed: BSA Other"/>
   <int value="8" label="Failed: OAuth Token Transient"/>
   <int value="9" label="Failed: OAuth Token Persistent"/>
+  <int value="10" label="Failed: Account in Error State"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/private_ai/phosphor/data_types.h:GetAuthnTokensResult) -->
@@ -25160,6 +25161,7 @@ Called by update_net_error_codes.py.-->
   <int value="22" label="ClientAttestationFailedRequestNotSent"/>
   <int value="23" label="ClientAttestationPresumedRejectedByServer"/>
   <int value="24" label="ClientAttestationFailedConnectionAborted"/>
+  <int value="25" label="AccountNotAvailable"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/private_ai/status_code.h:StatusCode) -->

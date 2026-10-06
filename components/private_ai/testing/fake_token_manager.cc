@@ -4,7 +4,6 @@
 
 #include "components/private_ai/testing/fake_token_manager.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -42,31 +41,33 @@ void FakeTokenManager::RunPendingCallbacks() {
 }
 
 void FakeTokenManager::RunPendingProxyCallbacks() {
-    std::optional<phosphor::BlindSignedAuthToken> token;
-    if (return_token_) {
-      token = phosphor::BlindSignedAuthToken{
-          .token = kFakeProxyToken,
-          .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw",
-          .expiration = base::Time::Now() + base::Minutes(1)};
-    }
-    proxy_callback_future_.Take().Run(std::move(token));
+  if (!return_token_) {
+    proxy_callback_future_.Take().Run(
+        base::unexpected(Error::kTokenFetchFailed));
+    return;
+  }
+  proxy_callback_future_.Take().Run(phosphor::BlindSignedAuthToken{
+      .token = kFakeProxyToken,
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw",
+      .expiration = base::Time::Now() + base::Minutes(1)});
 }
 
 void FakeTokenManager::RespondToGetAuthToken(
-    std::optional<phosphor::BlindSignedAuthToken> token) {
-  callback_future_.Take().Run(token);
+    base::expected<phosphor::BlindSignedAuthToken, Error> token) {
+  callback_future_.Take().Run(std::move(token));
 }
 
 void FakeTokenManager::RespondToGetAuthTokenForProxy(
-    std::optional<phosphor::BlindSignedAuthToken> token) {
+    base::expected<phosphor::BlindSignedAuthToken, Error> token) {
   proxy_callback_future_.Take().Run(std::move(token));
 }
 
 void FakeTokenManager::OnAccountStatusChanged(bool available) {}
 
-std::optional<phosphor::BlindSignedAuthToken> FakeTokenManager::GetToken() {
+base::expected<phosphor::BlindSignedAuthToken, FakeTokenManager::Error>
+FakeTokenManager::GetToken() {
   if (!return_token_) {
-    return std::nullopt;
+    return base::unexpected(Error::kTokenFetchFailed);
   }
   return phosphor::BlindSignedAuthToken{
       .token = kFakeToken,

@@ -104,6 +104,9 @@ class MockTokenFetcher : public TokenFetcher {
 
 class TokenManagerImplTest : public testing::Test {
  protected:
+  using GetAuthTokenFuture = base::test::TestFuture<
+      base::expected<BlindSignedAuthToken, TokenManager::Error>>;
+
   TokenManagerImplTest() {
     auto mock_fetcher = std::make_unique<MockTokenFetcher>();
     mock_fetcher_ = mock_fetcher.get();
@@ -144,7 +147,7 @@ TEST_F(TokenManagerImplTest, GetAuthToken) {
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   {
-    base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+    GetAuthTokenFuture future;
     token_manager_->GetAuthToken(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
@@ -157,7 +160,7 @@ TEST_F(TokenManagerImplTest, GetAuthToken) {
       expected_batch_size_, quiche::ProxyLayer::kTerminalLayer,
       TokenBatch(expected_batch_size_, kFutureExpiration));
   for (int i = 0; i < expected_batch_size_ - 1; ++i) {
-    base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+    GetAuthTokenFuture future;
     token_manager_->GetAuthToken(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     ASSERT_TRUE(future.Get().has_value());
@@ -167,7 +170,7 @@ TEST_F(TokenManagerImplTest, GetAuthToken) {
 
   // A token should be available from the new batch.
   {
-    base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+    GetAuthTokenFuture future;
     token_manager_->GetAuthToken(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     ASSERT_TRUE(future.Get().has_value());
@@ -181,7 +184,7 @@ TEST_F(TokenManagerImplTest, GetAuthTokenForProxy) {
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   {
-    base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+    GetAuthTokenFuture future;
     token_manager_->GetAuthTokenForProxy(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());

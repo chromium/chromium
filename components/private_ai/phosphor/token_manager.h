@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_PRIVATE_AI_PHOSPHOR_TOKEN_MANAGER_H_
 #define COMPONENTS_PRIVATE_AI_PHOSPHOR_TOKEN_MANAGER_H_
 
-#include <optional>
-#include <string>
-
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 
@@ -17,8 +15,13 @@ namespace private_ai::phosphor {
 // Manages the cache of blind-signed auth tokens for PrivateAI.
 class TokenManager {
  public:
+  enum class Error {
+    kTokenFetchFailed,
+    kAccountNotAvailable,
+  };
+
   using GetAuthTokenCallback =
-      base::OnceCallback<void(std::optional<BlindSignedAuthToken>)>;
+      base::OnceCallback<void(base::expected<BlindSignedAuthToken, Error>)>;
 
   virtual ~TokenManager() = default;
 

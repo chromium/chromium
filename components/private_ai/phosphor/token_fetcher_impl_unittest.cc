@@ -411,6 +411,7 @@ TEST_F(TokenFetcherImplTest, AuthTokenPersistentError) {
 
 // No primary account.
 TEST_F(TokenFetcherImplTest, NoAccount) {
+  oauth_token_provider_.is_token_fetch_enabled = false;
   oauth_token_provider_.response_access_token = std::nullopt;
   oauth_token_provider_.response_result =
       GetAuthnTokensResult::kFailedNoAccount;
@@ -419,6 +420,25 @@ TEST_F(TokenFetcherImplTest, NoAccount) {
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectGetAuthnTokensResultFailed(base::TimeDelta::Max());
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kFailedNoAccount, 1);
+}
+
+// Primary account is in a persistent error state.
+TEST_F(TokenFetcherImplTest, AccountInErrorState) {
+  oauth_token_provider_.is_token_fetch_enabled = false;
+  oauth_token_provider_.response_access_token = std::nullopt;
+  oauth_token_provider_.response_result =
+      GetAuthnTokensResult::kFailedAccountInErrorState;
+
+  GetAuthnTokens(1);
+
+  EXPECT_FALSE(bsa_->get_tokens_called());
+  ExpectGetAuthnTokensResultFailed(base::TimeDelta::Max());
+  histogram_tester_.ExpectUniqueSample(
+      "PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result",
+      GetAuthnTokensResult::kFailedAccountInErrorState, 1);
 }
 
 // Backoff calculations.
@@ -465,6 +485,11 @@ TEST_F(TokenFetcherImplTest, CalculateBackoff) {
   check_fn(kFailedNoAccount, base::TimeDelta::Max(), false);
   // The account-related backoffs should not be changed except by account change
   // events.
+  check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
+  fetcher_->OnAccountStatusChanged(true);
+  check_fn(kFailedBSA400, default_bug_backoff_, true);
+
+  check_fn(kFailedAccountInErrorState, base::TimeDelta::Max(), false);
   check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
   fetcher_->OnAccountStatusChanged(true);
   check_fn(kFailedBSA400, default_bug_backoff_, true);
@@ -520,6 +545,11 @@ TEST_F(TokenFetcherImplTest, CalculateBackoffNoJitter) {
   check_fn(kFailedNoAccount, base::TimeDelta::Max(), false);
   // The account-related backoffs should not be changed except by account change
   // events.
+  check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
+  fetcher_->OnAccountStatusChanged(true);
+  check_fn(kFailedBSA400, default_bug_backoff_, true);
+
+  check_fn(kFailedAccountInErrorState, base::TimeDelta::Max(), false);
   check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
   fetcher_->OnAccountStatusChanged(true);
   check_fn(kFailedBSA400, default_bug_backoff_, true);

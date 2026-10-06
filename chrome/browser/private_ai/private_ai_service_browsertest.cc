@@ -141,14 +141,16 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest, GetAuthToken) {
   tokens.push_back(std::move(bsa_token));
   test_private_ai_service->mock_bsa()->set_tokens(std::move(tokens));
 
-  base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>> future;
+  base::test::TestFuture<base::expected<phosphor::BlindSignedAuthToken,
+                                        phosphor::TokenManager::Error>>
+      future;
 
   // First call is async and starts the fetch.
   token_manager->GetAuthToken(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Wait for the async fetch to complete.
-  std::optional<phosphor::BlindSignedAuthToken> token = future.Get();
+  auto token = future.Get();
   ASSERT_TRUE(token.has_value());
 
   EXPECT_EQ(token->token, base::Base64Encode("test_token"));
@@ -183,13 +185,17 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
   test_private_ai_service->mock_bsa()->set_tokens(std::move(tokens));
 
   // First call is async and starts the fetch.
-  base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>> future;
+  base::test::TestFuture<base::expected<phosphor::BlindSignedAuthToken,
+                                        phosphor::TokenManager::Error>>
+      future;
   token_manager->GetAuthToken(future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
 
   // Second call should return a token from the cache.
-  base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>> future2;
+  base::test::TestFuture<base::expected<phosphor::BlindSignedAuthToken,
+                                        phosphor::TokenManager::Error>>
+      future2;
   token_manager->GetAuthToken(future2.GetCallback());
   EXPECT_FALSE(future2.IsReady());
   EXPECT_TRUE(future2.Get().has_value());

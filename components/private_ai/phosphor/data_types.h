@@ -43,8 +43,10 @@ enum class GetAuthnTokensResult {
   // There was a persistent failure fetching an OAuth token for the primary
   // account.
   kFailedOAuthTokenPersistent = 9,
+  // The primary account's refresh token is in a persistent error state.
+  kFailedAccountInErrorState = 10,
 
-  kMaxValue = kFailedOAuthTokenPersistent,
+  kMaxValue = kFailedAccountInErrorState,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiPhosphorGetAuthnTokensResult)
 

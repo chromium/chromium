@@ -90,7 +90,8 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
   }
   // If we are in a state where the OAuth token has persistent errors then don't
   // try to request tokens.
-  if (last_get_authn_tokens_backoff_ &&
+  if (oauth_token_provider_->IsTokenFetchEnabled() &&
+      last_get_authn_tokens_backoff_ &&
       *last_get_authn_tokens_backoff_ == base::TimeDelta::Max()) {
     GetAuthnTokensComplete(proxy_layer, std::nullopt, std::move(callback),
                            GetAuthnTokensResult::kFailedOAuthTokenPersistent);
@@ -240,6 +241,7 @@ std::optional<base::TimeDelta> TokenFetcherImpl::CalculateBackoff(
     case kSuccess:
       break;
     case kFailedNoAccount:
+    case kFailedAccountInErrorState:
     case kFailedOAuthTokenPersistent:
       backoff = base::TimeDelta::Max();
       break;

@@ -66,18 +66,19 @@ enum class StatusCode {
   // on this connection before the request was submitted. See
   // kClientAttestationPresumedRejectedByServer for the original failure.
   kClientAttestationFailedRequestNotSent = 22,
-  // A request failed before any successful response was received after the
-  // client attestation token was sent. The server closes the stream on an
-  // invalid token, so this is presumed to be a token rejection - but the
-  // rejection is never observed directly, and a network error or timeout at
-  // this point is reported the same way. See the
-  // PrivateAi.Client.ClientAttestationRequestFailureReason histogram for the
-  // underlying error.
+  // The connection was closed by the server before any successful response was
+  // received after the client attestation token was sent. Since the server
+  // closes the stream on an invalid token without sending an error response,
+  // this is presumed to be a token rejection. See the
+  // PrivateAi.Client.ClientAttestationRequestFailureReason histogram for all
+  // errors occurring before the first successful response.
   kClientAttestationPresumedRejectedByServer = 23,
   // The connection was torn down in response to the presumed rejection above.
   // Reported for requests that were already in flight at that moment.
   kClientAttestationFailedConnectionAborted = 24,
-  kMaxValue = kClientAttestationFailedConnectionAborted,
+  // The user is not signed in or their account is in a persistent error state.
+  kAccountNotAvailable = 25,
+  kMaxValue = kAccountNotAvailable,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiStatusCode)
 

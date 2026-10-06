@@ -5,6 +5,8 @@
 #include "components/private_ai/connection_token_attestation.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -99,11 +101,20 @@ void ConnectionTokenAttestation::FetchToken() {
 }
 
 void ConnectionTokenAttestation::OnTokenFetched(
-    std::optional<phosphor::BlindSignedAuthToken> auth_token) {
+    base::expected<phosphor::BlindSignedAuthToken,
+                   phosphor::TokenManager::Error> auth_token) {
   if (!auth_token.has_value()) {
-    logger_->LogError(FROM_HERE, "Failed to get anonymous auth token");
-    CallOnDisconnect(StatusCode::kClientAttestationTokenFetchFailed);
-    return;
+    switch (auth_token.error()) {
+      case phosphor::TokenManager::Error::kAccountNotAvailable:
+        logger_->LogError(FROM_HERE,
+                          "Failed to get anonymous auth token: not signed in");
+        CallOnDisconnect(StatusCode::kAccountNotAvailable);
+        return;
+      case phosphor::TokenManager::Error::kTokenFetchFailed:
+        logger_->LogError(FROM_HERE, "Failed to get anonymous auth token");
+        CallOnDisconnect(StatusCode::kClientAttestationTokenFetchFailed);
+        return;
+    }
   }
 
   // The `quiche::BlindSignAuth` library returns the token and extensions
@@ -165,28 +176,29 @@ void ConnectionTokenAttestation::OnInnerConnectionResponse(
     base::expected<proto::PrivateAiResponse, StatusCode> result) {
   if (attestation_state_ == AttestationState::kTokenSent) {
     if (!result.has_value()) {
-      // If *any* error occurs before we receive the first successful response
-      // after sending the token, we assume it's an attestation failure caused
-      // by an invalid token. The server closes the stream on invalid token,
-      // which surfaces as an error here.
       base::UmaHistogramEnumeration(
           "PrivateAi.Client.ClientAttestationRequestFailureReason",
           result.error());
 
-      logger_->LogError(
-          FROM_HERE,
-          base::StrCat({"Request failed with error code: ",
-                        base::NumberToString(static_cast<int>(result.error())),
-                        ", assuming token rejection."}));
-      attestation_state_ = AttestationState::kTokenFailed;
-      if (original_callback) {
-        std::move(original_callback)
-            .Run(base::unexpected(
-                StatusCode::kClientAttestationPresumedRejectedByServer));
+      if (result.error() == StatusCode::kConnectionClosedByServer) {
+        // The server closes the stream on an invalid token without sending an
+        // error response, which surfaces as kConnectionClosedByServer before
+        // the first successful response.
+        logger_->LogError(FROM_HERE,
+                          base::StrCat({"Request failed with error code: ",
+                                        base::NumberToString(
+                                            static_cast<int>(result.error())),
+                                        ", assuming token rejection."}));
+        attestation_state_ = AttestationState::kTokenFailed;
+        if (original_callback) {
+          std::move(original_callback)
+              .Run(base::unexpected(
+                  StatusCode::kClientAttestationPresumedRejectedByServer));
+        }
+        // The connection is now considered broken due to failed attestation.
+        CallOnDisconnect(StatusCode::kClientAttestationFailedConnectionAborted);
+        return;
       }
-      // The connection is now considered broken due to failed attestation.
-      CallOnDisconnect(StatusCode::kClientAttestationFailedConnectionAborted);
-      return;
     } else {
       // If we reach here with result.has_value() and we were in kTokenSent
       // state, it means this is the first successful response, so the token was

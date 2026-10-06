@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_PRIVATE_AI_TESTING_FAKE_TOKEN_MANAGER_H_
 #define COMPONENTS_PRIVATE_AI_TESTING_FAKE_TOKEN_MANAGER_H_
 
-#include <deque>
-#include <optional>
-
 #include "base/functional/callback.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/token_manager.h"
 
@@ -33,9 +31,9 @@ class FakeTokenManager : public phosphor::TokenManager {
 
   // An alternative to RunPending*Callbacks that allows custom token values.
   void RespondToGetAuthToken(
-      std::optional<phosphor::BlindSignedAuthToken> token);
+      base::expected<phosphor::BlindSignedAuthToken, Error> token);
   void RespondToGetAuthTokenForProxy(
-      std::optional<phosphor::BlindSignedAuthToken> token);
+      base::expected<phosphor::BlindSignedAuthToken, Error> token);
 
   void OnAccountStatusChanged(bool available) override;
 
@@ -43,7 +41,7 @@ class FakeTokenManager : public phosphor::TokenManager {
   static const char kFakeProxyToken[];
 
  private:
-  std::optional<phosphor::BlindSignedAuthToken> GetToken();
+  base::expected<phosphor::BlindSignedAuthToken, Error> GetToken();
 
   bool return_token_ = true;
   base::test::TestFuture<GetAuthTokenCallback> callback_future_;

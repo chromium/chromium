@@ -70,14 +70,14 @@ void FeatureTokenManager::GetAuthToken(
       "PrivateAi.Phosphor.FeatureTokenManager.ServedFromCache",
       !cache_.empty());
   if (!cache_.empty()) {
-    std::optional<BlindSignedAuthToken> result;
-    result.emplace(std::move(cache_.front()));
+    BlindSignedAuthToken token = std::move(cache_.front());
     cache_.pop_front();
 
     VLOG(2) << "PrivateAI ATC::GetAuthToken with " << cache_.size()
             << " tokens available";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::ok(std::move(token))));
   } else {
     if (try_get_auth_tokens_after_.has_value() &&
         base::Time::Now() < *try_get_auth_tokens_after_) {
@@ -85,8 +85,13 @@ void FeatureTokenManager::GetAuthToken(
                  "backoff";
       logger_->LogError(FROM_HERE,
                         "GetAuthToken failed immediately due to backoff");
+      TokenManager::Error error =
+          *try_get_auth_tokens_after_ == base::Time::Max()
+              ? TokenManager::Error::kAccountNotAvailable
+              : TokenManager::Error::kTokenFetchFailed;
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+          FROM_HERE,
+          base::BindOnce(std::move(callback), base::unexpected(error)));
       return;
     }
 
@@ -97,9 +102,9 @@ void FeatureTokenManager::GetAuthToken(
   MaybeRefillCache();
 }
 
-void FeatureTokenManager::FailPendingCallbacks() {
+void FeatureTokenManager::FailPendingCallbacks(TokenManager::Error error) {
   for (auto& callback : std::exchange(pending_callbacks_, {})) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(error));
   }
 }
 
@@ -117,7 +122,9 @@ void FeatureTokenManager::OnGotAuthTokens(
     base::UmaHistogramCounts100(
         "PrivateAi.Phosphor.FeatureTokenManager.TokensFetched", 0);
     try_get_auth_tokens_after_ = result.error();
-    FailPendingCallbacks();
+    FailPendingCallbacks(result.error() == base::Time::Max()
+                             ? TokenManager::Error::kAccountNotAvailable
+                             : TokenManager::Error::kTokenFetchFailed);
     ScheduleMaybeRefillCache();
     return;
   }
@@ -135,7 +142,7 @@ void FeatureTokenManager::OnGotAuthTokens(
                "Treating as a transient error.";
     try_get_auth_tokens_after_ =
         base::Time::Now() + kPrivateAiTryGetAuthTokensTransientBackoff.Get();
-    FailPendingCallbacks();
+    FailPendingCallbacks(TokenManager::Error::kTokenFetchFailed);
     ScheduleMaybeRefillCache();
     return;
   }
@@ -145,13 +152,12 @@ void FeatureTokenManager::OnGotAuthTokens(
   }
 
   while (!cache_.empty() && !pending_callbacks_.empty()) {
-    std::optional<BlindSignedAuthToken> token;
-    token.emplace(std::move(cache_.front()));
+    BlindSignedAuthToken token = std::move(cache_.front());
     cache_.pop_front();
     TokenManager::GetAuthTokenCallback callback =
         std::move(pending_callbacks_.front());
     pending_callbacks_.pop_front();
-    std::move(callback).Run(std::move(token));
+    std::move(callback).Run(base::ok(std::move(token)));
   }
 
   ScheduleMaybeRefillCache();

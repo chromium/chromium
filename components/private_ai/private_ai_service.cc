@@ -109,7 +109,10 @@ void PrivateAiService::SetClientForTesting(std::unique_ptr<Client> client) {
 bool PrivateAiService::IsTokenFetchEnabled() {
   CHECK(identity_manager_);
   if (is_shutting_down_ ||
-      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          identity_manager_->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin))) {
     return false;
   }
   return true;
@@ -118,9 +121,18 @@ bool PrivateAiService::IsTokenFetchEnabled() {
 void PrivateAiService::RequestOAuthToken(RequestOAuthTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsTokenFetchEnabled()) {
+  if (is_shutting_down_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::move(callback).Run(phosphor::GetAuthnTokensResult::kFailedNoAccount,
                             std::nullopt);
+    return;
+  }
+  if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          identity_manager_->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin))) {
+    std::move(callback).Run(
+        phosphor::GetAuthnTokensResult::kFailedAccountInErrorState,
+        std::nullopt);
     return;
   }
 

@@ -65,8 +65,8 @@ class FeatureTokenManager {
   void OnGotAuthTokens(
       base::expected<std::vector<BlindSignedAuthToken>, base::Time> result);
 
-  // Runs all pending callbacks with a `std::nullopt` token.
-  void FailPendingCallbacks();
+  // Runs all pending callbacks with the given `error`.
+  void FailPendingCallbacks(TokenManager::Error error);
 
   // Removes expired tokens from the cache.
   void RemoveExpiredTokens();

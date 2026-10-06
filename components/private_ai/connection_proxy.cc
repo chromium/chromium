@@ -4,6 +4,8 @@
 
 #include "components/private_ai/connection_proxy.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base64url.h"
@@ -156,13 +158,22 @@ void ConnectionProxy::FetchToken() {
 }
 
 void ConnectionProxy::OnProxyToken(
-    std::optional<phosphor::BlindSignedAuthToken> auth_token) {
+    base::expected<phosphor::BlindSignedAuthToken,
+                   phosphor::TokenManager::Error> auth_token) {
   is_initializing_ = false;
 
-  if (!auth_token) {
-    logger_->LogError(FROM_HERE, "Failed to get auth token for proxy.");
-    CallOnDisconnect(StatusCode::kProxyTokenFetchFailed);
-    return;
+  if (!auth_token.has_value()) {
+    switch (auth_token.error()) {
+      case phosphor::TokenManager::Error::kAccountNotAvailable:
+        logger_->LogError(FROM_HERE,
+                          "Failed to get auth token for proxy: not signed in.");
+        CallOnDisconnect(StatusCode::kAccountNotAvailable);
+        return;
+      case phosphor::TokenManager::Error::kTokenFetchFailed:
+        logger_->LogError(FROM_HERE, "Failed to get auth token for proxy.");
+        CallOnDisconnect(StatusCode::kProxyTokenFetchFailed);
+        return;
+    }
   }
 
   // NOTE: If adding/modifying fields in 'context_params' here, also
