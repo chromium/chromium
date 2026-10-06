@@ -83,6 +83,8 @@ suite('ContextualActionMenu', () => {
       keepMenuOpenOnTabSelectForRealbox: false,
       composeboxContextMenuEnableTabDeselection: false,
       useSearchboxConfigIconIds: true,
+      stsMegaplusAutomaticallyAddTabsHeader: 'Automatically add tabs',
+      stsMegaplusManuallyAddTabsHeader: 'Manually add tabs',
     });
 
     const pluralStringProxy = new TestPluralStringProxy();
@@ -2998,7 +3000,58 @@ suite('ContextualActionMenu', () => {
       const icon = flyoutToggleItem.querySelector('cr-icon');
       assertTrue(!!icon);
       assertEquals('composebox:screensaverAuto', icon.getAttribute('icon'));
+
+      // Headers are visible in flyout
+      const autoHeader = $$(actionMenu, '#automaticallyAddTabsHeader');
+      assertTrue(isVisible(autoHeader));
+      assertEquals('true', autoHeader?.getAttribute('aria-hidden'));
+      assertEquals('Automatically add tabs', autoHeader?.textContent?.trim());
+
+      const manualHeader = $$(actionMenu, '#manuallyAddTabsHeader');
+      assertTrue(isVisible(manualHeader));
+      assertEquals('true', manualHeader?.getAttribute('aria-hidden'));
+      assertEquals('Manually add tabs', manualHeader?.textContent?.trim());
     });
+
+    test(
+        'STS is OFF: no headers when showContextMenuHeaders is false',
+        async () => {
+          loadTimeData.overrideValues({
+            ShowContextMenuHeaders: false,
+          });
+          actionMenu.remove();
+          actionMenu =
+              document.createElement('cr-composebox-contextual-action-menu');
+          actionMenu.smartTabSharingVisible = true;
+          actionMenu.contextManagementInComposeboxEnabled = true;
+          actionMenu.tabSuggestions = [
+            createTabSuggestion({
+              tabId: 1,
+              title: 'Tab 1',
+            }),
+          ];
+          actionMenu.inputState = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+          });
+          document.body.appendChild(actionMenu);
+          await microtasksFinished();
+
+          actionMenu.smartTabSharingActive = false;
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+          await actionMenu.updateComplete;
+
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+          await actionMenu.updateComplete;
+
+          const autoHeader = $$(actionMenu, '#automaticallyAddTabsHeader');
+          assertFalse(isVisible(autoHeader));
+
+          const manualHeader = $$(actionMenu, '#manuallyAddTabsHeader');
+          assertFalse(isVisible(manualHeader));
+        });
 
     test('STS is ON: Show toggle in main menu, no flyout', async () => {
       actionMenu.smartTabSharingActive = true;

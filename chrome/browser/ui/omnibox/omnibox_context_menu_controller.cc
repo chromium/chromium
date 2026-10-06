@@ -460,6 +460,11 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     // If Smart Tab Sharing is enabled but NOT active, put the toggle at the
     // top of the submenu.
     if (is_smart_tab_sharing_enabled) {
+      const bool show_headers = omnibox::kShowContextMenuHeaders.Get();
+      if (show_headers) {
+        shared_tabs_menu_model_->AddTitleWithStringId(
+            IDS_STS_MEGAPLUS_AUTOMATICALLY_ADD_TABS_HEADER);
+      }
       shared_tabs_menu_model_->AddItem(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
                                        GetSmartTabSharingMegaplusMenuLabel());
       shared_tabs_menu_model_->SetIconForCommandId(
@@ -468,6 +473,10 @@ void OmniboxContextMenuController::AddRecentTabItems() {
               kScreensaverAutoIcon, ui::kColorMenuIcon,
               ui::SimpleMenuModel::kDefaultIconSize));
       shared_tabs_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+      if (show_headers) {
+        shared_tabs_menu_model_->AddTitleWithStringId(
+            IDS_STS_MEGAPLUS_MANUALLY_ADD_TABS_HEADER);
+      }
       first_tab_index = shared_tabs_menu_model_->GetItemCount();
     }
   } else {

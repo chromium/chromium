@@ -34,6 +34,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service_impl.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -794,11 +795,12 @@ TEST_F(OmniboxContextMenuControllerTest,
                   ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU)
                   .has_value());
 
-  // 4. Verify: Toggle IS in submenu at index 0
+  // 4. Verify: Toggle IS in submenu, directly below the "Automatically add
+  // tabs" header.
   ASSERT_TRUE(controller()->shared_tabs_menu_model());
   EXPECT_EQ(controller()->shared_tabs_menu_model()->GetIndexOfCommandId(
                 IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING),
-            0u);
+            1u);
 
   // 5. Verify: Minor icon is empty (unchecked)
   size_t index =
@@ -815,6 +817,91 @@ TEST_F(OmniboxContextMenuControllerTest,
   EXPECT_FALSE(icon.IsEmpty());
   EXPECT_TRUE(icon.IsVectorIcon());
   EXPECT_EQ(icon.GetVectorIcon().vector_icon(), &kScreensaverAutoIcon);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       SmartTabSharingSubmenuShowsSectionHeaders) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      "ContextManagementInComposebox,ContextManagementInOmnibox,"
+      "ContextualTasksForceEntryPointEligibility,"
+      "ContextualTasksContext<ContextualTasksContextStudy."
+      "ContextualTasksContextGroup:ContextualTasksContextSmartTabSharing/true",
+      "AimUsePecApi");
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetContextualSearchboxHandler(&fake_handler);
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+
+  fake_handler.active_ = false;
+  controller()->RebuildMenu();
+
+  ui::SimpleMenuModel* submenu = controller()->shared_tabs_menu_model();
+  ASSERT_TRUE(submenu);
+  ASSERT_EQ(submenu->GetItemCount(), 5u);
+
+  // "Automatically add tabs" header, then the toggle.
+  EXPECT_EQ(submenu->GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
+  EXPECT_EQ(submenu->GetLabelAt(0),
+            l10n_util::GetStringUTF16(
+                IDS_STS_MEGAPLUS_AUTOMATICALLY_ADD_TABS_HEADER));
+  EXPECT_EQ(submenu->GetCommandIdAt(1), IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING);
+
+  // Separator, then "Manually add tabs" header, then the tab list.
+  EXPECT_EQ(submenu->GetTypeAt(2), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(submenu->GetTypeAt(3), ui::MenuModel::TYPE_TITLE);
+  EXPECT_EQ(
+      submenu->GetLabelAt(3),
+      l10n_util::GetStringUTF16(IDS_STS_MEGAPLUS_MANUALLY_ADD_TABS_HEADER));
+  EXPECT_EQ(submenu->GetLabelAt(4), u"Tab 1");
+  EXPECT_EQ(submenu->GetElementIdentifierAt(4),
+            OmniboxContextMenuController::kFirstTabMenuItemIdForTesting);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       SmartTabSharingSubmenuHidesSectionHeadersWhenHeadersDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      "ContextManagementInComposebox,ContextManagementInOmnibox,"
+      "ContextualTasksForceEntryPointEligibility,"
+      "WebUIOmniboxAimPopup:Omnibox_ShowContextMenuHeaders/false,"
+      "ContextualTasksContext<ContextualTasksContextStudy."
+      "ContextualTasksContextGroup:ContextualTasksContextSmartTabSharing/true",
+      "AimUsePecApi");
+  ASSERT_FALSE(omnibox::kShowContextMenuHeaders.Get());
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetContextualSearchboxHandler(&fake_handler);
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+
+  fake_handler.active_ = false;
+  controller()->RebuildMenu();
+
+  ui::SimpleMenuModel* submenu = controller()->shared_tabs_menu_model();
+  ASSERT_TRUE(submenu);
+  ASSERT_EQ(submenu->GetItemCount(), 3u);
+  EXPECT_EQ(submenu->GetCommandIdAt(0), IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING);
+  EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(submenu->GetLabelAt(2), u"Tab 1");
+  for (size_t i = 0; i < submenu->GetItemCount(); ++i) {
+    EXPECT_NE(submenu->GetTypeAt(i), ui::MenuModel::TYPE_TITLE);
+  }
 }
 
 TEST_F(OmniboxContextMenuControllerTest,

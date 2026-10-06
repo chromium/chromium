@@ -204,6 +204,10 @@ export function getHtml(this: ContextualActionMenuElement) {
             @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
             @keydown="${this.onShareTabsFlyoutKeydown_}">
           ${this.smartTabSharingVisible ? html`
+            ${this.showContextMenuHeaders_ ? html`
+              <h4 id="automaticallyAddTabsHeader" aria-hidden="true">
+                ${this.i18n('stsMegaplusAutomaticallyAddTabsHeader')}</h4>
+            ` : ''}
             <button class="dropdown-item"
                 id="smartTabSharingItemFlyout"
                 role="menuitemcheckbox"
@@ -216,6 +220,10 @@ export function getHtml(this: ContextualActionMenuElement) {
                 ${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
             </button>
             <hr aria-hidden="true"/>
+            ${this.showContextMenuHeaders_ ? html`
+              <h4 id="manuallyAddTabsHeader" aria-hidden="true">
+                ${this.i18n('stsMegaplusManuallyAddTabsHeader')}</h4>
+            ` : ''}
           ` : ''}
 
           ${this.tabSuggestions.map((tab, index) => html`
