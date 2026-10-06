@@ -9,7 +9,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
@@ -176,11 +175,6 @@ void SharingChannelSender::SendMessageToFcmTarget(
   bool can_send_via_sync = !fcm_configuration.sender_id_fcm_token().empty() &&
                            !fcm_configuration.sender_id_p256dh().empty() &&
                            !fcm_configuration.sender_id_auth_secret().empty();
-
-  base::UmaHistogramBoolean(
-      "Sharing.SendMessageUsingSync",
-      can_send_via_sync &&
-          sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
 
   if (can_send_via_sync) {
     message.set_message_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
