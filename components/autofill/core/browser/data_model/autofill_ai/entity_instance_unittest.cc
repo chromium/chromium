@@ -27,6 +27,11 @@
 namespace autofill {
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Property;
+using ::testing::SizeIs;
+
 using enum AttributeTypeName;
 
 constexpr char kAppLocaleUS[] = "en-US";
@@ -190,8 +195,8 @@ TEST_F(AutofillEntityInstanceTest, Attributes) {
   const char16_t kName[] = u"Pippi";
   EntityInstance pp =
       test::GetPassportEntityInstance({.name = kName, .number = nullptr});
-  EXPECT_EQ(pp.attributes().size(), 4u);
-  EXPECT_EQ(pp.type().attributes().size(), 5u);
+  EXPECT_THAT(pp.attributes(), SizeIs(4u));
+  EXPECT_THAT(pp.type().attributes(), SizeIs(5u));
   EXPECT_FALSE(pp.attribute(AttributeType(kPassportNumber)));
   {
     base::optional_ref<const AttributeInstance> a =
@@ -429,7 +434,7 @@ TEST_F(
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(
           test::GetPassportEntityInstance());
-  EXPECT_TRUE(result.mergeable_attributes.empty());
+  EXPECT_THAT(result.mergeable_attributes, IsEmpty());
   EXPECT_TRUE(result.is_subset);
 }
 
@@ -440,7 +445,7 @@ TEST_F(
       test::GetPassportEntityInstance().GetEntityMergeability(
           test::GetPassportEntityInstance({.expiry_date = nullptr}));
 
-  EXPECT_TRUE(result.mergeable_attributes.empty());
+  EXPECT_THAT(result.mergeable_attributes, IsEmpty());
   EXPECT_TRUE(result.is_subset);
 }
 TEST_F(
@@ -450,7 +455,7 @@ TEST_F(
       test::GetPassportEntityInstance().GetEntityMergeability(
           test::GetPassportEntityInstance({.expiry_date = nullptr}));
 
-  EXPECT_TRUE(result.mergeable_attributes.empty());
+  EXPECT_THAT(result.mergeable_attributes, IsEmpty());
   EXPECT_TRUE(result.is_subset);
 }
 
@@ -463,9 +468,9 @@ TEST_F(
   EntityInstance::EntityMergeability result =
       old_entity.GetEntityMergeability(new_entity);
 
-  ASSERT_EQ(result.mergeable_attributes.size(), 1u);
-  EXPECT_EQ(result.mergeable_attributes[0].type().name(),
-            kPassportExpirationDate);
+  ASSERT_THAT(result.mergeable_attributes,
+              ElementsAre(Property(&AttributeInstance::type,
+                                   AttributeType(kPassportExpirationDate))));
 
   const AttributeInstance& old_attribute = result.mergeable_attributes[0];
   base::optional_ref<const AttributeInstance> new_attribute =
@@ -486,8 +491,9 @@ TEST_F(
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(new_entity);
 
-  ASSERT_EQ(result.mergeable_attributes.size(), 1u);
-  EXPECT_EQ(result.mergeable_attributes[0].type().name(), kPassportCountry);
+  ASSERT_THAT(result.mergeable_attributes,
+              ElementsAre(Property(&AttributeInstance::type,
+                                   AttributeType(kPassportCountry))));
 
   const AttributeInstance& old_attribute = result.mergeable_attributes[0];
   base::optional_ref<const AttributeInstance> new_attribute =
@@ -506,7 +512,7 @@ TEST_F(
       test::GetPassportEntityInstance({.number = u"456"});
   EntityInstance::EntityMergeability result =
       old_entity.GetEntityMergeability(new_entity);
-  EXPECT_TRUE(result.mergeable_attributes.empty());
+  EXPECT_THAT(result.mergeable_attributes, IsEmpty());
   EXPECT_FALSE(result.is_subset);
 }
 
@@ -518,7 +524,7 @@ TEST_F(
           .GetEntityMergeability(
               test::GetPassportEntityInstance({.number = u"1234    5"}));
 
-  EXPECT_TRUE(result.mergeable_attributes.empty());
+  EXPECT_THAT(result.mergeable_attributes, IsEmpty());
   EXPECT_TRUE(result.is_subset);
 }
 
@@ -556,7 +562,7 @@ TEST_F(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {
           .GetEntityMergeability(
               test::GetVehicleEntityInstance({.plate = u"6789"}));
 
-  EXPECT_TRUE(result.mergeable_attributes.empty());
+  EXPECT_THAT(result.mergeable_attributes, IsEmpty());
   EXPECT_FALSE(result.is_subset);
 }
 
