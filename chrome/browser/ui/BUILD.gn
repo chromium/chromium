@@ -1990,28 +1990,7 @@ static_library("ui") {
     "//ui/webui:buildflags",
   ]
 
-  allow_circular_includes_from = [
-    # page_load_metrics's :impl includes headers from //chrome/browser/ui that
-    # can't be split out yet.
-    "//chrome/browser/page_load_metrics:impl",
-
-    # profiles:misc includes headers from //chrome/browser/ui that can't be
-    # split out yet (e.g. browser.h).
-    "//chrome/browser/profiles:misc",
-    "//chrome/browser/profiles:profile_manager_impl",
-
-    # sessions includes headers from //chrome/browser/ui that can't be
-    # split out yet (e.g. browser.h).
-    "//chrome/browser/sessions",
-    "//chrome/browser/sessions:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when
-    # the following headers get modularized:
-    # - c/b/ui/browser_window.h
-    # - c/b/ui/browser.h
-    # - c/b/ui/views/frame/browser_view.h
-    "//chrome/browser/ui/views/file_system_access:impl",
-  ]
+  allow_circular_includes_from = []
 
   # The AI overlay dialog Java class is pulled into every Android APK by
   # toolbar code, so its JNI must be registered in all Android builds. The
@@ -2042,11 +2021,6 @@ static_library("ui") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/extensions:impl",
-    ]
-    allow_circular_includes_from += [
-      # TODO(crbug.com/420905611): Remove this circular dependency when
-      # c/b/ui/browser_dialogs.h gets componentized.
       "//chrome/browser/ui/extensions:impl",
     ]
   }
@@ -2089,237 +2063,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/default_browser:default_browser_modal",
       "//chrome/browser/ui/webui/default_browser:modal_mojo_bindings",
     ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/views/relaunch_notification:impl" ]
   }
-
-  # TODO(crbug.com/41437292): Remove this circular dependency. Any circular
-  # includes must depend on the target
-  # "//chrome/browser:browser_public_dependencies". These are all-platform
-  # circular includes.
-  if (!is_android) {
-    # //chrome/browser/download:impl sources include headers from
-    # //chrome/browser/ui.
-    allow_circular_includes_from += [
-      # views/search_engines:impl includes headers still built as part of this
-      # target (views/frame/browser_view.h, etc.) that can't be split out yet.
-      "//chrome/browser/ui/views/search_engines:impl",
-      "//chrome/browser/download:impl",
-      "//chrome/browser/ui/browser_web_contents_delegate",
-
-      # bookmarks includes headers from //chrome/browser/ui (e.g. browser.h,
-      # browser_window_interface.h) that can't be split out yet.
-      "//chrome/browser/ui/webui/bookmarks",
-
-      # chrome_web_contents_handler includes headers from //chrome/browser/ui
-      # (e.g. browser.h, browser_window.h) that can't be split out yet.
-      "//chrome/browser/ui/webui:chrome_web_contents_handler",
-
-      # TODO(crbug.com/504627103): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_command_controller.h
-      "//chrome/browser/new_tab_page:impl",
-
-      # downloads includes headers from //chrome/browser/ui (e.g.
-      # browser_window.h) that can't be split out yet.
-      "//chrome/browser/ui/webui/downloads",
-
-      # web_app_internals includes headers from //chrome/browser/ui (e.g.
-      # browser.h) that can't be split out yet.
-      "//chrome/browser/ui/webui/web_app_internals",
-    ]
-  }
-
-  allow_circular_includes_from += [
-    # enterprise headers include from //chrome/browser/ui (e.g. idle_dialog.h).
-    # enterprise:impl includes headers from //chrome/browser/ui that can't be
-    # split out yet.
-    "//chrome/browser/enterprise",
-    "//chrome/browser/enterprise:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency whent the
-    # following headers get modularized:
-    # - c/b/ui/browser.h
-    # - c/b/ui/views/media_rounter/media_remoting_dialog_view.h
-    "//chrome/browser/media:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_window.h
-    "//chrome/browser/ui/autofill/payments:impl",
-
-    # TODO(crbug.com/502936350): Remove this circular dependency.
-    # device_reauth's :impl includes headers from //chrome/browser/ui
-    # that can't be split out yet.
-    "//chrome/browser/device_reauth:impl",
-
-    # TODO(crbug.com/40161499): Remove this circular dependency.
-    "//chrome/browser/devtools",
-
-    # glic's :impl includes headers from //chrome/browser/ui (e.g. browser.h,
-    # browser_window.h, side_panel/side_panel_ui.h) that can't be split out
-    # yet.
-    "//chrome/browser/glic:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_commands.h, browser_window.h
-    # c/b/ui/scoped_tabbed_browser_displayer.h
-    # c/b/ui/views/frame/browser_view.h
-    "//chrome/browser/safe_browsing",
-
-    # TODO(crbug.com/364667551): Remove this circular dependency when
-    # c/b/ui/webui/feedback/feedback_dialog.h gets componentized.
-    # feedback_impl includes headers from //chrome/browser/ui (e.g. browser.h,
-    # browser_tabstrip.h, browser_window.h) that can't be split out yet.
-    "//chrome/browser/feedback:feedback_impl",
-
-    # lifetime:impl includes headers from //chrome/browser/ui that can't be
-    # split out yet (e.g. browser_window.h).
-    "//chrome/browser/lifetime:impl",
-
-    # notifications:impl includes headers from //chrome/browser/ui that can't
-    # be split out yet (e.g. browser.h, browser_window.h,
-    # scoped_tabbed_browser_displayer.h, settings_window_manager_chromeos.h).
-    "//chrome/browser/notifications:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_window.h
-    "//chrome/browser/password_manager:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following header gets componentized:
-    # c/b/ui/browser.h
-    "//chrome/browser/permissions",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_commands.h, browser_window.h
-    # c/b/ui/views/frame/browser_view.h
-    # c/b/ui/views/omnibox/omnibox_popup_closer.h
-    # c/b/ui/views/omnibox/rounded_omnibox_results_frame.h
-    "//chrome/browser/ui/omnibox:impl",
-
-    # TODO(crbug.com/344921703): Remove circular dependencies.
-    "//chrome/browser/sync",
-
-    # TODO(crbug.com/353284909): Remove this circular dependency.
-    "//chrome/browser/media/webrtc",
-
-    # metrics:impl includes headers from //chrome/browser/ui that can't be
-    # split out yet.
-    "//chrome/browser/metrics:impl",
-
-    # TODO(crbug.com/360599255): popunder_preventer.cc includes browser.h
-    "//chrome/browser/ui/blocked_content:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser_window.h
-    # c/b/ui/views/frame/browser_view.h
-    "//chrome/browser/picture_in_picture:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_window.h, singleton_tabs.h
-    # c/b/ui/views/autofill/popup/email_verifier/email_verification_popup_view.h
-    # c/b/ui/views/frame/browser_view.h
-    "//chrome/browser/ui/autofill:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/scoped_tabbed_browser_displayer.h
-    # c/b/ui/settings_window_manager_chromeos.h
-    "//chrome/browser/ui/bluetooth:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following header gets componentized:
-    # c/b/ui/browser_command_controller.h
-    "//chrome/browser/ui/exclusive_access",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_window.h
-    "//chrome/browser/ui/profiles:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/settings_window_manager_chromeos.h
-    "//chrome/browser/ui/serial:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_commands.h, browser_tabstrip.h, browser_window.h
-    "//chrome/browser/ui/startup:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following header gets componentized:
-    # c/b/ui/browser_command_controller.h
-    "//chrome/browser/ui/tab_contents:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_commands.h, browser_window.h, managed_ui.h
-    # c/b/ui/singleton_tabs.h
-    "//chrome/browser/ui/toolbar:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h
-    "//chrome/browser/search_engine_choice:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser_commands.h, browser_window.h
-    # c/b/ui/scoped_tabbed_browser_displayer.h
-    "//chrome/browser/signin:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, tab_modal_confirm_dialog.h
-    "//chrome/browser/ui/javascript_dialogs:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, bubble_anchor_util.h, tab_dialogs.h
-    "//chrome/browser/ui/page_info:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/browser.h, browser_window.h
-    # c/b/ui/views/frame/browser_view.h, picture_in_picture_browser_frame_view.h
-    "//chrome/browser/content_settings:content_settings_util_impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following header gets componentized:
-    # c/b/ui/browser.h
-    "//chrome/browser/updates/announcement_notification:impl",
-
-    # TODO(crbug.com/437811373): Remove this circular dependency when the
-    # following headers get componentized:
-    # - c/b/ui/browser.h
-    "//chrome/browser/ui/passwords:impl",
-
-    # ssl:impl includes headers from //chrome/browser/ui that can't be
-    # split out yet (e.g. browser.h).
-    "//chrome/browser/ssl:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when
-    # translate's impl no longer includes headers from //chrome/browser/ui.
-    "//chrome/browser/translate:impl",
-
-    # policy's impl includes headers from //chrome/browser/ui that can't
-    # be split out yet.
-    "//chrome/browser/policy:impl",
-
-    # vr_tab_helper.cc includes //c/b/ui/browser.h.
-    "//chrome/browser/vr:impl",
-
-    # webauthn:impl includes headers from //chrome/browser/ui that can't be
-    # split out yet.
-    "//chrome/browser/webauthn:impl",
-  ]
 
   if (!is_android) {
     deps += [
@@ -2348,31 +2092,6 @@ static_library("ui") {
       "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
       "//chrome/browser/ui/webui/webui_gallery",
       "//chrome/browser/ui/zoom:browser_window_zoom_observer",
-    ]
-    allow_circular_includes_from += [
-      ":browser_content_setting_bubble_model_delegate_impl",
-      ":browser_tabrestore_impl",
-      ":browser_window_deleter_impl",
-      ":browser_window_theme_observer_impl",
-
-      # browser_live_tab_context.cc includes browser_commands.h and
-      # browser_window.h which cannot be split out yet.
-      ":browser_live_tab_context_impl",
-
-      # browser_tab_restorer.cc includes browser_commands.h which cannot be
-      # split out yet.
-      ":browser_tab_restorer",
-
-      # browser_tab_strip_model_delegate.cc includes browser_commands.h,
-      # browser_window.h, and unload_controller.h which cannot be split out yet.
-      ":browser_tab_strip_model_delegate_impl",
-
-      # chrome_pages.cc includes browser_window.h which cannot be split out yet.
-      ":chrome_pages_impl",
-
-      # scoped_tabbed_browser_displayer.cc includes browser_window.h which
-      # cannot be split out yet.
-      ":scoped_tabbed_browser_displayer",
     ]
   }
 
@@ -2453,13 +2172,6 @@ static_library("ui") {
     if (enable_dice_support) {
       deps += [
         "//chrome/browser/ui/views/search_ai_mode",
-        "//chrome/browser/ui/views/search_ai_mode:impl",
-      ]
-      allow_circular_includes_from += [
-        # TODO(crbug.com/364667551): Remove this circular dependency when
-        # the following headers get modularized:
-        # - c/b/ui/browser.h
-        # - c/b/ui/views/frame/browser_view.h
         "//chrome/browser/ui/views/search_ai_mode:impl",
       ]
     }
@@ -2754,170 +2466,6 @@ static_library("ui") {
       ]
     }
 
-    # Any circular includes must depend on the target
-    # "//chrome/browser:browser_public_dependencies". Non-android circular
-    # dependencies
-    allow_circular_includes_from += [
-      # history_embeddings includes headers from //chrome/browser/ui (e.g.
-      # browser.h, browser_window.h) that can't be split out yet.
-      "//chrome/browser/ui/webui/cr_components/history_embeddings",
-
-      # history includes headers from //chrome/browser/ui (e.g. browser.h)
-      # that can't be split out yet.
-      "//chrome/browser/ui/webui/history",
-
-      # browser_command_handler.cc includes browser.h, browser_commands.h,
-      # etc. from //chrome/browser/ui:ui.
-      "//chrome/browser/ui/webui/browser_command",
-
-      # inspect_ui.cc includes browser.h, singleton_tabs.h.
-      "//chrome/browser/ui/webui/inspect",
-
-      # These side panel UIs include loose headers that remain in
-      # //chrome/browser/ui:ui (browser.h, browser_window.h, browser_commands.h,
-      # views/frame/browser_view.h).
-      "//chrome/browser/ui/webui/side_panel/bookmarks:impl",
-      "//chrome/browser/ui/webui/side_panel/reading_list:impl",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search",
-
-      # //chrome/browser/ui/webui/util/webui_util_desktop.h is included by
-      # :ui and its implementation is in //chrome/browser/ui/webui/util:impl.
-      "//chrome/browser/ui/webui/util:impl",
-
-      # TODO(crbug.com/40110173): Resolve circular dependencies.
-      "//chrome/browser/ui/desktop_to_mobile_promos:service",
-
-      # TODO(crbug.com/40251079): Remove circular dependencies.
-      "//chrome/browser/apps/app_service",
-
-      # TODO(crbug.com/345487716): Remove circular dependencies.
-      "//chrome/browser/ui/read_anything:impl",
-      "//chrome/browser/ui/views/side_panel",
-
-      # TODO(crbug/com/387527798): Remove circular dependencies.
-      "//chrome/browser/ui/views/download",
-
-      # TODO(crbug.com/40246046): Remove allow_circular_includes_from when
-      # dependencies for controller are fixed.
-      "//chrome/browser/lens/region_search",
-
-      # TODO(crbug.com/359593415): Remove allow_circular_includes_from.
-      # //c/b/ui/apps/directory_access_confirmation_dialog.cc includes
-      # //c/b/ui/tab_modal_confirm_dialog_delegate.h.
-      "//chrome/browser/ui/apps:impl",
-      "//chrome/browser/ui/browser_ui_controller:impl",
-      "//chrome/browser/ui/browser_window/internal",
-      "//chrome/browser/ui/find_bar:impl",
-      "//chrome/browser/ui/focus:impl",
-      "//chrome/browser/ui/fullscreen:impl",
-      "//chrome/browser/ui/performance_controls:impl",
-      "//chrome/browser/ui/tabs/saved_tab_groups:impl",
-      "//chrome/browser/ui/toasts:impl",
-      "//chrome/browser/ui/views/contextual_tasks:impl",
-      "//chrome/browser/ui/webui/customize_buttons:impl",
-      "//chrome/browser/ui/views/toolbar",
-      "//chrome/browser/ui/views/toolbar:impl",
-      "//chrome/browser/ui/views/new_tab_footer",
-      "//chrome/browser/ui/webui/searchbox",
-      "//chrome/browser/ui/webui/top_chrome:impl",
-      "//chrome/browser/ui/webui_browser",
-      "//chrome/browser/ui/webui_browser:impl",
-
-      # browser_command_controller.cc includes browser_window.h and
-      # browser_commands.h from //chrome/browser/ui:ui.
-      ":browser_command_controller_impl",
-
-      # browser_commands.cc includes browser_window.h from
-      # //chrome/browser/ui:ui.
-      ":browser_commands_impl",
-
-      # unload_controller.cc includes browser_window.h and browser_commands.h
-      # from //chrome/browser/ui:ui.
-      ":unload_controller_impl",
-
-      # TODO(crbug.com/382237520): Remove this once NTP code is modularized.
-      "//chrome/browser/ui/lens:impl",
-
-      "//chrome/browser/ui/signin:impl",
-      "//chrome/browser/ui/webui/commerce:impl",
-      "//chrome/browser/ui/webui/signin:signin_impl",
-      "//chrome/browser/ui/webui/webui_toolbar:impl",
-      "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
-      "//chrome/browser/ui/webui/whats_new:impl",
-
-      "//chrome/browser/glic/browser_ui:glow_impl",
-      "//chrome/browser/glic/browser_ui:glow_controller_impl",
-      "//chrome/browser/ui/views/glic",
-      "//chrome/browser/ui/views/tabs/glic",
-      "//chrome/browser/ui/views/tabs/glic:impl",
-
-      "//chrome/browser/ui/media_router:impl",
-      "//chrome/browser/ui/window_sizer:impl",
-      "//chrome/browser/ui/webui/settings:impl",
-      "//chrome/browser/ui/search_engine_choice:impl",
-      "//chrome/browser/ui/global_media_controls:impl",
-      "//chrome/browser/ui/toolbar/cast:impl",
-      "//chrome/browser/ui/tabs:impl",
-      "//chrome/browser/ui/tabs:tab_group_impl",
-      "//chrome/browser/ui/tabs:tab_model_impl",
-      "//chrome/browser/ui/tabs:tab_strip_impl",
-      "//chrome/browser/ui/bookmarks:impl",
-      "//chrome/browser/ui/desktop_to_mobile_promos:controller",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # c/b/ui/browser.h gets componentized.
-      "//chrome/browser/visited_url_ranking:impl",
-
-      # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
-      # subdirectories such as views and webui which are not modularized yet.
-      "//chrome/browser/ui/webui/access_code_cast:impl",
-
-      # TODO(crbug.com/364667551): It includes //c/b/ui/browser.h and
-      # //c/b/ui/browser_window.h.
-      "//chrome/browser/ui/webui/accessibility:impl",
-
-      # TODO(crbug.com/430013958): Remove this circular dependency when
-      # `translate_bubble_factory.cc` stop including c/b/ui/browser_window.h.
-      "//chrome/browser/ui/translate:impl",
-
-      # TODO(crbug.com/430078439): Remove this circular dependency when .cc
-      # files stop including browser.h, browser_window.h.
-      "//chrome/browser/ui/user_education:impl",
-
-      # TODO(crbug.com/432421124): Remove when the following headers aren't
-      # included or get componentized: c/b/ui/browser_dialogs.h,
-      # browser_navigation.h, browser.h.
-      "//chrome/browser/ui/sync:impl",
-
-      # TODO(crbug.com/438226511): Remove this circular dependency when the
-      # following headers get componentized:
-      # - c/b/ui/browser.h, browser_window.h, browser_window_state.h,
-      #   browser_commands.h, intent_picker_tab_helper.h.
-      "//chrome/browser/ui/web_applications:impl",
-
-      # TODO(crbug.com/438226511): Remove this circular dependency when
-      # c/b/ui/browser.h gets componentized.
-      "//chrome/browser/ui/web_applications:launch_utils",
-
-      # TODO(crbug.com/542827630): Remove this circular dependency when
-      # c/b/ui/browser.h gets componentized.
-      "//chrome/browser/ui/sessions",
-
-      # ntp and ntp_resource_cache include browser_window.h and
-      # layout_constants.h from //chrome/browser/ui.
-      "//chrome/browser/ui/webui/ntp:ntp_resource_cache",
-
-      # omnibox_popup includes browser_window.h and other headers from
-      # //chrome/browser/ui.
-      "//chrome/browser/ui/webui/omnibox_everywhere",
-      "//chrome/browser/ui/webui/omnibox_popup",
-
-      # tab_search includes browser.h, browser_window.h,
-      # plural_string_handler.h from //chrome/browser/ui.
-      "//chrome/browser/ui/webui/tab_search",
-    ]
-
     if (is_win || is_chromeos) {
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/webui/signin:inline_login_impl" ]
@@ -2937,17 +2485,12 @@ static_library("ui") {
         "//chrome/browser/profiles/batch_upload:impl",
         "//chrome/browser/ui/webui/batch_upload_promo",
       ]
-      allow_circular_includes_from += [
-        "//chrome/browser/ui/webui/batch_upload_promo",
-        "//chrome/browser/profiles/batch_upload:impl",
-      ]
     }
     if (enable_dice_support) {
       deps += [
         "//chrome/browser/ui/webui/signin/signout_confirmation",
         "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl",
       ]
-      allow_circular_includes_from += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
     }
 
     if (enable_extensions) {
@@ -2968,17 +2511,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
     ]
-    allow_circular_includes_from += [
-      # search:impl includes headers from //chrome/browser/ui (e.g.
-      # browser_window.h, tab_modal_confirm_dialog.h) that can't be split out
-      # yet.
-      "//chrome/browser/ui/search:impl",
-
-      # new_tab_page and new_tab_page:impl files include headers from
-      # //chrome/browser/ui:ui that haven't been extracted yet.
-      "//chrome/browser/ui/webui/new_tab_page:impl",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:impl",
-    ]
   }
 
   if (enable_webui_history) {
@@ -2989,13 +2521,6 @@ static_library("ui") {
     deps += [
       "//chrome/browser/extensions/api/web_navigation",
       "//chrome/browser/ui/views/supervised_user",
-      "//chrome/browser/ui/views/supervised_user:impl",
-    ]
-
-    allow_circular_includes_from += [
-      # parent_permission_dialog_view:impl includes headers from
-      # //chrome/browser/ui (e.g. extension_permissions_view.h) that can't be
-      # split out yet.
       "//chrome/browser/ui/views/supervised_user:impl",
     ]
   }
@@ -3227,82 +2752,6 @@ static_library("ui") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ui/ash/login",
       "//chrome/browser/ui/webui/ash/login",
-    ]
-
-    # Any circular includes must depend on the target
-    # "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from += [
-      # browser_process_platform_part_ash.cc and platform_util_ash.cc include
-      # //chrome/browser/ui headers (e.g. browser.h, browser_window.h) that
-      # can't be split out of this target yet.
-      "//chrome/browser:browser_process_platform_part_ash",
-      "//chrome/browser:platform_util_ash",
-
-      "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/ash/accessibility",
-      "//chrome/browser/ash/app_list",
-      "//chrome/browser/ash/arc/session",
-      "//chrome/browser/ash/boca/on_task",
-      "//chrome/browser/ash/browser_delegate:impl",
-      "//chrome/browser/ash/login/users/avatar",
-      "//chrome/browser/nearby_sharing:impl",
-      "//chrome/browser/ash/notifications",
-      "//chrome/browser/ash/sync",
-      "//chrome/browser/ash/system_web_apps/apps/personalization_app",
-      "//chrome/browser/chromeos/app_mode",
-      "//chrome/browser/chromeos/arc",
-      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
-      "//chrome/browser/chromeos/platform_keys",
-      "//chrome/browser/chromeos/policy/dlp",
-      "//chrome/browser/ui/ash/assistant",
-      "//chrome/browser/ui/ash/desks",
-      "//chrome/browser/ui/ash/in_session_auth",
-      "//chrome/browser/ui/ash/main_extra_parts",
-      "//chrome/browser/ui/ash/network",
-      "//chrome/browser/ui/ash/new_window",
-      "//chrome/browser/ui/ash/shell_delegate",
-      "//chrome/browser/ui/ash/system",
-      "//chrome/browser/ui/ash/wallpaper",
-      "//chrome/browser/ui/ash/wm",
-      "//chrome/browser/ui/chromeos/locked_state",
-
-      # browser_frame_header_chromeos.cc includes
-      # views/frame/browser_view.h which cannot be split out yet.
-      "//chrome/browser/ui/views/frame:browser_frame_header_chromeos_impl",
-
-      # browser_frame_view_chromeos.h includes browser_frame_view.h, and
-      # browser_frame_view_chromeos.cc includes browser_view.h,
-      # browser_widget.h, and top_container_view.h from //chrome/browser/ui:ui.
-      "//chrome/browser/ui/views/frame:browser_frame_view_chromeos",
-
-      # browser_frame_view_factory_chromeos.cc includes
-      # views/frame/browser_view.h which cannot be split out yet.
-      "//chrome/browser/ui/views/frame:browser_frame_view_factory_chromeos",
-
-      # browser_native_widget_ash.cc includes
-      # browser_commands.h and views/frame/browser_view.h which cannot be
-      # split out yet.
-      "//chrome/browser/ui/views/frame:browser_native_widget_ash_impl",
-
-      # browser_view_ash.h includes views/frame/browser_view.h which cannot be
-      # split out yet.
-      "//chrome/browser/ui/views/frame:browser_view_ash",
-
-      # picture_in_picture_browser_frame_view_ash.h includes
-      # views/frame/picture_in_picture_browser_frame_view.h which cannot be
-      # split out yet.
-      "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view_ash",
-
-      # settings_window_manager_chromeos.cc includes browser_window.h from
-      # //chrome/browser/ui:ui.
-      ":settings_window_manager_chromeos_impl",
-      "//chrome/browser/ui/views/frame:top_controls_slide_controller_chromeos_impl",
-      "//chrome/browser/ui/webui/ash/add_supervision",
-      "//chrome/browser/ui/webui/ash/cloud_upload",
-      "//chrome/browser/ui/webui/ash/settings/pages/main",
-      "//chrome/browser/ui/webui/ash/system_web_dialog",
-      "//chrome/browser/ui/webui/nearby_share",
-      "//chrome/browser/ui/webui/signin/ash",
     ]
 
     if (is_chrome_branded) {
@@ -4029,71 +3478,11 @@ static_library("ui") {
       "//ui/base:ozone_buildflags",
     ]
 
-    # Any circular includes must depend on the target
-    # "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from += [
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      "//chrome/browser/ui/views/frame:browser_view_tabbed_layout_impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      "//chrome/browser/ui/views/frame:system_menu_model_delegate_impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/commerce:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/views/payments:impl",
-
-      # TODO(crbug.com/434882143): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/views/location_bar:impl",
-
-      # TODO(crbug.com/512979192): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/views/drive_picker_host",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/views/user_education:impl",
-    ]
-
     if (is_linux) {
       deps += [
         "//chrome/browser/ui/views/frame:browser_frame_view_layout_linux_native",
         "//chrome/browser/ui/views/frame:browser_frame_view_linux",
         "//chrome/browser/ui/views/frame:browser_frame_view_linux_native",
-      ]
-      allow_circular_includes_from += [
-        # views/frame/browser_frame_view_layout_linux_native.cc includes
-        # opaque_browser_frame_view_layout.h from //chrome/browser/ui:ui.
-        "//chrome/browser/ui/views/frame:browser_frame_view_layout_linux_native",
-
-        # views/frame/browser_frame_view_linux.{h,cc} and
-        # views/frame/browser_frame_view_layout_linux.{h,cc} include
-        # opaque_browser_frame_view.h, opaque_browser_frame_view_layout.h,
-        # and browser_view.h from //chrome/browser/ui:ui.
-        "//chrome/browser/ui/views/frame:browser_frame_view_linux",
       ]
     }
 
@@ -4149,18 +3538,6 @@ static_library("ui") {
         "//chrome/browser/ui/views/shortcuts:impl",
         "//ui/views/window/vector_icons",
       ]
-      allow_circular_includes_from += [
-        # Circular dependency exists because the following headers are not yet
-        # componentized:
-        # - c/b/ui/browser.h
-        "//chrome/browser/ui/views/shortcuts:impl",
-
-        # opaque_browser_frame_view_impl includes browser_view.h,
-        # browser_widget.h, top_container_view.h, tab_icon_view.h,
-        # new_tab_button.h, tab_strip.h, toolbar_view.h, and
-        # app_browser_controller.h from //chrome/browser/ui:ui.
-        "//chrome/browser/ui/views/frame:opaque_browser_frame_view_impl",
-      ]
     }
 
     if (enable_compose) {
@@ -4168,8 +3545,6 @@ static_library("ui") {
         "//chrome/browser/ui/views/compose",
         "//chrome/browser/ui/views/compose:impl",
       ]
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/views/compose:impl" ]
     }
 
     if (enable_dice_support) {
@@ -4189,8 +3564,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:top_controls_slide_controller",
       "//chrome/browser/ui/views/web_apps/sub_apps:sub_apps_install_dialog",
     ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/views/autofill/autofill_ai:impl" ]
   }
 
   # TODO(https://crbug.com/330808104): Delete this code.
@@ -4216,33 +3589,7 @@ static_library("ui") {
         "//chrome/browser/ui/views/frame:browser_native_widget_aura",
         "//chrome/browser/ui/views/frame:browser_native_widget_aura_impl",
       ]
-      allow_circular_includes_from += [
-        # browser_frame_view_factory_views.cc includes
-        # views/frame/browser_view.h which cannot be split out yet.
-        "//chrome/browser/ui/views/frame:browser_frame_view_factory_views",
-
-        # browser_native_widget_aura.cc includes browser_view.h from
-        # //chrome/browser/ui:ui.
-        "//chrome/browser/ui/views/frame:browser_native_widget_aura_impl",
-      ]
     }
-
-    # Any circular includes must depend on the target
-    # "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from += [
-      # accelerator_utils_aura.cc includes browser_view.h from
-      # //chrome/browser/ui:ui.
-      "//chrome/browser/ui/views:accelerator_utils_aura",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # c/b/ui/views/frame/browser_view.h
-      "//chrome/browser/ui/views/renderer_context_menu:impl",
-    ]
-  }
-
-  if (enable_extensions_core || enable_webui_ntp ||
-      enable_webui_contextual_tasks_composebox) {
   }
 
   if (enable_extensions_core) {
@@ -4250,10 +3597,6 @@ static_library("ui") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/web_navigation",
     ]
-
-    # TODO(crbug.com/420905611): Verify whether this circular dependency
-    # declaration can be removed from here.
-    allow_circular_includes_from += [ "//chrome/browser/extensions" ]
   }
 
   if (enable_extensions) {
@@ -4273,28 +3616,8 @@ static_library("ui") {
       "//ui/base/cursor",
     ]
 
-    # Any circular includes must depend on the target
-    # "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from += [
-      "//chrome/browser/apps/platform_apps",
-
-      # TODO(crbug.com/353332589): extension_popup.cc includes browser_view.h.
-      "//chrome/browser/ui/views/extensions:extension_popup_impl",
-      "//chrome/browser/ui/views/extensions:extension_view_views_impl",
-
-      # TODO(crbug.com/353332589): zero_state_promo_ui.h and page_handler.cc
-      # include browser.h and custom_webui_help_bubble_controller.h from
-      # //chrome/browser/ui:ui.
-      "//chrome/browser/ui/webui/extensions_zero_state_promo",
-    ]
-
     if (use_aura) {
       deps += [
-        "//chrome/browser/ui/views:javascript_app_modal_event_blocker_aura",
-      ]
-      allow_circular_includes_from += [
-        # javascript_app_modal_event_blocker_aura.cc includes browser_view.h
-        # from //chrome/browser/ui:ui.
         "//chrome/browser/ui/views:javascript_app_modal_event_blocker_aura",
       ]
     }
@@ -4309,26 +3632,8 @@ static_library("ui") {
   }
 
   if (enable_pdf) {
-    deps += [
-      # TODO(crbug.com/372750819): Remove this dependency when the following
-      # files are built off of modularized GN targets:
-      # - c/b/ui/browser_commands.cc
-      # - c/b/ui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
-      # - c/b/ui/webui/print_preview/print_preview_ui.cc
-      "//chrome/browser/pdf",
-
-      # TODO(crbug.com/340272378, crbug.com/372750819): Remove this dependency
-      # when "PdfOopif" feature gets enabled by default or the following files
-      # are built off of modularized GN targets:
-      # - c/b/ui/browser_commands.cc
-      # - c/b/ui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
-      "//pdf:features",
-    ]
-
     if (enable_pdf_save_to_drive) {
       deps += [ "//chrome/browser/ui/views/save_to_drive" ]
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/views/save_to_drive:save_to_drive" ]
     }
   }
 
@@ -4341,11 +3646,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/print_preview",
       "//chrome/browser/ui/webui/print_preview:impl",
     ]
-
-    # print_preview includes headers from //chrome/browser/ui (e.g.
-    # browser_tabstrip.h) that can't be split out yet.
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/webui/print_preview:impl" ]
   }
 
   if (safe_browsing_mode > 0) {
@@ -4355,28 +3655,10 @@ static_library("ui") {
 
   if (chrome_root_store_cert_management_ui) {
     deps += [ "//chrome/browser/ui/webui/certificate_manager" ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/webui/certificate_manager" ]
   }
 
   if (enable_session_service) {
     deps += [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
-
-    # TODO(crbug.com/427204855): Remove this circular include once
-    # "chrome/browser/ui/browser.h" is fully componentized.
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
-  }
-
-  if (toolkit_views) {
-    allow_circular_includes_from += [
-      "//chrome/browser/ui/views:sad_tab_view",
-      "//chrome/browser/ui/views/autofill:autofill_bubble_handler_impl",
-    ]
-    if (enable_extensions) {
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop" ]
-    }
   }
 }
 
