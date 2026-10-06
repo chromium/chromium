@@ -486,20 +486,21 @@ TODO(crbug.com/540164671): describe the process.
 
 ### Syncing from Chromium to GitHub
 
-[Chromium (`third_party/chromium-bidi`)](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi) is the source of truth, and changes are synced out to the GitHub mirror at [GoogleChromeLabs/chromium-bidi](https://github.com/GoogleChromeLabs/chromium-bidi) using [Copybara](https://goto.google.com/copybara).
+[Chromium (`third_party/chromium-bidi`)](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi) is the source of truth. Every commit on `main` that touches this directory is mirrored automatically to [GoogleChromeLabs/chromium-bidi](https://github.com/GoogleChromeLabs/chromium-bidi) by [Copybara](https://goto.google.com/copybara): one GitHub commit per Chromium commit, carrying a `GitOrigin-RevId` trailer. Chromium-specific files (`README.chromium`, `OWNERS`, `DIR_METADATA`, `licenses/`, `copy.bara.sky`) are not exported.
 
-The configuration file is located at [`third_party/chromium-bidi/copy.bara.sky`](copy.bara.sky).
+The workflow is defined in [`third_party/chromium-bidi/copy.bara.sky`](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi/copy.bara.sky). The automated run is registered in Copybara-as-a-Service from an internal copy of that file (Googlers: the location is documented in its header). When changing `origin_files` or `transformations`, update both copies. Sync failures are emailed to browser-automation@google.com.
 
-TODO(crbug.com/549520316): Automate the sync process.
+#### Running Copybara manually (fallback)
 
-#### Running Copybara manually
+Only needed if the automated sync is paused or broken.
 
 > [!NOTE]
-> The Copybara sync takes ~10 minutes to run as it iteratively processes commits from Chromium history.
+> Copybara processes pending Chromium commits one by one, and the first run on a machine also has to fetch Chromium, so expect tens of minutes. If a single git step exceeds the default 15-minute timeout, pass `--repo-timeout=30m`.
 
-1. **Prerequisites:**
+1. **Prerequisites (Googlers):**
    - Set up the `copybara` CLI alias (see [go/copybara-setup](https://goto.google.com/copybara-setup)).
-   - Ensure your credentials for pushing to GitHub are configured via SSH.
+   - Create a GitHub token for `GoogleChromeLabs/chromium-bidi` (fine-grained: `Contents` and `Workflows` set to _Read and write_; classic: `repo` and `workflow` scopes) and store it where Copybara's git looks up HTTPS credentials, `~/.googlekeys/copybara_git_credentials` (one line: `https://<github-user>:<token>@github.com`).
+   - Ask a repository admin to add your GitHub account to the bypass list of the `main` branch ruleset; direct pushes to `main` are rejected otherwise.
 
 2. **Launch directory:**
    Run Copybara from the **root of the Chromium repository** (`src/`):
@@ -510,7 +511,8 @@ TODO(crbug.com/549520316): Automate the sync process.
 
 3. **Sync:**
    ```sh
-   copybara third_party/chromium-bidi/copy.bara.sky default
+   copybara third_party/chromium-bidi/copy.bara.sky default --dry-run  # verify first
+   copybara third_party/chromium-bidi/copy.bara.sky default            # push to GitHub
    ```
 
 ## Update CDDL types

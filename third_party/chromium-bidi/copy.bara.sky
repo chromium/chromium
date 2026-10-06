@@ -14,19 +14,20 @@ Only commits after the initial merge of chromium-bidi into Chromium should be sy
   URL: https://chromium.googlesource.com/chromium/src/+/ae0f21c64387599e4bd2e723dc4d3769f24b33b8
   Cr-Commit-Position: refs/heads/main@{#1684553}
 
-How to test locally:
-  1. Dry-run verification:
-     copybara third_party/chromium-bidi/copy.bara.sky default \\
-       --last-rev=ae0f21c64387599e4bd2e723dc4d3769f24b33b8 \\
-       --dry-run
+Automation:
+  The sync runs automatically in Copybara-as-a-Service (crbug.com/549520316).
+  The service only runs configs checked into google3, so the registered copy of
+  this workflow lives at:
+    //depot/google3/chrome/devtools/chromium_bidi/copy.bara.sky
+  Keep `origin_files` and `transformations` identical in both files.
 
-  2. Manual execution (with GitHub credentials configured):
-     copybara third_party/chromium-bidi/copy.bara.sky default \\
-       --last-rev=ae0f21c64387599e4bd2e723dc4d3769f24b33b8
+Manual run (fallback, see README.md "Syncing from Chromium to GitHub"):
+  copybara third_party/chromium-bidi/copy.bara.sky default --dry-run
+  copybara third_party/chromium-bidi/copy.bara.sky default
 """
 
 origin_url = "rpc://chromium/chromium/src"
-destination_url = "git@github.com:GoogleChromeLabs/chromium-bidi.git"
+destination_url = "https://github.com/GoogleChromeLabs/chromium-bidi.git"
 
 # Files from Chromium to export
 origin_files = glob(
@@ -67,21 +68,4 @@ core.workflow(
     transformations = [
         core.move("third_party/chromium-bidi", ""),
     ],
-)
-
-service.migration(
-    migration_name = "default",
-    owner_mdb = "browser-automation",
-    contact_email = "browser-automation@google.com",
-    cns_mdb = "copybara-freebie",
-    github_options = service.github(
-        use_app = True,
-    ),
-    notifications = service.notifications(
-        on_error = [
-            service.email(address = "browser-automation@google.com"),
-        ],
-    ),
-    state = "ACTIVE",
-    triggering = "EVENT_BASED",
 )
