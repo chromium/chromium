@@ -469,13 +469,6 @@ class CONTENT_EXPORT Request
   // Populated by MaybeShowAccountsDialog().
   std::vector<scoped_refptr<IdentityProviderData>> idp_data_for_display_;
 
-  // Populated by OnFetchDataForIdpSucceeded(). Contains the accounts of each
-  // IDP. Used to later set accounts_ in the order in which the IDPs are
-  // requested.
-  base::flat_map<GURL, std::vector<scoped_refptr<IdentityRequestAccount>>>
-      idp_accounts_;
-  base::flat_map<GURL, std::vector<scoped_refptr<IdentityRequestAccount>>>
-      idp_filtered_accounts_;
   // The accounts to be displayed by the UI.
   std::vector<scoped_refptr<IdentityRequestAccount>> accounts_;
   // The accounts that were filtered out during fetching.

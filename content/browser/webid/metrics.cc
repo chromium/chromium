@@ -38,19 +38,16 @@ Metrics::NumAccounts ComputeNumMatchingAccounts(size_t accounts_remaining) {
   return Metrics::NumAccounts::kMultiple;
 }
 
-int GetSumOfAllValues(const std::map<GURL, int>& map) {
-  int total = 0;
-  for (const auto& [_, value] : map) {
-    total += value;
-  }
-  return total;
-}
-
 int GetNewSessionID() {
   return base::RandIntInclusive(1, 1 << 30);
 }
 
 }  // namespace
+
+Metrics::ProviderInfo::ProviderInfo(ukm::SourceId source_id)
+    : fedcm_idp_builder(source_id) {}
+
+Metrics::ProviderInfo::~ProviderInfo() = default;
 
 Metrics::Metrics(ukm::SourceId page_source_id)
     : page_source_id_(page_source_id) {
@@ -62,8 +59,9 @@ Metrics::~Metrics() {
     fedcm_builder_->SetFedCmSessionID(session_id_)
         .Record(ukm::UkmRecorder::Get());
   }
-  for (auto& [_, builder] : provider_to_fedcm_idp_builder_) {
-    builder->SetFedCmSessionID(session_id_).Record(ukm::UkmRecorder::Get());
+  for (auto& [_, info] : providers_) {
+    info.fedcm_idp_builder.SetFedCmSessionID(session_id_)
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 
@@ -75,19 +73,20 @@ ukm::builders::Blink_FedCm* Metrics::GetOrCreateFedCmBuilder() {
   return fedcm_builder_.get();
 }
 
+Metrics::ProviderInfo& Metrics::GetOrCreateProviderInfo(const GURL& provider) {
+  auto it = providers_.find(provider);
+  if (it != providers_.end()) {
+    return it->second;
+  }
+  ukm::SourceId source_id =
+      ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
+          base::PassKey<Metrics>(), provider);
+  return providers_.emplace(provider, source_id).first->second;
+}
+
 ukm::builders::Blink_FedCmIdp* Metrics::GetOrCreateFedCmIdpBuilder(
     const GURL& provider) {
-  if (auto it = provider_to_fedcm_idp_builder_.find(provider);
-      it != provider_to_fedcm_idp_builder_.end()) {
-    return it->second.get();
-  }
-
-  std::unique_ptr<ukm::builders::Blink_FedCmIdp> fedcm_idp_builder =
-      std::make_unique<ukm::builders::Blink_FedCmIdp>(
-          GetOrCreateProviderSourceId(provider));
-  return provider_to_fedcm_idp_builder_
-      .insert({provider, std::move(fedcm_idp_builder)})
-      .first->second.get();
+  return &GetOrCreateProviderInfo(provider).fedcm_idp_builder;
 }
 
 void Metrics::RecordShowAccountsDialogTime(
@@ -525,29 +524,34 @@ void Metrics::RecordAutoReauthnMetrics(
       requires_user_mediation);
 }
 
+int Metrics::SumOverProviders(int ProviderInfo::* field) const {
+  int total = 0;
+  for (const auto& [_, info] : providers_) {
+    total += info.*field;
+  }
+  return total;
+}
+
 void Metrics::RecordAccountsDialogShown(
     const std::vector<scoped_refptr<IdentityProviderData>>& providers) {
-  auto SetUkm = [&](auto ukm_builder, int accounts_dialog_shown) {
-    ukm_builder->SetAccountsDialogShown2(accounts_dialog_shown);
-  };
-
   for (const auto& provider : providers) {
-    ukm::builders::Blink_FedCmIdp* fedcm_idp_builder =
-        GetOrCreateFedCmIdpBuilder(provider->idp_metadata.config_url);
+    ProviderInfo& info =
+        GetOrCreateProviderInfo(provider->idp_metadata.config_url);
     // A provider may have no accounts and be present due to IDP mismatch.
     if (!provider->has_login_status_mismatch) {
-      ++accounts_dialog_shown_[provider->idp_metadata.config_url];
-      SetUkm(fedcm_idp_builder,
-             accounts_dialog_shown_[provider->idp_metadata.config_url]);
+      ++info.accounts_dialog_shown;
+      info.fedcm_idp_builder.SetAccountsDialogShown2(
+          info.accounts_dialog_shown);
     } else {
       CHECK(provider->has_login_status_mismatch, base::NotFatalUntil::M158);
-      ++mismatch_dialog_shown_[provider->idp_metadata.config_url];
-      fedcm_idp_builder->SetMismatchDialogShown2(
-          mismatch_dialog_shown_[provider->idp_metadata.config_url]);
+      ++info.mismatch_dialog_shown;
+      info.fedcm_idp_builder.SetMismatchDialogShown2(
+          info.mismatch_dialog_shown);
     }
   }
 
-  SetUkm(GetOrCreateFedCmBuilder(), GetSumOfAllValues(accounts_dialog_shown_));
+  GetOrCreateFedCmBuilder()->SetAccountsDialogShown2(
+      SumOverProviders(&ProviderInfo::accounts_dialog_shown));
 
   base::UmaHistogramBoolean("Blink.FedCm.AccountsDialogShown", true);
 }
@@ -556,7 +560,9 @@ void Metrics::RecordSingleIdpMismatchDialogShown(
     const IdentityProviderData& provider,
     bool has_shown_mismatch,
     bool has_hints) {
-  ++mismatch_dialog_shown_[provider.idp_metadata.config_url];
+  ProviderInfo& info =
+      GetOrCreateProviderInfo(provider.idp_metadata.config_url);
+  ++info.mismatch_dialog_shown;
   MismatchDialogType type;
   if (!has_shown_mismatch) {
     type = has_hints ? MismatchDialogType::kFirstWithHints
@@ -567,28 +573,22 @@ void Metrics::RecordSingleIdpMismatchDialogShown(
   }
   base::UmaHistogramEnumeration("Blink.FedCm.MismatchDialogType", type);
 
-  auto SetUkm = [&](auto ukm_builder, int mismatch_dialog_shown) {
-    ukm_builder->SetMismatchDialogShown2(mismatch_dialog_shown);
-  };
-
-  SetUkm(GetOrCreateFedCmBuilder(), GetSumOfAllValues(mismatch_dialog_shown_));
+  GetOrCreateFedCmBuilder()->SetMismatchDialogShown2(
+      SumOverProviders(&ProviderInfo::mismatch_dialog_shown));
 
   CHECK(provider.has_login_status_mismatch, base::NotFatalUntil::M158);
-  SetUkm(GetOrCreateFedCmIdpBuilder(provider.idp_metadata.config_url),
-         mismatch_dialog_shown_[provider.idp_metadata.config_url]);
+  info.fedcm_idp_builder.SetMismatchDialogShown2(info.mismatch_dialog_shown);
 
   base::UmaHistogramBoolean("Blink.FedCm.MismatchDialogShown", true);
 }
 
 void Metrics::RecordAccountsRequestSent(const GURL& provider_url) {
-  ++accounts_request_sent_[provider_url];
-  auto SetUkm = [&](auto ukm_builder, int accounts_request_sent) {
-    ukm_builder->SetAccountsRequestSent2(accounts_request_sent);
-  };
+  ProviderInfo& info = GetOrCreateProviderInfo(provider_url);
+  ++info.accounts_request_sent;
 
-  SetUkm(GetOrCreateFedCmBuilder(), GetSumOfAllValues(accounts_request_sent_));
-  SetUkm(GetOrCreateFedCmIdpBuilder(provider_url),
-         accounts_request_sent_[provider_url]);
+  GetOrCreateFedCmBuilder()->SetAccountsRequestSent2(
+      SumOverProviders(&ProviderInfo::accounts_request_sent));
+  info.fedcm_idp_builder.SetAccountsRequestSent2(info.accounts_request_sent);
 
   base::UmaHistogramBoolean("Blink.FedCm.AccountsRequestSent", true);
 }
@@ -752,24 +752,8 @@ void Metrics::RecordRpUrlHasPath(bool rp_url_has_path) {
 void Metrics::RecordIdentityProvidersCount(int count) {
   CHECK_GT(count, 0);
   base::UmaHistogramCounts100("Blink.FedCm.IdentityProvidersCount", count);
-  auto SetUkm = [&](auto ukm_builder) {
-    ukm_builder->SetIdentityProvidersCount(
-        ukm::GetExponentialBucketMin(count, /*bucket_spacing=*/1.3));
-  };
-
-  SetUkm(GetOrCreateFedCmBuilder());
-}
-
-ukm::SourceId Metrics::GetOrCreateProviderSourceId(const GURL& provider) {
-  auto it = provider_source_ids_.find(provider);
-  if (it != provider_source_ids_.end()) {
-    return it->second;
-  }
-  ukm::SourceId source_id =
-      ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
-          base::PassKey<Metrics>(), provider);
-  provider_source_ids_[provider] = source_id;
-  return source_id;
+  GetOrCreateFedCmBuilder()->SetIdentityProvidersCount(
+      ukm::GetExponentialBucketMin(count, /*bucket_spacing=*/1.3));
 }
 
 int Metrics::GetSessionID() const {

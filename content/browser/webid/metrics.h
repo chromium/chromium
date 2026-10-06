@@ -599,7 +599,20 @@ class CONTENT_EXPORT Metrics {
   int GetSessionID() const;
 
  private:
-  ukm::SourceId GetOrCreateProviderSourceId(const GURL& provider);
+  // Holds the per-provider UKM builder and dialog/request counters for a
+  // single IDP config URL.
+  struct ProviderInfo {
+    explicit ProviderInfo(ukm::SourceId source_id);
+    ~ProviderInfo();
+
+    ukm::builders::Blink_FedCmIdp fedcm_idp_builder;
+    int accounts_request_sent = 0;
+    int accounts_dialog_shown = 0;
+    int mismatch_dialog_shown = 0;
+  };
+
+  ProviderInfo& GetOrCreateProviderInfo(const GURL& provider);
+  int SumOverProviders(int ProviderInfo::* field) const;
   ukm::builders::Blink_FedCm* GetOrCreateFedCmBuilder();
   ukm::builders::Blink_FedCmIdp* GetOrCreateFedCmIdpBuilder(
       const GURL& provider);
@@ -607,29 +620,14 @@ class CONTENT_EXPORT Metrics {
   // Builder to log the Blink.FedCm UKM event.
   std::unique_ptr<ukm::builders::Blink_FedCm> fedcm_builder_;
 
-  // Map of provider's config URL to its builder to log the Blink.FedCmIdp UKM
-  // event.
-  std::map<GURL, std::unique_ptr<ukm::builders::Blink_FedCmIdp>>
-      provider_to_fedcm_idp_builder_;
+  // Map of provider's config URL to its per-provider UKM builder and counters.
+  std::map<GURL, ProviderInfo> providers_;
 
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
 
   // Session ID associated with this request to include in metrics recorded.
   int session_id_;
-
-  // The SourceId to be used to log the UKM event Blink.FedCmIdp. Maps a
-  // provider's config URL to its UKM SourceId.
-  std::map<GURL, ukm::SourceId> provider_source_ids_;
-
-  // Map of provider's config URL to its number of accounts request sent.
-  std::map<GURL, int> accounts_request_sent_;
-
-  // Map of provider's config URL to its number of accounts dialogs shown.
-  std::map<GURL, int> accounts_dialog_shown_;
-
-  // Map of provider's config URL to its number of mismatch dialogs shown.
-  std::map<GURL, int> mismatch_dialog_shown_;
 
   // Whether |RecordRequestTokenStatus| has been called.
   bool has_recorded_request_token_status_{false};

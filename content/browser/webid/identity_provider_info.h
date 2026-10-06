@@ -41,6 +41,12 @@ class CONTENT_EXPORT IdentityProviderInfo {
   scoped_refptr<IdentityProviderData> data;
   gfx::Image decoded_idp_brand_icon;
   bool client_is_third_party_to_top_frame_origin{false};
+  // Populated when accounts are fetched for this IDP and moved into
+  // `Request::accounts_` and `Request::filtered_accounts_` in
+  // `Request::AssembleAndSortAccounts()`. Do not use after assembly as these
+  // vectors are cleared and will be empty.
+  std::vector<scoped_refptr<IdentityRequestAccount>> accounts;
+  std::vector<scoped_refptr<IdentityRequestAccount>> filtered_accounts;
 };
 
 }  // namespace content::webid

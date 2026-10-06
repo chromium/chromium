@@ -21,15 +21,14 @@ IdentityProviderInfo::IdentityProviderInfo(
       format(format) {}
 
 IdentityProviderInfo::~IdentityProviderInfo() = default;
-IdentityProviderInfo::IdentityProviderInfo(const IdentityProviderInfo& other) {
-  provider = other.provider->Clone();
-  endpoints = other.endpoints;
-  metadata = other.metadata;
-  has_failing_idp_signin_status = other.has_failing_idp_signin_status;
-  rp_context = other.rp_context;
-  rp_mode = other.rp_mode;
-  data = other.data;
-  format = other.format;
-}
+IdentityProviderInfo::IdentityProviderInfo(const IdentityProviderInfo& other)
+    : provider(other.provider->Clone()),
+      endpoints(other.endpoints),
+      metadata(other.metadata),
+      has_failing_idp_signin_status(other.has_failing_idp_signin_status),
+      rp_context(other.rp_context),
+      rp_mode(other.rp_mode),
+      format(other.format),
+      data(other.data) {}
 
 }  // namespace content::webid

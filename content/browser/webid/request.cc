@@ -149,6 +149,36 @@ bool CanBypassPermissionStatusCheck(
           mediation_requirement == MediationRequirement::kConditional);
 }
 
+bool CompareAccountsForDisplay(const IdentityRequestAccountPtr& account1,
+                               const IdentityRequestAccountPtr& account2) {
+  // Show filtered accounts after valid ones.
+  if (account1->is_filtered_out || account2->is_filtered_out) {
+    return !account1->is_filtered_out;
+  }
+  // Show newly logged in accounts, if any.
+  bool is_account1_new = account1->display_priority ==
+                         IdentityRequestAccount::DisplayPriority::kNew;
+  bool is_account2_new = account2->display_priority ==
+                         IdentityRequestAccount::DisplayPriority::kNew;
+  if (is_account1_new || is_account2_new) {
+    return !is_account2_new;
+  }
+  // Show returning accounts before non-returning.
+  if (account1->idp_claimed_login_state.value_or(
+          account1->browser_trusted_login_state) == LoginState::kSignUp ||
+      account2->idp_claimed_login_state.value_or(
+          account2->browser_trusted_login_state) == LoginState::kSignUp) {
+    return account1->idp_claimed_login_state.value_or(
+               account1->browser_trusted_login_state) == LoginState::kSignIn;
+  }
+  // Within returning accounts, prefer those with last used timestamp.
+  if (!account1->last_used_timestamp || !account2->last_used_timestamp) {
+    return !!account1->last_used_timestamp;
+  }
+  // If both have last used timestamp, prefer the latest.
+  return *account1->last_used_timestamp > *account2->last_used_timestamp;
+}
+
 }  // namespace
 
 Request::FetchData::FetchData() = default;
@@ -587,8 +617,7 @@ void Request::OnAccountsResultsReceived(
 
     // Success
     CHECK(result.accounts.has_value());
-    idp_filtered_accounts_[result.idp_config_url] =
-        std::move(result.filtered_accounts);
+    result.idp_info->filtered_accounts = std::move(result.filtered_accounts);
     OnFetchDataForIdpSucceeded(std::move(*result.accounts),
                                std::move(result.idp_info));
   }
@@ -651,8 +680,8 @@ void Request::OnFetchDataForIdpSucceeded(
              idp_config_url;
     });
   }
+  idp_info->accounts = std::move(accounts.accounts);
   idp_infos_[idp_config_url] = std::move(idp_info);
-  idp_accounts_[idp_config_url] = std::move(accounts.accounts);
 
   fetch_data_.pending_idps.erase(idp_config_url);
   MaybeShowAccountsDialog();
@@ -719,58 +748,27 @@ void Request::AssembleAndSortAccounts() {
 
   for (const auto& idp : spec_->idp_order()) {
     auto idp_info_it = idp_infos_.find(idp);
-    if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
-      idp_info_it->second->data->idp_metadata.has_filtered_out_account = false;
-      idp_data_for_display_.push_back(idp_info_it->second->data);
+    if (idp_info_it == idp_infos_.end()) {
+      continue;
     }
-    auto accounts_it = idp_accounts_.find(idp);
-    if (accounts_it != idp_accounts_.end()) {
-      accounts_.insert(accounts_.end(),
-                       std::make_move_iterator(accounts_it->second.begin()),
-                       std::make_move_iterator(accounts_it->second.end()));
+    IdentityProviderInfo& idp_info = *idp_info_it->second;
+    if (idp_info.data) {
+      idp_info.data->idp_metadata.has_filtered_out_account = false;
+      idp_data_for_display_.push_back(idp_info.data);
     }
-    auto filtered_it = idp_filtered_accounts_.find(idp);
-    if (filtered_it != idp_filtered_accounts_.end()) {
-      filtered_accounts_.insert(
-          filtered_accounts_.end(),
-          std::make_move_iterator(filtered_it->second.begin()),
-          std::make_move_iterator(filtered_it->second.end()));
-    }
+    accounts_.insert(accounts_.end(),
+                     std::make_move_iterator(idp_info.accounts.begin()),
+                     std::make_move_iterator(idp_info.accounts.end()));
+    idp_info.accounts.clear();
+    filtered_accounts_.insert(
+        filtered_accounts_.end(),
+        std::make_move_iterator(idp_info.filtered_accounts.begin()),
+        std::make_move_iterator(idp_info.filtered_accounts.end()));
+    idp_info.filtered_accounts.clear();
   }
-  idp_accounts_.clear();
-  idp_filtered_accounts_.clear();
 
-  std::stable_sort(
-      accounts_.begin(), accounts_.end(),
-      [&](const auto& account1, const auto& account2) {
-        // Show filtered accounts after valid ones.
-        if (account1->is_filtered_out || account2->is_filtered_out) {
-          return !account1->is_filtered_out;
-        }
-        // Show newly logged in accounts, if any.
-        bool is_account1_new = IsNewlyLoggedIn(*account1);
-        bool is_account2_new = IsNewlyLoggedIn(*account2);
-        if (is_account1_new || is_account2_new) {
-          return !is_account2_new;
-        }
-        // Show returning accounts before non-returning.
-        if (account1->idp_claimed_login_state.value_or(
-                account1->browser_trusted_login_state) == LoginState::kSignUp ||
-            account2->idp_claimed_login_state.value_or(
-                account2->browser_trusted_login_state) == LoginState::kSignUp) {
-          return account1->idp_claimed_login_state.value_or(
-                     account1->browser_trusted_login_state) ==
-                 LoginState::kSignIn;
-        }
-        // Within returning accounts, prefer those with last used
-        // timestamp.
-        if (!account1->last_used_timestamp || !account2->last_used_timestamp) {
-          return !!account1->last_used_timestamp;
-        }
-        // If both have last used timestamp, prefer the latest.
-        return *account1->last_used_timestamp > *account2->last_used_timestamp;
-      });
-  // Set the display priority for newly logged in accounts.
+  // Set the display priority for newly logged in accounts before sorting so
+  // the comparator can inspect `display_priority` directly.
   for (const auto& account : accounts_) {
     if (IsNewlyLoggedIn(*account)) {
       account->display_priority = IdentityRequestAccount::DisplayPriority::kNew;
@@ -782,6 +780,9 @@ void Request::AssembleAndSortAccounts() {
       account->identity_provider->idp_metadata.has_filtered_out_account = true;
     }
   }
+
+  std::stable_sort(accounts_.begin(), accounts_.end(),
+                   &CompareAccountsForDisplay);
 }
 
 Request::AutoReauthnInfo Request::CheckAutoReauthnEligibility() {
@@ -1118,6 +1119,7 @@ void Request::OnAccountsDisplayed() {
 
 void Request::OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info) {
   const GURL& idp_config_url = idp_info->provider->config->config_url;
+  const GURL& idp_login_url = idp_info->metadata.idp_login_url;
 
   idp_infos_[idp_config_url] = std::move(idp_info);
 
@@ -1143,8 +1145,7 @@ void Request::OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info) {
   }
 
   if (spec_->rp_mode() == RpMode::kActive) {
-    MaybeShowActiveModeModalDialog(
-        idp_config_url, idp_infos_[idp_config_url]->metadata.idp_login_url);
+    MaybeShowActiveModeModalDialog(idp_config_url, idp_login_url);
     return;
   }
 
@@ -1629,7 +1630,9 @@ void Request::RedirectTo(const GURL& idp_config_url,
 void Request::ShowErrorDialog(const GURL& idp_config_url,
                               FetchStatus status,
                               std::optional<TokenError> token_error) {
-  CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
+  auto it = idp_infos_.find(idp_config_url);
+  CHECK(it != idp_infos_.end());
+  const IdentityProviderInfo& idp_info = *it->second;
 
   dialog_type_ = DialogType::kError;
   config_url_ = idp_config_url;
@@ -1641,8 +1644,8 @@ void Request::ShowErrorDialog(const GURL& idp_config_url,
         return GetDialogController()->ShowErrorDialog(
             CreateRpData(/*client_metadata_received=*/true),
             FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-            idp_infos_[idp_config_url]->rp_context, spec_->rp_mode(),
-            idp_infos_[idp_config_url]->metadata, token_error,
+            idp_info.rp_context, spec_->rp_mode(), idp_info.metadata,
+            token_error,
             base::BindOnce(&Request::OnDismissErrorDialog,
                            weak_ptr_factory_.GetWeakPtr(), idp_config_url,
                            status),
@@ -2537,8 +2540,8 @@ void Request::MaybeShowNativeAppUi(
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   CHECK(idp_info);
   const GURL& idp_config_url = idp_info->provider->config->config_url;
+  IdentityProviderInfo* info = idp_info.get();
   idp_infos_[idp_config_url] = std::move(idp_info);
-  IdentityProviderInfo* info = idp_infos_[idp_config_url].get();
 
   const std::string idp_for_display = FormatUrlToSite(idp_config_url);
   info->data = base::MakeRefCounted<IdentityProviderData>(
