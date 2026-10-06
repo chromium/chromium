@@ -51,7 +51,7 @@ std::string GenerateGUID(int prepopulate_id, int starter_pack_id) {
 
 TemplateURLData::TemplateURLData()
     : safe_for_autoreplace(false),
-      id(0),
+      id(kInvalidTemplateURLID),
       date_created(base::Time::Now()),
       last_modified(base::Time::Now()),
       policy_origin(PolicyOrigin::kNoPolicy),
@@ -113,7 +113,7 @@ TemplateURLData::TemplateURLData(
       search_intent_params(search_intent_params),
       favicon_url(favicon_url),
       safe_for_autoreplace(true),
-      id(0),
+      id(kInvalidTemplateURLID),
       policy_origin(PolicyOrigin::kNoPolicy),
       enforced_by_policy(false),
       regulatory_origin(RegulatoryExtensionType::kDefault),
@@ -171,9 +171,9 @@ void TemplateURLData::SetURL(const std::string& url) {
 
 std::vector<uint8_t> TemplateURLData::GenerateHash() const {
   DCHECK(!url_.empty());
-  DCHECK_NE(id, 0);
+  DCHECK_NE(id, kInvalidTemplateURLID);
   base::Pickle pickle;
-  pickle.WriteInt64(id);
+  pickle.WriteInt64(id.value());
   pickle.WriteString(url_);
   pickle.WriteString16(keyword_);
   pickle.WriteBool(enforced_by_policy);

@@ -3261,7 +3261,8 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
   if (newly_adding) {
     DCHECK_EQ(kInvalidTemplateURLID, template_url->id());
     DCHECK(!Contains(&template_urls_, template_url.get()));
-    template_url->set_id(++next_id_);
+    next_id_ = TemplateURLID(next_id_.value() + 1);
+    template_url->set_id(next_id_);
   }
 
   template_url->ResetKeywordIfNecessary(search_terms_data(), false);

@@ -21,7 +21,7 @@ using ::history::URLRow;
 
 namespace {
 
-const history::KeywordID kTestKeywordId = 42;
+constexpr history::KeywordID kTestKeywordId(42);
 
 URLRow CreateUrlRow(const std::string& url,
                     const std::u16string& title,

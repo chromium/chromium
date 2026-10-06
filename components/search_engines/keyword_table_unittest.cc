@@ -82,7 +82,7 @@ class KeywordTableTest : public testing::Test {
     keyword.safe_for_autoreplace = true;
     keyword.input_encodings.push_back("UTF-8");
     keyword.input_encodings.push_back("UTF-16");
-    keyword.id = 1;
+    keyword.id = TemplateURLID(1);
     keyword.date_created = base::Time::UnixEpoch();
     keyword.last_modified = base::Time::UnixEpoch();
     keyword.last_visited = base::Time::UnixEpoch();
@@ -232,7 +232,7 @@ TEST_F(KeywordTableTest, KeywordWithNoFavicon) {
   keyword.SetKeyword(u"keyword");
   keyword.SetURL("http://url/");
   keyword.safe_for_autoreplace = true;
-  keyword.id = -100;
+  keyword.id = TemplateURLID(-100);
   AddKeyword(keyword);
 
   KeywordTable::Keywords keywords(GetKeywords());
@@ -252,12 +252,12 @@ TEST_F(KeywordTableTest, SanitizeURLs) {
   keyword.SetShortName(u"legit");
   keyword.SetKeyword(u"legit");
   keyword.SetURL("http://url/");
-  keyword.id = 1000;
+  keyword.id = TemplateURLID(1000);
   AddKeyword(keyword);
 
   keyword.SetShortName(u"bogus");
   keyword.SetKeyword(u"bogus");
-  keyword.id = 2000;
+  keyword.id = TemplateURLID(2000);
   AddKeyword(keyword);
 
   EXPECT_EQ(2U, GetKeywords().size());
@@ -280,7 +280,7 @@ TEST_F(KeywordTableTest, SanitizeShortName) {
     keyword.SetShortName(u"legit name");
     keyword.SetKeyword(u"legit");
     keyword.SetURL("http://url/");
-    keyword.id = 1000;
+    keyword.id = TemplateURLID(1000);
     AddKeyword(keyword);
     KeywordTable::Keywords keywords(GetKeywords());
     EXPECT_EQ(1U, keywords.size());
@@ -293,7 +293,7 @@ TEST_F(KeywordTableTest, SanitizeShortName) {
   {
     keyword.SetShortName(u"\t\tbogus \tname \n");
     keyword.SetKeyword(u"bogus");
-    keyword.id = 2000;
+    keyword.id = TemplateURLID(2000);
     AddKeyword(keyword);
     KeywordTable::Keywords keywords(GetKeywords());
     EXPECT_EQ(1U, keywords.size());

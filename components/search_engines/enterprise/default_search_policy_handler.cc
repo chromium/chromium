@@ -197,7 +197,7 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   // Set the fields which are not specified by the policy to default values.
   dict.Set(DefaultSearchManager::kID,
-           base::NumberToString(kInvalidTemplateURLID));
+           base::NumberToString(kInvalidTemplateURLID.value()));
   dict.Set(DefaultSearchManager::kPrepopulateID, 0);
   dict.Set(DefaultSearchManager::kStarterPackId, 0);
   dict.Set(DefaultSearchManager::kSyncGUID, std::string());

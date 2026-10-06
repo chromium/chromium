@@ -47,8 +47,7 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
 
   // Lambda facilitating insertion of TemplateURL definitions, ensuring that all
   // mandatory fields are present.
-  auto add_definition = [&overrides](TemplateURLID id,
-                                     std::string name_and_keyword,
+  auto add_definition = [&overrides](int id, std::string name_and_keyword,
                                      std::string base_url) {
     auto alternate_urls = base::ListValue();
     alternate_urls.Append(base_url + "/alternate?q={searchTerms}");
@@ -56,7 +55,7 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
     overrides.Append(
         base::DictValue()
             .Set("name", name_and_keyword)
-            .Set("id", (int)id)
+            .Set("id", id)
             .Set("keyword", name_and_keyword)
             .Set("search_url", base_url + "/search?q={searchTerms}")
             .Set("suggest_url", base_url + "/suggest?q={searchTerms}")

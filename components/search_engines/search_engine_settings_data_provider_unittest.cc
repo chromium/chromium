@@ -725,7 +725,7 @@ TEST_F(SearchEngineSettingsDataProviderSplitRegionTest,
   std::vector<int64_t> ids;
   ids.reserve(default_urls.size());
   for (const TemplateURL* turl : default_urls) {
-    ids.push_back(turl->id());
+    ids.push_back(turl->id().value());
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();

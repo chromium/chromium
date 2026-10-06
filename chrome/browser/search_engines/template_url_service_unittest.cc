@@ -111,7 +111,7 @@ TemplateURL* AddKeywordWithDate(TemplateURLService* model,
       model, short_name, keyword, url, suggest_url, alternate_url, favicon_url,
       safe_for_autoreplace, 0, encodings, date_created, last_modified,
       last_visited));
-  EXPECT_TRUE(!t_url || (t_url->id() != 0));
+  EXPECT_TRUE(!t_url || (t_url->id() != kInvalidTemplateURLID));
   return t_url;
 }
 

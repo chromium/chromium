@@ -51,7 +51,7 @@ KeywordSearchTermRowEnumerator::GetNextRow() {
     return nullptr;
   }
   auto row = std::make_unique<KeywordSearchTermRow>();
-  row->keyword_id = statement_.ColumnInt64(0);
+  row->keyword_id = KeywordID(statement_.ColumnInt64(0));
   row->url_id = statement_.ColumnInt64(1);
   row->term = statement_.ColumnString16(2);
   row->normalized_term = statement_.ColumnString16(3);

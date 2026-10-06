@@ -317,7 +317,8 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
   // in @typedef for SearchEngine. Please update it whenever you add or remove
   // any keys here.
   base::DictValue dict;
-  dict.Set("id", static_cast<int>(template_url->id()));
+  // TODO(crbug.com/568731926): Casts int64 -> int. Find a way to avoid it.
+  dict.Set("id", static_cast<int>(template_url->id().value()));
   dict.Set("name", template_url->short_name());
   dict.Set("displayName",
            GetDisplayName(template_url->short_name(), is_default));
@@ -471,7 +472,7 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
-  TemplateURLID id = args[0].GetInt();
+  TemplateURLID id(args[0].GetInt());
 
   search_engines::ChoiceMadeLocation choice_made_location =
       static_cast<search_engines::ChoiceMadeLocation>(args[1].GetInt());
@@ -509,7 +510,7 @@ void SearchEnginesHandler::HandleGetSaveGuestChoice(
 void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
     const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
-  const TemplateURLID id = args[0].GetInt();
+  const TemplateURLID id(args[0].GetInt());
   const bool is_active = args[1].GetBool();
 
   list_controller_.SetIsActiveTemplateURL(id, is_active);
@@ -518,7 +519,7 @@ void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
 void SearchEnginesHandler::HandleRemoveSearchEngine(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
-  TemplateURLID id = args[0].GetInt();
+  TemplateURLID id(args[0].GetInt());
 
   TemplateURL* template_url = list_controller_.GetTemplateURL(id);
   if (template_url && list_controller_.CanRemove(template_url)) {
@@ -530,7 +531,7 @@ void SearchEnginesHandler::HandleRemoveSearchEngine(
 void SearchEnginesHandler::HandleSearchEngineEditStarted(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
-  TemplateURLID id = args[0].GetInt();
+  TemplateURLID id(args[0].GetInt());
 
   TemplateURL* engine = list_controller_.GetTemplateURL(id);
 

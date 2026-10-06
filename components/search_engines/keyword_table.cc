@@ -187,7 +187,7 @@ void UpdateAllKeywordHashes(sql::Database* db,
 
   while (query_statement.Step()) {
     TemplateURLData data;
-    data.id = query_statement.ColumnInt64(0);
+    data.id = TemplateURLID(query_statement.ColumnInt64(0));
     const auto maybe_url = query_statement.ColumnString(1);
 
     // Due to past bugs, there might be persisted entries with empty URLs. Avoid
@@ -218,7 +218,7 @@ void UpdateAllKeywordHashes(sql::Database* db,
         SQL_FROM_HERE, "UPDATE keywords SET url_hash=? WHERE id=?"));
 
     update_statement.BindBlob(0, *std::move(encrypted_hash));
-    update_statement.BindInt64(1, data.id);
+    update_statement.BindInt64(1, data.id.value());
 
     if (!update_statement.Run()) {
       all_rows_migrated = false;
@@ -362,7 +362,7 @@ bool KeywordTable::GetKeywords(Keywords* keywords) {
     if (data) {
       keywords->emplace_back(*std::move(data));
     } else {
-      bad_entries.insert(s.ColumnInt64(0));
+      bad_entries.insert(TemplateURLID(s.ColumnInt64(0)));
     }
   }
   bool succeeded = s.Succeeded();
@@ -533,8 +533,8 @@ bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
   sql::Statement s(db()->GetUniqueStatement(kQuery));
   std::vector<std::tuple<TemplateURLID, Time, Time, Time>> updates;
   while (s.Step()) {
-    updates.emplace_back(std::make_tuple(s.ColumnInt64(0), s.ColumnTime(1),
-                                         s.ColumnTime(2), s.ColumnTime(3)));
+    updates.emplace_back(TemplateURLID(s.ColumnInt64(0)), s.ColumnTime(1),
+                         s.ColumnTime(2), s.ColumnTime(3));
   }
   if (!s.Succeeded())
     return false;
@@ -547,7 +547,7 @@ bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
     update_statement.BindTime(0, std::get<1>(tuple));
     update_statement.BindTime(1, std::get<2>(tuple));
     update_statement.BindTime(2, std::get<3>(tuple));
-    update_statement.BindInt64(3, std::get<0>(tuple));
+    update_statement.BindInt64(3, std::get<0>(tuple).value());
     if (!update_statement.Run()) {
       return false;
     }
@@ -633,7 +633,7 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.safe_for_autoreplace = s.ColumnBool(5);
   data.input_encodings = base::SplitString(
       s.ColumnStringView(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  data.id = s.ColumnInt64(0);
+  data.id = TemplateURLID(s.ColumnInt64(0));
   data.date_created = s.ColumnTime(7);
   data.last_modified = s.ColumnTime(13);
   data.policy_origin =
@@ -736,7 +736,7 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
   std::string alternate_urls =
       base::WriteJson(alternate_urls_value).value_or("");
 
-  s->BindInt64(id_column, data.id);
+  s->BindInt64(id_column, data.id.value());
   s->BindString16(starting_column, data.short_name());
   s->BindString16(starting_column + 1, data.keyword());
   s->BindString(starting_column + 2,
@@ -800,7 +800,7 @@ bool KeywordTable::RemoveKeyword(TemplateURLID id) {
   DCHECK(id);
   sql::Statement s(db()->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM keywords WHERE id = ?"));
-  s.BindInt64(0, id);
+  s.BindInt64(0, id.value());
 
   return s.Run();
 }
@@ -829,7 +829,7 @@ bool KeywordTable::GetKeywordAsString(TemplateURLID id,
       {"SELECT ", ColumnsForVersion(WebDatabase::kCurrentVersionNumber, true),
        " FROM ", table_name, " WHERE id=?"});
   sql::Statement s(db()->GetUniqueStatement(query));
-  s.BindInt64(0, id);
+  s.BindInt64(0, id.value());
 
   if (!s.Step()) {
     LOG_IF(WARNING, s.Succeeded()) << "No keyword with id: " << id

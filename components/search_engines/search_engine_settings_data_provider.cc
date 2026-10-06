@@ -314,7 +314,8 @@ void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
   TemplateURL::TemplateURLVector displayed_engines;
   displayed_engines.reserve(ids.size());
   for (int64_t id : ids) {
-    if (TemplateURL* turl = template_url_service_->GetTemplateURLForId(id)) {
+    if (TemplateURL* turl =
+            template_url_service_->GetTemplateURLForId(TemplateURLID(id))) {
       displayed_engines.push_back(turl);
     }
   }

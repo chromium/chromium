@@ -601,7 +601,7 @@ bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
   sql::Statement exist_statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "SELECT term FROM keyword_search_terms "
       "WHERE keyword_id = ? AND url_id = ?"));
-  exist_statement.BindInt64(0, keyword_id);
+  exist_statement.BindInt64(0, keyword_id.value());
   exist_statement.BindInt64(1, url_id);
 
   if (exist_statement.Step())
@@ -614,7 +614,7 @@ bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
       SQL_FROM_HERE,
       "INSERT INTO keyword_search_terms (keyword_id, url_id, term, "
       "normalized_term) VALUES (?,?,?,?)"));
-  statement.BindInt64(0, keyword_id);
+  statement.BindInt64(0, keyword_id.value());
   statement.BindInt64(1, url_id);
   statement.BindString16(2, term);
   statement.BindString16(3, NormalizeTerm(term));
@@ -627,7 +627,7 @@ bool URLDatabase::InsertKeywordSearchTermRow(const KeywordSearchTermRow& row) {
       SQL_FROM_HERE,
       "INSERT INTO keyword_search_terms (keyword_id, url_id, term, "
       "normalized_term) VALUES (?,?,?,?)"));
-  statement.BindInt64(0, row.keyword_id);
+  statement.BindInt64(0, row.keyword_id.value());
   statement.BindInt64(1, row.url_id);
   statement.BindString16(2, row.term);
   statement.BindString16(3, row.normalized_term);
@@ -670,7 +670,7 @@ bool URLDatabase::GetKeywordSearchTermRow(URLID url_id,
 
   if (row) {
     row->url_id = url_id;
-    row->keyword_id = statement.ColumnInt64(0);
+    row->keyword_id = KeywordID(statement.ColumnInt64(0));
     row->term = statement.ColumnString16(1);
     row->normalized_term = statement.ColumnString16(2);
   }
@@ -692,7 +692,7 @@ bool URLDatabase::GetKeywordSearchTermRows(
   while (statement.Step()) {
     KeywordSearchTermRow row;
     row.url_id = statement.ColumnInt64(1);
-    row.keyword_id = statement.ColumnInt64(0);
+    row.keyword_id = KeywordID(statement.ColumnInt64(0));
     row.term = term;
     row.normalized_term = statement.ColumnString16(2);
     rows->push_back(std::move(row));
@@ -705,7 +705,7 @@ void URLDatabase::DeleteAllSearchTermsForKeyword(
   DCHECK(keyword_id);
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "DELETE FROM keyword_search_terms WHERE keyword_id=?"));
-  statement.BindInt64(0, keyword_id);
+  statement.BindInt64(0, keyword_id.value());
 
   statement.Run();
 }
@@ -743,7 +743,7 @@ URLDatabase::CreateKeywordSearchTermVisitEnumerator(
   // This magic gives us a prefix search.
   std::u16string next_prefix = normalized_prefix;
   next_prefix.back() = next_prefix.back() + 1;
-  enumerator->statement_.BindInt64(0, keyword_id);
+  enumerator->statement_.BindInt64(0, keyword_id.value());
   enumerator->statement_.BindString16(1, normalized_prefix);
   enumerator->statement_.BindString16(2, next_prefix);
   enumerator->initialized_ = enumerator->statement_.is_valid();
@@ -774,7 +774,7 @@ URLDatabase::CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id) {
         kst.normalized_term <> ''
       ORDER BY kst.normalized_term, u.last_visit_time
       )"));
-  enumerator->statement_.BindInt64(0, keyword_id);
+  enumerator->statement_.BindInt64(0, keyword_id.value());
   enumerator->initialized_ = enumerator->statement_.is_valid();
   return enumerator;
 }
@@ -808,7 +808,7 @@ bool URLDatabase::DeleteKeywordSearchTermForNormalizedTerm(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "DELETE FROM keyword_search_terms WHERE "
                                  "keyword_id = ? AND normalized_term=?"));
-  statement.BindInt64(0, keyword_id);
+  statement.BindInt64(0, keyword_id.value());
   statement.BindString16(1, normalized_term);
 
   return statement.Run();

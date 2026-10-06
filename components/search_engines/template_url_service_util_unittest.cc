@@ -96,30 +96,42 @@ TEST(TemplateURLServiceUtilTest, RemoveDuplicatePrepopulateIDs) {
   // will test a different heuristic of RemoveDuplicatePrepopulateIDs.
   // Ignored set - These should be left alone as they do not have valid
   // prepopulate IDs.
-  local_turls.push_back(CreatePrepopulateTemplateURL(0, "winner1", 4));
-  local_turls.push_back(CreatePrepopulateTemplateURL(0, "winner2", 5));
-  local_turls.push_back(CreatePrepopulateTemplateURL(0, "winner3", 6));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(0, "winner1", TemplateURLID(4)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(0, "winner2", TemplateURLID(5)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(0, "winner3", TemplateURLID(6)));
   size_t num_non_prepopulated_urls = local_turls.size();
 
   // Keyword match set - Prefer the one that matches the keyword of the
   // prepopulate ID.
-  local_turls.push_back(CreatePrepopulateTemplateURL(1, "loser1", 7));
-  local_turls.push_back(CreatePrepopulateTemplateURL(1, "loser2", 8));
-  local_turls.push_back(CreatePrepopulateTemplateURL(1, "winner4", 9));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(1, "loser1", TemplateURLID(7)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(1, "loser2", TemplateURLID(8)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(1, "winner4", TemplateURLID(9)));
 
   // Default set - Prefer the default search engine over all other criteria.
   // The last one is the default. It will be passed as the
   // default_search_provider parameter to RemoveDuplicatePrepopulateIDs.
-  local_turls.push_back(CreatePrepopulateTemplateURL(2, "loser3", 10));
-  local_turls.push_back(CreatePrepopulateTemplateURL(2, "xxx", 11));
-  local_turls.push_back(CreatePrepopulateTemplateURL(2, "winner5", 12));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(2, "loser3", TemplateURLID(10)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(2, "xxx", TemplateURLID(11)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(2, "winner5", TemplateURLID(12)));
   TemplateURL* default_turl = local_turls.back().get();
 
   // ID set - Prefer the lowest TemplateURLID if the keywords don't match and if
   // none are the default.
-  local_turls.push_back(CreatePrepopulateTemplateURL(3, "winner6", 13));
-  local_turls.push_back(CreatePrepopulateTemplateURL(3, "loser5", 14));
-  local_turls.push_back(CreatePrepopulateTemplateURL(3, "loser6", 15));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(3, "winner6", TemplateURLID(13)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(3, "loser5", TemplateURLID(14)));
+  local_turls.push_back(
+      CreatePrepopulateTemplateURL(3, "loser6", TemplateURLID(15)));
 
   RemoveDuplicatePrepopulateIDs(nullptr, prepopulated_turls, default_turl,
                                 &local_turls, SearchTermsData(), nullptr);
@@ -149,7 +161,7 @@ TEST_F(TemplateURLServiceUtilWithEnvTest,
 
   // Start with single search engine created from Play API data.
   local_turls.push_back(CreatePrepopulateTemplateURL(
-      0, "play", 1, RegulatoryExtensionType::kAndroidEEA));
+      0, "play", TemplateURLID(1), RegulatoryExtensionType::kAndroidEEA));
 
   // Test that prepopulated search engine with matching keyword is merged with
   // Play API search engine. Search URL should come from Play API search engine.

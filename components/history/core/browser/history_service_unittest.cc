@@ -750,8 +750,8 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
        {history::kRepeatableQueriesMinVisitCount.name, "1"},
        {history::kRepeatableQueriesIgnoreDuplicateVisits.name, "true"}});
 
-  const KeywordID first_keyword_id = 1;
-  const KeywordID second_keyword_id = 2;
+  const KeywordID first_keyword_id(1);
+  const KeywordID second_keyword_id(2);
 
   struct PageData {
     const GURL url;

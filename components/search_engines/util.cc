@@ -510,7 +510,7 @@ void RemoveDuplicatePrepopulateIDs(
 // If not found, returns NULL.
 TemplateURL* GetTemplateURLByID(
     const TemplateURLService::TemplateURLVector& template_urls,
-    int64_t id) {
+    TemplateURLID id) {
   for (auto i(template_urls.begin()); i != template_urls.end(); ++i) {
     if ((*i)->id() == id) {
       return *i;

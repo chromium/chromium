@@ -469,7 +469,7 @@ void AutocompleteProviderTest::RegisterTemplateURL(
   turl_model->SetUserSelectedDefaultSearchProvider(default_turl);
   turl_model->Load();
   TemplateURLID default_provider_id = default_turl->id();
-  ASSERT_NE(0, default_provider_id);
+  ASSERT_NE(kInvalidTemplateURLID, default_provider_id);
 }
 
 void AutocompleteProviderTest::ResetControllerWithTestProviders(
@@ -528,7 +528,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordAndSearchProviders() {
       turl_model->Add(std::make_unique<TemplateURL>(data));
   turl_model->SetUserSelectedDefaultSearchProvider(default_turl);
   TemplateURLID default_provider_id = default_turl->id();
-  ASSERT_NE(0, default_provider_id);
+  ASSERT_NE(kInvalidTemplateURLID, default_provider_id);
 
   // Create another TemplateURL for KeywordProvider.
   TemplateURLData data2;
@@ -538,7 +538,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordAndSearchProviders() {
   data2.is_active = TemplateURLData::ActiveStatus::kTrue;
   TemplateURL* keyword_turl =
       turl_model->Add(std::make_unique<TemplateURL>(data2));
-  ASSERT_NE(0, keyword_turl->id());
+  ASSERT_NE(kInvalidTemplateURLID, keyword_turl->id());
 
   ResetControllerWithType(
       static_cast<int>(AutocompleteProvider::Type::kKeyword |
@@ -557,7 +557,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
   TemplateURL* keyword_turl =
       turl_model->Add(std::make_unique<TemplateURL>(data));
-  ASSERT_NE(0, keyword_turl->id());
+  ASSERT_NE(kInvalidTemplateURLID, keyword_turl->id());
 
   // Make a TemplateURL for KeywordProvider that a shorter version of the
   // first.
@@ -566,7 +566,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
   data.SetURL("http://f.com/{searchTerms}");
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
   keyword_turl = turl_model->Add(std::make_unique<TemplateURL>(data));
-  ASSERT_NE(0, keyword_turl->id());
+  ASSERT_NE(kInvalidTemplateURLID, keyword_turl->id());
 
   // Create another TemplateURL for KeywordProvider.
   data.SetShortName(u"bar.com");
@@ -574,7 +574,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
   data.SetURL("http://bar.com/{searchTerms}");
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
   keyword_turl = turl_model->Add(std::make_unique<TemplateURL>(data));
-  ASSERT_NE(0, keyword_turl->id());
+  ASSERT_NE(kInvalidTemplateURLID, keyword_turl->id());
 
   ResetControllerWithType(
       static_cast<int>(AutocompleteProvider::Type::kKeyword));

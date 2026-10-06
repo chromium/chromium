@@ -193,7 +193,7 @@ TEST_F(URLDatabaseTest, AddAndUpdateURL) {
 
 // Tests querying prefix keyword search terms.
 TEST_F(URLDatabaseTest, KeywordSearchTerms_Prefix) {
-  KeywordID keyword_id = 100;
+  KeywordID keyword_id(100);
   // Choose the local midnight of yesterday as the baseline for the time.
   base::Time local_midnight = Time::Now().LocalMidnight() - base::Days(1);
 
@@ -296,7 +296,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_Prefix) {
 
 // Tests querying zero-prefix keyword search terms.
 TEST_F(URLDatabaseTest, KeywordSearchTerms_ZeroPrefix) {
-  KeywordID keyword_id = 100;
+  KeywordID keyword_id(100);
   // Choose the local midnight of yesterday as the baseline for the time.
   base::Time local_midnight = Time::Now().LocalMidnight() - base::Days(1);
 
@@ -405,7 +405,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_MostRepeated) {
       history::kOrganicRepeatableQueries,
       {{history::kRepeatableQueriesIgnoreDuplicateVisits.name, "false"},
        {history::kRepeatableQueriesMinVisitCount.name, "1"}});
-  KeywordID keyword_id = 100;
+  KeywordID keyword_id(100);
   // Choose the local midnight of yesterday as the baseline for the time.
   base::Time local_midnight = Time::Now().LocalMidnight() - base::Days(1);
 
@@ -531,14 +531,15 @@ TEST_F(URLDatabaseTest, DeleteURLDeletesKeywordSearchTermVisit) {
   ASSERT_NE(0, url_id);
 
   // Add a keyword visit.
-  ASSERT_TRUE(SetKeywordSearchTermsForURL(url_id, 1, u"visit"));
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(url_id, KeywordID(1), u"visit"));
 
   // Delete the url.
   ASSERT_TRUE(DeleteURLRow(url_id));
 
   // Make sure the keyword visit was deleted.
   KeywordSearchTermVisitList matches;
-  auto enumerator = CreateKeywordSearchTermVisitEnumerator(1, u"visit");
+  auto enumerator =
+      CreateKeywordSearchTermVisitEnumerator(KeywordID(1), u"visit");
   ASSERT_TRUE(enumerator);
   matches.clear();
   GetAutocompleteSearchTermsFromEnumerator(*enumerator, /*count=*/SIZE_MAX,
@@ -622,8 +623,7 @@ TEST_F(URLDatabaseTest, EnumeratorForTypedOrSearched) {
   const URLID searched_id =
       AddURL(URLRow(GURL("https://www.google.com/search?q=foo")));
   ASSERT_NE(0, searched_id);
-  ASSERT_TRUE(
-      SetKeywordSearchTermsForURL(searched_id, /*keyword_id=*/1, u"foo"));
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(searched_id, KeywordID(1), u"foo"));
 
   URLRow visited(GURL("http://www.visited.com/"));
   visited.set_visit_count(10);
@@ -643,12 +643,11 @@ TEST_F(URLDatabaseTest, KeywordSearchTermRowEnumerator) {
   const URLID foo_id =
       AddURL(URLRow(GURL("https://www.google.com/search?q=Foo")));
   ASSERT_NE(0, foo_id);
-  ASSERT_TRUE(SetKeywordSearchTermsForURL(foo_id, /*keyword_id=*/1, u"Foo"));
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(foo_id, KeywordID(1), u"Foo"));
   const URLID bar_id =
       AddURL(URLRow(GURL("https://www.bing.com/search?q=Bar+Baz")));
   ASSERT_NE(0, bar_id);
-  ASSERT_TRUE(
-      SetKeywordSearchTermsForURL(bar_id, /*keyword_id=*/2, u"Bar  Baz"));
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(bar_id, KeywordID(2), u"Bar  Baz"));
 
   std::unique_ptr<KeywordSearchTermRowEnumerator> enumerator =
       CreateKeywordSearchTermRowEnumerator();
@@ -658,8 +657,9 @@ TEST_F(URLDatabaseTest, KeywordSearchTermRowEnumerator) {
     rows.push_back(std::move(*row));
   }
   EXPECT_THAT(rows, testing::UnorderedElementsAre(
-                        MatchesSearchTerm(1, foo_id, u"Foo", u"foo"),
-                        MatchesSearchTerm(2, bar_id, u"Bar  Baz", u"bar baz")));
+                        MatchesSearchTerm(KeywordID(1), foo_id, u"Foo", u"foo"),
+                        MatchesSearchTerm(KeywordID(2), bar_id, u"Bar  Baz",
+                                          u"bar baz")));
 }
 
 TEST_F(URLDatabaseTest, InsertKeywordSearchTermRow) {
@@ -669,7 +669,7 @@ TEST_F(URLDatabaseTest, InsertKeywordSearchTermRow) {
 
   // The row is stored as given, without normalizing the term.
   KeywordSearchTermRow row;
-  row.keyword_id = 1;
+  row.keyword_id = KeywordID(1);
   row.url_id = url_id;
   row.term = u"Foo  Bar";
   row.normalized_term = u"not normalized";
@@ -677,8 +677,8 @@ TEST_F(URLDatabaseTest, InsertKeywordSearchTermRow) {
 
   KeywordSearchTermRow stored;
   ASSERT_TRUE(GetKeywordSearchTermRow(url_id, &stored));
-  EXPECT_THAT(stored,
-              MatchesSearchTerm(1, url_id, u"Foo  Bar", u"not normalized"));
+  EXPECT_THAT(stored, MatchesSearchTerm(KeywordID(1), url_id, u"Foo  Bar",
+                                        u"not normalized"));
 }
 
 // Test GetKeywordSearchTermRows and DeleteSearchTerm
@@ -693,7 +693,7 @@ TEST_F(URLDatabaseTest, GetAndDeleteKeywordSearchTermByTerm) {
   ASSERT_NE(0, url_id1);
 
   // Add a keyword visit.
-  KeywordID keyword_id = 100;
+  KeywordID keyword_id(100);
   std::u16string keyword = u"visit";
   ASSERT_TRUE(SetKeywordSearchTermsForURL(url_id1, keyword_id, keyword));
 

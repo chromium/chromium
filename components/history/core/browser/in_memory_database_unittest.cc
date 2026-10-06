@@ -22,7 +22,7 @@
 namespace history {
 namespace {
 
-constexpr KeywordID kKeywordId = 42;
+constexpr KeywordID kKeywordId(42);
 
 // Matches a URLRow whose fields all equal those of `expected`.
 testing::Matcher<const URLRow&> SameRowAs(const URLRow& expected) {

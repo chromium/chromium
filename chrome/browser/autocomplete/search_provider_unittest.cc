@@ -371,7 +371,7 @@ void BaseSearchProviderTest::CustomizableSetUp(
   default_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
   turl_model->SetUserSelectedDefaultSearchProvider(default_t_url_);
   TemplateURLID default_provider_id = default_t_url_->id();
-  ASSERT_NE(0, default_provider_id);
+  ASSERT_NE(kInvalidTemplateURLID, default_provider_id);
 
   // Add url1, with search term term1_.
   term1_url_ = AddSearchToHistory(default_t_url_, std::u16string(term1_), 1);
@@ -383,7 +383,7 @@ void BaseSearchProviderTest::CustomizableSetUp(
   data.suggestions_url = "http://suggest_keyword/{searchTerms}";
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
   keyword_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
-  ASSERT_NE(0, keyword_t_url_->id());
+  ASSERT_NE(kInvalidTemplateURLID, keyword_t_url_->id());
 
   // Add a page and search term for keyword_t_url_.
   keyword_url_ =
@@ -4165,7 +4165,7 @@ class SearchProviderRequestTest : public SearchProviderTest {
     TemplateURL* template_url = turl_model->Add(
         std::make_unique<TemplateURL>(google_template_url_data));
     turl_model->SetUserSelectedDefaultSearchProvider(template_url);
-    ASSERT_NE(0, template_url->id());
+    ASSERT_NE(kInvalidTemplateURLID, template_url->id());
   }
 };
 
@@ -4311,7 +4311,7 @@ class SearchProviderOTRTest : public SearchProviderTest {
     TemplateURL* template_url = turl_model->Add(
         std::make_unique<TemplateURL>(google_template_url_data));
     turl_model->SetUserSelectedDefaultSearchProvider(template_url);
-    ASSERT_NE(0, template_url->id());
+    ASSERT_NE(kInvalidTemplateURLID, template_url->id());
 
     otr_client_ =
         std::make_unique<ChromeAutocompleteProviderClient>(otr_profile());

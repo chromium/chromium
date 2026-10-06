@@ -71,7 +71,7 @@ TEST_F(WebDataServiceWrapperTest, ShutdownKeywordWebDataService) {
   test_keyword.SetShortName(u"Foo Bar");
   test_keyword.SetKeyword(u"foo");
   test_keyword.SetURL("http://foo.bar");
-  test_keyword.id = 1234;
+  test_keyword.id = TemplateURLID(1234);
 
   // Create WebDataServiceWrapper. Add a test keyword and perform shutdown.
   auto web_data_service_wrapper = CreateWebDataServiceWrapper();

@@ -140,7 +140,10 @@ class SearchEnginesHandlerTest : public testing::Test {
 
   TestingProfileManager& profile_manager() { return profile_manager_; }
 
-  int bing_id() { return bing_engine_->id(); }
+  int bing_id() {
+    // TODO(crbug.com/568731926): Casts int64 -> int. Find a way to avoid it.
+    return static_cast<int>(bing_engine_->id().value());
+  }
 
  private:
   base::HistogramTester histogram_tester_;

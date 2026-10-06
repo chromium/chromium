@@ -1550,7 +1550,7 @@ TEST_P(WebDatabaseMigrationTestEncryption, MigrateVersion136ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_136.sql")));
   const char kTestUrl[] = "chrome://test/?q={searchTerms}";
   const std::string_view kTestKeyword = "@testing";
-  const TemplateURLID kTestId = 1;
+  const TemplateURLID kTestId(1);
   {
     sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
@@ -1559,7 +1559,7 @@ TEST_P(WebDatabaseMigrationTestEncryption, MigrateVersion136ToCurrent) {
 
     // Insert a keyword to test that it is migrated correctly.
     ASSERT_TRUE(connection.ExecuteScriptForTesting(base::StrCat(
-        {"INSERT INTO keywords VALUES(", base::NumberToString(kTestId),
+        {"INSERT INTO keywords VALUES(", base::NumberToString(kTestId.value()),
          ",'Test','", kTestKeyword, "','','", kTestUrl,
          "',1,'',0,0,'','',0,0,0,'','[]','','','','','',0,0,1,2,0,0);"})));
   }
@@ -1611,7 +1611,7 @@ INSTANTIATE_TEST_SUITE_P(/*empty*/,
 // enabled.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion136ToCurrentBadUrl) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_136.sql")));
-  const TemplateURLID kTestId = 99;
+  const TemplateURLID kTestId(99);
   {
     sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
@@ -1620,7 +1620,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion136ToCurrentBadUrl) {
 
     // Insert a keyword to test that it is migrated correctly.
     ASSERT_TRUE(connection.ExecuteScriptForTesting(base::StrCat(
-        {"INSERT INTO keywords VALUES(", base::NumberToString(kTestId),
+        {"INSERT INTO keywords VALUES(", base::NumberToString(kTestId.value()),
          ",'Test','@test','','", /*url=*/"",
          "',1,'',0,0,'','',0,0,0,'','[]','','','','','',0,0,1,2,0,0);"})));
   }
@@ -1984,7 +1984,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion151ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_151.sql")));
   const char kTestUrl[] = "chrome://test/?q={searchTerms}";
   const std::string_view kTestKeyword = "@testing";
-  const TemplateURLID kTestId = 1;
+  const TemplateURLID kTestId(1);
   const int kTestStarterPackId = 1234;
   const int kTestEnforcedByPolicy = 1;
   {
@@ -1997,8 +1997,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion151ToCurrent) {
         {"INSERT INTO keywords (id, short_name, keyword, favicon_url, url, "
          "safe_for_autoreplace, url_hash, starter_pack_id, enforced_by_policy) "
          "VALUES (",
-         base::NumberToString(kTestId), ",'Test','", kTestKeyword, "','','",
-         kTestUrl, "',1, NULL,", base::NumberToString(kTestStarterPackId), ",",
+         base::NumberToString(kTestId.value()), ",'Test','", kTestKeyword,
+         "','','", kTestUrl, "',1, NULL,",
+         base::NumberToString(kTestStarterPackId), ",",
          base::NumberToString(kTestEnforcedByPolicy), ");"})));
   }
   {
@@ -2015,7 +2016,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion151ToCurrent) {
     sql::Statement stmt(connection.GetUniqueStatement(
         base::StrCat({"SELECT url, keyword, starter_pack_id, "
                       "enforced_by_policy FROM keywords WHERE id=",
-                      base::NumberToString(kTestId)})));
+                      base::NumberToString(kTestId.value())})));
     EXPECT_TRUE(stmt.Step());
     EXPECT_EQ(kTestUrl, stmt.ColumnString(0));
     EXPECT_EQ(kTestKeyword, stmt.ColumnString(1));

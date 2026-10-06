@@ -40,7 +40,7 @@ struct KeywordSearchTermRow {
   KeywordSearchTermRow(KeywordSearchTermRow&& other) = default;
   KeywordSearchTermRow& operator=(KeywordSearchTermRow&& other) = default;
 
-  KeywordID keyword_id{0};         // ID of the keyword.
+  KeywordID keyword_id;            // ID of the keyword.
   URLID url_id{0};                 // ID of the url.
   std::u16string term;             // The search term that was used.
   std::u16string normalized_term;  // The search term, in lower case and with

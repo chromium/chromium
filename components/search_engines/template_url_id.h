@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_ID_H_
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_ID_H_
 
-// ID of a search provider.
-using TemplateURLID = int64_t;
+#include "base/types/id_type.h"
 
-const TemplateURLID kInvalidTemplateURLID = 0;
+class TemplateURL;
+
+// ID of a search provider.
+using TemplateURLID = base::IdType64<TemplateURL>;
+
+inline constexpr TemplateURLID kInvalidTemplateURLID;
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_ID_H_

@@ -141,7 +141,7 @@ static std::string JNI_TemplateUrl_GetProvidingExtensionId(
 
 static int64_t JNI_TemplateUrl_GetId(JNIEnv* env, int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
-  return template_url->id();
+  return template_url->id().value();
 }
 
 static jni_zero::ScopedJavaLocalRef<jbyteArray>

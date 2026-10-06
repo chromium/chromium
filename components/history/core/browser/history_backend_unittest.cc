@@ -769,7 +769,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase,
     NotifyDeletions(DeletionInfo::ForUrls(rows, std::set<GURL>()));
   }
 
-  size_t GetNumberOfMatchingSearchTerms(const int keyword_id,
+  size_t GetNumberOfMatchingSearchTerms(const KeywordID keyword_id,
                                         const std::u16string& prefix) {
     URLDatabase* url_db = mem_backend_->db();
     auto enumerator =
@@ -823,7 +823,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase,
   static const char16_t kTestSearchTerm2[];
 };
 
-const KeywordID InMemoryHistoryBackendTest::kTestKeywordId = 42;
+const KeywordID InMemoryHistoryBackendTest::kTestKeywordId(42);
 const char16_t InMemoryHistoryBackendTest::kTestSearchTerm1[] = u"banana";
 const char16_t InMemoryHistoryBackendTest::kTestSearchTerm2[] = u"orange";
 
@@ -3739,7 +3739,7 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
   const URLID url1_id = backend_->db()->AddURL(url_info1);
   EXPECT_NE(0, url1_id);
 
-  KeywordID keyword_id = 1;
+  KeywordID keyword_id(1);
   std::u16string keyword = u"bar";
   ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(url1_id, keyword_id,
                                                           keyword));
@@ -3753,7 +3753,7 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
   const URLID url2_id = backend_->db()->AddURL(url_info2);
   EXPECT_NE(0, url2_id);
 
-  KeywordID keyword_id2 = 2;
+  KeywordID keyword_id2(2);
   ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(url2_id, keyword_id2,
                                                           keyword));
 
@@ -4427,7 +4427,7 @@ TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
   base::Time base_time = base::Time::Now().LocalMidnight() - base::Days(7);
   const size_t result_count = 3;
 
-  const KeywordID first_keyword_id = 1;
+  const KeywordID first_keyword_id(1);
   for (size_t i = 0; i < result_count * 2; ++i) {
     HistoryAddPageArgs args;
     const std::u16string term = u"First" + base::NumberToString16(i + 1);
@@ -4438,7 +4438,7 @@ TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
     backend_->SetKeywordSearchTermsForURL(args.url, first_keyword_id, term);
   }
 
-  const KeywordID second_keyword_id = 2;
+  const KeywordID second_keyword_id(2);
   for (size_t i = 0; i < result_count * 2; ++i) {
     HistoryAddPageArgs args;
     const std::u16string term = u"Second" + base::NumberToString16(i + 1);

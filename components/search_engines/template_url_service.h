@@ -1024,7 +1024,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // ID assigned to next TemplateURL added to this model. This is an ever
   // increasing integer that is initialized from the database.
-  TemplateURLID next_id_ = kInvalidTemplateURLID + 1;
+  TemplateURLID next_id_ = TemplateURLID(1);
 
   // Used to retrieve the current time, in base::Time units.
   std::unique_ptr<base::Clock> clock_ = std::make_unique<base::DefaultClock>();
