@@ -531,6 +531,56 @@ TEST_F(BrowserModalHostTest, StartsAndStopsQuickDeleteCoordinator) {
   EXPECT_OCMOCK_VERIFY(classMock);
 }
 
+// Test that `-stopQuickDeleteForAnimationWithCompletion:` does not crash when
+// `BrowserCoordinatorCommands` and `SceneCommands` are no longer dispatched
+// during UI shutdown, and invokes them when they are dispatched.
+TEST_F(BrowserModalHostTest, StopQuickDeleteForAnimationWithCompletion) {
+  id mockBaseViewController = OCMPartialMock(base_view_controller_);
+  UIViewController* presentedViewController = [[UIViewController alloc] init];
+  OCMStub([mockBaseViewController presentedViewController])
+      .andReturn(presentedViewController);
+  OCMStub([mockBaseViewController
+      dismissViewControllerAnimated:YES
+                         completion:[OCMArg invokeBlock]]);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<QuickDeleteCommands> handler =
+      HandlerForProtocol(dispatcher, QuickDeleteCommands);
+
+  // When `BrowserCoordinatorCommands` and `SceneCommands` are not dispatched
+  // (e.g. during shutdown), the completion block should still run without
+  // crashing.
+  __block base::test::TestFuture<void> first_completion;
+  [handler stopQuickDeleteForAnimationWithCompletion:^{
+    first_completion.SetValue();
+  }];
+  EXPECT_TRUE(first_completion.Wait());
+
+  // When `BrowserCoordinatorCommands` and `SceneCommands` are dispatched, both
+  // handlers should be invoked.
+  id mockBrowserCoordinatorCommands =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  [dispatcher startDispatchingToTarget:mockBrowserCoordinatorCommands
+                           forProtocol:@protocol(BrowserCoordinatorCommands)];
+  OCMExpect([mockBrowserCoordinatorCommands
+      clearPresentedStateWithCompletion:nil
+                         dismissOmnibox:YES]);
+
+  id mockSceneCommands = OCMProtocolMock(@protocol(SceneCommands));
+  [dispatcher startDispatchingToTarget:mockSceneCommands
+                           forProtocol:@protocol(SceneCommands)];
+  OCMExpect([mockSceneCommands dismissModalDialogsWithCompletion:nil]);
+
+  __block base::test::TestFuture<void> second_completion;
+  [handler stopQuickDeleteForAnimationWithCompletion:^{
+    second_completion.SetValue();
+  }];
+  EXPECT_TRUE(second_completion.Wait());
+
+  EXPECT_OCMOCK_VERIFY(mockBrowserCoordinatorCommands);
+  EXPECT_OCMOCK_VERIFY(mockSceneCommands);
+}
+
 // Tests that `-dismissCurrentPromo` stops PromosManagerCoordinator.
 TEST_F(BrowserModalHostTest, DismissesCurrentPromo) {
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();

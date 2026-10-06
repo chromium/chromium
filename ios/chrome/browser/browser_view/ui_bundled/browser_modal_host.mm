@@ -2237,11 +2237,14 @@ const char kContextPanelDismissedHistogram[] =
     // Properly shutdown all coordinators started either by this coordinator or
     // by the scene controller. This should include Quick Delete, History and
     // the Privacy Settings.
-    [HandlerForProtocol(weakDispatcher, BrowserCoordinatorCommands)
-        clearPresentedStateWithCompletion:nil
-                           dismissOmnibox:YES];
-    // The protocol might not have a valid target when the shutdown of Quick
+    // The protocols might not have a valid target when the shutdown of Quick
     // Delete is happening at the same time the UI is being shutdown.
+    if ([weakDispatcher
+            dispatchingForProtocol:@protocol(BrowserCoordinatorCommands)]) {
+      [HandlerForProtocol(weakDispatcher, BrowserCoordinatorCommands)
+          clearPresentedStateWithCompletion:nil
+                             dismissOmnibox:YES];
+    }
     if ([weakDispatcher dispatchingForProtocol:@protocol(SceneCommands)]) {
       id<SceneCommands> sceneHandler =
           HandlerForProtocol(weakDispatcher, SceneCommands);
