@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
+#include "remoting/host/installer/win/setup/payload_files.h"
 
 namespace remoting::installer {
 
@@ -39,6 +40,10 @@ inline constexpr wchar_t kServiceDescription[] =
 // Executable and library names.
 inline constexpr wchar_t kHostBinaryName[] = L"remoting_host.exe";
 inline constexpr wchar_t kCoreBinaryName[] = L"remoting_core.dll";
+
+// Extension appended to locked in-use binaries during an update so the new
+// binary can be copied into the canonical path.
+inline constexpr wchar_t kOldFileExtension[] = L".old";
 
 // Returns the target installation directory for Chrome Remote Desktop
 // (e.g. C:\Program Files\Google\Chrome Remote Desktop).
