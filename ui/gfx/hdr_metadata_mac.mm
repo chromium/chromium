@@ -37,7 +37,21 @@ base::apple::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
 }
 
 base::apple::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
-    const gfx::HDRMetadata& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata,
+    bool fallback_to_defaults) {
+  if (!fallback_to_defaults) {
+    // Return null if the MDCV metadata is absent or entirely unspecified.
+    if (!hdr_metadata.HasMDCV()) {
+      return base::apple::ScopedCFTypeRef<CFDataRef>();
+    }
+    const auto& mdcv = hdr_metadata.GetMDCV();
+    if (mdcv.fDisplayPrimaries == SkNamedPrimariesExt::kInvalid &&
+        mdcv.fMaximumDisplayMasteringLuminance == 0.f &&
+        mdcv.fMinimumDisplayMasteringLuminance == 0.f) {
+      return base::apple::ScopedCFTypeRef<CFDataRef>();
+    }
+  }
+
   // This is a SMPTEST2086 Mastering Display Color Volume box.
   struct MasteringDisplayColorVolumeSEI {
     vector_ushort2 primaries[3];  // GBR

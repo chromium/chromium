@@ -224,16 +224,12 @@ void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
 
 void SetCvPixelBufferHdrMetadata(const gfx::HDRMetadata& hdr_metadata,
                                  CVPixelBufferRef pixel_buffer) {
-  if (!hdr_metadata.IsValid()) {
-    return;
+  if (auto mdcv = gfx::GenerateMasteringDisplayColorVolume(
+          hdr_metadata, /*fallback_to_defaults=*/false)) {
+    CVBufferSetAttachment(pixel_buffer,
+                          kCVImageBufferMasteringDisplayColorVolumeKey,
+                          mdcv.get(), kCVAttachmentMode_ShouldPropagate);
   }
-  if (hdr_metadata.HasMDCV()) {
-    CVBufferSetAttachment(
-        pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
-        gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get(),
-        kCVAttachmentMode_ShouldPropagate);
-  }
-  // GenerateContentLightLevelInfo() returns null for a zeroed out CLLI.
   if (auto clli = gfx::GenerateContentLightLevelInfo(hdr_metadata)) {
     CVBufferSetAttachment(pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
                           clli.get(), kCVAttachmentMode_ShouldPropagate);

@@ -262,10 +262,12 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
                               kCVImageBufferTransferFunctionKey,
                               kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
                               kCVAttachmentMode_ShouldPropagate);
-        CVBufferSetAttachment(
-            cv_pixel_buffer.get(), kCVImageBufferMasteringDisplayColorVolumeKey,
-            gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get(),
-            kCVAttachmentMode_ShouldPropagate);
+        CVBufferSetAttachment(cv_pixel_buffer.get(),
+                              kCVImageBufferMasteringDisplayColorVolumeKey,
+                              gfx::GenerateMasteringDisplayColorVolume(
+                                  hdr_metadata, /*fallback_to_defaults=*/true)
+                                  .get(),
+                              kCVAttachmentMode_ShouldPropagate);
         CVBufferSetAttachment(
             cv_pixel_buffer.get(), kCVImageBufferContentLightLevelInfoKey,
             gfx::GenerateContentLightLevelInfo(hdr_metadata).get(),
