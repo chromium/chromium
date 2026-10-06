@@ -71,6 +71,10 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemImpl
                   DeleteFileCallback callback) override;
   void GetFileInfo(const base::FilePath& path,
                    GetFileInfoCallback callback) override;
+  void GetDiskSpaceInfo(const base::FilePath& path,
+                        GetDiskSpaceInfoCallback callback) override;
+  void ComputeDirectorySize(const base::FilePath& path,
+                            ComputeDirectorySizeCallback callback) override;
   void GetPathAccess(const base::FilePath& path,
                      GetPathAccessCallback callback) override;
   void RenameFile(const base::FilePath& old_path,

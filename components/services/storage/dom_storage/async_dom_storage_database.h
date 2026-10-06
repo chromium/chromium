@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/system/sys_info.h"
 #include "base/threading/sequence_bound.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/db_status.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
+class FilesystemProxy;
 
 class AsyncDomStorageDatabase {
  public:
@@ -168,7 +170,25 @@ class AsyncDomStorageDatabase {
 
   void ResetMigrationTimer();
   void StartMigration();
+
+  // Returns OK when the disk for `leveldb_path` contains enough free space to
+  // support SQLite migration.
+  void CheckAvailableDiskSpaceForMigration(StatusCallback callback);
+  void OnDiskSpaceComputedForMigration(
+      const base::FilePath& leveldb_path,
+      StatusCallback callback,
+      std::optional<base::SysInfo::DiskSpaceInfo> disk_space);
+  static DbStatus OnLeveldbSizeAndDiskSpaceComputedForMigration(
+      base::SysInfo::DiskSpaceInfo disk_space,
+      base::ByteSize leveldb_size);
+
+  void ContinueMigrationAfterDiskSpaceCheck(
+      DbStatus available_disk_space_status);
+
   void OnMigrationFinished(DomStorageDatabaseFactory::OpenResult result);
+
+  // Creates `file_system_proxy_` if necessary.
+  FilesystemProxy* EnsureFileSystemProxy();
 
   // `database_` and `is_sqlite_` must not be used until `is_database_opened_`
   // is true.
@@ -196,6 +216,10 @@ class AsyncDomStorageDatabase {
 
   // Migration starts after the idle timer fires.
   InactivityTimer migration_timer_;
+
+  // Used by migration to check available disk space and calculate the size of
+  // the source LevelDB to migrate.  `nullptr` while migration is inactive.
+  std::unique_ptr<FilesystemProxy> file_system_proxy_;
 
   // Database read and write operations that occurred during migration.  Each
   // operation must run after migration completes or aborts.

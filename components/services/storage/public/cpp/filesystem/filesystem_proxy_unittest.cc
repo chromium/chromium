@@ -6,14 +6,17 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -377,6 +380,58 @@ TEST_P(FilesystemProxyTest, GetFileInfo) {
 
   const base::FilePath kBadFilename{FILE_PATH_LITERAL("bad_file")};
   EXPECT_FALSE(proxy().GetFileInfo(kBadFilename).has_value());
+}
+
+TEST_P(FilesystemProxyTest, GetDiskSpaceInfo) {
+  auto get_disk_space_info = [this](const base::FilePath& path) {
+    base::test::TestFuture<std::optional<base::SysInfo::DiskSpaceInfo>> future;
+    proxy().GetDiskSpaceInfo(path, future.GetCallback());
+    return future.Get();
+  };
+
+  // Querying the root directory should return valid disk space info with
+  // positive total space and available space not exceeding total space.
+  std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      get_disk_space_info(base::FilePath());
+  ASSERT_TRUE(disk_space.has_value());
+  EXPECT_TRUE(disk_space->total.is_positive());
+  EXPECT_GE(disk_space->available, base::ByteSize());
+  EXPECT_GE(disk_space->total, disk_space->available);
+
+  // Querying a valid subdirectory should also return valid disk space info.
+  std::optional<base::SysInfo::DiskSpaceInfo> dir_disk_space =
+      get_disk_space_info(kDir1);
+  ASSERT_TRUE(dir_disk_space.has_value());
+  EXPECT_TRUE(dir_disk_space->total.is_positive());
+  EXPECT_GE(dir_disk_space->available, base::ByteSize());
+  EXPECT_GE(dir_disk_space->total, dir_disk_space->available);
+
+  // A non-existent path should return nullopt.
+  const base::FilePath kBadFilename{FILE_PATH_LITERAL("bad_file")};
+  EXPECT_FALSE(get_disk_space_info(kBadFilename).has_value());
+}
+
+TEST_P(FilesystemProxyTest, ComputeDirectorySize) {
+  auto compute_directory_size = [this](const base::FilePath& path) {
+    base::test::TestFuture<base::ByteSize> future;
+    proxy().ComputeDirectorySize(path, future.GetCallback());
+    return future.Get();
+  };
+
+  // An empty directory returns 0 bytes.
+  EXPECT_EQ(base::ByteSize(), compute_directory_size(kDir2));
+
+  // A directory containing only an empty subdirectory returns 0 bytes.
+  EXPECT_EQ(base::ByteSize(), compute_directory_size(kDir1.Append(kDir1Dir1)));
+
+  // A directory with files returns the sum of their file sizes.
+  EXPECT_EQ(base::ByteSize(std::size(kDir1File1Contents) - 1 +
+                           std::size(kDir1File2Contents) - 1),
+            compute_directory_size(kDir1));
+
+  // A non-existent path returns 0 bytes.
+  const base::FilePath kBadFilename{FILE_PATH_LITERAL("bad_file")};
+  EXPECT_EQ(base::ByteSize(), compute_directory_size(kBadFilename));
 }
 
 TEST_P(FilesystemProxyTest, RenameFile) {

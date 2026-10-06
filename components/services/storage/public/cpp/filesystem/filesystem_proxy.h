@@ -9,12 +9,14 @@
 #include <optional>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/pass_key.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -101,6 +103,19 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   // Retrieves information about a file or directory at |path|. Returns a valid
   // base::File::Info value on success, or null on failure.
   std::optional<base::File::Info> GetFileInfo(const base::FilePath& path);
+
+  // Return the total and available disk space on the volume containing `path`,
+  // or nullopt on failure.
+  using GetDiskSpaceInfoCallback =
+      base::OnceCallback<void(std::optional<base::SysInfo::DiskSpaceInfo>)>;
+  void GetDiskSpaceInfo(const base::FilePath& path,
+                        GetDiskSpaceInfoCallback callback);
+
+  // Returns the total number of bytes used by all the files under `path`.
+  // If the path does not exist the function returns 0.
+  void ComputeDirectorySize(
+      const base::FilePath& path,
+      mojom::Directory::ComputeDirectorySizeCallback callback);
 
   // Retrieves information about access rights for a path in the filesystem.
   // Returns a valid PathAccessInfo on success, or null on failure.

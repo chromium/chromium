@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -15,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
+#include "base/system/sys_info.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -218,6 +220,27 @@ void FilesystemImpl::GetFileInfo(const base::FilePath& path,
     std::move(callback).Run(std::move(info));
   else
     std::move(callback).Run(std::nullopt);
+}
+
+void FilesystemImpl::GetDiskSpaceInfo(const base::FilePath& path,
+                                      GetDiskSpaceInfoCallback callback) {
+  std::optional<base::SysInfo::DiskSpaceInfo> info =
+      base::SysInfo::AmountOfDiskSpace(MakeAbsolute(path));
+  if (!info) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  mojom::DiskSpaceInfoPtr mojo_info =
+      mojom::DiskSpaceInfo::New(info->total, info->available);
+  std::move(callback).Run(std::move(mojo_info));
+}
+
+void FilesystemImpl::ComputeDirectorySize(
+    const base::FilePath& path,
+    ComputeDirectorySizeCallback callback) {
+  std::move(callback).Run(base::ByteSize{
+      base::as_unsigned(base::ComputeDirectorySize(MakeAbsolute(path)))});
 }
 
 void FilesystemImpl::GetPathAccess(const base::FilePath& path,

@@ -5,6 +5,7 @@
 module storage.mojom;
 
 import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_error.mojom";
 import "mojo/public/mojom/base/file_info.mojom";
@@ -26,6 +27,15 @@ enum GetEntriesMode {
 struct StrictRelativePath {
   // The actual path data.
   mojo_base.mojom.FilePath path;
+};
+
+// A snapshot recording a volume's disk space
+struct DiskSpaceInfo {
+  // The total number of bytes on the volume.
+  mojo_base.mojom.ByteSize total;
+
+  // The available number of bytes on the volume.
+  mojo_base.mojom.ByteSize available;
 };
 
 // Indicates how a file should be opened and/or created by
@@ -135,6 +145,15 @@ interface Directory {
   // null on failure, or a populated |info| struct on success.
   [Sync]
   GetFileInfo(StrictRelativePath path) => (mojo_base.mojom.FileInfo? info);
+
+  // Retrieves the total and available disk space on the volume containing
+  // `path`, or null on failure.
+  GetDiskSpaceInfo(StrictRelativePath path) => (DiskSpaceInfo? info);
+
+  // Retrieves the total number of bytes used by all the files under `path`.
+  // If the path does not exist, returns 0.
+  ComputeDirectorySize(StrictRelativePath path)
+      => (mojo_base.mojom.ByteSize directory_size);
 
   // Retrieves access information about a specific filesystem entry at |path|.
   // Returns null on failure or a populated |info| struct on success.

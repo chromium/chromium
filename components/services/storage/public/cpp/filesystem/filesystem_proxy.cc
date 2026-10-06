@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -227,6 +228,38 @@ std::optional<base::File::Info> FilesystemProxy::GetFileInfo(
   std::optional<base::File::Info> info;
   remote_directory_->GetFileInfo(MakeRelative(path), &info);
   return info;
+}
+
+void FilesystemProxy::GetDiskSpaceInfo(const base::FilePath& path,
+                                       GetDiskSpaceInfoCallback callback) {
+  if (!remote_directory_) {
+    std::move(callback).Run(
+        base::SysInfo::AmountOfDiskSpace(MaybeMakeAbsolute(path)));
+    return;
+  }
+
+  remote_directory_->GetDiskSpaceInfo(
+      MakeRelative(path),
+      base::BindOnce([](mojom::DiskSpaceInfoPtr mojo_info) {
+        return mojo_info ? std::make_optional<base::SysInfo::DiskSpaceInfo>({
+                               .total = mojo_info->total,
+                               .available = mojo_info->available,
+                           })
+                         : std::nullopt;
+      }).Then(std::move(callback)));
+}
+
+void FilesystemProxy::ComputeDirectorySize(
+    const base::FilePath& path,
+    mojom::Directory::ComputeDirectorySizeCallback callback) {
+  if (!remote_directory_) {
+    std::move(callback).Run(base::ByteSize{base::as_unsigned(
+        base::ComputeDirectorySize(MaybeMakeAbsolute(path)))});
+    return;
+  }
+
+  remote_directory_->ComputeDirectorySize(MakeRelative(path),
+                                          std::move(callback));
 }
 
 std::optional<FilesystemProxy::PathAccessInfo> FilesystemProxy::GetPathAccess(

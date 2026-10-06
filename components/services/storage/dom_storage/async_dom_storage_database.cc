@@ -11,10 +11,14 @@
 #include "base/task/bind_post_task.h"
 #include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/features.h"
+#include "components/services/storage/filesystem_proxy_factory.h"
 
 namespace storage {
 
 namespace {
+
+// An empty SQLite database occupies disk space.
+constexpr base::ByteSize kEmptySqliteSize{base::KiBS(72).AsByteSize()};
 
 // Records the duration of an operation to a histogram with the suffix
 // corresponding to `metrics_type`.
@@ -50,6 +54,22 @@ void RecordStatusAndDuration(const std::string& status_histogram_name,
                              const DbStatus& status) {
   RecordDuration(duration_histogram_name, metrics_type, start_time);
   status.Log(status_histogram_name, metrics_type);
+}
+
+// Returns OK when `disk_space` contains enough free space to support SQLite
+// migration.
+bool IsDiskSpaceAvailableForSQLiteMigration(
+    const base::SysInfo::DiskSpaceInfo& disk_space,
+    base::ByteSize leveldb_size) {
+  const base::ByteSize estimated_sqlite_size =
+      std::max(2.5 * leveldb_size, kEmptySqliteSize);
+
+  // Leave at least 1% of disk space free after migration.
+  const base::ByteSize reserved_free_space = disk_space.total / 100;
+
+  const base::ByteSize required_disk_space =
+      estimated_sqlite_size + reserved_free_space;
+  return disk_space.available > required_disk_space;
 }
 
 }  // namespace
@@ -385,7 +405,57 @@ void AsyncDomStorageDatabase::StartMigration() {
   }
 
   migration_state_ = MigrationState::kMigrating;
+  CheckAvailableDiskSpaceForMigration(base::BindOnce(
+      &AsyncDomStorageDatabase::ContinueMigrationAfterDiskSpaceCheck,
+      weak_ptr_factory_.GetWeakPtr()));
+}
 
+void AsyncDomStorageDatabase::CheckAvailableDiskSpaceForMigration(
+    StatusCallback callback) {
+  base::FilePath leveldb_path =
+      DomStorageDatabase::GetLevelDbPath(storage_type_, dir_to_open_);
+
+  // Get the amount of free space on the disk.
+  EnsureFileSystemProxy()->GetDiskSpaceInfo(
+      leveldb_path,
+      base::BindOnce(&AsyncDomStorageDatabase::OnDiskSpaceComputedForMigration,
+                     weak_ptr_factory_.GetWeakPtr(), leveldb_path,
+                     std::move(callback)));
+}
+
+void AsyncDomStorageDatabase::OnDiskSpaceComputedForMigration(
+    const base::FilePath& leveldb_path,
+    StatusCallback callback,
+    std::optional<base::SysInfo::DiskSpaceInfo> disk_space) {
+  if (!disk_space) {
+    std::move(callback).Run(DbStatus::IOError("disk space unknown"));
+    return;
+  }
+
+  // Get the size of the source LevelDB to migrate.
+  EnsureFileSystemProxy()->ComputeDirectorySize(
+      leveldb_path,
+      base::BindOnce(&AsyncDomStorageDatabase::
+                         OnLeveldbSizeAndDiskSpaceComputedForMigration,
+                     *std::move(disk_space))
+          .Then(std::move(callback)));
+}
+
+DbStatus AsyncDomStorageDatabase::OnLeveldbSizeAndDiskSpaceComputedForMigration(
+    base::SysInfo::DiskSpaceInfo disk_space,
+    base::ByteSize leveldb_size) {
+  return IsDiskSpaceAvailableForSQLiteMigration(disk_space, leveldb_size)
+             ? DbStatus::OK()
+             : (DbStatus::IOError("insufficient disk space"));
+}
+
+void AsyncDomStorageDatabase::ContinueMigrationAfterDiskSpaceCheck(
+    DbStatus available_disk_space_status) {
+  if (!available_disk_space_status.ok()) {
+    OnMigrationFinished(DomStorageDatabaseFactory::OpenResult::FromError(
+        std::move(available_disk_space_status)));
+    return;
+  }
   database_.PostTaskWithThisObject(
       base::BindOnce(&DomStorageDatabaseFactory::Migrate, storage_type_,
                      dir_to_open_, memory_dump_id_,
@@ -398,6 +468,7 @@ void AsyncDomStorageDatabase::OnMigrationFinished(
     DomStorageDatabaseFactory::OpenResult result) {
   CHECK_EQ(migration_state_, MigrationState::kMigrating);
   CHECK(is_database_opened_);
+  file_system_proxy_.reset();
 
   if (result.open_status.ok()) {
     CHECK(result.is_sqlite);
@@ -419,6 +490,13 @@ void AsyncDomStorageDatabase::OnMigrationFinished(
   for (auto& task : tasks_to_run) {
     std::move(task).Run();
   }
+}
+
+FilesystemProxy* AsyncDomStorageDatabase::EnsureFileSystemProxy() {
+  if (!file_system_proxy_) {
+    file_system_proxy_ = CreateFilesystemProxy();
+  }
+  return file_system_proxy_.get();
 }
 
 std::string_view AsyncDomStorageDatabase::StorageTypeForHistograms() const {

@@ -46,40 +46,27 @@ namespace storage {
 
 namespace {
 
-// Records the on-disk size of the database at `db_path` to the
-// `DatabaseOnDiskSizeKB` histogram for `storage_type` (`.OnDiskExperimental`
-// suffix for `kOnDiskExperimental`, unsuffixed for `kOnDisk`). LevelDB stores
-// its data in a directory, while SQLite stores a single file plus a `-wal` file
-// that may be absent depending on checkpoint state.
-void RecordDatabaseOnDiskSizeKB(StorageType storage_type,
-                                const base::FilePath& db_path,
-                                bool is_sqlite,
-                                DatabaseMetricsType metrics_type) {
-  // The storage service runs in a sandbox, so filesystem access must be
-  // brokered through a `FilesystemProxy`. Raw `base::` calls are blocked by the
-  // sandbox and fail silently, which would record a size of zero.
-  std::unique_ptr<FilesystemProxy> filesystem = CreateFilesystemProxy();
-  auto file_size = [&filesystem](const base::FilePath& path) -> int64_t {
-    std::optional<base::File::Info> info = filesystem->GetFileInfo(path);
-    return info ? info->size : 0;
-  };
-
-  int64_t size_bytes = 0;
-  if (is_sqlite) {
-    size_bytes += file_size(db_path);
-    size_bytes += file_size(sql::Database::WriteAheadLogPath(db_path));
-  } else {
-    // LevelDB stores all its files in a directory at `db_path`. There are no
-    // subdirectories, so a non-recursive enumeration captures the size.
-    base::FileErrorOr<std::vector<base::FilePath>> entries =
-        filesystem->GetDirectoryEntries(
-            db_path, FilesystemProxy::DirectoryEntryType::kFilesOnly);
-    if (entries.has_value()) {
-      for (const base::FilePath& entry : entries.value()) {
-        size_bytes += file_size(entry);
-      }
-    }
+// Return the number of bytes in `file_path`.  Returns 0 when `file_path` is a
+// directory or does not exist.
+base::ByteSize ComputeFileSize(FilesystemProxy& filesystem,
+                               const base::FilePath& file_path) {
+  std::optional<base::File::Info> info = filesystem.GetFileInfo(file_path);
+  if (!info || info->is_directory) {
+    return base::ByteSize{};
   }
+  return base::ByteSize{base::as_unsigned<uint64_t>(info->size)};
+}
+
+base::ByteSize ComputeSqliteDatabaseSize(FilesystemProxy& filesystem,
+                                         const base::FilePath& db_path) {
+  // For SQLite, compute the size of the database and WAL files.
+  return ComputeFileSize(filesystem, db_path) +
+         ComputeFileSize(filesystem, sql::Database::WriteAheadLogPath(db_path));
+}
+
+void RecordDatabaseOnDiskSizeKB(StorageType storage_type,
+                                base::ByteSize size,
+                                DatabaseMetricsType metrics_type) {
   std::string_view name_prefix =
       storage_type == StorageType::kLocalStorage
           ? "LocalStorage.DatabaseOnDiskSizeKB"
@@ -87,7 +74,38 @@ void RecordDatabaseOnDiskSizeKB(StorageType storage_type,
   base::UmaHistogramMemoryKB(
       base::StrCat(
           {name_prefix, MaybeGetOnDiskExperimentalSuffix(metrics_type)}),
-      base::ByteSize(base::checked_cast<uint64_t>(size_bytes)));
+      size);
+}
+
+// Records the on-disk size of the database at `db_path` to the
+// `DatabaseOnDiskSizeKB` histogram for `storage_type` (`.OnDiskExperimental`
+// suffix for `kOnDiskExperimental`, unsuffixed for `kOnDisk`). LevelDB stores
+// its data in a directory, while SQLite stores a single file plus a `-wal` file
+// that may be absent depending on checkpoint state.
+void CalculateAndRecordDatabaseSize(StorageType storage_type,
+                                    const base::FilePath& db_path,
+                                    bool is_sqlite,
+                                    DatabaseMetricsType metrics_type) {
+  // The storage service runs in a sandbox, so filesystem access must be
+  // brokered through a `FilesystemProxy`. Raw `base::` calls are blocked by the
+  // sandbox and fail silently, which would record a size of zero.
+  std::unique_ptr<FilesystemProxy> filesystem = CreateFilesystemProxy();
+  if (is_sqlite) {
+    RecordDatabaseOnDiskSizeKB(storage_type,
+                               ComputeSqliteDatabaseSize(*filesystem, db_path),
+                               metrics_type);
+    return;
+  }
+
+  FilesystemProxy* filesystem_ptr = filesystem.get();
+  filesystem_ptr->ComputeDirectorySize(
+      db_path,
+      base::BindOnce(
+          [](std::unique_ptr<FilesystemProxy>, StorageType storage_type,
+             DatabaseMetricsType metrics_type, base::ByteSize size) {
+            RecordDatabaseOnDiskSizeKB(storage_type, size, metrics_type);
+          },
+          std::move(filesystem), storage_type, metrics_type));
 }
 
 // Records all open-time telemetry for a database open attempt:
@@ -117,10 +135,11 @@ void RecordOpenDatabaseHistograms(StorageType storage_type,
   if (!database_path.empty()) {
     // The brokered `FilesystemProxy` size read is a synchronous call, so the
     // task must be allowed to block on sync primitives.
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
-        base::BindOnce(&RecordDatabaseOnDiskSizeKB, storage_type, database_path,
-                       is_sqlite, metrics_type));
+    base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::WithBaseSyncPrimitives()})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&CalculateAndRecordDatabaseSize, storage_type,
+                                  database_path, is_sqlite, metrics_type));
   }
 }
 
@@ -519,13 +538,13 @@ void DomStorageDatabaseFactory::MigrateLevelDbToSqlite(
         memory_dump_id,
     OpenResultCallback callback,
     DomStorageDatabase* source_database) {
-  const base::FilePath sqlite_path =
-      DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open);
-
   // Populate a new SQLite database at the staging path with all records
   // copied from the `source_database` LevelDB. Any failure below returns an
   // `OpenResult::FromError()` without modifying `source_database`, so the
   // caller can continue using it.
+  const base::FilePath sqlite_path =
+      DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open);
+
   const base::FilePath sqlite_staging_path =
       sqlite_path.AddExtensionASCII(kSqliteMigrationStagingExtension);
 
