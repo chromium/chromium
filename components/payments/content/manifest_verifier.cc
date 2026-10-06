@@ -34,7 +34,7 @@ void EnableMethodManifestUrlForSupportedApps(
     const GURL& method_manifest_url,
     const std::vector<std::string>& supported_origin_strings,
     content::InstalledPaymentAppsFinder::PaymentApps* apps,
-    std::vector<int64_t> app_ids,
+    const std::vector<int64_t>& app_ids,
     std::map<GURL, std::set<GURL>>* prohibited_payment_methods) {
   for (auto app_id : app_ids) {
     auto* app = (*apps)[app_id].get();
@@ -49,6 +49,9 @@ void EnableMethodManifestUrlForSupportedApps(
 }
 
 }  // namespace
+
+ManifestVerifier::ManifestState::ManifestState() = default;
+ManifestVerifier::ManifestState::~ManifestState() = default;
 
 ManifestVerifier::ManifestVerifier(const url::Origin& merchant_origin,
                                    content::WebContents* web_contents,
@@ -81,7 +84,6 @@ void ManifestVerifier::Verify(
   finished_verification_callback_ = std::move(finished_verification);
   finished_using_resources_callback_ = std::move(finished_using_resources);
 
-  std::set<GURL> manifests_to_download;
   for (auto& app : apps_) {
     std::vector<std::string> verified_method_names;
     for (const auto& method : app.second->enabled_methods) {
@@ -111,17 +113,16 @@ void ManifestVerifier::Verify(
         continue;
       }
 
-      manifests_to_download.insert(method_manifest_url);
       prohibited_payment_methods_[app.second->scope].insert(
           method_manifest_url);
-      manifest_url_to_app_id_map_[method_manifest_url].emplace_back(app.first);
+      manifests_[method_manifest_url].app_ids.emplace_back(app.first);
     }
 
     app.second->enabled_methods.swap(verified_method_names);
   }
 
   number_of_manifests_to_verify_ = number_of_manifests_to_download_ =
-      manifests_to_download.size();
+      manifests_.size();
   if (number_of_manifests_to_verify_ == 0) {
     RemoveInvalidPaymentApps();
     std::move(finished_verification_callback_)
@@ -130,7 +131,7 @@ void ManifestVerifier::Verify(
     return;
   }
 
-  for (const auto& method_manifest_url : manifests_to_download) {
+  for (const auto& [method_manifest_url, _] : manifests_) {
     WebDataServiceBase::Handle handle = cache_->GetPaymentMethodManifest(
         method_manifest_url.spec(),
         base::BindOnce(&ManifestVerifier::OnGetPaymentMethodManifest,
@@ -155,24 +156,23 @@ void ManifestVerifier::OnGetPaymentMethodManifest(
       (static_cast<const WDResult<std::vector<std::string>>*>(result.get()))
           ->GetValue();
 
-  std::vector<std::string> native_app_ids;
+  ManifestState& state = manifests_[method_manifest_url];
+  CHECK(state.cached_supported_native_app_ids.empty());
   std::vector<std::string> supported_origin_strings;
   for (const auto& origin_or_id : cached_strings) {
     if (base::IsStringUTF8(origin_or_id) && GURL(origin_or_id).is_valid()) {
       supported_origin_strings.emplace_back(origin_or_id);
     } else if (base::IsStringASCII(origin_or_id)) {
-      native_app_ids.emplace_back(origin_or_id);
+      state.cached_supported_native_app_ids.emplace_back(origin_or_id);
     }
   }
-  cached_supported_native_app_ids_[method_manifest_url] = native_app_ids;
 
   EnableMethodManifestUrlForSupportedApps(
-      method_manifest_url, supported_origin_strings, &apps_,
-      manifest_url_to_app_id_map_[method_manifest_url],
+      method_manifest_url, supported_origin_strings, &apps_, state.app_ids,
       &prohibited_payment_methods_);
 
   if (!supported_origin_strings.empty()) {
-    cached_manifest_urls_.insert(method_manifest_url);
+    state.used_cached_manifest = true;
     if (--number_of_manifests_to_verify_ == 0) {
       RemoveInvalidPaymentApps();
       std::move(finished_verification_callback_)
@@ -193,13 +193,12 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
     const std::string& error_message) {
   DCHECK_LT(0U, number_of_manifests_to_download_);
 
+  const ManifestState& state = manifests_[method_manifest_url];
   if (content.empty()) {
     if (first_error_message_.empty()) {
       first_error_message_ = error_message;
     }
-    if (cached_manifest_urls_.find(method_manifest_url) ==
-            cached_manifest_urls_.end() &&
-        --number_of_manifests_to_verify_ == 0) {
+    if (!state.used_cached_manifest && --number_of_manifests_to_verify_ == 0) {
       RemoveInvalidPaymentApps();
       std::move(finished_verification_callback_)
           .Run(std::move(apps_), first_error_message_);
@@ -221,11 +220,9 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
   std::ranges::transform(supported_origins, supported_origin_strings.begin(),
                          &url::Origin::Serialize);
 
-  if (cached_manifest_urls_.find(method_manifest_url) ==
-      cached_manifest_urls_.end()) {
+  if (!state.used_cached_manifest) {
     EnableMethodManifestUrlForSupportedApps(
-        method_manifest_url, supported_origin_strings, &apps_,
-        manifest_url_to_app_id_map_[method_manifest_url],
+        method_manifest_url, supported_origin_strings, &apps_, state.app_ids,
         &prohibited_payment_methods_);
 
     if (--number_of_manifests_to_verify_ == 0) {
@@ -236,12 +233,10 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
   }
 
   // Keep Android native payment app Ids in cache.
-  std::map<GURL, std::vector<std::string>>::const_iterator it =
-      cached_supported_native_app_ids_.find(method_manifest_url);
-  if (it != cached_supported_native_app_ids_.end()) {
-    supported_origin_strings.insert(supported_origin_strings.end(),
-                                    it->second.begin(), it->second.end());
-  }
+  supported_origin_strings.insert(
+      supported_origin_strings.end(),
+      state.cached_supported_native_app_ids.begin(),
+      state.cached_supported_native_app_ids.end());
 
   cache_->AddPaymentMethodManifest(method_manifest_url.spec(),
                                    supported_origin_strings);

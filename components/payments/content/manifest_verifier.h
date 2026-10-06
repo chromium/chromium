@@ -132,23 +132,29 @@ class ManifestVerifier final {
   // cache.
   base::OnceClosure finished_using_resources_callback_;
 
-  // The mapping of payment method names to the id of the apps that want to
-  // use these payment method names.
-  std::map<GURL, std::vector<int64_t>> manifest_url_to_app_id_map_;
+  struct ManifestState {
+    ManifestState();
+    ~ManifestState();
+
+    // The IDs of the apps that want to use this payment method name.
+    std::vector<int64_t> app_ids;
+
+    // Cached native payment app IDs. Note that the supported native payment
+    // app IDs have been cached for a payment method in the same cache in
+    // PaymentManifestVerifier.java. Do not override them since we do not
+    // refresh them in this class.
+    std::vector<std::string> cached_supported_native_app_ids;
+
+    // Whether the cached manifest value was used to verify payment apps.
+    bool used_cached_manifest = false;
+  };
+
+  // Per-manifest verification state keyed by payment method manifest URL.
+  std::map<GURL, ManifestState> manifests_;
 
   // The set of ongoing cache request handles, used to clean up any outstanding
   // requests when the class is torn down.
   std::set<WebDataServiceBase::Handle> cache_request_handles_;
-
-  // The set of payment method manifest URLs for which the cached value was
-  // used.
-  std::set<GURL> cached_manifest_urls_;
-
-  // The mapping of payment method names to cached native payment app Ids.
-  // Note that the supported native payment app Ids have been cached for a
-  // payment method in the same cache in PaymentManifestVerifier.java. Do not
-  // override them since we do not refresh them in this class.
-  std::map<GURL, std::vector<std::string>> cached_supported_native_app_ids_;
 
   // The number of manifests that have not been verified yet. A manifest can be
   // either be retrieved from cache or downloaded for verification. Once this
