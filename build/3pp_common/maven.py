@@ -163,4 +163,5 @@ def main(
         do_latest=do_latest,
         do_install=do_install,
         runtime_deps=['//third_party/jdk/current'],
+        version_deps=[],
     )
