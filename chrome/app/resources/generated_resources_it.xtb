@@ -5851,7 +5851,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
 <translation id="5457082343331641453">Aggiungi alla tua ricerca</translation>
 <translation id="5457459357461771897">Lettura ed eliminazione di foto, musica e altri contenuti multimediali del computer</translation>
-<translation id="5457795687441958389">Non eseguire l'accesso</translation>
+<translation id="5457795687441958389">Continua senza accedere</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Hai inserito un PIN errato troppe volte. Per accedere alle passkey e alle password, modifica il PIN.</translation>
 <translation id="5459251585760045919">Per recuperare la cronologia dal <ph name="DEVICE" />, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere alle estensioni e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
@@ -7078,7 +7078,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6434104957329207050">Velocità della scansione per punto</translation>
 <translation id="6434309073475700221">Elimina</translation>
 <translation id="6434755719322447931">Caotico</translation>
-<translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>
+<translation id="6435307030888827407">Continua senza accedere</translation>
 <translation id="6435339218366409950">Scegli la lingua in cui tradurre i sottotitoli codificati</translation>
 <translation id="6436164536244065364">Visualizza nel Web Store</translation>
 <translation id="6436778875248895551">L'estensione "<ph name="EXTENSION_NAME" />" è stata bloccata dall'amministratore</translation>
@@ -10443,7 +10443,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="8986494364107987395">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="8987321822984361516">Browser gestito da un'organizzazione, profilo gestito da <ph name="PROFILE_DOMAIN" /></translation>
-<translation id="8987736167266086032">Riprendi da dove eri rimasto</translation>
+<translation id="8987736167266086032">Riprendi da dove hai interrotto</translation>
 <translation id="8987927404178983737">Mese</translation>
 <translation id="8989359959810288806">Aggiorna stato tethering</translation>
 <translation id="8989779557457435460">Condividi la scheda corrente per impostazione predefinita</translation>

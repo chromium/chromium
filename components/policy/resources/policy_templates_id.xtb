@@ -975,6 +975,21 @@ Nilai minimumnya adalah 1 menit.
 <translation id="1635748761015837179">Izinkan penulisan ke perangkat penyimpanan eksternal</translation>
 <translation id="1639468541408865385">Aktifkan cache autentikasi HTTP yang tercakup secara global</translation>
 <translation id="1639673466479276550">Aktifkan screensaver di layar login.</translation>
+<translation id="1640646094704433064">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs yang tidak diizinkan untuk menjalankan JavaScript dengan compiler JIT (Just In Time) yang diaktifkan.
+
+          Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin merender konten web dengan lebih lambat, serta mungkin menonaktifkan bagian JavaScript termasuk WebAssembly. Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin merender konten web dalam konfigurasi yang lebih aman.
+
+          Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+          Pengecualian kebijakan dapat disetel untuk subdomain tertentu maupun seluruh situs. Misalnya, kebijakan yang disetel khusus untuk subdomain.site.com akan berlaku pada subdomain.site.com tanpa memengaruhi site.com. Dalam beberapa kasus saat subdomain tidak dapat diisolasi dari situs induknya, subdomain tersebut mungkin mewarisi kebijakan yang disetel di site.com. Pengecualian juga mungkin tidak berlaku untuk frame yang dimuat di tab yang ada hingga situs tersebut dibuka di tab baru. Pada perangkat <ph name="ANDROID_NAME" /> dengan memori rendah, pengecualian khusus situs mungkin tidak diterapkan. Sebagai gantinya, situs akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default JIT JavaScript pada profil tersebut.
+
+          Untuk menerapkan pengecualian, <ph name="PRODUCT_NAME" /> mungkin menempatkan situs atau subdomain yang setelannya berbeda dari setelan default ke dalam proses khusus. Hal ini dapat meningkatkan penggunaan memori, terutama di <ph name="ANDROID_NAME" /> atau saat pola karakter pengganti cocok dengan banyak subdomain, karena setiap origin yang cocok mungkin akan diisolasi secara terpisah. Subdomain yang diisolasi juga tidak dapat menggunakan document.domain untuk mengakses situs induknya.
+
+          Catatan: Di versi 155 dan yang lebih lama, pengecualian kebijakan hanya diterapkan pada perincian situs (eTLD+1). Kebijakan yang disetel khusus untuk subdomain.site.com tidak akan berjalan, termasuk pada subdomain.site.com; kebijakan tersebut harus disetel pada site.com agar dapat berlaku ke site.com dan subdomain.site.com.
+
+          Kebijakan ini diterapkan pada setiap frame dan bukan hanya berdasarkan URL origin tingkat teratas. Jadi, misalnya jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat frame berisi site-two.com, maka JIT JavaScript akan dinonaktifkan di site-one.com, sedangkan site-two.com akan mengikuti kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default dengan JIT JavaScript aktif. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan, yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+          Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau JIT JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="1640824698339859203">Aktifkan SSO Mengambang dan pindahkan autentikasi layanan web pengguna ke perangkat baru</translation>
 <translation id="1643642938972654829">Mengizinkan akses ke halaman pengujian kebijakan</translation>
 <translation id="1645793986494086629">Skema:</translation>
@@ -1150,6 +1165,17 @@ Jika kebijakan ini tidak disetel atau disetel ke Salah (False), perilaku default
 Jika mencoba meluncurkan Aplikasi Chrome yang dinonaktifkan, pengguna akan menerima pesan yang menjelaskan alasan aplikasi tidak diluncurkan dan menyarankan pengguna menghubungi departemen IT-nya.
 
 ChromeOS M184 akan menjadi versi ChromeOS terakhir yang mendukung Aplikasi Chrome.</translation>
+<translation id="1726477280489844651">Mengontrol apakah <ph name="PRODUCT_NAME" /> akan membuka jendela browser saat pengguna login ke <ph name="MS_WIN_NAME" />.
+
+<ph name="PRODUCT_NAME" /> memiliki setelan "Mulai <ph name="PRODUCT_NAME" /> dengan <ph name="MS_WIN_NAME" />" yang mengaturnya agar otomatis diluncurkan saat pengguna login, sehingga browser langsung siap digunakan. Pengguna juga mungkin akan melihat perintah yang menyarankannya untuk mengubah setelan ini.
+
+Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan diluncurkan dan membuka jendela browser saat pengguna login. Pengguna tidak dapat mengubah setelan dan tidak akan melihat perintah untuk mengubahnya.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan diluncurkan saat pengguna login. Pengguna tidak dapat mengubah setelan dan tidak akan melihat perintah untuk mengubahnya.
+
+Jika kebijakan tidak disetel, pengguna dapat mengubah setelan.
+
+Kebijakan ini tidak berpengaruh pada versi <ph name="PRODUCT_NAME" /> yang tidak menyediakan setelan "Mulai <ph name="PRODUCT_NAME" /> dengan <ph name="MS_WIN_NAME" />".</translation>
 <translation id="1729169799290004131">Menyetel kebijakan akan menentukan persentase kecerahan layar dan menonaktifkan fitur kecerahan otomatis. Kecerahan layar awal akan disesuaikan dengan nilai kebijakan, tetapi pengguna tidak dapat mengubahnya.
 
       Tidak menyetel kebijakan tidak akan memengaruhi kontrol layar pengguna atau fitur kecerahan otomatis.
@@ -1252,6 +1278,45 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 
       Jika kebijakan tidak disetel, pengguna akan dapat memanipulasi seluruh daftar bahasa pilihan.</translation>
 <translation id="1803646570632580723">Daftar aplikasi tersemat untuk ditampilkan pada peluncur</translation>
+<translation id="180432221123109556">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
+dengan pengoptimalan JavaScript lanjutan yang diaktifkan.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL situs yang valid, lihat
+https://chromeenterprise.google/policies/url-patterns.
+Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+Pengecualian kebijakan dapat disetel untuk subdomain tertentu maupun seluruh situs.
+Misalnya, kebijakan yang disetel khusus untuk subdomain.site.com berlaku untuk
+subdomain.site.com tanpa memengaruhi site.com. Dalam beberapa kasus saat
+subdomain tidak dapat diisolasi dari situs induknya, subdomain tersebut mungkin mewarisi kebijakan
+yang disetel di site.com. Pengecualian juga mungkin tidak berlaku untuk frame yang dimuat di
+tab yang ada hingga situs dibuka di tab baru. Pada perangkat
+<ph name="ANDROID_NAME" /> dengan memori rendah, pengecualian khusus situs mungkin
+tidak diterapkan. Sebagai gantinya, situs akan menggunakan kebijakan dari
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />,
+jika disetel, atau mengikuti setelan default pengoptimalan JavaScript pada profil tersebut.
+
+Untuk menerapkan pengecualian, <ph name="PRODUCT_NAME" />
+mungkin menempatkan situs atau subdomain yang setelannya berbeda dari setelan default ke dalam
+proses khusus. Hal ini dapat meningkatkan penggunaan memori, terutama di
+<ph name="ANDROID_NAME" /> atau saat pola karakter pengganti cocok dengan banyak
+subdomain, karena setiap origin yang cocok mungkin akan diisolasi secara terpisah. Subdomain
+yang diisolasi juga tidak dapat menggunakan document.domain untuk mengakses situs induknya.
+
+Catatan: Di versi 138 dan yang lebih lama, pengecualian kebijakan hanya diterapkan pada
+perincian situs (eTLD+1). Kebijakan yang disetel khusus untuk subdomain.site.com tidak akan
+berjalan, termasuk pada subdomain.site.com; kebijakan tersebut harus disetel di site.com agar
+dapat berlaku ke site.com dan subdomain.site.com.
+
+Kebijakan ini diterapkan pada setiap frame dan bukan hanya berdasarkan URL origin
+tingkat teratas, jadi misalnya jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, tetapi site-one.com memuat frame
+berisi site-two.com, pengoptimalan JavaScript akan diaktifkan
+untuk site-one.com, sedangkan site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default dengan pengoptimalan
+JavaScript aktif. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan,
+yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau
+pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="1807539058116290184">Nonaktifkan fitur cubit untuk zoom dalam mode kios</translation>
 <translation id="1808715480127969042">Blokir cookie di situs ini</translation>
 <translation id="1810261428246410396">Izinkan Tethering Instan untuk digunakan.</translation>
@@ -1482,6 +1547,7 @@ Jika kebijakan ini tidak disetel, fitur Klik untuk Menelepon akan diaktifkan sec
       Perlu diperhatikan bahwa kebijakan ini memblokir JavaScript berdasarkan apakah origin dokumen tingkat atas (biasanya URL halaman yang juga ditampilkan di kolom URL) cocok dengan pola apa pun. Oleh karena itu, kebijakan ini tidak sesuai untuk memitigasi serangan supply-chain web. Misalnya, menyediakan pola "https://[*.]foo.com/" tidak akan mencegah halaman yang dihosting di, misalnya, https://example.com, untuk menjalankan skrip yang dimuat dari https://www.foo.com/example.js. Selain itu, menyediakan pola "https://example.com/" tidak akan mencegah dokumen dari https://example.com untuk menjalankan skrip jika dokumen tersebut bukan dokumen tingkat atas, tetapi disematkan sebagai sub-frame ke halaman yang dihosting di origin lain, misalnya, https://www.bar.com.</translation>
 <translation id="1942015922182679826">Aktifkan penghapusan sandi yang tidak dapat didekripsi</translation>
 <translation id="1942626390957213764">Nonaktifkan hub berbagi desktop</translation>
+<translation id="1943628907052340534">Jangan buka <ph name="PRODUCT_NAME" /> saat pengguna login ke <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Nonaktifkan isolasi situs untuk semua situs, tetapi izinkan pengguna mengaktifkannya</translation>
 <translation id="1945994447126139909">Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan dihapus di <ph name="PRODUCT_NAME" /> versi 88.
 
@@ -2346,6 +2412,7 @@ Kebijakan ini merupakan tindakan sementara untuk mengontrol fitur dan akan dihap
 <translation id="2479760962196319822">Kebijakan ini mengontrol apakah pengguna <ph name="PRODUCT_OS_NAME" /> dapat menyimpan data secara lokal atau tidak.
       Jika kebijakan ini disetel ke Salah (False), penyimpanan lokal di <ph name="PRODUCT_OS_NAME" /> akan diblokir. Pengguna tidak dapat menyimpan data apa pun secara lokal, dan tidak dapat mengakses direktori lokal.
       Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, penyimpanan lokal di <ph name="PRODUCT_OS_NAME" /> akan diizinkan. Tidak ada batasan terkait tempat pengguna dapat menyimpan data, atau direktori mana yang dapat diakses pengguna.</translation>
+<translation id="2481931731272002134">Izinkan fitur AI generatif di Isi Otomatis dan tingkatkan kualitas model AI.</translation>
 <translation id="2482676533225429905">Perpesanan Asli</translation>
 <translation id="2483146640187052324">Prediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="2487495476672607707">Sinkronisasi file <ph name="PRODUCT_OS_NAME" /> secara otomatis
@@ -3862,17 +3929,6 @@ Jika kebijakan disetel ke Salah (False) atau tidak disetel, default keyboard ada
 
 Jika kebijakan disetel ke benar (true) atau tidak disetel, akses root ke penampung Crostini akan diberikan kepada pengguna.
 Jika kebijakan disetel ke salah (false), akses root ke penampung Crostini yang ada maupun yang baru tidak akan diberikan kepada pengguna.</translation>
-<translation id="3370759229531293665">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs yang tidak diizinkan untuk menjalankan JavaScript dengan compiler JIT (Just In Time) yang diaktifkan.
-
-          Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin akan merender konten web dengan lebih lambat, serta mungkin menonaktifkan bagian JavaScript termasuk WebAssembly. Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> akan dapat merender konten web dalam konfigurasi yang lebih aman.
-
-          Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-          Pengecualian kebijakan JIT JavaScript hanya akan diterapkan pada perincian situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan subdomain.site.com.
-
-          Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL origin tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, tetapi site-one.com memuat bingkai yang berisi site-two.com, site-one.com akan menonaktifkan JIT JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau secara default mengaktifkan JIT JavaScript.
-
-          Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau JIT JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="3373381043600809954">Mengaktifkan <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Mengonfigurasi direktori yang akan digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan data pengguna.
 
@@ -4392,6 +4448,7 @@ Jika <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> dan <ph n
 Transfer data dengan Takeout juga harus diaktifkan agar aplikasi Transfer konten berfungsi dengan benar. Lihat https://support.google.com/a/answer/6364687 untuk mengetahui informasi tambahan.</translation>
 <translation id="3702518095257671450">Pengesahan jarak jauh</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Kolom 1 baris sudah tidak digunakan lagi dan akan dihapus di masa mendatang. Mulai gunakan kotak teks multibaris di bawah.)</translation>
+<translation id="370314752761795411">Mulai <ph name="PRODUCT_NAME" /> dengan <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Tangguhkan</translation>
 <translation id="3712861436661566358">Menerapkan pemisahan profil</translation>
 <translation id="3719826155360621982">Beranda</translation>
@@ -4878,6 +4935,7 @@ Pertimbangan:
 <translation id="4027608872760987929">Aktifkan penyedia penelusuran default</translation>
 <translation id="4030152268425532846">Nonaktifkan pembatalan login otomatis</translation>
 <translation id="4032740546145417900">Jangan izinkan fitur Bicara untuk mengetik.</translation>
+<translation id="4035252407064087455">Izinkan fitur AI generatif di Isi Otomatis tanpa meningkatkan kualitas model AI.</translation>
 <translation id="4043796890723386527">Cegah pengguna membuat dan menggunakan profil sekunder serta menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Menyetel kebijakan akan mengontrol filter URL SafeSites, yang menggunakan Google Safe Search API untuk mengklasifikasikan URL bersifat pornografi atau bukan.
 
@@ -5322,6 +5380,7 @@ Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUC
 Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan pengguna untuk terhubung ke layanan Bluetooth yang ditetapkan dengan pengecualian saat daftar kosong yang berarti layanan apa pun diizinkan untuk digunakan. UUID yang digunakan oleh Bluetooth SIG dapat ditampilkan sebagai <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> atau <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. UUID kustom dapat ditampilkan sebagai <ph name="BLUETOOTH_CUSTOM_UUID" />. UUID tidak peka huruf besar/kecil. Jika kebijakan ini tidak disetel, pengguna dapat terhubung ke layanan Bluetooth mana pun.</translation>
 <translation id="4332177773549877617">Membuat log peristiwa penginstalan aplikasi Android</translation>
 <translation id="4333940819293342439">Interval pengumpulan telemetri penggunaan aplikasi dalam milidetik.</translation>
+<translation id="4336096948197154521">Buka <ph name="PRODUCT_NAME" /> saat pengguna login ke <ph name="MS_WIN_NAME" /></translation>
 <translation id="4340121900958123942">Menyetel tingkat ketersediaan sistem geolokasi <ph name="PRODUCT_OS_NAME" />.
 
 Lapisan ini adalah lapisan kontrol tambahan, yang berada di bawah lapisan izin untuk aplikasi dan situs. Mis. jika kebijakan ini disetel ke <ph name="GLS_BLOCKED" /> atau <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, tidak ada aplikasi atau situs yang dapat menentukan lokasi, terlepas dari izin akses lokasinya masing-masing. Namun, jika kebijakan ini disetel ke <ph name="GLS_ALLOWED" />, aplikasi dan situs masing-masing bisa mendapatkan lokasi jika memiliki izin.
@@ -6009,28 +6068,6 @@ Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yan
 Nilai yang valid berkisar dari 1 detik hingga 9999 detik. Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan nilai default 60 detik.
 
 Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).</translation>
-<translation id="4723615546736863060">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
-dengan pengoptimalan JavaScript lanjutan yang diaktifkan.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL situs yang valid, lihat
-https://chromeenterprise.google/policies/url-patterns.
-Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-Pengecualian kebijakan pengoptimalan JavaScript hanya akan diterapkan pada perincian
-situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan
-diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke
-eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan
-harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan
-subdomain.site.com.
-
-Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL origin
-tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, tetapi site-one.com memuat bingkai yang berisi site-two.com, site-one.com akan mengaktifkan pengoptimalan
-JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau secara default
-mengaktifkan pengoptimalan JavaScript. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan,
-yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
-
-Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel.
-Jika kebijakan ini disetel, pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="4723829699367336876">Mengaktifkan firewall traversal dari klien akses jarak jauh</translation>
 <translation id="4725528134735324213">Aktifkan Android Backup Service</translation>
 <translation id="4725691087141147920">Tampilkan Izin Sinkronisasi selama login</translation>
@@ -6123,6 +6160,7 @@ Jika kebijakan disetel ke Nonaktif, promo Ekstensi Penyedia Kredensial tidak aka
       <ph name="PAGE_SIZE_NAME" /> harus berisi salah satu format yang tercantum atau 'kustom' jika ukuran kertas yang diminta tidak ada dalam daftar. Jika nilai 'kustom' ditetapkan, properti <ph name="PAGE_SIZE_CUSTOM_SIZE" /> harus ditentukan. Nilai ini menjelaskan tinggi dan lebar yang diinginkan dalam satuan mikrometer. Jika tidak, properti <ph name="PAGE_SIZE_CUSTOM_SIZE" /> tidak harus ditentukan. Kebijakan yang melanggar aturan ini akan diabaikan.
 
       Jika ukuran halaman tidak tersedia pada printer yang dipilih pengguna, kebijakan ini diabaikan.</translation>
+<translation id="4787894429283141328">Jangan izinkan fitur AI generatif di Isi Otomatis.</translation>
 <translation id="4789450349513792856">Memblokir pop-up di situs ini</translation>
 <translation id="4790391579868456557">Gunakan cookie penting dan tidak penting di penelusuran.</translation>
 <translation id="4790588245699320140">Mengizinkan Asisten Google mengakses konteks layar</translation>
@@ -6718,6 +6756,7 @@ Kebijakan ini adalah penangguhan sementara agar pengguna memiliki waktu untuk me
       </translation>
 <translation id="5118635822783657217">Nonaktifkan update untuk komponen yang tidak penting</translation>
 <translation id="5120168808610189805">Aktifkan impor halaman beranda saat browser pertama kali dijalankan</translation>
+<translation id="5124321040285474825">Setelan untuk fitur AI generatif di Isi Otomatis</translation>
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
 <translation id="5124652340668722849">Mengonfigurasi daftar Domain Penyediaan (PvD) yang akan digunakan <ph name="PRODUCT_NAME" /> untuk mengambil konfigurasi proxy secara dinamis.
 
@@ -8332,6 +8371,47 @@ Jika kebijakan ini tidak disetel, pembekuan tab latar belakang akan diaktifkan s
 <translation id="608788685013546076">Menetapkan ambang batas pergeseran puncak daya baterai dalam persen</translation>
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
 <translation id="6091233616732024397">Paksa pengguna login untuk menggunakan browser</translation>
+<translation id="6091279561320899147">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
+dengan pengoptimalan JavaScript lanjutan yang dinonaktifkan.
+
+Jika pengoptimalan JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin akan merender konten web dengan lebih lambat.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat
+https://chromeenterprise.google/policies/url-patterns.
+Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+Pengecualian kebijakan dapat disetel untuk subdomain tertentu maupun seluruh situs.
+Misalnya, kebijakan yang disetel khusus untuk subdomain.site.com berlaku untuk
+subdomain.site.com tanpa memengaruhi site.com. Dalam beberapa kasus saat
+subdomain tidak dapat diisolasi dari situs induknya, subdomain tersebut mungkin mewarisi kebijakan
+yang disetel di site.com. Pengecualian juga mungkin tidak berlaku untuk frame yang dimuat di
+tab yang ada hingga situs dibuka di tab baru. Pada perangkat
+<ph name="ANDROID_NAME" /> dengan memori rendah, pengecualian khusus situs mungkin
+tidak diterapkan. Sebagai gantinya, situs akan menggunakan kebijakan dari
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />,
+jika disetel, atau mengikuti setelan default pengoptimalan JavaScript pada profil tersebut.
+
+Untuk menerapkan pengecualian, <ph name="PRODUCT_NAME" />
+mungkin menempatkan situs atau subdomain yang setelannya berbeda dari setelan default ke dalam
+proses khusus. Hal ini dapat meningkatkan penggunaan memori, terutama di
+<ph name="ANDROID_NAME" /> atau saat pola karakter pengganti cocok dengan banyak
+subdomain, karena setiap origin yang cocok mungkin akan diisolasi secara terpisah. Subdomain
+yang diisolasi juga tidak dapat menggunakan document.domain untuk mengakses situs induknya.
+
+Catatan: Di versi 138 dan yang lebih lama, pengecualian kebijakan hanya diterapkan pada
+perincian situs (eTLD+1). Kebijakan yang disetel khusus untuk subdomain.site.com tidak akan
+berjalan, termasuk pada subdomain.site.com; kebijakan tersebut harus disetel di site.com agar
+dapat berlaku ke site.com dan subdomain.site.com.
+
+Kebijakan ini diterapkan pada setiap frame dan bukan hanya berdasarkan URL origin
+tingkat teratas, jadi misalnya jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, tetapi site-one.com memuat frame
+berisi site-two.com, pengoptimalan JavaScript akan dinonaktifkan
+untuk site-one.com, sedangkan site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default dengan pengoptimalan
+JavaScript aktif. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan,
+yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau
+pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="6092073071805297119">Izinkan penggunaan Filter Performa Aksesibilitas.</translation>
 <translation id="6093156968240188330">Memungkinkan pengguna jarak jauh untuk berinteraksi dengan jendela yang berada jauh di sesi bantuan jarak jauh</translation>
 <translation id="6093551397728373988">Menerapkan semua metode input yang diizinkan untuk diaktifkan dalam sesi pengguna</translation>
@@ -9159,6 +9239,27 @@ Screensaver pengguna menampilkan gambar yang dirujuk oleh kebijakan <ph name="SC
 Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gambar ditampilkan dapat diubah dengan kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> dan kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Jika kebijakan tersebut tidak disetel, nilai defaultnya akan digunakan.</translation>
 <translation id="651248769129998376">Jangan membuat atau mengupload permintaan penginstalan ekstensi ke konsol Admin</translation>
 <translation id="6513453889192806240">Latensi HTTPS</translation>
+<translation id="6514006253468048943">Fitur di <ph name="PRODUCT_NAME" /> ini menggunakan model AI generatif untuk membantu pengguna mengisi formulir di web. Untuk menggunakan fitur ini, <ph name="PRODUCT_NAME" /> harus mengumpulkan data seperti struktur formulir yang diisi oleh pengguna dan, untuk fitur Temukan dan Isi dengan Gemini, kueri teks bebas yang dimasukkan pengguna untuk menelusuri aplikasi Gemini yang terhubung, lalu mengirimkan data tersebut ke server milik Google yang menjalankan model AI generatif.
+
+Jika kebijakan ini disetel ke 0 (Izinkan fitur AI generatif di Isi Otomatis dan tingkatkan kualitas model AI), fitur tersebut akan diizinkan untuk digunakan, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Jika kebijakan ini disetel ke 1 (Izinkan fitur AI generatif di Isi Otomatis tanpa meningkatkan kualitas model AI), fitur tersebut akan diizinkan untuk digunakan, tetapi Google tidak akan diizinkan untuk meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Jika kebijakan ini disetel ke 2 (Jangan izinkan fitur AI generatif di Isi Otomatis), fitur tersebut tidak akan diizinkan.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Fitur AI generatif di Isi Otomatis mencakup:
+
+- Pemahaman formulir yang lebih cerdas: menggunakan AI untuk mengidentifikasi dan mengklasifikasikan kolom formulir, sehingga lebih banyak kolom yang dapat diisi.
+
+- Temukan dan Isi dengan Gemini: menemukan informasi dari aplikasi yang telah dihubungkan pengguna ke Gemini dan menawarkannya untuk pengisian, baik sebagai saran proaktif pada formulir atau sebagai respons terhadap kueri yang ditulis pengguna.
+
+Kebijakan ini menggantikan kebijakan <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />, yang masih berlaku jika kebijakan ini tidak disetel. Fitur "Temukan dan Isi dengan Gemini" juga mengharuskan kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" /> tidak dinonaktifkan.
+
+Kebijakan ini tidak mengontrol fitur Isi Otomatis yang tidak menggunakan AI generatif.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6515357889978918016">Gambar <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6515520014183265350">Tentukan daftar origin yang berjalan dalam proses khusus.
 
@@ -9981,30 +10082,6 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
 Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (nilai 0), browser tidak akan dapat meminta sertifikat klien. Jika sertifikat klien terkelola milik profil sudah disediakan, karena kebijakan ini telah diaktifkan sebelumnya, sertifikat tersebut tidak akan dihapus, tetapi sertifikat tidak akan tersedia untuk koneksi mTLS dan tidak akan diperpanjang saat masa berlakunya berakhir.</translation>
 <translation id="7013484314513229844">Aktifkan booting pada tegangan AC</translation>
 <translation id="7014427417852575165">Pengguna yang terdaftar dalam Program Perlindungan Lanjutan akan menerima perlindungan ekstra</translation>
-<translation id="7015750050379345684">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
-dengan pengoptimalan JavaScript lanjutan yang dinonaktifkan.
-
-Jika pengoptimalan JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin akan merender konten web dengan lebih lambat.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat
-https://chromeenterprise.google/policies/url-patterns.
-Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-Pengecualian kebijakan pengoptimalan JavaScript hanya akan diterapkan pada perincian
-situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan
-diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke
-eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan
-harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan
-subdomain.site.com.
-
-Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL origin
-tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, tetapi site-one.com memuat bingkai yang berisi site-two.com, site-one.com akan menonaktifkan pengoptimalan
-JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau secara default
-mengaktifkan pengoptimalan JavaScript. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan,
-yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
-
-Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, atau
-pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="7016587686120059767">Nonaktifkan mode tamu</translation>
 <translation id="7019805045859631636">Cepat</translation>
 <translation id="7021590945154530517">Aktifkan pemantauan kondisi perangkat</translation>
@@ -10717,15 +10794,6 @@ Nilai sebenarnya dari data sensitif (seperti cookie atau nilai input) TIDAK diku
       Pengecualian: Informasi TPM dikontrol oleh <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> untuk M95 dan yang lebih lama.</translation>
 <translation id="739556497251174388">Mengizinkan penggunaan ulang kredensial login <ph name="PRODUCT_OS_NAME" /> untuk autentikasi jaringan</translation>
 <translation id="7395790871181951311">Memblokir koneksi Kartu Smart oleh Aplikasi Terisolasi</translation>
-<translation id="7396487166653169044">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs yang diizinkan untuk menjalankan JavaScript dengan compiler JIT (Just In Time) yang diaktifkan.
-
-          Untuk mengetahui informasi selengkapnya tentang pola URL situs yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-          Pengecualian kebijakan JIT JavaScript hanya akan diterapkan pada perincian situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan subdomain.site.com.
-
-          Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL origin tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, tetapi site-one.com memuat bingkai yang berisi site-two.com, site-one.com akan mengaktifkan JIT JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau secara default mengaktifkan JIT JavaScript.
-
-          Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau JIT JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="7400208209734208176">Buka link di browser Chrome secara default</translation>
 <translation id="7402257017733669351">Mencegah proses browser membuat kode dinamis</translation>
 <translation id="7406039009275722824">Menonaktifkan <ph name="CHROME_SYNC_NAME" /> akan menyebabkan Pencadangan dan Pemulihan Android tidak berfungsi dengan benar.</translation>
@@ -11134,6 +11202,19 @@ Jika kebijakan ini disetel ke nonaktif, penampil PDF akan menggunakan perender A
 
 Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</translation>
 <translation id="7704244074621846004">Memungkinkan masa aktif yang diperpanjang untuk SharedWorker</translation>
+<translation id="7706986409083477132">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menjalankan JavaScript dengan compiler JIT (Just In Time) yang diaktifkan.
+
+          Untuk mengetahui informasi selengkapnya tentang pola URL situs yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+          Pengecualian kebijakan dapat disetel untuk subdomain tertentu maupun seluruh situs. Misalnya, kebijakan yang disetel khusus untuk subdomain.site.com akan berlaku pada subdomain.site.com tanpa memengaruhi site.com. Dalam beberapa kasus saat subdomain tidak dapat diisolasi dari situs induknya, subdomain tersebut mungkin mewarisi kebijakan yang disetel di site.com. Pengecualian juga mungkin tidak berlaku untuk frame yang dimuat di tab yang ada hingga situs tersebut dibuka di tab baru. Pada perangkat <ph name="ANDROID_NAME" /> dengan memori rendah, pengecualian khusus situs mungkin tidak diterapkan. Sebagai gantinya, situs akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default JIT JavaScript pada profil tersebut.
+
+          Untuk menerapkan pengecualian, <ph name="PRODUCT_NAME" /> mungkin menempatkan situs atau subdomain yang setelannya berbeda dari setelan default ke dalam proses khusus. Hal ini dapat meningkatkan penggunaan memori, terutama di <ph name="ANDROID_NAME" /> atau saat pola karakter pengganti cocok dengan banyak subdomain, karena setiap origin yang cocok mungkin akan diisolasi secara terpisah. Subdomain yang diisolasi juga tidak dapat menggunakan document.domain untuk mengakses situs induknya.
+
+          Catatan: Di versi 155 dan yang lebih lama, pengecualian kebijakan hanya diterapkan pada perincian situs (eTLD+1). Kebijakan yang disetel khusus untuk subdomain.site.com tidak akan berjalan, termasuk pada subdomain.site.com; kebijakan tersebut harus disetel pada site.com agar dapat berlaku ke site.com dan subdomain.site.com.
+
+          Kebijakan ini diterapkan pada setiap frame dan bukan hanya berdasarkan URL origin tingkat teratas. Jadi, misalnya jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat frame berisi site-two.com, maka JIT JavaScript akan diaktifkan di site-one.com, sedangkan site-two.com akan mengikuti kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default dengan JIT JavaScript aktif. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan, yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+          Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau JIT JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="7707869387893611318">Mengaktifkan fitur suara pengisian daya.
 
           Fitur ini berfungsi untuk memutar suara pengisian daya.

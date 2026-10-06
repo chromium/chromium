@@ -4359,7 +4359,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4298660926525614540">Noms d'emmagatzematge extraïble</translation>
 <translation id="4299022904780065004">Finestra d'&amp;incògnit nova</translation>
 <translation id="4300272766492248925">Obre l'aplicació</translation>
-<translation id="4301231341924904092">Canvia-la per mi</translation>
+<translation id="4301231341924904092">Canvia-me-la</translation>
 <translation id="4301671483919369635">Aquesta pàgina té permís per editar fitxers</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contacte no està disponible. Per fer servir <ph name="FEATURE_NAME" /> amb aquesta persona, afegeix als teus contactes l'adreça electrònica associada al seu Compte de Google.}other{# contactes no estan disponibles. Per fer servir <ph name="FEATURE_NAME" /> amb aquestes persones, afegeix als teus contactes les adreces electròniques associades als seus Comptes de Google.}}</translation>
 <translation id="4303079906735388947">Configura un PIN nou per a la clau de seguretat</translation>
@@ -4930,7 +4930,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4744268813103118742">Ves al lloc web</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activa el so del lloc web}other{Activa el so dels llocs web}}</translation>
-<translation id="4745096442457817087">La contrasenya s'ha trobat en una violació de les dades pública</translation>
+<translation id="4745096442457817087">La contrasenya s'ha trobat en una violació de dades pública</translation>
 <translation id="4745500401920035244">L'administrador ha fet un canvi que desactiva alguns perfils antics en tot el sistema. Ja no pots accedir a aquest perfil, però encara el pots suprimir.</translation>
 <translation id="4746757725581505837">Estàs a punt de suprimir les dades de <ph name="BRAND" /> desades en aquest dispositiu</translation>
 <translation id="4748783296226936791">Els llocs web solen connectar-se a dispositius HID per a funcions que utilitzen teclats, comandaments de joc i altres dispositius poc habituals</translation>
@@ -8999,7 +8999,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7900950034255258543">Per assegurar-se que aquest dispositiu es pot utilitzar de manera segura, la teva organització pot veure informació sobre el sistema operatiu, el navegador i la configuració, i sobre el programari que hi ha instal·lat al dispositiu</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901728443188947649">Crea imatges</translation>
-<translation id="7903481341948453971">Utilitza el bloqueig de pantalla per emplenar contrasenyes</translation>
+<translation id="7903481341948453971">Utilitza el bloqueig de pantalla en emplenar les contrasenyes</translation>
 <translation id="7903925330883316394">Utilitat: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Obre el gestor d'adreces d'interès</translation>
@@ -9819,7 +9819,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8509646642152301857">La baixada del diccionari del corrector ortogràfic ha fallat.</translation>
 <translation id="8512476990829870887">Finalitza el procés</translation>
 <translation id="851263357009351303">Permet sempre que <ph name="HOST" /> mostri imatges</translation>
-<translation id="8513108775083588393">Rotació autom.</translation>
+<translation id="8513108775083588393">Gir automàtic</translation>
 <translation id="8513357934662532537">Per importar contrasenyes a <ph name="BRAND" /> per a <ph name="USER_EMAIL" />, selecciona un fitxer CSV.</translation>
 <translation id="8514257511170433540">Utilitza les tecles de drecera predeterminades en emplenar formularis</translation>
 <translation id="8514746246728959655">Prova una altra clau de seguretat</translation>

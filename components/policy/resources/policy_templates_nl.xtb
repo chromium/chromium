@@ -949,6 +949,21 @@ De minimum drempelwaarde is 1 minuut.
 <translation id="1635748761015837179">Schrijven naar externe opslagapparaten toestaan</translation>
 <translation id="1639468541408865385">HTTP-verificatiecache met wereldwijd bereik aanzetten</translation>
 <translation id="1639673466479276550">Zet de screensaver voor het inlogscherm aan.</translation>
+<translation id="1640646094704433064">Hiermee kun je een lijst met URL-patronen instellen van sites die JavaScript niet mogen uitvoeren met de JIT-compiler (Just In Time) aangezet.
+
+          Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> er langer over doen om webcontent te renderen en kunnen ook delen van JavaScript (waaronder WebAssembly) worden uitgezet. Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> webcontent renderen in een meer beveiligde configuratie.
+
+          Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+          Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites. Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. Sites gebruiken dan het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, als dit is ingesteld, of de standaard JavaScript JIT-instelling van het profiel.
+
+          <ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+          Opmerking: In versie 155 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, wordt JavaScript JIT uitgezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, indien ingesteld, of wordt JavaScript JIT standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+          Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders staat JavaScript JIT aan voor de site.</translation>
 <translation id="1640824698339859203">Zwevende SSO aanzetten en de webserviceverificaties van de gebruiker naar een nieuw apparaat verplaatsen</translation>
 <translation id="1643642938972654829">Toegang geven tot de testpagina voor beleid</translation>
 <translation id="1645793986494086629">Schema:</translation>
@@ -1104,6 +1119,17 @@ Als je dit beleid niet instelt of instelt op Onwaar, wordt het standaardgedrag g
 Als een gebruiker probeert een uitgezette Chrome-app te starten, krijgt deze een bericht waarin wordt uitgelegd waarom de app niet is gestart en wordt voorgesteld contact op te nemen met de IT-afdeling.
 
 ChromeOS M184 is de laatste ChromeOS-milestone die Chrome-apps ondersteunt.</translation>
+<translation id="1726477280489844651">Hiermee bepaal je of <ph name="PRODUCT_NAME" /> een browservenster opent als de gebruiker inlogt bij <ph name="MS_WIN_NAME" />.
+
+<ph name="PRODUCT_NAME" /> heeft de instelling <ph name="PRODUCT_NAME" /> starten met <ph name="MS_WIN_NAME" />. Hiermee wordt de browser geregistreerd om te starten als de gebruiker inlogt, zodat de browser meteen klaar is voor gebruik. Gebruikers kunnen ook prompts krijgen met de suggestie deze instelling te wijzigen.
+
+Als je het beleid toepast, wordt <ph name="PRODUCT_NAME" /> gestart en wordt er een browservenster geopend als de gebruiker inlogt. Gebruikers kunnen de instelling niet wijzigen en krijgen geen prompts om deze te wijzigen.
+
+Als je het beleid niet toepast, wordt <ph name="PRODUCT_NAME" /> niet gestart als de gebruiker inlogt. Gebruikers kunnen de instelling niet wijzigen en krijgen geen prompts om deze te wijzigen.
+
+Als je het beleid niet instelt, kunnen gebruikers de instelling wijzigen.
+
+Dit beleid heeft geen effect op versies van <ph name="PRODUCT_NAME" /> waarin de instelling <ph name="PRODUCT_NAME" /> starten met <ph name="MS_WIN_NAME" /> niet beschikbaar is.</translation>
 <translation id="1729169799290004131">Als je het beleid instelt, wordt de helderheid van het scherm als percentage ingesteld en worden de functies voor automatische helderheid uitgezet. Het scherm heeft aanvankelijk de helderheid van de beleidswaarde, maar gebruikers kunnen deze aanpassen.
 
       Als je het beleid niet instelt, bepaalt de gebruiker de helderheid en heeft dit geen invloed op de functies voor automatische helderheid.
@@ -1206,6 +1232,21 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 
       Als je het beleid niet instelt, kunnen gebruikers de hele lijst met voorkeurstalen aanpassen.</translation>
 <translation id="1803646570632580723">Lijst met vastgezette apps om in het opstartprogramma te tonen</translation>
+<translation id="180432221123109556">Hiermee kun je een lijst met URL-patronen instellen voor sites waarvoor geavanceerde JavaScript-optimalisaties zijn aangezet.
+
+Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen.
+Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites.
+Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. In plaats daarvan gebruiken sites het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (als dit is ingesteld) of de standaardinstelling voor JavaScript-optimalisatie van het profiel.
+
+<ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+Opmerking: In versie 138 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, worden JavaScript-optimalisaties aangezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, indien ingesteld, of worden JavaScript-optimalisaties standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld. Anders staat JavaScript-optimalisatie aan voor de site.</translation>
 <translation id="1807539058116290184">Knijpen om te zoomen uitzetten in de kioskmodus</translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
 <translation id="1810261428246410396">Het gebruik van instant tethering toestaan</translation>
@@ -1434,6 +1475,7 @@ Als je dit beleid niet instelt, staat de functie 'Klik om te bellen' standaard a
       Dit beleid blokkeert JavaScript als de oorsprong van het document op het hoogste niveau (meestal de pagina-URL die ook in de adresbalk wordt getoond) overeenkomt met een van de patronen. Dit beleid is daarom niet geschikt om aanvallen op de webtoeleveringsketen te beperken. Als je bijvoorbeeld het patroon 'https://[*.]foo.com/' invoert, voorkom je niet dat een pagina die wordt gehost op https://voorbeeld.com een script uitvoert dat is geladen vanaf https://www.foo.com/voorbeeld.js. Als je het patroon 'https://voorbeeld.com/' invoert, voorkom je daarnaast niet dat een document van https://voorbeeld.com scripts uitvoert als het niet het document op het hoogste niveau is, maar is ingebed als subframe in een pagina die wordt gehost op een andere oorsprong, bijvoorbeeld https://www.bar.com.</translation>
 <translation id="1942015922182679826">Verwijdering van niet-ontsleutelbare wachtwoorden aanzetten</translation>
 <translation id="1942626390957213764">Hub voor delen van bureaublad uitzetten</translation>
+<translation id="1943628907052340534"><ph name="PRODUCT_NAME" /> niet openen als de gebruiker inlogt bij <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Site-isolatie uitzetten voor alle websites, maar de gebruiker toestaan dit aan te zetten</translation>
 <translation id="1945994447126139909">Dit bedrijfsbeleid is voor tijdelijke aanpassing en wordt verwijderd in <ph name="PRODUCT_NAME" /> versie 88.
 
@@ -3712,17 +3754,6 @@ Als je dit beleid instelt op False, of niet instelt, voert het toetsenbord stand
 
 Als je het beleid instelt op True of niet instelt, krijgt de gebruiker toestemming voor roottoegang tot Crostini-containers.
 Als je het beleid instelt op False, krijgt de gebruiker geen toestemming voor toegang tot zowel bestaande als nieuwe Crostini-containers.</translation>
-<translation id="3370759229531293665">Hiermee kun je een lijst met URL-patronen instellen van sites die JavaScript niet mogen uitvoeren met de JIT-compiler (Just In Time) aangezet.
-
-          Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> er langer over doen om webcontent te renderen en kunnen ook delen van JavaScript (waaronder WebAssembly) worden uitgezet. Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> webcontent renderen in een meer beveiligde configuratie.
-
-          Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
-
-          Uitzonderingen op het JavaScript JIT-beleid worden alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, wordt niet correct toegepast op site.com of subdomein.site.com, omdat ze allebei worden omgezet in dezelfde eTLD+1 (site.com) waarvoor geen beleid bestaat. In dit geval moet het beleid worden ingesteld op site.com zodat het correct van toepassing is op zowel site.com als subdomein.site.com.
-
-Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL op het hoogste niveau. Als bijvoorbeeld site-one.com in het beleid <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> wordt vermeld maar site-one.com een frame laadt met daarin site-two.com, dan staat JavaScript JIT uit op site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, indien ingesteld, of wordt standaard JavaScript JIT aangezet.
-
-          Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders staat JavaScript JIT aan voor de site.</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="3374587000313305002">Hiermee wordt de directory geconfigureerd die <ph name="PRODUCT_NAME" /> gebruikt voor het opslaan van gebruikersgegevens.
 
@@ -4222,6 +4253,7 @@ Als <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> en <ph nam
 Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de app Contentoverdracht. Ga naar https://support.google.com/a/answer/6364687 voor meer informatie.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
+<translation id="370314752761795411"><ph name="PRODUCT_NAME" /> starten met <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712861436661566358">Profielscheiding afdwingen</translation>
 <translation id="3719826155360621982">Homepage</translation>
@@ -5133,6 +5165,7 @@ Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PROD
 Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alleen toe verbinding te maken met de opgegeven bluetooth-services, met een uitzondering wanneer de lijst leeg is, wat betekent dat elke service mag worden gebruikt. UUID's die zijn gereserveerd door de Bluetooth SIG kunnen worden getoond als <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> of <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Aangepaste UUID's kunnen worden getoond als <ph name="BLUETOOTH_CUSTOM_UUID" />. UUID's zijn hoofdlettergevoelig. Als je het beleid niet instelt, kunnen gebruikers verbinding maken met elke bluetooth-service.</translation>
 <translation id="4332177773549877617">Gebeurtenissen registreren voor installatie van Android-apps</translation>
 <translation id="4333940819293342439">Snelheid voor verzameling van app-telemetrie in milliseconden.</translation>
+<translation id="4336096948197154521"><ph name="PRODUCT_NAME" /> openen als de gebruiker inlogt bij <ph name="MS_WIN_NAME" /></translation>
 <translation id="4340121900958123942">Stel het beschikbaarheidsniveau voor het systeem voor geolocatie van <ph name="PRODUCT_OS_NAME" /> in.
 
 Dit is een extra beheerlaag die zich onder de rechtenlaag voor apps en websites bevindt. Als je dit beleid bijvoorbeeld instelt op <ph name="GLS_BLOCKED" /> of <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, kunnen apps of websites de locatie niet bepalen, ongeacht de respectieve locatierechten. Als je het beleid instelt op <ph name="GLS_ALLOWED" />, kunnen apps en websites de locatie afzonderlijk krijgen als ze toestemming hebben.
@@ -5794,16 +5827,6 @@ Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerd
 Geldige waarden liggen tussen 1 en 9999 seconden. Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardwaarde van 60 seconden.
 
 Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> is ingesteld op False.</translation>
-<translation id="4723615546736863060">Hiermee kun je een lijst met URL-patronen instellen voor sites waarvoor geavanceerde JavaScript-optimalisaties zijn aangezet.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen.
-Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
-
-Uitzonderingen op het beleid voor JavaScript-optimalisaties worden alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, wordt niet correct toegepast op site.com of subdomein.site.com, omdat ze allebei worden omgezet in dezelfde eTLD+1 (site.com) waarvoor geen beleid bestaat. In dit geval moet het beleid worden ingesteld op site.com zodat het correct van toepassing is op zowel site.com als subdomein.site.com.
-
-Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL op het hoogste niveau. Als bijvoorbeeld site-1.com in het beleid <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> wordt vermeld maar site-1.com een frame laadt met daarin site-2.com, dan staan JavaScript-optimalisaties aan op site-1.com, maar gebruikt site-2.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, indien ingesteld, of worden JavaScript-optimalisaties standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
-
-Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld. Anders staat JavaScript-optimalisatie aan voor de site.</translation>
 <translation id="4723829699367336876">Firewallpassage vanaf client voor externe toegang aanzetten</translation>
 <translation id="4725528134735324213">Android Backup Service aanzetten</translation>
 <translation id="4725691087141147920">Synchronisatietoestemming weergeven tijdens het inloggen</translation>
@@ -8007,6 +8030,23 @@ Als je het beleid niet instelt, staat het vastzetten van tabbladen op de achterg
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
 <translation id="6091233616732024397">Gebruikers dwingen in te loggen om de browser te gebruiken</translation>
+<translation id="6091279561320899147">Hiermee kun je een lijst met URL-patronen instellen voor sites waarvoor geavanceerde JavaScript-optimalisaties zijn uitgezet.
+
+Als je JavaScript-optimalisaties uitzet, kan <ph name="PRODUCT_NAME" /> er langer over doen om webcontent te renderen.
+
+Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
+Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites.
+Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. In plaats daarvan gebruiken sites het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (als dit is ingesteld) of de standaardinstelling voor JavaScript-optimalisatie van het profiel.
+
+<ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+Opmerking: In versie 138 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, worden JavaScript-optimalisaties uitgezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, als dit is ingesteld, of worden JavaScript-optimalisaties standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> van toepassing op de site, als dit is ingesteld. Anders staat JavaScript-optimalisatie aan voor de site.</translation>
 <translation id="6092073071805297119">Toestaan dat filters voor toegankelijkheidsprestaties worden gebruikt.</translation>
 <translation id="6093156968240188330">Externe gebruikers toestaan om een vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="6093551397728373988">Afdwingen dat alle toegestane invoermethoden worden aangezet in een gebruikerssessie</translation>
@@ -9571,18 +9611,6 @@ Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleer
 Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (waarde 0), kan de browser het clientcertificaat niet aanvragen. Als het beheerde clientcertificaat van een profiel al is geregistreerd omdat dit beleid eerder werd toegepast, wordt het niet verwijderd maar is het niet beschikbaar voor mTLS-verbindingen en wordt het niet verlengd als het verloopt.</translation>
 <translation id="7013484314513229844">Opstarten met wisselstroom aanzetten</translation>
 <translation id="7014427417852575165">Gebruikers die zijn ingeschreven voor Geavanceerde beveiliging krijgen extra bescherming</translation>
-<translation id="7015750050379345684">Hiermee kun je een lijst met URL-patronen instellen voor sites waarvoor geavanceerde JavaScript-optimalisaties zijn uitgezet.
-
-Als je JavaScript-optimalisaties uitzet, kan <ph name="PRODUCT_NAME" /> er langer over doen om webcontent te renderen.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
-
-Uitzonderingen op het beleid voor JavaScript-optimalisaties worden alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, wordt niet correct toegepast op site.com of subdomein.site.com, omdat ze allebei worden omgezet in dezelfde eTLD+1 (site.com) waarvoor geen beleid bestaat. In dit geval moet het beleid worden ingesteld op site.com zodat het correct van toepassing is op zowel site.com als subdomein.site.com.
-
-Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL op het hoogste niveau. Als bijvoorbeeld site-1.com in het beleid <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> wordt vermeld maar site-1.com een frame laadt met daarin site-2.com, dan staan JavaScript-optimalisaties uit op site-1.com, maar gebruikt site-2.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, indien ingesteld, of worden JavaScript-optimalisaties standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
-
-Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld. Anders staat JavaScript-optimalisatie aan voor de site.</translation>
 <translation id="7016587686120059767">Gastmodus uitzetten</translation>
 <translation id="7019805045859631636">Snel</translation>
 <translation id="7021590945154530517">Controle van apparaatstatus aanzetten</translation>
@@ -10255,15 +10283,6 @@ De werkelijke waarden van gevoelige gegevens (zoals cookies of invoerwaarden) wo
       Uitzondering: informatie over TPM wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="739556497251174388">Hiermee kunnen de inloggegevens voor <ph name="PRODUCT_OS_NAME" /> opnieuw worden gebruikt voor netwerkverificatie</translation>
 <translation id="7395790871181951311">Smartcardverbinding door geïsoleerde apps blokkeren</translation>
-<translation id="7396487166653169044">Hiermee kun je een lijst met URL-patronen instellen van sites die JavaScript mogen uitvoeren met de JIT-compiler (Just In Time) aangezet.
-
-          Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
-
-          Uitzonderingen op het JavaScript JIT-beleid worden alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, wordt niet correct toegepast op site.com of subdomein.site.com, omdat ze allebei worden omgezet in dezelfde eTLD+1 (site.com) waarvoor geen beleid bestaat. In dit geval moet het beleid worden ingesteld op site.com zodat het correct van toepassing is op zowel site.com als subdomein.site.com.
-
-Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL op het hoogste niveau. Als bijvoorbeeld site-one.com in het beleid <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> wordt vermeld maar site-one.com een frame laadt met daarin site-two.com, dan staat JavaScript JIT aan op site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, indien ingesteld, of wordt standaard JavaScript JIT aangezet.
-
-          Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders staat JavaScript JIT aan voor de site.</translation>
 <translation id="7400208209734208176">Links standaard openen in de Chrome-browser</translation>
 <translation id="7402257017733669351">Voorkomen dat het browserproces dynamische code maakt</translation>
 <translation id="7406039009275722824">Als je <ph name="CHROME_SYNC_NAME" /> uitzet, werkt de Android-functie 'Back-up maken en resetten' niet meer naar behoren.</translation>
@@ -10665,6 +10684,19 @@ Als je dit beleid niet toepast, gebruikt de pdf-viewer het huidige AGG-weergavep
 
 Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de browser.</translation>
 <translation id="7704244074621846004">Uitgebreide levensduur voor SharedWorkers aanzetten</translation>
+<translation id="7706986409083477132">Hiermee kun je een lijst met URL-patronen instellen van sites die JavaScript mogen uitvoeren met de JIT-compiler (Just In Time) aangezet.
+
+          Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+          Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites. Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. Sites gebruiken dan het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, als dit is ingesteld, of de standaard JavaScript JIT-instelling van het profiel.
+
+          <ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+          Opmerking: In versie 155 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, wordt JavaScript JIT aangezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, indien ingesteld, of wordt JavaScript JIT standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+          Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders staat JavaScript JIT aan voor de site.</translation>
 <translation id="7707869387893611318">De functie voor oplaadgeluiden aanzetten.
 
           Deze functie is verantwoordelijk voor het afspelen van de oplaadgeluiden.

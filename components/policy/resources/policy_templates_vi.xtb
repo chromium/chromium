@@ -952,6 +952,21 @@ Ngưỡng tối thiểu là 1 phút.
 <translation id="1635748761015837179">Cho phép ghi vào thiết bị bộ nhớ ngoài</translation>
 <translation id="1639468541408865385">Bật bộ nhớ đệm xác thực HTTP có phạm vi toàn cầu</translation>
 <translation id="1639673466479276550">Bật trình bảo vệ màn hình trên màn hình đăng nhập.</translation>
+<translation id="1640646094704433064">Cho phép bạn thiết lập một danh sách mẫu URL trang web để chỉ định các trang web không được phép chạy JavaScript bật trình biên dịch JIT (Just In Time).
+
+          Việc tắt JavaScript JIT có nghĩa là <ph name="PRODUCT_NAME" /> có thể hiển thị nội dung trên web chậm hơn và cũng có thể vô hiệu hoá các phần của JavaScript (bao gồm cả WebAssembly). Việc tắt JavaScript JIT có thể cho phép <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web ở một cấu hình an toàn hơn.
+
+          Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
+
+          Bạn có thể đặt các ngoại lệ về chính sách cho những miền con cụ thể cũng như toàn bộ trang web. Ví dụ: một chính sách chỉ được đặt cho subdomain.site.com sẽ áp dụng cho subdomain.site.com mà không ảnh hưởng đến site.com. Trong một số trường hợp không thể tách biệt miền con khỏi trang web mẹ, miền con đó có thể kế thừa chính sách được đặt trên site.com. Các ngoại lệ cũng có thể không có hiệu lực đối với những khung được tải trong một thẻ hiện có cho đến khi trang web được mở trong một thẻ mới. Trên các thiết bị <ph name="ANDROID_NAME" /> có bộ nhớ thấp, những ngoại lệ dành riêng cho từng trang web có thể không được thực thi. Thay vào đó, các trang web sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (nếu chính sách này được thiết lập) hoặc mặc định sử dụng chế độ cài đặt JavaScript JIT của hồ sơ.
+
+          Để thực thi các ngoại lệ, <ph name="PRODUCT_NAME" /> có thể đặt các trang web hoặc miền con có chế độ cài đặt khác với chế độ cài đặt mặc định vào các quy trình riêng. Việc này có thể làm tăng mức sử dụng bộ nhớ, đặc biệt là trên <ph name="ANDROID_NAME" /> hoặc khi một mẫu ký tự đại diện khớp với nhiều miền con, vì mỗi nguồn gốc khớp có thể được tách biệt riêng. Các miền con tách biệt cũng không thể sử dụng document.domain để truy cập vào trang web mẹ.
+
+          Lưu ý: Trong các phiên bản từ 155 trở về trước, những ngoại lệ về chính sách chỉ được thực thi ở cấp độ trang web (eTLD+1). Nếu chỉ đặt chính sách trên subdomain.site.com thì chính sách đó không có hiệu lực, ngay cả đối với subdomain.site.com; bạn phải đặt chính sách đó trên site.com để áp dụng cho cả site.com và subdomain.site.com.
+
+          Chính sách này áp dụng theo từng khung chứ không chỉ dựa trên URL gốc cấp cao nhất. Ví dụ: nếu site-one.com có trong chính sách <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung chứa site-two.com, thì site-one.com sẽ bị tắt JavaScript JIT, còn site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (nếu có) hoặc mặc định bật JavaScript JIT. Các mục trong danh sách chặn có mức độ ưu tiên cao hơn danh sách cho phép và do đó có mức độ ưu tiên cao hơn so với giá trị mặc định được định cấu hình.
+
+          Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), nếu không thì trang web sẽ được bật JavaScript JIT.</translation>
 <translation id="1640824698339859203">Bật dịch vụ SSO di động và chuyển trạng thái xác thực dịch vụ web của người dùng sang thiết bị mới</translation>
 <translation id="1643642938972654829">Cho phép truy cập vào trang thử nghiệm chính sách</translation>
 <translation id="1645793986494086629">Lược đồ:</translation>
@@ -1119,6 +1134,17 @@ Nếu bạn đặt chính sách này thành False (Sai) hoặc không đặt, ch
 Khi cố gắng khởi chạy một Ứng dụng Chrome đang tắt, người dùng sẽ thấy thông báo giải thích lý do ứng dụng không khởi chạy và đề xuất liên hệ với bộ phận CNTT.
 
 ChromeOS M184 sẽ là mốc quan trọng cuối cùng của ChromeOS hỗ trợ các Ứng dụng Chrome.</translation>
+<translation id="1726477280489844651">Kiểm soát việc <ph name="PRODUCT_NAME" /> có mở cửa sổ trình duyệt khi người dùng đăng nhập vào <ph name="MS_WIN_NAME" /> hay không.
+
+<ph name="PRODUCT_NAME" /> có chế độ cài đặt "Khởi động <ph name="PRODUCT_NAME" /> bằng <ph name="MS_WIN_NAME" />" để tự đăng ký khởi chạy khi người dùng đăng nhập, nhờ đó trình duyệt sẽ sẵn sàng hoạt động ngay lập tức. Người dùng cũng có thể thấy lời nhắc đề nghị họ thay đổi chế độ cài đặt này.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật), <ph name="PRODUCT_NAME" /> sẽ khởi chạy và mở một cửa sổ trình duyệt khi người dùng đăng nhập. Người dùng không thể thay đổi chế độ cài đặt này và cũng không thấy lời nhắc thay đổi chế độ cài đặt này.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt), <ph name="PRODUCT_NAME" /> sẽ không chạy khi người dùng đăng nhập. Người dùng không thể thay đổi chế độ cài đặt này và cũng không thấy lời nhắc thay đổi chế độ cài đặt này.
+
+Nếu bạn không đặt chính sách này, người dùng sẽ có thể thay đổi chế độ cài đặt.
+
+Chính sách này không ảnh hưởng đến các phiên bản <ph name="PRODUCT_NAME" /> không có chế độ cài đặt "Khởi động <ph name="PRODUCT_NAME" /> bằng <ph name="MS_WIN_NAME" />".</translation>
 <translation id="1729169799290004131">Việc đặt chính sách này sẽ chỉ định tỷ lệ phần trăm độ sáng màn hình, tắt các tính năng tự động điều chỉnh độ sáng. Độ sáng màn hình ban đầu sẽ thay đổi theo giá trị của chính sách nhưng người dùng có thể thay đổi giá trị này.
 
       Nếu bạn không đặt chính sách này, các tùy chọn kiểm soát màn hình của người dùng và tính năng tự động điều chỉnh độ sáng sẽ không bị ảnh hưởng.
@@ -1221,6 +1247,40 @@ Chính sách này không có hiệu lực nếu không có tuỳ chọn lưu gi�
 
       Nếu bạn không đặt chính sách này, thì người dùng có thể thao tác trên toàn bộ danh sách gồm các ngôn ngữ ưu tiên.</translation>
 <translation id="1803646570632580723">Danh sách các ứng dụng được ghim sẽ hiển thị trong trình chạy</translation>
+<translation id="180432221123109556">Cho phép bạn lập một danh sách các mẫu URL trang web để chỉ định các trang web được bật tính năng tối ưu hoá JavaScript nâng cao.
+
+Để biết thông tin chi tiết về các mẫu URL trang web hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns.
+Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
+
+Bạn có thể đặt các ngoại lệ về chính sách cho những miền con cụ thể cũng như toàn bộ trang web.
+Ví dụ: một chính sách chỉ được đặt cho subdomain.site.com sẽ áp dụng cho
+subdomain.site.com mà không ảnh hưởng đến site.com. Trong một số trường hợp
+không thể tách biệt miền con khỏi trang web mẹ, miền con đó có thể kế thừa chính sách
+được đặt trên site.com. Các ngoại lệ cũng có thể không có hiệu lực đối với những khung được tải trong
+thẻ đang mở cho đến khi trang web được mở trong thẻ mới. Trên các
+thiết bị <ph name="ANDROID_NAME" /> có bộ nhớ thấp, những ngoại lệ dành riêng cho từng trang web có thể
+không được thực thi. Thay vào đó, các trang web sẽ sử dụng chính sách của
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />
+(nếu chính sách này được thiết lập) hoặc mặc định sử dụng chế độ cài đặt JavaScript JIT của hồ sơ.
+
+Để thực thi các ngoại lệ, <ph name="PRODUCT_NAME" />
+có thể đặt các trang web hoặc miền con có chế độ cài đặt khác với chế độ cài đặt mặc định vào
+các quy trình riêng. Việc này có thể làm tăng mức sử dụng bộ nhớ, đặc biệt là trên
+<ph name="ANDROID_NAME" /> hoặc khi một mẫu ký tự đại diện khớp với nhiều
+miền con, vì mỗi nguồn gốc khớp có thể được tách biệt riêng. Các miền con
+tách biệt cũng không thể sử dụng document.domain để truy cập vào trang web mẹ.
+
+Lưu ý: Trong các phiên bản từ 138 trở về trước, những ngoại lệ về chính sách chỉ được thực thi ở cấp độ trang web (eTLD+1). Nếu chỉ đặt chính sách trên subdomain.site.com thì chính sách đó không có
+hiệu lực, ngay cả đối với subdomain.site.com; bạn phải đặt chính sách đó trên site.com để
+áp dụng cho cả site.com và subdomain.site.com.
+
+Chính sách này áp dụng theo từng khung chứ không chỉ dựa trên URL gốc
+cấp cao nhất. Ví dụ: nếu site-one.com có trong chính sách <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung
+chứa site-two.com, thì site-one.com sẽ được bật tính năng
+tối ưu hoá JavaScript, còn site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (nếu được thiết lập) hoặc mặc định bật tính năng
+tối ưu hoá JavaScript. Các mục trong danh sách chặn có mức độ ưu tiên cao hơn danh sách cho phép và do đó có mức độ ưu tiên cao hơn so với giá trị mặc định được định cấu hình.
+
+Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> cho trang web đó (nếu được thiết lập), còn không thì trang web đó sẽ được bật tính năng tối ưu hoá JavaScript.</translation>
 <translation id="1807539058116290184">Không cho phép dùng cử chỉ chụm để thu phóng ở chế độ Kiosk</translation>
 <translation id="1808715480127969042">Chặn cookie trên các trang web này</translation>
 <translation id="1810261428246410396">Cho phép sử dụng tính năng Chia sẻ Internet tức thì.</translation>
@@ -1449,6 +1509,7 @@ Nếu bạn không đặt chính sách này, thì tính năng Nhấp để gọi
       Xin lưu ý rằng chính sách này chặn JavaScript dựa trên việc nguồn gốc của tài liệu cấp cao nhất (thường là URL của trang cũng hiển thị trong thanh địa chỉ) có khớp với mẫu nào hay không. Do đó, chính sách này không phù hợp cho mục đích giảm thiểu các cuộc tấn công vào chuỗi cung ứng web. Ví dụ: Việc cung cấp mẫu "https://[*.]foo.com/" sẽ không ngăn một trang (được lưu trữ trên https://example.com chẳng hạn) chạy tập lệnh được tải từ https://www.foo.com/example.js. Hơn nữa, việc cung cấp mẫu "https://example.com/" sẽ không ngăn tài liệu trên https://example.com chạy tập lệnh nếu đó không phải là tài liệu cấp cao nhất nhưng được nhúng dưới dạng khung phụ vào một trang được lưu trữ trên nguồn gốc khác (chẳng hạn như https://www.bar.com).</translation>
 <translation id="1942015922182679826">Cho phép xoá mật khẩu không giải mã được</translation>
 <translation id="1942626390957213764">Tắt trung tâm chia sẻ trên máy tính</translation>
+<translation id="1943628907052340534">Không mở <ph name="PRODUCT_NAME" /> khi người dùng đăng nhập vào <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Tắt tính năng tách biệt trang web đối với tất cả trang web nhưng cho phép người dùng bật tính năng này</translation>
 <translation id="1945994447126139909">Chính sách doanh nghiệp này là để áp dụng trong thời gian ngắn và sẽ bị loại bỏ trong phiên bản <ph name="PRODUCT_NAME" /> 88.
 
@@ -2278,6 +2339,7 @@ Chính sách này chỉ là biện pháp tạm thời để kiểm soát tính n
 <translation id="2479760962196319822">Chính sách này kiểm soát việc người dùng <ph name="PRODUCT_OS_NAME" /> có thể lưu trữ dữ liệu trên máy hay không.
       Nếu bạn đặt chính sách này thành False thì hệ thống sẽ chặn quyền truy cập vào bộ nhớ cục bộ trên <ph name="PRODUCT_OS_NAME" />, tức là người dùng không thể lưu trữ dữ liệu trên máy và cũng không thể truy cập vào các thư mục trên máy.
       Nếu bạn đặt chính sách này thành True hoặc không đặt thì hệ thống sẽ cho phép truy cập vào bộ nhớ cục bộ trên <ph name="PRODUCT_OS_NAME" />, tức là người dùng có thể lưu trữ dữ liệu ở bất cứ đâu và truy cập bất cứ thư mục nào.</translation>
+<translation id="2481931731272002134">Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền và tham gia cải tiến các mô hình AI.</translation>
 <translation id="2482676533225429905">Máy chủ nhắn tin gốc</translation>
 <translation id="2483146640187052324">Dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
 <translation id="2487495476672607707">Tính năng đồng bộ hoá tệp <ph name="PRODUCT_OS_NAME" /> sẽ tự động đặt các tệp <ph name="GOOGLE_DRIVE_NAME" /> trong “Drive của tôi” của người dùng ở chế độ có thể sử dụng khi không có mạng (nếu có đủ dung lượng) trên thiết bị <ph name="CHROMEBOOK_PLUS_NAME" />.
@@ -3733,17 +3795,6 @@ Nếu bạn đặt thành False hoặc không đặt chính sách này, thì bà
 
 Nếu bạn không đặt hoặc đặt chính sách này thành true, thì người dùng này sẽ có quyền truy cập ở cấp gốc vào vùng chứa Crostini.
 Nếu bạn đặt chính sách này thành false, thì người dùng này sẽ không có quyền truy cập ở cấp gốc vào cả vùng chứa Crostini hiện có lẫn vùng chứa Crostini mới.</translation>
-<translation id="3370759229531293665">Cho phép bạn thiết lập một danh sách mẫu URL trang web để chỉ định các trang web không được phép chạy JavaScript bật trình biên dịch JIT (Just In Time).
-
-          Việc tắt JavaScript JIT có nghĩa là <ph name="PRODUCT_NAME" /> có thể hiển thị nội dung trên web chậm hơn và cũng có thể vô hiệu hoá các phần của JavaScript (bao gồm cả WebAssembly). Việc tắt JavaScript JIT có thể cho phép <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web ở một cấu hình an toàn hơn.
-
-          Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
-
-          Các ngoại lệ về chính sách đối với JavaScript JIT sẽ chỉ được thực thi chi tiết ở mức độ trang web (eTLD+1). Nếu bạn đặt một chính sách chỉ dành cho trang web subdomain.site.com thì chính sách đó sẽ không áp dụng chính xác cho site.com hoặc subdomain.site.com. Lý do là vì cả hai trang web này đều phân giải thành cùng một tên miền eTLD+1 (site.com) không được chính sách nào quy định. Trong trường hợp này, bạn phải đặt chính sách trên site.com để áp dụng chính xác cho cả site.com và subdomain.site.com.
-
-          Chính sách này áp dụng trên cơ sở từng khung và không hoàn toàn dựa vào URL gốc cấp cao nhất. Ví dụ: nếu site-one.com được liệt kê trong chính sách của <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung chứa site-two.com thì site-one.com sẽ tắt JavaScript JIT, nhưng site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (nếu có) hoặc bật JavaScript JIT theo mặc định.
-
-          Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), nếu không thì trang web sẽ bật JavaScript JIT.</translation>
 <translation id="3373381043600809954">Bật <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Định cấu hình thư mục mà <ph name="PRODUCT_NAME" /> sẽ dùng để lưu trữ dữ liệu của người dùng.
 
@@ -4265,6 +4316,7 @@ Nếu bạn không đặt cả <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_STAR
 Bạn cũng cần bật tuỳ chọn chuyển dữ liệu bằng Takeout để ứng dụng Chuyển nội dung hoạt động đúng cách. Truy cập vào https://support.google.com/a/answer/6364687 để biết thêm thông tin.</translation>
 <translation id="3702518095257671450">Chứng thực từ xa</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Trường một dòng không dùng nữa và sẽ bị xóa trong tương lai. Hãy bắt đầu sử dụng hộp văn bản nhiều dòng bên dưới.)</translation>
+<translation id="370314752761795411">Khởi động <ph name="PRODUCT_NAME" /> bằng <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Tạm ngừng</translation>
 <translation id="3712861436661566358">Buộc phân tách hồ sơ</translation>
 <translation id="3719826155360621982">Trang chủ</translation>
@@ -4750,6 +4802,7 @@ Những điều cần lưu ý:
 <translation id="4027608872760987929">Bật nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4030152268425532846">Tắt phím tắt bailout tự động đăng nhập</translation>
 <translation id="4032740546145417900">Không cho phép tính năng Nói để nhập.</translation>
+<translation id="4035252407064087455">Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền nhưng không tham gia cải tiến các mô hình AI.</translation>
 <translation id="4043796890723386527">Ngăn người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Khi bạn đặt chính sách này, hệ thống sẽ kiểm soát bộ lọc URL SafeSites. Bộ lọc này dùng API Tìm kiếm an toàn của Google để phân loại xem các URL có chứa nội dung khiêu dâm hay không.
 
@@ -5193,6 +5246,7 @@ Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đ�
 Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phép người dùng kết nối với các dịch vụ Bluetooth đã chỉ định. Tuy nhiên, nếu danh sách đó trống thì mọi dịch vụ đều được phép sử dụng. Những UUID do Bluetooth SIG đặt trước có thể được biểu thị là <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> hoặc <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Những UUID tùy chỉnh có thể được biểu thị là <ph name="BLUETOOTH_CUSTOM_UUID" />. UUID không phân biệt chữ hoa chữ thường. Nếu bạn không đặt chính sách này, người dùng sẽ có thể kết nối với mọi dịch vụ Bluetooth.</translation>
 <translation id="4332177773549877617">Ghi lại các sự kiện cho lượt cài đặt ứng dụng Android</translation>
 <translation id="4333940819293342439">Chu kỳ thu thập dữ liệu sử dụng ứng dụng đo từ xa tính bằng mili giây.</translation>
+<translation id="4336096948197154521">Mở <ph name="PRODUCT_NAME" /> khi người dùng đăng nhập vào <ph name="MS_WIN_NAME" /></translation>
 <translation id="4340121900958123942">Đặt mức độ hoạt động của hệ thống định vị vị trí của <ph name="PRODUCT_OS_NAME" />.
 
 Đây là lớp kiểm soát bổ sung bên dưới lớp quyền dành cho các ứng dụng và trang web. Ví dụ: Nếu bạn đặt chính sách này thành <ph name="GLS_BLOCKED" /> hoặc <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" /> thì không ứng dụng hoặc trang web nào có thể phân giải dữ liệu vị trí, bất kể quyền truy cập thông tin vị trí tương ứng. Tuy nhiên, nếu bạn đặt chính sách này thành <ph name="GLS_ALLOWED" /> thì các ứng dụng và trang web có thể lấy thông tin vị trí một cách riêng rẽ nếu được phép.
@@ -5870,16 +5924,6 @@ Nếu các mẫu URL xung đột với <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME
 Giá trị hợp lệ nằm trong khoảng từ 1 giây đến 9999 giây. Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng giá trị mặc định là 60 giây.
 
 Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> thành false (sai).</translation>
-<translation id="4723615546736863060">Cho phép bạn lập một danh sách các mẫu URL trang web để chỉ định các trang web được bật tính năng tối ưu hoá JavaScript nâng cao.
-
-Để biết thông tin chi tiết về các mẫu URL trang web hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns.
-Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
-
-Các ngoại lệ về chính sách tối ưu hoá JavaScript sẽ chỉ được thực thi chi tiết ở cấp trang web (eTLD+1). Nếu bạn đặt một chính sách chỉ dành cho trang web subdomain.site.com thì chính sách đó sẽ không áp dụng chính xác cho site.com hoặc subdomain.site.com. Lý do là cả hai trang web này đều phân giải thành cùng một tên miền eTLD+1 (site.com) không được quy định chính sách nào. Trong trường hợp này, bạn phải đặt chính sách cho site.com để áp dụng chính xác chính sách cho cả site.com và subdomain.site.com.
-
-Chính sách này áp dụng trên cơ sở từng khung và không chỉ dựa vào URL gốc cấp cao nhất. Ví dụ: Nếu site-one.com nằm trong chính sách của <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung chứa site-two.com thì site-one.com sẽ được bật tính năng tối ưu hoá JavaScript, nhưng site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (nếu có) hoặc được bật tính năng tối ưu hoá JavaScript theo mặc định. Các mục trong danh sách chặn có mức độ ưu tiên cao hơn danh sách cho phép và do đó có mức độ ưu tiên cao hơn so với giá trị mặc định được định cấu hình.
-
-Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), còn không thì trang web đó sẽ được bật tính năng tối ưu hoá JavaScript.</translation>
 <translation id="4723829699367336876">Bật tính năng chặn tường lửa từ máy khách truy cập từ xa</translation>
 <translation id="4725528134735324213">Bật Android Backup Service</translation>
 <translation id="4725691087141147920">Hiển thị màn hình Đồng ý đồng bộ hoá trong khi đăng nhập</translation>
@@ -5972,6 +6016,7 @@ Khi bạn đặt chính sách này thành Tắt, người dùng sẽ không th�
       <ph name="PAGE_SIZE_NAME" /> nên chứa một trong các định dạng được liệt kê hoặc giá trị "tùy chỉnh" nếu kích thước giấy bắt buộc không có trong danh sách đó. Nếu cung cấp giá trị "tùy chỉnh", thì bạn nên chỉ định thuộc tính <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Thuộc tính này mô tả chiều dài và chiều rộng mong muốn tính bằng micromet. Nếu không, bạn không nên chỉ định thuộc tính <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Chính sách vi phạm những quy tắc này sẽ bị bỏ qua.
 
       Nếu kích thước trang không có sẵn trên máy in mà người dùng chọn, thì chính sách này sẽ bị bỏ qua.</translation>
+<translation id="4787894429283141328">Không cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền.</translation>
 <translation id="4789450349513792856">Chặn cửa sổ bật lên trên các trang web này</translation>
 <translation id="4790391579868456557">Sử dụng các cookie thiết yếu và không thiết yếu trong công cụ tìm kiếm.</translation>
 <translation id="4790588245699320140">Cho phép Trợ lý Google truy cập vào bối cảnh trên màn hình</translation>
@@ -6559,6 +6604,7 @@ Chính sách này là giải pháp tạm thời để bạn có thời gian di c
       </translation>
 <translation id="5118635822783657217">Không cho phép cập nhật các thành phần không quan trọng</translation>
 <translation id="5120168808610189805">Bật chính sách nhập trang chủ trong lần chạy đầu tiên</translation>
+<translation id="5124321040285474825">Chế độ cài đặt cho các tính năng AI tạo sinh trong Tự động điền</translation>
 <translation id="5124368997194894978">Bật tính năng khởi động trên AC (dòng điện xoay chiều)</translation>
 <translation id="5124652340668722849">Định cấu hình danh sách các Miền cấp phép (PvD) mà <ph name="PRODUCT_NAME" /> sẽ sử dụng để tìm nạp cấu hình proxy một cách linh động.
 
@@ -8158,6 +8204,45 @@ Nếu bạn không đặt chính sách này thì tính năng đóng băng thẻ 
 <translation id="608788685013546076">Đặt ngưỡng pin cho chế độ chuyển đổi điện năng cao điểm theo phần trăm</translation>
 <translation id="6089679180657323464">Kiểm soát các tùy chọn cài đặt của bộ điều khiển đo từ xa và chẩn đoán wilco.</translation>
 <translation id="6091233616732024397">Buộc người dùng đăng nhập để sử dụng trình duyệt</translation>
+<translation id="6091279561320899147">Cho phép bạn lập một danh sách các mẫu URL trang web để chỉ định các trang web
+bị tắt tính năng tối ưu hoá JavaScript nâng cao.
+
+Việc tắt tính năng tối ưu hoá JavaScript có thể khiến <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web chậm hơn.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào
+https://chromeenterprise.google/policies/url-patterns.
+Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
+
+Bạn có thể đặt các ngoại lệ về chính sách cho những miền con cụ thể cũng như toàn bộ trang web.
+Ví dụ: một chính sách chỉ được đặt cho subdomain.site.com sẽ áp dụng cho
+subdomain.site.com mà không ảnh hưởng đến site.com. Trong một số trường hợp
+không thể tách biệt miền con khỏi trang web mẹ, miền con đó có thể kế thừa chính sách
+được đặt trên site.com. Các ngoại lệ cũng có thể không có hiệu lực đối với những khung được tải trong
+thẻ đang mở cho đến khi trang web được mở trong thẻ mới. Trên các
+thiết bị <ph name="ANDROID_NAME" /> bộ nhớ thấp, những ngoại lệ cụ thể theo trang web có thể
+không được thực thi và thay vào đó, các trang web sẽ sử dụng chính sách của
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />
+(nếu có) hoặc mặc định là chế độ cài đặt tính năng tối ưu hoá JavaScript của hồ sơ.
+
+Để thực thi các ngoại lệ, <ph name="PRODUCT_NAME" />
+có thể đặt các trang web hoặc miền con có chế độ cài đặt khác với chế độ cài đặt mặc định vào
+các quy trình riêng. Việc này có thể làm tăng mức sử dụng bộ nhớ, đặc biệt là trên
+<ph name="ANDROID_NAME" /> hoặc khi một mẫu ký tự đại diện khớp với nhiều
+miền con, vì mỗi nguồn gốc khớp có thể được tách biệt riêng. Các miền con
+tách biệt cũng không thể sử dụng document.domain để truy cập vào trang web mẹ.
+
+Lưu ý: Trong các phiên bản từ 138 trở về trước, những ngoại lệ về chính sách chỉ được thực thi ở cấp độ trang web (eTLD+1). Nếu chỉ đặt chính sách trên subdomain.site.com thì chính sách đó không có
+hiệu lực, ngay cả đối với subdomain.site.com; bạn phải đặt chính sách đó trên site.com để
+áp dụng cho cả site.com và subdomain.site.com.
+
+Chính sách này áp dụng theo từng khung chứ không chỉ dựa trên URL gốc
+cấp cao nhất. Ví dụ: nếu site-one.com có trong chính sách <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung
+chứa site-two.com, thì site-one.com sẽ bị tắt tính năng
+tối ưu hoá JavaScript, còn site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (nếu có) hoặc mặc định bật tính năng
+tối ưu hoá JavaScript. Các mục trong danh sách chặn có mức độ ưu tiên cao hơn danh sách cho phép và do đó có mức độ ưu tiên cao hơn so với giá trị mặc định được định cấu hình.
+
+Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), còn không thì
+trang web đó sẽ được bật tính năng tối ưu hoá JavaScript.</translation>
 <translation id="6092073071805297119">Cho phép sử dụng tính năng Lọc hiệu suất hỗ trợ tiếp cận.</translation>
 <translation id="6093156968240188330">Cho phép người dùng ở xa tương tác với cửa sổ bật lên trong phiên hỗ trợ từ xa</translation>
 <translation id="6093551397728373988">Bắt buộc bật tất cả phương thức nhập được phép trong một phiên hoạt động của người dùng</translation>
@@ -8952,6 +9037,27 @@ Trình bảo vệ màn hình của người dùng hiển thị những hình ả
 Bạn có thể điều chỉnh thời gian chờ ở trạng thái rảnh trước khi khởi động trình bảo vệ màn hình và khoảng thời gian hiển thị một hình ảnh lần lượt theo chính sách <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> và <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Nếu bạn không đặt chính sách nào đó trong số này, giá trị mặc định của chính sách sẽ được sử dụng.</translation>
 <translation id="651248769129998376">Không tạo hoặc tải yêu cầu cài đặt tiện ích lên Bảng điều khiển dành cho quản trị viên</translation>
 <translation id="6513453889192806240">Độ trễ https</translation>
+<translation id="6514006253468048943">Các tính năng này trong <ph name="PRODUCT_NAME" /> sử dụng mô hình AI tạo sinh để giúp người dùng điền vào các biểu mẫu trên web. Để sử dụng các tính năng này, <ph name="PRODUCT_NAME" /> phải thu thập các dữ liệu như cấu trúc của biểu mẫu mà người dùng tương tác, cũng như các truy vấn dạng văn bản tự do mà người dùng nhập để tìm kiếm trong các ứng dụng Gemini được kết nối (đối với tính năng Tìm và điền bằng Gemini). Dữ liệu này sau đó sẽ được gửi đến một máy chủ do Google sở hữu và chạy mô hình AI tạo sinh.
+
+Nếu bạn đặt chính sách này thành 0 (Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền và tham gia cải tiến các mô hình AI) thì người dùng có thể sử dụng các tính năng này, đồng thời Google được phép sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+Nếu bạn đặt chính sách này thành 1 (Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền nhưng không tham gia cải tiến các mô hình AI), thì người dùng có thể sử dụng các tính năng này nhưng Google không được phép sử dụng nội dung của người dùng (bao gồm cả câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+Nếu bạn đặt chính sách này thành 2 (Không cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền) thì người dùng sẽ không thể sử dụng các tính năng này.
+
+Nếu bạn không đặt chính sách này, hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> quyết định.
+
+Các tính năng AI tạo sinh trong Tự động điền bao gồm:
+
+– Hiểu biểu mẫu thông minh hơn: sử dụng AI để xác định và phân loại các trường của biểu mẫu, nhờ đó có thể điền nhiều trường hơn.
+
+– Tìm và điền bằng Gemini: tìm thông tin trong các ứng dụng mà người dùng đã kết nối với Gemini và cung cấp thông tin đó để hỗ trợ điền dữ liệu, dưới dạng đề xuất chủ động trên biểu mẫu hoặc để phản hồi câu hỏi mà người dùng nhập.
+
+Chính sách này thay thế chính sách <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" /> (vẫn áp dụng khi chính sách này không được thiết lập). Tính năng "Tìm và điền bằng Gemini" cũng yêu cầu bạn không được tắt chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Chính sách này không kiểm soát các tính năng Tự động điền không sử dụng AI tạo sinh.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6515357889978918016">Hình ảnh <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6515520014183265350">Chỉ định một danh sách các nguồn gốc chạy trong một quy trình riêng.
 
@@ -9758,18 +9864,6 @@ Nếu bạn không đặt chính sách này, sẽ không có sự kiện nào tr
 Nếu bạn đặt chính sách này thành <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (giá trị 0) thì trình duyệt sẽ không thể yêu cầu chứng chỉ máy khách. Nếu chứng chỉ máy khách được quản lý của một hồ sơ đã được cấp (do trước đó bạn đã bật chính sách này) thì chứng chỉ này sẽ không bị xoá nhưng cũng không dùng được cho các kết nối mTLS và không được gia hạn khi hết hạn.</translation>
 <translation id="7013484314513229844">Bật tính năng khởi động khi cắm nguồn AC</translation>
 <translation id="7014427417852575165">Người dùng đã đăng ký tham gia chương trình Bảo vệ nâng cao sẽ có thêm các biện pháp bảo vệ</translation>
-<translation id="7015750050379345684">Cho phép bạn lập một danh sách các mẫu URL trang web để chỉ định các trang web bị tắt tính năng tối ưu hoá JavaScript nâng cao.
-
-Việc tắt tính năng tối ưu hoá JavaScript có thể khiến <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web chậm hơn.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns.
-Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
-
-Các ngoại lệ về chính sách tối ưu hoá JavaScript sẽ chỉ được thực thi chi tiết ở cấp trang web (eTLD+1). Nếu bạn đặt một chính sách chỉ dành cho trang web subdomain.site.com thì chính sách đó sẽ không áp dụng chính xác cho site.com hoặc subdomain.site.com. Lý do là cả hai trang web này đều phân giải thành cùng một tên miền eTLD+1 (site.com) không được quy định chính sách nào. Trong trường hợp này, bạn phải đặt chính sách trên site.com để áp dụng chính xác chính sách cho cả site.com và subdomain.site.com.
-
-Chính sách này áp dụng trên cơ sở từng khung và không hoàn toàn dựa vào URL gốc cấp cao nhất. Ví dụ: nếu site-one.com được liệt kê trong chính sách của <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung chứa site-two.com thì site-one.com sẽ bị tắt tính năng tối ưu hoá JavaScript, nhưng site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (nếu có) hoặc được bật tính năng tối ưu hoá JavaScript theo mặc định. Các mục trong danh sách chặn có mức độ ưu tiên cao hơn danh sách cho phép và do đó có mức độ ưu tiên cao hơn so với giá trị mặc định được định cấu hình.
-
-Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), còn không thì trang web đó sẽ được bật tính năng tối ưu hoá JavaScript.</translation>
 <translation id="7016587686120059767">Tắt chế độ khách</translation>
 <translation id="7019805045859631636">Nhanh</translation>
 <translation id="7021590945154530517">Bật tính năng theo dõi tình trạng thiết bị</translation>
@@ -10446,15 +10540,6 @@ Giá trị thực tế của dữ liệu nhạy cảm (như cookie hoặc giá t
       Trường hợp ngoại lệ: Thông tin TPM do <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> kiểm soát trong M95 trở xuống.</translation>
 <translation id="739556497251174388">Cho phép sử dụng lại thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> để xác thực mạng</translation>
 <translation id="7395790871181951311">Không cho phép Ứng dụng tách biệt kết nối với Thẻ thông minh</translation>
-<translation id="7396487166653169044">Cho phép bạn thiết lập một danh sách mẫu URL trang web để chỉ định các trang web được phép chạy JavaScript bật trình biên dịch JIT (Just In Time).
-
-          Để biết thông tin chi tiết về các mẫu URL trang web hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
-
-          Các ngoại lệ về chính sách đối với JavaScript JIT sẽ chỉ được thực thi chi tiết ở mức độ trang web (eTLD+1). Nếu bạn đặt một chính sách chỉ dành cho trang web subdomain.site.com thì chính sách đó sẽ không áp dụng chính xác cho site.com hoặc subdomain.site.com. Lý do là vì cả hai trang web này đều phân giải thành cùng một tên miền eTLD+1 (site.com) không được chính sách nào quy định. Trong trường hợp này, bạn phải đặt chính sách trên site.com để áp dụng chính xác cho cả site.com và subdomain.site.com.
-
-          Chính sách này áp dụng trên cơ sở từng khung và không hoàn toàn dựa vào URL gốc cấp cao nhất. Ví dụ: nếu site-one.com được liệt kê trong chính sách của <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung chứa site-two.com thì site-one.com sẽ bật JavaScript JIT, nhưng site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (nếu có) hoặc bật JavaScript JIT theo mặc định.
-
-          Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), nếu không thì trang web sẽ bật JavaScript JIT.</translation>
 <translation id="7400208209734208176">Mở đường liên kết bằng trình duyệt Chrome theo mặc định</translation>
 <translation id="7402257017733669351">Ngăn quy trình của trình duyệt tạo mã động</translation>
 <translation id="7406039009275722824">Việc tắt <ph name="CHROME_SYNC_NAME" /> sẽ khiến tính năng Sao lưu và khôi phục trên Android hoạt động không bình thường.</translation>
@@ -10864,6 +10949,21 @@ Khi bạn tắt chính sách này, trình xem PDF sẽ sử dụng trình kết 
 
 Khi bạn không đặt chính sách này, trình duyệt sẽ chọn trình kết xuất đồ hoạ PDF.</translation>
 <translation id="7704244074621846004">Bật thời gian hoạt động lâu hơn cho SharedWorker</translation>
+<translation id="7706986409083477132">Cho phép bạn thiết lập một danh sách mẫu URL trang web để chỉ định các trang web được phép chạy JavaScript bật trình biên dịch JIT (Just In Time).
+
+          Để biết thông tin chi tiết về các mẫu URL trang web hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
+
+          Bạn có thể đặt các ngoại lệ về chính sách cho những miền con cụ thể cũng như toàn bộ trang web. Ví dụ: một chính sách chỉ được đặt cho subdomain.site.com sẽ áp dụng cho subdomain.site.com mà không ảnh hưởng đến site.com. Trong một số trường hợp không thể tách biệt miền con khỏi trang web mẹ, miền con đó có thể kế thừa chính sách được đặt trên site.com. Các ngoại lệ cũng có thể không có hiệu lực đối với những khung được tải trong một thẻ hiện có cho đến khi trang web được mở trong một thẻ mới. Trên các thiết bị <ph name="ANDROID_NAME" /> có bộ nhớ thấp, những ngoại lệ dành riêng cho từng trang web có thể không được thực thi. Thay vào đó, các trang web sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (nếu chính sách này được thiết lập) hoặc mặc định sử dụng chế độ cài đặt JavaScript JIT của hồ sơ.
+
+          Để thực thi các ngoại lệ, <ph name="PRODUCT_NAME" />
+có thể đặt các trang web hoặc miền con có chế độ cài đặt khác với chế độ cài đặt mặc định vào
+các quy trình riêng. Việc này có thể làm tăng mức sử dụng bộ nhớ, đặc biệt là trên <ph name="ANDROID_NAME" /> hoặc khi một mẫu ký tự đại diện khớp với nhiều miền con, vì mỗi nguồn gốc khớp có thể được tách biệt riêng. Các miền con tách biệt cũng không thể sử dụng document.domain để truy cập vào trang web mẹ.
+
+          Lưu ý: Trong các phiên bản từ 155 trở về trước, những ngoại lệ về chính sách chỉ được thực thi ở cấp độ trang web (eTLD+1). Nếu chỉ đặt chính sách trên subdomain.site.com thì chính sách đó không có hiệu lực, ngay cả đối với subdomain.site.com; bạn phải đặt chính sách đó trên site.com để áp dụng cho cả site.com và subdomain.site.com.
+
+          Chính sách này áp dụng theo từng khung chứ không chỉ dựa trên URL gốc cấp cao nhất. Ví dụ: nếu site-one.com có trong chính sách <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> nhưng site-one.com tải một khung chứa site-two.com, thì site-one.com sẽ được bật JavaScript JIT, còn site-two.com sẽ sử dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (nếu được thiết lập) hoặc mặc định bật JavaScript JIT. Các mục trong danh sách chặn có mức độ ưu tiên cao hơn trong danh sách cho phép và do đó có mức độ ưu tiên cao hơn so với giá trị mặc định được định cấu hình.
+
+          Nếu bạn không đặt chính sách này cho một trang web thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> cho trang web đó (nếu được thiết lập), nếu không thì trang web sẽ bật JavaScript JIT.</translation>
 <translation id="7707869387893611318">Bật tính năng phát chuông báo khi sạc.
 
           Tính năng này có nhiệm vụ phát chuông báo khi sạc.

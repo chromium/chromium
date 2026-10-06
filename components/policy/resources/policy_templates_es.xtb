@@ -951,6 +951,21 @@ Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ej
 <translation id="1635748761015837179">Permitir la escritura en dispositivos de almacenamiento externo</translation>
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1639673466479276550">Habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
+<translation id="1640646094704433064">Te permite definir una lista con patrones de URL de sitios donde se especifique qué sitios no pueden ejecutar JavaScript con un compilador en tiempo de ejecución (JIT) habilitado.
+
+          Si se inhabilita el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web de forma más lenta y que también se inhabiliten algunas partes de JavaScript, como WebAssembly. Al inhabilitarse el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web con una configuración más segura.
+
+          Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+          Se pueden definir excepciones de políticas para subdominios específicos, así como para sitios enteros. Por ejemplo, una política definida únicamente para subdominio.sitio.com se aplica a subdominio.sitio.com sin afectar a sitio.com. En algunos casos en los que un subdominio no se puede aislar de su sitio superior, puede heredar la política definida en sitio.com. Es posible que las excepciones no se apliquen a los marcos cargados en una pestaña existente hasta que el sitio se abra en una pestaña nueva. En los dispositivos <ph name="ANDROID_NAME" /> con poca memoria, es posible que no se apliquen las excepciones específicas de sitios y que, en su lugar, los sitios usen la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> si se ha definido, o la configuración de JavaScript con JIT predeterminada del perfil.
+
+          Para aplicar excepciones, <ph name="PRODUCT_NAME" /> puede asignar sitios o subdominios cuya configuración difiera de la predeterminada a procesos específicos. Esto puede aumentar el uso de memoria, especialmente en <ph name="ANDROID_NAME" /> o cuando un patrón de comodín coincide con muchos subdominios, ya que cada origen coincidente se puede aislar por separado. Los subdominios aislados tampoco pueden usar document.domain para acceder a su sitio superior.
+
+          Nota: En las versiones 155 y anteriores, las excepciones de la política solo se aplicaban obligatoriamente a nivel de sitio (eTLD+1). Una política definida únicamente para subdominio.sitio.com no se aplicaba, ni siquiera a subdominio.sitio.com. Tenía que definirse en sitio.com para que se aplicase tanto a sitio.com como a subdominio.sitio.com.
+
+          Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se inhabilitará el uso de JavaScript con JIT en sitio-uno.com, pero sitio-dos.com usará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido, se habilitará el uso de JavaScript con JIT de forma predeterminada. Las entradas de la lista de bloqueadas tienen más prioridad que las de la lista de permitidas, que a su vez tienen más prioridad que el valor predeterminado configurado.
+
+          Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido esta política, se habilitará el uso de JavaScript con JIT en ese sitio.</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y mover las autenticaciones de los servicios web del usuario a un dispositivo nuevo</translation>
 <translation id="1643642938972654829">Permitir el acceso a la página de prueba de políticas</translation>
 <translation id="1645793986494086629">Esquema:</translation>
@@ -1104,6 +1119,17 @@ Si no se le asigna ningún valor a esta política o se le asigna el valor False,
 Si el usuario intenta iniciar una aplicación de Chrome inhabilitada, se le mostrará un mensaje en el que se explica por qué no se ha iniciado la aplicación y se le sugiere que se ponga en contacto con su departamento de TI.
 
 ChromeOS M184 será la última versión de ChromeOS que admitirá aplicaciones de Chrome.</translation>
+<translation id="1726477280489844651">Controla si <ph name="PRODUCT_NAME" /> abre una ventana del navegador cuando el usuario inicia sesión en <ph name="MS_WIN_NAME" />.
+
+<ph name="PRODUCT_NAME" /> tiene la opción "Iniciar <ph name="PRODUCT_NAME" /> con <ph name="MS_WIN_NAME" />" que lo registra para que se inicie cuando el usuario inicie sesión, de modo que el navegador esté listo de inmediato. También se pueden mostrar a los usuarios mensajes que sugieran que cambien este ajuste.
+
+Si se habilita esta política, <ph name="PRODUCT_NAME" /> se iniciará y abrirá una ventana del navegador cuando el usuario inicie sesión. Los usuarios no pueden cambiar el ajuste y no se les muestran mensajes para que lo cambien.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> no se iniciará cuando el usuario inicie sesión. Los usuarios no pueden cambiar el ajuste y no se les muestran mensajes para que lo cambien.
+
+Si no se define la política, los usuarios podrán cambiar el ajuste.
+
+Esta política no tiene ningún efecto en las versiones de <ph name="PRODUCT_NAME" /> en las que no esté disponible el ajuste "Iniciar <ph name="PRODUCT_NAME" /> con <ph name="MS_WIN_NAME" />".</translation>
 <translation id="1729169799290004131">Si se le asigna un valor a esta política, se especifica el porcentaje de brillo de la pantalla y se desactivan las funciones de brillo automático. El brillo inicial de la pantalla se ajusta al del valor de la política, pero los usuarios pueden cambiarlo.
 
       Si no se configura esta política, las funciones de brillo automático y los controles de pantalla del usuario no se ven afectados.
@@ -1206,6 +1232,42 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 
       Si no se establece esta política, los usuarios podrán gestionar la lista completa de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijadas que deben aparecer en la barra de aplicaciones</translation>
+<translation id="180432221123109556">Te permite definir una lista de patrones de URL donde se especifican los sitios en los que se han habilitado las optimizaciones avanzadas de JavaScript.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
+Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+Se pueden definir excepciones de políticas para subdominios específicos, así como para sitios enteros.
+Por ejemplo, una política definida únicamente para subdominio.sitio.com se aplica a
+subdominio.sitio.com sin afectar a sitio.com. En algunos casos en los que un
+subdominio no se puede aislar de su sitio superior, puede heredar la política
+definida en sitio.com. Es posible que las excepciones no se apliquen a los marcos cargados en una
+pestaña existente hasta que el sitio se abra en una pestaña nueva. En los
+dispositivos <ph name="ANDROID_NAME" /> con poca memoria, es posible que
+no se apliquen las excepciones específicas de sitios y que, en su lugar, los sitios usen la política de
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />,
+si se ha definido, o la configuración de JavaScript con JIT predeterminada del perfil.
+
+Para aplicar excepciones, <ph name="PRODUCT_NAME" />
+puede asignar sitios o subdominios cuya configuración difiera de la predeterminada
+a procesos específicos. Esto puede aumentar el uso de memoria, especialmente en
+<ph name="ANDROID_NAME" /> o cuando un patrón de comodín coincide con muchos
+subdominios, ya que cada origen coincidente se puede aislar por separado. Los subdominios aislados
+tampoco pueden usar document.domain para acceder a su sitio superior.
+
+Nota: En las versiones 138 y anteriores, las excepciones de la política solo se implementaban obligatoriamente en
+una granularidad de sitios (eTLD+1). Una política definida únicamente para subdominio.sitio.com no
+se aplicaba, ni siquiera a subdominio.sitio.com. Tenía que definirse
+en sitio.com para que se aplicase tanto a sitio.com como a subdominio.sitio.com.
+
+Esta política se aplica marco a marco y no basándose únicamente en la URL de
+origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco
+que contiene sitio-dos.com, sitio-uno.com habilitará las
+optimizaciones de JavaScript, pero sitio-dos.com usará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido esta política, se habilitarán las
+optimizaciones de JavaScript de forma predeterminada. Las entradas de la lista de bloqueadas tienen más prioridad que las de la lista de permitidas, que a su vez tienen más prioridad que el valor predeterminado configurado.
+
+Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido,
+se habilitará la optimización de JavaScript.</translation>
 <translation id="1807539058116290184">Inhabilitar el gesto de pellizcar para hacer zoom en el modo Kiosco</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir conexión compartida instantánea.</translation>
@@ -1434,6 +1496,7 @@ Si no se define esta política, la función Clic de llamada se habilitará de fo
       Ten en cuenta que esta política bloquea JavaScript en función de si el origen del documento de nivel superior (normalmente, la URL de la página que también aparece en la barra de direcciones) coincide con alguno de los patrones. Por lo tanto, esta política no es adecuada para mitigar los ataques de la cadena de suministro web. Por ejemplo, si se proporciona el patrón "https://[*.]foo.com/", no se impedirá que una página alojada en https://example.com ejecute un script cargada desde https://www.foo.com/example.js. Además, si se proporciona el patrón "https://example.com/", no se evitará que un documento de https://example.com ejecute secuencias de comandos si no es el documento de nivel superior, sino que se inserta como submarco en una página alojada en otro origen, como https://www.bar.com.</translation>
 <translation id="1942015922182679826">Habilitar la eliminación de contraseñas que no se pueden descifrar</translation>
 <translation id="1942626390957213764">Inhabilitar el centro para compartir escritorio</translation>
+<translation id="1943628907052340534">No abrir <ph name="PRODUCT_NAME" /> cuando el usuario inicie sesión en <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Inhabilitar el aislamiento en todos los sitios web, pero permitir que el usuario lo habilite</translation>
 <translation id="1945994447126139909">Esta política de empresa sirve para una adaptación a corto plazo y se eliminará en la versión 88 de <ph name="PRODUCT_NAME" />.
 
@@ -2266,6 +2329,7 @@ Esta política es una medida temporal para controlar la función y se eliminará
 <translation id="2479760962196319822">Esta política controla si los usuarios de <ph name="PRODUCT_OS_NAME" /> pueden almacenar datos de forma local o no.
       Si se asigna el valor False a esta política, se bloqueará el almacenamiento local en <ph name="PRODUCT_OS_NAME" /> y los usuarios no podrán almacenar ningún dato de forma local ni acceder a ningún directorio local.
       Si se asigna el valor True a esta política o no se define, se permitirá el almacenamiento local en <ph name="PRODUCT_OS_NAME" /> y no habrá restricciones sobre dónde pueden almacenar datos los usuarios ni a qué directorios pueden acceder.</translation>
+<translation id="2481931731272002134">Permitir funciones de IA generativa en Autocompletar y mejorar los modelos de IA.</translation>
 <translation id="2482676533225429905">Mensajería nativa</translation>
 <translation id="2483146640187052324">Predecir las acciones de red en cualquier conexión de red</translation>
 <translation id="2487495476672607707">La función Sincronización de archivos de <ph name="PRODUCT_OS_NAME" /> permite que los archivos de <ph name="GOOGLE_DRIVE_NAME" /> incluidos en la sección "Mi unidad" del usuario estén disponibles automáticamente sin conexión (si hay espacio) en dispositivos <ph name="CHROMEBOOK_PLUS_NAME" />.
@@ -3722,17 +3786,6 @@ Si se le asigna el valor False o no se define, las teclas del teclado vuelven a 
 
 Si se asigna el valor true a esta política o no se establece, el usuario tendrá acceso root a los contenedores de Crostini.
 Si se le asigna el valor false, el usuario no tendrá acceso root a los contenedores de Crostini nuevos ni a los ya existentes.</translation>
-<translation id="3370759229531293665">Te permite definir una lista con patrones de URL de sitios donde se especifique qué sitios no pueden ejecutar JavaScript con un compilador en tiempo de ejecución (JIT) habilitado.
-
-          Si se inhabilita el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web de forma más lenta y que también se inhabiliten algunas partes de JavaScript, como WebAssembly. Al inhabilitarse el uso de JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> renderice contenido web con una configuración más segura.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
-
-          Las excepciones de la política de uso de JavaScript con JIT solo se implementarán obligatoriamente en una granularidad de sitios (eTLD+1). Por ejemplo, si se establece esta política únicamente para subdominio.sitio.com, no se aplicará correctamente a sitio.com ni a subdominio.sitio.com, ya que ambas URLs pertenecen al mismo nivel eTLD+1 (sitio.com), para el que no se ha definido ninguna política. En ese caso, deberás establecer la política para sitio.com si quieres que se aplique correctamente tanto a sitio.com como a subdominio.sitio.com.
-
-          Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se inhabilitará el uso de JavaScript con JIT en sitio-uno.com, pero a sitio-dos.com se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará de forma predeterminada el uso de JavaScript con JIT.
-
-          Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará el uso de JavaScript con JIT en ese sitio.</translation>
 <translation id="3373381043600809954">Habilitar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Configura el directorio que <ph name="PRODUCT_NAME" /> utilizará para almacenar los datos de usuario.
 
@@ -4236,6 +4289,7 @@ Si no se definen <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" 
 La transferencia de datos con Takeout también debe habilitarse para que la aplicación Transferencia de contenido funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (el campo de una línea está obsoleto y desaparecerá en el futuro; a partir de ahora, debes utilizar el campo de varias líneas que aparece más abajo).</translation>
+<translation id="370314752761795411">Iniciar <ph name="PRODUCT_NAME" /> con <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712861436661566358">Implementar obligatoriamente la separación de perfiles</translation>
 <translation id="3719826155360621982">Página principal</translation>
@@ -4721,6 +4775,7 @@ Consideraciones:
 <translation id="4027608872760987929">Habilitar proveedor de búsquedas predeterminadas</translation>
 <translation id="4030152268425532846">Inhabilitar la anulación de inicio de sesión automático</translation>
 <translation id="4032740546145417900">No permitir Escribir por voz.</translation>
+<translation id="4035252407064087455">Permitir funciones de IA generativa en Autocompletar sin mejorar los modelos de IA.</translation>
 <translation id="4043796890723386527">Evita que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="4047633048700722778">Si se define la política, controla el filtro de URL SafeSites, que usa la API Google Safe Search para clasificar las URL como pornográficas o no.
 
@@ -5148,6 +5203,7 @@ Si se define esta política, los usuarios no podrán modificarla en <ph name="PR
 Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que los usuarios se conecten a los servicios Bluetooth especificados. Si la lista está vacía, los usuarios podrán usar cualquier servicio. Los UUIDs reservados por Bluetooth SIG se pueden representar como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o como <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Los UUIDs personalizados se pueden representar como <ph name="BLUETOOTH_CUSTOM_UUID" />. Los UUIDs no distinguen entre mayúsculas y minúsculas. Si no se asigna ningún valor a esta política, los usuarios podrán conectarse a cualquier servicio Bluetooth.</translation>
 <translation id="4332177773549877617">Registrar eventos de descargas de la aplicación para Android</translation>
 <translation id="4333940819293342439">Intervalo de recogida de telemetría sobre el uso de la aplicación en milisegundos.</translation>
+<translation id="4336096948197154521">Abrir <ph name="PRODUCT_NAME" /> cuando el usuario inicie sesión en <ph name="MS_WIN_NAME" /></translation>
 <translation id="4340121900958123942">Define el nivel de disponibilidad del sistema de geolocalización de <ph name="PRODUCT_OS_NAME" />.
 
 Esta capa de control adicional está en un nivel inferior a la capa de permisos de aplicaciones y sitios web. Por ejemplo, si a esta política se le asigna el valor <ph name="GLS_BLOCKED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, ninguna aplicación ni ningún sitio web podrán determinar la ubicación, independientemente de sus respectivos permisos de ubicación. Sin embargo, si se le asigna el valor <ph name="GLS_ALLOWED" />, las aplicaciones y los sitios web podrán obtener la ubicación de forma individual si tienen permiso.
@@ -5823,16 +5879,6 @@ Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /
 Los valores válidos están comprendidos entre 1 y 9999 segundos. Si no se define esta política, <ph name="PRODUCT_OS_NAME" /> usará el valor predeterminado de 60 segundos.
 
 Esta política no tendrá ningún efecto si se asigna el valor false a la política <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" />.</translation>
-<translation id="4723615546736863060">Te permite definir una lista de patrones de URL donde se especifican los sitios en los que se han habilitado las optimizaciones avanzadas de JavaScript.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
-
-Las excepciones de la política de optimización de JavaScript solo se implementarán obligatoriamente a nivel de sitio (eTLD+1). Una política que se define únicamente para subdominio.sitio.com, no se aplicará correctamente a sitio.com ni a subdominio.sitio.com, ya que ambas URLs pertenecen al mismo eTLD+1 (sitio.com), para el que no se ha definido ninguna política. En ese caso, deberás definir la política para sitio.com si quieres que se aplique correctamente tanto a sitio.com como a subdominio.sitio.com.
-
-Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se habilitarán las optimizaciones de JavaScript en sitio-uno.com, pero a sitio-dos.com se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido, o se habilitarán de forma predeterminada las optimizaciones de JavaScript. Las entradas de la lista de bloqueadas tienen más prioridad que las de la lista de permitidas, que a su vez tienen más prioridad que el valor predeterminado configurado.
-
-Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido, se habilitará la optimización de JavaScript.</translation>
 <translation id="4723829699367336876">Habilita que se pueda pasar a través de un cortafuegos desde un host de acceso remoto.</translation>
 <translation id="4725528134735324213">Habilitar Android Backup Service</translation>
 <translation id="4725691087141147920">Mostrar Sync Consent durante el inicio de sesión</translation>
@@ -5925,6 +5971,7 @@ Si se inhabilita esta política, la promoción de la extensión del proveedor de
       <ph name="PAGE_SIZE_NAME" /> debe contener uno de los formatos incluidos en la lista, o "personalizado" si el tamaño del papel necesario no está en la lista. Si se proporciona un valor "personalizado", se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Describe el ancho y altura deseados en micrómetros. De lo contrario, no se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Se ignorará la política que infrinja estas reglas.
 
       Si el tamaño de la página no está disponible en la impresora que elija el usuario, se ignorará esta política.</translation>
+<translation id="4787894429283141328">No permitir funciones de IA generativa en Autocompletar.</translation>
 <translation id="4789450349513792856">Bloquear ventanas emergentes en estos sitios</translation>
 <translation id="4790391579868456557">Usa cookies esenciales y no esenciales en la búsqueda.</translation>
 <translation id="4790588245699320140">Permitir que el Asistente de Google acceda al contexto de la pantalla</translation>
@@ -6505,6 +6552,7 @@ Esta política es una tregua temporal para dar tiempo a la adaptación del conte
       </translation>
 <translation id="5118635822783657217">Inhabilitar las actualizaciones de componentes no esenciales</translation>
 <translation id="5120168808610189805">Habilitar la importación de la página principal en la primera ejecución</translation>
+<translation id="5124321040285474825">Configuración de las funciones de IA generativa en Autocompletar</translation>
 <translation id="5124368997194894978">Habilitar el inicio con CA (corriente alterna)</translation>
 <translation id="5124652340668722849">Configura una lista de dominios de aprovisionamiento (PvDs) que <ph name="PRODUCT_NAME" /> usará para obtener configuraciones de proxy de forma dinámica.
 
@@ -8074,6 +8122,43 @@ Si no se define esta política, la congelación de pestañas en segundo plano es
 <translation id="608788685013546076">Establece el umbral de batería de Peak Shift en forma de porcentaje</translation>
 <translation id="6089679180657323464">Controla los ajustes del controlador de diagnóstico y telemetría wilco.</translation>
 <translation id="6091233616732024397">Forzar a los usuarios a iniciar sesión para usar el navegador</translation>
+<translation id="6091279561320899147">Te permite definir una lista de patrones de URL donde se especifican los sitios en los que se han inhabilitado las optimizaciones avanzadas de JavaScript.
+
+Si se inhabilitan las optimizaciones de JavaScript, es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web de forma más lenta.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
+Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+Se pueden definir excepciones de políticas para subdominios específicos, así como para sitios enteros.
+Por ejemplo, una política definida únicamente para subdominio.sitio.com se aplica a
+subdominio.sitio.com sin afectar a sitio.com. En algunos casos en los que un
+subdominio no se puede aislar de su sitio superior, puede heredar la política
+definida en sitio.com. Es posible que las excepciones no se apliquen a los marcos cargados en una
+pestaña existente hasta que el sitio se abra en una pestaña nueva. En los
+dispositivos <ph name="ANDROID_NAME" /> con poca memoria, es posible que
+no se apliquen las excepciones específicas de sitios y que, en su lugar, los sitios usen la política de
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />,
+si se ha definido, o la configuración de JavaScript con JIT predeterminada del perfil.
+
+Para aplicar excepciones, <ph name="PRODUCT_NAME" />
+puede asignar sitios o subdominios cuya configuración difiera de la predeterminada
+a procesos específicos. Esto puede aumentar el uso de memoria, especialmente en
+<ph name="ANDROID_NAME" /> o cuando un patrón de comodín coincide con muchos
+subdominios, ya que cada origen coincidente se puede aislar por separado. Los subdominios aislados
+tampoco pueden usar document.domain para acceder a su sitio superior.
+
+Nota: En las versiones 138 y anteriores, las excepciones de la política solo se implementaban obligatoriamente en
+una granularidad de sitios (eTLD+1). Una política definida únicamente para subdominio.sitio.com no
+se aplicaba, ni siquiera a subdominio.sitio.com. Tenía que definirse
+en sitio.com para que se aplicase tanto a sitio.com como a subdominio.sitio.com.
+
+Esta política se aplica marco a marco y no basándose únicamente en la URL de
+origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco
+que contiene sitio-dos.com, sitio-uno.com inhabilitará las
+optimizaciones de JavaScript, pero sitio-dos.com usará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido esta política, se habilitarán las
+optimizaciones de JavaScript de forma predeterminada. Las entradas de la lista de bloqueadas tienen más prioridad que las de la lista de permitidas, que a su vez tienen más prioridad que el valor predeterminado configurado.
+
+Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido, se habilitará la optimización de JavaScript.</translation>
 <translation id="6092073071805297119">Permitir el uso de filtros de rendimiento de accesibilidad.</translation>
 <translation id="6093156968240188330">Permite que los usuarios remotos interactúen con ventanas con permisos de administrador en sesiones de asistencia remota</translation>
 <translation id="6093551397728373988">Forzar que se habiliten todos los métodos de introducción de texto permitidos en una sesión de usuario</translation>
@@ -8837,6 +8922,27 @@ El salvapantallas del usuario muestra las imágenes a las que se hace referencia
 El tiempo de espera de inactividad para que se inicie el salvapantallas y el intervalo durante el que se muestra una imagen pueden modificarse con las políticas <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> y <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivamente. Si alguna de estas políticas no se ha definido, se utilizarán los valores predeterminados.</translation>
 <translation id="651248769129998376">No crear ni subir solicitudes de instalación de extensiones a la consola de administración</translation>
 <translation id="6513453889192806240">Latencia de HTTPS</translation>
+<translation id="6514006253468048943">Estas funciones de <ph name="PRODUCT_NAME" /> utilizan modelos de IA generativa para ayudar a los usuarios a rellenar formularios en la Web. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recoger datos como la estructura de los formularios con los que interactúa un usuario y, en el caso de Buscar y rellenar con Gemini, las consultas de texto libre que introduce un usuario para buscar en las aplicaciones de Gemini conectadas, y enviar esos datos a un servidor que pertenece a Google y ejecuta un modelo de IA generativa.
+
+Si se le asigna el valor 0 (Permitir funciones de IA generativa en Autocompletar y mejorar los modelos de IA) a la política, se permite usar las funciones y que Google utilice datos pertinentes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, fuentes y comentarios escritos. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se le asigna el valor 1 (Permitir funciones de IA generativa en Autocompletar sin mejorar los modelos de IA) a la política, se permite usar las funciones, pero no se permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, fuentes y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se le asigna el valor 2 (No permitir funciones de IA generativa en Autocompletar) a la política, no se permitirán las funciones.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Las funciones de IA generativa en Autocompletar incluyen:
+
+- Comprensión de formularios más inteligente: usa la IA para identificar y clasificar los campos de un formulario, de modo que se puedan rellenar más.
+
+- Buscar y rellenar con Gemini: busca información en las aplicaciones que un usuario ha conectado a Gemini y la ofrece para rellenar, ya sea como sugerencias proactivas en un formulario o en respuesta a una consulta que escriba el usuario.
+
+Esta política sustituye a la política <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />, que se seguirá aplicando si esta no se define. La función "Buscar y rellenar con Gemini" también requiere que la política <ph name="GEMINI_SETTINGS_POLICY_NAME" /> no esté inhabilitada.
+
+Esta política no controla las funciones de Autocompletar que no usan IA generativa.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6515357889978918016">Imagen de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6515520014183265350">Especifica una lista de orígenes que se ejecutan en un proceso dedicado.
 
@@ -9638,18 +9744,6 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 Si se le asigna el valor 0 (<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" />) a esta política, el navegador no podrá solicitar el certificado de cliente. Si el certificado de cliente gestionado de un perfil ya se había proporcionado, ya que esta política se había habilitado antes, no se eliminará el certificado, pero tampoco estará disponible para conexiones mTLS ni se renovará cuando caduque.</translation>
 <translation id="7013484314513229844">Habilitar el inicio con CA</translation>
 <translation id="7014427417852575165">Los usuarios registrados en el Programa de Protección Avanzada recibirán protección adicional</translation>
-<translation id="7015750050379345684">Te permite definir una lista de patrones de URL donde se especifican los sitios en los que se han inhabilitado las optimizaciones avanzadas de JavaScript.
-
-Si se inhabilitan las optimizaciones de JavaScript, es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web de forma más lenta.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.
-Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
-
-Las excepciones de la política de optimización de JavaScript solo se implementarán obligatoriamente a nivel de sitio (eTLD+1). Una política que se define únicamente para subdominio.sitio.com, no se aplicará correctamente a sitio.com ni a subdominio.sitio.com, ya que ambas URLs pertenecen al mismo eTLD+1 (sitio.com), para el que no se ha definido ninguna política. En ese caso, deberás definir la política para sitio.com si quieres que se aplique correctamente tanto a sitio.com como a subdominio.sitio.com.
-
-Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se inhabilitarán las optimizaciones de JavaScript en sitio-uno.com, pero a sitio-dos.com se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido, o se habilitarán de forma predeterminada las optimizaciones de JavaScript. Las entradas de la lista de bloqueadas tienen más prioridad que las de la lista de permitidas, que a su vez tienen más prioridad que el valor predeterminado configurado.
-
-Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido, se habilitará la optimización de JavaScript.</translation>
 <translation id="7016587686120059767">Inhabilitar el modo Invitado</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7021590945154530517">Habilitar la supervisión del estado de los dispositivos</translation>
@@ -10322,15 +10416,6 @@ Los valores reales de los datos sensibles (como las cookies o los valores de ent
       Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla la información del TPM en M95 y versiones anteriores.</translation>
 <translation id="739556497251174388">Permitir reutilizar las credenciales de inicio de sesión de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red</translation>
 <translation id="7395790871181951311">Bloquear la conexión de tarjetas inteligentes con aplicaciones aisladas</translation>
-<translation id="7396487166653169044">Te permite definir una lista con patrones de URL de sitios donde se especifique qué sitios pueden ejecutar JavaScript con un compilador en tiempo de ejecución (JIT) habilitado.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
-
-          Las excepciones de la política de uso de JavaScript con JIT solo se implementarán obligatoriamente en una granularidad de sitios (eTLD+1). Por ejemplo, si se establece esta política únicamente para subdominio.sitio.com, no se aplicará correctamente a sitio.com ni a subdominio.sitio.com, ya que ambas URLs pertenecen al mismo nivel eTLD+1 (sitio.com), para el que no se ha definido ninguna política. En ese caso, deberás establecer la política para sitio.com si quieres que se aplique correctamente tanto a sitio.com como a subdominio.sitio.com.
-
-          Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se habilitará el uso de JavaScript con JIT en sitio-uno.com, pero a sitio-dos.com se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará de forma predeterminada el uso de JavaScript con JIT.
-
-          Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se ha definido. Si no se ha definido esta política, se habilitará el uso de JavaScript con JIT en ese sitio.</translation>
 <translation id="7400208209734208176">Abrir enlaces en el navegador Chrome de forma predeterminada</translation>
 <translation id="7402257017733669351">Impedir que el proceso del navegador cree código dinámico</translation>
 <translation id="7406039009275722824">Si se inhabilita <ph name="CHROME_SYNC_NAME" />, las funciones de copia de seguridad y restauración de Android no funcionarán correctamente.</translation>
@@ -10737,6 +10822,19 @@ Si se inhabilita esta política, el visor de PDFs usará el renderizador de AGG 
 
 Si no se establece esta política, el navegador seleccionará el renderizador de PDFs.</translation>
 <translation id="7704244074621846004">Habilitar la duración ampliada de los SharedWorkers</translation>
+<translation id="7706986409083477132">Te permite definir una lista con patrones de URL de sitios donde se especifique qué sitios pueden ejecutar JavaScript con un compilador justo a tiempo (JIT) habilitado.
+
+          Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+          Se pueden definir excepciones de políticas para subdominios específicos, así como para sitios enteros. Por ejemplo, una política definida únicamente para subdominio.sitio.com se aplica a subdominio.sitio.com sin afectar a sitio.com. En algunos casos en los que un subdominio no se puede aislar de su sitio superior, puede heredar la política definida en sitio.com. Es posible que las excepciones no se apliquen a los marcos cargados en una pestaña existente hasta que el sitio se abra en una pestaña nueva. En los dispositivos <ph name="ANDROID_NAME" /> con poca memoria, es posible que no se apliquen las excepciones específicas de sitios y que, en su lugar, los sitios usen la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> si se ha definido, o la configuración de JavaScript con JIT predeterminada del perfil.
+
+          Para aplicar excepciones, <ph name="PRODUCT_NAME" /> puede asignar sitios o subdominios cuya configuración difiera de la predeterminada a procesos específicos. Esto puede aumentar el uso de memoria, especialmente en <ph name="ANDROID_NAME" /> o cuando un patrón de comodín coincide con muchos subdominios, ya que cada origen coincidente se puede aislar por separado. Los subdominios aislados tampoco pueden usar document.domain para acceder a su sitio superior.
+
+          Nota: En las versiones 155 y anteriores, las excepciones de la política solo se aplicaban obligatoriamente a nivel de sitio (eTLD+1). Una política definida únicamente para subdominio.sitio.com no se aplicaba, ni siquiera a subdominio.sitio.com. Tenía que definirse en sitio.com para que se aplicase tanto a sitio.com como a subdominio.sitio.com.
+
+          Esta política se aplica marco a marco y no basándose únicamente en la URL de origen de nivel superior. Por ejemplo, si se ha incluido sitio-uno.com en la política <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, pero sitio-uno.com carga un marco que contiene sitio-dos.com, se habilitará el uso de JavaScript con JIT en sitio-uno.com, pero sitio-dos.com usará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido, se habilitará el uso de JavaScript con JIT de forma predeterminada. Las entradas de la lista de bloqueadas tienen más prioridad que las de la lista de permitidas, que a su vez tienen más prioridad que el valor predeterminado configurado.
+
+          Si no se establece esta política para un sitio, se le aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> si se ha definido. Si no se ha definido esta política, se habilitará el uso de JavaScript con JIT en ese sitio.</translation>
 <translation id="7707869387893611318">Habilita la función de sonidos de carga.
 
           Esta función se encarga de reproducir los sonidos de carga.
