@@ -4182,6 +4182,7 @@
       // family style matching, falling back to AppKit/CoreText weights if the
       // OS/2 table is unavailable. See https://crbug.com/543243014.
       name: "MacFontWeightFromOS2",
+      status: "stable",
     },
     {
       name: "MachineLearningNeuralNetwork",

@@ -371,7 +371,6 @@ TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
   // (`OS/2.usWeightClass` 200, `kCTFontWeightTrait` -0.8 -> 100). With
   // `MacFontWeightFromOS2` enabled, both paths read `usWeightClass` from the
   // `OS/2` table and match the expected face.
-  ScopedMacFontWeightFromOS2ForTest scoped_os2_weight(true);
   struct TestCase {
     int requested_weight;
     const char* expected_ps_name;
@@ -409,7 +408,6 @@ TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
 }
 
 TEST(FontMatcherMacTest, HiraginoSansWeightMatching) {
-  ScopedMacFontWeightFromOS2ForTest scoped_os2_weight(true);
   struct TestCase {
     int requested_weight;
     const char* expected_ps_name;
@@ -441,6 +439,133 @@ TEST(FontMatcherMacTest, HiraginoSansWeightMatching) {
                 kCFCompareEqualTo)
           << "weight=" << c.requested_weight
           << " ct_migration=" << ct_migration;
+    }
+  }
+}
+
+// Verify that font weight matching follows the CSS Fonts 4 section 5.2
+// directional search rules. Helvetica on macOS has Light (300), Regular (400),
+// and Bold (700) faces. Specifically:
+// - Weight 500 should match Regular (400), not Bold (700): for desired in
+//   [400, 500], lighter weights are checked before heavier weights.
+// - Weight 600 should match Bold (700), not Regular (400): for desired > 500,
+//   heavier weights are checked first.
+// - Weights 100-300 should match Light (300): for desired < 400, lighter
+//   weights are checked first, then heavier.
+TEST(FontMatcherMacTest, FontWeightSearchDirection) {
+  struct WeightExpectation {
+    int weight;
+    const char* expected_ps_name;
+  };
+  constexpr WeightExpectation kExpectations[] = {
+      {100, "Helvetica-Light"}, {200, "Helvetica-Light"},
+      {300, "Helvetica-Light"}, {400, "Helvetica"},
+      {500, "Helvetica"},       {600, "Helvetica-Bold"},
+      {700, "Helvetica-Bold"},  {800, "Helvetica-Bold"},
+      {900, "Helvetica-Bold"},
+  };
+
+  for (bool ct_migration : {false, true}) {
+    ScopedFontFamilyStyleMatchingCTMigrationForTest scoped_feature(
+        ct_migration);
+    for (const auto& [weight, expected_ps] : kExpectations) {
+      ScopedCFTypeRef<CTFontRef> font =
+          MatchFontFamily(AtomicString("Helvetica"), FontSelectionValue(weight),
+                          kNormalSlopeValue, kNormalWidthValue, 11);
+      ASSERT_TRUE(font) << "Failed to match Helvetica at weight " << weight;
+
+      ScopedCFTypeRef<CFStringRef> actual_ps(
+          CTFontCopyPostScriptName(font.get()));
+      ScopedCFTypeRef<CFStringRef> expected_cf(CFStringCreateWithCString(
+          nullptr, expected_ps, kCFStringEncodingUTF8));
+      EXPECT_EQ(CFStringCompare(actual_ps.get(), expected_cf.get(),
+                                kCFCompareCaseInsensitive),
+                kCFCompareEqualTo)
+          << "At weight " << weight << " (ct_migration=" << ct_migration
+          << "): expected " << expected_ps << " but got "
+          << base::apple::CFToNSPtrCast(actual_ps.get()).UTF8String;
+    }
+  }
+}
+
+// Verify sub-400 directional search with Helvetica Neue, which has UltraLight
+// (100), Thin (200), Light (300), and Regular (400). Per CSS Fonts 4 §5.2,
+// when desired weight < 400, weights <= desired are searched in descending
+// order first. For example, weight 350 should match Light (300), not Regular
+// (400), and weight 250 should match Thin (200), not Light (300).
+TEST(FontMatcherMacTest, FontWeightSearchDirectionSub400) {
+  struct WeightExpectation {
+    int weight;
+    const char* expected_ps_name;
+  };
+  constexpr WeightExpectation kExpectations[] = {
+      {100, "HelveticaNeue-UltraLight"}, {150, "HelveticaNeue-UltraLight"},
+      {190, "HelveticaNeue-UltraLight"}, {200, "HelveticaNeue-Thin"},
+      {250, "HelveticaNeue-Thin"},       {290, "HelveticaNeue-Thin"},
+      {300, "HelveticaNeue-Light"},      {350, "HelveticaNeue-Light"},
+      {390, "HelveticaNeue-Light"},      {400, "HelveticaNeue"},
+  };
+
+  for (bool ct_migration : {false, true}) {
+    ScopedFontFamilyStyleMatchingCTMigrationForTest scoped_feature(
+        ct_migration);
+    for (const auto& [weight, expected_ps] : kExpectations) {
+      ScopedCFTypeRef<CTFontRef> font = MatchFontFamily(
+          AtomicString("Helvetica Neue"), FontSelectionValue(weight),
+          kNormalSlopeValue, kNormalWidthValue, 11);
+      ASSERT_TRUE(font) << "Failed to match Helvetica Neue at weight "
+                        << weight;
+
+      ScopedCFTypeRef<CFStringRef> actual_ps(
+          CTFontCopyPostScriptName(font.get()));
+      ScopedCFTypeRef<CFStringRef> expected_cf(CFStringCreateWithCString(
+          nullptr, expected_ps, kCFStringEncodingUTF8));
+      EXPECT_EQ(CFStringCompare(actual_ps.get(), expected_cf.get(),
+                                kCFCompareCaseInsensitive),
+                kCFCompareEqualTo)
+          << "At weight " << weight << " (ct_migration=" << ct_migration
+          << "): expected " << expected_ps << " but got "
+          << base::apple::CFToNSPtrCast(actual_ps.get()).UTF8String;
+    }
+  }
+}
+
+// Verify that CJK system fonts with multiple sub-400 weights resolve to the
+// Light (300) face at font-weight 360. Per CSS Fonts 4 §5.2, desired weight
+// 360 (< 400) searches weights <= 360 in descending order first, selecting
+// HiraginoSans-W3 (OS/2 weight 300), PingFangTC-Light (300), and
+// PingFangSC-Light (300). See https://crbug.com/516316384 and
+// https://crbug.com/543243014.
+TEST(FontMatcherMacTest, ConsistentLightMatchAcrossCJKFamilies) {
+  struct FamilyExpectation {
+    const char* family;
+    const char* expected_ps_name;
+  };
+  constexpr FamilyExpectation kFamilies[] = {
+      {"Hiragino Sans", "HiraginoSans-W3"},
+      {"PingFang TC", "PingFangTC-Light"},
+      {"PingFang SC", "PingFangSC-Light"},
+  };
+
+  for (bool ct_migration : {false, true}) {
+    ScopedFontFamilyStyleMatchingCTMigrationForTest scoped_feature(
+        ct_migration);
+    for (const auto& [family, expected_ps] : kFamilies) {
+      ScopedCFTypeRef<CTFontRef> font =
+          MatchFontFamily(AtomicString(family), FontSelectionValue(360),
+                          kNormalSlopeValue, kNormalWidthValue, 11);
+      ASSERT_TRUE(font) << "Failed to match " << family << " at weight 360";
+
+      ScopedCFTypeRef<CFStringRef> actual_ps(
+          CTFontCopyPostScriptName(font.get()));
+      ScopedCFTypeRef<CFStringRef> expected_cf(CFStringCreateWithCString(
+          nullptr, expected_ps, kCFStringEncodingUTF8));
+      EXPECT_EQ(CFStringCompare(actual_ps.get(), expected_cf.get(),
+                                kCFCompareCaseInsensitive),
+                kCFCompareEqualTo)
+          << "For " << family << " at weight 360 (ct_migration=" << ct_migration
+          << "): expected " << expected_ps << " but got "
+          << base::apple::CFToNSPtrCast(actual_ps.get()).UTF8String;
     }
   }
 }
