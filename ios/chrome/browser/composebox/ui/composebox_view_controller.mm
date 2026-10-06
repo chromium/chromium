@@ -31,6 +31,7 @@ const CGFloat kInputPlateIpadWindowControlsOffset = 70.0f;
 /// The trailing and top padding for the input plate container.
 const CGFloat kInputPlateTrailingPadding = 8.0f;
 const CGFloat kInputPlateTopPadding = 4.0f;
+const CGFloat kMinInputPlateTopPadding = 8.0f;
 /// The size for the close button.
 const CGFloat kCloseButtonSize = 30.0f;
 /// The ammount of padding to add vertically to the incognito view content.
@@ -454,6 +455,9 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                                          ? 0
                                          : kCloseButtonTopMargin;
 
+      CGFloat topSafeArea = self.view.safeAreaInsets.top;
+      CGFloat topPadding =
+          MAX(topSafeArea + kInputPlateTopPadding, kMinInputPlateTopPadding);
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         _constraintToCloseButton,
         _constraintToLeadingEdge,
@@ -467,7 +471,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
             constraintEqualToAnchor:safeAreaGuide.trailingAnchor],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
-                           constant:kInputPlateTopPadding],
+                           constant:topPadding],
         [_inputViewController.view.bottomAnchor
             constraintLessThanOrEqualToAnchor:self.view.keyboardLayoutGuide
                                                   .topAnchor
