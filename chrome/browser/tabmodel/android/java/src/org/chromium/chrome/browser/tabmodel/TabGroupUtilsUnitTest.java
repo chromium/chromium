@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -114,12 +115,38 @@ public class TabGroupUtilsUnitTest {
     public void testGetSelectedTabInGroupForTab() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabs, TAB_GROUP_ID1);
-        doReturn(mTab1).when(mTabModel).getRepresentativeTabAt(POSITION1);
-        doReturn(POSITION1).when(mTabModel).representativeIndexOf(mTab1);
-        doReturn(POSITION1).when(mTabModel).representativeIndexOf(mTab2);
 
         assertThat(TabGroupUtils.getSelectedTabInGroupForTab(mTabModel, mTab1), equalTo(mTab1));
         assertThat(TabGroupUtils.getSelectedTabInGroupForTab(mTabModel, mTab2), equalTo(mTab1));
+        assertThat(TabGroupUtils.getSelectedTabInGroupForTab(mTabModel, mTab3), equalTo(mTab3));
+    }
+
+    @Test
+    public void testGetSelectedOrFirstTabInGroup() {
+        createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID1);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+
+        assertNull(TabGroupUtils.getSelectedOrFirstTabInGroup(mTabModel, /* tabGroupId= */ null));
+        assertNull(TabGroupUtils.getSelectedOrFirstTabInGroup(mTabModel, TAB_GROUP_ID2));
+
+        // When current tab supplier is unset, fallback to first tab.
+        assertThat(
+                TabGroupUtils.getSelectedOrFirstTabInGroup(mTabModel, TAB_GROUP_ID1),
+                equalTo(mTab1));
+
+        // When current tab is in the group, return it.
+        when(mTabModel.getCurrentTabSupplier())
+                .thenReturn(ObservableSuppliers.createNullable(mTab2));
+        assertThat(
+                TabGroupUtils.getSelectedOrFirstTabInGroup(mTabModel, TAB_GROUP_ID1),
+                equalTo(mTab2));
+
+        // When current tab is not in the group, fallback to first tab.
+        when(mTabModel.getCurrentTabSupplier())
+                .thenReturn(ObservableSuppliers.createNullable(mTab3));
+        assertThat(
+                TabGroupUtils.getSelectedOrFirstTabInGroup(mTabModel, TAB_GROUP_ID1),
+                equalTo(mTab1));
     }
 
     @Test

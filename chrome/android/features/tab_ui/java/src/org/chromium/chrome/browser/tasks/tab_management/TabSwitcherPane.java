@@ -383,17 +383,12 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             return;
         }
 
-        TabModel tabModel = mTabModelSupplier.get();
         @Nullable Pair<Integer, Integer> range = coordinator.getVisibleRange();
         if (range == null) return;
         // Iterate in reverse because when multiple viable groups are on screen, we want to trigger
         // on the most recently added, which should be ordered later.
         for (int viewIndex = range.second; viewIndex >= range.first; --viewIndex) {
-            int filterIndex = coordinator.countOfTabCardsOrInvalid(viewIndex);
-            @Nullable Tab tab = tabModel.getRepresentativeTabAt(filterIndex);
-            if (tab == null || !tabModel.isTabInTabGroup(tab)) continue;
-
-            @Nullable Token tabGroupId = tab.getTabGroupId();
+            Token tabGroupId = coordinator.getTabGroupIdForIndex(viewIndex);
             if (!TabUiUtils.shouldShowIphForSync(mTabGroupSyncService, tabGroupId)) continue;
 
             @Nullable View anchorView = coordinator.getViewByIndex(viewIndex);

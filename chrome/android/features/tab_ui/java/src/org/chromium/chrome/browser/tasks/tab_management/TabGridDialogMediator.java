@@ -713,16 +713,7 @@ public class TabGridDialogMediator
      * show.
      */
     boolean onReset(@Nullable List<Tab> tabs) {
-        TabModel tabModel = mCurrentTabModelSupplier.get();
-        assumeNonNull(tabModel);
-        if (tabs == null || tabs.isEmpty()) {
-            mCurrentTabGroupId = null;
-        } else {
-            Tab currentTab =
-                    tabModel.getRepresentativeTabAt(tabModel.representativeIndexOf(tabs.get(0)));
-            assumeNonNull(currentTab);
-            mCurrentTabGroupId = currentTab.getTabGroupId();
-        }
+        mCurrentTabGroupId = tabs == null || tabs.isEmpty() ? null : tabs.get(0).getTabGroupId();
 
         updateTabGroupId();
         if (mCurrentTabGroupId != null) {

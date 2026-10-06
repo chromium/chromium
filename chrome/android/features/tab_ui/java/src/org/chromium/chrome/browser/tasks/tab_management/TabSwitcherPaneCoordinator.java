@@ -1139,9 +1139,15 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         updatePinnedTabsStripOnScroll(/* shouldShowSearchBox= */ true, /* forced= */ false);
     }
 
-    /** Returns the filter index of a tab from its view index. */
-    public int countOfTabCardsOrInvalid(int viewIndex) {
-        return mTabListCoordinator.indexOfTabCardsOrInvalid(viewIndex);
+    /**
+     * Returns the tab group ID of the tab group card at the given view index, or null if the card
+     * at that index is not a tab group.
+     *
+     * @param viewIndex The view index in the recycler view.
+     * @return The {@link Token} tab group ID or null.
+     */
+    @Nullable Token getTabGroupIdForIndex(int viewIndex) {
+        return mTabListCoordinator.getTabGroupIdForIndex(viewIndex);
     }
 
     private int getIndexFromTabId(@TabId int tabId) {

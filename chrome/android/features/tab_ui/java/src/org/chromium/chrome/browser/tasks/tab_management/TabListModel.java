@@ -245,13 +245,17 @@ public class TabListModel extends ModelList {
         return lastTabIndex + 1;
     }
 
-    /** Returns the filter index of a tab from its view index. */
-    public int indexOfTabCardsOrInvalid(int index) {
-        if (index < 0 || index >= size() || !TabProperties.isTabOrTabGroup(get(index).model)) {
-            return TabModel.INVALID_TAB_INDEX;
-        }
-
-        return getTabCardCountsBefore(index);
+    /**
+     * Returns the tab group ID of the tab group card at the given index, or null if the index is
+     * out of bounds or the card is not a tab group header.
+     *
+     * @param index The index within the model list.
+     * @return The {@link Token} tab group ID or null.
+     */
+    public @Nullable Token getTabGroupIdForIndex(int index) {
+        if (!isValidIndex(index)) return null;
+        PropertyModel model = get(index).model;
+        return TabProperties.isTabGroupHeader(model) ? model.get(TAB_GROUP_HEADER_ID) : null;
     }
 
     /**

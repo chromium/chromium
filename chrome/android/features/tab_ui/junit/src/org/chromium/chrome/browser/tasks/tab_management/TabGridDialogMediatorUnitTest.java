@@ -284,18 +284,12 @@ public class TabGridDialogMediatorUnitTest {
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
         List<Tab> tabs1 = new ArrayList<>(Arrays.asList(mTab1));
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
-        List<Tab> tabList = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        when(mTabModel.getRepresentativeTabList()).thenReturn(tabList);
 
         mCurrentTabModelSupplier.set(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.representativeIndexOf(mTab1)).thenReturn(POSITION1);
-        when(mTabModel.representativeIndexOf(mTab2)).thenReturn(POSITION2);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
-        when(mTabModel.getRepresentativeTabAt(POSITION1)).thenReturn(mTab1);
-        when(mTabModel.getRepresentativeTabAt(POSITION2)).thenReturn(mTab2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs2);
         when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
@@ -1689,10 +1683,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabGroup, TAB_GROUP_ID);
 
-        int groupIndex = 3;
         // Mock that mTab2 is the current tab for the dialog.
-        when(mTabModel.representativeIndexOf(mTab1)).thenReturn(groupIndex);
-        when(mTabModel.getRepresentativeTabAt(groupIndex)).thenReturn(mTab2);
         mCurrentTabSupplier.set(mTab2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroup);
 

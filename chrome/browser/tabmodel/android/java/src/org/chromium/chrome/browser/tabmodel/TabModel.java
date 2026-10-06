@@ -396,20 +396,45 @@ public interface TabModel extends TabList {
     /**
      * Returns a list of {@link Tab} objects with a tab group being represented by one tab from its
      * tab group.
+     *
+     * @deprecated Do not use representative tabs to model tab groups. Iterate over {@link TabModel}
+     *     directly and group tabs by {@link Tab#getTabGroupId()}, or query {@link
+     *     #getAllTabGroupIds()} and {@link #getTabsInGroup(Token)}.
      */
+    // TODO(crbug.com/517544602): Delete when removing the flag.
+    @Deprecated
     List<Tab> getRepresentativeTabList();
 
-    /** Returns the number of individual tabs plus tab groups in the filter. */
+    /**
+     * Returns the number of individual tabs plus tab groups in the filter.
+     *
+     * @deprecated Do not rely on collapsed representative counts in {@link TabModel}. Query {@link
+     *     #getCount()} or {@link #getTabGroupCount()} directly.
+     */
+    // TODO(crbug.com/517544602): Delete when removing the flag.
+    @Deprecated
     int getIndividualTabAndGroupCount();
 
     /**
      * Returns the representative tab for an index or null if one does not exist. For an individual
      * tab this is the tab itself. For a tab group this is the most recently selected tab in the
      * group.
+     *
+     * @deprecated Do not index into collapsed representative tab lists. Use {@link #getTabAt(int)}
+     *     for flat tab model indices or {@link #getTabsInGroup(Token)} for tab group members.
      */
+    // TODO(crbug.com/517544602): Delete when removing the flag.
+    @Deprecated
     @Nullable Tab getRepresentativeTabAt(int index);
 
-    /** Returns the index of the individual tab or the tab group it belongs to. */
+    /**
+     * Returns the index of the individual tab or the tab group it belongs to.
+     *
+     * @deprecated Do not use collapsed representative indices. Use {@link #indexOf(Tab)} for model
+     *     indices or {@link #getIndexOfTabInGroup(Tab)} for within-group indices.
+     */
+    // TODO(crbug.com/517544602): Delete when removing the flag.
+    @Deprecated
     int representativeIndexOf(@Nullable Tab tab);
 
     /** Returns the number of tab groups. */

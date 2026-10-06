@@ -78,14 +78,8 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
 
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
-            } else {
-                int previousIndex = tabModel.representativeIndexOf(previousTab);
-                int currentIndex = tabModel.representativeIndexOf(tab);
-                if (previousIndex != currentIndex) {
-                    if (!tabModel.isTabInTabGroup(tab)) {
-                        RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
-                    }
-                }
+            } else if (previousTab != tab && tab.getTabGroupId() == null) {
+                RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
             }
         } else {
             int currentIndex = tabModel.indexOf(tab);
@@ -98,7 +92,7 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabSwitched");
             }
 
-            if (!tabModel.isTabInTabGroup(tab)) {
+            if (tab.getTabGroupId() == null) {
                 RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
             }
         }

@@ -923,9 +923,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         return indexes;
     }
 
-    /** Returns the filter index of a tab from its view index or TabList.INVALID_TAB_INDEX. */
-    int indexOfTabCardsOrInvalid(int index) {
-        return mModelList.indexOfTabCardsOrInvalid(index);
+    /** Returns the tab group ID of the tab group card at the given view index, or null. */
+    @Nullable Token getTabGroupIdForIndex(int index) {
+        return mModelList.getTabGroupIdForIndex(index);
     }
 
     int getTabListModelSize() {

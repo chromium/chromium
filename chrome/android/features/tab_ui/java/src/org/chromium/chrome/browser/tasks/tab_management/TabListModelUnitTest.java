@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
@@ -31,21 +32,23 @@ public class TabListModelUnitTest {
     }
 
     @Test
-    public void testIndexOfTabCardsOrInvalid() {
+    public void testGetTabGroupIdForIndex() {
+        Token groupId = Token.createRandom();
         TabListModel tabListModel = new TabListModel();
         tabListModel.add(listItemWithType(ModelType.MESSAGE));
         tabListModel.add(listItemWithType(ModelType.TAB));
-        tabListModel.add(listItemWithType(ModelType.MESSAGE));
-        tabListModel.add(listItemWithType(ModelType.TAB));
-        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        PropertyModel groupModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(CardProperties.CARD_TYPE, ModelType.TAB_GROUP)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
+                        .build();
+        tabListModel.add(new ListItem(UiType.TAB_GROUP, groupModel));
 
-        assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexOfTabCardsOrInvalid(-1));
-        assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexOfTabCardsOrInvalid(0));
-        assertEquals(0, tabListModel.indexOfTabCardsOrInvalid(1));
-        assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexOfTabCardsOrInvalid(2));
-        assertEquals(1, tabListModel.indexOfTabCardsOrInvalid(3));
-        assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexOfTabCardsOrInvalid(4));
-        assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexOfTabCardsOrInvalid(5));
+        assertNull(tabListModel.getTabGroupIdForIndex(-1));
+        assertNull(tabListModel.getTabGroupIdForIndex(0));
+        assertNull(tabListModel.getTabGroupIdForIndex(1));
+        assertEquals(groupId, tabListModel.getTabGroupIdForIndex(2));
+        assertNull(tabListModel.getTabGroupIdForIndex(3));
     }
 
     @Test
