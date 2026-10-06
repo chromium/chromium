@@ -3202,10 +3202,17 @@ void TemplateURLService::ApplyEnterpriseSearchChanges(
       keywords_to_remove.insert(keyword);
     }
   }
-  std::ranges::for_each(keywords_to_remove,
-                        [this](const std::u16string& keyword) {
-                          Remove(enterprise_search_keyword_to_turl_[keyword]);
-                        });
+  for (const std::u16string& keyword : keywords_to_remove) {
+    // `Remove()` can synchronously re-enter this method (it records
+    // overridable keywords in a pref observed by `EnterpriseSearchManager`),
+    // and the nested call may already have removed `keyword`. Look it up with
+    // `find()`: `operator[]` would insert a null TemplateURL and pass it to
+    // `Remove()`.
+    auto it = enterprise_search_keyword_to_turl_.find(keyword);
+    if (it != enterprise_search_keyword_to_turl_.end()) {
+      Remove(it->second);
+    }
+  }
 
   // Either add new site search entries or update existing ones if necessary.
   for (auto& search_engine : policy_search_engines) {
