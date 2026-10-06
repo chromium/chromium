@@ -18,8 +18,8 @@ features:
 supported_on:
 - android:144-
 - chrome.*:137-
+- ios:157-
 future_on:
-- ios
 - chrome_os
 owners:
 - seblalancette@chromium.org
