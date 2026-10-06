@@ -486,7 +486,7 @@ TEST_F(EntityDataManagerAndroidTest,
 
   EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
                 env(), static_cast<int>(EntityTypeName::kVehicle)),
-            WalletPassAccessManager::GetDetailsForUpsertPassResponse());
+            response);
 }
 
 TEST_F(

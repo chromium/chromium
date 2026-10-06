@@ -196,4 +196,14 @@ bool IsEligibleForWalletNotice(const EntityType& type,
          !type.read_only();
 }
 
+bool IsValidUpsertPassDetailsResponse(
+    const WalletPassAccessManager::GetDetailsForUpsertPassResponse& response) {
+  const bool should_see_legal_message_notice =
+      response.user_eligibility ==
+      WalletPassAccessManager::UserEligibility::kEligible;
+  return !should_see_legal_message_notice ||
+         (!response.legal_message_lines.empty() &&
+          !response.context_token.empty());
+}
+
 }  // namespace autofill

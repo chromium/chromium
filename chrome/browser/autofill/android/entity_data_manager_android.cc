@@ -291,24 +291,9 @@ EntityDataManagerAndroid::ExtractPreloadedDetailsForUpsertPass(
       response =
           wallet_pass_access_manager_->ExtractPreloadedDetailsForUpsertPass(
               EntityType(*type_name));
-  const bool should_see_legal_message_notice =
-      response.has_value() &&
-      response->user_eligibility ==
-          WalletPassAccessManager::UserEligibility::kEligible;
-  const bool fallback_to_local =
-      !response.has_value() || (should_see_legal_message_notice &&
-                                (response->legal_message_lines.empty() ||
-                                 response->context_token.empty()));
-  if (fallback_to_local) {
-    return std::nullopt;
-  }
-  if (!should_see_legal_message_notice) {
-    // Return an empty response (non-null in Java) so the caller still saves the
-    // pass to Google Wallet, but without displaying the legal disclosure notice
-    // or sending a context token.
-    return WalletPassAccessManager::GetDetailsForUpsertPassResponse();
-  }
-  return response;
+  return response.has_value() && IsValidUpsertPassDetailsResponse(*response)
+             ? response
+             : std::nullopt;
 }
 
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(

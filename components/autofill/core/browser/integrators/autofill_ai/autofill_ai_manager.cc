@@ -546,15 +546,7 @@ void AutofillAiManager::OnGetDetailsForUpsertPassResponse(
                    wallet::WalletHttpClient::WalletRequestError> response) {
   LegalMessageLines public_passes_notice;
   std::optional<std::string> context_token;
-  const bool should_see_legal_message_notice =
-      response.has_value() &&
-      response->user_eligibility ==
-          WalletPassAccessManager::UserEligibility::kEligible;
-  const bool fallback_to_local =
-      !response.has_value() || (should_see_legal_message_notice &&
-                                (response->legal_message_lines.empty() ||
-                                 response->context_token.empty()));
-  if (fallback_to_local) {
+  if (!response.has_value() || !IsValidUpsertPassDetailsResponse(*response)) {
     LogWalletNoticeFunnelEvent(
         AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError);
     // If fetching details for the upsert pass failed, or if the user should
@@ -567,10 +559,8 @@ void AutofillAiManager::OnGetDetailsForUpsertPassResponse(
   } else {
     LogWalletNoticeFunnelEvent(
         AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess);
-    if (should_see_legal_message_notice) {
-      public_passes_notice = std::move(response->legal_message_lines);
-      context_token = std::move(response->context_token);
-    }
+    public_passes_notice = std::move(response->legal_message_lines);
+    context_token = std::move(response->context_token);
   }
   ShowEntityImportBubble(form, ukm_source_id, prompt_type,
                          std::move(new_entity), std::move(old_entity),
@@ -630,7 +620,7 @@ void AutofillAiManager::HandlePromptResult(
   AddOrClearImportPromptStrikes(prompt_type, result, form.url(), entity);
 
   if (!DidUserExplicitlyAcceptedImportPrompt(result)) {
-    if (context_token.has_value()) {
+    if (context_token && !context_token->empty()) {
       LogWalletNoticeFunnelEvent(
           AutofillAiWalletNoticeFunnelEvents::kEntityNotSaved);
     }
@@ -644,7 +634,7 @@ void AutofillAiManager::HandlePromptResult(
   if (entity.record_type() == EntityInstance::RecordType::kServerWallet &&
       !MayPerformAutofillAiAction(*client_, AutofillAiAction::kImportToWallet,
                                   entity.type())) {
-    if (context_token.has_value()) {
+    if (context_token && !context_token->empty()) {
       LogWalletNoticeFunnelEvent(
           AutofillAiWalletNoticeFunnelEvents::kEntityNotSaved);
     }
@@ -653,7 +643,7 @@ void AutofillAiManager::HandlePromptResult(
   }
 
   if (!IsSaveAsynchronous(entity.type(), entity.record_type())) {
-    if (context_token.has_value()) {
+    if (context_token && !context_token->empty()) {
       LogWalletNoticeFunnelEvent(
           AutofillAiWalletNoticeFunnelEvents::kEntitySaved);
     }

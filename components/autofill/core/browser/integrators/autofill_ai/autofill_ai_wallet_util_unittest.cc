@@ -327,6 +327,35 @@ TEST_F(AutofillAiWalletUtilsTest, IsEligibleForWalletNotice) {
       EntityType(EntityTypeName::kFlightReservation), kServerWallet));
 }
 
+TEST_F(AutofillAiWalletUtilsTest, IsValidUpsertPassDetailsResponse) {
+  using Response = WalletPassAccessManager::GetDetailsForUpsertPassResponse;
+  using UserEligibility = WalletPassAccessManager::UserEligibility;
+
+  LegalMessageLines legal_message_lines;
+  legal_message_lines.emplace_back();
+
+  // Eligible user with both legal message lines and context token is valid.
+  Response valid_eligible{
+      .legal_message_lines = legal_message_lines,
+      .context_token = "token",
+      .user_eligibility = UserEligibility::kEligible,
+  };
+  EXPECT_TRUE(IsValidUpsertPassDetailsResponse(valid_eligible));
+
+  // Eligible user missing legal message lines or context token is invalid.
+  Response missing_lines{
+      .context_token = "token",
+      .user_eligibility = UserEligibility::kEligible,
+  };
+  EXPECT_FALSE(IsValidUpsertPassDetailsResponse(missing_lines));
+
+  Response missing_token{
+      .legal_message_lines = legal_message_lines,
+      .user_eligibility = UserEligibility::kEligible,
+  };
+  EXPECT_FALSE(IsValidUpsertPassDetailsResponse(missing_token));
+}
+
 struct IsValidWalletManagementUrlTestCase {
   std::string_view url;
   bool is_valid;

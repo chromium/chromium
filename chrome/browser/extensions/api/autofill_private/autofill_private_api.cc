@@ -1413,39 +1413,30 @@ AutofillPrivateGetDetailsForUpsertPassFunction::Run() {
       response = pass_manager->ExtractPreloadedDetailsForUpsertPass(
           autofill::EntityType(autofill::EntityTypeName::kVehicle));
 
-  const bool should_see_legal_message_notice =
-      response.has_value() &&
-      response->user_eligibility ==
-          autofill::WalletPassAccessManager::UserEligibility::kEligible;
-  const bool fallback_to_local =
-      !response.has_value() || (should_see_legal_message_notice &&
-                                (response->legal_message_lines.empty() ||
-                                 response->context_token.empty()));
-  if (fallback_to_local) {
+  if (!response.has_value() ||
+      !autofill::IsValidUpsertPassDetailsResponse(*response)) {
     return RespondNow(NoArguments());
   }
 
   api::autofill_private::UpsertPassDetails details;
-  if (should_see_legal_message_notice) {
-    details.context_token = std::move(response->context_token);
-    details.legal_message_lines.reserve(response->legal_message_lines.size());
-    for (const auto& line : response->legal_message_lines) {
-      api::autofill_private::LegalMessageLine idl_line;
-      idl_line.text = base::UTF16ToUTF8(line.text());
-      for (const auto& link : line.links()) {
-        if (!link.range.IsValid() || link.range.is_reversed() ||
-            link.range.is_empty() || link.range.end() > line.text().length() ||
-            !link.url.is_valid() || !link.url.SchemeIsHTTPOrHTTPS()) {
-          continue;
-        }
-        api::autofill_private::LegalMessageLink idl_link;
-        idl_link.start = static_cast<int>(link.range.start());
-        idl_link.end = static_cast<int>(link.range.end());
-        idl_link.url = link.url.spec();
-        idl_line.links.push_back(std::move(idl_link));
+  details.context_token = std::move(response->context_token);
+  details.legal_message_lines.reserve(response->legal_message_lines.size());
+  for (const auto& line : response->legal_message_lines) {
+    api::autofill_private::LegalMessageLine idl_line;
+    idl_line.text = base::UTF16ToUTF8(line.text());
+    for (const auto& link : line.links()) {
+      if (!link.range.IsValid() || link.range.is_reversed() ||
+          link.range.is_empty() || link.range.end() > line.text().length() ||
+          !link.url.is_valid() || !link.url.SchemeIsHTTPOrHTTPS()) {
+        continue;
       }
-      details.legal_message_lines.push_back(std::move(idl_line));
+      api::autofill_private::LegalMessageLink idl_link;
+      idl_link.start = static_cast<int>(link.range.start());
+      idl_link.end = static_cast<int>(link.range.end());
+      idl_link.url = link.url.spec();
+      idl_line.links.push_back(std::move(idl_link));
     }
+    details.legal_message_lines.push_back(std::move(idl_line));
   }
   return RespondNow(ArgumentList(
       api::autofill_private::GetDetailsForUpsertPass::Results::Create(
