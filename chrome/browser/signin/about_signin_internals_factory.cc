@@ -22,6 +22,7 @@ AboutSigninInternalsFactory::AboutSigninInternalsFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());
@@ -54,6 +55,9 @@ std::unique_ptr<KeyedService>
 AboutSigninInternalsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  if (profile && profile->IsOffTheRecord()) {
+    AboutSigninInternals::ResetSigninPrefs(profile->GetPrefs());
+  }
   return std::make_unique<AboutSigninInternals>(
       IdentityManagerFactory::GetForProfile(profile),
       SigninErrorControllerFactory::GetForProfile(profile),

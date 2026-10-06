@@ -264,8 +264,12 @@ AboutSigninInternals::AboutSigninInternals(
   identity_manager_observeration_.Observe(identity_manager_);
   diganostics_observeration_.Observe(identity_manager_);
   client_observeration_.Observe(client_);
-  signin_error_observeration_.Observe(signin_error_controller_);
-  account_reconcilor_observeration_.Observe(account_reconcilor_);
+  if (signin_error_controller_) {
+    signin_error_observeration_.Observe(signin_error_controller_);
+  }
+  if (account_reconcilor_) {
+    account_reconcilor_observeration_.Observe(account_reconcilor_);
+  }
 }
 
 AboutSigninInternals::~AboutSigninInternals() = default;
@@ -293,6 +297,19 @@ void AboutSigninInternals::RegisterPrefs(PrefRegistrySimple* user_prefs) {
     const std::string time = SigninStatusFieldToString(i) + ".time";
     user_prefs->RegisterStringPref(value, std::string());
     user_prefs->RegisterStringPref(time, std::string());
+  }
+}
+
+// static
+void AboutSigninInternals::ResetSigninPrefs(PrefService* prefs) {
+  if (!prefs) {
+    return;
+  }
+  std::string empty_string;
+  for (signin_internals_util::TimedSigninStatusField i =
+           signin_internals_util::TIMED_FIELDS_BEGIN;
+       i < signin_internals_util::TIMED_FIELDS_END; ++i) {
+    SetPref(prefs, i, empty_string, empty_string);
   }
 }
 
@@ -738,29 +755,33 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
       AddSectionEntry(basic_info,
                       SigninStatusFieldToLabel(signin_internals_util::USERNAME),
                       account_info.email);
-      if (signin_error_controller->HasError()) {
-        const CoreAccountId error_account_id =
-            signin_error_controller->error_account_id();
-        const AccountInfo error_account_info =
-            identity_manager->FindExtendedAccountInfoByAccountId(
-                error_account_id);
-        AddSectionEntry(basic_info, "Auth Error",
-                        signin_error_controller->auth_error().ToString());
-        AddSectionEntry(basic_info, "Auth Error Account Id",
-                        error_account_id.ToString());
-        AddSectionEntry(basic_info, "Auth Error Username",
-                        error_account_info.GetEmail());
-      } else {
-        AddSectionEntry(basic_info, "Auth Error", "None");
+      if (signin_error_controller) {
+        if (signin_error_controller->HasError()) {
+          const CoreAccountId error_account_id =
+              signin_error_controller->error_account_id();
+          const AccountInfo error_account_info =
+              identity_manager->FindExtendedAccountInfoByAccountId(
+                  error_account_id);
+          AddSectionEntry(basic_info, "Auth Error",
+                          signin_error_controller->auth_error().ToString());
+          AddSectionEntry(basic_info, "Auth Error Account Id",
+                          error_account_id.ToString());
+          AddSectionEntry(basic_info, "Auth Error Username",
+                          error_account_info.GetEmail());
+        } else {
+          AddSectionEntry(basic_info, "Auth Error", "None");
+        }
       }
     }
 
-    AddSectionEntry(
-        basic_info, "Account Reconcilor blocked",
-        account_reconcilor->IsReconcileBlocked() ? "True" : "False");
+    if (account_reconcilor) {
+      AddSectionEntry(
+          basic_info, "Account Reconcilor blocked",
+          account_reconcilor->IsReconcileBlocked() ? "True" : "False");
 
-    AddSectionEntry(basic_info, "Account Reconcilor State",
-                    ToString(account_reconcilor->GetState()));
+      AddSectionEntry(basic_info, "Account Reconcilor State",
+                      ToString(account_reconcilor->GetState()));
+    }
 
     // At this moment, it is mainly used to debug the state of
     // `AccountReconcilor`. It will be refreshed automatically when

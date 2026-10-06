@@ -132,4 +132,61 @@ TEST_F(AboutSigninInternalsTest,
   }
 }
 
+TEST_F(AboutSigninInternalsTest,
+       GetSigninStatus_NullSigninErrorControllerAndAccountReconcilor) {
+  identity_test_env_.MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+
+  AboutSigninInternals internals(identity_test_env_.identity_manager(),
+                                 /*signin_error_controller=*/nullptr,
+                                 signin::AccountConsistencyMethod::kDisabled,
+                                 &signin_client_,
+                                 /*account_reconcilor=*/nullptr);
+
+  base::DictValue status = internals.GetSigninStatus();
+  const base::ListValue* signin_info = status.FindList("signin_info");
+  ASSERT_TRUE(signin_info);
+  ASSERT_FALSE(signin_info->empty());
+  const base::DictValue* basic_section = (*signin_info)[0].GetIfDict();
+  ASSERT_TRUE(basic_section);
+  const base::ListValue* basic_data = basic_section->FindList("data");
+  ASSERT_TRUE(basic_data);
+
+  for (const base::Value& entry : *basic_data) {
+    const std::string* label = entry.GetDict().FindString("label");
+    ASSERT_TRUE(label);
+    EXPECT_NE(*label, "Auth Error");
+    EXPECT_NE(*label, "Auth Error Account Id");
+    EXPECT_NE(*label, "Auth Error Username");
+    EXPECT_NE(*label, "Account Reconcilor blocked");
+    EXPECT_NE(*label, "Account Reconcilor State");
+  }
+
+  internals.Shutdown();
+}
+
+TEST_F(AboutSigninInternalsTest, ResetSigninPrefs) {
+  constexpr const char* kSigninPrefs[] = {
+      "google.services.signin.AUTHENTICATION_RESULT_RECEIVED.value",
+      "google.services.signin.AUTHENTICATION_RESULT_RECEIVED.time",
+      "google.services.signin.REFRESH_TOKEN_RECEIVED.value",
+      "google.services.signin.REFRESH_TOKEN_RECEIVED.time",
+      "google.services.signin.LAST_SIGNIN_ACCESS_POINT.value",
+      "google.services.signin.LAST_SIGNIN_ACCESS_POINT.time",
+      "google.services.signin.LAST_SIGNOUT_SOURCE.value",
+      "google.services.signin.LAST_SIGNOUT_SOURCE.time",
+  };
+
+  for (const char* pref : kSigninPrefs) {
+    pref_service_.SetString(pref, "non_empty");
+  }
+
+  AboutSigninInternals::ResetSigninPrefs(&pref_service_);
+
+  for (const char* pref : kSigninPrefs) {
+    EXPECT_TRUE(pref_service_.HasPrefPath(pref));
+    EXPECT_EQ(pref_service_.GetString(pref), "");
+  }
+}
+
 }  // namespace

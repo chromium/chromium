@@ -33,6 +33,7 @@ enum class Channel;
 }
 
 class PrefRegistrySimple;
+class PrefService;
 class SigninClient;
 
 // Many values in SigninStatus are also associated with a timestamp.
@@ -58,6 +59,7 @@ class AboutSigninInternals : public KeyedService,
     virtual void OnCookieAccountsFetched(const base::DictValue& info) = 0;
   };
 
+  // `signin_error_controller` and `account_reconcilor` may be nullptr.
   AboutSigninInternals(signin::IdentityManager* identity_manager,
                        SigninErrorController* signin_error_controller,
                        signin::AccountConsistencyMethod account_consistency,
@@ -71,6 +73,12 @@ class AboutSigninInternals : public KeyedService,
 
   // Registers the preferences used by AboutSigninInternals.
   static void RegisterPrefs(PrefRegistrySimple* user_prefs);
+
+  // Resets all preferences used by `AboutSigninInternals` to empty strings.
+  // Should be called before creating an `AboutSigninInternals` instance for an
+  // off-the-record profile so that it does not inherit persisted signin status
+  // values from the parent profile.
+  static void ResetSigninPrefs(PrefService* prefs);
 
   // Each instance of SigninInternalsUI adds itself as an observer to be
   // notified of all updates that AboutSigninInternals receives.
