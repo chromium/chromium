@@ -391,6 +391,38 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
   histogram_tester.ExpectTotalCount(kCrostiniCorruptionHistogram, 0);
 }
 
+TEST_F(CrostiniManagerTest, StartTerminaVmDiskOpInProgressError) {
+  base::ScopedTempFile export_path;
+  ASSERT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> export_future;
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      export_future.GetCallback());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_FALSE(export_future.IsReady());
+
+  vm_tools::concierge::StartVmResponse response;
+  response.set_status(vm_tools::concierge::VM_STATUS_DISK_OP_IN_PROGRESS);
+  fake_concierge_client_->set_start_vm_response(response);
+
+  EnsureTerminaInstalled();
+  TestFuture<bool> start_future;
+  crostini_manager()->StartTerminaVm(kVmName, base::FilePath("unused"), 0,
+                                     start_future.GetCallback());
+
+  EXPECT_FALSE(start_future.Get());
+  EXPECT_FALSE(crostini_manager()->IsVmRunning(kVmName));
+  // Starting a VM while a disk operation is in progress should not abort the
+  // ongoing disk operation.
+  EXPECT_FALSE(export_future.IsReady());
+
+  vm_tools::concierge::DiskImageStatusResponse done_signal;
+  done_signal.set_status(vm_tools::concierge::DISK_STATUS_CREATED);
+  fake_concierge_client_->NotifyDiskImageProgress(done_signal);
+  EXPECT_EQ(export_future.Get(), CrostiniResult::SUCCESS);
+}
+
 TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
   const base::FilePath& disk_path = base::FilePath("unused");
   vm_tools::concierge::StartVmResponse response;
