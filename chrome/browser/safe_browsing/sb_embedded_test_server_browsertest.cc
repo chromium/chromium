@@ -125,8 +125,8 @@ class SBEmbeddedTestServerBrowserTest
       match.set_full_hash(SBProtocolManagerUtil::GetFullHash(match_url));
       match.add_full_hash_details()->set_threat_type(V5::ThreatType::MALWARE);
       std::map<GURL, V5::FullHash> response_map{{request_url, match}};
-      StartRedirectingV5RequestsForTesting(response_map, test_server,
-                                           /*delay_map=*/{}, serve_cookies);
+      StartRedirectingV5SearchHashesRequestsForTesting(
+          response_map, test_server, /*delay_map=*/{}, serve_cookies);
     } else {
       ThreatMatch match;
       FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(match_url);

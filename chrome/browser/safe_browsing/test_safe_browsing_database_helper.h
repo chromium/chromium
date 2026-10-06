@@ -35,7 +35,8 @@ class TestSafeBrowsingDatabaseHelper {
   //      `StartRedirectingV4RequestsForTesting`.
   //    - In V5: the real production protocol manager always runs. For
   //      in-memory cache mocking, use `AddFullHashToDbAndFullHashCache`; for
-  //      HTTP-layer mocking, use `StartRedirectingV5RequestsForTesting`.
+  //      HTTP-layer mocking, use
+  //      `StartRedirectingV5SearchHashesRequestsForTesting`.
   //      `v4_get_hash_factory` only applies to V4.
   //
   // 2. Additional lists:

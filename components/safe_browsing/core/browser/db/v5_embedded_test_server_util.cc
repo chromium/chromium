@@ -150,7 +150,7 @@ void SetV5UrlPrefixToTestServerForTesting(
 
 }  // namespace
 
-void StartRedirectingV5RequestsForTesting(
+void StartRedirectingV5SearchHashesRequestsForTesting(
     const std::map<GURL, V5::FullHash>& response_map,
     net::test_server::EmbeddedTestServer* embedded_test_server,
     const std::map<GURL, base::TimeDelta>& delay_map,

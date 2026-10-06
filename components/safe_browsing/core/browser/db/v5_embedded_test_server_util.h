@@ -23,7 +23,7 @@ namespace safe_browsing {
 // 2. Registers the hashes:search request handler with the server.
 // 3. (Optionally) associates some delay with the resulting http response.
 // 4. (Optionally) attaches a cookie to the response.
-void StartRedirectingV5RequestsForTesting(
+void StartRedirectingV5SearchHashesRequestsForTesting(
     const std::map<GURL, V5::FullHash>& response_map,
     net::test_server::EmbeddedTestServer* embedded_test_server,
     const std::map<GURL, base::TimeDelta>& delay_map =

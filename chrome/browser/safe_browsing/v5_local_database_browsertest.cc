@@ -58,7 +58,7 @@ class V5LocalDatabaseBrowserTest : public InProcessBrowserTest {
             base::span<const uint8_t, 4>(base::as_byte_span(prefix))));
     malware_list.set_sha256_checksum(std::string(sha256.begin(), sha256.end()));
 
-    StartRedirectingV5RequestsForTesting(
+    StartRedirectingV5SearchHashesRequestsForTesting(
         /*response_map=*/{{bad_url, match}}, embedded_test_server());
     StartRedirectingV5UpdateRequestsForTesting(
         /*hash_lists_map=*/{{list_name, std::move(malware_list)}},

@@ -674,8 +674,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredInterceptingBrowserTest,
     std::map<GURL, safe_browsing::V5::FullHash> response_map{
         {enforce_url, GetAbusiveMatchV5(enforce_url, /*is_warn_only=*/false)},
         {warn_url, GetAbusiveMatchV5(warn_url, /*is_warn_only=*/true)}};
-    safe_browsing::StartRedirectingV5RequestsForTesting(response_map,
-                                                        safe_browsing_server());
+    safe_browsing::StartRedirectingV5SearchHashesRequestsForTesting(
+        response_map, safe_browsing_server());
   } else {
     std::map<GURL, safe_browsing::ThreatMatch> response_map{
         {enforce_url, GetAbusiveMatchV4(enforce_url, "enforce")},

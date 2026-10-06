@@ -111,7 +111,7 @@ class SubresourceFilterInterceptingBrowserTest
           {url, GetBetterAdsMatchV5(url, /*is_warn_only=*/false)},
           {redirect_url, safe_browsing::V5::FullHash()}};
       // Delay the initial response, so it arrives after the final.
-      safe_browsing::StartRedirectingV5RequestsForTesting(
+      safe_browsing::StartRedirectingV5SearchHashesRequestsForTesting(
           response_map, safe_browsing_test_server(), delay_map);
     } else {
       // Map URLs to policies: enforce on the initial URL, and safe (no match)
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterInterceptingBrowserTest,
     std::map<GURL, safe_browsing::V5::FullHash> response_map{
         {enforce_url, GetBetterAdsMatchV5(enforce_url, /*is_warn_only=*/false)},
         {warn_url, GetBetterAdsMatchV5(warn_url, /*is_warn_only=*/true)}};
-    safe_browsing::StartRedirectingV5RequestsForTesting(
+    safe_browsing::StartRedirectingV5SearchHashesRequestsForTesting(
         response_map, safe_browsing_test_server());
   } else {
     std::map<GURL, safe_browsing::ThreatMatch> response_map{
