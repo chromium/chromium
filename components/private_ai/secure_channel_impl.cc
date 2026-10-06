@@ -140,32 +140,36 @@ void SecureChannelImpl::OnResponseReceived(
                                          static_cast<int>(state_)));
 
     StatusCode status_code = StatusCode::kUnexpectedTransportError;
-    switch (state_) {
-      case State::kPerformingAttestation:
-        status_code = StatusCode::kAttestationFailed;
-        break;
-      case State::kPerformingHandshake:
-        status_code = StatusCode::kHandshakeFailed;
-        break;
-      case State::kEstablished:
-        status_code =
-            response.error() == Transport::TransportError::kSocketClosed
-                ? StatusCode::kConnectionClosedByServer
-                : StatusCode::kNetworkError;
-        break;
-      case State::kWaitingHandshakeMessage:
-      case State::kVerifyingHandshake:
-      case State::kClosed:
-        // Transport error in these states is unexpected because no requests
-        // should be in flight.
-        //
-        // Nevertheless, we do not crash here as this branch could be triggered
-        // by misbehaving server.
-        logger_->LogError(
-            FROM_HERE,
-            base::StringPrintf("Unexpected transport error in state: %d",
-                               static_cast<int>(state_)));
-        break;
+    if (response.error() == Transport::TransportError::kConnectionFailed) {
+      status_code = StatusCode::kNetworkError;
+    } else {
+      switch (state_) {
+        case State::kPerformingAttestation:
+          status_code = StatusCode::kAttestationFailed;
+          break;
+        case State::kPerformingHandshake:
+          status_code = StatusCode::kHandshakeFailed;
+          break;
+        case State::kEstablished:
+          status_code =
+              response.error() == Transport::TransportError::kSocketClosed
+                  ? StatusCode::kConnectionClosedByServer
+                  : StatusCode::kNetworkError;
+          break;
+        case State::kWaitingHandshakeMessage:
+        case State::kVerifyingHandshake:
+        case State::kClosed:
+          // Transport error in these states is unexpected because no requests
+          // should be in flight.
+          //
+          // Nevertheless, we do not crash here as this branch could be
+          // triggered by misbehaving server.
+          logger_->LogError(
+              FROM_HERE,
+              base::StringPrintf("Unexpected transport error in state: %d",
+                                 static_cast<int>(state_)));
+          break;
+      }
     }
 
     FailAllRequestsAndClose(status_code);

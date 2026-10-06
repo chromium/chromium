@@ -467,6 +467,37 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringAttestationFailsRequest) {
   EXPECT_FALSE(established_called_);
 }
 
+// Tests that a WebSocket connection failure during the attestation phase maps
+// to StatusCode::kNetworkError instead of StatusCode::kAttestationFailed.
+TEST_F(SecureChannelImplTest,
+       ConnectionFailedDuringAttestationFailsWithNetworkError) {
+  oak::session::v1::SessionRequest expected_attestation_request;
+  expected_attestation_request.mutable_attest_request();
+
+  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
+      .WillOnce(Return(expected_attestation_request.attest_request()));
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_attestation_request)))
+      .WillOnce([&]() {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(
+                           [](Transport::ResponseCallback cb) {
+                             cb.Run(base::unexpected(
+                                 Transport::TransportError::kConnectionFailed));
+                           },
+                           response_callback_));
+      });
+
+  base::test::TestFuture<base::expected<Response, StatusCode>> future;
+  CreateSecureChannel(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), StatusCode::kNetworkError);
+  EXPECT_FALSE(established_called_);
+}
+
 // Tests a transport-level error during the handshake phase of session
 // establishment.
 TEST_F(SecureChannelImplTest, TransportErrorDuringHandshakeFailsRequest) {
