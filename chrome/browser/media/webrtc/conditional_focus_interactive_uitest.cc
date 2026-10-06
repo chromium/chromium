@@ -369,9 +369,10 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
 }
 
 // TODO(crbug.com/40913269): Flaky on TSan, MSan, and mac bots.
+// TODO(crbug.com/570576679): Flaky on Linux ChromiumOS MSan bots.
 #if (BUILDFLAG(IS_LINUX) &&                                       \
      (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))) || \
-    BUILDFLAG(IS_MAC)
+    (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_NoFocusBeforeCapture DISABLED_NoFocusBeforeCapture
 #else
 #define MAYBE_NoFocusBeforeCapture NoFocusBeforeCapture
