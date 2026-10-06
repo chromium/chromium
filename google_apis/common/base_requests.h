@@ -32,6 +32,10 @@ namespace base {
 class Value;
 }  // namespace base
 
+namespace net {
+struct RedirectInfo;
+}  // namespace net
+
 namespace google_apis {
 
 class RequestSender;
@@ -257,6 +261,12 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
   // Called when the SimpleURLLoader first receives a response.
   void OnResponseStarted(const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head);
+
+  // Called when SimpleURLLoader encounters a redirect.
+  void OnRedirect(const GURL& url_before_redirect,
+                  const net::RedirectInfo& redirect_info,
+                  const network::mojom::URLResponseHead& response_head,
+                  std::vector<std::string>* to_be_removed_headers);
 
   // Invokes callback with |code| and request to delete the request to
   // |sender_|.
