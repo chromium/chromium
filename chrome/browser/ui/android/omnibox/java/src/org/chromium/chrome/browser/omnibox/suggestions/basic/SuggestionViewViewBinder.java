@@ -36,8 +36,6 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
         } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT) {
             TextView tv = view.findViewById(R.id.line_1);
             tv.setText(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
-            int minHeight = getResourceProvider(model).getSuggestionMinHeight(tv.getLineCount());
-            view.setMinimumHeight(minHeight);
         } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_WRAP) {
             updateMaxLines(
                     view.findViewById(R.id.line_1),
