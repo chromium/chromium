@@ -24,6 +24,18 @@ android_library("file_provider_java") {
   ]
 }
 
+# Minimal Java library for download feature checks. Kept separate from ":java"
+# so that lower layers (e.g. the toolbar) can consult download feature flags
+# without depending on the full download UI.
+android_library("features_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/download/DownloadFeatures.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DangerousDownloadDialogBridge.java",
@@ -37,6 +49,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/DownloadMessageUiController.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStatus.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/download/InsecureDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/MediaStoreHelper.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
@@ -162,8 +175,10 @@ robolectric_library("junit_tests") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProviderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadFeaturesUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadFileProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetricsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadToolbarButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/StringUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DangerousDownloadDialogTest.java",
@@ -173,6 +188,7 @@ robolectric_library("junit_tests") {
   ]
 
   deps = [
+    ":features_java",
     ":file_provider_java",
     ":java",
     ":java_resources",

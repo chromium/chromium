@@ -58,10 +58,4 @@ public final class ToolbarFeatures {
 
         return isTablet && VERSION.SDK_INT >= VERSION_CODES.R;
     }
-
-    /** Returns whether the download toolbar button for desktop is enabled. */
-    public static boolean isDownloadButtonEnabled() {
-        return ChromeFeatureList.sDownloadToolbarButtonForDesktop.isEnabled()
-                && DeviceInfo.isDesktop();
-    }
 }

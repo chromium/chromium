@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.download.DownloadFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -300,7 +301,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 incognitoStateProvider);
             }
         }
-        if (ToolbarFeatures.isDownloadButtonEnabled()) {
+        if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
             ViewStub downloadButtonStub = mToolbarLayout.findViewById(R.id.download_button_stub);
             if (downloadButtonStub != null) {
                 // TODO(crbug.com/564646561): Wire up onButtonClickedRunnable to open the downloads
