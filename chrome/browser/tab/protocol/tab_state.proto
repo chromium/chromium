@@ -16,8 +16,6 @@ message TabState {
 
   optional int32 parent_id = 1;
 
-  optional int32 root_id = 2;
-
   optional int64 timestamp_millis = 3;
 
   optional bytes web_contents_state_bytes = 4;

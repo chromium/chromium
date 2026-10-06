@@ -4,24 +4,15 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -33,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,68 +34,20 @@ import java.util.List;
 /** Tests for {@link TabGroupTitleUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupTitleUtilsUnitTest {
-    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
-
-    private static final int TAB_ID = 456;
     private static final Token TAB_GROUP_ID = new Token(34789L, 3784L);
-    private static final String TAB_TITLE = "Tab";
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock SharedPreferences mSharedPreferences;
-    @Mock SharedPreferences.Editor mEditor;
-    @Mock SharedPreferences.Editor mPutStringEditor;
-    @Mock SharedPreferences.Editor mRemoveEditor;
-    @Mock TabModel mTabModel;
-    @Mock Tab mTab1;
-    @Mock Tab mTab2;
-    @Mock Tab mTab3;
+    @Mock private TabModel mTabModel;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
 
-    Context mContext;
+    private Context mContext;
 
     @Before
     public void setUp() {
-        mContext = spy(ApplicationProvider.getApplicationContext());
-        doReturn(mSharedPreferences)
-                .when(mContext)
-                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
-        doReturn(mEditor).when(mSharedPreferences).edit();
-        doReturn(mRemoveEditor).when(mEditor).remove(any(String.class));
-        doReturn(mPutStringEditor).when(mEditor).putString(any(String.class), any(String.class));
-        ContextUtils.initApplicationContextForTests(mContext);
-    }
-
-    @Test
-    public void testDeleteTabGroupTitle() {
-        TabGroupVisualDataStore.deleteTabGroupTitle(TAB_ID);
-
-        verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
-        verify(mRemoveEditor).apply();
-    }
-
-    @Test
-    public void testGetTabGroupTitle() {
-        // Mock that we have a stored tab group title with reference to TAB_ID.
-        when(mSharedPreferences.getString(String.valueOf(TAB_ID), UNSET_TAB_GROUP_TITLE))
-                .thenReturn(TAB_TITLE);
-
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TAB_ID), equalTo(TAB_TITLE));
-    }
-
-    @Test
-    public void testStoreTabGroupTitle() {
-        TabGroupVisualDataStore.storeTabGroupTitle(TAB_ID, TAB_TITLE);
-
-        verify(mEditor).putString(eq(String.valueOf(TAB_ID)), eq(TAB_TITLE));
-        verify(mPutStringEditor).apply();
-    }
-
-    @Test
-    public void testStoreTabGroupTitle_Empty() {
-        TabGroupVisualDataStore.storeTabGroupTitle(TAB_ID, "");
-
-        verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
-        verify(mRemoveEditor).apply();
+        mContext = ApplicationProvider.getApplicationContext();
     }
 
     @Test

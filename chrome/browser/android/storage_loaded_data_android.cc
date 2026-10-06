@@ -55,9 +55,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
 
   base::android::ScopedJavaLocalRef<jobject> j_tab_state =
       Java_StorageLoadedData_createTabState(
-          env, tab_state.parent_id(), tab_state.root_id(),
-          tab_state.timestamp_millis(), j_web_contents_state_buffer,
-          tab_state.web_contents_state_version(),
+          env, tab_state.parent_id(), tab_state.timestamp_millis(),
+          j_web_contents_state_buffer, tab_state.web_contents_state_version(),
           j_web_contents_state_string_pointer, tab_state.opener_app_id(),
           tab_state.theme_color(), tab_state.launch_type_at_creation(),
           tab_state.user_agent(),

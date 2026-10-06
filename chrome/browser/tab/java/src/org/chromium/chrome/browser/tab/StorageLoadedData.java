@@ -148,17 +148,16 @@ public class StorageLoadedData implements Destroyable {
     }
 
     @CalledByNative
-    public static TabState createTabState(
-            int parentTabId,
-            int rootId,
+    private static TabState createTabState(
+            @TabId int parentTabId,
             long timestampMillis,
             @Nullable ByteBuffer webContentsStateBuffer,
             int webContentsStateVersion,
             long webContentsStateStringPointer,
             @Nullable @JniType("std::string") String openerAppId,
             int themeColor,
-            int launchTypeAtCreation,
-            int userAgent,
+            @TabLaunchType int launchTypeAtCreation,
+            @TabUserAgent int userAgent,
             long lastNavigationCommittedTimestampMillis,
             @Nullable Token tabGroupId,
             boolean tabHasSensitiveContent,
@@ -166,7 +165,6 @@ public class StorageLoadedData implements Destroyable {
             @Nullable @JniType("std::string") String url) {
         TabState tabState = new TabState();
         tabState.parentId = parentTabId;
-        tabState.rootId = rootId;
         tabState.timestampMillis = timestampMillis;
         if (webContentsStateBuffer != null) {
             assert webContentsStateStringPointer != 0;
