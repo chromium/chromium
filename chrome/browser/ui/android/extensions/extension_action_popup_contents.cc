@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionPopupContents_jni.h"
@@ -38,16 +39,40 @@ constexpr gfx::Size kMaxSize = {800, 600};
 
 }  // namespace
 
+// static
+ScopedJavaLocalRef<jobject> ExtensionActionPopupContents::Create(
+    std::unique_ptr<ExtensionViewHost> host,
+    bool inspect_with_devtools,
+    ShowPopupCallback callback) {
+  WebContents* web_contents = host->host_contents();
+  auto contents = jni_zero::MakeUnique<ExtensionActionPopupContents>(
+      std::move(host), inspect_with_devtools, std::move(callback));
+  // Borrowed: the Java constructor only stores the JniUniquePtr, so the object
+  // outlives this function.
+  ExtensionActionPopupContents* self = contents.get();
+  ScopedJavaLocalRef<jobject> java_object =
+      Java_ExtensionActionPopupContents_Constructor(
+          AttachCurrentThread(), std::move(contents), web_contents);
+  self->java_object_.Reset(java_object);
+  self->AttachToHost();
+  return java_object;
+}
+
 ExtensionActionPopupContents::ExtensionActionPopupContents(
     std::unique_ptr<ExtensionViewHost> host,
     bool inspect_with_devtools,
     ShowPopupCallback callback)
     : host_(std::move(host)),
       inspect_with_devtools_(inspect_with_devtools),
-      shown_callback_(std::move(callback)) {
-  java_object_ = Java_ExtensionActionPopupContents_Constructor(
-      AttachCurrentThread(), reinterpret_cast<int64_t>(this),
-      host_->host_contents());
+      shown_callback_(std::move(callback)) {}
+
+ExtensionActionPopupContents::~ExtensionActionPopupContents() {
+  if (shown_callback_) {
+    std::move(shown_callback_).Run(nullptr);
+  }
+}
+
+void ExtensionActionPopupContents::AttachToHost() {
   host_->set_view(this);
   // Handle the containing view calling window.close();
   // The base::Unretained() below is safe because this object owns `host_`, so
@@ -60,16 +85,6 @@ ExtensionActionPopupContents::ExtensionActionPopupContents(
   if (primary_main_frame->IsRenderFrameLive()) {
     SetUpNewMainFrame(primary_main_frame);
   }
-}
-
-ExtensionActionPopupContents::~ExtensionActionPopupContents() {
-  if (shown_callback_) {
-    std::move(shown_callback_).Run(nullptr);
-  }
-}
-
-ScopedJavaLocalRef<jobject> ExtensionActionPopupContents::GetJavaObject() {
-  return java_object_.AsLocalRef(AttachCurrentThread());
 }
 
 void ExtensionActionPopupContents::RenderFrameHostChanged(
@@ -132,11 +147,7 @@ void ExtensionActionPopupContents::OnLoaded() {
                                              java_object_);
 }
 
-void ExtensionActionPopupContents::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-void ExtensionActionPopupContents::LoadInitialPage(JNIEnv* env) {
+void ExtensionActionPopupContents::LoadInitialPage() {
   host_->CreateRendererSoon();
 }
 

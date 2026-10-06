@@ -8,7 +8,10 @@ import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -30,11 +33,10 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionActionPopupContents implements Destroyable {
-    /**
-     * Pointer to the native C++ ExtensionActionPopupContents object. This is 0 if the native object
-     * has been destroyed.
-     */
-    private long mNativeExtensionActionPopupContents;
+    @JniType("::extensions::ExtensionActionPopupContents")
+    interface NativeExtensionActionPopupContents extends JniTypeToken {}
+
+    private final JniUniquePtr<NativeExtensionActionPopupContents> mNative;
 
     /** The WebContents hosting the extension popup's UI. */
     private final WebContents mWebContents;
@@ -44,9 +46,9 @@ public class ExtensionActionPopupContents implements Destroyable {
 
     @CalledByNative
     private ExtensionActionPopupContents(
-            long nativeExtensionActionPopupContents,
+            JniUniquePtr<NativeExtensionActionPopupContents> nativeExtensionActionPopupContents,
             @JniType("content::WebContents*") WebContents webContents) {
-        mNativeExtensionActionPopupContents = nativeExtensionActionPopupContents;
+        mNative = nativeExtensionActionPopupContents;
         mWebContents = webContents;
     }
 
@@ -58,11 +60,7 @@ public class ExtensionActionPopupContents implements Destroyable {
      */
     @Override
     public void destroy() {
-        if (mNativeExtensionActionPopupContents == 0) {
-            return;
-        }
-        ExtensionActionPopupContentsJni.get().destroy(mNativeExtensionActionPopupContents);
-        mNativeExtensionActionPopupContents = 0;
+        mNative.destroy();
     }
 
     /** Returns the {@link WebContents} that hosts the extension popup's UI. */
@@ -76,8 +74,7 @@ public class ExtensionActionPopupContents implements Destroyable {
      * <p>This should be called after the popup is created and its view is ready to display content.
      */
     public void loadInitialPage() {
-        assert mNativeExtensionActionPopupContents != 0;
-        ExtensionActionPopupContentsJni.get().loadInitialPage(mNativeExtensionActionPopupContents);
+        ExtensionActionPopupContentsJni.get().loadInitialPage(mNative);
     }
 
     /**
@@ -148,19 +145,12 @@ public class ExtensionActionPopupContents implements Destroyable {
     }
 
     @NativeMethods
-    public interface Natives {
-        /**
-         * Destroys the native ExtensionActionPopupContents object.
-         *
-         * @param nativeExtensionActionPopupContents The pointer to the native object.
-         */
-        void destroy(long nativeExtensionActionPopupContents);
-
+    interface Natives {
         /**
          * Triggers the loading of the initial URL in the native ExtensionActionPopupContents.
          *
-         * @param nativeExtensionActionPopupContents The pointer to the native object.
+         * @param self The pointer to the native object.
          */
-        void loadInitialPage(long nativeExtensionActionPopupContents);
+        void loadInitialPage(JniPtr<NativeExtensionActionPopupContents> self);
     }
 }

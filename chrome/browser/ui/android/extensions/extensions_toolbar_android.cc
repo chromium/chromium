@@ -80,13 +80,12 @@ void ExtensionsToolbarAndroid::TriggerPopup(
     std::unique_ptr<ExtensionViewHost> host,
     PopupShowAction show_action,
     ShowPopupCallback callback) {
-  auto* popup_contents = new ExtensionActionPopupContents(
-      std::move(host), show_action == PopupShowAction::kShowAndInspect,
-      std::move(callback));
+  bool inspect_with_devtools = show_action == PopupShowAction::kShowAndInspect;
   Java_ExtensionsToolbarBridge_triggerPopup(
       AttachCurrentThread(), java_object_, action_id,
-      popup_contents->GetJavaObject(),
-      show_action == PopupShowAction::kShowAndInspect);
+      ExtensionActionPopupContents::Create(
+          std::move(host), inspect_with_devtools, std::move(callback)),
+      inspect_with_devtools);
 }
 
 void ExtensionsToolbarAndroid::ShowContextMenu(
