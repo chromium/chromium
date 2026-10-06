@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -133,6 +134,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver,
+                                SceneStateObserver,
                                 SnapshotStorageObserver,
                                 TabGridModeObserving>
 // The profile from the browser.
@@ -196,12 +198,16 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
 - (void)setBrowser:(Browser*)browser {
   [self.snapshotStorage removeObserver:self];
+  if (_browser) {
+    [_browser->GetSceneState() removeObserver:self];
+  }
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
 
   _browser.reset();
   if (browser) {
     _browser = browser->AsWeakPtr();
+    [_browser->GetSceneState() addObserver:self];
     _webStateList = browser->GetWebStateList();
     _profile = browser->GetProfile();
     _URLLoader = UrlLoadingBrowserAgent::FromBrowser(browser);
@@ -226,6 +232,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
     _tabImagesConfigurator.reset();
   }
 
+  BOOL multipleScenesAvailable =
+      _browser && _browser->GetSceneState().multipleScenesAvailable;
+  [self.consumer setMultipleScenesAvailable:multipleScenesAvailable];
+
   [self.snapshotStorage addObserver:self];
 
   if (_webStateList) {
@@ -244,6 +254,9 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   _consumer = consumer;
   [self resetToAllItems];
   [consumer setTabGridMode:_modeHolder.mode];
+  BOOL multipleScenesAvailable =
+      _browser && _browser->GetSceneState().multipleScenesAvailable;
+  [consumer setMultipleScenesAvailable:multipleScenesAvailable];
 }
 
 #pragma mark - Subclassing
@@ -847,6 +860,13 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   [_selectedEditingItems removeAllItems];
   [self configureToolbarsButtons];
   [self.consumer setTabGridMode:modeHolder.mode];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    multipleScenesAvailabilityDidChange:(BOOL)multipleScenesAvailable {
+  [self.consumer setMultipleScenesAvailable:multipleScenesAvailable];
 }
 
 #pragma mark - SnapshotStorageObserver

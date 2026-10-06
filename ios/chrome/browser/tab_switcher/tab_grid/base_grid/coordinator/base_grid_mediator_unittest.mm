@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -1329,6 +1330,18 @@ TEST_P(BaseGridMediatorTest, SnapshotIgnoredBatchOperationGuardTest) {
   // When the batch operation ends, snapshot update should be processed.
   [mediator_ didUpdateSnapshotStorageWithSnapshotID:wrapper];
   EXPECT_EQ(initial_count + 2, consumer_.replaceItemCount);
+}
+
+// Test that the consumer's `multipleScenesAvailable` state is initialized from
+// `SceneState` and updated when `SceneState`'s availability changes.
+TEST_P(BaseGridMediatorTest, MultipleScenesAvailable) {
+  EXPECT_FALSE(consumer_.multipleScenesAvailable);
+
+  scene_state_.multipleScenesAvailable = YES;
+  EXPECT_TRUE(consumer_.multipleScenesAvailable);
+
+  scene_state_.multipleScenesAvailable = NO;
+  EXPECT_FALSE(consumer_.multipleScenesAvailable);
 }
 
 INSTANTIATE_TEST_SUITE_P(

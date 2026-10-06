@@ -275,3 +275,20 @@ TEST_F(BaseGridViewControllerTest, ContentInsetsRespectRTL) {
   EXPECT_EQ(grid_layout.sectionInsets.leading, expected_leading);
   EXPECT_EQ(grid_layout.sectionInsets.trailing, expected_trailing);
 }
+
+// Tests that `dragInteractionEnabled` in `TabGridMode::kSelection` updates
+// dynamically when `multipleScenesAvailable` changes.
+TEST_F(BaseGridViewControllerTest,
+       DragInteractionEnabledMultipleScenesAvailable) {
+  [view_controller_ setTabGridMode:TabGridMode::kNormal];
+  EXPECT_TRUE(view_controller_.collectionView.dragInteractionEnabled);
+
+  [view_controller_ setTabGridMode:TabGridMode::kSelection];
+  EXPECT_FALSE(view_controller_.collectionView.dragInteractionEnabled);
+
+  [view_controller_ setMultipleScenesAvailable:YES];
+  EXPECT_TRUE(view_controller_.collectionView.dragInteractionEnabled);
+
+  [view_controller_ setMultipleScenesAvailable:NO];
+  EXPECT_FALSE(view_controller_.collectionView.dragInteractionEnabled);
+}

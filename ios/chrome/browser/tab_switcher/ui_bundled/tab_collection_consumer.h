@@ -20,6 +20,9 @@ class WebStateID;
 // Sets the mode of the grid.
 - (void)setTabGridMode:(TabGridMode)mode;
 
+// Sets whether multiple scenes are available for multi-window interactions.
+- (void)setMultipleScenesAvailable:(BOOL)multipleScenesAvailable;
+
 // Many of the following methods pass a `selectedItemID` as a parameter,
 // indicating the identifier of the item that should be in the selected state
 // after the method is called. In every such case, a nil `selectedItemID`
