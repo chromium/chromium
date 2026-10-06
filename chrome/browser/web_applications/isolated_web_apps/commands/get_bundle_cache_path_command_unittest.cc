@@ -34,15 +34,18 @@ using base::test::ValueIs;
 using web_package::SignedWebBundleId;
 using SessionType = IwaCacheClient::SessionType;
 
-const SignedWebBundleId kMainBundleId = test::GetDefaultEd25519WebBundleId();
-const web_package::test::Ed25519KeyPair kPublicKeyPair =
-    test::GetDefaultEd25519KeyPair();
-SignedWebBundleId kBundleId2 = test::GetDefaultEcdsaP256WebBundleId();
-
 constexpr char kGetBundleCachePathSuccessMetric[] =
     "WebApp.Isolated.GetBundleCachePathSuccess";
 constexpr char kGetBundleCachePathErrorMetric[] =
     "WebApp.Isolated.GetBundleCachePathError";
+
+SignedWebBundleId GetMainBundleId() {
+  return test::GetDefaultEd25519WebBundleId();
+}
+
+SignedWebBundleId GetBundleId2() {
+  return test::GetDefaultEcdsaP256WebBundleId();
+}
 
 }  // namespace
 
@@ -127,7 +130,7 @@ class GetBundleCachePathCommandTest
 TEST_P(GetBundleCachePathCommandTest, NoCachedPathToFetch) {
   ExpectEmptyGetBundleCachePathMetrics();
   TestFuture<GetBundleCachePathResult> get_bundle_future;
-  ScheduleCommand(kMainBundleId, /*version=*/std::nullopt,
+  ScheduleCommand(GetMainBundleId(), /*version=*/std::nullopt,
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
@@ -138,10 +141,10 @@ TEST_P(GetBundleCachePathCommandTest, NoCachedPathToFetch) {
 TEST_P(GetBundleCachePathCommandTest, RequiredVersionFound) {
   ExpectEmptyGetBundleCachePathMetrics();
   base::FilePath bundle_path =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.1"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.1"));
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
-  ScheduleCommand(kMainBundleId, *IwaVersion::Create("0.0.1"),
+  ScheduleCommand(GetMainBundleId(), *IwaVersion::Create("0.0.1"),
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
@@ -153,10 +156,10 @@ TEST_P(GetBundleCachePathCommandTest, RequiredVersionFound) {
 TEST_P(GetBundleCachePathCommandTest, ProvidedVersionNotFound) {
   ExpectEmptyGetBundleCachePathMetrics();
   base::FilePath bundle_path =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.1"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.1"));
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
-  ScheduleCommand(kMainBundleId, *IwaVersion::Create("0.0.2"),
+  ScheduleCommand(GetMainBundleId(), *IwaVersion::Create("0.0.2"),
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
@@ -167,10 +170,10 @@ TEST_P(GetBundleCachePathCommandTest, ProvidedVersionNotFound) {
 
 TEST_P(GetBundleCachePathCommandTest, NoVersionProvided) {
   base::FilePath bundle_path =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.1"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.1"));
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
-  ScheduleCommand(kMainBundleId, /*version=*/std::nullopt,
+  ScheduleCommand(GetMainBundleId(), /*version=*/std::nullopt,
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
@@ -180,16 +183,16 @@ TEST_P(GetBundleCachePathCommandTest, NoVersionProvided) {
 
 TEST_P(GetBundleCachePathCommandTest, GetNewestVersionWhenVersionNotProvided) {
   base::FilePath bundle_path_v1 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.1"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.1"));
   base::FilePath bundle_path_v3 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.3"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.3"));
   base::FilePath bundle_path_v4 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("1.0.0"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("1.0.0"));
   base::FilePath bundle_path_v2 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.2"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.2"));
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
-  ScheduleCommand(kMainBundleId, /*version=*/std::nullopt,
+  ScheduleCommand(GetMainBundleId(), /*version=*/std::nullopt,
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
@@ -199,14 +202,14 @@ TEST_P(GetBundleCachePathCommandTest, GetNewestVersionWhenVersionNotProvided) {
 
 TEST_P(GetBundleCachePathCommandTest, GetCorrectVersion) {
   base::FilePath bundle_path_v2 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.2"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.2"));
   base::FilePath bundle_path_v1 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.1"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.1"));
   base::FilePath bundle_path_v3 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.3"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.3"));
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
-  ScheduleCommand(kMainBundleId, *IwaVersion::Create("0.0.1"),
+  ScheduleCommand(GetMainBundleId(), *IwaVersion::Create("0.0.1"),
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
@@ -216,12 +219,12 @@ TEST_P(GetBundleCachePathCommandTest, GetCorrectVersion) {
 
 TEST_P(GetBundleCachePathCommandTest, GetCorrectIwa) {
   base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kMainBundleId, *IwaVersion::Create("0.0.1"));
+      CreateBundleInCacheDir(GetMainBundleId(), *IwaVersion::Create("0.0.1"));
   base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId2, *IwaVersion::Create("0.0.1"));
+      CreateBundleInCacheDir(GetBundleId2(), *IwaVersion::Create("0.0.1"));
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
-  ScheduleCommand(kBundleId2, *IwaVersion::Create("0.0.1"),
+  ScheduleCommand(GetBundleId2(), *IwaVersion::Create("0.0.1"),
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),

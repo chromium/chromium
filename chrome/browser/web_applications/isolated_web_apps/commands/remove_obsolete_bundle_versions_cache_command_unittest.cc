@@ -39,9 +39,6 @@ using base::test::ValueIs;
 using web_package::SignedWebBundleId;
 using SessionType = IwaCacheClient::SessionType;
 
-const SignedWebBundleId kBundleId = test::GetDefaultEd25519WebBundleId();
-const web_package::test::Ed25519KeyPair kPublicKeyPair =
-    test::GetDefaultEd25519KeyPair();
 constexpr char kVersion1[] = "0.0.1";
 constexpr char kVersion2[] = "0.0.2";
 constexpr char kVersion3[] = "0.0.3";
@@ -50,6 +47,14 @@ constexpr char kRemoveObsoleteBundleVersionsSuccessMetric[] =
     "WebApp.Isolated.RemoveObsoleteBundleVersionsSuccess";
 constexpr char kRemoveObsoleteBundleVersionsErrorMetric[] =
     "WebApp.Isolated.RemoveObsoleteBundleVersionsError";
+
+SignedWebBundleId GetBundleId() {
+  return test::GetDefaultEd25519WebBundleId();
+}
+
+web_package::test::Ed25519KeyPair GetPublicKeyPair() {
+  return test::GetDefaultEd25519KeyPair();
+}
 
 }  // namespace
 
@@ -104,7 +109,7 @@ class RemoveObsoleteBundleVersionsCacheCommandTest
 
     std::unique_ptr<BundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
-            .BuildBundle(bundle_path, kPublicKeyPair);
+            .BuildBundle(bundle_path, GetPublicKeyPair());
     app->TrustSigningKey();
     app->FakeInstallPageState(profile());
     return app;
@@ -160,7 +165,7 @@ class RemoveObsoleteBundleVersionsCacheCommandTest
 TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, AppNotInstalled) {
   ExpectEmptyRemoveObsoleteBundleVersionsMetrics();
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ErrorIs(RemoveObsoleteBundleVersionsError(
@@ -176,7 +181,7 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest,
   ASSERT_THAT(app->Install(profile()), HasValue());
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ErrorIs(RemoveObsoleteBundleVersionsError(
@@ -191,10 +196,10 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest,
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion1);
   ASSERT_THAT(app->Install(profile()), HasValue());
   base::FilePath bundle_path =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ValueIs(RemoveObsoleteBundleVersionsSuccess(0)));
@@ -207,12 +212,12 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, RemoveOldVersion) {
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion2);
   ASSERT_THAT(app->Install(profile()), HasValue());
   base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
   base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion2));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion2));
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ValueIs(RemoveObsoleteBundleVersionsSuccess(1)));
@@ -226,12 +231,12 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, RemoveNewVersion) {
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion1);
   ASSERT_THAT(app->Install(profile()), HasValue());
   base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
   base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion2));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion2));
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ValueIs(RemoveObsoleteBundleVersionsSuccess(1)));
@@ -244,14 +249,14 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, RemoveTwoVersions) {
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion2);
   ASSERT_THAT(app->Install(profile()), HasValue());
   base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
   base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion2));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion2));
   base::FilePath bundle_path3 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion3));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion3));
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ValueIs(RemoveObsoleteBundleVersionsSuccess(2)));
@@ -262,10 +267,10 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, RemoveTwoVersions) {
 
 TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, AppNotInstalledButCached) {
   base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ErrorIs(RemoveObsoleteBundleVersionsError(
@@ -280,18 +285,18 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest,
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion1);
   ASSERT_THAT(app->Install(profile()), HasValue());
   base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
   base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion2));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion2));
   base::FilePath bundle_path3 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion3));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion3));
   EXPECT_TRUE(RestrictDirectoryPermission(
-      GetBundleDirWithVersion(kBundleId, *IwaVersion::Create(kVersion2))));
+      GetBundleDirWithVersion(GetBundleId(), *IwaVersion::Create(kVersion2))));
   EXPECT_TRUE(RestrictDirectoryPermission(
-      GetBundleDirWithVersion(kBundleId, *IwaVersion::Create(kVersion3))));
+      GetBundleDirWithVersion(GetBundleId(), *IwaVersion::Create(kVersion3))));
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(
       get_bundle_future.Get(),
@@ -309,16 +314,16 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, CouldNotDeleteOneVersion) {
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion1);
   ASSERT_THAT(app->Install(profile()), HasValue());
   base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
   base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion2));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion2));
   base::FilePath bundle_path3 =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion3));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion3));
   EXPECT_TRUE(RestrictDirectoryPermission(
-      GetBundleDirWithVersion(kBundleId, *IwaVersion::Create(kVersion2))));
+      GetBundleDirWithVersion(GetBundleId(), *IwaVersion::Create(kVersion2))));
 
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
-  ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
+  ScheduleCommand(GetBundleId(), get_bundle_future.GetCallback());
 
   EXPECT_THAT(
       get_bundle_future.Get(),

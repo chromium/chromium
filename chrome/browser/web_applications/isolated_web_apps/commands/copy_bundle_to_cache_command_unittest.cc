@@ -34,12 +34,16 @@ using base::test::ValueIs;
 using web_package::SignedWebBundleId;
 using SessionType = IwaCacheClient::SessionType;
 
-const SignedWebBundleId kBundleId = test::GetDefaultEd25519WebBundleId();
-const web_package::test::Ed25519KeyPair kPublicKeyPair =
-    test::GetDefaultEd25519KeyPair();
-
 constexpr char kVersion1[] = "0.0.1";
 constexpr char kVersion2[] = "2.0.0";
+
+SignedWebBundleId GetBundleId() {
+  return test::GetDefaultEd25519WebBundleId();
+}
+
+web_package::test::Ed25519KeyPair GetPublicKeyPair() {
+  return test::GetDefaultEd25519KeyPair();
+}
 
 }  // namespace
 
@@ -112,7 +116,7 @@ class CopyBundleToCacheCommandTest
 
     std::unique_ptr<BundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
-            .BuildBundle(bundle_path, kPublicKeyPair);
+            .BuildBundle(bundle_path, GetPublicKeyPair());
     app->TrustSigningKey();
     app->FakeInstallPageState(profile());
     return app;
@@ -131,10 +135,10 @@ TEST_P(CopyBundleToCacheCommandTest, CopyBundleToCache) {
   ASSERT_THAT(app->Install(profile()), HasValue());
 
   TestFuture<CopyBundleToCacheResult> copy_future;
-  ScheduleCommand(kBundleId, copy_future.GetCallback());
+  ScheduleCommand(GetBundleId(), copy_future.GetCallback());
 
   base::FilePath bundle_path =
-      GetBundleFullPath(kBundleId, *IwaVersion::Create(kVersion1));
+      GetBundleFullPath(GetBundleId(), *IwaVersion::Create(kVersion1));
   EXPECT_THAT(copy_future.Get(),
               ValueIs(CopyBundleToCacheSuccess{bundle_path}));
   EXPECT_TRUE(base::PathExists(bundle_path));
@@ -142,7 +146,7 @@ TEST_P(CopyBundleToCacheCommandTest, CopyBundleToCache) {
 
 TEST_P(CopyBundleToCacheCommandTest, AppNotInstalled) {
   TestFuture<CopyBundleToCacheResult> copy_future;
-  ScheduleCommand(kBundleId, copy_future.GetCallback());
+  ScheduleCommand(GetBundleId(), copy_future.GetCallback());
 
   EXPECT_THAT(copy_future.Get(),
               ErrorIs(CopyBundleToCacheError::kAppNotInstalled));
@@ -157,7 +161,7 @@ TEST_P(CopyBundleToCacheCommandTest, FailedToCreateDir) {
   RestrictDirectoryPermission(CacheRootPath());
 
   TestFuture<CopyBundleToCacheResult> copy_future;
-  ScheduleCommand(kBundleId, copy_future.GetCallback());
+  ScheduleCommand(GetBundleId(), copy_future.GetCallback());
 
   EXPECT_THAT(copy_future.Get(),
               ErrorIs(CopyBundleToCacheError::kFailedToCreateDir));
@@ -170,12 +174,12 @@ TEST_P(CopyBundleToCacheCommandTest, FailedToCopyFile) {
   // Bundle directory is already created, but restricted, so copy to that
   // directory will fail.
   base::FilePath bundle_directory_path =
-      GetBundleDirWithVersion(kBundleId, *IwaVersion::Create(kVersion1));
+      GetBundleDirWithVersion(GetBundleId(), *IwaVersion::Create(kVersion1));
   EXPECT_TRUE(base::CreateDirectory(bundle_directory_path));
   RestrictDirectoryPermission(bundle_directory_path);
 
   TestFuture<CopyBundleToCacheResult> copy_future;
-  ScheduleCommand(kBundleId, copy_future.GetCallback());
+  ScheduleCommand(GetBundleId(), copy_future.GetCallback());
 
   EXPECT_THAT(copy_future.Get(),
               ErrorIs(CopyBundleToCacheError::kFailedToCopyFile));
@@ -183,15 +187,15 @@ TEST_P(CopyBundleToCacheCommandTest, FailedToCopyFile) {
 
 TEST_P(CopyBundleToCacheCommandTest, CopyBundleToCacheReplacesExistingFile) {
   base::FilePath existing_bundle =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion1);
   ASSERT_THAT(app->Install(profile()), HasValue());
 
   TestFuture<CopyBundleToCacheResult> copy_future;
-  ScheduleCommand(kBundleId, copy_future.GetCallback());
+  ScheduleCommand(GetBundleId(), copy_future.GetCallback());
 
   base::FilePath bundle_path =
-      GetBundleFullPath(kBundleId, *IwaVersion::Create(kVersion1));
+      GetBundleFullPath(GetBundleId(), *IwaVersion::Create(kVersion1));
   EXPECT_THAT(copy_future.Get(),
               ValueIs(CopyBundleToCacheSuccess{bundle_path}));
   EXPECT_TRUE(base::PathExists(bundle_path));
@@ -199,15 +203,15 @@ TEST_P(CopyBundleToCacheCommandTest, CopyBundleToCacheReplacesExistingFile) {
 
 TEST_P(CopyBundleToCacheCommandTest, CopyAnotherBundleVersion) {
   base::FilePath existing_bundle_path =
-      CreateBundleInCacheDir(kBundleId, *IwaVersion::Create(kVersion1));
+      CreateBundleInCacheDir(GetBundleId(), *IwaVersion::Create(kVersion1));
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion2);
   ASSERT_THAT(app->Install(profile()), HasValue());
 
   TestFuture<CopyBundleToCacheResult> copy_future;
-  ScheduleCommand(kBundleId, copy_future.GetCallback());
+  ScheduleCommand(GetBundleId(), copy_future.GetCallback());
 
   base::FilePath updated_bundle_path =
-      GetBundleFullPath(kBundleId, *IwaVersion::Create(kVersion2));
+      GetBundleFullPath(GetBundleId(), *IwaVersion::Create(kVersion2));
   EXPECT_THAT(copy_future.Get(),
               ValueIs(CopyBundleToCacheSuccess{updated_bundle_path}));
   // Check that both versions are cached.

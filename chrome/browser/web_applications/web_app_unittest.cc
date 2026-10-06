@@ -425,7 +425,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
 
   static constexpr std::string_view kUpdateManifestUrl =
       "https://update-manifest.com";
-  static const UpdateChannel kUpdateChannel = UpdateChannel::default_channel();
+  const UpdateChannel update_channel = UpdateChannel::default_channel();
 
   auto integrity_block_data = CreateIntegrityBlockData();
   app.SetIsolationData(
@@ -438,7 +438,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
               *IwaVersion::Create("2.0.0"), integrity_block_data))
           .SetIntegrityBlockData(integrity_block_data)
           .SetUpdateManifestUrl(GURL(kUpdateManifestUrl))
-          .SetUpdateChannel(kUpdateChannel)
+          .SetUpdateChannel(update_channel)
           .Build());
 
   EXPECT_TRUE(app.isolation_data().has_value());
@@ -479,7 +479,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
       base::ReplaceStringPlaceholders(
           kExpectedIsolationDataFormat,
           {ib_data_serialized, ib_data_serialized,
-           GURL(kUpdateManifestUrl).spec(), kUpdateChannel.ToString()},
+           GURL(kUpdateManifestUrl).spec(), update_channel.ToString()},
           /*offsets=*/nullptr),
       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 

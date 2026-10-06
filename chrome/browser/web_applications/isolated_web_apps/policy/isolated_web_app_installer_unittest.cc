@@ -54,16 +54,24 @@ constexpr char kVersion1[] = "1.0.0";
 constexpr char kVersion2[] = "7.0.6";
 constexpr char kVersion3[] = "7.0.8";
 
-const SignedWebBundleId kBundleId = test::GetDefaultEd25519WebBundleId();
-const Ed25519KeyPair kKeyPair = test::GetDefaultEd25519KeyPair();
-const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
-
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kCopyBundleToCacheSuccessMetric[] =
     "WebApp.Isolated.CopyBundleToCacheAfterInstallationSuccess";
 constexpr char kCopyBundleToCacheErrorMetric[] =
     "WebApp.Isolated.CopyBundleToCacheAfterInstallationError";
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+SignedWebBundleId GetBundleId() {
+  return test::GetDefaultEd25519WebBundleId();
+}
+
+Ed25519KeyPair GetKeyPair() {
+  return test::GetDefaultEd25519KeyPair();
+}
+
+UpdateChannel GetBetaChannel() {
+  return UpdateChannel::Create("beta").value();
+}
 
 }  // namespace
 
@@ -91,7 +99,7 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     data_provider_.Update(
-        [](auto& update) { update.AddToManagedAllowlist({kBundleId}); });
+        [](auto& update) { update.AddToManagedAllowlist({GetBundleId()}); });
   }
 
   // When multiple IWAs are created for the same `bundle_id` with different
@@ -101,11 +109,11 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
       const SignedWebBundleId& bundle_id,
       std::string_view version,
       bool update_install_page = true) {
-    CHECK_EQ(SignedWebBundleId::CreateForPublicKey(kKeyPair.public_key),
+    CHECK_EQ(SignedWebBundleId::CreateForPublicKey(GetKeyPair().public_key),
              bundle_id);
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
-            .BuildBundle(bundle_id, {kKeyPair});
+            .BuildBundle(bundle_id, {GetKeyPair()});
     app->TrustSigningKey();
 
     if (update_install_page) {
@@ -209,41 +217,41 @@ class IwaInstallerTest : public IwaInstallerBaseTest,
 };
 
 TEST_P(IwaInstallerTest, SimpleInstall) {
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion1);
 }
 
 TEST_P(IwaInstallerTest, InstallLatestVersion) {
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
-  CreateAndPublishIwaBundle(kBundleId, kVersion3);
-  CreateAndPublishIwaBundle(kBundleId, kVersion2,
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion3);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion2,
                             /*update_install_page=*/false);
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion3);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion3);
 }
 
 TEST_P(IwaInstallerTest, UpdateManifestDownloadFailed) {
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_NOT_FOUND, /*json_content=*/"");
+      GetBundleId(), net::HttpStatusCode::HTTP_NOT_FOUND, /*json_content=*/"");
 
-  EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  EXPECT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kErrorUpdateManifestDownloadFailed);
 }
 
 TEST_P(IwaInstallerTest, UpdateManifestParsingFailed) {
   const std::string kUpdateManifestNotJson = "not json";
 
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_OK, kUpdateManifestNotJson);
+      GetBundleId(), net::HttpStatusCode::HTTP_OK, kUpdateManifestNotJson);
 
-  EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  EXPECT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kErrorUpdateManifestParsingFailed);
 }
 
@@ -255,12 +263,12 @@ TEST_P(IwaInstallerTest, InvalidUpdateManifestSrcUrl) {
                               .Set("version", kVersion1)
                               .Set("src", "chrome-extension://app5.wbn")));
 
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_OK,
+      GetBundleId(), net::HttpStatusCode::HTTP_OK,
       *base::WriteJson(kUpdateManifestWithInvalidSrcUrl));
 
-  EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  EXPECT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
 }
 
@@ -277,10 +285,10 @@ TEST_P(IwaInstallerTest, CantDownloadWebBundle) {
                                    net::HttpStatusCode::HTTP_NOT_FOUND);
 
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_OK,
+      GetBundleId(), net::HttpStatusCode::HTTP_OK,
       *base::WriteJson(kUpdateManifestWithCustomBundleUrl));
 
-  EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  EXPECT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kErrorCantDownloadWebBundle);
 }
 
@@ -297,85 +305,87 @@ TEST_P(IwaInstallerTest, CantInstallFromWebBundle) {
   url_loader_factory().AddResponse(kBundleUrl, kBundleContent);
 
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_OK,
+      GetBundleId(), net::HttpStatusCode::HTTP_OK,
       *base::WriteJson(kUpdateManifestWithCustomBundleUrl));
 
-  EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  EXPECT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kErrorCantInstallFromWebBundle);
 }
 
 TEST_P(IwaInstallerTest, BetaChannel) {
-  CreateAndPublishIwaBundle(kBundleId, kVersion1, kBetaChannel);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1, GetBetaChannel());
 
-  ASSERT_EQ(
-      RunInstallerAndWaitForResult(kBundleId, UpdateChannel(kBetaChannel)),
-      IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId(),
+                                         UpdateChannel(GetBetaChannel())),
+            IwaInstallerResult::Type::kSuccess);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion1);
 }
 
 TEST_P(IwaInstallerTest, InstallBetaChannelWhenRequested) {
-  CreateAndPublishIwaBundle(kBundleId, kVersion1, kBetaChannel);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1, GetBetaChannel());
   // Default channel.
-  CreateAndPublishIwaBundle(kBundleId, kVersion2,
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion2,
                             /*update_install_page=*/false);
 
-  ASSERT_EQ(
-      RunInstallerAndWaitForResult(kBundleId, UpdateChannel(kBetaChannel)),
-      IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId(),
+                                         UpdateChannel(GetBetaChannel())),
+            IwaInstallerResult::Type::kSuccess);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion1);
 }
 
 TEST_P(IwaInstallerTest, NoVersionInBetaChannel) {
   // Default channel.
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
 
-  ASSERT_EQ(
-      RunInstallerAndWaitForResult(kBundleId, UpdateChannel(kBetaChannel)),
-      IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId(),
+                                         UpdateChannel(GetBetaChannel())),
+            IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
 }
 
 TEST_P(IwaInstallerTest, InstallPinnedVersion) {
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
-  CreateAndPublishIwaBundle(kBundleId, kVersion2);
-  CreateAndPublishIwaBundle(kBundleId, kVersion3,
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion2);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion3,
                             /*update_install_page=*/false);
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(
-                kBundleId, /*pinned_version=*/*IwaVersion::Create(kVersion2)),
-            IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion2);
+  ASSERT_EQ(
+      RunInstallerAndWaitForResult(
+          GetBundleId(), /*pinned_version=*/*IwaVersion::Create(kVersion2)),
+      IwaInstallerResult::Type::kSuccess);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion2);
 }
 
 TEST_P(IwaInstallerTest, NoPinnedVersionInUpdateManifest) {
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
-  CreateAndPublishIwaBundle(kBundleId, kVersion3);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion3);
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(
-                kBundleId, /*pinned_version=*/*IwaVersion::Create(kVersion2)),
-            IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
+  ASSERT_EQ(
+      RunInstallerAndWaitForResult(
+          GetBundleId(), /*pinned_version=*/*IwaVersion::Create(kVersion2)),
+      IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
 }
 
 TEST_P(IwaInstallerTest, InstallPinnedVersionFromBetaChannel) {
   // Default channel.
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
-  CreateAndPublishIwaBundle(kBundleId, kVersion2, kBetaChannel);
-  CreateAndPublishIwaBundle(kBundleId, kVersion3, kBetaChannel,
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion2, GetBetaChannel());
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion3, GetBetaChannel(),
                             /*update_install_page=*/false);
 
   ASSERT_EQ(RunInstallerAndWaitForResult(
-                kBundleId, UpdateChannel(kBetaChannel),
+                GetBundleId(), UpdateChannel(GetBetaChannel()),
                 /*pinned_version=*/*IwaVersion::Create(kVersion2)),
             IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion2);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion2);
 }
 
 TEST_P(IwaInstallerTest, PinnedVersionIsAvailableInWrongChannel) {
   // Default channel.
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
-  CreateAndPublishIwaBundle(kBundleId, kVersion2);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion2);
 
   ASSERT_EQ(RunInstallerAndWaitForResult(
-                kBundleId, UpdateChannel(kBetaChannel),
+                GetBundleId(), UpdateChannel(GetBetaChannel()),
                 /*pinned_version=*/*IwaVersion::Create(kVersion1)),
             IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined);
 }
@@ -387,11 +397,11 @@ TEST_P(IwaInstallerTest, CachingEnabled) {
       features::kIsolatedWebAppBundleCache);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -475,42 +485,42 @@ class IwaMgsCachingInstallerTest : public IwaInstallerBaseTest {
 TEST_F(IwaMgsCachingInstallerTest,
        BundleCopiedToCacheAfterSuccessfulInstallation) {
   ExpectEmptyCopyBundleMetrics();
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kSuccess);
 
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion1);
   // Checks that bundle exists in cache after successful installation.
   EXPECT_TRUE(base::PathExists(
-      GetFullBundlePath(kBundleId, *IwaVersion::Create(kVersion1))));
+      GetFullBundlePath(GetBundleId(), *IwaVersion::Create(kVersion1))));
   ExpectSuccessCopyBundleMetric();
 }
 
 TEST_F(IwaMgsCachingInstallerTest,
        BundleNotCopiedToCacheAfterFailedInstallation) {
   ExpectEmptyCopyBundleMetrics();
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_NOT_FOUND, /*json_content=*/"");
+      GetBundleId(), net::HttpStatusCode::HTTP_NOT_FOUND, /*json_content=*/"");
 
-  EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  EXPECT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kErrorUpdateManifestDownloadFailed);
 
   EXPECT_FALSE(base::PathExists(
-      GetFullBundlePath(kBundleId, *IwaVersion::Create(kVersion1))));
+      GetFullBundlePath(GetBundleId(), *IwaVersion::Create(kVersion1))));
   ExpectEmptyCopyBundleMetrics();
 }
 
 TEST_F(IwaMgsCachingInstallerTest, FailedToCopyBundleToCache) {
   ExpectEmptyCopyBundleMetrics();
   DestroyCacheDir();
-  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+  CreateAndPublishIwaBundle(GetBundleId(), kVersion1);
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kSuccess);
 
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion1);
   ExpectErrorCopyBundleMetric(CopyBundleToCacheError::kFailedToCreateDir);
 }
 
@@ -518,16 +528,16 @@ TEST_F(IwaMgsCachingInstallerTest, InstallFromCache) {
   histogram_tester_.ExpectTotalCount("WebApp.Isolated.InstallFromCache", 0);
   // Change the response, so the installation can only happen from the cache.
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      CreateIwaBundle(kBundleId, kVersion1);
+      CreateIwaBundle(GetBundleId(), kVersion1);
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_NOT_FOUND,
+      GetBundleId(), net::HttpStatusCode::HTTP_NOT_FOUND,
       /*json_content=*/"");
 
   CopyBundleToCache(app->web_bundle_id(), app->version(), app->path());
 
-  ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  ASSERT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  AssertAppInstalledAtVersion(GetBundleId(), kVersion1);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("WebApp.Isolated.InstallFromCache"),
       BucketsAre(base::Bucket(true, 1)));
@@ -537,9 +547,9 @@ TEST_F(IwaMgsCachingInstallerTest, InstallFromCacheFailedRetryFromInternet) {
   histogram_tester_.ExpectTotalCount("WebApp.Isolated.InstallFromCache", 0);
   // Change the response, so the installation can only happen from the cache.
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      CreateIwaBundle(kBundleId, kVersion1);
+      CreateIwaBundle(GetBundleId(), kVersion1);
   test_update_server().SetServedUpdateManifestResponse(
-      kBundleId, net::HttpStatusCode::HTTP_NOT_FOUND,
+      GetBundleId(), net::HttpStatusCode::HTTP_NOT_FOUND,
       /*json_content=*/"");
 
   // Installer will try to install the IWA from cache since the cache file
@@ -550,7 +560,7 @@ TEST_F(IwaMgsCachingInstallerTest, InstallFromCacheFailedRetryFromInternet) {
   base::CreateTemporaryFile(&temp_file);
   CopyBundleToCache(app->web_bundle_id(), app->version(), temp_file);
 
-  EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
+  EXPECT_EQ(RunInstallerAndWaitForResult(GetBundleId()),
             IwaInstallerResult::Type::kErrorUpdateManifestDownloadFailed);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("WebApp.Isolated.InstallFromCache"),

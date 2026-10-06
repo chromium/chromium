@@ -22,27 +22,31 @@ namespace web_app {
 
 namespace {
 
-const base::FilePath kInputIcon{
-    FILE_PATH_LITERAL("chrome/test/data/web_apps/input_icon_for_masking.png")};
-const base::FilePath kMaskedMacIcon{
-    FILE_PATH_LITERAL("chrome/test/data/web_apps/golden_masked_icon_mac.png")};
-const base::FilePath kMaskedChromeOsIcon{FILE_PATH_LITERAL(
-    "chrome/test/data/web_apps/golden_masked_icon_chromeos.png")};
+constexpr base::FilePath::CharType kInputIcon[] =
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/input_icon_for_masking.png");
+#if BUILDFLAG(IS_MAC)
+constexpr base::FilePath::CharType kMaskedMacIcon[] =
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/golden_masked_icon_mac.png");
+#elif BUILDFLAG(IS_CHROMEOS)
+constexpr base::FilePath::CharType kMaskedChromeOsIcon[] = FILE_PATH_LITERAL(
+    "chrome/test/data/web_apps/golden_masked_icon_chromeos.png");
+#endif
 
 base::FilePath GetExpectedIconsFilePath() {
 #if BUILDFLAG(IS_MAC)
-  return kMaskedMacIcon;
+  return base::FilePath(kMaskedMacIcon);
 #elif BUILDFLAG(IS_CHROMEOS)
-  return kMaskedChromeOsIcon;
+  return base::FilePath(kMaskedChromeOsIcon);
 #else
-  return kInputIcon;
+  return base::FilePath(kInputIcon);
 #endif
 }
 
 TEST(IconMaskingTest, Basic) {
   base::test::TaskEnvironment task_environment;
   const SkBitmap input_bitmap =
-      web_app::test::LoadTestImageFromDisk(kInputIcon).AsBitmap();
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kInputIcon))
+          .AsBitmap();
 
   base::test::TestFuture<SkBitmap> bitmap_future;
   MaskIconOnOs(input_bitmap, bitmap_future.GetCallback());

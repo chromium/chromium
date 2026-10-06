@@ -118,9 +118,12 @@ using ::testing::SizeIs;
 using ::testing::VariantWith;
 using ::testing::WithArg;
 
-const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 constexpr char kInitialIwaVersion[] = "1.0.0";
 constexpr char kUpdateIwaVersion[] = "2.0.0";
+
+UpdateChannel GetBetaChannel() {
+  return UpdateChannel::Create("beta").value();
+}
 
 using UpdateDiscoveryTaskFuture = base::test::TestFuture<
     IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus>;
@@ -485,13 +488,14 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DiscoversAndPreparesUpdateOfPolicyInstalledAppsOnBetaChannel) {
   // Initial Beta channel bundle installation.
   {
-    test_update_server().AddBundle(CreateIwa1Bundle(kInitialIwaVersion),
-                                   std::vector<UpdateChannel>{kBetaChannel});
+    test_update_server().AddBundle(
+        CreateIwa1Bundle(kInitialIwaVersion),
+        std::vector<UpdateChannel>{GetBetaChannel()});
 
     test::AddForceInstalledIwaToPolicy(
         profile()->GetPrefs(),
         test_update_server().CreateForceInstallPolicyEntry(
-            GetIwa1WebBundleId(), /*update_channel=*/kBetaChannel));
+            GetIwa1WebBundleId(), /*update_channel=*/GetBetaChannel()));
 
     web_app::WebAppTestInstallObserver(profile()).BeginListeningAndWait(
         {GetAppId(GetIwa1WebBundleId())});
@@ -501,7 +505,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   }
 
   test_update_server().AddBundle(CreateIwa1Bundle(kUpdateIwaVersion),
-                                 std::vector<UpdateChannel>{kBetaChannel});
+                                 std::vector<UpdateChannel>{GetBetaChannel()});
 
   task_environment().FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
@@ -523,7 +527,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   InitialIwaBundleForceInstall(CreateIwa1Bundle(kInitialIwaVersion));
 
   test_update_server().AddBundle(CreateIwa1Bundle("4.0.0"),
-                                 std::vector<UpdateChannel>{kBetaChannel});
+                                 std::vector<UpdateChannel>{GetBetaChannel()});
 
   UpdateDiscoveryTaskFuture update_future;
   UpdateDiscoveryTaskResultWaiter update_waiter(
