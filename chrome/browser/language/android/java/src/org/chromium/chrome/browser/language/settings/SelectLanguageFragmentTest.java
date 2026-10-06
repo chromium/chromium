@@ -12,7 +12,6 @@ import androidx.fragment.app.FragmentFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -21,7 +20,6 @@ import java.util.Set;
 
 /** Unit tests for {@link SelectLanguageFragment} and its per-selection subclasses. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SelectLanguageFragmentTest {
     @Test
     public void testEveryPickerOffersADistinctList() {

@@ -55,7 +55,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link GlicExperimentalOptInUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE)
 public class GlicExperimentalOptInUiCoordinatorUnitTest {
     private static final long NATIVE_PTR = 12345L;
