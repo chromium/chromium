@@ -1226,20 +1226,23 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             mControlsAnimator = null;
             mBrowserDrivenHideAnimator = null;
         }
-        mIsAnimatingToShow = true;
 
-        setOffsetOverridden(true);
-
-        boolean isNtpScrollOffEnabled =
-                BottomBarConfigUtils.isNtpScrollOffEnabled(getTab(), mActivity);
-        final float hiddenRatio =
-                isNtpScrollOffEnabled ? getBottomControlHiddenRatio() : getTopControlHiddenRatio();
-
-        int startOffset = isNtpScrollOffEnabled ? getBottomControlOffset() : getTopControlOffset();
-        if (startOffset == 0) {
+        final int startTopOffset = getTopControlOffset();
+        final int startBottomOffset = getBottomControlOffset();
+        if (startTopOffset == 0 && startBottomOffset == 0) {
+            resetControlsOffsetOverridden();
             return;
         }
-        mControlsAnimator = ValueAnimator.ofInt(startOffset, 0);
+
+        mIsAnimatingToShow = true;
+        setOffsetOverridden(true);
+
+        final float hiddenRatio =
+                Math.max(
+                        startTopOffset != 0 ? getTopControlHiddenRatio() : 0.f,
+                        startBottomOffset != 0 ? getBottomControlHiddenRatio() : 0.f);
+
+        mControlsAnimator = ValueAnimator.ofFloat(1.f, 0.f);
         mControlsAnimator.setDuration(
                 (long) Math.abs(hiddenRatio * CONTROLS_ANIMATION_DURATION_MS));
         mControlsAnimator.addListener(
@@ -1262,11 +1265,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 });
         mControlsAnimator.addUpdateListener(
                 (animator) -> {
-                    int value = (int) animator.getAnimatedValue();
+                    float fraction = (float) animator.getAnimatedValue();
                     updateBrowserControlsOffsets(
                             false,
-                            isNtpScrollOffEnabled ? 0 : value,
-                            isNtpScrollOffEnabled ? value : 0,
+                            Math.round(fraction * startTopOffset),
+                            Math.round(fraction * startBottomOffset),
                             getTopControlsHeight(),
                             getTopControlsMinHeight(),
                             getBottomControlsMinHeight());
@@ -1283,12 +1286,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         }
         mIsAnimatingToShow = false;
 
-        setOffsetOverridden(true);
-
         boolean isNtpScrollOffEnabled =
                 BottomBarConfigUtils.isNtpScrollOffEnabled(getTab(), mActivity);
-        final float hiddenRatio =
-                isNtpScrollOffEnabled ? getBottomControlHiddenRatio() : getTopControlHiddenRatio();
 
         final int bottomControlHeight = getBottomControlsHeight();
         final int bottomControlOffset = getBottomControlOffset();
@@ -1312,10 +1311,22 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             return;
         }
 
+        setOffsetOverridden(true);
+
+        final float remaining =
+                isNtpScrollOffEnabled
+                        ? 1.f - getBottomControlHiddenRatio()
+                        : Math.max(
+                                topControlOffset != targetTopOffset
+                                        ? 1.f - getTopControlHiddenRatio()
+                                        : 0.f,
+                                bottomControlOffset != targetBottomOffset
+                                        ? 1.f - getBottomControlHiddenRatio()
+                                        : 0.f);
+
         mControlsAnimator = ValueAnimator.ofFloat(0.f, 1.f);
         mBrowserDrivenHideAnimator = mControlsAnimator;
-        mControlsAnimator.setDuration(
-                (long) Math.abs((1.f - hiddenRatio) * CONTROLS_ANIMATION_DURATION_MS));
+        mControlsAnimator.setDuration((long) Math.abs(remaining * CONTROLS_ANIMATION_DURATION_MS));
         mControlsAnimator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override

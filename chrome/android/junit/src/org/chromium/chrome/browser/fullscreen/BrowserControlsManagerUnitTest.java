@@ -985,6 +985,111 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
+    public void testShowAndroidControlsAnimated_alreadyShown_doesNotLatchOffsetOverridden() {
+        mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager.setBottomControlsHeight(TOOLBAR_HEIGHT, 0);
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
+        assertFalse(mBrowserControlsManager.offsetOverridden());
+
+        mBrowserControlsManager.showAndroidControls(true);
+
+        assertFalse(mBrowserControlsManager.offsetOverridden());
+    }
+
+    @Test
+    public void
+            testShowAndroidControlsAnimated_cancelsHideAtZeroOffset_doesNotLatchOffsetOverridden() {
+        mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager.setBottomControlsHeight(TOOLBAR_HEIGHT, 0);
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
+
+        mBrowserControlsManager.hideAndroidControls(true);
+        assertTrue(mBrowserControlsManager.offsetOverridden());
+        assertNotNull(mBrowserControlsManager.getControlsAnimatorForTesting());
+
+        mBrowserControlsManager.showAndroidControls(true);
+
+        assertFalse(mBrowserControlsManager.offsetOverridden());
+        assertNull(mBrowserControlsManager.getControlsAnimatorForTesting());
+    }
+
+    @Test
+    public void testShowAndroidControlsAnimated_bottomHiddenTopShown_showsBottomControls() {
+        mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager.setBottomControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager.setPositionsForTab(0, TOOLBAR_HEIGHT, TOOLBAR_HEIGHT, 0, 0);
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsManager.getBottomControlOffset());
+
+        mBrowserControlsManager.showAndroidControls(true);
+
+        assertNotNull(mBrowserControlsManager.getControlsAnimatorForTesting());
+        mBrowserControlsManager.getControlsAnimatorForTesting().end();
+        assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
+    }
+
+    @Test
+    public void testHideAndroidControlsAnimated_alreadyHidden_doesNotLatchOffsetOverridden() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+        // Let the transient SHOWN constraint from the tab switch expire so the hide isn't blocked.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(
+                BrowserControlsState.BOTH,
+                (int) mBrowserControlsManager.getBrowserVisibilityDelegate().get());
+
+        mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager.setBottomControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(mTab, -TOOLBAR_HEIGHT, TOOLBAR_HEIGHT, 0, 0, 0);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsManager.getBottomControlOffset());
+        assertEquals(0, mBrowserControlsManager.getContentOffset());
+        assertFalse(mBrowserControlsManager.offsetOverridden());
+
+        mBrowserControlsManager.hideAndroidControls(true);
+
+        assertFalse(mBrowserControlsManager.offsetOverridden());
+        assertNull(mBrowserControlsManager.getControlsAnimatorForTesting());
+    }
+
+    @Test
+    public void testHideAndroidControlsAnimated_topHiddenBottomShown_animatesBottom() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+        // Let the transient SHOWN constraint from the tab switch expire so the hide isn't blocked.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(
+                BrowserControlsState.BOTH,
+                (int) mBrowserControlsManager.getBrowserVisibilityDelegate().get());
+
+        mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager.setBottomControlsHeight(TOOLBAR_HEIGHT, 0);
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(mTab, -TOOLBAR_HEIGHT, 0, 0, 0, 0);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
+        assertFalse(mBrowserControlsManager.offsetOverridden());
+
+        mBrowserControlsManager.hideAndroidControls(true);
+
+        assertTrue(mBrowserControlsManager.offsetOverridden());
+        ValueAnimator animator = mBrowserControlsManager.getControlsAnimatorForTesting();
+        assertNotNull(animator);
+        assertTrue(animator.getDuration() > 0);
+
+        animator.end();
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsManager.getBottomControlOffset());
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+    }
+
+    @Test
     public void testOffsetTagsChanged_HiddenConstraints_UpdatesOffsetsEvenWhenOnScreen() {
         remakeWithoutSpy();
         notifyAddTab(mTab);
