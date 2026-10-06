@@ -1674,6 +1674,9 @@ export class OmniboxPopupSearchboxElement extends
     }
 
     if (e.key === 'Tab') {
+      if (e.ctrlKey || e.altKey && e.metaKey) {
+        return;
+      }
       const isShift = e.shiftKey;
       const isAimButtonFocused = this.isAiModeVirtualFocused() ||
           this.shadowRoot?.activeElement === this.$.composeButton;
