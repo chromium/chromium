@@ -10,6 +10,12 @@
 test(t => {
   assert_false("modelContext" in document, "document.modelContext should NOT be exposed when no origin trial token is present");
 }, "document.modelContext is not exposed by default");
+test(t => {
+  assert_false("agentInvoked" in SubmitEvent.prototype,
+      "SubmitEvent.agentInvoked should NOT be exposed");
+  assert_false("respondWith" in SubmitEvent.prototype,
+      "SubmitEvent.respondWith() should NOT be exposed");
+}, "Declarative WebMCP is not enabled by default");
 </script>
 </body>
 </html>

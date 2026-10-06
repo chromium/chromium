@@ -78,6 +78,7 @@ class HTMLFormMcpToolTest : public PageTestBase {
 
  private:
   ScopedWebMCPForTest scoped_feature{true};
+  ScopedDeclarativeWebMCPForTest scoped_declarative_feature{true};
   ScopedWebMCPDeclarativeFileInputForTest scoped_file_feature{true};
 };
 

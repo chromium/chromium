@@ -8035,7 +8035,7 @@ void Document::FinishedParsing() {
   SetParsingState(kInDOMContentLoaded);
   DocumentParserTiming::From(*this).MarkParserStop();
 
-  if (RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
+  if (ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext())) {
     if (auto* model_context = ModelContextSupplement::GetIfExists(*this)) {
       model_context->DidFinishParsing();
     }

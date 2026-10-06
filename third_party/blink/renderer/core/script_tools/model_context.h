@@ -126,6 +126,14 @@ class CORE_EXPORT ModelContext : public EventTarget,
  public:
   ModelContext(Document& document);
 
+  // Returns true if declarative (<form>-based) WebMCP is enabled in `context`.
+  // Declarative WebMCP is gated by its own runtime feature (which is also
+  // enabled by the WebMCP origin trial), but it builds on top of the
+  // imperative WebMCP infrastructure, so this also requires `WebMCP` to be
+  // enabled (via flag or origin trial). This ensures the kWebMCP kill switch
+  // disables both.
+  static bool IsDeclarativeWebMCPEnabled(const ExecutionContext* context);
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(toolchange, kToolchange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(toolactivated, kToolactivated)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(toolcancel, kToolcancel)

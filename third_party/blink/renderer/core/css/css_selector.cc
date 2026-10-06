@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_install_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/script_tools/model_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -934,7 +935,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if ((match->type == CSSSelector::kPseudoToolFormActive ||
        match->type == CSSSelector::kPseudoToolSubmitActive) &&
       document &&
-      !RuntimeEnabledFeatures::WebMCPEnabled(document->GetExecutionContext())) {
+      !ModelContext::IsDeclarativeWebMCPEnabled(
+          document->GetExecutionContext())) {
     return CSSSelector::kPseudoUnknown;
   }
 

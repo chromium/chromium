@@ -1965,6 +1965,7 @@ TEST_P(LangParsingFlagDependentTest, ExtendedLangRangesParsing) {
 
 TEST(CSSSelectorParserTest, ToolFormSubmitActive_Disabled) {
   ScopedWebMCPForTest scoped_webmcp_feature(false);
+  ScopedDeclarativeWebMCPForTest scoped_declarative_webmcp_feature(false);
   ScopedWebMCPTestingForTest scoped_webmcp_testing_feature(false);
   ScopedWebMCPDeclarativeFileInputForTest scoped_webmcp_file_input_feature(
       false);
@@ -1976,7 +1977,8 @@ TEST(CSSSelectorParserTest, ToolFormSubmitActive_Disabled) {
   Document& document = dummy_holder->GetDocument();
   auto* context = MakeGarbageCollected<CSSParserContext>(document);
 
-  // Test that these pseudo classes are not valid with the WebMCP flag disabled
+  // Test that these pseudo classes are not valid with the DeclarativeWebMCP
+  // flag disabled.
   HeapVector<CSSSelector> arena;
   CSSParserTokenStream stream1(":tool-form-active");
   base::span<CSSSelector> tool_form_active = CSSSelectorParser::ParseSelector(

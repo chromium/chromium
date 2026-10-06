@@ -362,7 +362,7 @@ void HTMLFormElement::ReportInvalidMCPFormIssueIfNeeded(
 // when `toolname` or `tooldescription` attributes are added, removed, or
 // changed, and when the children of `this` are changed.
 void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
-  if (!RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
+  if (!ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext())) {
     return;
   }
   // Declarative WebMCP tools require an active frame to bind to the browser
@@ -426,7 +426,7 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
 }
 
 void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
-  CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
+  CHECK(ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext()));
 
   String name = FastGetAttribute(html_names::kToolnameAttr);
   String description = FastGetAttribute(html_names::kTooldescriptionAttr);
@@ -805,7 +805,7 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
           submitter && RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
                            submitter->GetExecutionContext()));
       if (declarative_webmcp_call) {
-        CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
+        CHECK(ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext()));
         submit_event_init->setAgentInvoked(true);
       }
       SubmitEvent* submit_event = MakeGarbageCollected<SubmitEvent>(
@@ -861,7 +861,7 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
     }
     ScheduleFormSubmission(event, submitter);
     if (executing_tool && executing_tool->CurrentlyRunning()) {
-      CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
+      CHECK(ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext()));
       // Return a null string to indicate that a navigation has been
       // triggered.
       executing_tool->CallDoneCallback(base::ok(String()));
@@ -875,7 +875,7 @@ void HTMLFormElement::submitFromJavaScript() {
   // If a WebMCP tool is running, resolving it here handles the case where
   // the site manually called form.submit() from inside a submit handler.
   if (active_webmcp_tool_ && active_webmcp_tool_->CurrentlyRunning()) {
-    CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
+    CHECK(ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext()));
     active_webmcp_tool_->CallDoneCallback(base::ok(String()));
   }
 }
@@ -1749,7 +1749,7 @@ void HTMLFormElement::UseCountPropertyAccess(
 }
 
 void HTMLFormElement::ScheduleWebMCPSchemaUpdateIfActive() {
-  if (!RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
+  if (!ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext())) {
     return;
   }
   if (!active_webmcp_tool_) {

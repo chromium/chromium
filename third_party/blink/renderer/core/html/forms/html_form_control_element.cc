@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/script_tools/model_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -142,7 +143,7 @@ void HTMLFormControlElement::DetachLayoutTree(bool performing_reattach) {
 
 void HTMLFormControlElement::AttributeChanged(
     const AttributeModificationParams& params) {
-  if (RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
+  if (ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext())) {
     if (HTMLFormElement* form = Form()) {
       form->ScheduleWebMCPSchemaUpdateIfActive();
     }
@@ -376,7 +377,7 @@ bool HTMLFormControlElement::MatchesValidityPseudoClasses() const {
 }
 
 String HTMLFormControlElement::GetWebMCPParameterName() const {
-  CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
+  CHECK(ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext()));
   String name = String(GetName()).StripWhiteSpace();
   // Eventually add more logic here to use the label, tool-param-name, etc.
   return name;

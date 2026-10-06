@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -311,6 +312,12 @@ class ModelContext::ToolFunctionFinishedCallback
   const base::UnguessableToken invocation_id_;
   const bool success_;
 };
+
+// static
+bool ModelContext::IsDeclarativeWebMCPEnabled(const ExecutionContext* context) {
+  return RuntimeEnabledFeatures::DeclarativeWebMCPEnabled(context) &&
+         RuntimeEnabledFeatures::WebMCPEnabled(context);
+}
 
 ModelContext::ModelContext(Document& document)
     : document_(document),

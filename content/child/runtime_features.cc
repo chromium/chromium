@@ -267,6 +267,11 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"CompressionDictionaryTransport",
            network::features::kCompressionDictionaryTransport},
           {"CookieStoreAPIMaxAge", blink::features::kCookieStoreAPIMaxAge},
+          // Overriding kWebMCP (e.g. --enable-features=WebMCP) controls both
+          // imperative and declarative WebMCP. An explicit kDeclarativeWebMCP
+          // override still takes precedence, since it is applied afterwards by
+          // UpdateStatusFromBaseFeatures().
+          {"DeclarativeWebMCP", blink::features::kWebMCP, kSetOnlyIfOverridden},
           {"DocumentPolicyIncludeJSCallStacksInCrashReports",
            blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports,
            kSetOnlyIfOverridden},

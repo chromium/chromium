@@ -18,6 +18,14 @@ tools/origin_trials/generate_token.py https://web-platform.test:8444/ WebMCP --e
 test(t => {
   assert_false("modelContext" in document, "document.modelContext should NOT be exposed when the kill-switch is active, even with a valid Origin Trial token!");
 }, "document.modelContext is not exposed when WebMCP is kill-switched");
+// Declarative WebMCP shares the "WebMCP" Origin Trial, which can't be enabled
+// when the WebMCP base::Feature is disabled.
+test(t => {
+  assert_false("agentInvoked" in SubmitEvent.prototype,
+      "SubmitEvent.agentInvoked should NOT be exposed when the kill-switch is active");
+  assert_false("respondWith" in SubmitEvent.prototype,
+      "SubmitEvent.respondWith() should NOT be exposed when the kill-switch is active");
+}, "Declarative WebMCP is not enabled when WebMCP is kill-switched");
 </script>
 </body>
 </html>

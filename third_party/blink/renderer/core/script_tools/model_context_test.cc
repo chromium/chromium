@@ -184,6 +184,7 @@ class ModelContextTest : public ModelContextTestBase {
 
  private:
   ScopedWebMCPForTest scoped_webmcp_{true};
+  ScopedDeclarativeWebMCPForTest scoped_declarative_webmcp_{true};
 };
 
 TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
@@ -1020,6 +1021,7 @@ class ModelContextMetricsTest : public SimTest {
 
  private:
   ScopedWebMCPForTest scoped_webmcp_{true};
+  ScopedDeclarativeWebMCPForTest scoped_declarative_webmcp_{true};
 };
 
 TEST_F(ModelContextMetricsTest, RecordToolCountHistogram) {

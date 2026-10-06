@@ -14,6 +14,12 @@ tools/origin_trials/generate_token.py https://web-platform.test:8444/ WebMCP --e
 test(t => {
   assert_true("modelContext" in document, "document.modelContext should be exposed when the origin trial token is present");
 }, "document.modelContext is exposed via Origin Trial");
+test(t => {
+  assert_true("agentInvoked" in SubmitEvent.prototype,
+      "SubmitEvent.agentInvoked should be exposed");
+  assert_true("respondWith" in SubmitEvent.prototype,
+      "SubmitEvent.respondWith() should be exposed");
+}, "Declarative WebMCP is enabled via the WebMCP Origin Trial");
 </script>
 </body>
 </html>

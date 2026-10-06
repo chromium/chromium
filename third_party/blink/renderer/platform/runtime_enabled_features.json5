@@ -2353,6 +2353,38 @@
       status: "test",
     },
     {
+      // Declarative WebMCP: tools declared via HTML <form> attributes
+      // (`toolname`, `tooldescription`, ...), and the associated CSS
+      // pseudo-classes and SubmitEvent extensions. It builds on top of the
+      // imperative `WebMCP` feature (`document.modelContext`).
+      //
+      // This shares the "WebMCP" origin trial with imperative WebMCP, so that
+      // declarative WebMCP keeps working for origin trial participants, while
+      // still being independently controllable (e.g. kill-switchable) through
+      // its own base feature. Declarative WebMCP builds on the imperative
+      // infrastructure, so C++ callers should use
+      // ModelContext::IsDeclarativeWebMCPEnabled(), which also requires
+      // `WebMCP` to be enabled (and thus honors the kWebMCP kill switch).
+      // `depends_on` can't be used here since depending on an origin trial
+      // feature is not supported.
+      //
+      // Overriding the kWebMCP base feature (e.g. --enable-features=WebMCP)
+      // also sets this feature; see content/child/runtime_features.cc. An
+      // explicit kDeclarativeWebMCP override takes precedence.
+      name: "DeclarativeWebMCP",
+      origin_trial_feature_name: "WebMCP",
+      origin_trial_allows_third_party: true,
+      public: true,
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      implied_by: [
+        "WebMCPDeclarativeFileInput",
+        "WebMCPFormAssociatedCustomElements",
+        "WebMCPTesting"
+      ],
+      status: "experimental",
+    },
+    {
       // Killswitch for https://crbug.com/400317114 fix.
       // This lands in M142, and the flag can be removed in M144.
       name: "DelegatesFocusTextControlInputFix",
@@ -7341,6 +7373,8 @@
       status: "stable",
     },
     {
+      // Imperative WebMCP: `document.modelContext` and its tool
+      // registration/execution APIs. See also `DeclarativeWebMCP`.
       name: "WebMCP",
       origin_trial_feature_name: "WebMCP",
       origin_trial_allows_third_party: true,
