@@ -1188,7 +1188,8 @@ public class ChromeContextMenuPopulatorTest {
     })
     public void testVideoCopyFrame() {
         setAllMandatoryFlowsComplete();
-        ContextMenuParams params = createVideoParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+        ContextMenuParams params =
+                createVideoParams(ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         // Mock this method because it goes into native code to record a histogram.
@@ -1226,7 +1227,8 @@ public class ChromeContextMenuPopulatorTest {
                 .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
 
         setAllMandatoryFlowsComplete();
-        ContextMenuParams params = createVideoParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+        ContextMenuParams params =
+                createVideoParams(ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         // Mock this method because it goes into native code to record a histogram.
@@ -1248,7 +1250,8 @@ public class ChromeContextMenuPopulatorTest {
     })
     public void testVideoDownloadVideoFrame() {
         setAllMandatoryFlowsComplete();
-        ContextMenuParams params = createVideoParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+        ContextMenuParams params =
+                createVideoParams(ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         // Mock this method because it goes into native code to record a histogram.
@@ -1278,7 +1281,40 @@ public class ChromeContextMenuPopulatorTest {
     @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
     public void testVideoEncrypted() {
         FirstRunStatus.setFirstRunFlowComplete(true);
-        ContextMenuParams params = createVideoParams(ContextMenuDataMediaFlags.MEDIA_ENCRYPTED);
+        ContextMenuParams params =
+                createVideoParams(
+                        ContextMenuDataMediaFlags.MEDIA_ENCRYPTED
+                                | ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+
+        ListItem downloadVideoFrameItem =
+                findItemWithTitle(
+                        menuState,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.contextmenu_download_video_frame));
+        assertNull("Should NOT have 'Download video frame' menu item.", downloadVideoFrameItem);
+
+        ListItem copyVideoFrameItem =
+                findItemWithTitle(
+                        menuState,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.contextmenu_copy_video_frame));
+        assertNull("Should NOT have 'Copy video frame' menu item.", copyVideoFrameItem);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID
+    })
+    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    public void testVideoWithoutReadableFrame() {
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams params = createVideoParams(ContextMenuDataMediaFlags.MEDIA_NONE);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         List<ModelList> menuState = mPopulator.buildContextMenu();
@@ -1308,13 +1344,13 @@ public class ChromeContextMenuPopulatorTest {
     })
     public void testVideoDownloadVideoFrame_cannotSaveMedia() {
         setAllMandatoryFlowsComplete();
-        // Set canSaveMedia to false.
+        // Set canSaveMedia to false (e.g., MediaSource video like YouTube).
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
                         new GURL(PAGE_URL),
                         new GURL(IMAGE_SRC_URL),
                         "VIDEO!",
@@ -1334,12 +1370,17 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         List<ModelList> menuState = mPopulator.buildContextMenu();
 
+        assertNull(
+                "Should NOT have 'Save video' menu item when canSaveMedia is false.",
+                findItemWithId(menuState, R.id.contextmenu_save_video));
         ListItem downloadVideoFrameItem =
                 findItemWithTitle(
                         menuState,
                         ContextUtils.getApplicationContext()
                                 .getString(R.string.contextmenu_download_video_frame));
-        assertNull("Should NOT have 'Download video frame' menu item.", downloadVideoFrameItem);
+        assertNotNull(
+                "Should have 'Download video frame' menu item when frame is readable.",
+                downloadVideoFrameItem);
     }
 
     @Test
@@ -1360,7 +1401,7 @@ public class ChromeContextMenuPopulatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
                         new GURL(PAGE_URL),
                         internalUrl,
                         "VIDEO!",
@@ -1380,13 +1421,16 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         List<ModelList> menuState = mPopulator.buildContextMenu();
 
+        assertNull(
+                "Should NOT have 'Save video' menu item for chrome: URL.",
+                findItemWithId(menuState, R.id.contextmenu_save_video));
         ListItem downloadVideoFrameItem =
                 findItemWithTitle(
                         menuState,
                         ContextUtils.getApplicationContext()
                                 .getString(R.string.contextmenu_download_video_frame));
-        assertNull(
-                "Should NOT have 'Download video frame' menu item for chrome: URL.",
+        assertNotNull(
+                "Should have 'Download video frame' menu item when frame is readable.",
                 downloadVideoFrameItem);
     }
 
@@ -1401,7 +1445,8 @@ public class ChromeContextMenuPopulatorTest {
     public void testVideoDownloadVideoFrame_restrictedByPolicy() {
         setAllMandatoryFlowsComplete();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
-        ContextMenuParams params = createVideoParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+        ContextMenuParams params =
+                createVideoParams(ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
@@ -1445,7 +1490,7 @@ public class ChromeContextMenuPopulatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
                         new GURL(PAGE_URL),
                         url,
                         "VIDEO!",
@@ -1594,7 +1639,7 @@ public class ChromeContextMenuPopulatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
                         new GURL(PAGE_URL),
                         url,
                         "VIDEO!",
@@ -3891,7 +3936,7 @@ public class ChromeContextMenuPopulatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
                         new GURL(PAGE_URL),
                         new GURL("http://www.blah.com/video.mp4"),
                         "VIDEO!",

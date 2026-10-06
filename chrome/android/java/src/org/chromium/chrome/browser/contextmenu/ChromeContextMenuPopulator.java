@@ -871,7 +871,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 /* showInProductHelp= */ false,
                                 !mIsDownloadRestrictedByPolicy));
             }
-            if (!mParams.isEncrypted()) {
+            if (!mParams.isEncrypted() && mParams.hasReadableVideoFrame()) {
                 if (ChromeFeatureList.sContextMenuCopyVideoFrame.isEnabled()) {
                     videoGroup.add(
                             createListItem(
@@ -880,8 +880,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                     /* enabled= */ true));
                 }
                 if (ChromeFeatureList.sContextMenuDownloadVideoFrame.isEnabled()
-                        && mParams.canSaveMedia()
-                        && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())
                         && mMode != ContextMenuMode.THIN_WEB_VIEW) {
                     videoGroup.add(
                             createListItem(

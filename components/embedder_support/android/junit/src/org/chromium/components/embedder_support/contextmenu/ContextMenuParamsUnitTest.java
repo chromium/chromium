@@ -70,4 +70,25 @@ public class ContextMenuParamsUnitTest {
         assertFalse("canPictureInPicture should be false", params.canPictureInPicture());
         assertFalse("isPictureInPicture should be false", params.isPictureInPicture());
     }
+
+    @Test
+    public void testMediaFlags_EncryptedAndReadableVideoFrame() {
+        ContextMenuParams noneParams =
+                createContextMenuParamsWithMediaFlags(ContextMenuDataMediaFlags.MEDIA_NONE);
+        assertFalse("isEncrypted should be false", noneParams.isEncrypted());
+        assertFalse("hasReadableVideoFrame should be false", noneParams.hasReadableVideoFrame());
+
+        ContextMenuParams readableParams =
+                createContextMenuParamsWithMediaFlags(
+                        ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME);
+        assertFalse("isEncrypted should be false", readableParams.isEncrypted());
+        assertTrue("hasReadableVideoFrame should be true", readableParams.hasReadableVideoFrame());
+
+        ContextMenuParams encryptedParams =
+                createContextMenuParamsWithMediaFlags(
+                        ContextMenuDataMediaFlags.MEDIA_ENCRYPTED
+                                | ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME);
+        assertTrue("isEncrypted should be true", encryptedParams.isEncrypted());
+        assertTrue("hasReadableVideoFrame should be true", encryptedParams.hasReadableVideoFrame());
+    }
 }

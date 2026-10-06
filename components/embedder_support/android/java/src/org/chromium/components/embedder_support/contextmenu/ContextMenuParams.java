@@ -146,6 +146,16 @@ public class ContextMenuParams {
     }
 
     /**
+     * @return Whether the video element has a frame available for presentation whose pixels can be
+     *     read back into CPU memory, i.e. at least one frame has been decoded and it is not
+     *     protected. This is what copying or saving the current video frame requires, and mirrors
+     *     blink::WebMediaPlayer::HasReadableVideoFrame().
+     */
+    public boolean hasReadableVideoFrame() {
+        return (mMediaFlags & ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME) != 0;
+    }
+
+    /**
      * @return The x-coordinate of the touch that triggered the context menu in dp relative to the
      *     render view; 0 corresponds to the left edge.
      */
