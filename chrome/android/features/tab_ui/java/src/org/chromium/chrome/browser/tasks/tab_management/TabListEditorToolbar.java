@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -27,7 +29,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.ui.util.KeyboardNavigationListener;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -43,7 +44,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     private ChromeImageButton mMenuButton;
     private TabListEditorActionViewLayout mActionViewLayout;
     private @Nullable View mNextFocusableView;
-    private @Nullable TintedDrawable mNavigationIconDrawable;
+    private @Nullable Drawable mNavigationIconDrawable;
     private @ColorInt int mBackgroundColor;
     private @StringRes int mBackButtonAccessibilityString;
 
@@ -88,8 +89,10 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
 
     private void showNavigationButton() {
         mNavigationIconDrawable =
-                TintedDrawable.constructTintedDrawable(
-                        getContext(), R.drawable.ic_arrow_back_white_24dp);
+                assumeNonNull(
+                                AppCompatResources.getDrawable(
+                                        getContext(), R.drawable.ic_arrow_back_24dp))
+                        .mutate();
         final @ColorInt int lightIconColor =
                 SemanticColorUtils.getDefaultIconColorInverse(getContext());
         mNavigationIconDrawable.setTint(lightIconColor);
@@ -179,7 +182,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
      */
     public void setButtonTint(ColorStateList tint) {
         if (mNavigationIconDrawable != null) {
-            mNavigationIconDrawable.setTint(tint);
+            mNavigationIconDrawable.setTintList(tint);
         }
         ImageViewCompat.setImageTintList(mMenuButton, tint);
     }

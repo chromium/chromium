@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -12,11 +15,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.VectorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -27,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.tab_ui.R;
@@ -179,5 +192,76 @@ public class TabListEditorLayoutUnitTest {
         mTabListEditorLayout.overrideContentDescriptions(containerDescResId, backButtonDescResId);
 
         assertEquals(expectedContainerDesc, mTabListEditorLayout.getContentDescription());
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void testToolbarNavigationIcon_VectorDrawableAndRtlMirroring() {
+        initializeLayout();
+        TabListEditorToolbar toolbar = mTabListEditorLayout.getToolbar();
+        Drawable navIcon = toolbar.getNavigationIcon();
+        assertNotNull(navIcon);
+        assertTrue(navIcon instanceof LayerDrawable);
+
+        LayerDrawable layerDrawable = (LayerDrawable) navIcon;
+        assertEquals(2, layerDrawable.getNumberOfLayers());
+
+        Drawable iconLayer = layerDrawable.getDrawable(1);
+        assertNotNull(iconLayer);
+        assertTrue("Icon layer must be a VectorDrawable", iconLayer instanceof VectorDrawable);
+        assertTrue(iconLayer.isAutoMirrored());
+
+        ColorStateList tint = ColorStateList.valueOf(Color.RED);
+        toolbar.setButtonTint(tint);
+        assertEquals(
+                tint,
+                ImageViewCompat.getImageTintList(toolbar.findViewById(R.id.list_menu_button)));
+
+        toolbar.setIsIncognito(true);
+        LayerDrawable incognitoNavIcon = (LayerDrawable) toolbar.getNavigationIcon();
+        assertNotNull(incognitoNavIcon);
+        assertSame(iconLayer, incognitoNavIcon.getDrawable(1));
+        assertTrue(incognitoNavIcon.getDrawable(1).isAutoMirrored());
+
+        int inset =
+                toolbar.getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.search_box_nav_button_background_inset);
+        int width = inset * 4;
+        int height = inset * 4;
+        incognitoNavIcon.setBounds(0, 0, width, height);
+        incognitoNavIcon.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+        assertEquals(View.LAYOUT_DIRECTION_RTL, iconLayer.getLayoutDirection());
+        assertEquals(new Rect(inset, inset, width - inset, height - inset), iconLayer.getBounds());
+
+        Bitmap rtlBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas rtlCanvas = new Canvas(rtlBitmap);
+        incognitoNavIcon.getDrawable(0).setAlpha(0);
+        incognitoNavIcon.draw(rtlCanvas);
+
+        boolean hasRenderedIconPixels = false;
+        for (int y = inset; y < height - inset; y++) {
+            for (int x = inset; x < width - inset; x++) {
+                if (rtlBitmap.getPixel(x, y) != 0) {
+                    hasRenderedIconPixels = true;
+                    break;
+                }
+            }
+            if (hasRenderedIconPixels) {
+                break;
+            }
+        }
+
+        assertTrue(
+                "VectorDrawable should render non-zero pixels under native graphics",
+                hasRenderedIconPixels);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (x < inset || x >= width - inset || y < inset || y >= height - inset) {
+                    assertEquals(0, rtlBitmap.getPixel(x, y));
+                }
+            }
+        }
     }
 }
