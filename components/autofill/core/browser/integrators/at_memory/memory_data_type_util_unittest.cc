@@ -28,6 +28,7 @@
 namespace autofill {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -234,12 +235,13 @@ TEST(MemoryDataTypeUtilTest, ExtractSourcesFromProto) {
       "https://photos.google.com/photo/456");
 
   const std::vector<MemoryEntrySource> sources = ExtractSources(proto_result);
-  ASSERT_EQ(sources.size(), 2u);
-  EXPECT_EQ(sources[0].type, MemoryEntrySourceType::kGmail);
-  EXPECT_EQ(sources[0].deeplink_url,
-            GetGmailSourceUrl(source_gmail->gmail()).spec());
-  EXPECT_EQ(sources[1].type, MemoryEntrySourceType::kPhotos);
-  EXPECT_EQ(sources[1].deeplink_url, "https://photos.google.com/photo/456");
+  EXPECT_THAT(
+      sources,
+      ElementsAre(
+          MemoryEntrySource(MemoryEntrySourceType::kGmail,
+                            GetGmailSourceUrl(source_gmail->gmail()).spec()),
+          MemoryEntrySource(MemoryEntrySourceType::kPhotos,
+                            "https://photos.google.com/photo/456")));
 }
 
 // Tests conversion of AtMemorySearchResult proto with schemaful primary and
@@ -267,9 +269,10 @@ TEST(MemoryDataTypeUtilTest,
   EXPECT_EQ(result.value, u"A12345678");
   EXPECT_EQ(result.confidence_score, 0.85f);
   EXPECT_FALSE(result.is_obfuscated);
-  ASSERT_EQ(result.metadata_list.size(), 1u);
-  EXPECT_EQ(result.metadata_list[0].type, MemoryDataType::kPassportCountry);
-  EXPECT_EQ(result.metadata_list[0].value, u"US");
+  EXPECT_THAT(result.metadata_list,
+              ElementsAre(AllOf(
+                  Field(&EntryMetadata::type, MemoryDataType::kPassportCountry),
+                  Field(&EntryMetadata::value, u"US"))));
 }
 
 // Tests conversion of AtMemorySearchResult proto with schemaless key.
@@ -309,10 +312,11 @@ TEST(MemoryDataTypeUtilTest, ExtractRemoteResultsFiltersEmptyValues) {
 
   std::vector<MemorySearchResult> results =
       ExtractRemoteResults(response, "en-US");
-  ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type, MemoryDataType::kEmail);
-  EXPECT_EQ(results[0].value, u"test@example.com");
-  EXPECT_EQ(results[0].remote_response_index, 0);
+  EXPECT_THAT(results,
+              ElementsAre(AllOf(
+                  Field(&MemorySearchResult::type, MemoryDataType::kEmail),
+                  Field(&MemorySearchResult::value, u"test@example.com"),
+                  Field(&MemorySearchResult::remote_response_index, 0))));
 }
 
 // Tests formatting of Date attribute values into YYYY-MM-DD strings.
