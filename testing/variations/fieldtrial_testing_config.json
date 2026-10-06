@@ -17238,9 +17238,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_64KiB",
+                    "name": "Enabled_32KiB",
                     "params": {
-                        "FullPrefetchBytes": "65536",
+                        "FullPrefetchBytes": "32768",
                         "PrefetchDiskCacheOnly": "true",
                         "TrailerPrefetchSpeculativeBytes": "10240"
                     },
@@ -17249,9 +17249,9 @@
                     ]
                 },
                 {
-                    "name": "Enabled_32KiB",
+                    "name": "Enabled_64KiB",
                     "params": {
-                        "FullPrefetchBytes": "32768",
+                        "FullPrefetchBytes": "65536",
                         "PrefetchDiskCacheOnly": "true",
                         "TrailerPrefetchSpeculativeBytes": "10240"
                     },
