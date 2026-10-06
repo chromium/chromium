@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/hats/hats_dialog.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -42,6 +41,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -279,7 +279,9 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
 
   // Do not show survey to non-owners. However, enterprise-enrolled Googlers
   // who passed the previous check will not be owners; don't exclude them.
-  if (!is_enterprise_enrolled && !ProfileHelper::IsOwnerProfile(profile)) {
+  if (!is_enterprise_enrolled &&
+      !user_manager::UserManager::Get()->IsOwnerUser(
+          BrowserContextHelper::Get()->GetUserByBrowserContext(profile))) {
     return false;
   }
 
