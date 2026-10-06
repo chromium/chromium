@@ -192,6 +192,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::internal::kMigrateExtensionsFromLocalToAccount, false);
   registry->RegisterBooleanPref(
       prefs::internal::kMigrateThemeFromLocalToAccount, false);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  registry->RegisterBooleanPref(
+      prefs::internal::kReadingListPrefMigratedToAccount, false);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry->RegisterBooleanPref(
       prefs::kCleanUpStatsTableFromAccountPasswordStore, false);
 
@@ -998,10 +1002,11 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
   // sign-in to be enabled by default. This is to specifically handle the case
   // when `syncer::kExplicitSigninForExtension` is true.
   bool extensions_enabled = everything_enabled;
-  // Explicitly set the bookmarks toggle, which otherwise requires an explicit
-  // sign-in to be enabled by default. This is to specifically handle the case
-  // when `syncer::kExplicitSigninForBookmarks` is true.
+  // Explicitly set the bookmarks and reading list toggles, which otherwise
+  // require an explicit sign-in to be enabled by default (see
+  // `SigninPrefs::GetBookmarksExplicitBrowserSignin()`).
   bool bookmarks_enabled = everything_enabled;
+  bool reading_list_enabled = everything_enabled;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (everything_enabled) {
     // On desktop, Passwords is considered disabled by default and
@@ -1031,6 +1036,8 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
         GetPrefNameForType(UserSelectableType::kExtensions));
     bookmarks_enabled = pref_service->GetBoolean(
         GetPrefNameForType(UserSelectableType::kBookmarks));
+    reading_list_enabled = pref_service->GetBoolean(
+        GetPrefNameForType(UserSelectableType::kReadingList));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1049,10 +1056,18 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
                         tabs_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kBookmarks),
                         bookmarks_enabled);
+  account_settings->Set(GetPrefNameForType(UserSelectableType::kReadingList),
+                        reading_list_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kSavedTabGroups),
                         saved_tab_groups_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kExtensions),
                         extensions_enabled);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Record that this migration now covers the Reading List toggle, to be able
+  // to identify users who were migrated before it did (crbug.com/568406887).
+  pref_service->SetBoolean(prefs::internal::kReadingListPrefMigratedToAccount,
+                           true);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
