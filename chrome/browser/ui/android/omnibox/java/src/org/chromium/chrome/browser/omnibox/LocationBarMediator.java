@@ -961,7 +961,7 @@ public class LocationBarMediator
                     .restoreInitialInput()
                     .setSelection(TextSelection.SELECT_ALL);
             pushUrlBarDataFromCurrentInput();
-            mUrlCoordinator.setKeyboardVisibility(false, false);
+            mUrlCoordinator.setKeyboardVisibility(false);
         } else {
             updateUrl();
         }
@@ -1312,7 +1312,7 @@ public class LocationBarMediator
         if (!mNativeInitialized) return;
         // Hide keyboard before launch voice search to avoid keyboard action announcement in
         // TalkBack to be picked up by voice search.
-        mUrlCoordinator.setKeyboardVisibility(false, false);
+        mUrlCoordinator.setKeyboardVisibility(false);
 
         RecordUserAction.record("MobileOmniboxVoiceSearch");
         mVoiceRecognitionHandler.startVoiceRecognition(
@@ -1413,7 +1413,7 @@ public class LocationBarMediator
      */
     /* package */ void finishUrlFocusChange(boolean showExpandedState, boolean shouldShowKeyboard) {
         if (mUrlCoordinator == null) return;
-        mUrlCoordinator.setKeyboardVisibility(shouldShowKeyboard, true);
+        mUrlCoordinator.setKeyboardVisibility(shouldShowKeyboard);
         setUrlFocusChangeInProgress(false);
         updateShouldAnimateIconChanges();
         if (!mIsTablet && !showExpandedState) {

@@ -5835,7 +5835,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.finishUrlFocusChange(
                 /* showExpandedState= */ true, /* shouldShowKeyboard= */ true);
 
-        verify(mUrlCoordinator, never()).setKeyboardVisibility(anyBoolean(), anyBoolean());
+        verify(mUrlCoordinator, never()).setKeyboardVisibility(anyBoolean());
     }
 
     @Test

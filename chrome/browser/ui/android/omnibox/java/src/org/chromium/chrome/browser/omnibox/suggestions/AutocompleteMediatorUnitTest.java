@@ -586,15 +586,15 @@ public class AutocompleteMediatorUnitTest {
         // With fully concealed elements, scroll should trigger keyboard hide.
         clearInvocations(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownScroll();
-        verify(mAutocompleteDelegate).setKeyboardVisibility(eq(false), anyBoolean());
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true), anyBoolean());
+        verify(mAutocompleteDelegate).setKeyboardVisibility(false);
+        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(true);
 
         // Pretend that the user scrolled back to top with an overscroll.
         // This should bring back the soft keyboard.
         clearInvocations(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownOverscrolledToTop();
-        verify(mAutocompleteDelegate).setKeyboardVisibility(eq(true), anyBoolean());
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(false), anyBoolean());
+        verify(mAutocompleteDelegate).setKeyboardVisibility(true);
+        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(false);
     }
 
     @Test
@@ -2608,7 +2608,7 @@ public class AutocompleteMediatorUnitTest {
         animator.start();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true), anyBoolean());
+        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(true);
     }
 
     @Test
@@ -2623,7 +2623,7 @@ public class AutocompleteMediatorUnitTest {
         animator.start();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mAutocompleteDelegate).setKeyboardVisibility(eq(true), anyBoolean());
+        verify(mAutocompleteDelegate).setKeyboardVisibility(true);
     }
 
     @Test

@@ -623,7 +623,7 @@ class AutocompleteMediator
                             if (mAutocompleteInput == null
                                     || mAutocompleteInput.getAutocompleteState()
                                             != AutocompleteState.STANDBY_NO_FOCUS) {
-                                mDelegate.setKeyboardVisibility(true, false);
+                                mDelegate.setKeyboardVisibility(true);
                             }
                         }
                     }
@@ -2038,7 +2038,7 @@ class AutocompleteMediator
     public void onSuggestionDropdownScroll() {
         if (mAutocompleteInput == null) return;
         mAutocompleteInput.setSuggestionsListScrolled();
-        mDelegate.setKeyboardVisibility(false, false);
+        mDelegate.setKeyboardVisibility(false);
     }
 
     /**
@@ -2093,7 +2093,7 @@ class AutocompleteMediator
 
     @Override
     public void onSuggestionDropdownOverscrolledToTop() {
-        mDelegate.setKeyboardVisibility(true, false);
+        mDelegate.setKeyboardVisibility(true);
     }
 
     /**

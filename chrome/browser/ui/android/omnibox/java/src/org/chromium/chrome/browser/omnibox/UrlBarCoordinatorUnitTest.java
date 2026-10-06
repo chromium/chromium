@@ -108,22 +108,17 @@ public class UrlBarCoordinatorUnitTest {
         OmniboxFeatures.setDebounceKeyboardVisibilityForTesting(false);
 
         // Show keyboard is called immediately
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
         verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
 
-        // Hide keyboard with delay schedules mKeyboardHideTask
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ true);
-        verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        // Hide keyboard is called immediately
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
 
     @Test
     public void setKeyboardVisibility_showFromHidden_schedulesDebounce() {
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
 
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
 
@@ -134,32 +129,27 @@ public class UrlBarCoordinatorUnitTest {
 
     @Test
     public void setKeyboardVisibility_showWhenAlreadyShowingOrShown_noOp() {
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
 
         // Subsequent show requests while SHOWING are no-ops
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
         clearInvocations(mKeyboardVisibilityDelegate);
 
         // When confirmed SHOWN, show requests are still no-ops
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
     }
 
     @Test
     public void setKeyboardVisibility_hideWhileShowing_cancelsDebounceWithoutCallingHide() {
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
 
         // Hide requested while show is still pending: cancels without scheduling hide
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
@@ -170,8 +160,7 @@ public class UrlBarCoordinatorUnitTest {
     public void setKeyboardVisibility_hideFromShown_schedulesDebounce() {
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
 
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
 
         // When runnable fires, keyboard is hidden
@@ -182,8 +171,7 @@ public class UrlBarCoordinatorUnitTest {
     @Test
     public void setKeyboardVisibility_hideWhenAlreadyHidingOrHidden_noOp() {
         // Initial state is HIDDEN -> hide is no-op
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
 
@@ -191,10 +179,8 @@ public class UrlBarCoordinatorUnitTest {
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
 
         // First hide schedules debounce; second hide while HIDING is a no-op
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
@@ -202,11 +188,9 @@ public class UrlBarCoordinatorUnitTest {
     @Test
     public void setKeyboardVisibility_showWhileHiding_cancelsHideWithoutCallingShow() {
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
 
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
@@ -215,8 +199,7 @@ public class UrlBarCoordinatorUnitTest {
 
     @Test
     public void keyboardVisibilityChanged_updatesCursorAndCancelsPending() {
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
 
         // OS notifies that keyboard showed
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
@@ -231,13 +214,11 @@ public class UrlBarCoordinatorUnitTest {
 
     @Test
     public void setKeyboardVisibility_hideAfterShowRunnableFiresBeforeOsCallback_schedulesHide() {
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
 
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
 
         // Late OS show callback must not cancel the pending hide runnable.
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
@@ -251,8 +232,7 @@ public class UrlBarCoordinatorUnitTest {
         // inset dip or focus transfer).
         doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(mUrlBar);
 
-        mCoordinator.setKeyboardVisibility(
-                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);

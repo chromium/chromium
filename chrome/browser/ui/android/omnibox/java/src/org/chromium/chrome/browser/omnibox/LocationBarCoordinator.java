@@ -847,8 +847,8 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public void setKeyboardVisibility(boolean shouldShow, boolean delayHide) {
-        mUrlCoordinator.setKeyboardVisibility(shouldShow, delayHide);
+    public void setKeyboardVisibility(boolean shouldShow) {
+        mUrlCoordinator.setKeyboardVisibility(shouldShow);
     }
 
     @Override
