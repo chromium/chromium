@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -184,6 +185,23 @@ void ContextualCueingTabHelper::SetContextualCueForTesting(
   cue_ = std::move(cue);
 }
 
+void ContextualCueingTabHelper::SetGeminiInvoked(bool is_invoked) {
+  if (is_gemini_invoked_ == is_invoked) {
+    return;
+  }
+  is_gemini_invoked_ = is_invoked;
+  if (!is_invoked || !cue_.has_value()) {
+    return;
+  }
+  // Tapping the cue itself invokes Gemini, potentially synchronously from
+  // within the infobar's `Accept()` or the badge tap handler. Invalidating
+  // synchronously would destroy the infobar delegate mid-call and drop
+  // `active_category_type_` before `RecordCueClicked()` runs, so defer it.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ContextualCueingTabHelper::InvalidateCue,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ContextualCueingTabHelper::SetLocationBarBadgeCommandsHandler(
     id<LocationBarBadgeCommands> handler) {
   location_bar_badge_handler_ = handler;
@@ -252,6 +270,14 @@ bool ContextualCueingTabHelper::ShowContextualCueChip(
 
 bool ContextualCueingTabHelper::PresentContextualCue() {
   if (!cue_.has_value() || !cue_ui_type_.has_value() || has_presented_cue_) {
+    return false;
+  }
+  // `SetGeminiInvoked()` defers `InvalidateCue()` to a posted task, so a
+  // stored cue may still exist if the tab becomes visible before it runs. The
+  // user is already engaged with Gemini, so drop the cue instead of showing it.
+  if (is_gemini_invoked_) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
+    InvalidateCue();
     return false;
   }
   bool presented = false;
@@ -557,6 +583,12 @@ void ContextualCueingTabHelper::ProcessClassificationResult(
     active_category_type_ = evaluation_result.top_category->category_type;
   }
 
+  // Skips cue generation while Gemini is invoked.
+  if (is_gemini_invoked_) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
+    return;
+  }
+
   if (IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled()) {
     InitiateModelExecutionRequest(expected_url);
   }
@@ -627,6 +659,15 @@ void ContextualCueingTabHelper::OnModelExecutionResponseReceived(
   }
 
   log_entry_ = std::move(log_entry);
+
+  // Gemini may have been invoked while model execution was in flight. The user
+  // is already engaged with Gemini, so drop the response instead of storing a
+  // cue in `cue_` that can never be shown.
+  if (is_gemini_invoked_) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
+    NotifyContextualCueReceived(std::nullopt);
+    return;
+  }
 
   if (!result.response.has_value()) {
     NotifyContextualCueReceived(std::nullopt);
