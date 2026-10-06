@@ -314,6 +314,10 @@ bool TranslateManager::IsMimeTypeSupported(std::string_view mime_type) {
     return false;
   if (mime_type == "multipart/related")
     return false;
+  if (mime_type == kPdfMimeType &&
+      !base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
+    return false;
+  }
 
   return true;
 }
