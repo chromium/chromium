@@ -117,8 +117,7 @@ class DeclarativePerformanceObserverStore::Backend
       if (statement.ColumnBool(1)) {
         url::Origin origin =
             url::Origin::Create(GURL(statement.ColumnString(0)));
-        base::Time created_at = base::Time::FromDeltaSinceWindowsEpoch(
-            base::Microseconds(statement.ColumnInt64(2)));
+        base::Time created_at = statement.ColumnTime(2);
         loaded.push_back({std::move(origin), created_at});
       }
     }
@@ -140,8 +139,7 @@ class DeclarativePerformanceObserverStore::Backend
           "INSERT OR REPLACE INTO declarative_performance_observer_policies "
           "(origin, capture_early_failures, created_at) VALUES (?, 1, ?)"));
       statement.BindString(0, origin.Serialize());
-      statement.BindInt64(
-          1, base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+      statement.BindTime(1, base::Time::Now());
       statement.Run();
     } else {
       sql::Statement statement(db_->GetCachedStatement(
@@ -180,8 +178,7 @@ class DeclarativePerformanceObserverStore::Backend
         "(origin, payload, created_at) VALUES (?, ?, ?)"));
     statement.BindString(0, origin.Serialize());
     statement.BindString(1, payload);
-    statement.BindInt64(
-        2, base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindTime(2, base::Time::Now());
 
     if (!statement.Run()) {
       RecordStoreReportResult(StoreReportResult::kFailedSqlRun);
@@ -455,10 +452,8 @@ class DeclarativePerformanceObserverStore::Backend
         "created_at < ?";
     sql::Statement clean_policies_statement(
         db_->GetUniqueStatement(kCleanExpiredPolicies));
-    int64_t threshold_us = (base::Time::Now() - kReportsTimeToLive)
-                               .ToDeltaSinceWindowsEpoch()
-                               .InMicroseconds();
-    clean_policies_statement.BindInt64(0, threshold_us);
+    clean_policies_statement.BindTime(0,
+                                      base::Time::Now() - kReportsTimeToLive);
     clean_policies_statement.Run();
 
     // Clean up expired reports (TTL = 7 days).
@@ -467,10 +462,7 @@ class DeclarativePerformanceObserverStore::Backend
         "created_at < ?";
     sql::Statement clean_statement(
         db_->GetUniqueStatement(kCleanExpiredReports));
-    threshold_us = (base::Time::Now() - kReportsTimeToLive)
-                       .ToDeltaSinceWindowsEpoch()
-                       .InMicroseconds();
-    clean_statement.BindInt64(0, threshold_us);
+    clean_statement.BindTime(0, base::Time::Now() - kReportsTimeToLive);
     if (clean_statement.Run()) {
       int expired_rows = db_->GetLastChangeCount();
       if (expired_rows > 0) {

@@ -973,8 +973,7 @@ bool PaymentsAutofillTable::GetServerCreditCards(
         CreditCard::RecordType::kMaskedServerCard, server_id);
     card->SetRawInfo(CREDIT_CARD_NUMBER, last_four);
     card->usage_history().set_use_count(s.ColumnInt64(index++));
-    card->usage_history().set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(s.ColumnInt64(index++))));
+    card->usage_history().set_use_date(s.ColumnTime(index++));
     // Modification date is not tracked for server cards. Explicitly set it here
     // to override the default value of AutofillClock::Now().
     card->usage_history().set_modification_date(base::Time());
@@ -1154,8 +1153,7 @@ bool PaymentsAutofillTable::GetServerCardsMetadata(
     PaymentsMetadata card_metadata;
     card_metadata.id = s.ColumnString(index++);
     card_metadata.use_count = s.ColumnInt64(index++);
-    card_metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(s.ColumnInt64(index++)));
+    card_metadata.use_date = s.ColumnTime(index++);
     card_metadata.billing_address_id = s.ColumnString(index++);
     cards_metadata.push_back(card_metadata);
   }
@@ -1197,8 +1195,7 @@ bool PaymentsAutofillTable::GetServerIbansMetadata(
     PaymentsMetadata iban_metadata;
     iban_metadata.id = s.ColumnString(index++);
     iban_metadata.use_count = s.ColumnInt64(index++);
-    iban_metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds((s.ColumnInt64(index++))));
+    iban_metadata.use_date = s.ColumnTime(index++);
     ibans_metadata.push_back(iban_metadata);
   }
   return s.Succeeded();
@@ -1332,8 +1329,7 @@ bool PaymentsAutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& i
     std::unique_ptr<Iban> iban =
         std::make_unique<Iban>(Iban::InstrumentId(instrument_id));
     iban->usage_history().set_use_count(s.ColumnInt64(index++));
-    iban->usage_history().set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(s.ColumnInt64(index++))));
+    iban->usage_history().set_use_date(s.ColumnTime(index++));
     iban->set_nickname(s.ColumnString16(index++));
     iban->set_prefix(s.ColumnString16(index++));
     iban->set_suffix(s.ColumnString16(index++));
