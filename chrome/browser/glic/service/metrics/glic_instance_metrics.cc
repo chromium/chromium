@@ -337,11 +337,6 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
                                 hidden_time, base::Milliseconds(1),
                                 base::Hours(24), 50);
 
-  base::UmaHistogramCustomTimes("Glic.Instance.LifetimeDuration", lifetime,
-                                base::Milliseconds(1), base::Hours(24), 50);
-  base::UmaHistogramCustomTimes("Glic.Instance.LifetimeDuration.Max21Days",
-                                lifetime, base::Milliseconds(1), base::Days(21),
-                                50);
   base::UmaHistogramCounts100("Glic.Instance.TotalTabsBoundInLifetime",
                               GetEventCount(GlicInstanceEvent::kTabBound));
   base::UmaHistogramCounts100("Glic.Instance.MaxConcurrentlyBoundTabs",

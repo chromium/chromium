@@ -1445,28 +1445,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.LifetimeDuration" units="ms"
-    expires_after="2027-02-07">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time from when a GlicInstance is created until it is destroyed.
-    Recorded when the GlicInstance is destroyed. This histogram has a max of 24
-    hours.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.LifetimeDuration.Max21Days" units="ms"
-    expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time from when a GlicInstance is created until it is destroyed.
-    Recorded when the GlicInstance is destroyed. This histogram has a max of 21
-    days.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Instance.MaxConcurrentlyBoundTabs" units="count"
     expires_after="2027-02-07">
   <owner>birnie@google.com</owner>
