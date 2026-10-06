@@ -15,11 +15,12 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/profiles",
-  "+chrome/test/base",
 ]
 
 specific_include_rules = {
   ".*_unittest\\.cc": [
     "+chrome/browser/prefs",
+    # Only tests need this //chrome dependency.
+    "+chrome/test/base",
   ],
 }

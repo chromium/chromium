@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config_loader.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/modeller.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -72,7 +71,9 @@ class ModellerImpl : public Modeller,
   };
 
   // ModellerImpl has weak dependencies on all parameters except |trainer|.
-  ModellerImpl(const Profile* profile,
+  // `profile_path` is where the personal model is read from and written to.
+  // An empty path disables the modeller.
+  ModellerImpl(const base::FilePath& profile_path,
                AlsReader* als_reader,
                BrightnessMonitor* brightness_monitor,
                ModelConfigLoader* model_config_loader,
@@ -106,7 +107,7 @@ class ModellerImpl : public Modeller,
 
   // ModellerImpl has weak dependencies on all parameters except |trainer|.
   static std::unique_ptr<ModellerImpl> CreateForTesting(
-      const Profile* profile,
+      const base::FilePath& profile_path,
       AlsReader* als_reader,
       BrightnessMonitor* brightness_monitor,
       ModelConfigLoader* model_config_loader,
@@ -137,7 +138,7 @@ class ModellerImpl : public Modeller,
 
  private:
   // ModellerImpl has weak dependencies on all parameters except |trainer|.
-  ModellerImpl(const Profile* profile,
+  ModellerImpl(const base::FilePath& profile_path,
                AlsReader* als_reader,
                BrightnessMonitor* brightness_monitor,
                ModelConfigLoader* model_config_loader,

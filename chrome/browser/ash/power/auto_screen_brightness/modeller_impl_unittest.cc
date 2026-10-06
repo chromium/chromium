@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/monotone_cubic_spline.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/trainer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
-#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -178,10 +177,7 @@ class ModellerImplTest : public testing::Test {
   ModellerImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     CHECK(temp_dir_.CreateUniqueTempDir());
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName("testuser@gmail.com");
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
-    profile_ = profile_builder.Build();
+    profile_path_ = temp_dir_.GetPath().AppendASCII("TestProfile");
     test_model_config_ = GetTestModelConfig();
     test_initial_global_curve_ = MonotoneCubicSpline::CreateMonotoneCubicSpline(
         test_model_config_.log_lux, test_model_config_.brightness);
@@ -205,7 +201,7 @@ class ModellerImplTest : public testing::Test {
                      bool return_new_curve,
                      double curve_error) {
     modeller_ = ModellerImpl::CreateForTesting(
-        profile_.get(), als_reader_.get(), &fake_brightness_monitor_,
+        profile_path_, als_reader_.get(), &fake_brightness_monitor_,
         &fake_model_config_loader_, /*user_activity_detector=*/nullptr,
         std::make_unique<FakeTrainer>(is_trainer_configured,
                                       is_personal_curve_valid, return_new_curve,
@@ -245,7 +241,7 @@ class ModellerImplTest : public testing::Test {
   void WriteModelToFile(const Model& model) {
     const ModellerImpl::ModelSavingSpec& model_saving_spec =
         ModellerImpl::ModellerImpl::GetModelSavingSpecFromProfilePath(
-            profile_->GetPath());
+            profile_path_);
     CHECK(!model_saving_spec.global_curve.empty());
     CHECK(!model_saving_spec.personal_curve.empty());
     CHECK(!model_saving_spec.iteration_count.empty());
@@ -272,7 +268,7 @@ class ModellerImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<TestingProfile> profile_;
+  base::FilePath profile_path_;
 
   ModelConfig test_model_config_;
   std::optional<MonotoneCubicSpline> test_initial_global_curve_;

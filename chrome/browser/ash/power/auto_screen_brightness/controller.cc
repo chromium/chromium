@@ -78,7 +78,7 @@ void Controller::InitializeComponents() {
   CHECK(user_activity_detector, base::NotFatalUntil::M160);
 
   modeller_ = std::make_unique<ModellerImpl>(
-      profile, als_reader_.get(), brightness_monitor_.get(),
+      profile->GetPath(), als_reader_.get(), brightness_monitor_.get(),
       model_config_loader_.get(), user_activity_detector,
       std::make_unique<GaussianTrainer>());
 

@@ -163,13 +163,13 @@ bool SaveModelToDisk(const ModellerImpl::ModelSavingSpec& model_saving_spec,
   return SaveDataAndLogError(model_saving_spec.iteration_count, data);
 }
 
-ModellerImpl::ModellerImpl(const Profile* profile,
+ModellerImpl::ModellerImpl(const base::FilePath& profile_path,
                            AlsReader* als_reader,
                            BrightnessMonitor* brightness_monitor,
                            ModelConfigLoader* model_config_loader,
                            ui::UserActivityDetector* user_activity_detector,
                            std::unique_ptr<Trainer> trainer)
-    : ModellerImpl(profile,
+    : ModellerImpl(profile_path,
                    als_reader,
                    brightness_monitor,
                    model_config_loader,
@@ -268,7 +268,7 @@ void ModellerImpl::OnUserActivity(const ui::Event* event) {
 }
 
 std::unique_ptr<ModellerImpl> ModellerImpl::CreateForTesting(
-    const Profile* profile,
+    const base::FilePath& profile_path,
     AlsReader* als_reader,
     BrightnessMonitor* brightness_monitor,
     ModelConfigLoader* model_config_loader,
@@ -277,7 +277,7 @@ std::unique_ptr<ModellerImpl> ModellerImpl::CreateForTesting(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const base::TickClock* tick_clock) {
   return base::WrapUnique(new ModellerImpl(
-      profile, als_reader, brightness_monitor, model_config_loader,
+      profile_path, als_reader, brightness_monitor, model_config_loader,
       user_activity_detector, std::move(trainer), blocking_task_runner,
       tick_clock, true /* is_testing */));
 }
@@ -334,7 +334,7 @@ ModellerImpl::ModelSavingSpec ModellerImpl::GetModelSavingSpecFromProfilePath(
 }
 
 ModellerImpl::ModellerImpl(
-    const Profile* profile,
+    const base::FilePath& profile_path,
     AlsReader* als_reader,
     BrightnessMonitor* brightness_monitor,
     ModelConfigLoader* model_config_loader,
@@ -355,7 +355,7 @@ ModellerImpl::ModellerImpl(
 
   CHECK(trainer_, base::NotFatalUntil::M160);
 
-  if (!profile) {
+  if (profile_path.empty()) {
     is_modeller_enabled_ = false;
     return;
   }
@@ -377,7 +377,7 @@ ModellerImpl::ModellerImpl(
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ModellerImpl::GetModelSavingSpecFromProfilePath,
-                     profile->GetPath()),
+                     profile_path),
       base::BindOnce(&ModellerImpl::OnModelSavingSpecReadFromProfile,
                      weak_ptr_factory_.GetWeakPtr()));
 }
