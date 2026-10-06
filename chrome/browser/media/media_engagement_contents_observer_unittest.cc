@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -52,7 +54,9 @@ class MediaEngagementContentsObserverTest
 
     SetContents(content::WebContentsTester::CreateTestWebContents(
         browser_context(), nullptr));
-    RecentlyAudibleHelper::CreateForWebContents(web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+    recently_audible_helper_ =
+        std::make_unique<RecentlyAudibleHelper>(tab_, web_contents());
 
     service_ =
         base::WrapUnique(new MediaEngagementService(profile(), &test_clock_));
@@ -67,6 +71,11 @@ class MediaEngagementContentsObserverTest
 
     // Advance the test clock to a non-null value.
     Advance15Minutes();
+  }
+
+  void TearDown() override {
+    recently_audible_helper_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   MediaEngagementContentsObserver* CreateContentsObserverFor(
@@ -385,6 +394,9 @@ class MediaEngagementContentsObserverTest
   }
 
  private:
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<RecentlyAudibleHelper> recently_audible_helper_;
+
   // contents_observer_ auto-destroys when WebContents is destroyed.
   raw_ptr<MediaEngagementContentsObserver, DanglingUntriaged>
       contents_observer_;

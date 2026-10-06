@@ -54,7 +54,6 @@ class TabAlertControllerTest : public testing::Test {
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
     vr::VrTabHelper::CreateForWebContents(web_contents_.get());
-    RecentlyAudibleHelper::CreateForWebContents(web_contents_.get());
 
     mock_tab_ = std::make_unique<MockTabInterface>();
     ON_CALL(*mock_tab_, GetContents())
@@ -62,6 +61,8 @@ class TabAlertControllerTest : public testing::Test {
     ON_CALL(*mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(user_data_host_));
 
+    recently_audible_helper_ = std::make_unique<RecentlyAudibleHelper>(
+        *mock_tab_, web_contents_.get());
     child_tab_alert_helper_ = std::make_unique<ChildTabAlertHelper>(*mock_tab_);
     tab_alert_controller_ = std::make_unique<TabAlertController>(*mock_tab_);
   }
@@ -71,6 +72,7 @@ class TabAlertControllerTest : public testing::Test {
     // BrowserTaskEnvironment to time out on destruction.
     tab_alert_controller_.reset();
     child_tab_alert_helper_.reset();
+    recently_audible_helper_.reset();
     mock_tab_.reset();
     web_contents_.reset();
     profile_.reset();
@@ -104,6 +106,7 @@ class TabAlertControllerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<MockTabInterface> mock_tab_;
+  std::unique_ptr<RecentlyAudibleHelper> recently_audible_helper_;
   std::unique_ptr<ChildTabAlertHelper> child_tab_alert_helper_;
   std::unique_ptr<TabAlertController> tab_alert_controller_;
 };

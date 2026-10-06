@@ -84,6 +84,7 @@ class PwaInstallPageActionController;
 class QwacWebContentsObserver;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
+class RecentlyAudibleHelper;
 class RecordReplayPageActionController;
 class RevokedPermissionsTabHelper;
 class SadTabHelper;
@@ -737,6 +738,8 @@ class TabFeatures {
   std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
 
   std::unique_ptr<MemorySaverChipTabHelper> memory_saver_chip_helper_;
+
+  std::unique_ptr<RecentlyAudibleHelper> recently_audible_helper_;
 
   std::unique_ptr<ChildTabAlertHelper> child_tab_alert_helper_;
 

@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -51,7 +50,6 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    RecentlyAudibleHelper::CreateForWebContents(web_contents());
     sound_content_setting_observer_ =
         std::make_unique<SoundContentSettingObserver>(tab_, web_contents());
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents());

@@ -161,6 +161,7 @@ class NavigationPredictorPreconnectClient;
 class OomInterventionTabHelper;
 class PluginObserverAndroid;
 class PolicyAuditorBridge;
+class RecentlyAudibleHelper;
 class RevokedPermissionsTabHelper;
 class SearchEngineTabHelper;
 class SecurityStateEventObserver;
@@ -295,6 +296,7 @@ class TabFeatures {
       auto_fetch_navigation_observer_;
   std::unique_ptr<PluginObserverAndroid> plugin_observer_android_;
   std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;
+  std::unique_ptr<RecentlyAudibleHelper> recently_audible_helper_;
   std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
   std::unique_ptr<tasks::TaskTabHelper> task_tab_helper_;
   std::unique_ptr<HistoryEmbeddingsTabHelper> history_embeddings_tab_helper_;

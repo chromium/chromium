@@ -1028,7 +1028,9 @@ source_set("recently_audible_helper") {
   sources = [ "recently_audible_helper.cc" ]
   public_deps = [
     "//base",
+    "//components/tabs:public",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
 }
 

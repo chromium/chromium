@@ -11,6 +11,8 @@
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
@@ -37,8 +39,8 @@ class RecentlyAudibleHelperTest : public testing::Test {
         std::make_unique<base::TestMockTimeTaskRunner::ScopedContext>(
             task_runner_);
 
-    RecentlyAudibleHelper::CreateForWebContents(contents_);
-    helper_ = RecentlyAudibleHelper::FromWebContents(contents_);
+    tabs::TabLookupFromWebContents::CreateForWebContents(contents_, &tab_);
+    helper_ = std::make_unique<RecentlyAudibleHelper>(tab_, contents_);
     helper_->SetTickClockForTesting(task_runner_->GetMockTickClock());
     subscription_ =
         helper_->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
@@ -52,6 +54,7 @@ class RecentlyAudibleHelperTest : public testing::Test {
     task_runner_->RunUntilIdle();
     EXPECT_TRUE(recently_audible_messages_.empty());
 
+    helper_.reset();
     scoped_context_.reset();
     test_web_contents_factory_.reset();
   }
@@ -118,7 +121,8 @@ class RecentlyAudibleHelperTest : public testing::Test {
 
   // A test WebContents and its associated helper.
   raw_ptr<content::WebContents, DanglingUntriaged> contents_;
-  raw_ptr<RecentlyAudibleHelper, DanglingUntriaged> helper_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<RecentlyAudibleHelper> helper_;
   base::CallbackListSubscription subscription_;
 
   std::list<bool> recently_audible_messages_;

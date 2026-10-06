@@ -100,11 +100,13 @@ TabAlertController::TabAlertController(TabInterface& tab)
           .get());
   vr_tab_helper_observation_.Observe(
       vr::VrTabHelper::FromWebContents(web_contents()));
-  recently_audible_subscription_ =
-      RecentlyAudibleHelper::FromWebContents(tab.GetContents())
-          ->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
-              &TabAlertController::OnRecentlyAudibleStateChanged,
-              base::Unretained(this)));
+  if (auto* audible_helper = RecentlyAudibleHelper::From(&tab)) {
+    recently_audible_subscription_ =
+        audible_helper->RegisterRecentlyAudibleChangedCallback(
+            base::BindRepeating(
+                &TabAlertController::OnRecentlyAudibleStateChanged,
+                base::Unretained(this)));
+  }
 
   if (auto* actor_ui_tab_controller =
           actor::ui::ActorUiTabControllerInterface::From(&tab)) {
@@ -323,11 +325,13 @@ void TabAlertController::OnDiscardContents(TabInterface* tab_interface,
   vr_tab_helper_observation_.Reset();
   vr_tab_helper_observation_.Observe(
       vr::VrTabHelper::FromWebContents(new_contents));
-  recently_audible_subscription_ =
-      RecentlyAudibleHelper::FromWebContents(new_contents)
-          ->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
-              &TabAlertController::OnRecentlyAudibleStateChanged,
-              base::Unretained(this)));
+  if (auto* audible_helper = RecentlyAudibleHelper::From(tab_interface)) {
+    recently_audible_subscription_ =
+        audible_helper->RegisterRecentlyAudibleChangedCallback(
+            base::BindRepeating(
+                &TabAlertController::OnRecentlyAudibleStateChanged,
+                base::Unretained(this)));
+  }
 }
 
 void TabAlertController::OnCapabilityTypesChanged(
@@ -368,7 +372,7 @@ void TabAlertController::DidUpdateAudioMutingState(bool muted) {
   // possible for a tab to be muted but never play audio, in such cases, the
   // muted alert should not show.
   RecentlyAudibleHelper* const audible_helper =
-      RecentlyAudibleHelper::FromWebContents(tab().GetContents());
+      RecentlyAudibleHelper::From(&tab());
   CHECK(audible_helper);
   ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kAudioMuting,

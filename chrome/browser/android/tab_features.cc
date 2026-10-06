@@ -82,6 +82,7 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
@@ -415,6 +416,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
               *tab, *tab, web_contents, optimization_guide_decider);
     }
   }
+
+  recently_audible_helper_ =
+      GetUserDataFactory().CreateInstance<RecentlyAudibleHelper>(*tab, *tab,
+                                                                 web_contents);
 
   sound_content_setting_observer_ =
       GetUserDataFactory().CreateInstance<SoundContentSettingObserver>(

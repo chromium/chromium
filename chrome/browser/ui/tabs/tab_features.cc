@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
@@ -818,6 +819,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   new_tab_page_preload_pipeline_manager_ =
       std::make_unique<NewTabPagePreloadPipelineManager>(tab.GetContents());
+
+  recently_audible_helper_ =
+      GetUserDataFactory().CreateInstance<RecentlyAudibleHelper>(
+          tab, tab, tab.GetContents());
 
   child_tab_alert_helper_ =
       GetUserDataFactory().CreateInstance<ChildTabAlertHelper>(tab, tab);
@@ -1674,6 +1679,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   core_tab_helper_.reset();
   core_tab_helper_ = GetUserDataFactory().CreateInstance<CoreTabHelper>(
       *tab, *tab, new_contents);
+
+  recently_audible_helper_.reset();
+  recently_audible_helper_ =
+      GetUserDataFactory().CreateInstance<RecentlyAudibleHelper>(*tab, *tab,
+                                                                 new_contents);
 }
 
 customize_chrome::SidePanelController*
