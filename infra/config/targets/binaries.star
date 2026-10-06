@@ -1915,7 +1915,7 @@ targets.binaries.generated_script(
 
 targets.binaries.script(
     name = "partition_alloc_perftests",
-    label = "//base/allocator/partition_allocator/src/partition_alloc:partition_alloc_perftests",
+    label = "//base:partition_alloc_perftests",
     script = "//testing/scripts/run_performance_tests.py",
     skip_usage_check = True,
     args = [
