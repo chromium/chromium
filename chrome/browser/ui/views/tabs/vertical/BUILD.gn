@@ -12,6 +12,7 @@ source_set("vertical") {
     "vertical_tab_strip_expand_on_hover_lock.h",
     "vertical_tab_strip_focus_swipe_controller.h",
     "vertical_tab_strip_scroll_bar.h",
+    "vertical_tab_strip_segmented_control.h",
     "vertical_tab_strip_top_container.h",
   ]
 
@@ -41,6 +42,7 @@ source_set("impl") {
     "vertical_tab_strip_expand_on_hover_lock.cc",
     "vertical_tab_strip_focus_swipe_controller.cc",
     "vertical_tab_strip_scroll_bar.cc",
+    "vertical_tab_strip_segmented_control.cc",
     "vertical_tab_strip_top_container.cc",
   ]
 
@@ -144,12 +146,16 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "vertical_tab_strip_expand_on_hover_lock_unittest.cc",
+    "vertical_tab_strip_segmented_control_unittest.cc",
     "vertical_tab_strip_top_container_unittest.cc",
   ]
   deps = [
     ":impl",
     "//base/test:test_support",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/animation",
+    "//chrome/browser/ui/tabs/organizer",
+    "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/tabs/common",
     "//chrome/browser/ui/views/tabs/common:unit_tests",
     "//chrome/browser/ui/views/tabs/shared",
