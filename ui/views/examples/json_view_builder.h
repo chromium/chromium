@@ -19,14 +19,15 @@ class DialogModel;
 }
 
 namespace views {
+class DialogDelegate;
 class View;
 }
 
 namespace views::examples {
 
 // JsonViewBuilder provides declarative runtime instantiation and property
-// application for Views UI components and DialogModels from JSON specifications
-// without requiring recompilation.
+// application for Views UI components, Dialogs, Bubbles, and DialogModels from
+// JSON specifications without requiring recompilation.
 //
 // The complete JSON Schema specification describing all supported component
 // types, layout managers, properties, and dynamic token resolvers is documented
@@ -46,12 +47,22 @@ class VIEWS_EXAMPLES_EXPORT JsonViewBuilder {
                                        const base::DictValue& dict,
                                        std::string* error_msg);
 
-  // DialogModel Support.
+  // Dialog & Bubble Support.
+  // Returns true if `dict` represents a top-level Dialog, Bubble, or
+  // DialogModel.
+  static bool IsDialogOrBubbleSpec(const base::DictValue& dict);
+
   // Returns true if `dict` represents a DialogModel specification.
   static bool IsDialogModelSpec(const base::DictValue& dict);
 
   // Builds a ui::DialogModel from a JSON specification ("type": "DialogModel").
   static std::unique_ptr<ui::DialogModel> BuildDialogModel(
+      const base::DictValue& dict,
+      std::string* error_msg);
+
+  // Creates a DialogDelegate or BubbleDialogDelegate from an explicit Dialog or
+  // Bubble JSON specification ("type": "Dialog" or "type": "Bubble").
+  static std::unique_ptr<views::DialogDelegate> BuildDialogDelegate(
       const base::DictValue& dict,
       std::string* error_msg);
 };
