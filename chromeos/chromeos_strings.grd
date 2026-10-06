@@ -6277,7 +6277,7 @@
           Shortcut with top row keys need to include the <ph name="meta_key">$1<ex>search</ex></ph> key.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE" desc="The status message that displays when user press a key combination
-            that includes right alt key.">
+            that includes the Quick Insert key.">
           Quick Insert can't be used for custom shortcuts.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE"

@@ -4139,7 +4139,7 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_EMOJI_PICKER" desc="Label for accelerator action - Open Emoji Picker.">
         Open Emoji Picker
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_QUICK_INSERT" desc="Label for accelerator action - Right alt.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_QUICK_INSERT" desc="Label for accelerator action - Quick Insert.">
         Quick Insert
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_STOP_SCREEN_RECORDING" desc="Label for accelerator action - Stop screen recording.">

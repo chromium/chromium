@@ -238,7 +238,7 @@ export class KeyboardRemapModifierKeyRowElement extends
         });
       }
 
-      // Push void last so that right alt is added before it.
+      // Push void last so that Quick Insert is added before it.
       keyMapTargets.push({
         value: ModifierKey.kVoid,
         name: this.i18n('perDeviceKeyboardKeyDisabled'),

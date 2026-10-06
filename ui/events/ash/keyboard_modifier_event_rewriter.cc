@@ -377,7 +377,7 @@ KeyboardModifierEventRewriter::GetRemappedPhysicalCode(DomCode code,
       break;
 
     case DomCode::LAUNCH_ASSISTANT:
-      // Right alt key must be checked explicitly on a per-device basis as it
+      // Quick Insert key must be checked explicitly on a per-device basis as it
       // shares the dom code.
       if (keyboard_capability_->HasQuickInsertKey(device_id)) {
         modifier_key = mojom::ModifierKey::kQuickInsert;
