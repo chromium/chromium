@@ -22,7 +22,6 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -43,9 +42,13 @@ constexpr char kDeleteEditShortcut[] = "DeleteEditShortcut";
 DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                                        ActionViewListItem* anchor_view)
     : views::BubbleDialogDelegateView(anchor_view,
-                                      views::BubbleBorder::LEFT_CENTER,
-                                      views::BubbleBorder::NO_SHADOW),
+                                      views::BubbleBorder::LEFT_CENTER),
       controller_(controller) {
+  set_shadow_config({.shadow_type = views::BubbleBorder::NO_SHADOW,
+                     .avoid_overlap_shadow = true});
+  set_border_style(
+      {.insets = gfx::Insets::VH(
+           0, kSpaceToEditingList + kEditingListInsideBorderInsets)});
   SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
   set_margins(gfx::Insets(12));
   set_corner_radius(20);
@@ -135,27 +138,6 @@ void DeleteEditShortcut::OnDeleteButtonPressed() {
     controller_->RemoveAction(anchor_view->action());
     controller_->RemoveDeleteEditShortcutWidget();
   }
-}
-
-std::unique_ptr<views::FrameView> DeleteEditShortcut::CreateFrameView(
-    views::Widget* widget) {
-  // Create the customized bubble border.
-  auto bubble_border =
-      std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->set_background_color(background_color());
-  if (GetParams().round_corners) {
-    bubble_border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));
-  }
-  bubble_border->set_avoid_shadow_overlap(true);
-  bubble_border->set_insets(
-      gfx::Insets::VH(0, kSpaceToEditingList + kEditingListInsideBorderInsets));
-
-  auto frame = views::BubbleDialogDelegateView::CreateFrameView(widget);
-  if (auto* frame_view =
-          views::AsViewClass<views::BubbleFrameView>(frame.get())) {
-    frame_view->SetBubbleBorder(std::move(bubble_border));
-  }
-  return frame;
 }
 
 void DeleteEditShortcut::OnMouseExited(const ui::MouseEvent& event) {

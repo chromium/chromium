@@ -5,15 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_DELETE_EDIT_SHORTCUT_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_DELETE_EDIT_SHORTCUT_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-namespace views {
-class FrameView;
-}  // namespace views
 
 namespace ash {
 class IconButton;
@@ -55,10 +49,6 @@ class DeleteEditShortcut : public views::BubbleDialogDelegateView {
   // Handle button functions.
   void OnEditButtonPressed();
   void OnDeleteButtonPressed();
-
-  // views::DialogDelegate:
-  std::unique_ptr<views::FrameView> CreateFrameView(
-      views::Widget* widget) override;
 
   // views::View:
   void OnMouseExited(const ui::MouseEvent& event) override;
