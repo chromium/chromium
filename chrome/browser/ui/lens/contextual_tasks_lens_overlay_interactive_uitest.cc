@@ -689,6 +689,69 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // This tests the following CUJ:
+//  (1) User navigates to a webpage containing an image.
+//  (2) User right-clicks the image to open the context menu.
+//  (3) User selects the "Search image with Google Lens" item from the context
+//      menu.
+//  (4) Lens overlay opens with the image preselected as the search region.
+//  (5) The image region query opens the Contextual Tasks side panel.
+// Disabled on Mac because the Mac interaction test util implementation does
+// not support selecting an item in the native context menu.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImageContextMenuClick DISABLED_ImageContextMenuClick
+#else
+#define MAYBE_ImageContextMenuClick ImageContextMenuClick
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       MAYBE_ImageContextMenuClick) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  const GURL page_url = embedded_test_server()->GetURL(kDocumentWithImage);
+  const DeepQuery kPathToImg{"img"};
+
+  RunTestSequence(
+      // Step 1: Navigate the active tab to a webpage containing an image and
+      // wait for the image to finish loading so the context menu offers the
+      // image search item.
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToImg), WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+      WaitForJsResultAt(kTabId, kPathToImg,
+                        "(el) => el.complete && el.naturalWidth > 0"),
+
+      // Steps 2-3: Right-click the image and select the Lens image search item
+      // from the context menu.
+      MoveMouseTo(kTabId, kPathToImg), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(RenderViewContextMenu::kSearchForImageItem),
+      SelectMenuItem(RenderViewContextMenu::kSearchForImageItem,
+                     InputType::kMouse),
+
+      // Step 4: The Lens overlay opens from the image context menu with the
+      // image preselected as the search region.
+      InAnyContext(WaitForShow(LensOverlayController::kOverlayId)),
+      CheckResult(
+          [this]() {
+            return LensSearchController::FromTabWebContents(
+                       browser()->GetTabStripModel()->GetWebContentsAt(0))
+                ->invocation_source();
+          },
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kContentAreaContextMenuImage),
+          "Lens overlay was opened from the image context menu"),
+
+      // Step 5: The preselected image region query opens the Contextual Tasks
+      // side panel.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true));
+}
+
+// This tests the following CUJ:
 //  (1) User navigates to a webpage.
 //  (2) User right-clicks a blank area of the webpage.
 //  (3) User selects the Google Lens page search item from the context menu.
