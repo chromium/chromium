@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -576,13 +575,10 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   SkBitmap valid_icon_bitmap = *valid_icon.GetImage().ToSkBitmap();
 
   // Verify we did not get the default favicon.
-  UNSAFE_TODO(EXPECT_NE(
-      0, memcmp(default_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
-                default_icon_bitmap.computeByteSize())));
+  EXPECT_FALSE(
+      gfx::test::AreBitmapsEqual(default_icon_bitmap, valid_icon_bitmap));
   // Verify we did get the expected favicon.
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(new_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
-                new_icon_bitmap.computeByteSize())));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(new_icon_bitmap, valid_icon_bitmap));
 }
 
 TEST_F(BackFwdMenuModelTest, NavigationWhenMenuShownTest) {
