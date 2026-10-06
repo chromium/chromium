@@ -364,8 +364,11 @@ class ChromeRenderProcessHostBackgroundingTest
     : public ChromeRenderProcessHostTest {
  public:
   ChromeRenderProcessHostBackgroundingTest() {
-    feature_list_.InitAndDisableFeature(
-        performance_manager::features::kPMLoadingPageVoter);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            performance_manager::features::kPMLoadingPageVoter,
+            performance_manager::features::kPMLoadingPageVoterV2});
   }
 
   ChromeRenderProcessHostBackgroundingTest(

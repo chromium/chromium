@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/performance_manager_tab_helper.h"
 
+#include <algorithm>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -82,6 +83,38 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
   helper->primary_page_node()->SetOpenerFrameNode(opener_frame_node);
   return true;
 }
+
+// Returns true if `navigation_handle` loads a new document in the primary main
+// frame, i.e. a navigation that makes the page load.
+bool IsPrimaryMainFrameCrossDocument(
+    content::NavigationHandle* navigation_handle) {
+  return navigation_handle->IsInPrimaryMainFrame() &&
+         !navigation_handle->IsSameDocument();
+}
+
+// Returns true if `navigation_handle` was initiated by the browser (omnibox,
+// bookmarks, session restore, extension APIs, ...) or by a renderer with
+// transient user activation (e.g. a link click). `HasUserGesture()` isn't used
+// because it is filtered for navigations that go through a frame proxy.
+bool IsUserOrBrowserInitiated(content::NavigationHandle* navigation_handle) {
+  return !navigation_handle->IsRendererInitiated() ||
+         navigation_handle->StartedWithTransientActivation();
+}
+
+// A navigation that isn't user- or browser-initiated and starts within this
+// delay of the current document's commit is considered a client redirect that
+// continues the current load. This is based on the client redirect heuristic
+// of `content::RedirectChainDetector` (in
+// content/browser/btm/btm_bounce_detector.cc), which isn't exposed outside of
+// content, and matches the default of
+// `features::kBtmClientBounceDetectionTimeout`.
+//
+// Like RedirectChainDetector, the window restarts on each hop, so slow redirect
+// chains keep inheriting the value. As a consequence, a page that reloads
+// itself more often than this window also keeps inheriting it. Unlike
+// RedirectChainDetector, which restarts the window whenever a navigation
+// finishes, only commits restart it here.
+constexpr base::TimeDelta kClientRedirectInheritanceWindow = base::Seconds(10);
 
 }  // namespace
 
@@ -464,8 +497,90 @@ void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
   frame_node->SetIsCapturingMediaStream(is_capturing_media_stream);
 }
 
+void PerformanceManagerTabHelper::SetTickClockForTesting(
+    const base::TickClock* tick_clock) {
+  tick_clock_ = tick_clock ? tick_clock : base::DefaultTickClock::GetInstance();
+}
+
+bool PerformanceManagerTabHelper::
+    IsClientRedirectOfUserOrBrowserInitiatedDocument() const {
+  return is_current_document_user_or_browser_initiated_ &&
+         current_document_commit_time_.has_value() &&
+         tick_clock_->NowTicks() - *current_document_commit_time_ <=
+             kClientRedirectInheritanceWindow;
+}
+
+void PerformanceManagerTabHelper::UpdateIsUserOrBrowserInitiatedLoad() {
+  page_node_->SetIsUserOrBrowserInitiatedLoad(
+      pending_navigations_.empty()
+          ? is_current_document_user_or_browser_initiated_
+          : pending_navigations_.back().is_user_or_browser_initiated);
+}
+
+// The page node's IsUserOrBrowserInitiatedLoad() property is set when a
+// navigation starts, so that the new renderer process gets the right priority
+// before commit. It becomes the value of the current document when the
+// navigation commits, and reverts to it when the navigation doesn't commit.
+// When navigations overlap, the page follows the most recently started pending
+// one (see UpdateIsUserOrBrowserInitiatedLoad()).
+//
+// A navigation that isn't user- or browser-initiated but starts shortly after
+// the current document committed is a client redirect (e.g. link shorteners,
+// SSO, meta-refresh) and inherits the current document's value (see
+// kClientRedirectInheritanceWindow).
+//
+// Known gap, acceptable because it is short and at worst gives a load the
+// boost it had before this property existed (or withholds it only briefly):
+// between WebContentsObserver::DidStartLoading() and DidStartNavigation(), the
+// page is loading but still has the previous value. This window includes
+// waiting for a beforeunload handler, if the current document has one.
+// A new page's first navigation isn't affected: the initial empty document has
+// no beforeunload handler, so the navigation starts in the same task that
+// begins loading.
+//
+// Known limitation: the synchronous about:blank commit of `window.open()` is
+// renderer-initiated without transient activation, so it isn't user-initiated.
+// As a result, a navigation that follows it (e.g. `popup.location = url` from
+// the opener, whose transient activation was consumed by `window.open()`)
+// isn't user-initiated either.
+void PerformanceManagerTabHelper::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!IsPrimaryMainFrameCrossDocument(navigation_handle)) {
+    return;
+  }
+  const bool is_user_or_browser_initiated =
+      IsUserOrBrowserInitiated(navigation_handle) ||
+      IsClientRedirectOfUserOrBrowserInitiatedDocument();
+  pending_navigations_.push_back(
+      {navigation_handle->GetNavigationId(), is_user_or_browser_initiated});
+  UpdateIsUserOrBrowserInitiatedLoad();
+}
+
 void PerformanceManagerTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (IsPrimaryMainFrameCrossDocument(navigation_handle)) {
+    bool is_user_or_browser_initiated;
+    auto it = std::ranges::find(pending_navigations_,
+                                navigation_handle->GetNavigationId(),
+                                &PendingNavigation::navigation_id);
+    if (it != pending_navigations_.end()) {
+      is_user_or_browser_initiated = it->is_user_or_browser_initiated;
+      pending_navigations_.erase(it);
+    } else {
+      // The navigation started before this helper observed it. Its start time
+      // is unknown, so client redirect inheritance can't be evaluated. At
+      // worst, a client redirect isn't boosted.
+      is_user_or_browser_initiated =
+          IsUserOrBrowserInitiated(navigation_handle);
+    }
+    if (navigation_handle->HasCommitted()) {
+      is_current_document_user_or_browser_initiated_ =
+          is_user_or_browser_initiated;
+      current_document_commit_time_ = tick_clock_->NowTicks();
+    }
+    UpdateIsUserOrBrowserInitiatedLoad();
+  }
+
   if (!navigation_handle->HasCommitted())
     return;
 

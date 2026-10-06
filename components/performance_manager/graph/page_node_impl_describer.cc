@@ -79,6 +79,8 @@ base::DictValue PageNodeImplDescriber::DescribePageNodeData(
   result.Set("is_audible", page_node_impl->is_audible_.value());
   result.Set("loading_state",
              PageNode::ToString(page_node_impl->loading_state_.value()));
+  result.Set("is_user_or_browser_initiated_load",
+             page_node_impl->is_user_or_browser_initiated_load_.value());
   result.Set("ukm_source_id",
              base::NumberToString(page_node_impl->ukm_source_id_.value()));
   result.Set("lifecycle_state",

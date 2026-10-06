@@ -15,8 +15,10 @@ namespace performance_manager::execution_context_priority {
 
 // This voter casts a Process::Priority::kUserBlocking vote to all frames of
 // a loading page if it is the active tab, or a Process::Priority::kUserVisible
-// vote if it is not the active tab. This makes loading in the active tab
-// fast while preventing background loading pages from freezing.
+// vote if it is not the active tab and the load was user- or browser-initiated
+// (see PageNode::IsUserOrBrowserInitiatedLoad()). This makes loading in the
+// active tab fast while preventing user-requested background loads from
+// freezing, without boosting unsolicited background navigations.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
 class LoadingPageVoter : public PriorityVoter,
@@ -26,7 +28,12 @@ class LoadingPageVoter : public PriorityVoter,
  public:
   static const char kPageIsLoadingReason[];
 
-  explicit LoadingPageVoter();
+  // If `boost_only_requested_background_loads` is false, the voter uses its
+  // original behavior (features::kPMLoadingPageVoter): every background load
+  // is boosted regardless of its initiator, and a page in the
+  // kLoadingTimedOut state isn't considered loading. Kept only for
+  // diagnostics, to be removed when features::kPMLoadingPageVoterV2 launches.
+  explicit LoadingPageVoter(bool boost_only_requested_background_loads);
   ~LoadingPageVoter() override;
 
   LoadingPageVoter(const LoadingPageVoter&) = delete;
@@ -41,6 +48,8 @@ class LoadingPageVoter : public PriorityVoter,
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
+  void OnIsUserOrBrowserInitiatedLoadChanged(
+      const PageNode* page_node) override;
   void OnEmbedderFrameNodeChanged(const PageNode* page_node,
                                   const FrameNode* previous_embedder) override;
 
@@ -59,20 +68,23 @@ class LoadingPageVoter : public PriorityVoter,
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
+  // Returns true if `loading_state` represents an actively loading state.
+  bool IsLoading(PageNode::LoadingState loading_state) const;
+
   // Returns true if `page_node` is the active tab directly.
   bool IsPageActiveTab(const PageNode* page_node) const;
 
   // Returns true if the outermost embedder root page is the active tab.
   bool IsRootPageActiveTab(const PageNode* page_node) const;
 
-  // Returns the priority to vote for a loading frame based on whether its root
-  // page is the active tab.
-  base::Process::Priority GetPriority(bool is_root_page_active_tab) const;
+  // Returns the vote for a loading frame based on whether its root page is the
+  // active tab or whether the load was user- or browser-initiated.
+  std::optional<Vote> GetVote(const PageNode* page_node,
+                              bool is_root_page_active_tab) const;
 
-  // Called when a page node starts/stops loading, which will submit/invalidate
-  // a vote for every frame in that page, respectively.
-  void OnPageNodeStartedLoading(const PageNode* page_node);
-  void OnPageNodeStoppedLoading(const PageNode* page_node);
+  // Sets the votes for every frame in `page_node`, based on its current state.
+  // Removes them if the page isn't loading.
+  void UpdateVotesForPage(const PageNode* page_node);
 
   // Changes votes for `page_node` and its embedded subpages when root page
   // active tab state changes.
@@ -84,6 +96,8 @@ class LoadingPageVoter : public PriorityVoter,
                          const std::optional<Vote>& vote);
   void ChangeVotesForFrameSubtree(const FrameNode* frame_node,
                                   bool is_root_page_active_tab);
+
+  const bool boost_only_requested_background_loads_;
 
   VotingChannel voting_channel_;
 };

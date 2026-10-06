@@ -475,6 +475,7 @@ if (!is_android) {
       "policies/discard_eligibility_policy_browsertest.cc",
       "policies/page_discarding_helper_browsertest.cc",
       "policies/transient_keep_alive_policy_browsertest.cc",
+      "process_priority_browsertest.cc",
       "user_tuning/performance_detection_manager_browsertest.cc",
     ]
 

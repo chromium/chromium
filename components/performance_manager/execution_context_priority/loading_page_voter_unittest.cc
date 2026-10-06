@@ -45,7 +45,8 @@ class LoadingPageVoterTest : public GraphTestHarness {
 
  private:
   DummyVoteObserver observer_;
-  LoadingPageVoter loading_page_voter_;
+  LoadingPageVoter loading_page_voter_{
+      /*boost_only_requested_background_loads=*/true};
 };
 
 }  // namespace
@@ -70,6 +71,19 @@ TEST_F(LoadingPageVoterTest, VoteIfLoading) {
   EXPECT_TRUE(observer().HasVote(voter_id(), child_frame_node.get(),
                                  base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
+
+  // Still voting when the navigation hasn't committed after the timeout.
+  mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
+
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(), child_frame_node.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoading);
 
   // Still voting when the page is in the state kLoadedBusy.
   mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
@@ -433,6 +447,120 @@ TEST_F(LoadingPageVoterTest, PageNodeRemovedWhileLoading) {
   mock_graph.child_frame.reset();
   mock_graph.frame.reset();
   mock_graph.page.reset();
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+TEST_F(LoadingPageVoterTest,
+       NonUserOrBrowserInitiatedBackgroundLoadNotBoosted) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
+  auto& frame_node = mock_graph.frame;
+  auto& child_frame_node = mock_graph.child_frame;
+
+  // A background load that was not user- or browser-initiated should not
+  // receive a kUserVisible boost.
+  mock_graph.page->SetIsUserOrBrowserInitiatedLoad(false);
+  mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+
+  // Adding a frame while loading in the background should also not vote.
+  auto other_child_frame_node = graph()->CreateFrameNodeAutoId(
+      mock_graph.process.get(), mock_graph.page.get(), frame_node.get());
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+  other_child_frame_node.reset();
+
+  // Switching to the tab while it is still loading boosts it to kUserBlocking.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(mock_graph.page.get())
+      ->SetIsActiveTabForTesting(true);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(), child_frame_node.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  // Switching away again removes the votes.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(mock_graph.page.get())
+      ->SetIsActiveTabForTesting(false);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that votes are updated when the initiator of an in-flight load changes
+// (e.g. a new navigation supersedes the current one).
+TEST_F(LoadingPageVoterTest, InitiatorChangesWhileLoading) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
+  auto& frame_node = mock_graph.frame;
+  auto& child_frame_node = mock_graph.child_frame;
+
+  // Background user/browser-initiated load -> kUserVisible.
+  mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+
+  // Superseded by an unsolicited renderer-initiated navigation -> no vote.
+  mock_graph.page->SetIsUserOrBrowserInitiatedLoad(false);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+
+  // Superseded again by a user/browser-initiated navigation -> kUserVisible.
+  mock_graph.page->SetIsUserOrBrowserInitiatedLoad(true);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(), child_frame_node.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  // In the active tab, the initiator doesn't matter.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(mock_graph.page.get())
+      ->SetIsActiveTabForTesting(true);
+  mock_graph.page->SetIsUserOrBrowserInitiatedLoad(false);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
+                                 base::Process::Priority::kUserBlocking,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+
+  // Changing the initiator while not loading has no effect.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(mock_graph.page.get())
+      ->SetIsActiveTabForTesting(false);
+  mock_graph.page->SetIsUserOrBrowserInitiatedLoad(true);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that a background embedded page uses its own load initiator, not its
+// root page's.
+TEST_F(LoadingPageVoterTest, EmbeddedPageUsesOwnInitiator) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
+  auto& embedder_frame_node = mock_graph.frame;
+
+  // The root page's most recent load was not user/browser-initiated.
+  mock_graph.page->SetIsUserOrBrowserInitiatedLoad(false);
+
+  auto embedded_page_node = CreateNode<PageNodeImpl>();
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(
+      embedded_page_node.get());
+  embedded_page_node->SetEmbedderFrameNode(embedder_frame_node.get());
+  auto embedded_frame_node =
+      CreateFrameNodeAutoId(mock_graph.process.get(), embedded_page_node.get());
+
+  // The embedded page's own load is user/browser-initiated -> kUserVisible.
+  embedded_page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), embedded_frame_node.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 LoadingPageVoter::kPageIsLoadingReason));
+
+  // The embedded page's load becomes unsolicited -> no vote.
+  embedded_page_node->SetIsUserOrBrowserInitiatedLoad(false);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+
+  // The root page's initiator changing doesn't affect the embedded page.
+  mock_graph.page->SetIsUserOrBrowserInitiatedLoad(true);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+
+  embedded_page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   EXPECT_EQ(observer().GetVoteCount(), 0u);
 }
 

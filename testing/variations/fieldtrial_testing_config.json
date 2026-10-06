@@ -13816,7 +13816,7 @@
             ]
         }
     ],
-    "PMLoadingPageVoter": [
+    "PMLoadingPageVoterV2": [
         {
             "platforms": [
                 "android",
@@ -13829,7 +13829,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PMLoadingPageVoter"
+                        "PMLoadingPageVoterV2"
                     ]
                 }
             ]

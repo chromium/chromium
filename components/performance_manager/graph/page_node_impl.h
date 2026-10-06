@@ -93,6 +93,7 @@ class PageNodeImpl
   bool HasFreezingOriginTrialOptOut() const override;
   bool IsOffTheRecord() const override;
   LoadingState GetLoadingState() const override;
+  bool IsUserOrBrowserInitiatedLoad() const override;
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
   bool IsHoldingWebLock() const override;
@@ -127,6 +128,7 @@ class PageNodeImpl
   void SetIsAudible(bool is_audible);
   void SetHasPictureInPicture(bool has_picture_in_picture);
   void SetLoadingState(LoadingState loading_state);
+  void SetIsUserOrBrowserInitiatedLoad(bool is_user_or_browser_initiated_load);
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
   void OnFaviconUpdated(blink::mojom::FaviconUpdateReason reason);
   void OnTitleUpdated();
@@ -377,6 +379,17 @@ class PageNodeImpl
       &PageNodeObserver::OnLoadingStateChanged,
       TracedWrapper<LoadingState>>
       loading_state_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Whether the current (or most recent) load was initiated by the browser or
+  // by a renderer with transient user activation, or is a client redirect that
+  // continues such a load. Maintained by
+  // PerformanceManagerTabHelper from primary main frame navigations. Defaults
+  // to true so that a page whose load start wasn't observed keeps being treated
+  // as a user-intended load.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &PageNodeObserver::OnIsUserOrBrowserInitiatedLoadChanged>
+      is_user_or_browser_initiated_load_ GUARDED_BY_CONTEXT(sequence_checker_){
+          true};
   // The UKM source ID associated with the URL of the main frame of this page.
   ObservedProperty::NotifiesOnlyOnChanges<
       ukm::SourceId,

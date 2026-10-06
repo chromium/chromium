@@ -125,10 +125,16 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     // Casts a USER_BLOCKING vote for all frames in an active loading page,
-    // or USER_VISIBLE for background loading pages.
-    if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
+    // or USER_VISIBLE for background loading pages (only user- or
+    // browser-initiated ones with V2). V1 takes precedence, since it's only
+    // enabled manually for diagnostics.
+    const bool loading_page_voter_v1 =
+        base::FeatureList::IsEnabled(features::kPMLoadingPageVoter);
+    if (loading_page_voter_v1 ||
+        base::FeatureList::IsEnabled(features::kPMLoadingPageVoterV2)) {
       priority_voting_system
-          ->AddPriorityVoter<execution_context_priority::LoadingPageVoter>();
+          ->AddPriorityVoter<execution_context_priority::LoadingPageVoter>(
+              /*boost_only_requested_background_loads=*/!loading_page_voter_v1);
     }
 
 #if BUILDFLAG(IS_MAC)

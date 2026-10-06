@@ -173,6 +173,8 @@ const base::FeatureParam<bool> kRendererHighInitialPriority{
 
 BASE_FEATURE(kPMLoadingPageVoter, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPMLoadingPageVoterV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUrgentPageDiscarding, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCPUMeasurementInFreezingPolicy, base::FEATURE_ENABLED_BY_DEFAULT);

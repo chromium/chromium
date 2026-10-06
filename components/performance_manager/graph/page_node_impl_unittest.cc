@@ -519,4 +519,28 @@ TEST_F(PageNodeImplTest, IsHoldingBlockingIndexedDBLock) {
   EXPECT_FALSE(page_node->IsHoldingBlockingIndexedDBLock());
 }
 
+TEST_F(PageNodeImplTest, IsUserOrBrowserInitiatedLoad) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  const PageNode* raw_page_node = page_node.get();
+
+  // Defaults to true.
+  EXPECT_TRUE(raw_page_node->IsUserOrBrowserInitiatedLoad());
+
+  MockObserver obs(graph());
+
+  // Setting the same value doesn't notify.
+  EXPECT_CALL(obs, OnIsUserOrBrowserInitiatedLoadChanged(_)).Times(0);
+  page_node->SetIsUserOrBrowserInitiatedLoad(true);
+  testing::Mock::VerifyAndClearExpectations(&obs);
+
+  EXPECT_CALL(obs, OnIsUserOrBrowserInitiatedLoadChanged(raw_page_node));
+  page_node->SetIsUserOrBrowserInitiatedLoad(false);
+  EXPECT_FALSE(raw_page_node->IsUserOrBrowserInitiatedLoad());
+  testing::Mock::VerifyAndClearExpectations(&obs);
+
+  EXPECT_CALL(obs, OnIsUserOrBrowserInitiatedLoadChanged(raw_page_node));
+  page_node->SetIsUserOrBrowserInitiatedLoad(true);
+  EXPECT_TRUE(raw_page_node->IsUserOrBrowserInitiatedLoad());
+}
+
 }  // namespace performance_manager

@@ -13,6 +13,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
 #include "content/public/browser/permission_controller.h"
@@ -89,6 +92,8 @@ class PerformanceManagerTabHelper
   void OnFrameIsCapturingMediaStreamChanged(
       content::RenderFrameHost* render_frame_host,
       bool is_capturing_media_stream) override;
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(
@@ -135,6 +140,10 @@ class PerformanceManagerTabHelper
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Overrides the clock used to detect client redirects. Passing nullptr
+  // restores the default clock.
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
+
  private:
   friend class content::WebContentsUserData<PerformanceManagerTabHelper>;
   friend class PerformanceManagerRegistryImpl;
@@ -148,6 +157,16 @@ class PerformanceManagerTabHelper
   using WebContentsUserData<PerformanceManagerTabHelper>::CreateForWebContents;
 
   void OnMainFrameNavigation(int64_t navigation_id);
+
+  // Returns true if a navigation that isn't user- or browser-initiated,
+  // starting now, is a client redirect of a current document that was user- or
+  // browser-initiated, i.e. it starts shortly after that document committed.
+  bool IsClientRedirectOfUserOrBrowserInitiatedDocument() const;
+
+  // Sets the page node's IsUserOrBrowserInitiatedLoad() property to the value
+  // of the most recently started pending navigation, or of the current
+  // document if no navigation is pending.
+  void UpdateIsUserOrBrowserInitiatedLoad();
 
   // Returns the notification permission status for the current main frame and
   // subscribes to changes.
@@ -169,6 +188,29 @@ class PerformanceManagerTabHelper
 
   // The UKM source ID for this page.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+
+  // Whether the navigation that committed the current document of the primary
+  // main frame was user- or browser-initiated. Reflected on the page node while
+  // no navigation is pending. Defaults to true to match the PageNode default.
+  bool is_current_document_user_or_browser_initiated_ = true;
+
+  // When the current document of the primary main frame committed. Used to
+  // detect client redirects. Unset until the first commit.
+  std::optional<base::TimeTicks> current_document_commit_time_;
+
+  struct PendingNavigation {
+    int64_t navigation_id;
+    // Computed when the navigation started, including client redirect
+    // inheritance.
+    bool is_user_or_browser_initiated;
+  };
+
+  // Pending primary main frame cross-document navigations, in the order they
+  // started. The page node reflects the most recently started one.
+  std::vector<PendingNavigation> pending_navigations_;
+
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
   // When the feature
   // `kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate` is disabled,

@@ -13,12 +13,6 @@ namespace performance_manager::execution_context_priority {
 
 namespace {
 
-// Returns true if `loading_state` represent an actively loading state.
-bool IsLoading(PageNode::LoadingState loading_state) {
-  return loading_state == PageNode::LoadingState::kLoading ||
-         loading_state == PageNode::LoadingState::kLoadedBusy;
-}
-
 // Walks up embedder frame relationships to locate the outermost browser tab
 // PageNode (e.g., out of embedded GuestViews or portals).
 const PageNode* GetRootPageNode(const PageNode* page_node) {
@@ -33,7 +27,9 @@ const PageNode* GetRootPageNode(const PageNode* page_node) {
 // static
 const char LoadingPageVoter::kPageIsLoadingReason[] = "Page is loading.";
 
-LoadingPageVoter::LoadingPageVoter() = default;
+LoadingPageVoter::LoadingPageVoter(bool boost_only_requested_background_loads)
+    : boost_only_requested_background_loads_(
+          boost_only_requested_background_loads) {}
 
 LoadingPageVoter::~LoadingPageVoter() = default;
 
@@ -58,7 +54,7 @@ void LoadingPageVoter::OnPageNodeAdded(const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)->AddObserver(
       this);
   if (IsLoading(page_node->GetLoadingState())) {
-    OnPageNodeStartedLoading(page_node);
+    UpdateVotesForPage(page_node);
   }
 }
 
@@ -70,15 +66,21 @@ void LoadingPageVoter::OnBeforePageNodeRemoved(const PageNode* page_node) {
 void LoadingPageVoter::OnLoadingStateChanged(
     const PageNode* page_node,
     PageNode::LoadingState previous_state) {
-  const bool was_loading = IsLoading(previous_state);
-  const bool is_loading = IsLoading(page_node->GetLoadingState());
+  if (IsLoading(previous_state) != IsLoading(page_node->GetLoadingState())) {
+    UpdateVotesForPage(page_node);
+  }
+}
 
-  if (was_loading && !is_loading) {
-    OnPageNodeStoppedLoading(page_node);
+void LoadingPageVoter::OnIsUserOrBrowserInitiatedLoadChanged(
+    const PageNode* page_node) {
+  if (!boost_only_requested_background_loads_) {
+    // The original behavior doesn't depend on the initiator.
+    return;
   }
-  if (!was_loading && is_loading) {
-    OnPageNodeStartedLoading(page_node);
-  }
+  // Happens when a navigation starts after the page started loading
+  // (DidStartLoading() precedes DidStartNavigation()), or supersedes an
+  // in-flight one.
+  UpdateVotesForPage(page_node);
 }
 
 void LoadingPageVoter::OnEmbedderFrameNodeChanged(
@@ -111,8 +113,8 @@ void LoadingPageVoter::OnBeforeFrameNodeAdded(
   }
 
   voting_channel_.SetVote(
-      frame_node, Vote(GetPriority(IsRootPageActiveTab(pending_page_node)),
-                       kPageIsLoadingReason));
+      frame_node,
+      GetVote(pending_page_node, IsRootPageActiveTab(pending_page_node)));
 }
 
 void LoadingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
@@ -121,6 +123,21 @@ void LoadingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
     return;
   }
   voting_channel_.SetVote(frame_node, std::nullopt);
+}
+
+bool LoadingPageVoter::IsLoading(PageNode::LoadingState loading_state) const {
+  switch (loading_state) {
+    case PageNode::LoadingState::kLoading:
+    case PageNode::LoadingState::kLoadedBusy:
+      return true;
+    case PageNode::LoadingState::kLoadingTimedOut:
+      // The navigation hasn't committed yet, but the load is still in
+      // progress. The original behavior doesn't consider it loading.
+      return boost_only_requested_background_loads_;
+    case PageNode::LoadingState::kLoadingNotStarted:
+    case PageNode::LoadingState::kLoadedIdle:
+      return false;
+  }
 }
 
 bool LoadingPageVoter::IsPageActiveTab(const PageNode* page_node) const {
@@ -134,23 +151,29 @@ bool LoadingPageVoter::IsRootPageActiveTab(const PageNode* page_node) const {
   return IsPageActiveTab(GetRootPageNode(page_node));
 }
 
-base::Process::Priority LoadingPageVoter::GetPriority(
+std::optional<Vote> LoadingPageVoter::GetVote(
+    const PageNode* page_node,
     bool is_root_page_active_tab) const {
-  return is_root_page_active_tab ? base::Process::Priority::kUserBlocking
-                                 : base::Process::Priority::kUserVisible;
+  if (is_root_page_active_tab) {
+    return Vote(base::Process::Priority::kUserBlocking, kPageIsLoadingReason);
+  }
+  // In a background tab, only boost loads that the user or the browser asked
+  // for (unless running the original behavior). Use the loading page's own
+  // initiator, since embedded pages load independently of their root page.
+  if (!boost_only_requested_background_loads_ ||
+      page_node->IsUserOrBrowserInitiatedLoad()) {
+    return Vote(base::Process::Priority::kUserVisible, kPageIsLoadingReason);
+  }
+  return std::nullopt;
 }
 
-void LoadingPageVoter::OnPageNodeStartedLoading(const PageNode* page_node) {
-  const Vote vote(GetPriority(IsRootPageActiveTab(page_node)),
-                  kPageIsLoadingReason);
+void LoadingPageVoter::UpdateVotesForPage(const PageNode* page_node) {
+  const std::optional<Vote> vote =
+      IsLoading(page_node->GetLoadingState())
+          ? GetVote(page_node, IsRootPageActiveTab(page_node))
+          : std::nullopt;
   for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
     SetVoteForSubtree(main_frame_node, vote);
-  }
-}
-
-void LoadingPageVoter::OnPageNodeStoppedLoading(const PageNode* page_node) {
-  for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
-    SetVoteForSubtree(main_frame_node, std::nullopt);
   }
 }
 
@@ -177,9 +200,8 @@ void LoadingPageVoter::ChangeVotesForFrameSubtree(
     bool is_root_page_active_tab) {
   const PageNode* page_node = frame_node->GetPageNode();
   if (IsLoading(page_node->GetLoadingState())) {
-    voting_channel_.SetVote(
-        frame_node,
-        Vote(GetPriority(is_root_page_active_tab), kPageIsLoadingReason));
+    voting_channel_.SetVote(frame_node,
+                            GetVote(page_node, is_root_page_active_tab));
   }
 
   // Recurse through subtree.

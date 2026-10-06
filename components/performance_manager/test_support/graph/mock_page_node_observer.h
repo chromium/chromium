@@ -43,6 +43,10 @@ class LenientMockPageNodeObserver : public PageNodeObserver {
               OnLoadingStateChanged,
               (const PageNode*, PageNode::LoadingState),
               (override));
+  MOCK_METHOD(void,
+              OnIsUserOrBrowserInitiatedLoadChanged,
+              (const PageNode*),
+              (override));
   MOCK_METHOD(void, OnUkmSourceIdChanged, (const PageNode*), (override));
   MOCK_METHOD(void, OnPageLifecycleStateChanged, (const PageNode*), (override));
   MOCK_METHOD(void,

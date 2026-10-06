@@ -120,7 +120,17 @@ extern const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible;
 
 extern const base::FeatureParam<bool> kRendererHighInitialPriority;
 
+// Boosts the priority of loading pages: kUserBlocking in the active tab, and
+// kUserVisible in background tabs. Original version, which boosts every
+// background load. Kept only for diagnostics (e.g. comparing with V2 when
+// investigating reports), to be removed when kPMLoadingPageVoterV2 launches.
+// Takes precedence over kPMLoadingPageVoterV2 when both are enabled.
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
+
+// Same as kPMLoadingPageVoter, but only boosts background loads that are user-
+// or browser-initiated (see PageNode::IsUserOrBrowserInitiatedLoad()), and
+// also boosts loads in the kLoadingTimedOut state.
+BASE_DECLARE_FEATURE(kPMLoadingPageVoterV2);
 
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
