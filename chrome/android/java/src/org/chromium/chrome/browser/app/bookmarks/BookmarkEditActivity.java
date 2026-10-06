@@ -485,9 +485,13 @@ public class BookmarkEditActivity extends SnackbarActivity {
     }
 
     @Override
+    protected boolean shouldDrawEdgeToEdgeOnCreate() {
+        return !BookmarkUtils.isBookmarkDialog(this);
+    }
+
+    @Override
     protected boolean wrapContentWithEdgeToEdgeLayout() {
         // Floating modal dialogs should not be wrapped edge-to-edge.
-        return super.wrapContentWithEdgeToEdgeLayout()
-                && !BookmarkUtils.isDesktopBookmarksDialogEnabled();
+        return super.wrapContentWithEdgeToEdgeLayout() && !BookmarkUtils.isBookmarkDialog(this);
     }
 }
