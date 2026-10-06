@@ -97,20 +97,23 @@ contains a local copy of pylint, appropriately configured.
 - Directories need to opt into pylint presubmit checks via:
   `input_api.canned_checks.RunPylint()`.
 
-### YAPF
+### Ruff
 
-[YAPF](https://github.com/google/yapf) is the Python formatter used by:
+[Ruff](https://docs.astral.sh/ruff/formatter/) is the Python formatter used by:
 
 ```sh
 git cl format --python
 ```
 
-Directories can opt into enforcing auto-formatting by adding a `.style.yapf`
+Directories can opt into enforcing auto-formatting by adding a `.ruff.toml`
 file with the following contents:
 
-```
-[style]
-based_on_style = pep8
+```toml
+line-length = 79
+indent-width = 4
+
+[format]
+quote-style = "preserve"
 ```
 
 Entire files can be formatted (rather than just touched lines) via:
@@ -119,22 +122,20 @@ Entire files can be formatted (rather than just touched lines) via:
 git cl format --python --full
 ```
 
-YAPF has gotchas. You should review its changes before submitting. Notably:
+Ruff has gotchas. You should review its changes before submitting. Notably:
 
-- It does not re-wrap comments.
-- It won't insert characters in order wrap lines. You might need to add ()s
-  yourself in order to have to wrap long lines for you.
+- It does not re-wrap comments or docstrings.
+- It does not split long string literals.
 - It formats lists differently depending on whether or not they end with a
   trailing comma.
 
 #### Bugs
 
-- Are tracked here: https://github.com/google/yapf/issues.
 - For Chromium-specific bugs, please discuss on [`python@chromium.org`].
 
 #### Editor Integration
 
-See: https://github.com/google/yapf/tree/main/plugins
+See: https://docs.astral.sh/ruff/editors/
 
 [vpython]: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/doc/users/vpython.md
 [`python@chromium.org`]: https://groups.google.com/a/chromium.org/g/python
