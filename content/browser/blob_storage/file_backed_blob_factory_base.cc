@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "components/file_access/scoped_file_access.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -56,19 +57,8 @@ void ContinueRegisterBlob(
     file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
         file_access,
     bool security_check_success,
-    mojo::ReportBadMessageCallback bad_message_callback,
-    scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    blink::mojom::FileBackedBlobFactory::RegisterBlobSyncCallback
-        finish_callback) {
+    scoped_refptr<ChromeBlobStorageContext> blob_storage_context) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
-  base::ScopedClosureRunner scoped_finish_callback(std::move(finish_callback));
-
-  if (blob_storage_context->context()->registry().HasEntry(uuid) ||
-      uuid.empty()) {
-    std::move(bad_message_callback)
-        .Run("Invalid UUID passed to FileBackedBlobFactoryImpl::RegisterBlob");
-    return;
-  }
 
   if (!security_check_success) {
     std::unique_ptr<storage::BlobDataHandle> handle =
@@ -104,25 +94,10 @@ FileBackedBlobFactoryBase::~FileBackedBlobFactoryBase() = default;
 
 void FileBackedBlobFactoryBase::RegisterBlob(
     mojo::PendingReceiver<blink::mojom::Blob> blob,
-    const std::string& uuid,
-    const std::string& content_type,
-    blink::mojom::DataElementFilePtr file) {
-  // We can safely perform the registration asynchronously since blob remote
-  // messages are managed by the mojo infrastructure until the blob pending
-  // receiver is resolved, and this happens when the async registration is
-  // completed. Without the mojo continuation callback the `RegisterBlobSync`
-  // call is async.
-
-  RegisterBlobSync(std::move(blob), uuid, content_type, std::move(file),
-                   base::NullCallback());
-}
-
-void FileBackedBlobFactoryBase::RegisterBlobSync(
-    mojo::PendingReceiver<blink::mojom::Blob> blob,
-    const std::string& uuid,
     const std::string& content_type,
     blink::mojom::DataElementFilePtr file,
-    RegisterBlobSyncCallback finish_callback) {
+    bool block_on_registration,
+    RegisterBlobCallback finish_callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   const bool security_check_success =
@@ -130,22 +105,21 @@ void FileBackedBlobFactoryBase::RegisterBlobSync(
                                                                  file->path);
 
   const GURL url_for_file_access_checks = GetCurrentUrl();
+  const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  base::OnceClosure done = base::BindOnce(std::move(finish_callback), uuid);
 
-  if (finish_callback) {
-    finish_callback =
-        base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                           std::move(finish_callback));
+  base::OnceClosure do_register = base::BindOnce(
+      &ContinueRegisterBlob, std::move(blob), uuid, content_type,
+      std::move(file), GetAccessCallback(url_for_file_access_checks),
+      security_check_success, blob_storage_context_);
+  if (block_on_registration) {
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, std::move(do_register), std::move(done));
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(do_register));
+    std::move(done).Run();
   }
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ContinueRegisterBlob, std::move(blob), uuid, content_type,
-                     std::move(file),
-                     GetAccessCallback(url_for_file_access_checks),
-                     security_check_success,
-                     base::BindPostTask(GetUIThreadTaskRunner({}),
-                                        GetBadMessageCallback()),
-                     blob_storage_context_, std::move(finish_callback)));
 }
 
 }  // namespace content

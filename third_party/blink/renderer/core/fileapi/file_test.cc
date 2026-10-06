@@ -50,7 +50,7 @@ class MockBlob : public FakeBlob {
                   std::make_unique<MockBlob>(uuid, modified_time),
                   std::move(receiver));
             },
-            file->Uuid(), remote.InitWithNewPipeAndPassReceiver(),
+            file->MaybeUuid(), remote.InitWithNewPipeAndPassReceiver(),
             modified_time));
     file->GetBlobDataHandle()->SetBlobRemoteForTesting(std::move(remote));
   }

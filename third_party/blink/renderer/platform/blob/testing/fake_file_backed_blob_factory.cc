@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -23,19 +24,11 @@ FakeFileBackedBlobFactory::~FakeFileBackedBlobFactory() = default;
 
 void FakeFileBackedBlobFactory::RegisterBlob(
     mojo::PendingReceiver<mojom::blink::Blob> blob,
-    const String& uuid,
-    const String& content_type,
-    mojom::blink::DataElementFilePtr file) {
-  RegisterBlobSync(std::move(blob), uuid, content_type, std::move(file),
-                   base::NullCallback());
-}
-
-void FakeFileBackedBlobFactory::RegisterBlobSync(
-    mojo::PendingReceiver<mojom::blink::Blob> blob,
-    const String& uuid,
     const String& content_type,
     mojom::blink::DataElementFilePtr file,
-    RegisterBlobSyncCallback callback) {
+    bool block_on_registration,
+    RegisterBlobCallback callback) {
+  const String uuid = CreateCanonicalUuidString();
   std::optional<std::vector<uint8_t>> content =
       base::ReadFileToBytes(file->path);
   Vector<uint8_t> body_bytes(content ? *content : std::vector<uint8_t>());
@@ -52,9 +45,7 @@ void FakeFileBackedBlobFactory::RegisterBlobSync(
                                 std::move(receiver));
                           },
                           uuid, std::move(blob), std::move(body_bytes)));
-  if (callback) {
-    std::move(callback).Run();
-  }
+  std::move(callback).Run(uuid);
 }
 
 }  // namespace blink

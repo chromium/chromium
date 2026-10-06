@@ -45,6 +45,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:AdProtoDecompressionOutcome) -->
 
+<!-- LINT.IfChange(BlobUuidAccess) -->
+
+<enum name="BlobUuidAccess">
+  <int value="0"
+      label="UUID was known synchronously (when Blob was connected in
+             renderer)"/>
+  <int value="1"
+      label="UUID was retrieved asynchronously, but was ready before needed"/>
+  <int value="2"
+      label="UUID was needed and renderer thread blocked to wait for it"/>
+  <int value="3"
+      label="UUID was unavailable because the Blob's remote connection was
+             not valid"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/platform/blob/blob_data.cc:BlobUuidAccess) -->
+
 <enum name="BooleanInherited">
   <int value="0" label="Not inherited"/>
   <int value="1" label="Inherited"/>

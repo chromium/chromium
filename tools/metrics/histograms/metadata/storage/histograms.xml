@@ -1160,6 +1160,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.Blob.RendererUuidAccess" enum="BlobUuidAccess"
+    expires_after="2027-09-22">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records whether BlobDataHandle::Uuid returns a UUID created synchronously,
+    an asynchronously created UUID that was already available, an asynchronously
+    created UUID requested synchronously from the blob, or that no UUID was
+    available because the blob's remote connection was not valid. Recorded each
+    time BlobDataHandle::Uuid is called.
+  </summary>
+</histogram>
+
 <histogram name="Storage.Buckets.BucketCount" units="buckets"
     expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>

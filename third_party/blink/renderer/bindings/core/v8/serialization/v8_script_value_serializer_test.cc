@@ -1637,8 +1637,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
   Blob* blob = Blob::Create(
       base::as_bytes(base::span_with_nul_from_cstring(kHelloWorld)),
       "text/plain");
-  String uuid = blob->Uuid();
-  EXPECT_FALSE(uuid.empty());
+  EXPECT_TRUE(blob->MaybeUuid().empty());
   v8::Local<v8::Value> wrapper =
       ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob);
   v8::Local<v8::Value> result =
@@ -1647,7 +1646,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
   ASSERT_NE(new_blob, nullptr);
   EXPECT_EQ("text/plain", new_blob->type());
   EXPECT_EQ(sizeof(kHelloWorld), new_blob->size());
-  EXPECT_EQ(uuid, new_blob->Uuid());
+  EXPECT_TRUE(new_blob->MaybeUuid().empty());
+  EXPECT_EQ(blob->GetBlobDataHandle()->GetUuidMayBlock(),
+            new_blob->GetBlobDataHandle()->GetUuidMayBlock());
 }
 
 // Blob deserialization requires blob data handles.
@@ -1673,8 +1674,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
   Blob* blob = Blob::Create(
       base::as_bytes(base::span_with_nul_from_cstring(kHelloWorld)),
       "text/plain");
-  String uuid = blob->Uuid();
-  EXPECT_FALSE(uuid.empty());
+  EXPECT_TRUE(blob->MaybeUuid().empty());
   v8::Local<v8::Value> wrapper =
       ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob);
   WebBlobInfoArray blob_info_array;
@@ -1686,14 +1686,16 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
   ASSERT_NE(new_blob, nullptr);
   EXPECT_EQ("text/plain", new_blob->type());
   EXPECT_EQ(sizeof(kHelloWorld), new_blob->size());
-  EXPECT_EQ(uuid, new_blob->Uuid());
+  EXPECT_EQ(blob->GetBlobDataHandle()->GetUuidMayBlock(),
+            new_blob->GetBlobDataHandle()->GetUuidMayBlock());
+  EXPECT_FALSE(blob->MaybeUuid().empty());
 
   // The blob info array should also contain the blob details since it was
   // serialized by index into this array.
   ASSERT_EQ(1u, blob_info_array.size());
   const WebBlobInfo& info = blob_info_array[0];
   EXPECT_FALSE(info.IsFile());
-  EXPECT_EQ(uuid, info.GetBlobHandle()->Uuid());
+  EXPECT_EQ(blob->MaybeUuid(), info.GetBlobHandle()->MaybeUuid());
   EXPECT_EQ("text/plain", info.GetType());
   EXPECT_EQ(sizeof(kHelloWorld), static_cast<size_t>(info.size()));
 }
@@ -1713,7 +1715,7 @@ TEST(V8ScriptValueSerializerTest, DecodeBlobIndex) {
   v8::Local<v8::Value> result = deserializer.Deserialize();
   Blob* new_blob = V8Blob::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_blob, nullptr);
-  EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_blob->Uuid());
+  EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_blob->MaybeUuid());
   EXPECT_EQ("text/plain", new_blob->type());
   EXPECT_EQ(12u, new_blob->size());
 }
@@ -1884,7 +1886,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
   const WebBlobInfo& info = blob_info_array[0];
   EXPECT_TRUE(info.IsFile());
   EXPECT_EQ("path", info.FileName());
-  EXPECT_EQ(file->Uuid(), info.GetBlobHandle()->Uuid());
+  EXPECT_EQ(file->GetBlobDataHandle()->GetUuidMayBlock(),
+            info.GetBlobHandle()->GetUuidMayBlock());
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileIndex) {
@@ -1902,7 +1905,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileIndex) {
   v8::Local<v8::Value> result = deserializer.Deserialize();
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_file, nullptr);
-  EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_file->Uuid());
+  EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_file->MaybeUuid());
   EXPECT_EQ("text/plain", new_file->type());
   EXPECT_TRUE(new_file->GetPath().empty());
   EXPECT_EQ("path", new_file->name());
@@ -2076,7 +2079,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListIndex) {
   File* new_file = new_file_list->item(0);
   EXPECT_TRUE(new_file->GetPath().empty());
   EXPECT_EQ("name", new_file->name());
-  EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_file->Uuid());
+  EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_file->MaybeUuid());
   EXPECT_EQ("text/plain", new_file->type());
 }
 

@@ -84,7 +84,7 @@ class CORE_EXPORT Blob : public ScriptWrappable, public ImageBitmapSource {
   ScriptPromise<DOMArrayBuffer> arrayBuffer(ScriptState* script_state);
   ScriptPromise<NotShared<DOMUint8Array>> bytes(ScriptState* script_state);
   String type() const { return blob_data_handle_->GetType(); }
-  String Uuid() const { return blob_data_handle_->Uuid(); }
+  String MaybeUuid() const { return blob_data_handle_->MaybeUuid(); }
   // Returns the BlobDataHandle this `Blob` was created with. Note that the size
   // of the returned BlobDataHandle might be `BlobUtils::kUnknownSize`. If it is
   // important for the returned BlobDataHandle to contain a known size, use

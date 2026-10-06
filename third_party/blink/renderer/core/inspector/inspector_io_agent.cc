@@ -32,7 +32,7 @@ protocol::Response InspectorIOAgent::resolveBlob(const String& object_id,
         "Object id doesn't reference a Blob");
   }
 
-  *uuid = blob->Uuid();
+  *uuid = blob->GetBlobDataHandle()->GetUuidMayBlock();
   return protocol::Response::Success();
 }
 

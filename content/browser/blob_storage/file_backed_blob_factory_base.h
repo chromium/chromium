@@ -53,14 +53,10 @@ class CONTENT_EXPORT FileBackedBlobFactoryBase
 
   // FileBackedBlobFactory:
   void RegisterBlob(mojo::PendingReceiver<blink::mojom::Blob> blob,
-                    const std::string& uuid,
                     const std::string& content_type,
-                    blink::mojom::DataElementFilePtr file) override;
-  void RegisterBlobSync(mojo::PendingReceiver<blink::mojom::Blob> blob,
-                        const std::string& uuid,
-                        const std::string& content_type,
-                        blink::mojom::DataElementFilePtr file,
-                        RegisterBlobSyncCallback finish_callback) override;
+                    blink::mojom::DataElementFilePtr file,
+                    bool block_on_registration,
+                    RegisterBlobCallback finish_callback) override;
 
  protected:
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;

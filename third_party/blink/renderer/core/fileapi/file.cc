@@ -106,12 +106,13 @@ static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithMetadata(
   // call, we have to ensure the permission is available while we create the
   // handle. So we need create a handle using the synchronous version of the
   // IPC.
-  return BlobDataHandle::CreateForFileSync(
+  return BlobDataHandle::CreateForFile(
       FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context),
       metadata.platform_path,
       /*offset=*/0, metadata.length, metadata.modification_time,
       GetContentTypeFromFileName(file_system_name,
-                                 File::kWellKnownContentTypes));
+                                 File::kWellKnownContentTypes),
+      /*synchronous_register=*/true);
 }
 
 // static
@@ -368,7 +369,17 @@ bool File::HasSameSource(const File& other) const {
   if (!file_system_url_.IsEmpty())
     return file_system_url_ == other.file_system_url_;
 
-  return Uuid() == other.Uuid();
+  CHECK(GetBlobDataHandle());
+  if (GetBlobDataHandle().get() == other.GetBlobDataHandle().get()) {
+    return true;
+  }
+
+  String uuid = GetBlobDataHandle()->GetUuidMayBlock();
+  if (uuid.empty()) {
+    return false;
+  }
+
+  return uuid == other.GetBlobDataHandle()->GetUuidMayBlock();
 }
 
 bool File::AppendToControlState(FormControlState& state) {

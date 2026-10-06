@@ -325,7 +325,7 @@ scoped_refptr<BlobDataHandle> Blob::GetBlobDataHandleWithKnownSize() const {
   if (!blob_data_handle_->IsSingleUnknownSizeFile()) {
     return blob_data_handle_;
   }
-  return BlobDataHandle::Create(blob_data_handle_->Uuid(),
+  return BlobDataHandle::Create(blob_data_handle_->MaybeUuid(),
                                 blob_data_handle_->GetType(), size(),
                                 blob_data_handle_->CloneBlobRemote());
 }

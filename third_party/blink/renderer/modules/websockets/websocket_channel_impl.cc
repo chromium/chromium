@@ -429,7 +429,7 @@ void WebSocketChannelImpl::Send(
 
 void WebSocketChannelImpl::Send(
     scoped_refptr<BlobDataHandle> blob_data_handle) {
-  DVLOG(1) << this << " Send(" << blob_data_handle->Uuid() << ", "
+  DVLOG(1) << this << " Send(" << blob_data_handle->MaybeUuid() << ", "
            << blob_data_handle->GetType() << ", " << blob_data_handle->size()
            << ") "
            << "(BlobDataHandle argument)";

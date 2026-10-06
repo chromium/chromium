@@ -73,5 +73,5 @@ interface Blob {
   // This returns the internal UUID of the blob, used by the blob system to
   // identify the blob.
   // TODO(40529364): remove this.
-  GetInternalUUID() => (string uuid);
+  [Sync] GetInternalUUID() => (string uuid);
 };

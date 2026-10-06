@@ -506,7 +506,8 @@ void DOMWebSocket::send(NotShared<DOMArrayBufferView> array_buffer_view,
 }
 
 void DOMWebSocket::send(Blob* blob, ExceptionState& exception_state) {
-  DVLOG(1) << "WebSocket " << this << " send() Sending Blob " << blob->Uuid();
+  DVLOG(1) << "WebSocket " << this << " send() Sending Blob "
+           << blob->MaybeUuid();
   DCHECK(blob);
   if (common_.GetState() == kConnecting) {
     SetInvalidStateErrorForSendMethod(exception_state);

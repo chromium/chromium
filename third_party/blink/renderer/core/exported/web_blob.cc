@@ -81,7 +81,7 @@ void WebBlob::Assign(const WebBlob& other) {
 WebString WebBlob::Uuid() {
   if (!private_.Get())
     return WebString();
-  return private_->Uuid();
+  return private_->GetBlobDataHandle()->GetUuidMayBlock();
 }
 
 v8::Local<v8::Value> WebBlob::ToV8Value(v8::Isolate* isolate) {

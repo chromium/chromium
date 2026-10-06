@@ -11,13 +11,13 @@ import "third_party/blink/public/mojom/blob/data_element.mojom";
 // to register a file backed blob and capture the URL from which it is accessed.
 // This interface is channel-associated (for frames).
 interface FileBackedBlobFactory {
-    // Registers a file backed blob.
-    // TODO(crbug.com/40529364): get rid of UUID parameter.
-    RegisterBlob(pending_receiver<blink.mojom.Blob> blob, string uuid,
+    // Registers a file backed blob. When `block_on_registration` is true, the
+    // UUID won't be returned until the registration has been completed.
+    // Otherwise, it may be returned when the registration has merely been
+    // initiated.
+    [Sync] RegisterBlob(
+        pending_receiver<blink.mojom.Blob> blob,
         string content_type,
-        blink.mojom.DataElementFile file);
-    // Synchronous method for registering a file backed blob.
-    [Sync] RegisterBlobSync(pending_receiver<blink.mojom.Blob> blob,
-        string uuid, string content_type,
-        blink.mojom.DataElementFile file) => ();
+        blink.mojom.DataElementFile file,
+        bool block_on_registration) => (string uuid);
 };

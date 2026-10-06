@@ -56,10 +56,6 @@ namespace blink {
 
 namespace {
 
-const std::string Utf8BlobUuid(Blob* blob) {
-  return blob->Uuid().Utf8();
-}
-
 const std::string Utf8FilePath(Blob* blob) {
   return blob->HasBackingFile() ? To<File>(blob)->GetPath().Utf8() : "";
 }
@@ -235,7 +231,7 @@ bool FileReader::HasPendingActivity() const {
 void FileReader::readAsArrayBuffer(Blob* blob,
                                    ExceptionState& exception_state) {
   DCHECK(blob);
-  DVLOG(1) << "reading as array buffer: " << Utf8BlobUuid(blob).data() << " "
+  DVLOG(1) << "reading as array buffer: " << blob->MaybeUuid() << " "
            << Utf8FilePath(blob).data();
 
   ReadInternal(blob, FileReadType::kReadAsArrayBuffer, exception_state);
@@ -244,7 +240,7 @@ void FileReader::readAsArrayBuffer(Blob* blob,
 void FileReader::readAsBinaryString(Blob* blob,
                                     ExceptionState& exception_state) {
   DCHECK(blob);
-  DVLOG(1) << "reading as binary: " << Utf8BlobUuid(blob).data() << " "
+  DVLOG(1) << "reading as binary: " << blob->MaybeUuid() << " "
            << Utf8FilePath(blob).data();
 
   ReadInternal(blob, FileReadType::kReadAsBinaryString, exception_state);
@@ -254,7 +250,7 @@ void FileReader::readAsText(Blob* blob,
                             const String& encoding,
                             ExceptionState& exception_state) {
   DCHECK(blob);
-  DVLOG(1) << "reading as text: " << Utf8BlobUuid(blob).data() << " "
+  DVLOG(1) << "reading as text: " << blob->MaybeUuid() << " "
            << Utf8FilePath(blob).data();
 
   encoding_ = encoding;
@@ -267,7 +263,7 @@ void FileReader::readAsText(Blob* blob, ExceptionState& exception_state) {
 
 void FileReader::readAsDataURL(Blob* blob, ExceptionState& exception_state) {
   DCHECK(blob);
-  DVLOG(1) << "reading as data URL: " << Utf8BlobUuid(blob).data() << " "
+  DVLOG(1) << "reading as data URL: " << blob->MaybeUuid() << " "
            << Utf8FilePath(blob).data();
 
   ReadInternal(blob, FileReadType::kReadAsDataURL, exception_state);

@@ -174,13 +174,23 @@ class BlobRegistryImplTest : public testing::Test {
     return registry_impl_->BlobsBeingStreamedForTesting();
   }
 
+  // Returns false if the registration was rejected, closing the registry pipe.
   bool Register(mojo::PendingReceiver<blink::mojom::Blob> blob,
                 std::string& uuid,
                 const std::string& content_type,
                 const std::string& content_disposition,
                 std::vector<blink::mojom::DataElementPtr> elements) {
-    return registry_->Register(std::move(blob), content_type,
-                               content_disposition, std::move(elements), &uuid);
+    base::RunLoop run_loop;
+    registry_.set_disconnect_handler(run_loop.QuitClosure());
+    registry_->Register(
+        std::move(blob), content_type, content_disposition, std::move(elements),
+        base::BindLambdaForTesting([&uuid](const std::string& generated_uuid) {
+          EXPECT_FALSE(generated_uuid.empty());
+          uuid = generated_uuid;
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+    registry_.set_disconnect_handler(base::OnceClosure());
+    return !uuid.empty();
   }
 
  protected:
@@ -1079,18 +1089,13 @@ TEST_F(BlobRegistryImplTest, RegisterFromStream) {
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   mojo::CreateDataPipe(nullptr, producer, consumer);
-  blink::mojom::SerializedBlobPtr blob;
-  base::RunLoop loop;
+  base::test::TestFuture<blink::mojom::SerializedBlobPtr> future;
   registry_->RegisterFromStream(
       kContentType, kContentDisposition, kData.length(), std::move(consumer),
-      progress_receiver.BindNewEndpointAndPassRemote(),
-      base::BindLambdaForTesting([&](blink::mojom::SerializedBlobPtr result) {
-        blob = std::move(result);
-        loop.Quit();
-      }));
+      progress_receiver.BindNewEndpointAndPassRemote(), future.GetCallback());
   mojo::BlockingCopyFromString(kData, producer);
   producer.reset();
-  loop.Run();
+  blink::mojom::SerializedBlobPtr blob = future.Take();
 
   ASSERT_TRUE(blob);
   EXPECT_FALSE(blob->uuid.empty());
@@ -1119,18 +1124,13 @@ TEST_F(BlobRegistryImplTest, RegisterFromStream_NoDiskSpace) {
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   mojo::CreateDataPipe(nullptr, producer, consumer);
-  blink::mojom::SerializedBlobPtr blob;
-  base::RunLoop loop;
+  base::test::TestFuture<blink::mojom::SerializedBlobPtr> future;
   registry_->RegisterFromStream(
       kContentType, kContentDisposition, kData.length(), std::move(consumer),
-      progress_receiver.BindNewEndpointAndPassRemote(),
-      base::BindLambdaForTesting([&](blink::mojom::SerializedBlobPtr result) {
-        blob = std::move(result);
-        loop.Quit();
-      }));
+      progress_receiver.BindNewEndpointAndPassRemote(), future.GetCallback());
   mojo::BlockingCopyFromString(kData, producer);
   producer.reset();
-  loop.Run();
+  blink::mojom::SerializedBlobPtr blob = future.Take();
 
   EXPECT_FALSE(blob);
   EXPECT_EQ(0u, BlobsBeingStreamed());

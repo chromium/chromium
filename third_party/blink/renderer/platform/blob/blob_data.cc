@@ -37,6 +37,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -66,6 +67,22 @@ using mojom::blink::DataElementFile;
 using mojom::blink::DataElementPtr;
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(BlobUuidAccess)
+enum class BlobUuidAccess {
+  kSyncUuid = 0,
+  kAsyncUuidWasReady = 1,
+  kAsyncUuidBlocked = 2,
+  kUuidUnavailable = 3,
+  kMaxValue = kUuidUnavailable,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:BlobUuidAccess)
+
+void LogBlobUuidAccess(BlobUuidAccess access) {
+  base::UmaHistogramEnumeration("Storage.Blob.RendererUuidAccess", access);
+}
 
 // http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob
 bool IsValidBlobType(const String& type) {
@@ -242,37 +259,41 @@ void BlobData::AppendDataInternal(base::span<const uint8_t> data,
 }
 
 // static
+scoped_refptr<BlobDataHandle> BlobDataHandle::Create() {
+  scoped_refptr<BlobDataHandle> handle = base::AdoptRef(new BlobDataHandle());
+  handle->Register({});
+  return handle;
+}
+
+// static
+scoped_refptr<BlobDataHandle> BlobDataHandle::Create(
+    std::unique_ptr<BlobData> data,
+    uint64_t size) {
+  scoped_refptr<BlobDataHandle> handle = base::AdoptRef(new BlobDataHandle(
+      data->ContentType(), size, data->IsSingleUnknownSizeFile()));
+  handle->Register(data->ReleaseElements());
+  return handle;
+}
+
+// static
 scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
     mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
     const String& path,
     int64_t offset,
     int64_t length,
     const std::optional<base::Time>& expected_modification_time,
-    const String& content_type) {
+    const String& content_type,
+    bool synchronous_register) {
   mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
       StringToFilePath(path), offset, length, expected_modification_time);
   uint64_t size = length == BlobData::kToEndOfFile
                       ? std::numeric_limits<uint64_t>::max()
                       : length;
-  return base::AdoptRef(new BlobDataHandle(
-      file_backed_blob_factory, std::move(element), content_type, size));
-}
-
-// static
-scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFileSync(
-    mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
-    const String& path,
-    int64_t offset,
-    int64_t length,
-    const std::optional<base::Time>& expected_modification_time,
-    const String& content_type) {
-  mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
-      StringToFilePath(path), offset, length, expected_modification_time);
-  uint64_t size = length == BlobData::kToEndOfFile
-                      ? std::numeric_limits<uint64_t>::max()
-                      : length;
-  return base::AdoptRef(new BlobDataHandle(
-      file_backed_blob_factory, std::move(element), content_type, size, true));
+  scoped_refptr<BlobDataHandle> handle = base::AdoptRef(
+      new BlobDataHandle(content_type, size, length == BlobData::kToEndOfFile));
+  handle->RegisterFile(file_backed_blob_factory, std::move(element),
+                       synchronous_register);
+  return handle;
 }
 
 // static
@@ -287,53 +308,49 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::Create(
 }
 
 BlobDataHandle::BlobDataHandle()
-    : size_(0), is_single_unknown_size_file_(false) {
-  GetThreadSpecificRegistry()->Register(
-      blob_remote_.InitWithNewPipeAndPassReceiver(), "", "", {}, &uuid_);
-}
+    : size_(0), is_single_unknown_size_file_(false) {}
 
-BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
-    : type_(data->ContentType()),
+BlobDataHandle::BlobDataHandle(const String& type,
+                               uint64_t size,
+                               bool is_single_unknown_size_file)
+    : type_(type),
       size_(size),
-      is_single_unknown_size_file_(data->IsSingleUnknownSizeFile()) {
-  auto elements = data->ReleaseElements();
+      is_single_unknown_size_file_(is_single_unknown_size_file) {}
+
+void BlobDataHandle::Register(Vector<mojom::blink::DataElementPtr> elements) {
+  base::AutoLock locker(blob_remote_lock_);
   TRACE_EVENT0("Blob", "Registry::RegisterBlob");
   GetThreadSpecificRegistry()->Register(
       blob_remote_.InitWithNewPipeAndPassReceiver(),
-      type_.IsNull() ? "" : type_, "", std::move(elements), &uuid_);
+      type_.IsNull() ? "" : type_, /*content_disposition=*/"",
+      std::move(elements),
+      base::BindOnce(&BlobDataHandle::DidGetUuid, base::RetainedRef(this)));
 }
 
-BlobDataHandle::BlobDataHandle(
+void BlobDataHandle::RegisterFile(
     mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
     mojom::blink::DataElementFilePtr file_element,
-    const String& content_type,
-    uint64_t size,
-    bool synchronous_register)
-    : type_(content_type),
-      size_(size),
-      is_single_unknown_size_file_(size ==
-                                   std::numeric_limits<uint64_t>::max()) {
+    bool synchronous_register) {
   if (file_backed_blob_factory) {
-    uuid_ = CreateCanonicalUuidString();
+    base::AutoLock locker(blob_remote_lock_);
     if (synchronous_register) {
-      file_backed_blob_factory->RegisterBlobSync(
-          blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-          type_.IsNull() ? "" : type_, std::move(file_element));
+      file_backed_blob_factory->RegisterBlob(
+          blob_remote_.InitWithNewPipeAndPassReceiver(),
+          type_.IsNull() ? "" : type_, std::move(file_element),
+          /*block_on_registration=*/true, &uuid_);
     } else {
       file_backed_blob_factory->RegisterBlob(
-          blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-          type_.IsNull() ? "" : type_, std::move(file_element));
+          blob_remote_.InitWithNewPipeAndPassReceiver(),
+          type_.IsNull() ? "" : type_, std::move(file_element),
+          /*block_on_registration=*/false,
+          base::BindOnce(&BlobDataHandle::DidGetUuid, base::RetainedRef(this)));
     }
   } else {
     // TODO(b/287417238): Temporarily fallback to the previous BlobRegistry
-    // registration when new interface is disabled by its feature flag or the
-    // interface is not bound to a frame.
+    // registration when the interface is not bound to a frame.
     Vector<mojom::blink::DataElementPtr> elements;
     elements.push_back(DataElement::NewFile(std::move(file_element)));
-    TRACE_EVENT0("Blob", "Registry::RegisterBlob");
-    GetThreadSpecificRegistry()->Register(
-        blob_remote_.InitWithNewPipeAndPassReceiver(),
-        type_.IsNull() ? "" : type_, "", std::move(elements), &uuid_);
+    Register(std::move(elements));
   }
 }
 
@@ -401,6 +418,50 @@ bool BlobDataHandle::CaptureSnapshot(
   // CaptureSnapshot call.
   mojo::Remote<mojom::blink::Blob> remote(CloneBlobRemote());
   return remote->CaptureSnapshot(snapshot_size, snapshot_modification_time);
+}
+
+String BlobDataHandle::GetUuidMayBlock() {
+  if (!uuid_.empty()) {
+    LogBlobUuidAccess(BlobUuidAccess::kSyncUuid);
+    return uuid_;
+  }
+
+  if (base::AutoLock locker(async_uuid_lock_); !async_uuid_.empty()) {
+    LogBlobUuidAccess(BlobUuidAccess::kAsyncUuidWasReady);
+    return async_uuid_;
+  }
+
+  if (mojo::Remote<mojom::blink::Blob> remote{CloneBlobRemote()}) {
+    // Clone remote to avoid holding lock during this synchronous call.
+    LogBlobUuidAccess(BlobUuidAccess::kAsyncUuidBlocked);
+    String uuid;
+    remote->GetInternalUUID(&uuid);
+    base::AutoLock locker(async_uuid_lock_);
+    async_uuid_ = std::move(uuid);
+    return async_uuid_;
+  }
+
+  LogBlobUuidAccess(BlobUuidAccess::kUuidUnavailable);
+  return {};
+}
+
+String BlobDataHandle::MaybeUuid() const {
+  if (!uuid_.empty()) {
+    return uuid_;
+  }
+
+  base::AutoLock locker(async_uuid_lock_);
+  return async_uuid_;
+}
+
+void BlobDataHandle::DidGetUuid(const String& uuid) {
+  CHECK(uuid_.empty());
+  base::AutoLock locker(async_uuid_lock_);
+  if (async_uuid_.empty()) {
+    async_uuid_ = uuid;
+  } else {
+    CHECK_EQ(async_uuid_, uuid);
+  }
 }
 
 // static

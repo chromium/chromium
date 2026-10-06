@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_file_backed_blob_factory.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
@@ -143,7 +142,7 @@ class BlobDataHandleTest : public testing::Test {
     blob_registry_remote_.FlushForTesting();
     ASSERT_EQ(1u, mock_blob_registry_.registrations.size());
     auto& reg = mock_blob_registry_.registrations[0];
-    EXPECT_EQ(handle->Uuid(), reg.uuid);
+    EXPECT_EQ(handle->MaybeUuid(), reg.uuid);
     EXPECT_EQ(type.IsNull() ? "" : type, reg.content_type);
     EXPECT_EQ("", reg.content_disposition);
     ASSERT_EQ(expected_elements.size(), reg.elements.size());
@@ -156,18 +155,11 @@ class BlobDataHandleTest : public testing::Test {
         EXPECT_EQ(expected->get_bytes()->embedded_data,
                   actual->get_bytes()->embedded_data);
 
-        base::RunLoop loop;
-        Vector<uint8_t> received_bytes;
         mojo::Remote<mojom::blink::BytesProvider> actual_data(
             std::move(actual->get_bytes()->data));
-        actual_data->RequestAsReply(blink::BindOnce(
-            [](base::RepeatingClosure quit_closure, Vector<uint8_t>* bytes_out,
-               const Vector<uint8_t>& bytes) {
-              *bytes_out = bytes;
-              quit_closure.Run();
-            },
-            loop.QuitClosure(), blink::Unretained(&received_bytes)));
-        loop.Run();
+        base::test::TestFuture<const Vector<uint8_t>&> future;
+        actual_data->RequestAsReply(future.GetCallback());
+        const Vector<uint8_t>& received_bytes = future.Get();
         if (expected->get_bytes()->embedded_data)
           EXPECT_EQ(expected->get_bytes()->embedded_data, received_bytes);
         else
@@ -184,19 +176,11 @@ class BlobDataHandleTest : public testing::Test {
         EXPECT_EQ(expected->get_blob()->length, actual->get_blob()->length);
         EXPECT_EQ(expected->get_blob()->offset, actual->get_blob()->offset);
 
-        base::RunLoop loop;
-        String received_uuid;
         mojo::Remote<mojom::blink::Blob> blob(
             std::move(actual->get_blob()->blob));
-        blob->GetInternalUUID(blink::BindOnce(
-            [](base::RepeatingClosure quit_closure, String* uuid_out,
-               const String& uuid) {
-              *uuid_out = uuid;
-              quit_closure.Run();
-            },
-            loop.QuitClosure(), blink::Unretained(&received_uuid)));
-        loop.Run();
-        EXPECT_EQ(expected_elements[i].blob_uuid, received_uuid);
+        base::test::TestFuture<const String&> future;
+        blob->GetInternalUUID(future.GetCallback());
+        EXPECT_EQ(expected_elements[i].blob_uuid, future.Get());
       }
     }
     mock_blob_registry_.registrations.clear();
@@ -230,7 +214,7 @@ TEST_F(BlobDataHandleTest, CreateEmpty) {
   blob_registry_remote_.FlushForTesting();
   ASSERT_EQ(1u, mock_blob_registry_.registrations.size());
   const auto& reg = mock_blob_registry_.registrations[0];
-  EXPECT_EQ(handle->Uuid(), reg.uuid);
+  EXPECT_EQ(handle->MaybeUuid(), reg.uuid);
   EXPECT_EQ("", reg.content_type);
   EXPECT_EQ("", reg.content_disposition);
   EXPECT_EQ(0u, reg.elements.size());
@@ -268,7 +252,7 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
   file_factory_remote.FlushForTesting();
   EXPECT_EQ(1u, file_factory.registrations.size());
   const auto& reg = file_factory.registrations[0];
-  EXPECT_EQ(handle->Uuid(), reg.uuid);
+  EXPECT_EQ(handle->MaybeUuid(), reg.uuid);
   EXPECT_EQ(kType, reg.content_type);
   EXPECT_EQ(StringToFilePath(kPath), reg.file->path);
   EXPECT_EQ(kSize, reg.file->length);

@@ -36,7 +36,6 @@
 
 namespace content {
 namespace {
-constexpr char kId[] = "id";
 constexpr char kType[] = "content/type";
 constexpr uint64_t kOffset = 0;
 constexpr uint64_t kSize = 16;
@@ -55,20 +54,12 @@ class FileBackedBlobFactoryFrameImplTest
         main_test_rfh(), factory_.BindNewEndpointAndPassDedicatedReceiver());
 
     main_test_rfh()->SetLastCommittedUrl(GURL(kMainFrameUrl));
-
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindRepeating(&FileBackedBlobFactoryFrameImplTest::OnBadMessage,
-                            base::Unretained(this)));
   }
   void TearDown() override {
     // Clean up error handler, to avoid causing other tests run in the same
     // process from crashing.
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
     RenderViewHostImplTestHarness::TearDown();
-  }
-
-  void OnBadMessage(const std::string& error) {
-    bad_messages_.push_back(error);
   }
 
   void WaitForBlobCompletion(storage::BlobDataHandle* blob_handle) {
@@ -81,7 +72,6 @@ class FileBackedBlobFactoryFrameImplTest
  protected:
   ChildProcessId process_id_;
   mojo::AssociatedRemote<blink::mojom::FileBackedBlobFactory> factory_;
-  std::vector<std::string> bad_messages_;
 };
 
 TEST_F(FileBackedBlobFactoryFrameImplTest, Register_UnreadableFile) {
@@ -96,19 +86,19 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_UnreadableFile) {
       blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
-  factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
-                         std::move(element));
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<std::string> uuid_future;
+  factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
+                         std::move(element),
+                         /*block_on_registration=*/false,
+                         uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
-
-  EXPECT_TRUE(bad_messages_.empty());
 
   auto* blob_storage_context =
       ChromeBlobStorageContext::GetFor(main_test_rfh()->GetBrowserContext())
           ->context();
 
   std::unique_ptr<storage::BlobDataHandle> handle =
-      blob_storage_context->GetBlobDataFromUUID(kId);
+      blob_storage_context->GetBlobDataFromUUID(uuid_future.Get());
   WaitForBlobCompletion(handle.get());
 
   EXPECT_TRUE(handle->IsBroken());
@@ -128,19 +118,20 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ValidFile) {
       blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
-  factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
-                         std::move(element));
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<std::string> uuid_future;
+  factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
+                         std::move(element),
+                         /*block_on_registration=*/false,
+                         uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
-
-  EXPECT_TRUE(bad_messages_.empty());
+  const std::string uuid = uuid_future.Get();
 
   auto* blob_storage_context =
       ChromeBlobStorageContext::GetFor(main_test_rfh()->GetBrowserContext())
           ->context();
 
   std::unique_ptr<storage::BlobDataHandle> handle =
-      blob_storage_context->GetBlobDataFromUUID(kId);
+      blob_storage_context->GetBlobDataFromUUID(uuid);
   WaitForBlobCompletion(handle.get());
 
   EXPECT_FALSE(handle->IsBroken());
@@ -148,74 +139,11 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ValidFile) {
   EXPECT_EQ(kSize, handle->size());
   ASSERT_EQ(storage::BlobStatus::DONE, handle->GetBlobStatus());
 
-  storage::BlobDataBuilder expected_blob_data(kId);
+  storage::BlobDataBuilder expected_blob_data(uuid);
   expected_blob_data.AppendFile(path, kOffset, kSize, base::Time());
   expected_blob_data.set_content_type(kType);
 
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
-}
-
-TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ExistingUUID) {
-  const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
-
-  ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(process_id_,
-                                                               path);
-  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      process_id_, path));
-
-  auto element1 =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
-
-  mojo::Remote<blink::mojom::Blob> blob1;
-  factory_->RegisterBlob(blob1.BindNewPipeAndPassReceiver(), kId, kType,
-                         std::move(element1));
-  base::RunLoop().RunUntilIdle();
-  blob1.FlushForTesting();
-
-  EXPECT_TRUE(bad_messages_.empty());
-
-  auto* blob_storage_context =
-      ChromeBlobStorageContext::GetFor(main_test_rfh()->GetBrowserContext())
-          ->context();
-
-  std::unique_ptr<storage::BlobDataHandle> handle =
-      blob_storage_context->GetBlobDataFromUUID(kId);
-  WaitForBlobCompletion(handle.get());
-
-  EXPECT_FALSE(handle->IsBroken());
-
-  auto element2 =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
-
-  mojo::Remote<blink::mojom::Blob> blob2;
-  factory_->RegisterBlob(blob2.BindNewPipeAndPassReceiver(), kId, kType,
-                         std::move(element2));
-  base::RunLoop().RunUntilIdle();
-  blob2.FlushForTesting();
-
-  EXPECT_EQ(bad_messages_.size(), 1u);
-
-  factory_.FlushForTesting();
-  EXPECT_FALSE(factory_.is_connected());
-
-  blob2.FlushForTesting();
-  EXPECT_FALSE(blob2.is_connected());
-}
-
-TEST_F(FileBackedBlobFactoryFrameImplTest, Register_EmptyUUID) {
-  mojo::Remote<blink::mojom::Blob> blob;
-
-  factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), "", "",
-                         blink::mojom::DataElementFile::New());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(1u, bad_messages_.size());
-
-  factory_.FlushForTesting();
-  EXPECT_FALSE(factory_.is_connected());
-
-  blob.FlushForTesting();
-  EXPECT_FALSE(blob.is_connected());
 }
 
 TEST_F(FileBackedBlobFactoryFrameImplTest,
@@ -239,19 +167,20 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
       blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
-  factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
-                         std::move(element));
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<std::string> uuid_future;
+  factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
+                         std::move(element),
+                         /*block_on_registration=*/false,
+                         uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
-
-  EXPECT_TRUE(bad_messages_.empty());
+  const std::string uuid = uuid_future.Get();
 
   auto* blob_storage_context =
       ChromeBlobStorageContext::GetFor(main_test_rfh()->GetBrowserContext())
           ->context();
 
   std::unique_ptr<storage::BlobDataHandle> handle =
-      blob_storage_context->GetBlobDataFromUUID(kId);
+      blob_storage_context->GetBlobDataFromUUID(uuid);
   WaitForBlobCompletion(handle.get());
 
   EXPECT_FALSE(handle->IsBroken());
@@ -259,7 +188,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
   EXPECT_EQ(kSize, handle->size());
   ASSERT_EQ(storage::BlobStatus::DONE, handle->GetBlobStatus());
 
-  storage::BlobDataBuilder expected_blob_data(kId);
+  storage::BlobDataBuilder expected_blob_data(uuid);
   expected_blob_data.AppendFile(path, kOffset, kSize, base::Time());
   expected_blob_data.set_content_type(kType);
 
@@ -298,12 +227,14 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
       blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
-  child_factory->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
-                              std::move(element));
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<std::string> uuid_future;
+  child_factory->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
+                              std::move(element),
+                              /*block_on_registration=*/false,
+                              uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
 
-  EXPECT_TRUE(bad_messages_.empty());
+  EXPECT_FALSE(uuid_future.Get().empty());
   EXPECT_EQ(GURL(kSubframeUrl), captured_destination);
   EXPECT_NE(GURL(kMainFrameUrl), captured_destination);
 }

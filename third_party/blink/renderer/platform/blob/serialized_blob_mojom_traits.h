@@ -26,7 +26,8 @@ struct PLATFORM_EXPORT StructTraits<blink::mojom::SerializedBlobDataView,
   }
 
   static blink::String uuid(const scoped_refptr<blink::BlobDataHandle>& input) {
-    return input->Uuid();
+    blink::String uuid = input->MaybeUuid();
+    return uuid.IsNull() ? blink::g_empty_string : uuid;
   }
 
   static blink::String content_type(
