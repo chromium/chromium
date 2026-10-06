@@ -57,7 +57,7 @@ void DeleteNode(ui::Layer* node) {
 void ExcludeShadowContainer(ui::Layer* root, ui::Layer* shadow_layer) {
   std::vector<ui::Layer*> to_remove;
   for (ui::Layer* child : root->children()) {
-    if (child->name() == "Shadow Parent Container" ||
+    if (child->name() == "Decoration-Shadow:Container" ||
         (shadow_layer && child->bounds() == shadow_layer->bounds() &&
          (child->bounds().x() < 0 || child->bounds().y() < 0))) {
       to_remove.push_back(child);
