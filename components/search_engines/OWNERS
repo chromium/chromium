@@ -10,11 +10,8 @@ ankushkush@google.com
 per-file search_engine_choice*=set noparent
 per-file search_engine_choice*=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 
-per-file generated_marketing_snippets*=set noparent
-per-file generated_marketing_snippets*=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
+per-file search_engines_switches.*=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 
 per-file choice_made_location.h=set noparent
 per-file choice_made_location.h=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 
-per-file prepopulated_engines.json=set noparent
-per-file prepopulated_engines.json=file://components/search_engines/COMPLIANCE_OWNERS
