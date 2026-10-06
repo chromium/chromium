@@ -18,4 +18,11 @@ found in the LICENSE file.
         android:key="tab_position_card_selector"
         android:order="1" />
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="expand_tabs_on_hover_switch"
+        android:order="2"
+        android:persistent="false"
+        android:title="@string/tab_position_expand_tabs_on_hover"
+        app:isPreferenceVisible="false" />
+
 </PreferenceScreen>

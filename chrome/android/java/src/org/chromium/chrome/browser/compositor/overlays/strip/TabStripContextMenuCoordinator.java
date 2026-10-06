@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.task_manager.TaskManagerFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHoverToggleEntryPoint;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutSwitchEntryPoint;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -294,6 +295,20 @@ public class TabStripContextMenuCoordinator {
                             .withEnabled(enabled)
                             .build();
             itemList.add(item);
+
+            // Add "Turn on/off auto expanding tabs" option for the vertical tab strip.
+            if (mTabStripLayout == TabStripLayoutType.VERTICAL
+                    && VerticalTabUtils.isExpandOnHoverFeatureEnabled()) {
+                itemList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(
+                                        VerticalTabUtils.isExpandOnHoverEnabled()
+                                                ? R.string.turn_off_expand_tabs_on_hover
+                                                : R.string.turn_on_expand_tabs_on_hover)
+                                .withMenuId(R.id.toggle_expand_tabs_on_hover_menu_id)
+                                .withIsIncognito(isIncognito)
+                                .build());
+            }
         }
 
         // Add "Task Manager" option with divider.
@@ -372,6 +387,10 @@ public class TabStripContextMenuCoordinator {
                     controller.onMenuOrKeyboardAction(
                             R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);
                 }
+            } else if (model.get(MENU_ITEM_ID) == R.id.toggle_expand_tabs_on_hover_menu_id) {
+                VerticalTabUtils.setExpandOnHoverEnabled(
+                        !VerticalTabUtils.isExpandOnHoverEnabled(),
+                        ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU);
             } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {
                 TabStripMenuMetricsUtils.recordStripMenuUserAction(
                         StripMenuAction.PIN_GLIC, mTabStripLayout);

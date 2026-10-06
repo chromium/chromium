@@ -1196,6 +1196,13 @@
       <message name="IDS_SHOW_TABS_HORIZONTALLY" desc="Context menu item text to show the horizontal tabs.">
         Show tabs horizontally
       </message>
+      <!-- TODO(crbug.com/542280452): Make translateable once the copy is final. -->
+      <message name="IDS_TURN_ON_EXPAND_TABS_ON_HOVER" desc="Context menu item text, shown for the vertical tabs side panel, that turns on expanding the collapsed side panel when the mouse pointer hovers over it." translateable="false">
+        Turn on auto expanding tabs
+      </message>
+      <message name="IDS_TURN_OFF_EXPAND_TABS_ON_HOVER" desc="Context menu item text, shown for the vertical tabs side panel, that turns off expanding the collapsed side panel when the mouse pointer hovers over it." translateable="false">
+        Turn off auto expanding tabs
+      </message>
       <message name="IDS_NEW_TAB_BELOW_MENU_ITEM" desc="Context menu item text to create a new tab below the selected tab.">
         New tab below
       </message>

@@ -19,7 +19,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHoverToggleEntryPoint;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -28,6 +30,12 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
         implements CustomDividerFragment {
     public static final String PREF_TAB_POSITION_CARD_SELECTOR = "tab_position_card_selector";
+    public static final String PREF_EXPAND_TABS_ON_HOVER_SWITCH = "expand_tabs_on_hover_switch";
+
+    // TODO(crbug.com/542280452): Make the expand-on-hover switch searchable: index
+    // R.xml.tab_position_preferences and, in updateDynamicPreferences(), remove the entries for
+    // the description, the card selector, and the switch while it is hidden (i.e. vertical tabs
+    // are not selected or the "expand_on_hover" feature param is off).
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     TabPositionSettingsFragment.class.getName(),
@@ -36,6 +44,7 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
     private @Nullable TabPositionCardPreference mCardPreference;
+    private @Nullable ChromeSwitchPreference mExpandOnHoverSwitch;
     private @Nullable OnSharedPreferenceChangeListener mPrefsListener;
 
     @Override
@@ -63,10 +72,23 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
                 });
         updateCardPreference();
 
+        mExpandOnHoverSwitch =
+                NullUtil.assertNonNull(findPreference(PREF_EXPAND_TABS_ON_HOVER_SWITCH));
+        mExpandOnHoverSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    VerticalTabUtils.setExpandOnHoverEnabled(
+                            (boolean) newValue, ExpandOnHoverToggleEntryPoint.SETTINGS);
+                    return true;
+                });
+        updateExpandOnHoverSwitch();
+
         mPrefsListener =
                 (sharedPreferences, key) -> {
                     if (ChromePreferenceKeys.VERTICAL_TABS_ENABLED.equals(key)) {
                         updateCardPreference();
+                        updateExpandOnHoverSwitch();
+                    } else if (ChromePreferenceKeys.VERTICAL_TABS_EXPAND_ON_HOVER.equals(key)) {
+                        updateExpandOnHoverSwitch();
                     }
                 };
         ContextUtils.getAppSharedPreferences()
@@ -88,6 +110,7 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
     public void onStart() {
         super.onStart();
         updateCardPreference();
+        updateExpandOnHoverSwitch();
     }
 
     @Override
@@ -113,7 +136,26 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
         mCardPreference.setCheckedState(isVertical);
     }
 
+    /**
+     * Shows the expand-on-hover switch only while vertical tabs are selected and the feature is
+     * available, and syncs its checked state with the user setting, which can also be changed from
+     * the vertical tabs context menus.
+     */
+    private void updateExpandOnHoverSwitch() {
+        if (mExpandOnHoverSwitch == null) {
+            return;
+        }
+        mExpandOnHoverSwitch.setVisible(
+                VerticalTabUtils.isExpandOnHoverFeatureEnabled()
+                        && VerticalTabUtils.isVerticalTabsEnabled(getContext()));
+        mExpandOnHoverSwitch.setChecked(VerticalTabUtils.isExpandOnHoverEnabled());
+    }
+
     @Nullable TabPositionCardPreference getCardPreferenceForTesting() {
         return mCardPreference;
+    }
+
+    @Nullable ChromeSwitchPreference getExpandOnHoverSwitchForTesting() {
+        return mExpandOnHoverSwitch;
     }
 }

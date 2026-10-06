@@ -45,4 +45,7 @@ found in the LICENSE file.
 
     <!-- Vertical Tabs Hover. -->
     <item type="id" name="tab_hover_state_listener" />
+
+    <!-- Vertical Tabs context menu items. -->
+    <item type="id" name="toggle_expand_tabs_on_hover_menu_id" />
 </resources>
