@@ -7,8 +7,9 @@ import {FittingType, OpenPdfParamsParser, ViewMode} from 'chrome-extension://mhj
 const URL = 'http://xyz.pdf';
 
 function getParamsParser(): OpenPdfParamsParser {
-  const getPageBoundingBoxCallback = function(_page: number) {
-    return Promise.resolve({x: 10, y: 15, width: 200, height: 300});
+  const getPageBoundingBoxCallback = function(pageIndex: number) {
+    return Promise.resolve(
+        {x: 10 + pageIndex, y: 15 + pageIndex, width: 200, height: 300});
   };
   const paramsParser = new OpenPdfParamsParser(function(destination: string) {
     // Set the dummy viewport dimensions for calculating the zoom level for
@@ -90,8 +91,15 @@ function getParamsParser(): OpenPdfParamsParser {
         pageIndex: 0,
       });
     }
+    if (destination === 'DestWithFitB') {
+      return Promise.resolve({
+        messageId: 'getNamedDestination_13',
+        namedDestinationView: `${ViewMode.FIT_B}`,
+        pageIndex: 2,
+      });
+    }
     return Promise.resolve(
-        {messageId: 'getNamedDestination_13', pageIndex: -1});
+        {messageId: 'getNamedDestination_14', pageIndex: -1});
   }, getPageBoundingBoxCallback);
   return paramsParser;
 }
@@ -274,6 +282,20 @@ chrome.test.runTests([
     chrome.test.assertEq(undefined, params.zoom);
     chrome.test.assertEq(undefined, params.position);
     chrome.test.assertEq(undefined, params.viewPosition);
+
+    // Checking #nameddest=name with a nameddest that specifies the view fit
+    // type is "FitB".
+    paramsParser.setPageCount(3);
+    params = await paramsParser.getViewportFromUrlParams(
+        `${URL}#nameddest=DestWithFitB`);
+    chrome.test.assertEq(2, params.pageIndex);
+    chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX, params.view);
+    chrome.test.assertTrue(params.boundingBox !== undefined);
+    // TODO(crbug.com/568852321): The page at index 2 should return (12, 17).
+    chrome.test.assertEq(11, params.boundingBox.x);
+    chrome.test.assertEq(16, params.boundingBox.y);
+    chrome.test.assertEq(200, params.boundingBox.width);
+    chrome.test.assertEq(300, params.boundingBox.height);
 
     chrome.test.succeed();
   },
