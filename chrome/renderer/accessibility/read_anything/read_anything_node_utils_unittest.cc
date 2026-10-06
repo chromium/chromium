@@ -352,7 +352,7 @@ TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_ControlElementsIgnored) {
   EXPECT_TRUE(a11y::IsIgnored(&node, false));
 }
 
-TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_SectionHeaderAndFooterIgnored) {
+TEST_F(ReadAnythingNodeUtilsTest, IsPdfArtifact_SectionHeaderAndFooter) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kPdfAccessibilityHeuristicEnhancements);
@@ -361,9 +361,10 @@ TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_SectionHeaderAndFooterIgnored) {
   static constexpr ui::AXNodeID kHeaderId = 2;
   static constexpr ui::AXNodeID kHeaderTextId = 3;
   static constexpr ui::AXNodeID kFooterId = 4;
-  static constexpr ui::AXNodeID kFooterTextId = 5;
-  static constexpr ui::AXNodeID kParagraphId = 6;
-  static constexpr ui::AXNodeID kParagraphTextId = 7;
+  static constexpr ui::AXNodeID kFooterWrapperId = 5;
+  static constexpr ui::AXNodeID kFooterTextId = 6;
+  static constexpr ui::AXNodeID kParagraphId = 7;
+  static constexpr ui::AXNodeID kParagraphTextId = 8;
 
   ui::AXNodeData root_data;
   root_data.id = kRootId;
@@ -377,10 +378,15 @@ TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_SectionHeaderAndFooterIgnored) {
 
   ui::AXNodeData header_text = test::TextNode(kHeaderTextId, u"Header text");
 
+  // The footer text is nested below a wrapper to cover text that is not a
+  // direct child of the footer.
   ui::AXNodeData footer_data;
   footer_data.id = kFooterId;
   footer_data.role = ax::mojom::Role::kSectionFooter;
-  footer_data.child_ids = {kFooterTextId};
+  footer_data.child_ids = {kFooterWrapperId};
+
+  ui::AXNodeData footer_wrapper = test::GenericContainerNode(kFooterWrapperId);
+  footer_wrapper.child_ids = {kFooterTextId};
 
   ui::AXNodeData footer_text = test::TextNode(kFooterTextId, u"Footer text");
 
@@ -395,32 +401,42 @@ TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_SectionHeaderAndFooterIgnored) {
   ui::AXTree tree;
   ui::AXTreeUpdate update;
   update.root_id = kRootId;
-  update.nodes = {root_data,   header_data,    header_text,   footer_data,
-                  footer_text, paragraph_data, paragraph_text};
+  update.nodes = {root_data,      header_data, header_text,    footer_data,
+                  footer_wrapper, footer_text, paragraph_data, paragraph_text};
   tree.Unserialize(update);
 
-  // Section header and its children are ignored for PDFs when heuristic
-  // enhancements are enabled.
-  EXPECT_TRUE(a11y::IsIgnored(tree.GetFromId(kHeaderId), /*is_pdf=*/true));
-  EXPECT_TRUE(a11y::IsIgnored(tree.GetFromId(kHeaderTextId), /*is_pdf=*/true));
-  EXPECT_TRUE(a11y::IsIgnored(tree.GetFromId(kFooterId), /*is_pdf=*/true));
-  EXPECT_TRUE(a11y::IsIgnored(tree.GetFromId(kFooterTextId), /*is_pdf=*/true));
+  // Section header, footer, and all of their descendants are artifacts when
+  // heuristic enhancements are enabled.
+  EXPECT_TRUE(a11y::IsPdfArtifact(tree.GetFromId(kHeaderId)));
+  EXPECT_TRUE(a11y::IsPdfArtifact(tree.GetFromId(kHeaderTextId)));
+  EXPECT_TRUE(a11y::IsPdfArtifact(tree.GetFromId(kFooterId)));
+  EXPECT_TRUE(a11y::IsPdfArtifact(tree.GetFromId(kFooterWrapperId)));
+  EXPECT_TRUE(a11y::IsPdfArtifact(tree.GetFromId(kFooterTextId)));
 
-  // Non-PDF documents do not ignore these roles via the PDF heuristic check.
-  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kHeaderId), /*is_pdf=*/false));
-  EXPECT_FALSE(
-      a11y::IsIgnored(tree.GetFromId(kHeaderTextId), /*is_pdf=*/false));
-  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kFooterId), /*is_pdf=*/false));
-  EXPECT_FALSE(
-      a11y::IsIgnored(tree.GetFromId(kFooterTextId), /*is_pdf=*/false));
+  // Artifacts are not ignored so select-to-distill can still show them.
+  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kHeaderId), /*is_pdf=*/true));
+  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kHeaderTextId), /*is_pdf=*/true));
+  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kFooterId), /*is_pdf=*/true));
+  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kFooterTextId), /*is_pdf=*/true));
 
-  // Regular paragraph and its text are not ignored.
-  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kParagraphId), /*is_pdf=*/false));
-  EXPECT_FALSE(a11y::IsIgnored(tree.GetFromId(kParagraphId), /*is_pdf=*/true));
-  EXPECT_FALSE(
-      a11y::IsIgnored(tree.GetFromId(kParagraphTextId), /*is_pdf=*/false));
-  EXPECT_FALSE(
-      a11y::IsIgnored(tree.GetFromId(kParagraphTextId), /*is_pdf=*/true));
+  // Regular paragraph and its text are not artifacts.
+  EXPECT_FALSE(a11y::IsPdfArtifact(tree.GetFromId(kParagraphId)));
+  EXPECT_FALSE(a11y::IsPdfArtifact(tree.GetFromId(kParagraphTextId)));
+}
+
+TEST_F(ReadAnythingNodeUtilsTest,
+       IsPdfArtifact_HeuristicEnhancementsDisabled_ReturnsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  ui::AXNodeData data;
+  data.id = 2;
+  data.role = ax::mojom::Role::kSectionHeader;
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_FALSE(a11y::IsPdfArtifact(&node));
 }
 
 TEST_F(ReadAnythingNodeUtilsTest, IsSuperscript) {

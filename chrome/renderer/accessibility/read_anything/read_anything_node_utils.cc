@@ -76,17 +76,24 @@ bool IsIgnored(const ui::AXNode* const ax_node, bool is_pdf) {
                parent && parent->GetRole() == ax::mojom::Role::kContentInfo) {
       return true;
     }
-    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-      if (IsHeaderFooterRole(role) ||
-          (parent && IsHeaderFooterRole(parent->GetRole()))) {
-        return true;
-      }
-    }
   }
 
   // Ignore interactive elements, except for text fields and aria-related
   // support fields.
   return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
+}
+
+bool IsPdfArtifact(const ui::AXNode* const ax_node) {
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    return false;
+  }
+
+  for (const ui::AXNode* node = ax_node; node; node = node->GetParent()) {
+    if (IsHeaderFooterRole(node->GetRole())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::string GetHtmlTag(const ui::AXNode* ax_node, bool is_pdf, bool is_docs) {

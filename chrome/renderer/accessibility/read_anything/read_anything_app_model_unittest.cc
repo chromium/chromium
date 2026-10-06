@@ -3540,6 +3540,175 @@ TEST_F(ReadAnythingAppModelCaptionTest,
             ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
 }
 
+// Tests that PDF artifacts are only shown for select-to-distill.
+class ReadAnythingAppModelPdfArtifactTest
+    : public ReadAnythingAppModelScreen2xTest {
+ public:
+  static constexpr ui::AXNodeID kRootId = 1;
+  static constexpr ui::AXNodeID kHeaderId = 2;
+  static constexpr ui::AXNodeID kHeaderTextId = 3;
+  static constexpr ui::AXNodeID kParagraphId = 4;
+  static constexpr ui::AXNodeID kParagraphTextId = 5;
+  static constexpr ui::AXNodeID kFooterId = 6;
+  static constexpr ui::AXNodeID kFooterTextId = 7;
+
+  ReadAnythingAppModelPdfArtifactTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPdfAccessibilityHeuristicEnhancements);
+  }
+  ~ReadAnythingAppModelPdfArtifactTest() override = default;
+
+  void SetUp() override {
+    ReadAnythingAppModelScreen2xTest::SetUp();
+    model().SetIsPdf(true);
+
+    // Tree structure:
+    // 1: PDF root
+    //   2: Section header
+    //     3: Header text
+    //   4: Paragraph
+    //     5: Paragraph text
+    //   6: Section footer
+    //     7: Footer text
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+
+    ui::AXNodeData root;
+    root.id = kRootId;
+    root.role = ax::mojom::Role::kPdfRoot;
+    root.child_ids = {kHeaderId, kParagraphId, kFooterId};
+
+    ui::AXNodeData header;
+    header.id = kHeaderId;
+    header.role = ax::mojom::Role::kSectionHeader;
+    header.child_ids = {kHeaderTextId};
+
+    ui::AXNodeData paragraph;
+    paragraph.id = kParagraphId;
+    paragraph.role = ax::mojom::Role::kParagraph;
+    paragraph.child_ids = {kParagraphTextId};
+
+    ui::AXNodeData footer;
+    footer.id = kFooterId;
+    footer.role = ax::mojom::Role::kSectionFooter;
+    footer.child_ids = {kFooterTextId};
+
+    update.nodes = {root,
+                    header,
+                    test::TextNode(kHeaderTextId, u"Header"),
+                    paragraph,
+                    test::TextNode(kParagraphTextId, u"Paragraph"),
+                    footer,
+                    test::TextNode(kFooterTextId, u"Footer")};
+    ApplyAccessibilityUpdates(tree_id_, {update});
+
+    // Use the PDF root as the content node so the artifacts are among its
+    // descendants.
+    ProcessDisplayNodes({kRootId});
+  }
+
+  void SetSelection(ui::AXNodeID anchor_id,
+                    int anchor_offset,
+                    ui::AXNodeID focus_id,
+                    int focus_offset) {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    update.tree_data.sel_anchor_object_id = anchor_id;
+    update.tree_data.sel_focus_object_id = focus_id;
+    update.tree_data.sel_anchor_offset = anchor_offset;
+    update.tree_data.sel_focus_offset = focus_offset;
+    update.tree_data.sel_is_backward = false;
+    ApplyAccessibilityUpdates(tree_id_, {update});
+  }
+
+  void ClearSelection() {
+    // Default tree data has an invalid (empty) selection.
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    ApplyAccessibilityUpdates(tree_id_, {update});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ReadAnythingAppModelPdfArtifactTest,
+       DisplayNodeIdsDoesNotContain_Artifacts) {
+  EXPECT_THAT(model().display_node_ids(),
+              UnorderedElementsAre(kRootId, kParagraphId, kParagraphTextId));
+}
+
+TEST_F(ReadAnythingAppModelPdfArtifactTest,
+       DisplayNodeIdsContains_SectionHeaderAndFooter_NonPdf) {
+  // Section headers and footers are only artifacts in PDFs.
+  model().SetIsPdf(false);
+  ProcessDisplayNodes({kRootId});
+  EXPECT_THAT(
+      model().display_node_ids(),
+      UnorderedElementsAre(kRootId, kHeaderId, kHeaderTextId, kParagraphId,
+                           kParagraphTextId, kFooterId, kFooterTextId));
+}
+
+TEST_F(ReadAnythingAppModelPdfArtifactTest,
+       DisplayNodeIdsDoesNotContain_ArtifactContentNode) {
+  // A content node inside an artifact is dropped along with its ancestors.
+  ProcessDisplayNodes({kHeaderTextId, kParagraphId});
+  EXPECT_THAT(model().display_node_ids(),
+              UnorderedElementsAre(kRootId, kParagraphId, kParagraphTextId));
+}
+
+TEST_F(ReadAnythingAppModelPdfArtifactTest,
+       SelectionNodeIdsContains_SelectedArtifacts) {
+  SetSelection(kHeaderTextId, 0, kHeaderTextId, 4);
+
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+  EXPECT_THAT(model().selection_node_ids(),
+              UnorderedElementsAre(kRootId, kHeaderId, kHeaderTextId));
+}
+
+TEST_F(ReadAnythingAppModelPdfArtifactTest,
+       SelectionNodeIdsDoesNotContain_UnselectedArtifacts) {
+  // Selecting from the header through the paragraph includes only that range;
+  // the footer is not selected and stays out.
+  SetSelection(kHeaderTextId, 0, kParagraphTextId, 4);
+
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+  EXPECT_THAT(model().selection_node_ids(),
+              UnorderedElementsAre(kRootId, kHeaderId, kHeaderTextId,
+                                   kParagraphId, kParagraphTextId));
+}
+
+TEST_F(ReadAnythingAppModelPdfArtifactTest,
+       DisplayNodeIdsDoesNotContain_ArtifactsAfterArtifactSelection) {
+  SetSelection(kHeaderTextId, 0, kHeaderTextId, 4);
+  ASSERT_TRUE(model().PostProcessSelection());
+
+  // The controller recomputes display nodes when drawing in selection mode.
+  model().ComputeDisplayNodeIdsForDistilledTree();
+  EXPECT_THAT(model().display_node_ids(),
+              UnorderedElementsAre(kRootId, kParagraphId, kParagraphTextId));
+
+  // Clearing the selection returns to main content without the artifacts.
+  ClearSelection();
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+  EXPECT_THAT(model().display_node_ids(),
+              UnorderedElementsAre(kRootId, kParagraphId, kParagraphTextId));
+
+  // Re-selecting the artifact still triggers select-to-distill.
+  SetSelection(kHeaderTextId, 0, kHeaderTextId, 4);
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+  EXPECT_THAT(model().selection_node_ids(),
+              UnorderedElementsAre(kRootId, kHeaderId, kHeaderTextId));
+}
+
 TEST_F(ReadAnythingAppModelScreen2xTest,
        StartAndEndNodesHaveDifferentParents_SelectionStateCorrect) {
   ui::AXTreeUpdate update;

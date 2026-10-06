@@ -477,6 +477,13 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
       continue;
     }
 
+    // Artifacts are only shown via select-to-distill, so leave them out of the
+    // main content. Skipping the content node here also keeps its artifact
+    // ancestors out of the ancestor walk below.
+    if (IsPdf() && a11y::IsPdfArtifact(content_node)) {
+      continue;
+    }
+
     // Ignore aria-expanded for editables.
     if (content_node->data().SupportsExpandCollapse() &&
         !content_node->HasState(ax::mojom::State::kRichlyEditable)) {
@@ -519,6 +526,9 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     }
     while (next_node != deepest_last_descendant) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
+      if (IsPdf() && a11y::IsPdfArtifact(next_node)) {
+        continue;
+      }
       InsertIdIfNotIgnored(next_node->id(), display_node_ids_);
     }
   }
