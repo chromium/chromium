@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Нууц үг</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}-н {position}-р хаяг}other{{count}-н {position}-р хаяг}}</translation>
 <translation id="13813615483058219">Ямар нэг алдаа гарлаа. Интернэт холболтоо шалгаж, дуугаа чангалах эсвэл дахин оролдоно уу.</translation>
+<translation id="138181280295369883">Хадгалсан мэдээлэл болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="138692594145659985">Карт хадгалах сонголтууд</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Хуудсыг орчуулах</translation>
 <translation id="1539535193627863227">Энэ сайтад ямар ч нууц үг, нэвтрэх түлхүүр олдсонгүй</translation>
 <translation id="1540800554400757039">Хаяг 1</translation>
+<translation id="1543035591122163372"><ph name="DEVICE_TYPE" />-с нууц үг болон бусад зүйлээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="154312949627292154">Бусад төхөөрөмжөөсөө хүлээн авсан табыг түгжээтэй дэлгэцээс нээнэ үү.</translation>
 <translation id="1544653821167545205">Хуудсыг хураангуйлах</translation>
 <translation id="1545749641540134597">QR кодыг скан хийх</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Би энэ онцлогийг хэрхэн ашиглах вэ?</translation>
 <translation id="1901600657316773839">Сонголтыг хадгалах</translation>
 <translation id="1902277226107477495">Хаяг илрүүлэхийг унтраасан. Үүнийг Тохиргооноос буцааж асаана уу.</translation>
+<translation id="1905582086181351638">Хадгалсан мэдээлэл болон бусад зүйлээ <ph name="DEVICE_TYPE" />-с авахын тулд нэвтэрнэ үү</translation>
 <translation id="1909201414196501151">Сайтыг нэмж, бэхэлсэн</translation>
 <translation id="1911619930368729126">Google Drive руу татаж оруул</translation>
 <translation id="1925706052394657380">iOS-н тохиргооноос <ph name="BEGIN_BOLD" />Өгөгдмөл аппыг<ph name="END_BOLD" /> нээнэ үү</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Сайт таны микрофоныг ашиглахыг хүсэх болможтой</translation>
 <translation id="2219935992754556187">Chrome таны эмзэг өгөгдлийг Царайн ID-р аюулгүй байлгадаг</translation>
 <translation id="2220529011494928058">Асуудлыг мэдэгдэх</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />"-г таны камерт хандахыг блоклосон</translation>
 <translation id="2223461067862937305">QR код үүсгэх</translation>
 <translation id="222798989929574238">Та хайхад 20+ зураг ашигласан</translation>
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Та дараагийн удаа холбогдох маягтыг бөглөхдөө энэ мэдээллийг Wallet-д хадгалах боломжтой болно.</translation>
 <translation id="3868495844258915202">Бүтэн URL-г харуулах</translation>
 <translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
-<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />"-г таны микрофонд хандахыг блоклосон</translation>
 <translation id="3878657761594430423">Хүснэгтийн бариул</translation>
 <translation id="3884810423191119660">Нууц үгийг аюулгүй хадгалснаар та сайт, аппад хялбархан нэвтрэх боломжтой</translation>
 <translation id="3885587018298784481">Гэр бүлийн бүлэгт нэгдэх</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Зургийн сан</translation>
 <translation id="429074084062258019">{count,plural, =1{Табыг бүлэгт нэмэх}other{Табуудыг бүлэгт нэмэх}}</translation>
 <translation id="4290920330097335010">Хэзээ ч бүү зөвшөөр</translation>
+<translation id="4293154608148215505">таны утас</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" />-р нэвтрэх үү?</translation>
 <translation id="4302061870579014542">Байрлал тохируулах</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Бүтээгдэхүүнийг хянахын тулд Хянах дээр товшино уу</translation>
 <translation id="5121618895923301719">Та энэ бүтээгдэхүүнийг аль хэдийн хянаж байна. Энэ хуудсыг <ph name="BEGIN_LINK" />Мобайл хавчуургад<ph name="END_LINK" /> хадгалсан.</translation>
 <translation id="512533434554095351">Танд нууц үгний хэд хэдэн асуудал байна.</translation>
+<translation id="5126335625961252141">таны таблет</translation>
 <translation id="5128788795241319992">Шинэ цэсийг судлах</translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
+<translation id="5137568953923142260">Нэг удаа зөвшөөрөх</translation>
 <translation id="5141363746588976328">Таны таб дээрх үнийн бууралтын картыг нуух</translation>
 <translation id="514154868070499296">Фонт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Таб хооронд шилжүүлэгчээс гарах</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Текстийн хэмжээг томруулах</translation>
 <translation id="5376135254804080693">Бүх сонголтыг цуцлах</translation>
 <translation id="537853552771686272">Сонирхдог сэдэв, сайтуудаа удирдана уу</translation>
+<translation id="5385892579392932755">таны зөөврийн компьютер</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} табыг хаасан}other{{count} табыг хаасан}}</translation>
 <translation id="5394975111793637642">Танд зориулсан бүтээгдэхүүний шүүмжийн картыг нуух</translation>
 <translation id="5414763847370083940">Аль нэг сайтад үнэ буурсан тохиолдолд та сэрэмжлүүлэг авна.</translation>
@@ -1967,6 +1972,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Таны табуудыг хаах бөгөөд интернэтээр үзсэн өгөгдлийг устгана</translation>
 <translation id="714291438898585119">Одтой</translation>
+<translation id="7144458305574230431"><ph name="DEVICE_TYPE" />-с хавчуурга болон бусад зүйлээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="7145337554745942724">Жолооны үнэмлэхийг шинэчлэх</translation>
 <translation id="7146301801400584641">Календарийн файл боломжтой</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
@@ -1994,6 +2000,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="722339453342442311">Одоо шалгах</translation>
 <translation id="7227235818314667565">Хуваалцахыг удирдах</translation>
 <translation id="7233006041370588369">Бөглөх нууц үгийг сонгоно уу.</translation>
+<translation id="7238074332967840767">Аюулгүй байдал</translation>
 <translation id="723874023660911012">Профайл сэлгэх</translation>
 <translation id="7241135764990439166">Нууцлалын горим боломжгүй байна</translation>
 <translation id="7245288034498365666">Цэгцтэй болж, цаг хэмнээрэй</translation>
@@ -2377,7 +2384,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8393700583063109961">Мессеж илгээх</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> хоногийн турш ашиглаагүй табууд</translation>
 <translation id="8395180897620197612">Лог хийхийг зогсоох</translation>
-<translation id="8399253661151100858">Таныг энэ сайтад зочлох бүрд "<ph name="SITE_DOMAIN" />" таны микрофонд хандах боломжтой</translation>
 <translation id="8407669440184693619">Энэ сайтад нууц үг олдсонгүй</translation>
 <translation id="8407831512155324054">Таны нууц үгнүүд сайн харагдаж байна</translation>
 <translation id="8414283596511250978">Нууц үгээ хэзээ ч бүү мартаарай</translation>
@@ -2392,7 +2398,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8439758443371991593">Унших жагсаалтад нэмэхийг нуух</translation>
 <translation id="8443986842926457191">URL нь 2048-аас дээш тэмдэгттэй байна</translation>
 <translation id="8449869326050867919">Нууц үгийг хуваалцсан</translation>
-<translation id="8458009459729013424">Таныг энэ сайтад зочлох бүрд "<ph name="SITE_DOMAIN" />" таны камерт хандах боломжтой</translation>
 <translation id="8461708300275916315">Хэрэв та 18 нас хүрээгүй бол</translation>
 <translation id="8473815223723723001">Gemini-р зураг засах</translation>
 <translation id="8473863474539038330">Хаяг болон бусад</translation>

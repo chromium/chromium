@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">ใช้แบบอักษรที่มีอยู่ในคอมพิวเตอร์เพื่อให้สร้างเนื้อหาความแม่นยำสูงได้</translation>
 <translation id="1465457928007067810">บันทึก IBAN ไปยังบัญชี Google แล้ว</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
-<translation id="1471514598850585811">แล็ปท็อป</translation>
 <translation id="1472675084647422956">แสดงเพิ่มเติม</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">ป้อนคำอย่างน้อย 3 คำเพื่อรับความช่วยเหลือในการเขียน</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">ลองติดต่อผู้ดูแลระบบ</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, หมดอายุ <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">คอมพิวเตอร์</translation>
 <translation id="1739364174357629566">อัปเดตหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว</translation>
 <translation id="1740404923954980840">หากต้องการออกจากโหมดเต็มหน้าจอ ให้ลากจากด้านบนแล้วแตะปุ่มย้อนกลับ</translation>
 <translation id="1741474054575634405">จัดการบัตรสะสมคะแนน...</translation>
@@ -867,6 +865,7 @@
 <translation id="2436186046335138073">อนุญาตให้ <ph name="HANDLER_HOSTNAME" /> เปิดลิงก์ <ph name="PROTOCOL" /> ทั้งหมดไหม</translation>
 <translation id="243815215670139125">บันทึกบัตรนี้ในบัญชี Google ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน</translation>
 <translation id="2438874542388153331">เจาะรูด้านขวา 4 รู</translation>
+<translation id="2442033148418774391">ปิดประกาศการป้อนข้อความอัตโนมัติที่ชาญฉลาดยิ่งขึ้นและเป็นส่วนตัวแล้ว</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ประวัติการท่องเว็บ
@@ -879,13 +878,13 @@
 <translation id="2451607499823206582">การติดตาม</translation>
 <translation id="2452837234288608067">ยังช่วยเรื่องนี้ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="2453045048779611513">องค์กรของคุณจำกัดสิ่งที่คุณสามารถบันทึก</translation>
+<translation id="2456490423293803882">ประกาศการป้อนข้อความอัตโนมัติที่ชาญฉลาดยิ่งขึ้นและเป็นส่วนตัวเปิดอยู่แบบเต็มหน้า</translation>
 <translation id="2459882793359532780">นโยบายเบราว์เซอร์ (นโยบายเครื่องและโปรไฟล์) ที่ใช้</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core มีเครื่องมือส่วนกลางสำหรับกำหนดค่านโยบายเบราว์เซอร์จากระบบคลาวด์</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="2462724976360937186">รหัสคีย์ผู้ออกใบรับรอง</translation>
 <translation id="2465688316154986572">เย็บด้วยลวดเย็บกระดาษ</translation>
 <translation id="2465914000209955735">จัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
-<translation id="2466682894498377850">แท็บที่ส่งจาก <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">ข้อมูลจำเพาะและสถิติของฮาร์ดแวร์อุปกรณ์ เช่น ประวัติการใช้ CPU/RAM</translation>
 <translation id="2467421459221956357">ใช้เซ็นเซอร์ไหม</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />เรียกใช้การวินิจฉัยเครือข่าย<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />ระบบจะแชร์เนื้อหาจากหน้าชำระเงินกับ Google เพื่อเสนอตัวเลือกเหล่านี้<ph name="END_BOLD" /> แพ็กเกจการชำระเงินขึ้นอยู่กับสิทธิ์ หากต้องการซ่อนตัวเลือกการชำระเงินภายหลัง ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่าการชำระเงิน<ph name="END_LINK" /></translation>
 <translation id="2526062290525841862">หากต้องการเรียกใช้แอปนี้ ให้เปิดใช้โหมดนักพัฒนาซอฟต์แวร์ของ Isolated Web App อีกครั้ง</translation>
 <translation id="2526280916094749336">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google ของคุณ (<ph name="ACCOUNT" />)</translation>
-<translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="2527451058878391043">CVC จะแสดงอยู่บนด้านหน้าของบัตร โดยเป็นรหัส 4 หลักที่ด้านขวาบนเหนือหมายเลขบัตร</translation>
 <translation id="2529899080962247600">ช่องนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ ระบบจะไม่สนใจรายการอื่นๆ ทั้งหมด</translation>
 <translation id="2530042584066815841">การล็อกและการใช้เมาส์</translation>
@@ -1108,6 +1106,7 @@
 <translation id="2878197950673342043">พับแบบโปสเตอร์</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">ใช้การล็อกหน้าจอเพื่อป้อนรหัสผ่าน</translation>
+<translation id="2880119244122776372">สร้างและเขียนโค้ด</translation>
 <translation id="2881276955470682203">บันทึกบัตรไหม</translation>
 <translation id="2882280148032777436">ลบหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
 <translation id="2882949212241984732">พับทบ 4 ตอน</translation>
@@ -1735,7 +1734,6 @@
 <translation id="3905894480064208252">{0,plural, =1{ไฟล์ถูกบล็อกไม่ให้มีการโอน}other{ไฟล์ <ph name="FILE_COUNT" /> รายการถูกบล็อกไม่ให้มีการโอน}}</translation>
 <translation id="3906022360148923497">ไอคอนเครื่องมือการชำระเงิน</translation>
 <translation id="3906234161316839040">คำสั่งซื้ออื่นๆ</translation>
-<translation id="3906954721959377182">แท็บเล็ต</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">ดูข้อมูลเพิ่มเติมเกี่ยวกับเนื้อหาที่ฝัง</translation>
 <translation id="3920504717067627103">นโยบายใบรับรอง</translation>
@@ -3913,6 +3911,7 @@
 <translation id="753713322968419914">นำที่อยู่บ้านออกจากฟีเจอร์ป้อนข้อความอัตโนมัติของ Chrome ใช่ไหม</translation>
 <translation id="753714465667062283">ลงชื่อเข้าใช้เพื่อบันทึกรูปภาพ</translation>
 <translation id="7537536606612762813">จำเป็น</translation>
+<translation id="7540924742308928499">ระดมความคิดและสรุป</translation>
 <translation id="7543525346216957623">ถามผู้ปกครอง</translation>
 <translation id="7546409722674205727">เริ่มใช้งาน <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">แก้ไขข้อผิดพลาดในการเชื่อมต่อ</translation>

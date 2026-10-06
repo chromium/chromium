@@ -1700,7 +1700,6 @@
 <translation id="2300383962156589922">تخصيص <ph name="APP_NAME" /> والتحكّم فيه</translation>
 <translation id="2300434721407965566">يتوقف الشحن عند وصول البطارية إلى %80 للمساعدة في إطالة عمرها.</translation>
 <translation id="2301382460326681002">دليل الجذر للإضافة غير صالح.</translation>
-<translation id="2301402091755573488">علامة تبويب تمت مشاركتها</translation>
 <translation id="2304820083631266885">كوكب</translation>
 <translation id="2305202347479035002">آلية العمل</translation>
 <translation id="2306794767168143227">الحفظ في "<ph name="BRAND" />" على هذا الجهاز</translation>
@@ -2078,7 +2077,6 @@
 <translation id="2598710988533271874">‏يتوفّر تحديث جديد لمتصفِّح Chrome</translation>
 <translation id="2599048253926156421">تم نسخ اسم المستخدم إلى الحافظة.</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{تم إيقاف إضافة واحدة غير آمنة}zero{تم إيقاف {NUM_SITES} إضافة غير آمنة}two{تم إيقاف إضافتَين ({NUM_SITES}) غير آمنتَين}few{تم إيقاف {NUM_SITES} إضافات غير آمنة}many{تم إيقاف {NUM_SITES} إضافة غير آمنة}other{تم إيقاف {NUM_SITES} إضافة غير آمنة}}</translation>
-<translation id="2603121359676416582">لهذه الصفحة</translation>
 <translation id="2603656971249947488">شريط علامات التبويب</translation>
 <translation id="2604129989323098489">تطلب المواقع الإلكترونية عادةً معلومات عن شاشات أجهزتك لتتمكّن من فتح النوافذ وتحديد موضعها بدقة، مثل عرض المستندات أو المحتوى في وضع ملء الشاشة جنبًا إلى جنب.</translation>
 <translation id="2604255671529671813">خطأ في اتصال الشبكة</translation>
@@ -3018,7 +3016,6 @@
 <translation id="3292966601422448005">إنّ الأذونات الممنوحة لـ "<ph name="APP_NAME" />" سيتم منحها أيضًا لتطبيقاته المثبَّتة.</translation>
 <translation id="3293080634164207409">إضافة علامات تبويب</translation>
 <translation id="329324683265785818">‏اختصار لوحة المفاتيح المخصّص للتشغيل/الإيقاف المؤقت: k</translation>
-<translation id="3293644607209440645">إرسال هذه الصفحة</translation>
 <translation id="3294437725009624529">ضيف</translation>
 <translation id="3294686910656423119">إحصاءات الاستخدام وتقارير الأعطال</translation>
 <translation id="3295241308788901889">يجري بث علامة تبويب.</translation>
@@ -5717,6 +5714,7 @@
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليمنى)</translation>
 <translation id="534449933710420173">مجلد بدون اسم</translation>
 <translation id="5345916423802287046">تشغيل التطبيق تلقائيًا عند تسجيل الدخول</translation>
+<translation id="5346059693449184483">ما الذي يجول في خاطرك؟</translation>
 <translation id="5350116201946341974">عجيب</translation>
 <translation id="535123479159372765">تم نسخ نص من جهاز آخر.</translation>
 <translation id="5352257124367865087">إدارة أذونات الموقع الإلكتروني</translation>
@@ -7140,7 +7138,6 @@
 <translation id="6472893788822429178">عرض زر الصفحة الرئيسية</translation>
 <translation id="6473315466413288899">حدِّد خيارًا</translation>
 <translation id="6474021817475285003">‏عرض المزيد في "تقويم Google"</translation>
-<translation id="6474401088838630457">‏سؤال Gemini حول المزيد عن هذا الموضوع</translation>
 <translation id="6474498546677193336">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا الملف. سيتم إلغاء مشاركة الملف عند إيقاف Linux.</translation>
 <translation id="6474884162850599008">‏إلغاء ربط حساب Google Drive</translation>
 <translation id="6476482583633999078">سرعة الكلام</translation>

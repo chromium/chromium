@@ -289,7 +289,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1462951478840426066">Usare i caratteri installati sul computer per consentirti di creare contenuti ad alta fedeltà</translation>
 <translation id="1465457928007067810">IBAN salvato nel tuo Account Google</translation>
 <translation id="1467432559032391204">Sinistra</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Mostra altro</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Inserisci 3 o più parole per ricevere aiuto per la scrittura</translation>
@@ -452,7 +451,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Prova a contattare l'amministratore di sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, scade il giorno <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Computer</translation>
 <translation id="1739364174357629566">Aggiorna Known Traveler Number</translation>
 <translation id="1740404923954980840">Per uscire dalla modalità a schermo intero, trascina dall'alto e tocca il pulsante Indietro</translation>
 <translation id="1741474054575634405">Gestisci le carte fedeltà…</translation>
@@ -867,6 +865,7 @@ Puoi rimuovere questo suggerimento da Chrome. La fonte originale non verrà elim
 <translation id="2436186046335138073">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Impossibile salvare questa carta nel tuo Account Google. È invece salvata su Chrome su questo dispositivo.</translation>
 <translation id="2438874542388153331">Perforatura quadrupla a destra</translation>
+<translation id="2442033148418774391">Notifica di Compilazione automatica più intelligente, sempre nel rispetto della tua privacy chiusa</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />non salverà quanto segue<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Cronologia di navigazione
@@ -879,13 +878,13 @@ Puoi rimuovere questo suggerimento da Chrome. La fonte originale non verrà elim
 <translation id="2451607499823206582">Monitoraggio</translation>
 <translation id="2452837234288608067">Non posso aiutarti. Riprova.</translation>
 <translation id="2453045048779611513">La tua organizzazione limita ciò che puoi salvare</translation>
+<translation id="2456490423293803882">Compilazione automatica più intelligente: informativa sulla privacy aperta a schermo intero</translation>
 <translation id="2459882793359532780">Policy del browser applicate (policy relative a computer e profili)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ti offre uno strumento centralizzato per configurare le policy del browser dal cloud</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2462724976360937186">ID della chiave dell'autorità di certificazione</translation>
 <translation id="2465688316154986572">Pinzatura</translation>
 <translation id="2465914000209955735">Gestisci i file che hai scaricato in Chrome</translation>
-<translation id="2466682894498377850">Scheda inviata dal tuo <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Specifiche hardware e statistiche del dispositivo quali la cronologia dell'utilizzo di CPU/RAM</translation>
 <translation id="2467421459221956357">Utilizzare i sensori?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica di rete<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Puoi rimuovere questo suggerimento da Chrome. La fonte originale non verrà elim
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />I contenuti della pagina di pagamento vengono condivisi con Google per offrire queste opzioni.<ph name="END_BOLD" /> I piani di pagamento sono soggetti a idoneità. Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LINK" />impostazioni di pagamento<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Per eseguire questa app, riattiva la modalità sviluppatore per app web isolate</translation>
 <translation id="2526280916094749336">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Desktop</translation>
 <translation id="2527451058878391043">Il CVC si trova sul lato anteriore della tua carta. È il codice di 4 cifre in alto a destra, sopra il numero della carta.</translation>
 <translation id="2529899080962247600">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in più verranno ignorate.</translation>
 <translation id="2530042584066815841">Blocco e uso del mouse</translation>
@@ -1108,6 +1106,7 @@ Puoi rimuovere questo suggerimento da Chrome. La fonte originale non verrà elim
 <translation id="2878197950673342043">Piegatura a mappa</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">usare il blocco schermo per inserire le password</translation>
+<translation id="2880119244122776372">Crea e programma</translation>
 <translation id="2881276955470682203">Salvare la carta?</translation>
 <translation id="2882280148032777436">Elimina Known Traveler Number</translation>
 <translation id="2882949212241984732">Piegatura a doppia finestra</translation>
@@ -1733,7 +1732,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3905894480064208252">{0,plural, =1{Trasferimento del file bloccato}other{Trasferimento di <ph name="FILE_COUNT" /> file bloccato}}</translation>
 <translation id="3906022360148923497">Icona dello strumento di pagamento</translation>
 <translation id="3906234161316839040">Altri ordini</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Scopri di più sui contenuti incorporati</translation>
 <translation id="3920504717067627103">Policy dei certificati</translation>
@@ -3910,6 +3908,7 @@ Ulteriori dettagli:
 <translation id="753713322968419914">Rimuovere l'indirizzo di casa dalla compilazione automatica di Chrome?</translation>
 <translation id="753714465667062283">Accedi per salvare la foto</translation>
 <translation id="7537536606612762813">Obbligatorio</translation>
+<translation id="7540924742308928499">Fai brainstorming e riassumi</translation>
 <translation id="7543525346216957623">Chiedi a uno dei tuoi genitori</translation>
 <translation id="7546409722674205727">Avvio dell'app <ph name="APP_NAME" /> in corso…</translation>
 <translation id="7548892272833184391">Correggere gli errori di connessione</translation>

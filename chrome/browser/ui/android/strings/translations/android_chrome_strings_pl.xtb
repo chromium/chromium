@@ -764,6 +764,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="4092709865241032354">Aby pomóc Menedżerowi haseł Google zapisać dane logowania, dodaj nazwę użytkownika dla tej strony</translation>
 <translation id="4095146165863963773">Usunąć dane aplikacji?</translation>
 <translation id="4095483462103784441">Utwórz nową grupę kart</translation>
+<translation id="4098552968111329864">Aby zabezpieczyć Twoją pracę w Chrome, Twoja organizacja będzie mogła wyświetlać określone informacje lub nimi zarządzać, gdy zalogujesz się w Chrome</translation>
 <translation id="4105527135143631701">Powiadomienie o aktualizacji Menedżera haseł Google zostało otwarte</translation>
 <translation id="4107207375883769436">Twoja organizacja może potrzebować dostępu do danych przeglądania w Twoim profilu służbowym, takich jak historia przeglądania i hasła</translation>
 <translation id="4113030288477039509">Zarządzany przez administratora</translation>
@@ -1241,6 +1242,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="6039379616847168523">Przejdź do następnej karty</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="604124094241169006">Automatyczne</translation>
+<translation id="6041959688070413372">Zarządzaj połączeniem między usługami wyszukiwania a aplikacjami Google Workspace, takimi jak Dysk Google</translation>
 <translation id="6042308850641462728">Więcej</translation>
 <translation id="6047066316630165190">Otwórz przełącznik kart w formie siatki</translation>
 <translation id="604996488070107836">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu nieznanego błędu.</translation>
@@ -1769,6 +1771,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7929587383660661825">Chrome automatycznie usuwa uprawnienia z witryn, które nadużywają powiadomień lub które nie były przez Ciebie ostatnio odwiedzane</translation>
 <translation id="7934668619883965330">Nie można pobrać pliku. Format pliku nie jest obsługiwany.</translation>
 <translation id="7951102827450076904">Zawsze otwieraj pobrane pliki PDF</translation>
+<translation id="7952148074468405586">Dowiedz się więcej o <ph name="BEGIN_LINK" />informacjach, które Twoja organizacja może wyświetlać lub którymi może zarządzać<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Aby otworzyć nowe okno, zmniejsz łączną liczbę aktywnych okien do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7956713633345437162">Zakładki na komórce</translation>
 <translation id="7957413488482743710">Karta wirtualna ukrywa Twoją prawdziwą kartę, aby chronić Cię przed oszustwami. <ph name="BEGIN_LINK1" />Więcej informacji o kartach wirtualnych<ph name="END_LINK1" /></translation>

@@ -289,7 +289,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1462951478840426066">Usar as fontes do seu computador para criar conteúdo de alta fidelidade</translation>
 <translation id="1465457928007067810">IBAN salvo na sua Conta do Google</translation>
 <translation id="1467432559032391204">À esquerda</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Digite três palavras ou mais para receber ajuda com a escrita</translation>
@@ -452,7 +451,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira em <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Computador</translation>
 <translation id="1739364174357629566">Atualizar o número do programa de passageiro conhecido</translation>
 <translation id="1740404923954980840">Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
 <translation id="1741474054575634405">Gerencie cartões fidelidade…</translation>
@@ -887,7 +885,6 @@ Se quiser, você pode remover essa sugestão do Chrome. A fonte original dos dad
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
 <translation id="2465688316154986572">Grampear</translation>
 <translation id="2465914000209955735">Gerencie os arquivos baixados no Chrome</translation>
-<translation id="2466682894498377850">Guia enviada pelo dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Especificações e estatísticas de hardware do dispositivo, como histórico de uso da CPU/RAM</translation>
 <translation id="2467421459221956357">Usar sensores?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar o Diagnóstico de Rede<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Se quiser, você pode remover essa sugestão do Chrome. A fonte original dos dad
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Para oferecer essas opções, o conteúdo da página de finalização da compra é compartilhado com o Google.<ph name="END_BOLD" /> Os planos de pagamento estão sujeitos à qualificação. Se quiser ocultar as opções de pagar depois, acesse as <ph name="BEGIN_LINK" />configurações de pagamento<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Para executar esse app, reative o modo de desenvolvedor para App Isolado da Web</translation>
 <translation id="2526280916094749336">Os endereços salvos podem ser usados em vários produtos do Google. Esse será salvo na sua conta <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Área de trabalho</translation>
 <translation id="2527451058878391043">O CVC é um código de quatro dígitos que fica no canto superior direito da parte da frente do cartão, logo acima do número dele.</translation>
 <translation id="2529899080962247600">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as entradas futuras serão ignoradas.</translation>
 <translation id="2530042584066815841">Bloqueio e uso do mouse</translation>
@@ -1739,7 +1735,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3905894480064208252">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="3906022360148923497">Ícone do instrumento de pagamento</translation>
 <translation id="3906234161316839040">Outros pedidos</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saber mais sobre conteúdo incorporado</translation>
 <translation id="3920504717067627103">Diretivas de certificação</translation>
@@ -2165,7 +2160,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4612631413844865947">Ocorreu um erro ao processar seu pedido em <ph name="MERCHANT_ORIGIN" /> usando <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Este site pode ter conteúdo para maiores. Um familiar ou responsável precisa autorizar seu acesso.</translation>
 <translation id="4613873770449493819">O URL precisa levar a um domínio do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
-<translation id="4619564267100705184">Confirmar sua identidade</translation>
+<translation id="4619564267100705184">Confirme sua identidade</translation>
 <translation id="4619669610757527494">Salvar carteira de habilitação na Carteira do Google</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
 <translation id="4622647778991854660">Ative as notificações na Central de notificações. Abra as <ph name="LINK" />.</translation>

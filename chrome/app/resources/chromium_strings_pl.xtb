@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1186645291482254714">Otrzymuj alerty o śledzeniu cen w Chromium na telefonie</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> oczekuje na instalację. Aby zapewnić Ci bezpieczeństwo podczas przeglądania, Chromium zaktualizuje się, gdy przez <ph name="IDLE_DURATION" /> nie będziesz nic robić.</translation>
 <translation id="1232234696885483911">Gdy otworzysz wyszukiwanie obrazów, tytuł, adres URL i zawartość strony, w tym pliki PDF, zostaną automatycznie wysłane na serwer. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Po zalogowaniu się w Chromium możesz używać haseł i innych danych z konta Google. Aby to zmienić, przejdź do sekcji „Twoje konto w Chromium”.</translation>
 <translation id="1244381985120794049">Pokaż Gemini w Chromium na pasku menu Maca</translation>
@@ -225,6 +226,7 @@
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
 <translation id="328888136576916638">Brakuje kluczy interfejsu Google API. Niektóre funkcje Chromium będą wyłączone.</translation>
 <translation id="3296368748942286671">Kontynuuj działanie aplikacji w tle po zamknięciu Chromium</translation>
+<translation id="3300632735252839402">Chromium zaktualizuje się, gdy nie będziesz korzystać z urządzenia</translation>
 <translation id="3313189106987092621">Chromium będzie Cię ostrzegać przed wczytywaniem stron, które korzystają z niezabezpieczonego połączenia</translation>
 <translation id="3316771292331273802">Gdy zamkniesz wszystkie okna Chromium, wylogujesz się na większości stron, ale nie z konta Google, o ile wcześniej zalogujesz się w Chromium. Aby pozwolić witrynom na zapamiętywanie Twoich danych, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">prawy górny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u góry <ph name="TOP" />%</translation>
@@ -233,6 +235,7 @@
 <translation id="3387527074123400161">System operacyjny Chromium</translation>
 <translation id="3406848076815591792">Przełączyć na istniejący profil Chromium?</translation>
 <translation id="3412460710772753638">W Menedżerze haseł na tym urządzeniu</translation>
+<translation id="3425452599984451640">Chromium chce się zaktualizować</translation>
 <translation id="3427159664004296878">Aby mieć dostęp do zakładek oraz innych danych z urządzenia <ph name="DEVICE" />, zaloguj się w Chromium</translation>
 <translation id="3438772217992559640">Wyszukaj na tej karcie za pomocą wyszukiwania obrazów</translation>
 <translation id="3455907671758333080">Korzystaj z Ulepszonego bezpiecznego przeglądania także na telefonie dzięki Chromium</translation>

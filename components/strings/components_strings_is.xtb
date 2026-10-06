@@ -289,7 +289,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1462951478840426066">Notaðu leturgerðirnar í tölvunni svo þú getir búið til hágæðaefni.</translation>
 <translation id="1465457928007067810">IBAN-númer vistað á Google-reikninginn</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
-<translation id="1471514598850585811">Fartölva</translation>
 <translation id="1472675084647422956">Sýna meira</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Sláðu inn þrjú eða fleiri orð til að fá aðstoð við skrif</translation>
@@ -452,7 +451,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Prófaðu að hafa samband við kerfisstjórann.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, rennur út <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Tölva</translation>
 <translation id="1739364174357629566">Uppfæra þekkt ferðalangsnúmer</translation>
 <translation id="1740404923954980840">Til að hætta í öllum skjánum, draga ofan frá og snerta hnappinn til baka</translation>
 <translation id="1741474054575634405">Stjórna tryggðarkortum...</translation>
@@ -867,6 +865,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2436186046335138073">Leyfa <ph name="HANDLER_HOSTNAME" /> að opna alla <ph name="PROTOCOL" />-tengla?</translation>
 <translation id="243815215670139125">Ekki var hægt að vista þetta kort á Google-reikninginn þinn. Í staðinn var það vistað í Chrome í þessu tæki.</translation>
 <translation id="2438874542388153331">Fjögur göt hægra megin</translation>
+<translation id="2442033148418774391">Snjallari sjálfvirk útfylling, lokað án þess að aðrir sjái</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />vistar ekki<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Vafraferilinn þinn
@@ -879,13 +878,13 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2451607499823206582">Vöktun</translation>
 <translation id="2452837234288608067">Ekki tókst að aðstoða þig með þetta. Reyndu aftur.</translation>
 <translation id="2453045048779611513">Fyrirtækið takmarkar hvað þú getur vistað</translation>
+<translation id="2456490423293803882">Snjallari sjálfvirk útfylling, opnuð í fullri hæð án þess að aðrir sjái</translation>
 <translation id="2459882793359532780">Gildandi vafrareglur (vélar- og prófílreglur)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core veitir þér miðlægt verkfæri til að stilla vafrareglur úr skýinu</translation>
 <translation id="2461822463642141190">Núna</translation>
 <translation id="2462724976360937186">Lykilsauðkenni vottunarstöðvar</translation>
 <translation id="2465688316154986572">Hefti</translation>
 <translation id="2465914000209955735">Stjórna skrám sem þú hefur sótt í Chrome</translation>
-<translation id="2466682894498377850">Flipi sendur úr <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Tæknilýsing vélbúnaðar tækis og talnagögn á borð við notkunarferil örgjörva/vinnsluminnis</translation>
 <translation id="2467421459221956357">Nota skynjara?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Keyrir netgreiningu<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Efni frá greiðslusíðunni er deilt með Google til að bjóða upp á þessa valkosti.<ph name="END_BOLD" /> Greiðsluáætlanir eru háðar gjaldgengi. Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til að fela valkosti greiðslufrests</translation>
 <translation id="2526062290525841862">Til að keyra þetta forrit skaltu virkja aftur forritarastillingu einangraðs vefforrits</translation>
 <translation id="2526280916094749336">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang verður vistað á Google-reikningnum þínum: <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Skjáborð</translation>
 <translation id="2527451058878391043">CVC-númerið er á framhlið kortsins. Það er 4 tölustafa kóðinn efst til hægri ofan við kortanúmerið.</translation>
 <translation id="2529899080962247600">Þessi reitur á ekki að innihalda fleiri en <ph name="MAX_ITEMS_LIMIT" /> færslur. Allar frekari færslur verða hunsaðar.</translation>
 <translation id="2530042584066815841">Læsing og notkun músar</translation>
@@ -1108,6 +1106,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2878197950673342043">Veggspjaldabrot</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">nota skjálásinn til að fylla út aðgangsorð</translation>
+<translation id="2880119244122776372">Smíða og kóða</translation>
 <translation id="2881276955470682203">Vista kort?</translation>
 <translation id="2882280148032777436">Eyða þekktu ferðalangsnúmeri</translation>
 <translation id="2882949212241984732">Innábrot (bæklingabrot)</translation>
@@ -1736,7 +1735,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3905894480064208252">{0,plural, =1{Lokað er á flutning skráar}one{Lokað er á flutning <ph name="FILE_COUNT" /> skráar}other{Lokað er á flutning <ph name="FILE_COUNT" /> skráa}}</translation>
 <translation id="3906022360148923497">Greiðslumátatákn</translation>
 <translation id="3906234161316839040">Aðrar pantanir</translation>
-<translation id="3906954721959377182">Spjaldtölva</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Nánar um innfellt efni</translation>
 <translation id="3920504717067627103">Vottorðastefnur</translation>
@@ -3913,6 +3911,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="753713322968419914">Fjarlægja heimilisfang úr sjálfvirkri útfyllingu Chrome?</translation>
 <translation id="753714465667062283">Skráðu þig inn til að vista myndina</translation>
 <translation id="7537536606612762813">Áskilin</translation>
+<translation id="7540924742308928499">Hugmyndavinna og samantekt</translation>
 <translation id="7543525346216957623">Spyrðu foreldri þitt</translation>
 <translation id="7546409722674205727">Ræsir <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Laga tengingarvillur</translation>

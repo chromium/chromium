@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ ഉള്ള ഫോണ്ടുകൾ ഉപയോഗിക്കുന്നതിലൂടെ നിങ്ങൾക്ക് ഉയർന്ന ഫിഡിലിറ്റിയുള്ള ഉള്ളടക്കം സൃഷ്ടിക്കാനാകും</translation>
 <translation id="1465457928007067810">IBAN നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചു</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
-<translation id="1471514598850585811">ലാപ്‌ടോപ്പ്</translation>
 <translation id="1472675084647422956">കൂടുതൽ‍ കാണിക്കുക</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">എഴുതാൻ സഹായം തേടാൻ 3 അല്ലെങ്കിൽ അതിലധികം വാക്കുകൾ നൽകുക</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">സിസ്റ്റം അഡ്‌മിനെ ബന്ധപ്പെടാൻ ശ്രമിക്കുക.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-ന് കാലഹരണപ്പെടുന്നു</translation>
-<translation id="1736420071277903564">കമ്പ്യൂട്ടർ</translation>
 <translation id="1739364174357629566">'നോൺ ട്രാവലർ നമ്പർ' അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="1740404923954980840">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട ശേഷം 'മടങ്ങുക' ബട്ടൺ സ്പർശിക്കുക</translation>
 <translation id="1741474054575634405">ലോയൽറ്റി കാർഡുകൾ മാനേജ് ചെയ്യുക...</translation>
@@ -887,7 +885,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="2462724976360937186">സർട്ടിഫിക്കേഷൻ അതോറിറ്റി കീ ഐഡി</translation>
 <translation id="2465688316154986572">സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="2465914000209955735">Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യുക</translation>
-<translation id="2466682894498377850">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> എന്നതിൽ നിന്നയച്ച ടാബ്</translation>
 <translation id="2467272921457885625">ഉപകരണ ഹാർഡ്‌വെയർ സവിശേഷതകളും CPU/RAM ഉപയോഗ ചരിത്രം പോലുള്ള സ്ഥിതിവിവരക്കണക്കുകളും</translation>
 <translation id="2467421459221956357">സെൻസറുകൾ ഉപയോഗിക്കണോ?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />ഈ ഓപ്ഷനുകൾ ലഭ്യമാക്കാൻ, ചെക്ക്ഔട്ട് പേജിൽ നിന്നുള്ള ഉള്ളടക്കം Google-മായി പങ്കിടുന്നു.<ph name="END_BOLD" /> പേയ്മെന്റ് പ്ലാനുകൾ യോഗ്യതയ്ക്ക് വിധേയമാണ്. പിന്നീട് പേ ചെയ്യാനുള്ള ഓപ്ഷനുകൾ മറയ്ക്കാൻ, <ph name="BEGIN_LINK" />പേയ്മെന്റ് ക്രമീകരണം<ph name="END_LINK" /> എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="2526062290525841862">ഈ ആപ്പ് റൺ ചെയ്യാൻ, ഐസൊലേറ്റഡ് വെബ് ആപ്പ് ഡെവലപ്പർ മോഡ് വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="2526280916094749336">സംരക്ഷിച്ച വിലാസങ്ങൾ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാം. ഈ വിലാസം നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google Account-ൽ സംരക്ഷിക്കും.</translation>
-<translation id="2526590354069164005">ഡെസ്ക്‌ടോപ്പ്</translation>
 <translation id="2527451058878391043">CVC നിങ്ങളുടെ കാർഡിന്റെ മുൻഭാഗത്താണുള്ളത്. നിങ്ങളുടെ കാർഡ് നമ്പറിന് മുകളിൽ വലതുവശത്തുള്ള 4 അക്ക കോഡാണിത്.</translation>
 <translation id="2529899080962247600">ഈ ഫീൽഡിൽ <ph name="MAX_ITEMS_LIMIT" />-ൽ കൂടുതൽ എൻ‌ട്രികൾ ഉണ്ടാകരുത്. തുടർന്നുള്ള എല്ലാ എൻ‌ട്രികളും നിരസിക്കും.</translation>
 <translation id="2530042584066815841">മൗസ് ലോക്കും ഉപയോഗവും</translation>
@@ -1738,7 +1734,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="3905894480064208252">{0,plural, =1{കൈമാറുന്നതിൽ നിന്ന് ഫയൽ ബ്ലോക്ക് ചെയ്‌തു}other{കൈമാറുന്നതിൽ നിന്ന് <ph name="FILE_COUNT" /> ഫയലുകൾ ബ്ലോക്ക് ചെയ്‌തു}}</translation>
 <translation id="3906022360148923497">പേയ്‌മെന്റ് ഇൻസ്ട്രുമെന്റ് ഐക്കൺ</translation>
 <translation id="3906234161316839040">മറ്റ് ഓർഡറുകൾ</translation>
-<translation id="3906954721959377182">ടാബ്‌ലെറ്റ്</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">ഉൾച്ചേർത്ത ഉള്ളടക്കത്തെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3920504717067627103">സര്‍‌ട്ടിഫിക്കറ്റ് നയങ്ങള്‍‌</translation>

@@ -289,7 +289,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1462951478840426066">Gunakan fon pada komputer anda supaya anda dapat membuat kandungan fideliti tinggi</translation>
 <translation id="1465457928007067810">IBAN telah disimpan pada Google Account anda</translation>
 <translation id="1467432559032391204">Kiri</translation>
-<translation id="1471514598850585811">Komputer riba</translation>
 <translation id="1472675084647422956">Tunjukkan lagi</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Masukkan 3 atau lebih perkataan untuk mendapatkan bantuan penulisan</translation>
@@ -452,7 +451,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Cuba hubungi pentadbir sistem.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, tamat tempoh <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Komputer</translation>
 <translation id="1739364174357629566">Kemas kinikan Nombor Pengembara Yang Diketahui</translation>
 <translation id="1740404923954980840">Untuk keluar daripada skrin penuh, seret dari bahagian atas dan sentuh butang kembali</translation>
 <translation id="1741474054575634405">Urus kad kesetiaan...</translation>
@@ -887,7 +885,6 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2462724976360937186">ID Kekunci Pihak Berkuasa Pensijilan</translation>
 <translation id="2465688316154986572">Kokot</translation>
 <translation id="2465914000209955735">Urus fail yang telah anda muat turun dalam Chrome</translation>
-<translation id="2466682894498377850">Tab dihantar daripada <ph name="DEVICE_NAME" /> anda</translation>
 <translation id="2467272921457885625">Spesifikasi dan statistik perkakasan peranti seperti sejarah penggunaan CPU/RAM</translation>
 <translation id="2467421459221956357">Gunakan penderia?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Jalankan Diagnostik Rangkaian<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Kandungan daripada halaman semak keluar dikongsi dengan Google untuk menawarkan pilihan ini.<ph name="END_BOLD" /> Pelan pembayaran tertakluk pada kelayakan. Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetapan pembayaran<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Untuk menjalankan apl ini, dayakan semula Mod Pembangun Apl Web Terpencil</translation>
 <translation id="2526280916094749336">Anda boleh menggunakan alamat yang disimpan pada seluruh produk Google. Alamat ini akan disimpan dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Desktop</translation>
 <translation id="2527451058878391043">CVC tertera pada bahagian hadapan kad anda. CVC ialah kod 4 digit pada bahagian atas sebelah kanan, di atas nombor kad anda.</translation>
 <translation id="2529899080962247600">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
 <translation id="2530042584066815841">Kunci dan penggunaan tetikus</translation>
@@ -1741,7 +1737,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3905894480064208252">{0,plural, =1{Fail disekat daripada dipindahkan}other{<ph name="FILE_COUNT" /> fail disekat daripada dipindahkan}}</translation>
 <translation id="3906022360148923497">Ikon instrumen pembayaran</translation>
 <translation id="3906234161316839040">Pesanan lain</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Ketahui lebih lanjut tentang kandungan terbenam</translation>
 <translation id="3920504717067627103">Dasar Sijil</translation>
@@ -4620,7 +4615,6 @@ Butiran tambahan:
 <translation id="8763676559028782284">{COUNT,plural, =1{Pautan dihantar daripada <ph name="DEVICE_NAME" />}other{# pautan dihantar daripada <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
 <translation id="8763986294015493060">Tutup semua tetingkap Inkognito yang terbuka pada masa ini</translation>
-<translation id="8766878556492508344">Ketahui perihal Autolengkap kod pengesahan daripada Gmail dengan lebih lanjut</translation>
 <translation id="8766943070169463815">Helaian pengesahan bukti kelayakan pembayaran selamat dibuka</translation>
 <translation id="8767765348545497220">Tutup gelembung bantuan</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 kaedah pembayaran}other{# kaedah pembayaran}}</translation>

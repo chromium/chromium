@@ -289,7 +289,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1462951478840426066">Använd fonterna på datorn så att du kan skapa innehåll av hög kvalitet</translation>
 <translation id="1465457928007067810">IBAN har sparats i ditt Google-konto</translation>
 <translation id="1467432559032391204">Vänster</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Visa fler</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Ange tre eller fler ord för att få hjälp med att skriva</translation>
@@ -452,7 +451,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Kontakta systemadministratören.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Dator</translation>
 <translation id="1739364174357629566">Uppdatera ditt Known Traveler Number</translation>
 <translation id="1740404923954980840">Dra från toppen och tryck på bakåtknappen för att avsluta helskärmsläget</translation>
 <translation id="1741474054575634405">Hantera stamkundskort …</translation>
@@ -887,7 +885,6 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2462724976360937186">Nyckel-ID för certifikatutfärdare</translation>
 <translation id="2465688316154986572">Häftning</translation>
 <translation id="2465914000209955735">Hantera filer du har laddat ned i Chrome</translation>
-<translation id="2466682894498377850">Fliken skickades från din <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Enhetens hårdvaruspecifikation och statistik som historiken över CPU-/RAM-användning</translation>
 <translation id="2467421459221956357">Vill du använda sensorer?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />att köra nätverksdiagnostik<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Innehåll från kassasidan delas med Google för att erbjuda dessa alternativ.<ph name="END_BOLD" /> Kvalificering krävs för betalningsplaner. Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /> om du vill dölja alternativen för att betala senare.</translation>
 <translation id="2526062290525841862">Aktivera utvecklarläget för isolerade webbappar igen om du vill köra appen</translation>
 <translation id="2526280916094749336">Du kan använda sparade adresser i Googles produkter. Den här adressen sparas i ditt Google-konto, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Skrivbord</translation>
 <translation id="2527451058878391043">CVC-koden finns på framsidan av kortet. Det är den fyrsiffriga koden uppe till höger ovanför kortnumret.</translation>
 <translation id="2529899080962247600">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver det ignoreras.</translation>
 <translation id="2530042584066815841">Låsa och använda musen</translation>
@@ -1739,7 +1735,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3905894480064208252">{0,plural, =1{Filen har blockerats från att överföras}other{<ph name="FILE_COUNT" /> filer har blockerats från att överföras}}</translation>
 <translation id="3906022360148923497">Ikon för betalningsmetod</translation>
 <translation id="3906234161316839040">Övriga beställningar</translation>
-<translation id="3906954721959377182">Surfplatta</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Läs mer om inbäddat innehåll</translation>
 <translation id="3920504717067627103">Certifikatpolicyer</translation>

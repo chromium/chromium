@@ -146,6 +146,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="417201473131094001">Chưa hỗ trợ trên Chrome Canary</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4314240881330431451">Bạn có thể dùng Google Ống kính trong Chrome để tìm thông tin về bất cứ nội dung nào bạn thấy</translation>
+<translation id="4315292299997584267">Đăng nhập vào trang web này và Chrome để sử dụng mật khẩu và các nội dung khác trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="4409545895715116037">Các khoá truy cập sau đây không được nhập vào Trình quản lý mật khẩu của Google vì không đáp ứng được các yêu cầu.</translation>
 <translation id="4430797724889237570">Mở đường liên kết từ Gmail, Maps, YouTube và các ứng dụng khác trong Chrome</translation>
 <translation id="447252321002412580">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
@@ -163,6 +164,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="4742795653798179840">Đã xoá dữ liệu Chrome</translation>
 <translation id="4761869838909035636">Chạy quy trình Kiểm tra an toàn trên Chrome</translation>
 <translation id="4798859546468762093">Để sử dụng chế độ cá nhân hoá và các tính năng khác, hãy thêm Chrome vào <ph name="FEATURE_NAME_1" /> và <ph name="FEATURE_NAME_2" /></translation>
+<translation id="4807700370495020449">Đăng nhập vào trang web này và Chrome để sử dụng thông tin đã lưu và các nội dung khác trên tất cả thiết bị của bạn</translation>
 <translation id="4819268619367838612">Để giúp cải thiện ứng dụng, Chrome sẽ gửi dữ liệu về sự cố và mức sử dụng cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">Đặt Chrome làm trình duyệt mặc định của bạn?</translation>
 <translation id="484033449593719797">Chưa hỗ trợ trên Chrome phiên bản thử nghiệm</translation>
@@ -173,6 +175,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="496747131578053942">Mẹo khi dùng Chrome: Tìm thông tin về những gì bạn thấy bằng Google Ống kính</translation>
 <translation id="498985224078955265">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
 <translation id="5030102366287574140">Chrome có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
+<translation id="5085038751173179818">Đăng nhập vào trang web này và Chrome để sử dụng dấu trang và các nội dung khác trên tất cả thiết bị của bạn</translation>
 <translation id="5109169629909011627">Xem dấu trang trên Chrome</translation>
 <translation id="5112925986883715005">Xem Danh sách đọc trên Chrome</translation>
 <translation id="5116239826668864748">Bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
@@ -190,6 +193,7 @@ Trước khi đăng xuất, hãy đợi một vài phút. Nếu bạn đăng xu�
 <translation id="5395376160638294582">Đảm bảo bạn luôn có thể sử dụng dữ liệu Chrome trong Tài khoản Google của mình</translation>
 <translation id="5404252374083197467">Bạn muốn đặt Chrome làm trình duyệt mặc định?</translation>
 <translation id="5439191312780166229">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chrome.</translation>
+<translation id="544285856361623600">Đăng nhập vào trang web này và Chrome để sử dụng dấu trang và các nội dung khác trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="5453077102022695084">Video toàn màn hình hướng dẫn cách đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="5460571915754665838">4. Chọn Chrome</translation>
 <translation id="5492504007368565877">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn.</translation>
@@ -309,6 +313,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="7642373780953416937">Nhận cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chrome tự động phát hiện ra.</translation>
 <translation id="7660356333829433649">Quay lại đây để xem thêm các mẹo hữu ích giúp khai thác tối đa Chrome.</translation>
 <translation id="7662994914830945754">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chrome, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
+<translation id="767157537088426800">Đăng nhập vào trang web này và Chrome để sử dụng mật khẩu và các nội dung khác trên tất cả thiết bị của bạn</translation>
 <translation id="7693590760643069321">Giờ đây, bạn có thể dùng Chrome mỗi khi nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
 <translation id="7707877166818730835">Mở thẻ mà tôi mở gần đây nhất trong Chrome</translation>
@@ -386,6 +391,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="9122931302567044771">Tức là lần nào Chrome cũng yêu cầu trang web dành cho máy tính.</translation>
 <translation id="9176561303811134420">Quản lý phương thức thanh toán trong Chrome</translation>
 <translation id="9181628561061032322">Mở các thẻ gần đây trong Chrome.</translation>
+<translation id="9199610579638564405">Đăng nhập vào trang web này và Chrome để sử dụng thông tin đã lưu và các nội dung khác trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="924447568950697217">Đặt Chrome làm trình duyệt mặc định của bạn</translation>
 <translation id="948597495737267756">Mở trang Nhật ký duyệt web trên Chrome.</translation>
 <translation id="954347330803595209">Nhập dữ liệu để sử dụng mật khẩu, nhật ký, dấu trang và thẻ tín dụng của bạn trên Chrome</translation>

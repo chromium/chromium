@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">密码</translation>
 <translation id="1381022135873211423">{count,plural, =1{第 {position} 个地址，共 {count} 个}other{第 {position} 个地址，共 {count} 个}}</translation>
 <translation id="13813615483058219">出了点问题。请检查网络连接、调高音量，或重试。</translation>
+<translation id="138181280295369883">登录即可在自己的所有设备上获取保存的信息等内容</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="138618066238211776">以<ph name="USER_NAME" />的身份继续</translation>
 <translation id="138692594145659985">卡片保存选项</translation>
@@ -161,6 +162,7 @@
 <translation id="1466035273550360103">没有已打开的标签页</translation>
 <translation id="1469381646033328562">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">自完成“创建标签页分组”以来</translation>
 <translation id="147982357559798527">已更改</translation>
 <translation id="1481450969185702334">查找并填充</translation>
 <translation id="1483493594462132177">发送</translation>
@@ -187,6 +189,7 @@
 <translation id="1536390784834419204">翻译网页</translation>
 <translation id="1539535193627863227">未找到此网站的密码或通行密钥</translation>
 <translation id="1540800554400757039">地址第1行</translation>
+<translation id="1543035591122163372">登录即可获取<ph name="DEVICE_TYPE" />中的密码等信息</translation>
 <translation id="154312949627292154">在锁屏状态下打开从其他设备接收的标签页。</translation>
 <translation id="1544653821167545205">总结页面内容</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
@@ -313,6 +316,7 @@
 <translation id="1901366738768303267">如何使用此功能？</translation>
 <translation id="1901600657316773839">保留所做选择</translation>
 <translation id="1902277226107477495">地址检测已关闭。您可以在“设置”中重新开启此功能。</translation>
+<translation id="1905582086181351638">登录即可获取<ph name="DEVICE_TYPE" />中保存的信息等内容</translation>
 <translation id="1909201414196501151">已添加并固定网站</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
 <translation id="1925706052394657380">在 iOS 中打开<ph name="BEGIN_BOLD" />默认 App<ph name="END_BOLD" /> 设置</translation>
@@ -407,8 +411,8 @@
 <translation id="2218389616572918761">网站可以请求使用麦克风</translation>
 <translation id="2219935992754556187">Chrome 可利用面容 ID 确保您的敏感数据安全</translation>
 <translation id="2220529011494928058">报告问题</translation>
-<translation id="2222149859067335623">“<ph name="SITE_DOMAIN" />”无法使用您的摄像头</translation>
 <translation id="2223461067862937305">生成二维码</translation>
+<translation id="222798989929574238">您使用了 20 多张照片进行搜索</translation>
 <translation id="2230173723195178503">已加载网页</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
 <translation id="2237869114829007407">获取任何网页或主题的概览与关键要点</translation>
@@ -899,7 +903,6 @@
 <translation id="386224966259596343">下次您填写相关表单时，可选择将此信息保存到 Google 钱包。</translation>
 <translation id="3868495844258915202">显示完整网址</translation>
 <translation id="3875783148670536197">操作步骤</translation>
-<translation id="3877211858413020188">“<ph name="SITE_DOMAIN" />”无法使用您的麦克风</translation>
 <translation id="3878657761594430423">动作条抓取器</translation>
 <translation id="3884810423191119660">安全保存密码，轻松登录网站和应用</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
@@ -1036,6 +1039,7 @@
 <translation id="4289309730265289297">照片库</translation>
 <translation id="429074084062258019">{count,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
 <translation id="4290920330097335010">一律不允许</translation>
+<translation id="4293154608148215505">您的手机</translation>
 <translation id="4294506173142861371">要以 <ph name="FIRST_NAME" /> 的身份登录吗？</translation>
 <translation id="4302061870579014542">设置位置</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
@@ -1308,8 +1312,10 @@
 <translation id="5119329531859909472">如需跟踪此商品，请点按“跟踪”</translation>
 <translation id="5121618895923301719">您已在跟踪此商品。该网页已保存在<ph name="BEGIN_LINK" />移动设备书签<ph name="END_LINK" />中。</translation>
 <translation id="512533434554095351">发现多个密码问题。</translation>
+<translation id="5126335625961252141">您的平板电脑</translation>
 <translation id="5128788795241319992">探索新菜单</translation>
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
+<translation id="5137568953923142260">允许一次</translation>
 <translation id="5141363746588976328">隐藏“您打开的标签页中有降价”卡片</translation>
 <translation id="514154868070499296">字体：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">离开标签页切换器</translation>
@@ -1388,6 +1394,7 @@
 <translation id="5371112366564891538">放大文字</translation>
 <translation id="5376135254804080693">取消全选</translation>
 <translation id="537853552771686272">管理您感兴趣的主题和网站</translation>
+<translation id="5385892579392932755">您的笔记本电脑</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} 个已关闭}other{{count} 个已关闭}}</translation>
 <translation id="5394975111793637642">隐藏“为您推荐的商品评价”卡片</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
@@ -1763,6 +1770,7 @@
 <translation id="6525550806864373485">修改菜单</translation>
 <translation id="6527208859483186860">第 {position} 张背景图，共 {total} 张</translation>
 <translation id="6527303717912515753">分享</translation>
+<translation id="6529706885792457023">您整理了超过 15 个标签页</translation>
 <translation id="6532106788206463496">保存更改</translation>
 <translation id="6536759809440150308">打开“<ph name="GROUP_TITLE" />”，分组包含 <ph name="NUMBER_OF_TABS" />，<ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1816,7 @@
 <translation id="6642362222295953972">切换到已打开的标签页</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">二维码：<ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">您检查了超过 25 个密码</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6659660757330712663">您可以滑动工具栏以切换标签页。</translation>
 <translation id="6663529247339810546">无法保存图片</translation>
@@ -1963,9 +1972,11 @@
 <translation id="7140355148730164340"><ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="7141960840225504692">标签页将被关闭，而且您的浏览数据将被删除</translation>
 <translation id="714291438898585119">已加星标</translation>
+<translation id="7144458305574230431">登录即可获取<ph name="DEVICE_TYPE" />中的书签等信息</translation>
 <translation id="7145337554745942724">更新驾照信息</translation>
 <translation id="7146301801400584641">有可用的日历文件</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
+<translation id="7151361008641622036">{count,plural, =1{您整理了 1 个标签页}other{您整理了 # 个标签页}}</translation>
 <translation id="7154417656353909837">移除地址</translation>
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
 <translation id="7165323152084385463">车辆识别码</translation>
@@ -1989,6 +2000,7 @@
 <translation id="722339453342442311">立即检查</translation>
 <translation id="7227235818314667565">管理共享设置</translation>
 <translation id="7233006041370588369">选择要填充的密码。</translation>
+<translation id="7238074332967840767">安全</translation>
 <translation id="723874023660911012">切换个人资料</translation>
 <translation id="7241135764990439166">无痕模式不可用</translation>
 <translation id="7245288034498365666">保持井井有条，省时省力</translation>
@@ -2372,7 +2384,6 @@
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> 天未使用的标签页</translation>
 <translation id="8395180897620197612">停止日志记录</translation>
-<translation id="8399253661151100858">每当您访问此网站时，“<ph name="SITE_DOMAIN" />”都可以使用您的麦克风</translation>
 <translation id="8407669440184693619">未找到此网站的密码</translation>
 <translation id="8407831512155324054">您的密码看起来安全系数较高</translation>
 <translation id="8414283596511250978">再也不必担心忘记密码</translation>
@@ -2387,7 +2398,6 @@
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>
 <translation id="8443986842926457191">网址长度超出了 2048 个字符（上限）</translation>
 <translation id="8449869326050867919">已分享密码</translation>
-<translation id="8458009459729013424">每当您访问此网站时，“<ph name="SITE_DOMAIN" />”都可以使用您的摄像头</translation>
 <translation id="8461708300275916315">如果您未满 18 周岁</translation>
 <translation id="8473815223723723001">使用 Gemini 编辑图片</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
@@ -2396,6 +2406,7 @@
 <translation id="8481184073299279701">点按“开始记录”按钮，即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>
+<translation id="8488065047914929586">自完成“保存密码”以来</translation>
 <translation id="8488923644885757471">打开新窗口</translation>
 <translation id="8490629238792920282">无法创建链接</translation>
 <translation id="8501469528283376592">自动删除下载内容</translation>
@@ -2543,6 +2554,7 @@
 <translation id="8890516388109605451">来源</translation>
 <translation id="8893208530912252670">视频</translation>
 <translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
+<translation id="890009681345348416">已自动填充 40 多个密码</translation>
 <translation id="8900845556227858314">浏览器应用</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8907722425137681851">在当前页面中查找…</translation>

@@ -1712,7 +1712,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2300383962156589922">Sesuaikan dan kawal <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Berhenti mengecas pada tahap 80% agar bateri anda bertahan lebih lama.</translation>
 <translation id="2301382460326681002">Direktori akar sambungan adalah tidak sah.</translation>
-<translation id="2301402091755573488">Tab Dikongsi</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305202347479035002">Cara ciri ini berfungsi</translation>
 <translation id="2306794767168143227">Simpan ke <ph name="BRAND" /> pada peranti ini</translation>
@@ -2090,7 +2089,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2598710988533271874">Chrome baharu tersedia</translation>
 <translation id="2599048253926156421">Nama pengguna disalin kepada papan keratan</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Matikan 1 sambungan tidak selamat}other{Matikan {NUM_SITES} sambungan tidak selamat}}</translation>
-<translation id="2603121359676416582">Untuk halaman ini</translation>
 <translation id="2603656971249947488">Jalur tab</translation>
 <translation id="2604129989323098489">Laman biasanya meminta maklumat tentang paparan anda supaya laman itu boleh membuka dan meletakkan tetingkap dengan bijak, seperti menunjukkan dokumen atau kandungan skrin penuh bersebelahan</translation>
 <translation id="2604255671529671813">Ralat sambungan rangkaian</translation>
@@ -2173,7 +2171,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2653275834716714682">Penggantian Teks</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="265390580714150011">Nilai Medan</translation>
-<translation id="2654384612175108845">Hai, apakah yang bermain di fikiran anda?</translation>
 <translation id="2654553774144920065">Permintaan cetak</translation>
 <translation id="265748523151262387">Kekal bersambung dengan telefon anda</translation>
 <translation id="2657612187216250073">Tetapan kebolehaksesan penuding</translation>
@@ -3032,7 +3029,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3292966601422448005">Kebenaran yang anda berikan untuk <ph name="APP_NAME" /> juga akan diberikan kepada apl yang dipasang oleh apl tersebut.</translation>
 <translation id="3293080634164207409">Tambahkan tab</translation>
 <translation id="329324683265785818">Mainkan / jeda, pintasan papan kekunci k</translation>
-<translation id="3293644607209440645">Hantar halaman ini</translation>
 <translation id="3294437725009624529">Tetamu</translation>
 <translation id="3294686910656423119">Perangkaan penggunaan dan laporan ranap sistem</translation>
 <translation id="3295241308788901889">Menghantar tab</translation>
@@ -5733,6 +5729,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="534449933710420173">Folder tanpa nama</translation>
 <translation id="5345916423802287046">Mulakan apl apabila anda log masuk</translation>
+<translation id="5346059693449184483">Apakah yang anda fikirkan?</translation>
 <translation id="5350116201946341974">Aneh</translation>
 <translation id="535123479159372765">Teks disalin daripada peranti lain</translation>
 <translation id="5352257124367865087">Urus kebenaran laman</translation>
@@ -7159,7 +7156,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6472893788822429178">Paparkan butang Laman Utama</translation>
 <translation id="6473315466413288899">Buat satu pilihan</translation>
 <translation id="6474021817475285003">Lihat lagi dalam Google Calendar</translation>
-<translation id="6474401088838630457">Minta Gemini maklumat lanjut tentang perkara ini</translation>
 <translation id="6474498546677193336">Tidak dapat menyahkongsi kerana terdapat aplikasi yang menggunakan folder ini. Folder akan dinyahkongsi apabila Linux ditutup selepas ini.</translation>
 <translation id="6474884162850599008">Putuskan sambungan akaun Google Drive</translation>
 <translation id="6476482583633999078">Kelajuan pertuturan</translation>

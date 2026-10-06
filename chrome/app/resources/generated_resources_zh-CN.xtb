@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">撤消访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">隐藏 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="1794791083288629568">发送反馈，以协助我们解决此问题。</translation>
 <translation id="1795214765651529549">使用经典主题背景</translation>
@@ -1697,7 +1698,6 @@
 <translation id="2300383962156589922">自定义和控制<ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">电池电量充到 80% 时停止充电，帮助延长电池寿命。</translation>
 <translation id="2301382460326681002">扩展程序根目录无效。</translation>
-<translation id="2301402091755573488">已分享的标签页</translation>
 <translation id="2304820083631266885">行星</translation>
 <translation id="2305202347479035002">运作方式</translation>
 <translation id="2306794767168143227">保存到此设备上的 <ph name="BRAND" /></translation>
@@ -1716,6 +1716,7 @@
 <translation id="2322622365472107569">结束时间：<ph name="TIME" /></translation>
 <translation id="2323018538045954000">保存的 WLAN 网络</translation>
 <translation id="2323685460575935191">隐藏滚动按钮</translation>
+<translation id="2325004050205455346">近期历史记录</translation>
 <translation id="2325444234681128157">记住密码</translation>
 <translation id="2326188115274135041">请确认 PIN 码以开启自动解锁功能</translation>
 <translation id="2326583548923775947">这不是 Google 账号。您保存到 Chrome 的内容将无法在其他设备上使用。</translation>
@@ -2074,7 +2075,6 @@
 <translation id="2598710988533271874">有新版 Chrome 可用</translation>
 <translation id="2599048253926156421">用户名已复制到剪贴板</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{关闭了 1 个不安全的扩展程序}other{关闭了 {NUM_SITES} 个不安全的扩展程序}}</translation>
-<translation id="2603121359676416582">针对此页面</translation>
 <translation id="2603656971249947488">标签栏</translation>
 <translation id="2604129989323098489">网站通常会询问您的显示屏的相关信息，以便智能地打开和放置窗口，例如并排显示文档或全屏内容</translation>
 <translation id="2604255671529671813">网络连接错误</translation>
@@ -2938,6 +2938,7 @@
 <translation id="323262942975422760">更多修改或删除<ph name="ENTITY_INSTANCE_LABEL" />和<ph name="ENTITY_INSTANCE_SUBLABEL" />的选项</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3233271424239923319">备份 Linux 应用和文件</translation>
+<translation id="3233577317461669428">未找到其他设备</translation>
 <translation id="3234251228180563751">用户名长度超过了 1,000 个字符</translation>
 <translation id="3234978181857588512">保存到设备</translation>
 <translation id="3237871032310650497">为 <ph name="PARTITION_SITE_NAME" /> 上已分区的 <ph name="SITE_NAME" /> 删除网站数据？</translation>
@@ -3012,7 +3013,6 @@
 <translation id="3292966601422448005">您向“<ph name="APP_NAME" />”授予的权限也会授予它安装的应用。</translation>
 <translation id="3293080634164207409">添加标签页</translation>
 <translation id="329324683265785818">播放/暂停，键盘快捷键为 K 键</translation>
-<translation id="3293644607209440645">发送此页面</translation>
 <translation id="3294437725009624529">访客</translation>
 <translation id="3294686910656423119">使用情况统计信息和崩溃报告</translation>
 <translation id="3295241308788901889">正在投放标签页</translation>
@@ -4760,7 +4760,7 @@
 <translation id="4621866192918370652">您可以使用 Google 搜索此页面，以获取更多实用信息</translation>
 <translation id="4622051949285931942">关闭自动更新？</translation>
 <translation id="4623167406982293031">验证账号</translation>
-<translation id="4623894491222334521">身份文件</translation>
+<translation id="4623894491222334521">身份证件</translation>
 <translation id="4624054169152573743">颜色主题</translation>
 <translation id="4625350031596795804">大号聚焦样式</translation>
 <translation id="4625905218692741757">默认颜色为灰色</translation>
@@ -5710,6 +5710,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="534449933710420173">未命名的文件夹</translation>
 <translation id="5345916423802287046">登录时启动应用</translation>
+<translation id="5346059693449184483">想聊点什么？</translation>
 <translation id="5350116201946341974">怪诞</translation>
 <translation id="535123479159372765">从其他设备复制的文字</translation>
 <translation id="5352257124367865087">管理网站权限</translation>
@@ -6983,6 +6984,7 @@
 <translation id="6356893102071098867">确保您选择的是正确的账号</translation>
 <translation id="6357305427698525450">部分受支持的链接仍会在“<ph name="APP_NAME" />”或“<ph name="APP_NAME_2" />”中打开。</translation>
 <translation id="6357750620525943720">其他稳定的标识符（例如，哈希或 UUID）</translation>
+<translation id="6357830294871526418">其他设备上打开的标签页</translation>
 <translation id="6358884629796491903">龙</translation>
 <translation id="6359640073754977254">滚动到最后一个标签页</translation>
 <translation id="6361850914223837199">错误详情：</translation>
@@ -7130,7 +7132,6 @@
 <translation id="6472893788822429178">显示“主页”按钮</translation>
 <translation id="6473315466413288899">选择一个选项</translation>
 <translation id="6474021817475285003">在 Google 日历中查看更多信息</translation>
-<translation id="6474401088838630457">向 Gemini 询问更多相关信息</translation>
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘账号的关联</translation>
 <translation id="6476482583633999078">语速</translation>

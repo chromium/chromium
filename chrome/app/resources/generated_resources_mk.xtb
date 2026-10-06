@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">Отстрани го пристапот</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Продолжен екран</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Скриј ја лозинката за <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Испратете повратни информации за да ни помогнете да го решиме проблемов.</translation>
 <translation id="1795214765651529549">Користи „Класичен“</translation>
@@ -1710,7 +1711,6 @@
 <translation id="2300383962156589922">Приспособете ја и контролирајте ја апликацијата <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Го сопира полнењето на 80 % за да ѝ помогне на батеријата да трае подолго.</translation>
 <translation id="2301382460326681002">Неважечки основен директориум на наставка.</translation>
-<translation id="2301402091755573488">Споделена картичка</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305202347479035002">Како функционира</translation>
 <translation id="2306794767168143227">Зачувајте во <ph name="BRAND" /> на уредов</translation>
@@ -1729,6 +1729,7 @@
 <translation id="2322622365472107569">Време на завршување: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Зачувани Wi-Fi мрежи</translation>
 <translation id="2323685460575935191">Скриј ги копчињата за лизгање</translation>
+<translation id="2325004050205455346">Неодамнешна историја</translation>
 <translation id="2325444234681128157">Запомни ја лозинката</translation>
 <translation id="2326188115274135041">Потврдете го PIN-кодот за да вклучите автоматско отклучување</translation>
 <translation id="2326583548923775947">Ова не е сметка на Google. Ставките што ги зачувувате на Chrome нема да бидат достапни на други уреди.</translation>
@@ -2087,7 +2088,6 @@
 <translation id="2598710988533271874">Достапна е нова верзија на Chrome</translation>
 <translation id="2599048253926156421">Корисничкото име е копирано во привремена меморија</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Исклучена е 1 небезбедна екстензија}one{Исклучени се {NUM_SITES} небезбедна екстензија}other{Исклучени се {NUM_SITES} небезбедни екстензии}}</translation>
-<translation id="2603121359676416582">За страницава</translation>
 <translation id="2603656971249947488">Лента за картички</translation>
 <translation id="2604129989323098489">Сајтовите обично бараат податоци за вашите екрани за да можат да отвораат и поставуваат прозорци интелигентно, како прикажување документи или содржини една до друга на цел екран</translation>
 <translation id="2604255671529671813">Грешка во мрежното поврзување</translation>
@@ -2953,6 +2953,7 @@
 <translation id="323262942975422760">Повеќе опции за изменување или бришење на <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3233271424239923319">Направете бекап на апликациите и датотеките на Linux</translation>
+<translation id="3233577317461669428">Не е најден друг уред</translation>
 <translation id="3234251228180563751">Корисничкото име содржи повеќе од 1.000 знаци</translation>
 <translation id="3234978181857588512">Зачувај на уредот</translation>
 <translation id="3237871032310650497">Да се избришат податоците од сајтот за <ph name="SITE_NAME" /> што се поделени на делови на <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3027,7 +3028,6 @@
 <translation id="3292966601422448005">Дозволите што ќе ѝ ги доделите на <ph name="APP_NAME" /> ќе важат и за нејзините инсталирани апликации.</translation>
 <translation id="3293080634164207409">Додајте картички</translation>
 <translation id="329324683265785818">Пушти/паузирај кратенка од тастатура k</translation>
-<translation id="3293644607209440645">Испратете ја страницава</translation>
 <translation id="3294437725009624529">Гостин</translation>
 <translation id="3294686910656423119">Статистика на користење и извештаи за падовите</translation>
 <translation id="3295241308788901889">Се емитува картичка</translation>
@@ -5728,6 +5728,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
 <translation id="534449933710420173">Неименувана папка</translation>
 <translation id="5345916423802287046">Стартувај ја апликацијата кога ќе се најавам</translation>
+<translation id="5346059693449184483">За што размислувате?</translation>
 <translation id="5350116201946341974">Каприциозно</translation>
 <translation id="535123479159372765">Текст копиран од друг уред</translation>
 <translation id="5352257124367865087">Управувајте со дозволите за сајтот</translation>
@@ -7004,6 +7005,7 @@
 <translation id="6356893102071098867">Погрижете се да ја изберете точната сметка</translation>
 <translation id="6357305427698525450">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" /> или <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Други стабилни идентификатори (на пр., Hashes или UUIDs)</translation>
+<translation id="6357830294871526418">Картички на други уреди</translation>
 <translation id="6358884629796491903">Змеј</translation>
 <translation id="6359640073754977254">Лизгајте до последната картичка</translation>
 <translation id="6361850914223837199">Детали за грешка:</translation>
@@ -7151,7 +7153,6 @@
 <translation id="6472893788822429178">Прикажи копче Дома</translation>
 <translation id="6473315466413288899">Изберете опција</translation>
 <translation id="6474021817475285003">Погледнете повеќе во „Календар на Google“</translation>
-<translation id="6474401088838630457">Поставете му на Gemini повеќе прашања за ова</translation>
 <translation id="6474498546677193336">Не може да се откаже споделувањето бидејќи некоја апликација ја користи папкава. Споделувањето на папкава ќе се откаже кога Linux ќе се исклучи нареден пат.</translation>
 <translation id="6474884162850599008">Исклучете ја сметката на Дискот на Google</translation>
 <translation id="6476482583633999078">Брзина на говорот</translation>

@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Passord</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} av {count} adresse}other{{position} av {count} adresser}}</translation>
 <translation id="13813615483058219">Noe gikk galt. Sjekk internettilkoblingen, skru opp volumet, eller prøv på nytt.</translation>
+<translation id="138181280295369883">Logg på for å få den lagrede informasjonen din med mer på alle enhetene dine</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="138618066238211776">Fortsett som <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Alternativer for lagring av kort</translation>
@@ -161,6 +162,7 @@
 <translation id="1466035273550360103">Ingen åpne faner</translation>
 <translation id="1469381646033328562">Kontoen din administreres av forelderen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">siden du fullførte «Opprett en fanegruppe»</translation>
 <translation id="147982357559798527">Endret</translation>
 <translation id="1481450969185702334">Finn og fyll ut</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -187,6 +189,7 @@
 <translation id="1536390784834419204">Oversett siden</translation>
 <translation id="1539535193627863227">Fant ingen passord eller passnøkler for dette nettstedet</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
+<translation id="1543035591122163372">Logg på for å få passordene dine med mer fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Åpne faner du mottar fra andre enheter, fra låseskjermen.</translation>
 <translation id="1544653821167545205">Oppsummer siden</translation>
 <translation id="1545749641540134597">Skann en QR-kode</translation>
@@ -313,6 +316,7 @@
 <translation id="1901366738768303267">Hvordan bruker jeg denne funksjonen?</translation>
 <translation id="1901600657316773839">Behold utvalget</translation>
 <translation id="1902277226107477495">Adressegjenkjenning er av. Slå det på igjen i innstillingene.</translation>
+<translation id="1905582086181351638">Logg på for å få den lagrede informasjonen din med mer fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Nettstedet er lagt til og festet</translation>
 <translation id="1911619930368729126">Last opp til Google Disk</translation>
 <translation id="1925706052394657380">Åpne <ph name="BEGIN_BOLD" />Standardapper<ph name="END_BOLD" />-innstillingene i iOS</translation>
@@ -407,8 +411,8 @@
 <translation id="2218389616572918761">Nettsteder kan be om å få bruke mikrofonen</translation>
 <translation id="2219935992754556187">Chrome beskytter de sensitive dataene dine med Face ID.</translation>
 <translation id="2220529011494928058">Rapporter et problem</translation>
-<translation id="2222149859067335623">«<ph name="SITE_DOMAIN" />» er blokkert fra å bruke kameraet</translation>
 <translation id="2223461067862937305">Lag en QR-kode</translation>
+<translation id="222798989929574238">Du har brukt mer enn 20 bilder til å søke</translation>
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2237869114829007407">Få en oversikt og viktig statistikk for alle sider eller emner</translation>
@@ -899,7 +903,6 @@
 <translation id="386224966259596343">Du får mulighet til å lagre denne informasjonen i Wallet neste gang du fyller ut et relevant skjema.</translation>
 <translation id="3868495844258915202">Vis hele nettadressen</translation>
 <translation id="3875783148670536197">Vis meg hvordan</translation>
-<translation id="3877211858413020188">«<ph name="SITE_DOMAIN" />» er blokkert fra å bruke mikrofonen</translation>
 <translation id="3878657761594430423">Arkhenter</translation>
 <translation id="3884810423191119660">Lagre passord sikkert, slik at du enkelt kan logge på nettsteder og apper</translation>
 <translation id="3885587018298784481">Bli med i en familiegruppe</translation>
@@ -1036,6 +1039,7 @@
 <translation id="4289309730265289297">Bildebibliotek</translation>
 <translation id="429074084062258019">{count,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
 <translation id="4290920330097335010">Aldri tillat</translation>
+<translation id="4293154608148215505">telefonen din</translation>
 <translation id="4294506173142861371">Vil du logge på som <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Velg posisjon</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
@@ -1308,8 +1312,10 @@
 <translation id="5119329531859909472">For å spore produktet, trykk på Spor</translation>
 <translation id="5121618895923301719">Du sporer allerede dette produktet. Denne siden er lagret i <ph name="BEGIN_LINK" />Bokmerker for mobil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flere passordproblemer.</translation>
+<translation id="5126335625961252141">nettbrettet ditt</translation>
 <translation id="5128788795241319992">Utforsk den nye menyen</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
+<translation id="5137568953923142260">Tillat én gang</translation>
 <translation id="5141363746588976328">Skjul «Avslag på faner»-kortet</translation>
 <translation id="514154868070499296">Skrifttype: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Gå ut av fanevelgeren</translation>
@@ -1388,6 +1394,7 @@
 <translation id="5371112366564891538">Øk tekststørrelsen</translation>
 <translation id="5376135254804080693">Velg bort alle</translation>
 <translation id="537853552771686272">Administrer emnene og nettstedene du er interessert i</translation>
+<translation id="5385892579392932755">den bærbare datamaskinen din</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} er lukket}other{{count} er lukket}}</translation>
 <translation id="5394975111793637642">Skjul «Produktanmeldelser for deg»-kortet</translation>
 <translation id="5414763847370083940">Du får varsler hvis prisen settes ned på noe nettsted.</translation>
@@ -1763,6 +1770,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6525550806864373485">Rediger-menyen</translation>
 <translation id="6527208859483186860">bakgrunn {position} av {total}</translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="6529706885792457023">Du har organisert mer enn 15 faner</translation>
 <translation id="6532106788206463496">Lagre endringene</translation>
 <translation id="6536759809440150308">Åpne <ph name="GROUP_TITLE" />, gruppe på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">eteksempel.no</translation>
@@ -1808,6 +1816,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6642362222295953972">Bytt til den eksisterende fanen</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6645899968535965230">QR-kode: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Du har sjekket mer enn 25 passord</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659660757330712663">Du kan sveipe på verktøylinjen for å bytte mellom faner.</translation>
 <translation id="6663529247339810546">Kan ikke lagre bildet</translation>
@@ -1963,9 +1972,11 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Fanene dine blir lukket, og nettlesingsdataene dine blir slettet</translation>
 <translation id="714291438898585119">Stjernemerket</translation>
+<translation id="7144458305574230431">Logg på for å få bokmerkene dine med mer fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Oppdater førerkort</translation>
 <translation id="7146301801400584641">En kalenderfil er tilgjengelig</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
+<translation id="7151361008641622036">{count,plural, =1{Du har organisert 1 fane}other{Du har organisert # faner}}</translation>
 <translation id="7154417656353909837">Fjern adresser</translation>
 <translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -1989,6 +2000,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="722339453342442311">Sjekk nå</translation>
 <translation id="7227235818314667565">Administrer deling</translation>
 <translation id="7233006041370588369">Velg passordet du vil fylle ut.</translation>
+<translation id="7238074332967840767">Sikkerhet</translation>
 <translation id="723874023660911012">Bytt profil</translation>
 <translation id="7241135764990439166">Inkognitomodus er ikke tilgjengelig</translation>
 <translation id="7245288034498365666">Få orden og spar tid</translation>
@@ -2372,7 +2384,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8393700583063109961">Send melding</translation>
 <translation id="8393889347136007944">Faner som ikke er brukt på <ph name="THRESHOLD" /> dager</translation>
 <translation id="8395180897620197612">Stopp loggføring</translation>
-<translation id="8399253661151100858">«<ph name="SITE_DOMAIN" />» kan bruke mikrofonen når du besøker dette nettstedet</translation>
 <translation id="8407669440184693619">Fant ingen passord for dette nettstedet</translation>
 <translation id="8407831512155324054">Passordene dine ser sterke ut</translation>
 <translation id="8414283596511250978">Glem aldri passordene dine</translation>
@@ -2387,7 +2398,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8439758443371991593">Skjul Legg til på leselisten</translation>
 <translation id="8443986842926457191">Nettadressen er lengre enn 2048 tegn</translation>
 <translation id="8449869326050867919">Passordet er delt</translation>
-<translation id="8458009459729013424">«<ph name="SITE_DOMAIN" />» kan bruke kameraet når du besøker dette nettstedet</translation>
 <translation id="8461708300275916315">Hvis du er under 18 år</translation>
 <translation id="8473815223723723001">Rediger bilde med Gemini</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
@@ -2396,6 +2406,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8481184073299279701">Trykk på «Start loggføring»-knappen for å samle inn fremtidige JavaScript-konsollogger og -feil fra alle faner. Loggene samles inn (og lagres bare i minnet) frem til denne siden lukkes eller du trykker på «Stopp loggføring».</translation>
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
+<translation id="8488065047914929586">siden du fullførte «Lagre et passord»</translation>
 <translation id="8488923644885757471">Nytt vindu</translation>
 <translation id="8490629238792920282">Kan ikke opprette linken</translation>
 <translation id="8501469528283376592">Slett nedlastinger automatisk</translation>
@@ -2543,6 +2554,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8890516388109605451">Kilder</translation>
 <translation id="8893208530912252670">Videoer</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
+<translation id="890009681345348416">40+ passord er autofylt</translation>
 <translation id="8900845556227858314">Nettleser-app</translation>
 <translation id="890565330728586731">Tilbake</translation>
 <translation id="8907722425137681851">Finn på siden…</translation>

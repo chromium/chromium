@@ -1711,7 +1711,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2300383962156589922">Anpassa och kontrollera <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Slutar ladda vid 80 % så att batteriet håller längre.</translation>
 <translation id="2301382460326681002">Tilläggets rotkatalog är ogiltig.</translation>
-<translation id="2301402091755573488">Fliken har delats</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305202347479035002">Så fungerar den</translation>
 <translation id="2306794767168143227">Spara i <ph name="BRAND" /> på den här enheten</translation>
@@ -2089,7 +2088,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2598710988533271874">Nya Chrome är tillgängligt</translation>
 <translation id="2599048253926156421">Användarnamnet har kopierats till urklipp</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 osäkert tillägg har inaktiverats}other{{NUM_SITES} osäkra tillägg har inaktiverats}}</translation>
-<translation id="2603121359676416582">För den här sidan</translation>
 <translation id="2603656971249947488">Flikhuvud</translation>
 <translation id="2604129989323098489">Webbplatser begär vanligtvis information om dina skärmar så att de kan öppna och placera fönster på ett smart sätt, t.ex. genom att visa dokument eller innehåll i helskärmsläge sida vid sida</translation>
 <translation id="2604255671529671813">Fel vid nätverksanslutning</translation>
@@ -3030,7 +3028,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3292966601422448005">Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för dess installerade appar.</translation>
 <translation id="3293080634164207409">Lägg till flikar</translation>
 <translation id="329324683265785818">Spela upp/pausa, kortkommandot K</translation>
-<translation id="3293644607209440645">Skicka sidan</translation>
 <translation id="3294437725009624529">Gäst</translation>
 <translation id="3294686910656423119">Användningsstatistik och kraschrapporter</translation>
 <translation id="3295241308788901889">Castar en flik</translation>
@@ -5731,6 +5728,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
 <translation id="534449933710420173">Namnlös mapp</translation>
 <translation id="5345916423802287046">Starta appen när du loggar in</translation>
+<translation id="5346059693449184483">Vad vill du ha hjälp med?</translation>
 <translation id="5350116201946341974">Lekfull</translation>
 <translation id="535123479159372765">Text kopierad från en annan enhet</translation>
 <translation id="5352257124367865087">Hantera webbplatsbehörigheter</translation>
@@ -7155,7 +7153,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6472893788822429178">Visa hemknappen</translation>
 <translation id="6473315466413288899">Välj ett alternativ</translation>
 <translation id="6474021817475285003">Se mer i Google Kalender</translation>
-<translation id="6474401088838630457">Fråga Gemini om detta</translation>
 <translation id="6474498546677193336">Det gick inte att sluta dela eftersom ett program använder den här mappen. Mappen delas inte längre när Linux stängs av nästa gång.</translation>
 <translation id="6474884162850599008">Koppla från Google Drive-konto</translation>
 <translation id="6476482583633999078">Talhastighet</translation>

@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">Օգտագործել ձեր համակարգչի տառատեսակները, որպեսզի կարողանաք բարձր ճշգրտության բովանդակություն ստեղծել</translation>
 <translation id="1465457928007067810">IBAN համարը պահվեց ձեր Google հաշվում</translation>
 <translation id="1467432559032391204">Ձախ</translation>
-<translation id="1471514598850585811">Նոթբուք</translation>
 <translation id="1472675084647422956">Ցույց տալ ավելին</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Մուտքագրեք առնվազն 3 բառ՝ գրելու հետ կապված օգնություն ստանալու համար</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Փորձեք կապվել համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, վավերականության ժամկետը՝ <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Համակարգիչ</translation>
 <translation id="1739364174357629566">Թարմացնել ուղևորի անձնական համարը</translation>
 <translation id="1740404923954980840">Լիաէկրան ռեժիմից դուրս գալու համար քաշեք էկրանի վերևից և հպեք «Հետ» կոճակին</translation>
 <translation id="1741474054575634405">Կառավարեք մշտական հաճախորդի քարտերը…</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">Հավաստագրման կենտրոնի բանալու ID</translation>
 <translation id="2465688316154986572">Ամրակ</translation>
 <translation id="2465914000209955735">Կառավարել Chrome-ում ձեր ներբեռնած ֆայլերը</translation>
-<translation id="2466682894498377850">Ձեր <ph name="DEVICE_NAME" /> սարքից ուղարկված ներդիր</translation>
 <translation id="2467272921457885625">Սարքակազմի բնութագրերն ու վիճակագրությունը (օր․՝ CPU-ի/RAM-ի օգտագործման պատմությունը)</translation>
 <translation id="2467421459221956357">Օգտագործե՞լ ցուցիչները</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Գործարկել ցանցի ախտորոշումը<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Վճարման էջի բովանդակությունը փոխանցվում է Google-ին՝ այս տարբերակներն առաջարկելու համար։<ph name="END_BOLD" /> Վճարային պլանները հասանելի են միայն պահանջները բավարարելու դեպքում։ Տարաժամկետ վճարման տարբերակները թաքցնելու համար անցեք <ph name="BEGIN_LINK" />վճարման կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="2526062290525841862">Այս հավելվածը գործարկելու համար նորից միացրեք մեկուսացված վեբ հավելվածների՝ մշակողի ռեժիմը։</translation>
 <translation id="2526280916094749336">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն կպահվի ձեր Google հաշվում (<ph name="ACCOUNT" />)։</translation>
-<translation id="2526590354069164005">Աշխատասեղան</translation>
 <translation id="2527451058878391043">CVC կոդը նշված է քարտի դիմերեսին։ Այն քառանիշ կոդ է, որը գտնվում է քարտի համարի վերևի աջ կողմում։</translation>
 <translation id="2529899080962247600">Այս դաշտում գրառումների առավելագույն քանակը՝ <ph name="MAX_ITEMS_LIMIT" />: Ավել գրառումները կանտեսվեն:</translation>
 <translation id="2530042584066815841">Մկնիկի կողպում և օգտագործում</translation>
@@ -1739,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{Ֆայլի փոխանցումն արգելափակված է}one{<ph name="FILE_COUNT" /> ֆայլի փոխանցումն արգելափակված է}other{<ph name="FILE_COUNT" /> ֆայլի փոխանցումն արգելափակված է}}</translation>
 <translation id="3906022360148923497">Վճարային միջոցի պատկերակ</translation>
 <translation id="3906234161316839040">Այլ պատվերներ</translation>
-<translation id="3906954721959377182">Պլանշետ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Իմանալ ավելին ներկառուցված բովանդակության մասին</translation>
 <translation id="3920504717067627103">Վկայագրի քաղաքականություններ</translation>

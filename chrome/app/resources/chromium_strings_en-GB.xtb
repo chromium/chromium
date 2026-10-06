@@ -23,6 +23,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1186645291482254714">Get price tracking alerts with Chromium on your phone</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821">An <ph name="IMPORTANT_UPDATE" /> is pending. To keep your browsing safe, Chromium will update the next time you're inactive for <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">When you open Image Search, the page title, URL and content, including PDFs, will be sent to the server automatically. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">While you're signed in, you can use your passwords and more from your Google Account in Chromium. To change this, go to 'Your account in Chromium'.</translation>
 <translation id="1244381985120794049">Show Gemini in Chromium in Mac menu bar</translation>
@@ -230,6 +231,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>
+<translation id="3300632735252839402">Chromium will update when you're away</translation>
 <translation id="3313189106987092621">Chromium will warn you before loading any site using an insecure connection</translation>
 <translation id="3316771292331273802">You'll be signed out of most sites when you close all Chromium windows, except your Google Account if you're signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
@@ -238,6 +240,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Switch to existing Chromium profile?</translation>
 <translation id="3412460710772753638">In Password Manager on this device</translation>
+<translation id="3425452599984451640">Chromium wants to update</translation>
 <translation id="3427159664004296878">To get your bookmarks and more from <ph name="DEVICE" />, sign in to Chromium</translation>
 <translation id="3438772217992559640">Search this tab with image search</translation>
 <translation id="3455907671758333080">Extend Enhanced Safe Browsing with Chromium on your phone</translation>

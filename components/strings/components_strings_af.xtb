@@ -289,7 +289,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1462951478840426066">Gebruik die lettertipes op jou rekenaar sodat jy hoëtrou-inhoud kan skep</translation>
 <translation id="1465457928007067810">IBAN is in jou Google-rekening gestoor</translation>
 <translation id="1467432559032391204">Links</translation>
-<translation id="1471514598850585811">Skootrekenaar</translation>
 <translation id="1472675084647422956">Wys meer</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Voer 3 of meer woorde in om skryfhulp te kry</translation>
@@ -452,7 +451,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Probeer om die stelseladministrateur te kontak.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, verval <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Rekenaar</translation>
 <translation id="1739364174357629566">Dateer bekendereisigernommer op</translation>
 <translation id="1740404923954980840">Sleep van bo af en raak die terugknoppie om uit volskerm te gaan</translation>
 <translation id="1741474054575634405">Bestuur lojaliteitskaarte …</translation>
@@ -867,6 +865,7 @@ Jy kan hierdie voorstel uit Chrome verwyder. Jou oorspronklike bron sal nie uitg
 <translation id="2436186046335138073">Laat <ph name="HANDLER_HOSTNAME" /> toe om alle <ph name="PROTOCOL" />-skakels oop te maak?</translation>
 <translation id="243815215670139125">Hierdie kaart kon nie in jou Google-rekening gestoor word nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor.</translation>
 <translation id="2438874542388153331">Vierpons regs</translation>
+<translation id="2442033148418774391">Slimmer outovul, met kennisgewing dat dit privaat gehou word, is toegemaak</translation>
 <translation id="2442865686365739754">Chrome sal die volgende <ph name="BEGIN_EMPHASIS" />nie stoor nie<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Jou blaaigeskiedenis
@@ -879,13 +878,13 @@ Jy kan hierdie voorstel uit Chrome verwyder. Jou oorspronklike bron sal nie uitg
 <translation id="2451607499823206582">Spoor tans na</translation>
 <translation id="2452837234288608067">Kon nie daarmee help nie. Probeer weer.</translation>
 <translation id="2453045048779611513">Jou organisasie beperk wat jy kan stoor</translation>
+<translation id="2456490423293803882">Slimmer outovul, met kennisgewing dat dit privaat gehou word, word teen volle hoogte oopgemaak</translation>
 <translation id="2459882793359532780">Toegepaste blaaierbeleide (masjien- en profielbeleide)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core gee jou ’n gesentraliseerde nutsding om blaaierbeleide vanaf die wolk op te stel</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2462724976360937186">Sertifiseringoutoriteit se Sleutel-ID</translation>
 <translation id="2465688316154986572">Kram</translation>
 <translation id="2465914000209955735">Bestuur lêers wat jy in Chrome afgelaai het</translation>
-<translation id="2466682894498377850">Oortjie is gestuur van jou <ph name="DEVICE_NAME" /> af</translation>
 <translation id="2467272921457885625">Toestelhardewarespesifikasies en -statistieke, soos CPU- of RAM-benuttinggeskiedenis</translation>
 <translation id="2467421459221956357">Gebruik sensors?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Voer tans netwerkdiagnostiek uit<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Jy kan hierdie voorstel uit Chrome verwyder. Jou oorspronklike bron sal nie uitg
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Inhoud op die betaalpuntbladsy word met Google gedeel om hierdie opsies te bied.<ph name="END_BOLD" /> Betaalpakkette is onderworpe aan geskiktheid. Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Betaal Later-opsies te versteek.</translation>
 <translation id="2526062290525841862">Heraktiveer Geïsoleerde webapp-ontwikkelaarmodus</translation>
 <translation id="2526280916094749336">Jy kan gestoorde adresse in alle Google-produkte gebruik. Hierdie adres sal in jou Google-rekening, <ph name="ACCOUNT" />, gestoor word.</translation>
-<translation id="2526590354069164005">Rekenaar</translation>
 <translation id="2527451058878391043">Jou CVC is op die voorkant van jou kaart. Dis die 4-syferkode bo regs bo jou kaartnommer.</translation>
 <translation id="2529899080962247600">Hierdie veld moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie. Alle verdere inskrywings sal geïgnoreer word.</translation>
 <translation id="2530042584066815841">Muisslot en -gebruik</translation>
@@ -1108,6 +1106,7 @@ Jy kan hierdie voorstel uit Chrome verwyder. Jou oorspronklike bron sal nie uitg
 <translation id="2878197950673342043">Plakkaatvou</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">gebruik jou skermslot vir die invul van wagwoorde</translation>
+<translation id="2880119244122776372">Bou en kodeer</translation>
 <translation id="2881276955470682203">Stoor kaart?</translation>
 <translation id="2882280148032777436">Vee bekende reisigernommer uit</translation>
 <translation id="2882949212241984732">Dubbeluitvoublad</translation>
@@ -1736,7 +1735,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3905894480064208252">{0,plural, =1{Lêer kan weens blokkering nie oorgedra word nie}other{<ph name="FILE_COUNT" /> lêers kan weens blokkering nie oorgedra word nie}}</translation>
 <translation id="3906022360148923497">Betaalinstrumentikoon</translation>
 <translation id="3906234161316839040">Ander bestellings</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Kom meer te wete oor ingebedde inhoud</translation>
 <translation id="3920504717067627103">Sertifikaatbeleide</translation>
@@ -3913,6 +3911,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="753713322968419914">Wil jy jou huisadres uit Chrome-outovul verwyder?</translation>
 <translation id="753714465667062283">Meld aan om jou foto te stoor</translation>
 <translation id="7537536606612762813">Verplig</translation>
+<translation id="7540924742308928499">Dinkskrum en som op</translation>
 <translation id="7543525346216957623">Vra jou ouer</translation>
 <translation id="7546409722674205727">Begin <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Stel verbindingfoute reg</translation>

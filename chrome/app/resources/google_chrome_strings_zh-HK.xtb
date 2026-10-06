@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">由於此檔案類型不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" />有待處理。為確保瀏覽安全，Chrome 會在你下次閒置 <ph name="IDLE_DURATION" />後更新。</translation>
 <translation id="1226003169284463347">如要在你的所有裝置上取用書籤及其他設定，請登入 Chrome</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1289911795790071537">開啟 Chrome 搜尋功能</translation>
@@ -506,6 +507,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5941830788786076944">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="5947104538377036631">Chrome 捷徑</translation>
 <translation id="5960071705175224773">你的設定已由不明應用程式變更</translation>
+<translation id="5960404530854194706">Chrome 會在你閒置時更新</translation>
 <translation id="5980111191913430208">來源不明的擴充程式、應用程式和主題可能會損害你的裝置。Chromium 建議你只透過「<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />」安裝這些項目</translation>
 <translation id="6003112304606738118">正在下載… 剩餘 <ph name="HOURS" /> 小時</translation>
 <translation id="6008161919456049856">你儲存在 Google 帳戶中的密碼、付款方法和地址將從此裝置中移除。如要再次在 Chrome 中使用這些資料，請重新登入。</translation>
@@ -589,6 +591,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6556755379298048869">使用鍵盤快速鍵搜尋。</translation>
 <translation id="6585124893636629274">關閉 Chrome 版 Gemini</translation>
 <translation id="659498884637196217">前往此裝置的「Google 密碼管理工具」進行更新</translation>
+<translation id="660312897435669152">Chrome 需要更新</translation>
 <translation id="6612152958212564387">你的使用情況統計和當機報告不會傳送給 Google。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">將 Chrome 設定為預設瀏覽器，在所有裝置上同步更新密碼、書籤和記錄。</translation>
 <translation id="6621391692573306628">如要將此分頁傳送至其他裝置，請在這兩部裝置上登入 Chrome</translation>

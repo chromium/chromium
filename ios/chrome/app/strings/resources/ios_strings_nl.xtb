@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Wachtwoorden</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} van {count} adres}other{{position} van {count} adressen}}</translation>
 <translation id="13813615483058219">Er is iets misgegaan. Controleer je internetverbinding, zet het volume hoger of probeer het opnieuw.</translation>
+<translation id="138181280295369883">Log in om onder andere je opgeslagen informatie op al je apparaten te gebruiken</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opties om een kaart op te slaan</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Pagina vertalen</translation>
 <translation id="1539535193627863227">Geen wachtwoorden of toegangssleutels gevonden voor deze site</translation>
 <translation id="1540800554400757039">Adres 1</translation>
+<translation id="1543035591122163372">Log in om onder andere je wachtwoorden van <ph name="DEVICE_TYPE" /> te gebruiken</translation>
 <translation id="154312949627292154">Geopende tabbladen die je van je andere apparaten krijgt vanaf het vergrendelscherm.</translation>
 <translation id="1544653821167545205">Pagina samenvatten</translation>
 <translation id="1545749641540134597">QR-code scannen</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Hoe gebruik ik deze functie?</translation>
 <translation id="1901600657316773839">Selectie behouden</translation>
 <translation id="1902277226107477495">Adresdetectie uitgezet. Zet deze functie weer aan in Instellingen.</translation>
+<translation id="1905582086181351638">Log in om onder andere je opgeslagen informatie van <ph name="DEVICE_TYPE" /> te gebruiken</translation>
 <translation id="1909201414196501151">Site toegevoegd en vastgezet</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
 <translation id="1925706052394657380">Open de instellingen voor <ph name="BEGIN_BOLD" />standaard-apps<ph name="END_BOLD" /> in iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Sites kunnen om je microfoon vragen</translation>
 <translation id="2219935992754556187">Chrome beveiligt je gevoelige gegevens met Face ID</translation>
 <translation id="2220529011494928058">Een probleem melden</translation>
-<translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> heeft geen toegang tot je camera</translation>
 <translation id="2223461067862937305">Een QR-code maken</translation>
 <translation id="222798989929574238">Je hebt meer dan 20 foto's gebruikt om te zoeken</translation>
 <translation id="2230173723195178503">Webpagina geladen</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Je krijgt de volgende keer dat je een relevant formulier invult de kans om deze informatie op te slaan in Wallet.</translation>
 <translation id="3868495844258915202">Volledige URL tonen</translation>
 <translation id="3875783148670536197">Laten zien</translation>
-<translation id="3877211858413020188"><ph name="SITE_DOMAIN" /> heeft geen toegang tot je microfoon</translation>
 <translation id="3878657761594430423">Bladgrijper</translation>
 <translation id="3884810423191119660">Wachtwoorden beveiligd opslaan zodat je makkelijk kunt inloggen bij sites en apps</translation>
 <translation id="3885587018298784481">Lid worden van een gezinsgroep</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Fotobibliotheek</translation>
 <translation id="429074084062258019">{count,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
 <translation id="4290920330097335010">Nooit toestaan</translation>
+<translation id="4293154608148215505">je telefoon</translation>
 <translation id="4294506173142861371">Inloggen als <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Positie instellen</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Tik op Volgen om het product te volgen</translation>
 <translation id="5121618895923301719">Je volgt dit product al. Deze pagina is opgeslagen in <ph name="BEGIN_LINK" />Mobiele bookmarks<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Je hebt verschillende wachtwoordproblemen.</translation>
+<translation id="5126335625961252141">je tablet</translation>
 <translation id="5128788795241319992">Het nieuwe menu ontdekken</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
+<translation id="5137568953923142260">Eenmalig toestaan</translation>
 <translation id="5141363746588976328">Kaart Prijsdalingen op je tabbladen verbergen</translation>
 <translation id="514154868070499296">Lettertype: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tabbladschakelaar verlaten</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Lettergrootte groter maken</translation>
 <translation id="5376135254804080693">Alles deselecteren</translation>
 <translation id="537853552771686272">Beheer de onderwerpen en sites waarin je geïnteresseerd bent</translation>
+<translation id="5385892579392932755">je laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} gesloten}other{{count} gesloten}}</translation>
 <translation id="5394975111793637642">Kaart Productreviews voor jou verbergen</translation>
 <translation id="5414763847370083940">Je krijgt een melding als de prijs op een site daalt.</translation>
@@ -1967,6 +1972,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Je tabbladen worden gesloten en browsegegevens worden verwijderd</translation>
 <translation id="714291438898585119">Met ster</translation>
+<translation id="7144458305574230431">Log in om onder andere je bookmarks van <ph name="DEVICE_TYPE" /> te gebruiken</translation>
 <translation id="7145337554745942724">Rijbewijs updaten</translation>
 <translation id="7146301801400584641">Agendabestand beschikbaar</translation>
 <translation id="7149893636342594995">Afgelopen 24 uur</translation>
@@ -1994,6 +2000,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="722339453342442311">Nu checken</translation>
 <translation id="7227235818314667565">Delen beheren</translation>
 <translation id="7233006041370588369">Selecteer een wachtwoord om in te vullen.</translation>
+<translation id="7238074332967840767">Veiligheid</translation>
 <translation id="723874023660911012">Van profiel wisselen</translation>
 <translation id="7241135764990439166">Incognitomodus is niet beschikbaar</translation>
 <translation id="7245288034498365666">Houd overzicht en bespaar tijd</translation>
@@ -2377,7 +2384,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
 <translation id="8393889347136007944">Tabbladen die <ph name="THRESHOLD" /> dagen niet zijn gebruikt</translation>
 <translation id="8395180897620197612">Logboekregistratie stoppen</translation>
-<translation id="8399253661151100858"><ph name="SITE_DOMAIN" /> heeft toegang tot je microfoon wanneer je deze site bezoekt</translation>
 <translation id="8407669440184693619">Geen wachtwoorden gevonden voor deze site</translation>
 <translation id="8407831512155324054">Je wachtwoorden lijken sterk</translation>
 <translation id="8414283596511250978">Je wachtwoorden nooit vergeten</translation>
@@ -2392,7 +2398,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8439758443371991593">Toevoegen aan leeslijst verbergen</translation>
 <translation id="8443986842926457191">De URL is langer dan 2048 tekens</translation>
 <translation id="8449869326050867919">Wachtwoord gedeeld</translation>
-<translation id="8458009459729013424"><ph name="SITE_DOMAIN" /> heeft toegang tot je camera wanneer je deze site bezoekt</translation>
 <translation id="8461708300275916315">Als je jonger bent dan 18 jaar</translation>
 <translation id="8473815223723723001">Afbeelding bewerken met Gemini</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>

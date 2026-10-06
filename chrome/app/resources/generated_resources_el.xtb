@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">Κατάργηση πρόσβασης</translation>
 <translation id="1791662854739702043">Εγκατεστημένο</translation>
 <translation id="1792619191750875668">Διευρυμένη οθόνη</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Απόκρυψη κωδικού πρόσβασης για <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Στείλτε τα σχόλιά σας για να μας βοηθήσετε να επιλύσουμε αυτό το πρόβλημα.</translation>
 <translation id="1795214765651529549">Χρήση κλασικού</translation>
@@ -1710,7 +1711,6 @@
 <translation id="2300383962156589922">Προσαρμογή και έλεγχος της εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Σταματά τη φόρτιση στο 80%, για να διαρκεί περισσότερο η μπαταρία.</translation>
 <translation id="2301382460326681002">Ο κατάλογος ρίζας επέκτασης δεν είναι έγκυρος.</translation>
-<translation id="2301402091755573488">Καρτέλα Κοινόχρηστα</translation>
 <translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305202347479035002">Πώς λειτουργεί</translation>
 <translation id="2306794767168143227">Αποθήκευση στον <ph name="BRAND" /> σε αυτήν τη συσκευή</translation>
@@ -1729,6 +1729,7 @@
 <translation id="2322622365472107569">Ώρα λήξης <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Αποθηκευμένα δίκτυα Wi-Fi</translation>
 <translation id="2323685460575935191">Απόκρυψη κουμπιών κύλισης</translation>
+<translation id="2325004050205455346">Πρόσφατο ιστορικό</translation>
 <translation id="2325444234681128157">Απομνημόνευση κωδικού πρόσβασης</translation>
 <translation id="2326188115274135041">Επιβεβαίωση PIN για ενεργοποίηση αυτόματου ξεκλειδώματος</translation>
 <translation id="2326583548923775947">Αυτός ο λογαριασμός δεν είναι Λογαριασμός Google. Τα στοιχεία που αποθηκεύετε στο Chrome δεν θα είναι διαθέσιμα σε άλλες συσκευές.</translation>
@@ -2087,7 +2088,6 @@
 <translation id="2598710988533271874">Νέο διαθέσιμο Chrome</translation>
 <translation id="2599048253926156421">Το όνομα χρήστη αντιγράφηκε στο πρόχειρο</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Απενεργοποιήθηκε 1 μη ασφαλής επέκταση}other{Απενεργοποιήθηκαν {NUM_SITES} μη ασφαλείς επεκτάσεις}}</translation>
-<translation id="2603121359676416582">Για αυτή τη σελίδα</translation>
 <translation id="2603656971249947488">Γραμμή καρτελών</translation>
 <translation id="2604129989323098489">Οι ιστότοποι συνήθως ζητούν πληροφορίες σχετικά με τις οθόνες σας, ώστε να μπορούν να ανοίγουν και να τοποθετούν παράθυρα με έξυπνο τρόπο, όπως για την προβολή εγγράφων ή για περιεχόμενο πλήρους οθόνης σε παράθεση.</translation>
 <translation id="2604255671529671813">Σφάλμα σύνδεσης δικτύου</translation>
@@ -2953,6 +2953,7 @@
 <translation id="323262942975422760">Περισσότερες επιλογές για επεξεργασία ή διαγραφή του <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
 <translation id="3233271424239923319">Δημιουργία αντιγράφων ασφαλείας για εφαρμογές και αρχεία Linux</translation>
+<translation id="3233577317461669428">Δεν βρέθηκε άλλη συσκευή</translation>
 <translation id="3234251228180563751">Το όνομα χρήστη υπερβαίνει τους 1.000 χαρακτήρες</translation>
 <translation id="3234978181857588512">Αποθήκευση στη συσκευή</translation>
 <translation id="3237871032310650497">Διαγραφή δεδομένων ιστοτόπου για τον ιστότοπο <ph name="SITE_NAME" /> που έχουν χωριστεί σε διαμερίσματα στο <ph name="PARTITION_SITE_NAME" />;</translation>
@@ -3027,7 +3028,6 @@
 <translation id="3292966601422448005">Οι άδειες που επιτρέπετε για την εφαρμογή <ph name="APP_NAME" /> θα επιτρέπονται επίσης για τις εγκατεστημένες εφαρμογές της.</translation>
 <translation id="3293080634164207409">Προσθήκη καρτελών</translation>
 <translation id="329324683265785818">Αναπαραγωγή/παύση, συντόμευση πληκτρολογίου k</translation>
-<translation id="3293644607209440645">Αποστολή αυτής της σελίδας</translation>
 <translation id="3294437725009624529">Επισκέπτης</translation>
 <translation id="3294686910656423119">Στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων</translation>
 <translation id="3295241308788901889">Μετάδοση καρτέλας</translation>
@@ -5728,6 +5728,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Δεξί)</translation>
 <translation id="534449933710420173">Φάκελος χωρίς όνομα</translation>
 <translation id="5345916423802287046">Εκκίνηση εφαρμογής κατά τη σύνδεση</translation>
+<translation id="5346059693449184483">Τι σκέφτεστε;</translation>
 <translation id="5350116201946341974">Ευφάνταστη</translation>
 <translation id="535123479159372765">Το κείμενο αντιγράφηκε από άλλη συσκευή</translation>
 <translation id="5352257124367865087">Διαχείριση αδειών ιστοτόπου</translation>
@@ -7005,6 +7006,7 @@
 <translation id="6356893102071098867">Ελέγξτε ότι έχετε επιλέξει τον σωστό λογαριασμό</translation>
 <translation id="6357305427698525450">Ορισμένοι υποστηριζόμενοι σύνδεσμοι θα εξακολουθούν να ανοίγουν στην εφαρμογή <ph name="APP_NAME" /> ή την εφαρμογή  <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Άλλα σταθερά αναγνωριστικά (π.χ. Κατακερματισμοί ή UUID)</translation>
+<translation id="6357830294871526418">Καρτέλες σε άλλες συσκευές</translation>
 <translation id="6358884629796491903">Δράκος</translation>
 <translation id="6359640073754977254">Κύλιση στην τελευταία καρτέλα</translation>
 <translation id="6361850914223837199">Λεπτομέρειες σφάλματος:</translation>
@@ -7152,7 +7154,6 @@
 <translation id="6472893788822429178">Εμφάνιση κουμπιού Αρχικής σελίδας</translation>
 <translation id="6473315466413288899">Ορίστε μία επιλογή</translation>
 <translation id="6474021817475285003">Δείτε περισσότερα στο Ημερολόγιο Google</translation>
-<translation id="6474401088838630457">Ρωτήστε το Gemini για περισσότερες πληροφορίες σχετικά με αυτό</translation>
 <translation id="6474498546677193336">Η κατάργηση κοινοποίησης δεν ήταν δυνατή, επειδή μια εφαρμογή χρησιμοποιεί αυτόν τον φάκελο. Η κοινοποίηση του φακέλου θα καταργηθεί κατά τον επόμενο τερματισμό λειτουργίας του Linux.</translation>
 <translation id="6474884162850599008">Αποσύνδεση του λογαριασμού Google Drive</translation>
 <translation id="6476482583633999078">Ταχύτητα ομιλίας</translation>

@@ -146,6 +146,7 @@
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4314240881330431451">Chrome의 Google 렌즈를 사용하면 화면에 보이는 모든 것을 검색할 수 있습니다</translation>
+<translation id="4315292299997584267"><ph name="DEVICE_TYPE" />에서 비밀번호 등을 사용하려면 이 사이트 및 Chrome에 로그인하세요</translation>
 <translation id="4409545895715116037">다음 패스키는 요건을 충족하지 않아 Google 비밀번호 관리자로 가져오지 않았습니다.</translation>
 <translation id="4430797724889237570">Gmail, 지도, YouTube 및 기타 앱의 링크를 Chrome에서 엽니다</translation>
 <translation id="447252321002412580">Chrome의 기능 및 성능 개선에 참여</translation>
@@ -163,6 +164,7 @@
 <translation id="4742795653798179840">Chrome 데이터 삭제됨</translation>
 <translation id="4761869838909035636">Chrome 안전 확인 실행</translation>
 <translation id="4798859546468762093">맞춤설정 및 기타 기능을 사용하려면 <ph name="FEATURE_NAME_1" /> 그리고 <ph name="FEATURE_NAME_2" />에 Chrome을 포함하세요.</translation>
+<translation id="4807700370495020449">모든 기기에서 저장된 정보 등을 사용하려면 이 사이트 및 Chrome에 로그인하세요</translation>
 <translation id="4819268619367838612">앱 개선을 위해 Chrome에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리하기<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">Chrome을 기본 브라우저로 지정할까요?</translation>
 <translation id="484033449593719797">Chrome 베타에서는 지원되지 않습니다.</translation>
@@ -173,6 +175,7 @@
 <translation id="496747131578053942">Chrome 도움말: Google 렌즈로 눈앞의 사물을 검색하세요</translation>
 <translation id="498985224078955265">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="5030102366287574140">Chrome에서는 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다</translation>
+<translation id="5085038751173179818">이 사이트 및 Chrome에 로그인하여 모든 기기에서 북마크 등을 사용하세요</translation>
 <translation id="5109169629909011627">Chrome 북마크 보기</translation>
 <translation id="5112925986883715005">Chrome 읽기 목록 보기</translation>
 <translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
@@ -190,6 +193,7 @@
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="5404252374083197467">Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="5439191312780166229">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
+<translation id="544285856361623600"><ph name="DEVICE_TYPE" />에서 북마크 등을 사용하려면 이 사이트 및 Chrome에 로그인하세요</translation>
 <translation id="5453077102022695084">Chrome을 기본 브라우저로 설정하는 방법을 보여주는 전체 화면 동영상</translation>
 <translation id="5460571915754665838">4. Chrome을 선택합니다.</translation>
 <translation id="5492504007368565877">Google 비밀번호 관리자에서 내 비밀번호를 확인할 수 없습니다.</translation>
@@ -309,6 +313,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7642373780953416937">Chrome에서 자동으로 감지한 개인 정보 보호 또는 보안 문제에 대한 알림을 받습니다.</translation>
 <translation id="7660356333829433649">이곳으로 다시 돌아와 Chrome을 최대한 활용하는 데 도움이 되는 유용한 팁을 확인하세요.</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
+<translation id="767157537088426800">모든 기기에서 비밀번호 등을 사용하려면 이 사이트 및 Chrome에 로그인하세요</translation>
 <translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
 <translation id="7707877166818730835">Chrome에서 최신 내 탭 열기</translation>
@@ -386,6 +391,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9122931302567044771">Chrome에서 데스크톱 사이트를 매번 요청함을 의미합니다</translation>
 <translation id="9176561303811134420">Chrome에서 결제 수단 관리</translation>
 <translation id="9181628561061032322">Chrome 최근 탭을 엽니다.</translation>
+<translation id="9199610579638564405">이 사이트 및 Chrome에 로그인하여 <ph name="DEVICE_TYPE" />에서 저장된 정보 등을 사용하세요</translation>
 <translation id="924447568950697217">Chrome을 기본 브라우저로 지정</translation>
 <translation id="948597495737267756">Chrome 방문 기록 페이지를 엽니다.</translation>
 <translation id="954347330803595209">Chrome에서 비밀번호, 방문 기록, 북마크, 신용카드를 사용하려면 데이터를 가져오세요</translation>

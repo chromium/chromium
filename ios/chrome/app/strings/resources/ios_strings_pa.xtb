@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">ਪਾਸਵਰਡ</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} ਵਿੱਚੋਂ {position} ਪਤਾ}one{{count} ਵਿੱਚੋਂ {position} ਪਤਾ}other{{count} ਵਿੱਚੋਂ {position} ਪਤੇ}}</translation>
 <translation id="13813615483058219">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ, ਆਪਣੀ ਅਵਾਜ਼ ਵਧਾਓ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="138181280295369883">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="138692594145659985">ਕਾਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੇ ਵਿਕਲਪ</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">ਪੰਨੇ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="1539535193627863227">ਇਸ ਸਾਈਟ ਲਈ ਕੋਈ ਪਾਸਵਰਡ ਜਾਂ ਪਾਸਕੀ ਨਹੀਂ ਮਿਲੀ</translation>
 <translation id="1540800554400757039">ਪਤਾ 1</translation>
+<translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="154312949627292154">ਲਾਕ ਸਕ੍ਰੀਨ ਤੋਂ, ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਪ੍ਰਾਪਤ ਕੀਤੀਆਂ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
 <translation id="1544653821167545205">ਸਾਰਾਂਸ਼ ਪੰਨਾ</translation>
 <translation id="1545749641540134597">QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">ਮੈਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਵਰਤੋਂ ਕਿਵੇਂ ਕਰਾਂ?</translation>
 <translation id="1901600657316773839">ਚੋਣ ਨੂੰ ਰੱਖੋ</translation>
 <translation id="1902277226107477495">ਪਤੇ ਦੀ ਪਹਿਚਾਣ ਕਰਨ ਸੰਬੰਧੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਇਸਨੂੰ ਵਾਪਸ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="1905582086181351638"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1909201414196501151">ਸਾਈਟ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ ਅਤੇ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1911619930368729126">Google ਡ੍ਰਾਈਵ ਤੇ ਅਪਲੋਡ ਕਰੋ</translation>
 <translation id="1925706052394657380">iOS ਵਿੱਚ <ph name="BEGIN_BOLD" />ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ<ph name="END_BOLD" /> ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਮੰਗ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="2219935992754556187">Chrome ਤੁਹਾਡੇ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਨੂੰ ਚਿਹਰਾ ਆਈਡੀ ਨਾਲ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="2220529011494928058">ਇੱਕ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2223461067862937305">QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="222798989929574238">ਤੁਸੀਂ ਖੋਜਣ ਲਈ 20+ ਫ਼ੋਟੋਆਂ ਦੀ ਵਰਤੋਂ ਕੀਤੀ</translation>
 <translation id="2230173723195178503">ਵੈੱਬਪੰਨਾ ਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">ਅਗਲੀ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਕੋਈ ਢੁਕਵਾਂ ਫ਼ਾਰਮ ਭਰੋਗੇ, ਤਾਂ ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦਾ ਮੌਕਾ ਹੋਵੇਗਾ।</translation>
 <translation id="3868495844258915202">ਪੂਰਾ URL ਦਿਖਾਓ</translation>
 <translation id="3875783148670536197">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
-<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3878657761594430423">ਸ਼ੀਟ ਗ੍ਰੈਬਰ</translation>
 <translation id="3884810423191119660">ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਰੱਖਿਅਤ ਕਰੋ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋ</translation>
 <translation id="3885587018298784481">ਪਰਿਵਾਰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣਾ</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">ਫ਼ੋਟੋ ਲਾਇਬ੍ਰੇਰੀ</translation>
 <translation id="429074084062258019">{count,plural, =1{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}one{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}other{ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}}</translation>
 <translation id="4290920330097335010">ਕਦੇ ਵੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
+<translation id="4293154608148215505">ਤੁਹਾਡਾ ਫ਼ੋਨ</translation>
 <translation id="4294506173142861371">ਕੀ <ph name="FIRST_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4302061870579014542">ਸਥਿਤੀ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="4304713468139749426">ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ, 'ਟਰੈਕ ਕਰੋ' 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5121618895923301719">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰ ਰਹੇ ਹੋ। ਇਸ ਪੰਨੇ ਨੂੰ <ph name="BEGIN_LINK" />ਮੋਬਾਈਲ ਬੁੱਕਮਾਰਕਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="512533434554095351">ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਸੰਬੰਧੀ ਕਈ ਸਮੱਸਿਆਵਾਂ ਹਨ।</translation>
+<translation id="5126335625961252141">ਤੁਹਾਡਾ ਟੈਬਲੈੱਟ</translation>
 <translation id="5128788795241319992">ਨਵੇਂ ਮੀਨੂ ਦੀ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="5132942445612118989">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦਾ ਸਿੰਕ ਕਰੋ</translation>
+<translation id="5137568953923142260">ਇੱਕ ਵਾਰ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5141363746588976328">ਆਪਣੇ ਟੈਬ ਕਾਰਡ 'ਤੇ ਕੀਮਤ ਘਟਣ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="514154868070499296">ਫ਼ੌਂਟ: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ਟੈਬ ਸਵਿੱਚਰ ਨੂੰ ਛੱਡੋ</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">ਲਿਖਤ ਦਾ ਆਕਾਰ ਵਧਾਓ</translation>
 <translation id="5376135254804080693">ਸਭ ਅਣ-ਚੁਣਿਆ ਕਰੋ</translation>
 <translation id="537853552771686272">ਆਪਣੀ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਅਤੇ ਸਾਈਟਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="5385892579392932755">ਤੁਹਾਡਾ ਲੈਪਟਾਪ</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ਟੈਬ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ}one{{count} ਟੈਬ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ}other{{count} ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="5394975111793637642">'ਤੁਹਾਡੇ ਲਈ ਉਤਪਾਦ ਦੀਆਂ ਸਮੀਖਿਆਵਾਂ' ਕਾਰਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="5414763847370083940">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਤੁਹਾਨੂੰ ਅਲਰਟ ਪ੍ਰਾਪਤ ਹੋਵੇਗਾ।</translation>
@@ -1967,6 +1972,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7140355148730164340"><ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="7141960840225504692">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="714291438898585119">ਤਾਰਾਬੱਧ</translation>
+<translation id="7144458305574230431"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7145337554745942724">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="7146301801400584641">ਕੈਲੰਡਰ ਫ਼ਾਈਲ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="7149893636342594995">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
@@ -1994,6 +2000,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="722339453342442311">ਹੁਣ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="7227235818314667565">ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7233006041370588369">ਭਰਨ ਲਈ ਕੋਈ ਪਾਸਵਰਡ ਚੁਣੋ।</translation>
+<translation id="7238074332967840767">ਸੁਰੱਖਿਆ</translation>
 <translation id="723874023660911012">ਪ੍ਰੋਫਾਈਲ ਬਦਲੋ</translation>
 <translation id="7241135764990439166">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="7245288034498365666">ਵਿਵਸਥਿਤ ਰਹੋ ਅਤੇ ਸਮਾਂ ਬਚਾਓ</translation>
@@ -2377,7 +2384,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8393700583063109961">ਸੁਨੇਹਾ ਭੇਜੋ</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> ਦਿਨਾਂ ਤੋਂ ਨਹੀਂ ਵਰਤੀਆਂ ਗਈਆਂ ਟੈਬਾਂ</translation>
 <translation id="8395180897620197612">ਲੌਗ-ਇਨ logging ਨੂੰ ਰੋਕੋ</translation>
-<translation id="8399253661151100858">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ "<ph name="SITE_DOMAIN" />" ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8407669440184693619">ਇਸ ਸਾਈਟ ਲਈ ਕੋਈ ਪਾਸਵਰਡ ਨਹੀਂ ਲੱਭਿਆ</translation>
 <translation id="8407831512155324054">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਮਜ਼ਬੂਤ ਲੱਗਦਾ ਹੈ</translation>
 <translation id="8414283596511250978">ਆਪਣੇ ਪਾਸਵਰਡ ਨੂੰ ਕਦੇ ਨਾ ਭੁੱਲੋ</translation>
@@ -2392,7 +2398,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8439758443371991593">'ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ' ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="8443986842926457191">URL 2048 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਹੈ</translation>
 <translation id="8449869326050867919">ਪਾਸਵਰਡ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="8458009459729013424">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ "<ph name="SITE_DOMAIN" />" ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8461708300275916315">ਜੇ ਤੁਹਾਡੀ ਉਮਰ 18 ਸਾਲ ਤੋਂ ਘੱਟ ਹੈ</translation>
 <translation id="8473815223723723001">Gemini ਨਾਲ ਚਿੱਤਰ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>

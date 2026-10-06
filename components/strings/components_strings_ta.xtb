@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">துல்லியமான உள்ளடக்கத்தை உருவாக்க, உங்கள் கம்ப்யூட்டரில் உள்ள எழுத்துருக்களைப் பயன்படுத்தவும்</translation>
 <translation id="1465457928007067810">உங்கள் Google கணக்கில் IBAN சேமிக்கப்பட்டது</translation>
 <translation id="1467432559032391204">இடது</translation>
-<translation id="1471514598850585811">லேப்டாப்</translation>
 <translation id="1472675084647422956">மேலும் காண்பி</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">எழுதுவதற்கு உதவிபெற, 3 அல்லது அதற்கு மேற்பட்ட வார்த்தைகளை வழங்கவும்</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">கணினி நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, காலாவதித் தேதி: <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">கம்ப்யூட்டர்</translation>
 <translation id="1739364174357629566">தெரிந்த பயணி எண்ணை மாற்ற வேண்டுமா?</translation>
 <translation id="1740404923954980840">முழுத்திரையில் இருந்து வெளியேற மேலே இருந்து இழுத்து பின் செல்வதற்கான பட்டனைத் தொடவும்</translation>
 <translation id="1741474054575634405">லாயல்டி கார்டுகளை நிர்வகியுங்கள்...</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">சான்றளிக்கும் மைய விசை ID</translation>
 <translation id="2465688316154986572">ஸ்டேப்பில்</translation>
 <translation id="2465914000209955735">Chromeமில் நீங்கள் பதிவிறக்கிய ஃபைல்களை நிர்வகிக்கலாம்</translation>
-<translation id="2466682894498377850">உங்கள் <ph name="DEVICE_NAME" /> இல் இருந்து பக்கம் அனுப்பப்பட்டுள்ளது</translation>
 <translation id="2467272921457885625">CPU/RAM உபயோகப் பதிவு போன்ற சாதன வன்பொருள் விவரக்குறிப்புகள் மற்றும் புள்ளிவிவரங்கள்</translation>
 <translation id="2467421459221956357">சென்சார்களைப் பயன்படுத்தவா?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />நெட்வொர்க் டயக்னாஸ்டிக்ஸ் கருவியை இயக்கவும்<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />இந்த விருப்பங்களை வழங்க, செக்-அவுட் பக்கத்தில் உள்ள உள்ளடக்கம் Googleளுடன் பகிரப்படும்.<ph name="END_BOLD" /> பேமெண்ட் திட்டங்கள் தகுதிநிலைக்கு உட்பட்டவை. பிறகு பணம் செலுத்தும் வழிகளை மறைக்க, <ph name="BEGIN_LINK" />பேமெண்ட் அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="2526062290525841862">இந்த ஆப்ஸை இயக்க, தனிப்பட்ட இணைய ஆப்ஸ் டெவெலப்பர் பயன்முறையை மீண்டும் இயக்கவும்</translation>
 <translation id="2526280916094749336">சேமிக்கப்படும் முகவரிகளை Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்தலாம். இந்த முகவரி உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) சேமிக்கப்படும்.</translation>
-<translation id="2526590354069164005">டெஸ்க்டாப்</translation>
 <translation id="2527451058878391043">கார்டின் முன்பக்கத்தில் CVC எண் இருக்கும். அது கார்டு எண்ணிற்கு மேல் வலதுபுறத்தில் உள்ள 4 இலக்க எண்ணாகும்.</translation>
 <translation id="2529899080962247600">இதில் <ph name="MAX_ITEMS_LIMIT" /> உள்ளீடுகளுக்கு மேல் இருக்கக்கூடாது. அதற்கு மேல் இருப்பவை நிராகரிக்கப்படும்.</translation>
 <translation id="2530042584066815841">மவுஸ் லாக் மற்றும் உபயோகம்</translation>
@@ -1735,7 +1731,6 @@
 <translation id="3905894480064208252">{0,plural, =1{ஃபைலை மாற்றுவது தடுக்கப்பட்டது}other{<ph name="FILE_COUNT" /> ஃபைல்களை மாற்றுவது தடுக்கப்பட்டது}}</translation>
 <translation id="3906022360148923497">கட்டண முறை ஐகான்</translation>
 <translation id="3906234161316839040">பிற ஆர்டர்கள்</translation>
-<translation id="3906954721959377182">டேப்லெட்</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">உட்பொதிக்கப்பட்ட உள்ளடக்கம் குறித்து மேலும் அறிக</translation>
 <translation id="3920504717067627103">சான்றிதழ் கொள்கைகள்</translation>

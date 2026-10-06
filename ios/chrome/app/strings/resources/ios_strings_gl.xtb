@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Contrasinais</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} enderezo}other{{position} de {count} enderezos}}</translation>
 <translation id="13813615483058219">Produciuse un erro. Comproba a conexión a Internet, sube o volume ou téntao de novo.</translation>
+<translation id="138181280295369883">Inicia sesión para poder acceder á túa información gardada e moito máis en todos os teus dispositivos</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opcións para gardar unha tarxeta</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Traducir páxina</translation>
 <translation id="1539535193627863227">Non se atopou ningún contrasinal nin clave de acceso para este sitio</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
+<translation id="1543035591122163372">Inicia sesión para acceder aos teus contrasinais e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Abre as pestanas recibidas doutros dispositivos desde a pantalla de bloqueo.</translation>
 <translation id="1544653821167545205">Resumir páxina</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Como se usa esta función?</translation>
 <translation id="1901600657316773839">Manter selección</translation>
 <translation id="1902277226107477495">A detección de enderezos está desactivada. Volve activala en Configuración.</translation>
+<translation id="1905582086181351638">Inicia sesión para acceder á túa información gardada e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Engadiuse e fixouse o sitio</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
 <translation id="1925706052394657380">Abre a opción de configuración <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> (Aplicacións predeterminadas) en iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Os sitios poden pedirche permiso para acceder ao micrófono</translation>
 <translation id="2219935992754556187">Chrome protexe os teus datos confidenciais con Face ID</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
-<translation id="2222149859067335623">Bloqueouse o acceso de "<ph name="SITE_DOMAIN" />" á cámara</translation>
 <translation id="2223461067862937305">Crear código QR</translation>
 <translation id="222798989929574238">Usaches máis de 20 fotos para facer buscas</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Terás a oportunidade de gardar esta información en Wallet a próxima vez que completes un formulario relevante.</translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
-<translation id="3877211858413020188">Bloqueouse o acceso de "<ph name="SITE_DOMAIN" />" ao micrófono</translation>
 <translation id="3878657761594430423">Control da folla</translation>
 <translation id="3884810423191119660">Garda os contrasinais de forma segura para poder iniciar sesión facilmente en sitios e aplicacións</translation>
 <translation id="3885587018298784481">Únete a un grupo familiar</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Mediateca de fotos</translation>
 <translation id="429074084062258019">{count,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
 <translation id="4290920330097335010">Non permitir nunca</translation>
+<translation id="4293154608148215505">o teu teléfono</translation>
 <translation id="4294506173142861371">Queres iniciar sesión como <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Para facer un seguimento do produto, toca a opción correspondente</translation>
 <translation id="5121618895923301719">Xa estás facendo un seguimento deste produto. A páxina está gardada en <ph name="BEGIN_LINK" />Marcadores do móbil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tes varios problemas cos contrasinais.</translation>
+<translation id="5126335625961252141">a túa tableta</translation>
 <translation id="5128788795241319992">Explora o novo menú</translation>
 <translation id="5132942445612118989">Sincroniza os teus contrasinais, o historial e moito máis en todos os dispositivos</translation>
+<translation id="5137568953923142260">Permitir unha vez</translation>
 <translation id="5141363746588976328">Ocultar a tarxeta Baixadas de prezo nas túas pestanas</translation>
 <translation id="514154868070499296">Tipo de letra: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Saír do selector de pestanas</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Aumentar tamaño do texto</translation>
 <translation id="5376135254804080693">Anular toda a selección</translation>
 <translation id="537853552771686272">Xestiona os temas e sitios que che interesan</translation>
+<translation id="5385892579392932755">o teu portátil</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} pechada}other{{count} pechadas}}</translation>
 <translation id="5394975111793637642">Ocultar a tarxeta Reseñas de produtos para ti</translation>
 <translation id="5414763847370083940">Recibirás unha alerta se baixa o prezo en calquera sitio.</translation>
@@ -1967,6 +1972,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Pecharanse as pestanas e eliminaranse os datos de navegación</translation>
 <translation id="714291438898585119">Marcado con estrela</translation>
+<translation id="7144458305574230431">Inicia sesión para acceder aos teus marcadores e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Actualiza o permiso de conducir</translation>
 <translation id="7146301801400584641">Hai un ficheiro de calendario dispoñible</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
@@ -1994,6 +2000,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="722339453342442311">Comprobar agora</translation>
 <translation id="7227235818314667565">Xestionar uso compartido</translation>
 <translation id="7233006041370588369">Selecciona un contrasinal para inserilo.</translation>
+<translation id="7238074332967840767">Seguranza</translation>
 <translation id="723874023660911012">Cambiar de perfil</translation>
 <translation id="7241135764990439166">O modo de incógnito non está dispoñible</translation>
 <translation id="7245288034498365666">Organízate e aforra tempo</translation>
@@ -2377,7 +2384,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
 <translation id="8393889347136007944">Estas pestanas levan sen usarse <ph name="THRESHOLD" /> días</translation>
 <translation id="8395180897620197612">Deter rexistro</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" pode acceder ao micrófono sempre que visites este sitio</translation>
 <translation id="8407669440184693619">Non se atopou ningún contrasinal para este sitio</translation>
 <translation id="8407831512155324054">Os contrasinais son seguros</translation>
 <translation id="8414283596511250978">Non esquezas nunca os teus contrasinais</translation>
@@ -2392,7 +2398,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
 <translation id="8443986842926457191">O URL contén máis de 2048 caracteres</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" pode acceder á cámara sempre que visites este sitio</translation>
 <translation id="8461708300275916315">Se tes menos de 18 anos</translation>
 <translation id="8473815223723723001">Editar imaxe con Gemini</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>

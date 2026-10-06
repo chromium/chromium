@@ -1033,6 +1033,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1790976235243700817">Supprimer l'accès</translation>
 <translation id="1791662854739702043">Installé dans</translation>
 <translation id="1792619191750875668">Affichage étendu</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Masquer le mot de passe pour <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Envoyer des commentaires pour nous aider à résoudre ce problème.</translation>
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
@@ -1697,7 +1698,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2300383962156589922">Personnaliser et configurer <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Interrompt la recharge à 80 % pour prolonger la durée de vie de la batterie.</translation>
 <translation id="2301382460326681002">Le répertoire racine de l'extension est incorrect.</translation>
-<translation id="2301402091755573488">Onglet partagé</translation>
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2305202347479035002">Fonctionnement</translation>
 <translation id="2306794767168143227">Enregistrer dans le <ph name="BRAND" /> sur cet appareil</translation>
@@ -1716,6 +1716,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2322622365472107569">Heure de fin : <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Réseaux Wi-Fi enregistrés</translation>
 <translation id="2323685460575935191">Masquer les boutons de défilement</translation>
+<translation id="2325004050205455346">Historique récent</translation>
 <translation id="2325444234681128157">Mémoriser le mot de passe</translation>
 <translation id="2326188115274135041">Confirmez le code pour activer le déverrouillage automatique</translation>
 <translation id="2326583548923775947">Il ne s'agit pas d'un compte Google. Les éléments que vous enregistrez dans Chrome ne seront pas disponibles sur d'autres appareils.</translation>
@@ -2074,7 +2075,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2598710988533271874">Nouvelle version de Chrome disponible</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 extension non sécurisée désactivée}one{{NUM_SITES} extension non sécurisée désactivée}other{{NUM_SITES} extensions non sécurisées désactivées}}</translation>
-<translation id="2603121359676416582">Pour cette page</translation>
 <translation id="2603656971249947488">Barre d'onglets</translation>
 <translation id="2604129989323098489">Les sites demandent généralement des informations concernant vos écrans afin de pouvoir ouvrir et placer intelligemment les fenêtres, par exemple pour afficher des documents ou des contenus en plein écran côte à côte</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
@@ -2938,6 +2938,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="323262942975422760">Plus d'options pour modifier ou supprimer <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Application Web</translation>
 <translation id="3233271424239923319">Sauvegarder des applications et fichiers Linux</translation>
+<translation id="3233577317461669428">Aucun autre appareil détecté</translation>
 <translation id="3234251228180563751">Le nom d'utilisateur contient plus de 1 000 caractères</translation>
 <translation id="3234978181857588512">Enregistrer sur l'appareil</translation>
 <translation id="3237871032310650497">Supprimer les données du site <ph name="SITE_NAME" /> partitionnées sur <ph name="PARTITION_SITE_NAME" /> ?</translation>
@@ -3012,7 +3013,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3292966601422448005">Les autorisations que vous accordez à <ph name="APP_NAME" /> le seront également pour ses applis installées.</translation>
 <translation id="3293080634164207409">Ajouter des onglets</translation>
 <translation id="329324683265785818">Raccourci clavier pour lire/mettre pause : k</translation>
-<translation id="3293644607209440645">Envoyer cette page</translation>
 <translation id="3294437725009624529">Invité</translation>
 <translation id="3294686910656423119">Statistiques d'utilisation et rapports d'erreur</translation>
 <translation id="3295241308788901889">Caster un onglet</translation>
@@ -5711,6 +5711,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droit)</translation>
 <translation id="534449933710420173">Dossier sans nom</translation>
 <translation id="5345916423802287046">Lancer l'application lors de la connexion</translation>
+<translation id="5346059693449184483">Que voulez-vous savoir ?</translation>
 <translation id="5350116201946341974">Fantaisiste</translation>
 <translation id="535123479159372765">Texte copié depuis un autre appareil</translation>
 <translation id="5352257124367865087">Gérer les autorisations des sites</translation>
@@ -6988,6 +6989,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6356893102071098867">Vérifiez si vous avez choisi le bon compte</translation>
 <translation id="6357305427698525450">Certains liens compatibles continueront à s'ouvrir dans <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Autres identifiants stables (hachages ou UUID, par exemple)</translation>
+<translation id="6357830294871526418">Onglets sur d'autres appareils</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="6359640073754977254">Faire défiler jusqu'au dernier onglet</translation>
 <translation id="6361850914223837199">Informations sur l'erreur :</translation>
@@ -7135,7 +7137,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6472893788822429178">Afficher le bouton Accueil</translation>
 <translation id="6473315466413288899">Sélectionnez une option</translation>
 <translation id="6474021817475285003">Voir plus dans Google Agenda</translation>
-<translation id="6474401088838630457">Demander à Gemini plus d'infos à ce sujet</translation>
 <translation id="6474498546677193336">Impossible d'annuler le partage, car une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Linux.</translation>
 <translation id="6474884162850599008">Déconnecter le compte Google Drive</translation>
 <translation id="6476482583633999078">Vitesse d'élocution</translation>

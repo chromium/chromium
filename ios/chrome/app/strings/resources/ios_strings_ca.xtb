@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Contrasenyes</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} d’{count} adreça}other{{position} de {count} adreces}}</translation>
 <translation id="13813615483058219">Hi ha hagut un error. Comprova la connexió a Internet, apuja el volum o torna-ho a provar.</translation>
+<translation id="138181280295369883">Inicia la sessió per obtenir la teva informació desada i més en tots els teus dispositius</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="138618066238211776">Continua com a <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opcions per desar la targeta</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Tradueix la pàgina</translation>
 <translation id="1539535193627863227">No s'ha trobat cap contrasenya ni clau d'accés per a aquest lloc web</translation>
 <translation id="1540800554400757039">Adreça 1</translation>
+<translation id="1543035591122163372">Inicia la sessió per obtenir les teves contrasenyes i més de <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Obre les pestanyes rebudes dels teus altres dispositius des de la pantalla de bloqueig.</translation>
 <translation id="1544653821167545205">Resumeix la pàgina</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Com puc utilitzar aquesta funció?</translation>
 <translation id="1901600657316773839">Conserva la selecció</translation>
 <translation id="1902277226107477495">La detecció d'adreces està desactivada. Torna a activar-la a Configuració.</translation>
+<translation id="1905582086181351638">Inicia la sessió per obtenir la informació desada i més de <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">El lloc web s'ha afegit i fixat</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
 <translation id="1925706052394657380">Obre la pantalla de configuració <ph name="BEGIN_BOLD" />Apps per omissió<ph name="END_BOLD" /> a iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Els llocs web poden demanar permís per utilitzar el micròfon</translation>
 <translation id="2219935992754556187">Chrome protegeix les teves dades sensibles amb Face ID</translation>
 <translation id="2220529011494928058">Informa d'un problema</translation>
-<translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> té bloquejat l'accés a la càmera</translation>
 <translation id="2223461067862937305">Crea un codi QR</translation>
 <translation id="222798989929574238">Has utilitzat més de 20 fotos per fer la cerca</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Tindràs l'oportunitat de desar aquesta informació a Wallet la propera vegada que emplenis un formulari rellevant.</translation>
 <translation id="3868495844258915202">Mostra l'URL complet</translation>
 <translation id="3875783148670536197">Mostra'm com</translation>
-<translation id="3877211858413020188"><ph name="SITE_DOMAIN" /> té bloquejat l'accés al micròfon</translation>
 <translation id="3878657761594430423">Ansa del full</translation>
 <translation id="3884810423191119660">Desa les contrasenyes de manera segura per poder iniciar la sessió fàcilment en llocs web i aplicacions</translation>
 <translation id="3885587018298784481">Uneix-te a un grup familiar</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Biblioteca de fotos</translation>
 <translation id="429074084062258019">{count,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
 <translation id="4290920330097335010">No permetis mai</translation>
+<translation id="4293154608148215505">del teu telèfon</translation>
 <translation id="4294506173142861371">Vols iniciar la sessió com a <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Defineix la posició</translation>
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Per fer un seguiment del producte, toca Fes un seguiment</translation>
 <translation id="5121618895923301719">Ja estàs fent el seguiment d'aquest producte. Aquesta pàgina s'ha desat a <ph name="BEGIN_LINK" />Adreces d'interès per a mòbils<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tens diversos problemes relacionats amb les contrasenyes.</translation>
+<translation id="5126335625961252141">de la teva tauleta</translation>
 <translation id="5128788795241319992">Explora el menú nou</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
+<translation id="5137568953923142260">Permet una vegada</translation>
 <translation id="5141363746588976328">Amaga la targeta Baixades de preu a les pestanyes</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Surt del selector de pestanyes</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Augmenta la mida del text</translation>
 <translation id="5376135254804080693">Desselecciona-ho tot</translation>
 <translation id="537853552771686272">Gestiona els temes i els llocs web que t'interessen</translation>
+<translation id="5385892579392932755">el teu portàtil</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} de tancada}other{{count} de tancades}}</translation>
 <translation id="5394975111793637642">Amaga la targeta de Ressenyes de productes per a tu</translation>
 <translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>
@@ -1967,6 +1972,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Les pestanyes es tancaran i les dades de navegació se suprimiran</translation>
 <translation id="714291438898585119">Destacats</translation>
+<translation id="7144458305574230431">Inicia la sessió per obtenir les adreces d'interès i més de <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Actualitza el permís de conduir</translation>
 <translation id="7146301801400584641">Hi ha disponible un fitxer de calendari</translation>
 <translation id="7149893636342594995">24 darreres hores</translation>
@@ -1994,6 +2000,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="722339453342442311">Comprova ara</translation>
 <translation id="7227235818314667565">Gestiona la compartició</translation>
 <translation id="7233006041370588369">Selecciona una contrasenya per emplenar.</translation>
+<translation id="7238074332967840767">Seguretat</translation>
 <translation id="723874023660911012">Canvia de perfil</translation>
 <translation id="7241135764990439166">El mode d'incògnit no està disponible</translation>
 <translation id="7245288034498365666">Organitza't i estalvia temps</translation>
@@ -2377,7 +2384,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8393889347136007944">Pestanyes que no s'han utilitzat durant <ph name="THRESHOLD" /> dies</translation>
 <translation id="8395180897620197612">Atura el registre</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" pot accedir al micròfon sempre que visitis aquest lloc web</translation>
 <translation id="8407669440184693619">No s'ha trobat cap contrasenya per a aquest lloc web</translation>
 <translation id="8407831512155324054">Les contrasenyes són segures</translation>
 <translation id="8414283596511250978">No oblidis mai les teves contrasenyes</translation>
@@ -2392,7 +2398,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8439758443371991593">Amaga l'opció Afegeix a la llista de lectura</translation>
 <translation id="8443986842926457191">L'URL conté més de 2.048 caràcters</translation>
 <translation id="8449869326050867919">S'ha compartit la contrasenya</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" pot accedir a la càmera sempre que visitis aquest lloc web</translation>
 <translation id="8461708300275916315">Si tens menys de 18 anys</translation>
 <translation id="8473815223723723001">Edita la imatge amb Gemini</translation>
 <translation id="8473863474539038330">Adreces i més</translation>

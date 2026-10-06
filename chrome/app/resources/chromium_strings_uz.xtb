@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1186645291482254714">Telefonda Chromium orqali narxlar oʻzgarishi haqida bildirishnomalar oling</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> oʻrnatilishi kerak. Internetni xavfsiz kezish uchun Chromium keyingi safar <ph name="IDLE_DURATION" /> ishlatilmaganda avtomatik yangilanadi.</translation>
 <translation id="1232234696885483911">Rasmli qidiruv ochilganda sahifa sarlavhasi, URL manzili, kontenti, jumladan, PDF fayllar Google serverlariga avtomatik yuboriladi. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Chromiumda hisobdan chiqmasangiz, Google hisobingizdagi parollar va boshqa maʼlumotlardan foydalana olasiz. Buni oʻzgartirish uchun “Chromium hisobingiz” rukniga kiring.</translation>
 <translation id="1244381985120794049">Chromium ichidagi Gemini belgisini Mac menyu panelida chiqarish</translation>
@@ -225,6 +226,7 @@
 <translation id="3286538390144397061">Hozir qaytadan ishga tushirish</translation>
 <translation id="328888136576916638">Google API kalitlari yetishmayapti. Chromium’ning ba’zi funksiyalari ishlamasligi mumkin.</translation>
 <translation id="3296368748942286671">Chromium yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
+<translation id="3300632735252839402">Chromium ishtirokingizsiz avtomatik yangilanadi</translation>
 <translation id="3313189106987092621">Xavfsiz ulanishli har qanday saytga kirganingizda Chromium sizni ogohlantiradi</translation>
 <translation id="3316771292331273802">Barcha Chromium oynalari yopilganda aksariyat saytlardan chiqib ketasiz, ammo Chromium hisobingizga kirganingizda Google hisobingizdan chiqmaysiz. Saytlarga sizni eslab qolishga ruxsat berish uchun <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">qidiruv hududining yuqori oʻng burchagi: oʻng <ph name="RIGHT" />%, yuqori <ph name="TOP" />%</translation>
@@ -233,6 +235,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mavjud Chromium profiliga almashilsinmi?</translation>
 <translation id="3412460710772753638">Bu qurilmada Parollar menejeriga</translation>
+<translation id="3425452599984451640">Chromium yangilanishi kerak</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> qurilmasidagi bukmarklar va boshqa maʼlumotlaringizni olish uchun Chromium hisobiga kiring</translation>
 <translation id="3438772217992559640">Bu varaqda rasmli qidiruv bilan qidirish</translation>
 <translation id="3455907671758333080">Telefonda Chromium orqali Saytlarni kuchaytirilgan rejimda xavfsiz kezish imkoniyatini kengaytiring</translation>

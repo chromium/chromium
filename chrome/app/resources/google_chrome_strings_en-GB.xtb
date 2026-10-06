@@ -30,6 +30,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1194807384646768652">Chrome blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
 <translation id="1197860368385086056">Next time you open Chrome on your <ph name="DEVICE_TYPE" />, you'll see a prompt to enable price tracking alerts.</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
+<translation id="122321322139970942">An <ph name="IMPORTANT_UPDATE" /> is pending. To keep your browsing safe, Chrome will update the next time you're inactive for <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">To get your bookmarks and more on all your devices, sign in to Chrome</translation>
 <translation id="1278833599417554002">Relaunch to update &amp;Chrome</translation>
 <translation id="1289911795790071537">Open search with Chrome</translation>
@@ -507,6 +508,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
 <translation id="5947104538377036631">Chrome shortcut</translation>
 <translation id="5960071705175224773">Your settings were changed by an unknown app</translation>
+<translation id="5960404530854194706">Chrome will update when you're away</translation>
 <translation id="5980111191913430208">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
 <translation id="6008161919456049856">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.</translation>
@@ -590,6 +592,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6556755379298048869">Search with a keyboard shortcut.</translation>
 <translation id="6585124893636629274">Close Gemini in Chrome</translation>
 <translation id="659498884637196217">In Google Password Manager on this device</translation>
+<translation id="660312897435669152">Chrome wants to update</translation>
 <translation id="6612152958212564387">You're not sending usage statistics and crash reports to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Keep your passwords, bookmarks and history perfectly synced across devices by setting Chrome as your default browser.</translation>
 <translation id="6621391692573306628">To send this tab to another device, sign in to Chrome on both devices</translation>

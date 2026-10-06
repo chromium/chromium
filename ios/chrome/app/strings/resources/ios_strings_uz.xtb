@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Parollar</translation>
 <translation id="1381022135873211423">{count,plural, =1{Manzil: {position}/{count}}other{Manzil: {position}/{count}}}</translation>
 <translation id="13813615483058219">Xatolik yuz berdi. Internet aloqasini tekshiring, tovush balandligini oshiring yoki qayta urining.</translation>
+<translation id="138181280295369883">Saqlangan maʼlumotlar va boshqalarni barcha qurilmalarda olish uchun hisobingizga kiring</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> hisobi bilan davom etish</translation>
 <translation id="138692594145659985">Kartalarni saqlash parametrlari</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Sahifani tarjima qilish</translation>
 <translation id="1539535193627863227">Bu sayt uchun hech qanday parol yoki kirish kaliti topilmadi</translation>
 <translation id="1540800554400757039">Manzil, 1-qator</translation>
+<translation id="1543035591122163372">Parollar va boshqa maʼlumotlaringizni <ph name="DEVICE_TYPE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="154312949627292154">Boshqa qurilmalardan qabul qilingan varaqlarni ekran qulfida ochish.</translation>
 <translation id="1544653821167545205">Sahifani xulosalash</translation>
 <translation id="1545749641540134597">QR kodni skanerlash</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Bu funksiyadan qanday foydalanish mumkin?</translation>
 <translation id="1901600657316773839">Tanlovni qoldirish</translation>
 <translation id="1902277226107477495">Manzil aniqlanishi yoqilmagan. Sozlamalar orqali qayta yoqish mumkin</translation>
+<translation id="1905582086181351638">Saqlangan maʼlumotlaringiz va boshqalarni <ph name="DEVICE_TYPE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="1909201414196501151">Sayt qoʻshildi va qadaldi</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
 <translation id="1925706052394657380">iOS qurilmada <ph name="BEGIN_BOLD" />Birlamchi ilovalar<ph name="END_BOLD" /> sozlamalarini oching</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Saytlar mikrofondan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="2219935992754556187">Chrome Face ID bilan maxfiy maʼlumotlarni xavfsiz saqlaydi</translation>
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
-<translation id="2222149859067335623">“<ph name="SITE_DOMAIN" />” saytiga kameradan foydalanish taqiqlangan</translation>
 <translation id="2223461067862937305">QR kod yaratish</translation>
 <translation id="222798989929574238">Qidirish uchun 20+ ta surat ishlatdingiz</translation>
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Keyingi safar tegishli shaklni toʻldirganingizda bu maʼlumotni Walletga saqlash imkoniga ega boʻlasiz.</translation>
 <translation id="3868495844258915202">Toʻliq URL manzil</translation>
 <translation id="3875783148670536197">Koʻrsatish</translation>
-<translation id="3877211858413020188">“<ph name="SITE_DOMAIN" />” saytiga mikrofondan foydalanish taqiqlangan</translation>
 <translation id="3878657761594430423">Sahifadan belgilash</translation>
 <translation id="3884810423191119660">Sayt va ilovalarga oson kirish uchun parollarni xavfsiz saqlang</translation>
 <translation id="3885587018298784481">Oilaviy guruhga kiring</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Galereya</translation>
 <translation id="429074084062258019">{count,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
 <translation id="4290920330097335010">Ruxsat berilmasin</translation>
+<translation id="4293154608148215505">Telefon</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> hisobidan kirilsinmi?</translation>
 <translation id="4302061870579014542">Joylashuvni tanlash</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Mahsulot narxini kuzatish uchun Kuzatish ustiga bosing</translation>
 <translation id="5121618895923301719">Siz bu mahsulotni kuzatyapsiz. Bu sahifa <ph name="BEGIN_LINK" />Mobil bukmarklarga<ph name="END_LINK" /> saqlandi.</translation>
 <translation id="512533434554095351">Bir nechta parol bilan bogʻliq muammo bor.</translation>
+<translation id="5126335625961252141">Planshet</translation>
 <translation id="5128788795241319992">Yangi menyu bilan tanishing</translation>
 <translation id="5132942445612118989">Parollar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
+<translation id="5137568953923142260">Bir marta ruxsat</translation>
 <translation id="5141363746588976328">“Varaqlarda narx pasayishi” bildirgisi chiqmasin</translation>
 <translation id="514154868070499296">Shrift: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Varaq almashtirish panelini yopish</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Matnni kattalashtirish</translation>
 <translation id="5376135254804080693">Hammasini bekor qilish</translation>
 <translation id="537853552771686272">Qiziq boʻlgan mavzu va saytlarni boshqarish</translation>
+<translation id="5385892579392932755">Noutbuk</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ta varaq yopildi}other{{count} ta varaq yopildi}}</translation>
 <translation id="5394975111793637642">“Siz uchun mahsulot sharhlari” bildirgisi chiqmasin</translation>
 <translation id="5414763847370083940">Istalgan saytda narx tushganda ogohlantirish olasiz.</translation>
@@ -1967,6 +1972,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Varaqlar yopiladi va brauzer tarixi tozalanadi</translation>
 <translation id="714291438898585119">Yulduzchali</translation>
+<translation id="7144458305574230431">Bukmarklar va boshqa maʼlumotlaringizni <ph name="DEVICE_TYPE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="7145337554745942724">Haydovchilik guvohnomasini yangilash</translation>
 <translation id="7146301801400584641">Taqvim fayli mavjud</translation>
 <translation id="7149893636342594995">Oxirgi 24 soat</translation>
@@ -1994,6 +2000,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="722339453342442311">Hozir tekshirish</translation>
 <translation id="7227235818314667565">Ulashuvni boshqarish</translation>
 <translation id="7233006041370588369">Kiritish uchun parolni tanlang.</translation>
+<translation id="7238074332967840767">Xavfsizlik</translation>
 <translation id="723874023660911012">Profilni almashtirish</translation>
 <translation id="7241135764990439166">Inkognito rejimi ishlamayapti</translation>
 <translation id="7245288034498365666">Ishlaringizni tartiblang va vaqtingizni tejang</translation>
@@ -2377,7 +2384,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8393700583063109961">Xabar yuborish</translation>
 <translation id="8393889347136007944">Varaqlar <ph name="THRESHOLD" /> kun ishlatilmadi</translation>
 <translation id="8395180897620197612">Qayd qilishni toʻxtatish</translation>
-<translation id="8399253661151100858">“<ph name="SITE_DOMAIN" />” saytiga kirganingizda mikrofoningiz ishlatilishi mumkin</translation>
 <translation id="8407669440184693619">Bu sayt uchun hech qanday parol topilmadi</translation>
 <translation id="8407831512155324054">Parollaringiz ishonchli darajada</translation>
 <translation id="8414283596511250978">Endi parollarni unutmaysiz</translation>
@@ -2392,7 +2398,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8439758443371991593">Saqlangan sahifalarga kiritishni berkitish</translation>
 <translation id="8443986842926457191">URL manzilda 2048 tadan ortiq belgi kiritildi.</translation>
 <translation id="8449869326050867919">Parol ulashilgan</translation>
-<translation id="8458009459729013424">“<ph name="SITE_DOMAIN" />” saytiga kirganingizda kamerangiz ishlatilishi mumkin</translation>
 <translation id="8461708300275916315">Agar 18 yoshdan kichik boʻlsangiz</translation>
 <translation id="8473815223723723001">Rasmni Gemini bilan tahrirlash</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>

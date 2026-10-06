@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} von {count} Adresse}other{{position} von {count} Adressen}}</translation>
 <translation id="13813615483058219">Ein Fehler ist aufgetreten. Überprüfe deine Internetverbindung, erhöhe die Lautstärke oder versuche es noch einmal.</translation>
+<translation id="138181280295369883">Melde dich an, um auf gespeicherte Informationen und mehr auf allen deinen Geräten zuzugreifen</translation>
 <translation id="1383876407941801731">Suchen</translation>
 <translation id="138618066238211776">Als <ph name="USER_NAME" /> fortfahren</translation>
 <translation id="138692594145659985">Optionen zum Speichern von Karten</translation>
@@ -187,6 +188,7 @@
 <translation id="1536390784834419204">Seite übersetzen</translation>
 <translation id="1539535193627863227">Keine Passwörter oder Passkeys für diese Website gefunden</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
+<translation id="1543035591122163372">Melde dich an, um auf Passwörter und mehr auf <ph name="DEVICE_TYPE" /> zuzugreifen</translation>
 <translation id="154312949627292154">Tabs, die du von anderen Geräten erhalten hast, vom Sperrbildschirm aus öffnen.</translation>
 <translation id="1544653821167545205">Seite zusammenfassen</translation>
 <translation id="1545749641540134597">QR-Code scannen</translation>
@@ -313,6 +315,7 @@
 <translation id="1901366738768303267">Wie verwende ich diese Funktion?</translation>
 <translation id="1901600657316773839">Auswahl beibehalten</translation>
 <translation id="1902277226107477495">Adressenerkennung deaktiviert. Du kannst sie in den Einstellungen wieder aktivieren.</translation>
+<translation id="1905582086181351638">Melde dich an, um auf deine gespeicherten Informationen und mehr auf <ph name="DEVICE_TYPE" /> zuzugreifen</translation>
 <translation id="1909201414196501151">Website hinzugefügt und angepinnt</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
 <translation id="1925706052394657380">Öffne unter iOS die Einstellungen für <ph name="BEGIN_BOLD" />Standard-Apps<ph name="END_BOLD" /></translation>
@@ -407,7 +410,6 @@
 <translation id="2218389616572918761">Websites dürfen nachfragen, ob sie mein Mikrofon verwenden können</translation>
 <translation id="2219935992754556187">Chrome trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen</translation>
 <translation id="2220529011494928058">Problem melden</translation>
-<translation id="2222149859067335623">„<ph name="SITE_DOMAIN" />“ darf nicht auf deine Kamera zugreifen</translation>
 <translation id="2223461067862937305">QR‑Code erstellen</translation>
 <translation id="2230173723195178503">Webseite geladen</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
@@ -899,7 +901,6 @@
 <translation id="386224966259596343">Du kannst diese Informationen in Wallet speichern, wenn du das nächste Mal ein entsprechendes Formular ausfüllst.</translation>
 <translation id="3868495844258915202">Vollständige URL anzeigen</translation>
 <translation id="3875783148670536197">So gehts</translation>
-<translation id="3877211858413020188">„<ph name="SITE_DOMAIN" />“ darf nicht auf dein Mikrofon zugreifen</translation>
 <translation id="3878657761594430423">Sheet Grabber</translation>
 <translation id="3884810423191119660">Hier kannst du Passwörter sicher speichern, damit du dich einfacher auf Websites und in Apps anmelden kannst</translation>
 <translation id="3885587018298784481">Einer Familiengruppe beitreten</translation>
@@ -1036,6 +1037,7 @@
 <translation id="4289309730265289297">Fotogalerie</translation>
 <translation id="429074084062258019">{count,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="4290920330097335010">Nie erlauben</translation>
+<translation id="4293154608148215505">deinem Smartphone</translation>
 <translation id="4294506173142861371">Als <ph name="FIRST_NAME" /> anmelden?</translation>
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
@@ -1308,6 +1310,7 @@
 <translation id="5119329531859909472">Tippe auf „Verfolgen“, um das Produkt zu beobachten</translation>
 <translation id="5121618895923301719">Du beobachtest dieses Produkt bereits. Diese Seite ist in den <ph name="BEGIN_LINK" />mobilen Lesezeichen<ph name="END_LINK" /> gespeichert.</translation>
 <translation id="512533434554095351">Es gibt mehrere Probleme mit deinen Passwörtern.</translation>
+<translation id="5126335625961252141">deinem Tablet</translation>
 <translation id="5128788795241319992">Neues Menü ansehen</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5141363746588976328">Karte „Preissenkungen auf deinen Tabs“ ausblenden</translation>
@@ -1388,6 +1391,7 @@
 <translation id="5371112366564891538">Text vergrößern</translation>
 <translation id="5376135254804080693">Auswahl für alle aufheben</translation>
 <translation id="537853552771686272">Hier kannst du Themen und Websites verwalten, die dich interessieren</translation>
+<translation id="5385892579392932755">deinem Laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} geschlossen}other{{count} geschlossen}}</translation>
 <translation id="5394975111793637642">Karte „Rezensionen für dich“ ausblenden</translation>
 <translation id="5414763847370083940">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
@@ -1963,6 +1967,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Deine Tabs werden geschlossen und die Browserdaten werden gelöscht</translation>
 <translation id="714291438898585119">Markiert</translation>
+<translation id="7144458305574230431">Melde dich an, um auf Lesezeichen und mehr auf <ph name="DEVICE_TYPE" /> zuzugreifen</translation>
 <translation id="7145337554745942724">Führerschein aktualisieren</translation>
 <translation id="7146301801400584641">Kalenderdatei verfügbar</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
@@ -2372,7 +2377,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8393700583063109961">Nachricht senden</translation>
 <translation id="8393889347136007944">Tabs, die <ph name="THRESHOLD" /> Tage lang nicht verwendet wurden</translation>
 <translation id="8395180897620197612">Protokollierung anhalten</translation>
-<translation id="8399253661151100858">„<ph name="SITE_DOMAIN" />“ kann auf dein Mikrofon zugreifen, wenn du diese Website besuchst</translation>
 <translation id="8407669440184693619">Keine Passwörter für diese Website gefunden</translation>
 <translation id="8407831512155324054">Deine Passwörter sind stark</translation>
 <translation id="8414283596511250978">Nie wieder Passwörter vergessen</translation>
@@ -2387,7 +2391,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8439758443371991593">„Zur Leseliste hinzufügen“ ausblenden</translation>
 <translation id="8443986842926457191">Die URL ist länger als 2048 Zeichen.</translation>
 <translation id="8449869326050867919">Passwort geteilt</translation>
-<translation id="8458009459729013424">„<ph name="SITE_DOMAIN" />“ kann auf deine Kamera zugreifen, wenn du diese Website besuchst</translation>
 <translation id="8461708300275916315">Wenn du jünger als 18 Jahre bist</translation>
 <translation id="8473815223723723001">Bild mit Gemini bearbeiten</translation>
 <translation id="8473863474539038330">Adressen und andere Daten</translation>

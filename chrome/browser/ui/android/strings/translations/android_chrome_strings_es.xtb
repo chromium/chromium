@@ -774,6 +774,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, pestaña en grabación fijada en selección múltiple</translation>
 <translation id="4137746084635924146">Idioma actual del dispositivo</translation>
 <translation id="414128724510021958">Sitios para ordenadores solicitados de forma predeterminada</translation>
+<translation id="4150837143272125910">Se ha descargado una actualización</translation>
 <translation id="4162867837470729563">Lista de opciones para compartir abierta a altura completa.</translation>
 <translation id="4164642020717536140">Navega por la Web de forma rápida y segura</translation>
 <translation id="4165077084524712774">Más herramientas</translation>
@@ -1240,6 +1241,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="6039379616847168523">Te dirige a la siguiente pestaña</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>
+<translation id="6041959688070413372">Gestiona la conexión entre los servicios de búsqueda y las aplicaciones de Google Workspace, como Google Drive</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="6047066316630165190">Abre la Función de cambio de pestaña en cuadrícula</translation>
 <translation id="604996488070107836">No ha sido posible descargar el archivo <ph name="FILE_NAME" /> debido a un error desconocido.</translation>
@@ -1400,6 +1402,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6565959834589222080">Se utiliza la red Wi‑Fi si está disponible</translation>
 <translation id="657177046675873214">Para acceder a tus marcadores en todos tus dispositivos, activa Marcadores en los ajustes</translation>
 <translation id="6573096386450695060">Permitir siempre</translation>
+<translation id="657480975869429144">Hay una nueva versión de Chrome disponible</translation>
 <translation id="658099107946526506">Protege tu navegación privada con un PIN para evitar accesos no deseados</translation>
 <translation id="6583199322650523874">Añade la página actual a marcadores</translation>
 <translation id="6588043302623806746">Usar DNS seguro</translation>

@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">Користете ги фонтовите на компјутерот за да создавате содржини со висока верност</translation>
 <translation id="1465457928007067810">IBAN е зачуван во вашата сметка на Google</translation>
 <translation id="1467432559032391204">Лево</translation>
-<translation id="1471514598850585811">Лаптоп</translation>
 <translation id="1472675084647422956">Прикажи повеќе</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Внесете 3 или повеќе збора за да добиете помош за пишување</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Обидете се да контактирате со системскиот администратор.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, истекува на <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Компјутер</translation>
 <translation id="1739364174357629566">Ажурирајте го бројот на познат патник</translation>
 <translation id="1740404923954980840">За да излезете од цел екран, повлечете одозгора и допрете го копчето за назад</translation>
 <translation id="1741474054575634405">Управувајте со картичките за лојалност…</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">ИД на клуч на орган за сертифицирање</translation>
 <translation id="2465688316154986572">Спојување</translation>
 <translation id="2465914000209955735">Управувајте со датотеките што сте ги презеле во Chrome</translation>
-<translation id="2466682894498377850">Картичката е испратена од вашиот <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Спецификацијата на хардверот на уредот и статистиката, како што е историјата на користењето на CPU/RAM</translation>
 <translation id="2467421459221956357">Да се користат сензорите?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />да извршите дијагностика на мрежата<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Содржините од страницата за наплата се споделуваат со Google за да се понудат опцииве.<ph name="END_BOLD" /> Тарифните пакети зависат од подобноста. За да ги скриете опциите за „Платете подоцна“, одете во <ph name="BEGIN_LINK" />поставките за плаќање<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">За да се извршува апликацијава, овозможете го „Режимот на програмер“ во изолираните веб-апликации повторно</translation>
 <translation id="2526280916094749336">Може да ги користите зачуваните адреси на производите на Google. Адресава ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Десктоп</translation>
 <translation id="2527451058878391043">Вашиот CVC е на предната страна на картичката. Тоа е 4-цифрениот код горе десно, над бројот на картичката.</translation>
 <translation id="2529899080962247600">Полево не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> записи. Сите понатамошни записи ќе се игнорираат.</translation>
 <translation id="2530042584066815841">Заклучување и користење на глувчето</translation>
@@ -1739,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{Датотеката е блокирана за префрлање}one{<ph name="FILE_COUNT" /> датотека се блокирани за префрлање}other{<ph name="FILE_COUNT" /> датотеки се блокирани за префрлање}}</translation>
 <translation id="3906022360148923497">Икона за платежен инструмент</translation>
 <translation id="3906234161316839040">Други нарачки</translation>
-<translation id="3906954721959377182">Таблет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Дознајте повеќе за вметнатите содржини</translation>
 <translation id="3920504717067627103">Правила на сертификати</translation>

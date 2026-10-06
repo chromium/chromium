@@ -1697,7 +1697,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> のカスタマイズと制御</translation>
 <translation id="2300434721407965566">バッテリーを長持ちさせるため、80% で充電を停止します。</translation>
 <translation id="2301382460326681002">拡張機能のルート ディレクトリが無効です。</translation>
-<translation id="2301402091755573488">共有されたタブ</translation>
 <translation id="2304820083631266885">惑星</translation>
 <translation id="2305202347479035002">仕組み</translation>
 <translation id="2306794767168143227">このデバイスの <ph name="BRAND" /> に保存する</translation>
@@ -1716,6 +1715,7 @@
 <translation id="2322622365472107569">終了時間: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">保存済みの Wi-Fi ネットワーク</translation>
 <translation id="2323685460575935191">スクロール ボタンを非表示</translation>
+<translation id="2325004050205455346">最近の履歴</translation>
 <translation id="2325444234681128157">パスワードを保存する</translation>
 <translation id="2326188115274135041">PIN を入力して自動ロック解除を有効にする</translation>
 <translation id="2326583548923775947">これは Google アカウントではありません。Chrome に保存したアイテムを他のデバイスで使用することはできません。</translation>
@@ -2074,7 +2074,6 @@
 <translation id="2598710988533271874">新しい Chrome をご利用いただけます</translation>
 <translation id="2599048253926156421">ユーザー名をクリップボードにコピーしました</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 個の安全でない拡張機能をオフにしました}other{{NUM_SITES} 個の安全でない拡張機能をオフにしました}}</translation>
-<translation id="2603121359676416582">このページに対する操作</translation>
 <translation id="2603656971249947488">タブバー</translation>
 <translation id="2604129989323098489">サイトは通常、ウィンドウをインテリジェントに開いて配置できるように（ドキュメントや全画面コンテンツを並べて表示するなど）、ディスプレイに関する情報をリクエストします</translation>
 <translation id="2604255671529671813">ネットワーク接続エラー</translation>
@@ -3013,7 +3012,6 @@
 <translation id="3292966601422448005"><ph name="APP_NAME" /> に許可した権限は、インストール済みの関連アプリにも適用されます。</translation>
 <translation id="3293080634164207409">タブを追加</translation>
 <translation id="329324683265785818">再生 / 一時停止、キーボード ショートカット K キー</translation>
-<translation id="3293644607209440645">このページを送信</translation>
 <translation id="3294437725009624529">ゲスト</translation>
 <translation id="3294686910656423119">使用統計データと障害レポート</translation>
 <translation id="3295241308788901889">タブをキャストしています</translation>
@@ -5711,6 +5709,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
 <translation id="534449933710420173">名前のないフォルダ</translation>
 <translation id="5345916423802287046">ログイン時にアプリを開く</translation>
+<translation id="5346059693449184483">何かお手伝いできることはありますか？</translation>
 <translation id="5350116201946341974">気まぐれ</translation>
 <translation id="535123479159372765">他のデバイスからテキストがコピーされました</translation>
 <translation id="5352257124367865087">サイトの権限を管理</translation>
@@ -7073,7 +7072,7 @@
 <translation id="6434104957329207050">ポイントのスキャン速度</translation>
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6434755719322447931">無秩序</translation>
-<translation id="6435307030888827407">ログアウト状態を保持する</translation>
+<translation id="6435307030888827407">ログアウト状態を保持</translation>
 <translation id="6435339218366409950">字幕の訳文言語を選択してください</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>
 <translation id="6436778875248895551">拡張機能「<ph name="EXTENSION_NAME" />」は管理者によってブロックされました</translation>
@@ -7134,7 +7133,6 @@
 <translation id="6472893788822429178">ホーム ボタンを表示する</translation>
 <translation id="6473315466413288899">オプションを選択</translation>
 <translation id="6474021817475285003">Google カレンダーで詳細を見る</translation>
-<translation id="6474401088838630457">Gemini にさらに質問する</translation>
 <translation id="6474498546677193336">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Linux をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="6474884162850599008">Google ドライブ アカウントを切断する</translation>
 <translation id="6476482583633999078">読み上げ速度</translation>
@@ -10436,7 +10434,7 @@
 <translation id="8986362086234534611">削除</translation>
 <translation id="8986494364107987395">使用統計データと障害レポートを Google に自動送信します</translation>
 <translation id="8987321822984361516">ブラウザは組織によって管理され、プロファイルは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
-<translation id="8987736167266086032">同じところから再開</translation>
+<translation id="8987736167266086032">中断したところから再開する</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
 <translation id="8989779557457435460">デフォルトで現在のタブを共有する</translation>

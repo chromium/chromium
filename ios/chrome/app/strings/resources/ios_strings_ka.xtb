@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">პაროლები</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}-დან {position} მისამართი}other{{count}-დან {position} მისამართი}}</translation>
 <translation id="13813615483058219">წარმოიქმნა შეფერხება. შეამოწმეთ ინტერნეტ-კავშირი, აუწიეთ ხმა ან ცადეთ ხელახლა.</translation>
+<translation id="138181280295369883">გაიარეთ ავტორიზაცია, რომ ისარგებლოთ თქვენი შენახული ინფორმაციითა და სხვა მონაცემებით ყველა თქვენს მოწყობილობაზე</translation>
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="138618066238211776">გაგრძელება, როგორც <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">ბარათის შენახვის ვარიანტები</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">გვერდის თარგმნა</translation>
 <translation id="1539535193627863227">ამ საიტისთვის პაროლები ან წვდომის გასაღებები ვერ მოიძებნა</translation>
 <translation id="1540800554400757039">მისამართი 1</translation>
+<translation id="1543035591122163372">გაიარეთ ავტორიზაცია, რომ მიიღოთ თქვენი პაროლები და სხვა მონაცემები <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">გახსენით თქვენი სხვა მოწყობილობებიდან მიღებული ჩანართები დაბლოკილი ეკრანიდან.</translation>
 <translation id="1544653821167545205">შეაჯამე გვერდი</translation>
 <translation id="1545749641540134597">QR კოდის სკანირება</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">როგორ გამოვიყენოთ ეს ფუნქცია?</translation>
 <translation id="1901600657316773839">არჩევანის შენარჩუნება</translation>
 <translation id="1902277226107477495">მისამართის ამოცნობა გამორთულია. ჩართეთ კვლავ პარამეტრებიდან.</translation>
+<translation id="1905582086181351638">გაიარეთ ავტორიზაცია, რომ მიიღოთ შენახული ინფორმაცია და სხვა კონტენტი <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">საიტი დაემატა და ჩამაგრებულია</translation>
 <translation id="1911619930368729126">ატვირთვა Google Drive-ზე</translation>
 <translation id="1925706052394657380">გახსენით <ph name="BEGIN_BOLD" />ნაგულისხმევი აპების<ph name="END_BOLD" /> პარამეტრები iOS-ში</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">საიტებმა შეიძლება მოითხოვოს თქვენს მიკროფონზე წვდომა</translation>
 <translation id="2219935992754556187">Chrome უზრუნველყოფს თქვენი სენსიტიური მონაცემების უსაფრთხოებას Face ID-ს მეშვეობით</translation>
 <translation id="2220529011494928058">შეტყობინება პრობლემის შესახებ</translation>
-<translation id="2222149859067335623">„<ph name="SITE_DOMAIN" />“-ს დაბლოკილი აქვს თქვენს კამერაზე წვდომა</translation>
 <translation id="2223461067862937305">QR კოდის შექმნა</translation>
 <translation id="222798989929574238">თქვენ ძიებისთვის გამოიყენეთ 20-ზე მეტი ფოტო</translation>
 <translation id="2230173723195178503">ვებგვერდი ჩაიტვირთა</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">შესაბამისი ფორმის შევსებისას, მომავალში, გექნებათ შესაძლებლობა, შეინახოთ ეს ინფორმაცია საფულეში.</translation>
 <translation id="3868495844258915202">სრული URL-ის ჩვენება</translation>
 <translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
-<translation id="3877211858413020188">„<ph name="SITE_DOMAIN" />“-ს დაბლოკილი აქვს თქვენს მიკროფონზე წვდომა</translation>
 <translation id="3878657761594430423">ფურცლის შემგროვებელი</translation>
 <translation id="3884810423191119660">უსაფრთხოდ შეინახეთ პაროლები, რომ მარტივად შეხვიდეთ საიტებსა და აპებში</translation>
 <translation id="3885587018298784481">ოჯახის ჯგუფში გაწევრიანება</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">ფოტოების ბიბლიოთეკა</translation>
 <translation id="429074084062258019">{count,plural, =1{ჩანართის დამატება ჯგუფში}other{ჩანართების დამატება ჯგუფში}}</translation>
 <translation id="4290920330097335010">არასოდეს დაშვება</translation>
+<translation id="4293154608148215505">თქვენი ტელეფონიდან</translation>
 <translation id="4294506173142861371">შეხვალთ, როგორც <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">მდებარეობის დაყენება</translation>
 <translation id="4304713468139749426">პაროლების მმართველი</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">პროდუქტისთვის თვალყურის სადევნებლად შეეხეთ თვალყურის დევნების ღილაკს</translation>
 <translation id="5121618895923301719">ამ პროდუქტს თვალს უკვე ადევნებთ. ეს გვერდი შენახულია <ph name="BEGIN_LINK" />მობილურ სანიშნეებში<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">პაროლებთან დაკავშირებით რამდენიმე პრობლემა გაქვთ.</translation>
+<translation id="5126335625961252141">თქვენი ტაბლეტიდან</translation>
 <translation id="5128788795241319992">გაეცანით ახალ მენიუს</translation>
 <translation id="5132942445612118989">მოახდინეთ თქვენი პაროლების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობაზე</translation>
+<translation id="5137568953923142260">ერთხელ დაშვება</translation>
 <translation id="5141363746588976328">ბარათის „ფასების დაწევის შეტყობინება თქვენს ჩანართებში“ დამალვა</translation>
 <translation id="514154868070499296">შრიფტი: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ჩანართების გადამრთველიდან გამოსვლა</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">ტექსტის ზომის გაზრდა</translation>
 <translation id="5376135254804080693">ყველას არჩევის გაუქმება</translation>
 <translation id="537853552771686272">მართეთ თემები და ვებსაიტები, რომლებიც გაინტერესებთ</translation>
+<translation id="5385892579392932755">თქვენი ლეპტოპიდან</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} დაიხურა}other{{count} დაიხურა}}</translation>
 <translation id="5394975111793637642">ბარათის „პროდუქტის მიმოხილვები თქვენთვის“ დამალვა</translation>
 <translation id="5414763847370083940">თქვენ მიიღებთ გაფრთხილებას, როცა რომელიმე საიტზე ფასი დაიკლებს.</translation>
@@ -1967,6 +1972,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">თქვენი ჩანართები დაიხურება, ხოლო ვების დათვალიერების მონაცემები წაიშლება</translation>
 <translation id="714291438898585119">ვარსკვლავით მონიშნული</translation>
+<translation id="7144458305574230431">გაიარეთ ავტორიზაცია, რომ გამოიყენოთ თქვენი სანიშნეები და სხვა მონაცემები <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">მართვის მოწმობის განახლება</translation>
 <translation id="7146301801400584641">ხელმისაწვდომია კალენდრის ფაილი</translation>
 <translation id="7149893636342594995">ბოლო 24 საათი</translation>
@@ -1994,6 +2000,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="722339453342442311">ახლავე შემოწმება</translation>
 <translation id="7227235818314667565">გაზიარების მართვა</translation>
 <translation id="7233006041370588369">აირჩიეთ შესავსები პაროლი.</translation>
+<translation id="7238074332967840767">უსაფრთხოება</translation>
 <translation id="723874023660911012">პროფილებს შორის გადართვა</translation>
 <translation id="7241135764990439166">ინკოგნიტო რეჟიმი მიუწვდომელია</translation>
 <translation id="7245288034498365666">იყავით ორგანიზებული და დაზოგეთ დრო</translation>
@@ -2377,7 +2384,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8393700583063109961">შეტყობინების გაგზავნა</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> დღის განმავლობაში გამოუყენებელი ჩანართები</translation>
 <translation id="8395180897620197612">ჟურნალის წარმოების შეწყვეტა</translation>
-<translation id="8399253661151100858">„<ph name="SITE_DOMAIN" />“ წვდომას განახორციელებს თქვენს მიკროფონზე, როდესაც ამ საიტს ეწვევით</translation>
 <translation id="8407669440184693619">ამ საიტისთვის პაროლები ვერ მოიძებნა</translation>
 <translation id="8407831512155324054">თქვენი პაროლები ძლიერი ჩანს</translation>
 <translation id="8414283596511250978">არასდროს დაგავიწყდეთ თქვენი პაროლები</translation>
@@ -2392,7 +2398,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8439758443371991593">საკითხავ სიაში დამატების დამალვა</translation>
 <translation id="8443986842926457191">URL შედგება 2048-ზე მეტი სიმბოლოსგან</translation>
 <translation id="8449869326050867919">პაროლი გაზიარებულია</translation>
-<translation id="8458009459729013424">„<ph name="SITE_DOMAIN" />“ წვდომას განახორციელებს თქვენს კამერაზე, როდესაც ამ საიტს ეწვევით</translation>
 <translation id="8461708300275916315">თუ 18 წლამდე ხართ</translation>
 <translation id="8473815223723723001">სურათის რედაქტირება Gemini-ს მეშვეობით</translation>
 <translation id="8473863474539038330">მისამართები და სხვა</translation>

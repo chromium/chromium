@@ -1042,6 +1042,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1790976235243700817">Fjern adgang</translation>
 <translation id="1791662854739702043">Installeret</translation>
 <translation id="1792619191750875668">Udvidet display</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Skjul adgangskoden til <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Send feedback for at hjælpe os med at løse problemet.</translation>
 <translation id="1795214765651529549">Brug Klassisk</translation>
@@ -1711,7 +1712,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2300383962156589922">Tilpas og administrer <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Opladningen stopper ved 80 % for at forlænge batteritiden.</translation>
 <translation id="2301382460326681002">Udvidelsens rodmappe er ugyldig.</translation>
-<translation id="2301402091755573488">Delt fane</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305202347479035002">Sådan fungerer det</translation>
 <translation id="2306794767168143227">Gem i <ph name="BRAND" /> på denne enhed</translation>
@@ -1730,6 +1730,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2322622365472107569">Sluttidspunkt: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gemte Wi-Fi-netværk</translation>
 <translation id="2323685460575935191">Skjul rulleknapper</translation>
+<translation id="2325004050205455346">Seneste historik</translation>
 <translation id="2325444234681128157">Husk adgangskoden</translation>
 <translation id="2326188115274135041">Bekræft pinkoden for at aktivere automatisk oplåsning</translation>
 <translation id="2326583548923775947">Dette er ikke en Google-konto. De elementer, du gemmer i Chrome, er ikke tilgængelige på andre enheder.</translation>
@@ -2088,7 +2089,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2598710988533271874">En ny Chrome-opdatering er tilgængelig</translation>
 <translation id="2599048253926156421">Brugernavnet er kopieret til udklipsholderen</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 usikker udvidelse blev deaktiveret}one{{NUM_SITES} usikker udvidelse blev deaktiveret}other{{NUM_SITES} usikre udvidelser blev deaktiveret}}</translation>
-<translation id="2603121359676416582">På denne side</translation>
 <translation id="2603656971249947488">Fanelinje</translation>
 <translation id="2604129989323098489">Websites beder typisk om oplysninger om dine skærme med henblik på at kunne åbne og placere vinduer på en smart måde, f.eks. ved at vise dokumenter eller indhold i fuld skærm side om side</translation>
 <translation id="2604255671529671813">Fejl i netværksforbindelsen</translation>
@@ -2449,7 +2449,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2854453262159518435">Erstat eksisterende fanegruppe</translation>
 <translation id="2855243985454069333">Sletter historikken fra alle synkroniserede enheder</translation>
 <translation id="2855812646048059450">Log ind med <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="2857047802954430547">Log ind for at få adgang til dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
+<translation id="2857047802954430547">Log ind for at tilgå adgangskoder, bogmærker og andet på alle dine enheder</translation>
 <translation id="2857195263461649321">Fortsæt, hvor du slap, i Gemini</translation>
 <translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Virksomhedspolitikker</translation>
@@ -2954,6 +2954,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="323262942975422760">Flere valgmuligheder for at redigere eller slette <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Webapp</translation>
 <translation id="3233271424239923319">Sikkerhedskopiér Linux-apps og -filer</translation>
+<translation id="3233577317461669428">Der blev ikke fundet en anden enhed</translation>
 <translation id="3234251228180563751">Brugernavnet er på mere end 1.000 tegn</translation>
 <translation id="3234978181857588512">Gem på enheden</translation>
 <translation id="3237871032310650497">Vil du slette websitedata for <ph name="SITE_NAME" />, der er opdelt på <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3028,7 +3029,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3292966601422448005">Tilladelser, du giver <ph name="APP_NAME" />, gives også til de apps, som den installerer.</translation>
 <translation id="3293080634164207409">Tilføj faner</translation>
 <translation id="329324683265785818">Afspil/sæt på pause, tastaturgenvejen k</translation>
-<translation id="3293644607209440645">Send denne side</translation>
 <translation id="3294437725009624529">Gæst</translation>
 <translation id="3294686910656423119">Brugsstatistikker og nedbrudsrapporter</translation>
 <translation id="3295241308788901889">Caster en fane</translation>
@@ -5273,7 +5273,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>
 <translation id="4983159853748980742">Din adgangskode blev ikke delt. Tjek din internetforbindelse, og sørg for, at du er logget ind i Chrome. Prøv derefter igen.</translation>
 <translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
-<translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan personligt tilpasse Søgning og andre tjenester baseret på din historik.</translation>
+<translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan tilpasse Søgning og andre tjenester personligt baseret på din historik.</translation>
 <translation id="4986728572522335985">Denne handling sletter alle data på sikkerhedsnøglen, bl.a. pinkoden</translation>
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4989479404508898003">Du kan søge i din browserhistorik baseret på generelt sideindhold, ikke kun sidetitel og webadresse, og få bedre resultater</translation>
@@ -5729,6 +5729,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (højre)</translation>
 <translation id="534449933710420173">Unavngiven mappe</translation>
 <translation id="5345916423802287046">Start app, når du logger ind</translation>
+<translation id="5346059693449184483">Hvad har du på hjerte?</translation>
 <translation id="5350116201946341974">Finurlig</translation>
 <translation id="535123479159372765">Tekst kopieret fra en anden enhed</translation>
 <translation id="5352257124367865087">Administrer websitetilladelser</translation>
@@ -7005,6 +7006,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6356893102071098867">Tjek, om du har valgt den rigtige konto</translation>
 <translation id="6357305427698525450">Nogle understøttede links åbnes fortsat i <ph name="APP_NAME" /> eller <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Andre stabile id'er (f.eks. hash-værdier eller UUID'er)</translation>
+<translation id="6357830294871526418">Faner på andre enheder</translation>
 <translation id="6358884629796491903">Drage</translation>
 <translation id="6359640073754977254">Rul til sidste fane</translation>
 <translation id="6361850914223837199">Info om fejl:</translation>
@@ -7152,7 +7154,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6472893788822429178">Vis knappen Startside</translation>
 <translation id="6473315466413288899">Vælg en af mulighederne</translation>
 <translation id="6474021817475285003">Se mere i Google Kalender</translation>
-<translation id="6474401088838630457">Stil flere spørgsmål om dette til Gemini</translation>
 <translation id="6474498546677193336">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang Linux lukkes.</translation>
 <translation id="6474884162850599008">Fjern tilknytningen af din Google Drev-konto</translation>
 <translation id="6476482583633999078">Talehastighed</translation>

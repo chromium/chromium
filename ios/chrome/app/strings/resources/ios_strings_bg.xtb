@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} от {count} адрес}other{{position} от {count} адреса}}</translation>
 <translation id="13813615483058219">Нещо се обърка. Проверете връзката си с интернет, увеличете силата на звука или опитайте отново.</translation>
+<translation id="138181280295369883">Влезте в профила си, за да получите достъп до запазената си информация и др. на всичките си устройства</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="138618066238211776">Продължаване като <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Опции за запазване на картата</translation>
@@ -161,6 +162,7 @@
 <translation id="1466035273550360103">Няма отворени раздели</translation>
 <translation id="1469381646033328562">Профилът ви се управлява от родителя ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">след завършването на задачата „Създаване на група раздели“</translation>
 <translation id="147982357559798527">Променено</translation>
 <translation id="1481450969185702334">Намиране и попълване</translation>
 <translation id="1483493594462132177">Изпращане</translation>
@@ -187,6 +189,7 @@
 <translation id="1536390784834419204">Превод на страницата</translation>
 <translation id="1539535193627863227">Няма намерени пароли или ключове за достъп за този сайт</translation>
 <translation id="1540800554400757039">Адрес 1</translation>
+<translation id="1543035591122163372">Влезте в профила си, за да получите достъп до паролите си и др. от <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Отваряйте от заключения екран разделите, получени от другите ви устройства.</translation>
 <translation id="1544653821167545205">Обобщи страницата</translation>
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
@@ -313,6 +316,7 @@
 <translation id="1901366738768303267">Как да използвам тази функция?</translation>
 <translation id="1901600657316773839">Запазване на избора</translation>
 <translation id="1902277226107477495">Разпознаването на адреси е изключено. Можете да го включите отново в настройките.</translation>
+<translation id="1905582086181351638">Влезте в профила си, за да получите достъп до запазената си информация и др. от <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Сайтът е добавен и фиксиран</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1925706052394657380">Отворете настройките за <ph name="BEGIN_BOLD" />основните приложения<ph name="END_BOLD" /> в iOS</translation>
@@ -407,8 +411,8 @@
 <translation id="2218389616572918761">Сайтовете могат да извеждат запитвания за достъп до микрофона ви</translation>
 <translation id="2219935992754556187">Chrome защитава чувствителните ви данни с помощта на Face ID</translation>
 <translation id="2220529011494928058">Подаване на сигнал за проблем</translation>
-<translation id="2222149859067335623">Достъпът на <ph name="SITE_DOMAIN" /> до камерата ви е блокиран</translation>
 <translation id="2223461067862937305">Създаване на QR код</translation>
+<translation id="222798989929574238">Използвахте над 20 снимки за търсене</translation>
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="2236949375853147973">Моята активност</translation>
 <translation id="2237869114829007407">Получавайте общ преглед и ключова статистика за всяка страница или тема</translation>
@@ -899,7 +903,6 @@
 <translation id="386224966259596343">Ще имате възможност да запазите тази информация в Wallet следващия път, когато попълвате съответен формуляр.</translation>
 <translation id="3868495844258915202">Показване на пълния URL адрес</translation>
 <translation id="3875783148670536197">Покажете ми как</translation>
-<translation id="3877211858413020188">Достъпът на <ph name="SITE_DOMAIN" /> до микрофона ви е блокиран</translation>
 <translation id="3878657761594430423">Приспособление за хващане на листа</translation>
 <translation id="3884810423191119660">Запазвайте паролите си по сигурен начин, за да можете лесно да влизате в сайтове и приложения</translation>
 <translation id="3885587018298784481">Присъединяване към семейна група</translation>
@@ -1036,6 +1039,7 @@
 <translation id="4289309730265289297">Библиотека със снимки</translation>
 <translation id="429074084062258019">{count,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="4290920330097335010">Никога да не се разрешава</translation>
+<translation id="4293154608148215505">телефона ви</translation>
 <translation id="4294506173142861371">Искате ли да влезете като <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Задаване на позиция</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
@@ -1308,8 +1312,10 @@
 <translation id="5119329531859909472">За да проследите продукта, докоснете „Проследяване“</translation>
 <translation id="5121618895923301719">Вече проследявате този продукт. Тази страница е запазена в <ph name="BEGIN_LINK" />Мобилни отметки<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Имате няколко проблема с паролите.</translation>
+<translation id="5126335625961252141">таблета ви</translation>
 <translation id="5128788795241319992">Разглеждане на новото меню</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
+<translation id="5137568953923142260">Разрешаване веднъж</translation>
 <translation id="5141363746588976328">Скриване на картата за понижения на цените в разделите</translation>
 <translation id="514154868070499296">Шрифт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Излизане от превключвателя на раздели</translation>
@@ -1388,6 +1394,7 @@
 <translation id="5371112366564891538">Увеличаване на размера на текста</translation>
 <translation id="5376135254804080693">Премахване на избора от всички</translation>
 <translation id="537853552771686272">Управлявайте темите и сайтовете, които ви интересуват</translation>
+<translation id="5385892579392932755">лаптопа ви</translation>
 <translation id="5390458669633674385">{count,plural, =1{Затворихте {count}}other{Затворихте {count}}}</translation>
 <translation id="5394975111793637642">Скриване на картата „Подходящи за вас отзиви за продукт“</translation>
 <translation id="5414763847370083940">Ще получите сигнал, когато цената в някой от сайтовете се понижи.</translation>
@@ -1763,6 +1770,7 @@
 <translation id="6525550806864373485">Меню „Редактиране“</translation>
 <translation id="6527208859483186860">фон {position} от {total}</translation>
 <translation id="6527303717912515753">Споделяне</translation>
+<translation id="6529706885792457023">Организирахте над 15 раздела</translation>
 <translation id="6532106788206463496">Запазване на промените</translation>
 <translation id="6536759809440150308">Отваряне на „<ph name="GROUP_TITLE" />“, група от <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1816,7 @@
 <translation id="6642362222295953972">Превключване към съществуващия раздел</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Проверихте над 25 пароли</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659660757330712663">Можете да прекарате пръст през лентата с инструменти, за да превключвате между разделите.</translation>
 <translation id="6663529247339810546">Изображението не се запази</translation>
@@ -1963,9 +1972,11 @@
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Разделите ви ще бъдат затворени, а данните за сърфирането – изтрити</translation>
 <translation id="714291438898585119">Със звезда</translation>
+<translation id="7144458305574230431">Влезте в профила си, за да получите достъп до отметките си и др. от <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Актуализиране на шофьорската книжка</translation>
 <translation id="7146301801400584641">Налице е файл за календар</translation>
 <translation id="7149893636342594995">Последните 24 часа</translation>
+<translation id="7151361008641622036">{count,plural, =1{Организирахте 1 раздел}other{Организирахте # раздела}}</translation>
 <translation id="7154417656353909837">Премахване на адресите</translation>
 <translation id="7161230316646448869">Синхронизиране на отметките, историята ви и др. на всички устройства</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -1989,6 +2000,7 @@
 <translation id="722339453342442311">Проверка сега</translation>
 <translation id="7227235818314667565">Управление на споделянето</translation>
 <translation id="7233006041370588369">Изберете парола, която да се попълни.</translation>
+<translation id="7238074332967840767">Безопасност</translation>
 <translation id="723874023660911012">Превключване на потребителските профили</translation>
 <translation id="7241135764990439166">Режимът „инкогнито“ не е налице</translation>
 <translation id="7245288034498365666">Организирайте и пестете време</translation>
@@ -2372,7 +2384,6 @@
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8393889347136007944">Разделите не са използвани от <ph name="THRESHOLD" /> дни</translation>
 <translation id="8395180897620197612">Спиране на регистрирането</translation>
-<translation id="8399253661151100858"><ph name="SITE_DOMAIN" /> има достъп до микрофона ви, когато посещавате този сайт</translation>
 <translation id="8407669440184693619">Няма намерени пароли за този сайт</translation>
 <translation id="8407831512155324054">Паролите ви изглеждат надеждни</translation>
 <translation id="8414283596511250978">Никога не забравяйте паролите си</translation>
@@ -2387,7 +2398,6 @@
 <translation id="8439758443371991593">Скриване на „Добавяне към списъка за четене“</translation>
 <translation id="8443986842926457191">URL адресът е повече от 2048 знака</translation>
 <translation id="8449869326050867919">Паролата е споделена</translation>
-<translation id="8458009459729013424"><ph name="SITE_DOMAIN" /> има достъп до камерата ви, когато посещавате този сайт</translation>
 <translation id="8461708300275916315">Ако сте на възраст под 18 години</translation>
 <translation id="8473815223723723001">Редактиране на изображението с Gemini</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
@@ -2396,6 +2406,7 @@
 <translation id="8481184073299279701">Докоснете бутона „Стартиране на регистрирането“, ако искате да се събират бъдещите регистрационни файлове от конзолата на JavaScript и грешките от всички раздели. Регистрационните файлове ще се събират (и съхраняват само в паметта), докато затворите съответната страница или докоснете бутона „Спиране на регистрирането“.</translation>
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
+<translation id="8488065047914929586">след завършването на задачата „Запазване на парола“</translation>
 <translation id="8488923644885757471">Нов прозорец</translation>
 <translation id="8490629238792920282">Не може да се създаде връзка</translation>
 <translation id="8501469528283376592">Автоматично изтриване на изтеглянията</translation>
@@ -2543,6 +2554,7 @@
 <translation id="8890516388109605451">Източници</translation>
 <translation id="8893208530912252670">Видеоклипове</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
+<translation id="890009681345348416">Над 40 пароли са попълнени автоматично</translation>
 <translation id="8900845556227858314">Browser App</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8907722425137681851">Търсене в страницата…</translation>

@@ -289,7 +289,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1462951478840426066">Gamitin ang mga font sa iyong computer para makagawa ka ng lubos na tumpak na content</translation>
 <translation id="1465457928007067810">Na-save ang IBAN sa iyong Google Account</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Magpakita ng higit pa</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Maglagay ng 3 o higit pang salita para makatanggap ng tulong sa pagsusulat</translation>
@@ -452,7 +451,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Subukang makipag-ugnayan sa admin ng system.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, mag-e-expire sa <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Computer</translation>
 <translation id="1739364174357629566">I-update ang Known Traveler Number</translation>
 <translation id="1740404923954980840">Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="1741474054575634405">Pamahalaan ang mga loyalty card...</translation>
@@ -867,6 +865,7 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2436186046335138073">Papayagan ang <ph name="HANDLER_HOSTNAME" /> na buksan ang lahat ng link ng <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Hindi ma-save ang card na ito sa iyong Google Account. Na-save lang ito sa Chrome sa device na ito.</translation>
 <translation id="2438874542388153331">Quad punch right</translation>
+<translation id="2442033148418774391">Isinara ang abiso sa mas smart na autofill, pinapanatiling pribado</translation>
 <translation id="2442865686365739754"><ph name="BEGIN_EMPHASIS" />Hindi ise-save<ph name="END_EMPHASIS" /> ng Chrome ang:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Iyong history ng pag-browse
@@ -879,13 +878,13 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2451607499823206582">Pagsubaybay</translation>
 <translation id="2452837234288608067">Wala kaming maitutulong diyan. Subukan ulit.</translation>
 <translation id="2453045048779611513">Nililimitahan ng iyong organisasyon kung ano ang puwede mong i-save</translation>
+<translation id="2456490423293803882">Binuksan nang buo ang abiso sa mas smart na autofill, pinapanatiling pribado</translation>
 <translation id="2459882793359532780">Mga inilapat na patakaran sa browser (mga patakaran sa machine at profile)</translation>
 <translation id="2461385121573678775">Nagbibigay sa iyo ang Chrome Enterprise Core ng sentralisadong tool para sa pag-configure ng mga patakaran ng browser mula sa cloud</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2465688316154986572">Staple</translation>
 <translation id="2465914000209955735">Pamahalaan ang mga file na na-download mo sa Chrome</translation>
-<translation id="2466682894498377850">Ipinadala ang tab mula sa iyong <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Mga detalye ng hardware at mga istatistika ng device gaya ng history ng paggamit ng CPU/RAM</translation>
 <translation id="2467421459221956357">Gumamit ng mga sensor?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Magpatakbo ng Network Diagnostics<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Sine-share sa Google ang content mula sa page para sa pag-checkout para maialok ang mga opsyong ito.<ph name="END_BOLD" /> Napapailalim sa pagiging kwalipikado ang mga plan sa pagbabayad. Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga setting ng pagbabayad<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Para patakbuhin ang app na ito, i-enable ulit ang Developer Mode ng Naka-isolate na Web App</translation>
 <translation id="2526280916094749336">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Mase-save ang address na ito sa iyong Google Account na <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Desktop</translation>
 <translation id="2527451058878391043">Nasa harap ng iyong card ang CVC mo. Ito ang 4 na digit na code sa kanang bahagi sa itaas ng numero ng iyong card.</translation>
 <translation id="2529899080962247600">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry ang field na ito. Babalewalain ang lahat ng entry na lalampas dito.</translation>
 <translation id="2530042584066815841">Lock at paggamit ng mouse</translation>
@@ -1108,6 +1106,7 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2878197950673342043">Poster fold</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">gamitin ang iyong lock ng screen para sa paglalagay ng mga password</translation>
+<translation id="2880119244122776372">Bumuo at mag-code</translation>
 <translation id="2881276955470682203">I-save ang card?</translation>
 <translation id="2882280148032777436">Mag-delete ng Known Traveler Number</translation>
 <translation id="2882949212241984732">Double-gate fold</translation>
@@ -1736,7 +1735,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3905894480064208252">{0,plural, =1{Na-block ang file para hindi mailipat}one{<ph name="FILE_COUNT" /> file ang na-block para hindi mailipat}other{<ph name="FILE_COUNT" /> na file ang na-block para hindi mailipat}}</translation>
 <translation id="3906022360148923497">Icon ng paraan ng pagbabayad</translation>
 <translation id="3906234161316839040">Iba pang order</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Matuto pa tungkol sa naka-embed na content</translation>
 <translation id="3920504717067627103">Mga Patakaran ng Certificate</translation>
@@ -3914,6 +3912,7 @@ Mga karagdagang detalye:
 <translation id="753713322968419914">Alisin ang address ng tahanan sa autofill sa Chrome?</translation>
 <translation id="753714465667062283">Mag-sign in para ma-save ang iyong larawan</translation>
 <translation id="7537536606612762813">Kinakailangan</translation>
+<translation id="7540924742308928499">Mag-brainstorm at magbuod</translation>
 <translation id="7543525346216957623">I-request sa magulang mo</translation>
 <translation id="7546409722674205727">Magsisimula <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ayusin ang mga error sa koneksyon</translation>

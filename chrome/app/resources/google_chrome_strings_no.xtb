@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome har blokkert denne nedlastingen fordi filtypen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="1197860368385086056">Neste gang du åpner Chrome på <ph name="DEVICE_TYPE" />, ser du en forespørsel om å slå på varsler om prissporing.</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
+<translation id="122321322139970942">En <ph name="IMPORTANT_UPDATE" /> venter. For å holde surfingen din trygg oppdateres Chrome neste gang du er inaktiv i <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Logg på Chrome for å få bokmerkene dine med mer på alle enhetene</translation>
 <translation id="1278833599417554002">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="1289911795790071537">Åpne søk med Chrome</translation>
@@ -499,6 +500,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5941830788786076944">Gjør Google Chrome til standardleser</translation>
 <translation id="5947104538377036631">Chrome-snarvei</translation>
 <translation id="5960071705175224773">Innstillingene dine er endret av en ukjent app</translation>
+<translation id="5960404530854194706">Chrome oppdateres når du er borte</translation>
 <translation id="5980111191913430208">Utvidelser, apper og temaer fra ukjente kilder kan skade enheten din. Chrome anbefaler at du kun installerer dem fra <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
 <translation id="6008161919456049856">Passordene, betalingsmåtene og adressene du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chrome igjen, logg på igjen.</translation>
@@ -582,6 +584,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6556755379298048869">Søk med en hurtigtast.</translation>
 <translation id="6585124893636629274">Lukk Gemini i Chrome</translation>
 <translation id="659498884637196217">I Google Passordlagring på denne enheten</translation>
+<translation id="660312897435669152">Chrome vil oppdatere</translation>
 <translation id="6612152958212564387">Du sender ikke bruksstatistikk og krasjrapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hold passordene, bokmerkene og loggen synkronisert på alle enheter ved å angi Chrome som standardnettleser.</translation>
 <translation id="6621391692573306628">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene</translation>

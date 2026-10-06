@@ -1164,6 +1164,17 @@ Se ela for deixada sem definição ou for definida como falsa, será usado o com
 Se o usuário tentar abrir um app do Chrome desativado, vai receber uma mensagem explicando por que isso não foi possível e sugerindo que ele entre em contato com o departamento de TI.
 
 O ChromeOS M184 será o último marco do ChromeOS compatível com Apps do Chrome.</translation>
+<translation id="1726477280489844651">Controla se o <ph name="PRODUCT_NAME" /> abre uma janela do navegador quando o usuário faz login no <ph name="MS_WIN_NAME" />.
+
+O <ph name="PRODUCT_NAME" /> tem uma configuração "Iniciar o <ph name="PRODUCT_NAME" /> com o <ph name="MS_WIN_NAME" />" que o registra para ser iniciado quando o usuário faz login. Assim, o navegador fica pronto imediatamente. Os usuários também podem receber solicitações sugerindo que mudem essa configuração.
+
+Se a política for ativada, o <ph name="PRODUCT_NAME" /> será iniciado e abrirá uma janela do navegador quando o usuário fizer login. Os usuários não podem mudar a configuração e não recebem solicitações para fazer isso.
+
+Se a política for desativada, o <ph name="PRODUCT_NAME" /> não será iniciado quando o usuário fizer login. Os usuários não podem mudar a configuração e não recebem solicitações para fazer isso.
+
+Se a política não for definida, os usuários poderão mudar a configuração.
+
+Esta política não afeta as versões do <ph name="PRODUCT_NAME" /> em que a configuração "Iniciar o <ph name="PRODUCT_NAME" /> com o <ph name="MS_WIN_NAME" />" não está disponível.</translation>
 <translation id="1729169799290004131">Se a política for definida, a porcentagem de brilho da tela será especificada, desativando os recursos do brilho automático. O brilho inicial da tela será ajustado para o valor da política, mas os usuários poderão mudá-lo.
 
       Se a política não for definida, os controles da tela pelo usuário ou os recursos de brilho automático não serão afetados.
@@ -1534,6 +1545,7 @@ Se esta política não for definida, o recurso "Clique para ligar" vai ficar ati
       Esta política bloqueia o JavaScript com base na correspondência entre a origem do documento de nível superior (geralmente o URL da página que também é mostrado na barra de endereços) e um dos padrões. Ela não é adequada para mitigar ataques de cadeia de suprimentos da web. Por exemplo, fornecer o padrão "https://[*.]foo.com/" não vai impedir que uma página hospedada em https://example.com execute um script carregado de https://www.foo.com/example.js. Além disso, fornecer o padrão "https://example.com/" não vai impedir que um documento de https://example.com execute scripts se ele não for o documento de nível superior, mas incorporado como um subframe em uma página hospedada em outra origem, como https://www.bar.com.</translation>
 <translation id="1942015922182679826">Ativar a exclusão de senhas não descriptografáveis</translation>
 <translation id="1942626390957213764">Desativar o hub de compartilhamento da área de trabalho</translation>
+<translation id="1943628907052340534">Não abrir o <ph name="PRODUCT_NAME" /> quando o usuário fizer login no <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Desativar o isolamento de sites para todos os sites, mas permitir que o usuário ative essa opção</translation>
 <translation id="1945994447126139909">Esta política visa à adaptação a curto prazo e será removida na versão 88 do <ph name="PRODUCT_NAME" />.
 
@@ -2231,6 +2243,13 @@ a implementação antiga será removida.
 OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
 política enquanto o navegador estiver em execução.</translation>
 <translation id="2354439478396602136">Mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2355126045573728327">A definição da política especifica uma lista de nomes de pacotes de aplicativos do <ph name="ANDROID_NAME" /> (por exemplo, <ph name="EXAMPLE_PACKAGE_NAME" />) que serão iniciados automaticamente quando o usuário fizer login no <ph name="PRODUCT_OS_NAME" />.
+
+Os aplicativos também precisam ser configurados como de instalação forçada usando a política <ph name="ARC_POLICY_NAME" />. Eles são iniciados automaticamente assim que a instalação é concluída.
+
+No momento, apenas o primeiro aplicativo da lista é iniciado.
+
+Se esta política for deixada em branco ou sem definição, nenhum aplicativo do <ph name="ANDROID_NAME" /> será iniciado automaticamente no login.</translation>
 <translation id="2355876547176311490">Desativar o uso de servidores de redirecionamento pelo host de acesso remoto</translation>
 <translation id="2358176879566587521">Esta política foi removida. Ela não é compatível com esta versão do <ph name="PRODUCT_NAME" />. Leia mais em https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="235987002603620567">O NewBaseUrlInheritanceBehavior é um recurso do <ph name="PRODUCT_NAME" /> que faz com que os frames <ph name="ABOUT_BLANK_PAGE" /> e <ph name="ABOUT_SRCDOC_PAGE" /> herdem os valores do URL base de maneira consistente por snapshots do URL base do iniciador. Confira mais detalhes em https://chromestatus.com/feature/5161101671530496.
@@ -2866,6 +2885,7 @@ Se a política for definida como 2 ("Desativada"), a integração do Google Deve
       </translation>
 <translation id="2697717608663878828">Ativar o experimento Encrypted ClientHello do TLS</translation>
 <translation id="2699836109975228367">Ativar o áudio mono na tela de login</translation>
+<translation id="2701554183194485203">Aplicativos do <ph name="ANDROID_NAME" /> serão iniciados automaticamente no login</translation>
 <translation id="2702023190395322609">Ativar recomendações de mídia</translation>
 <translation id="2702682139813393777">Forçar os hosts de mensagens nativas do Windows a iniciar via cmd.exe</translation>
 <translation id="270582584528242502">Não mostrar uma caixa de diálogo de alerta quando o usuário tentar sair</translation>
@@ -3739,6 +3759,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="322359555555487980">Determina a disponibilidade de variações no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3229163415739929305">Se a política for ativada ou deixada sem definição, a busca de metadados para carregamento de página e dos modelos de aprendizado de máquina que melhoram a experiência de navegação serão ativados.
       Se a política for desativada, é possível que alguns recursos não funcionem corretamente.</translation>
+<translation id="3230956492238004242">Ativar a aplicação de patches de módulo filho dinâmico</translation>
 <translation id="3231311173895401135">Deixar o navegador decidir o suporte</translation>
 <translation id="3231837273069128027">A definição da política configura a disponibilidade e o comportamento das atualizações de firmware para <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
@@ -4443,6 +4464,7 @@ Se as <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> e <ph na
 A transferência de dados com o Takeout também precisa estar ativada para que o app Transferência de conteúdo funcione corretamente. Para saber mais, consulte https://support.google.com/a/answer/6364687.</translation>
 <translation id="3702518095257671450">Atestado remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
+<translation id="370314752761795411">Iniciar o <ph name="PRODUCT_NAME" /> com o <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712861436661566358">Aplicar separação de perfis</translation>
 <translation id="3719826155360621982">Página inicial</translation>
@@ -5374,6 +5396,7 @@ Se a política for definida, os usuários não poderão mudá-la no <ph name="PR
 Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que os usuários se conectem apenas aos serviços Bluetooth especificados com uma exceção quando a lista estiver vazia, ou seja, quando qualquer serviço tiver permissão para ser usado. UUIDs reservados pela Bluetooth SIG podem ser representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> ou <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. UUIDs personalizados podem ser representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. UUIDs não diferenciam maiúsculas e minúsculas. Se esta política não for definida, os usuários poderão se conectar a qualquer serviço Bluetooth.</translation>
 <translation id="4332177773549877617">Registra eventos de instalações do app Android</translation>
 <translation id="4333940819293342439">Frequência (em milissegundos) de coleta da telemetria de uso do app.</translation>
+<translation id="4336096948197154521">Abrir o <ph name="PRODUCT_NAME" /> quando o usuário fizer login no <ph name="MS_WIN_NAME" /></translation>
 <translation id="4340121900958123942">Defina o nível de disponibilidade do sistema de geolocalização do <ph name="PRODUCT_OS_NAME" />.
 
 Essa é uma camada extra de controle, localizada abaixo das permissões para apps e sites. Por exemplo, se esta política for definida como <ph name="GLS_BLOCKED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, nenhum app ou site poderá determinar o local, seja qual for a permissão de localização. No entanto, se ela estiver definida como <ph name="GLS_ALLOWED" />, apps e sites poderão receber a localização individualmente se tiverem permissão.
@@ -6494,6 +6517,13 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="4947257516265472776">Aplicar o Modo Restrito Rigoroso para o <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="494924690085329212">Será reinicializado quando o usuário sair se o Android tiver sido iniciado.</translation>
 <translation id="4950447493143157880">Nunca usar o cliente DNS integrado</translation>
+<translation id="4953257833692039804">Controla se o <ph name="PRODUCT_NAME" /> aplica dinamicamente atualizações de segurança em etapas a processos filhos recém-lançados (como processos de renderização) sem exigir uma reinicialização completa do navegador.
+
+Se <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> estiver desativado, nenhum módulo novo será instalado para uso.
+
+Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá iniciar novos processos filhos usando binários de módulo filho preparados dinamicamente, quando disponíveis.
+
+Se esta política for desativada, o <ph name="PRODUCT_NAME" /> vai parar imediatamente de aplicar binários de módulos filhos preparados dinamicamente a processos filhos recém-lançados (incluindo atualizações já baixadas ou preparadas localmente) e vai exigir uma reinicialização completa do navegador para aplicar as atualizações. Os processos filhos já em execução vão continuar como estão. Essa configuração desativa a aplicação dinâmica de patches sem desativar todas as atualizações de componentes.</translation>
 <translation id="4953541641325278286">Não permitir que sites detectem o estado de inatividade do usuário</translation>
 <translation id="4954352279763128540">Adiciona um domínio pré-preenchido à caixa de diálogo de autenticação Kerberos.
 
@@ -6872,6 +6902,7 @@ política enquanto o navegador estiver em execução.</translation>
           Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="5182483318861266793">Posicionar a estante no lado direito da tela</translation>
 <translation id="51859390023061147">Desativar o recurso de restauração completa.</translation>
+<translation id="5188507662885416844">Desativar a aplicação de patches de módulo filho dinâmico</translation>
 <translation id="5189360528842591274">Permitir conexão apenas com os serviços Bluetooth na lista</translation>
 <translation id="5191007233343702012">Usar a priorização padrão de guias</translation>
 <translation id="5191476996923842491">Comportamento padrão para o tempo limite mínimo da função setTimeout().</translation>

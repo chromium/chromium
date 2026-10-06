@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">စကားဝှက်များ</translation>
 <translation id="1381022135873211423">{count,plural, =1{လိပ်စာ {count} ခု အနက် {position}}other{လိပ်စာ {count} ခုအနက် {position}}}</translation>
 <translation id="13813615483058219">တစ်ခုခု မှားသွားသည်။ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ။ အသံချဲ့ပါ (သို့) ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="138181280295369883">သင့်စက်အားလုံးတွင် သိမ်းထားသော အချက်အလက်နှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
 <translation id="138692594145659985">ကတ်သိမ်းရန် ရွေးစရာများ</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">စာမျက်နှာကို ဘာသာပြန်ရန်</translation>
 <translation id="1539535193627863227">ဤဝဘ်ဆိုက်အတွက် စကားဝှက် (သို့) လျှို့ဝှက်ကီး မတွေ့ပါ</translation>
 <translation id="1540800554400757039">လိပ်စာ: 1</translation>
+<translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> မှ သင့်စကားဝှက်နှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="154312949627292154">သင်၏အခြားစက်များမှ ရရှိထားသော တဘ်များကို လော့ခ်မျက်နှာပြင်တွင် ဖွင့်ပါ။</translation>
 <translation id="1544653821167545205">စာမျက်နှာ အကျဉ်းချုပ်ရန်</translation>
 <translation id="1545749641540134597">QR ကုဒ်ကို ဖတ်ပါ</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">ဤတူးလ်ကို ဘယ်လိုသုံးရမလဲ။</translation>
 <translation id="1901600657316773839">ဆက်လက်ရွေးချယ်ရန်</translation>
 <translation id="1902277226107477495">လိပ်စာသိရှိခြင်း ပိတ်ထားသည်။ ဆက်တင်များတွင် ပြန်ဖွင့်နိုင်သည်။</translation>
+<translation id="1905582086181351638"><ph name="DEVICE_TYPE" /> မှ သင်သိမ်းထားသော အချက်အလက်နှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1909201414196501151">ဝဘ်ဆိုက်ကို ထည့်ပြီး ပင်ထိုးလိုက်သည်</translation>
 <translation id="1911619930368729126">Google Drive သို့အပ်လုဒ်လုပ်မည်</translation>
 <translation id="1925706052394657380">iOS ရှိ <ph name="BEGIN_BOLD" />မူရင်းအက်ပ်<ph name="END_BOLD" /> ဆက်တင်များကို ဖွင့်ပါ</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">သင့်မိုက်ခရိုဖုန်း သုံးရန် ဝဘ်ဆိုက်များက တောင်းဆိုနိုင်သည်</translation>
 <translation id="2219935992754556187">Chrome သည် ‘မျက်နှာ ID’ ဖြင့် သင်၏ သတိထားရမည့်ဒေတာကို လုံခြုံစေသည်</translation>
 <translation id="2220529011494928058">ပြဿနာ အစီရင်ခံရန်</translation>
-<translation id="2222149859067335623">“<ph name="SITE_DOMAIN" />” ကို သင့်ကင်မရာသုံးခွင့် ပိတ်ထားသည်</translation>
 <translation id="2223461067862937305">QR ကုဒ် ပြုလုပ်ရန်</translation>
 <translation id="222798989929574238">ရှာဖွေရန် ဓာတ်ပုံ ၂၀+ ပုံ သုံးထားသည်</translation>
 <translation id="2230173723195178503">ဝဘ်စာမျက်နှာကို ဖွင့်ပြီးပါပြီ</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">သက်ဆိုင်ရာဖောင်ကို နောက်တစ်ကြိမ်ဖြည့်သည့်အခါ ဤအချက်အလက်ကို Wallet တွင် သိမ်းခွင့်ရပါမည်။</translation>
 <translation id="3868495844258915202">URL အပြည့်အစုံ ပြပါ</translation>
 <translation id="3875783148670536197">လုပ်နည်း ပြရန်</translation>
-<translation id="3877211858413020188">“<ph name="SITE_DOMAIN" />” ကို သင့်မိုက်ခရိုဖုန်းသုံးခွင့် ပိတ်ထားသည်</translation>
 <translation id="3878657761594430423">စာမျက်နှာ ဆွဲယူစနစ်</translation>
 <translation id="3884810423191119660">ဝဘ်ဆိုက်နှင့် အက်ပ်များသို့ အလွယ်တကူ လက်မှတ်ထိုးဝင်နိုင်ရန် စကားဝှက်များကို လုံခြုံစွာသိမ်းနိုင်သည်</translation>
 <translation id="3885587018298784481">မိသားစုအဖွဲ့၌ ပါဝင်ပါ</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">ဓာတ်ပုံဒစ်ဂျစ်တိုက်</translation>
 <translation id="429074084062258019">{count,plural, =1{အုပ်စုသို့ တဘ်ထည့်ရန်}other{အုပ်စုသို့ တဘ်များထည့်ရန်}}</translation>
 <translation id="4290920330097335010">ဘယ်တော့မှ ခွင့်မပြုရန်</translation>
+<translation id="4293154608148215505">သင့်ဖုန်း</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> အဖြစ် လက်မှတ်ထိုးဝင်မလား</translation>
 <translation id="4302061870579014542">နေရာသတ်မှတ်ရန်</translation>
 <translation id="4304713468139749426">စကားဝှက်မန်နေဂျာ</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">ကုန်ပစ္စည်း ခြေရာခံရန် ‘ခြေရာခံရန်’ ကိုတို့ပါ</translation>
 <translation id="5121618895923301719">ဤထုတ်ကုန်ကို စောင့်ကြည့်ထားပြီးပြီ။ ဤစာမျက်နှာကို <ph name="BEGIN_LINK" />မိုဘိုင်းလိပ်စာများ<ph name="END_LINK" /> တွင် သိမ်းထားသည်။</translation>
 <translation id="512533434554095351">သင့်တွင် စကားဝှက်ပြဿနာအချို့ ရှိသည်။</translation>
+<translation id="5126335625961252141">သင့်တက်ဘလက်</translation>
 <translation id="5128788795241319992">မီနူးအသစ်ကို စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
+<translation id="5137568953923142260">တစ်ကြိမ်ခွင့်ပြုရန်</translation>
 <translation id="5141363746588976328">သင့်တဘ်များကတ်ရှိ ဈေးကျခြင်းများကတ်ကို ဖျောက်ရန်</translation>
 <translation id="514154868070499296">ဖောင့်- <ph name="FONT" /></translation>
 <translation id="5145331760738811130">တဘ်ပြောင်းခလုတ်မှ ထွက်ရန်</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">စာသားအရွယ်အစား ကြီးအောင်လုပ်ရန်</translation>
 <translation id="5376135254804080693">အားလုံးပြန်ဖြုတ်ရန်</translation>
 <translation id="537853552771686272">သင်စိတ်ဝင်စားသည့် အကြောင်းအရာ၊ ဝဘ်ဆိုက်များကို စီမံနိုင်သည်</translation>
+<translation id="5385892579392932755">သင့်လက်ပ်တော့</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ခု ပိတ်ထားသည်}other{{count} ခု ပိတ်ထားသည်}}</translation>
 <translation id="5394975111793637642">သင့်ကတ်အတွက် ကုန်ပစ္စည်း သုံးသပ်ချက်များ ဖျောက်ရန်</translation>
 <translation id="5414763847370083940">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက် ရရှိမည်။</translation>
@@ -1966,6 +1971,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7140355148730164340"><ph name="EMAIL" />။ <ph name="AI_TIER" />။</translation>
 <translation id="7141960840225504692">သင့်တဘ်များကို ပိတ်မည်ဖြစ်ပြီး ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ထားသည်</translation>
 <translation id="714291438898585119">ကြယ်ပွင့်ပြထားသည်များ</translation>
+<translation id="7144458305574230431"><ph name="DEVICE_TYPE" /> မှ သင့်ဝဘ်လိပ်စာနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7145337554745942724">ယာဉ်မောင်းလိုင်စင် အပ်ဒိတ်လုပ်မလား</translation>
 <translation id="7146301801400584641">ပြက္ခဒိန်ဖိုင် ရရှိနိုင်သည်</translation>
 <translation id="7149893636342594995">ပြီးခဲ့သည့် ၂၄ နာရီ</translation>
@@ -1993,6 +1999,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="722339453342442311">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="7227235818314667565">မျှဝေမှုကို စီမံရန်</translation>
 <translation id="7233006041370588369">ဖြည့်ရန် စကားဝှက်ရွေးပါ။</translation>
+<translation id="7238074332967840767">လုံခြုံမှု</translation>
 <translation id="723874023660911012">ပရိုဖိုင်ပြောင်းရန်</translation>
 <translation id="7241135764990439166">ရုပ်ဖျက်မုဒ်ကို မရနိုင်ပါ</translation>
 <translation id="7245288034498365666">စနစ်တကျစုစည်းပြီး အချိန်ချွေတာပါ</translation>
@@ -2376,7 +2383,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8393700583063109961">မက်ဆေ့ဂျ်ပို့ရန်</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> ရက်ကြာ အသုံးမပြုသည့် တဘ်များ</translation>
 <translation id="8395180897620197612">မှတ်တမ်းတင်ခြင်းကို ရပ်ရန်</translation>
-<translation id="8399253661151100858">ဤဝဘ်ဆိုက်သို့ သင်ဝင်ကြည့်သည့်အခါတိုင်း “<ph name="SITE_DOMAIN" />” က သင့်မိုက်ခရိုဖုန်းကို သုံးနိုင်သည်</translation>
 <translation id="8407669440184693619">ဤဝဘ်ဆိုက်အတွက် စကားဝှက်မရှိပါ</translation>
 <translation id="8407831512155324054">သင့်စကားဝှက်များက လုံခြုံမှုမြင့်ပုံရသည်</translation>
 <translation id="8414283596511250978">သင့်စကားဝှက်များကို မမေ့တော့ပါ</translation>
@@ -2391,7 +2397,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8439758443371991593">‘ဖတ်ရန်စာရင်းတွင် ထည့်ရန်’ ကိုဖျောက်ရန်</translation>
 <translation id="8443986842926457191">URL သည် စာလုံးရေ ၂၀၄၈ လုံးထက်များနေသည်</translation>
 <translation id="8449869326050867919">စကားဝှက်မျှဝေထားသည်</translation>
-<translation id="8458009459729013424">ဤဝဘ်ဆိုက်သို့ သင်ဝင်ကြည့်သည့်အခါတိုင်း “<ph name="SITE_DOMAIN" />” က သင့်ကင်မရာကို သုံးနိုင်သည်</translation>
 <translation id="8461708300275916315">သင်သည် အသက် ၁၈ နှစ်အောက်ဖြစ်ပါက</translation>
 <translation id="8473815223723723001">Gemini ဖြင့် ပုံတည်းဖြတ်ပါ</translation>
 <translation id="8473863474539038330">လိပ်စာများနှင့် အခြားအရာများ</translation>

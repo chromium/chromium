@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">رسائی ہٹائیں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792619191750875668">توسیع کردہ ڈسپلے</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> کیلئے پاس ورڈ چھپائیں</translation>
 <translation id="1794791083288629568">اس مسئلے کو حل کرنے میں ہماری مدد کیلئے تاثرات بھیجیں۔</translation>
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
@@ -1697,7 +1698,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> کو ذاتی نوعیت کا بنائیں اور کنٹرول کريں</translation>
 <translation id="2300434721407965566">آپ کی بیٹری کو زیادہ دیر تک چلنے میں مدد کے لیے 80 فیصد پر چارج ہونا بند ہو جاتا ہے۔</translation>
 <translation id="2301382460326681002">ایکسٹینشن روٹ ڈائریکٹری غلط ہے۔</translation>
-<translation id="2301402091755573488">اشتراک کردہ ٹیب</translation>
 <translation id="2304820083631266885">سیارہ</translation>
 <translation id="2305202347479035002">یہ کیسے کام کرتا ہے</translation>
 <translation id="2306794767168143227">اس آلے پر <ph name="BRAND" /> میں محفوظ کریں</translation>
@@ -1716,6 +1716,7 @@
 <translation id="2322622365472107569">وقت اختتام <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏محفوظ کردہ Wi-Fi نیٹ ورکس</translation>
 <translation id="2323685460575935191">اسکرول بٹنز چھپائیں</translation>
+<translation id="2325004050205455346">حالیہ سرگزشت</translation>
 <translation id="2325444234681128157">پاس ورڈ یاد رکھیں</translation>
 <translation id="2326188115274135041">‏خودکار غیر مقفل کریں کو آن کرنے کے لیے PIN کی تصدیق کریں</translation>
 <translation id="2326583548923775947">‏یہ Google اکاؤنٹ نہیں ہے۔ آپ جو آئٹمز Chrome میں محفوظ کرتے ہیں وہ دوسرے آلات پر دستیاب نہیں ہوں گے۔</translation>
@@ -2074,7 +2075,6 @@
 <translation id="2598710988533271874">‏نیا Chrome دستیاب ہے</translation>
 <translation id="2599048253926156421">صارف کا نام کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{‫1 غیر محفوظ ایکسٹینشن کو آف کر دیا گیا}other{‫{NUM_SITES} غیر محفوظ ایکسٹینشنز کو آف کر دیا گیا}}</translation>
-<translation id="2603121359676416582">اس صفحہ کے لیے</translation>
 <translation id="2603656971249947488">ٹیب اسٹرپ</translation>
 <translation id="2604129989323098489">سائٹس عام طور پر آپ کے ڈسپلیز کے بارے میں معلومات طلب کرتی ہیں تاکہ وہ ونڈوز کو اچھے طریقے سے کھول سکیں اور رکھ سکیں، جیسے دستاویزات یا پوری اسکرین مواد کو ساتھ ساتھ دکھانا</translation>
 <translation id="2604255671529671813">نیٹ ورک کنکشن میں خرابی</translation>
@@ -2938,6 +2938,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />، <ph name="ENTITY_INSTANCE_SUBLABEL" /> میں ترمیم کرنے یا اسے حذف کرنے کیلئے مزید اختیارات</translation>
 <translation id="3232754137068452469">ویب ایپ</translation>
 <translation id="3233271424239923319">‏Linux کی ایپس اور فائلز کا بیک اپ لیں</translation>
+<translation id="3233577317461669428">کوئی دوسرا آلہ نہیں ملا</translation>
 <translation id="3234251228180563751">صارف کے نام میں 1000 سے زیادہ حروف ہیں</translation>
 <translation id="3234978181857588512">آلہ پر محفوظ کریں</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> پر تقسیم کردہ <ph name="SITE_NAME" /> کے لیے سائٹ کا ڈیٹا حذف کریں؟</translation>
@@ -3012,7 +3013,6 @@
 <translation id="3292966601422448005"><ph name="APP_NAME" /> کے لیے آپ کی دی گئی اجازتیں اس کی انسٹال کردہ ایپس کے لیے بھی قابل اطلاق ہوں گی۔</translation>
 <translation id="3293080634164207409">ٹیبز شامل کریں</translation>
 <translation id="329324683265785818">‏چلائیں / موقوف کریں، کی بورڈ شارٹ کٹ k</translation>
-<translation id="3293644607209440645">یہ صفحہ بھیجیں</translation>
 <translation id="3294437725009624529">مہمان</translation>
 <translation id="3294686910656423119">استعمال کے اعداد و شمار اور کریش رپورٹس</translation>
 <translation id="3295241308788901889">ٹیب کو کاسٹ کیا جا رہا ہے</translation>
@@ -5711,6 +5711,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (دائیں)</translation>
 <translation id="534449933710420173">بغیر نام والا فولڈر</translation>
 <translation id="5345916423802287046">اپنے سائن ان کرتے وقت ایپ شروع کریں</translation>
+<translation id="5346059693449184483">آپ کے ذہن میں کیا ہے؟</translation>
 <translation id="5350116201946341974">انوکھا</translation>
 <translation id="535123479159372765">دوسرے آلے سے ٹیکسٹ کاپی کیا گیا</translation>
 <translation id="5352257124367865087">سائٹ کی اجازتوں کا نظم کریں</translation>
@@ -6986,6 +6987,7 @@
 <translation id="6356893102071098867">چیک کریں کہ آپ نے صحیح اکاؤنٹ کا انتخاب کیا ہے</translation>
 <translation id="6357305427698525450">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" /> یا  <ph name="APP_NAME_2" /> میں کھلیں گے۔</translation>
 <translation id="6357750620525943720">‏دیگر مستحکم شناخت کنندگان (جیسے، ہیشیز یا UUIDs)</translation>
+<translation id="6357830294871526418">دیگر آلات پر ٹیبز</translation>
 <translation id="6358884629796491903">ڈریگن</translation>
 <translation id="6359640073754977254">آخری ٹیب پر سکرول کریں</translation>
 <translation id="6361850914223837199">خرابی کی تفصیلات</translation>
@@ -7133,7 +7135,6 @@
 <translation id="6472893788822429178">ہوم بٹن دکھائیں</translation>
 <translation id="6473315466413288899">ایک اختیار منتخب کریں</translation>
 <translation id="6474021817475285003">‏‫Google کیلنڈر میں مزید دیکھیں</translation>
-<translation id="6474401088838630457">‏اس کے بارے میں Gemini سے مزید پوچھیں</translation>
 <translation id="6474498546677193336">‏اشتراک ختم نہیں ہوسکا کیونکہ ایک ایپلیکیشن اس فولڈر کو استعمال کر رہی ہے۔ اگلی بار Linux بند ہونے پر فولڈر کا اشتراک ختم کر دیا جائے گا۔</translation>
 <translation id="6474884162850599008">‏Google Drive اکاؤنٹ منقطع کریں</translation>
 <translation id="6476482583633999078">اسپیچ کی رفتار</translation>

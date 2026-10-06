@@ -1033,6 +1033,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1790976235243700817">Kendu sarbidea</translation>
 <translation id="1791662854739702043">Instalatu da</translation>
 <translation id="1792619191750875668">Pantaila hedatua</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Ezkutatu <ph name="DOMAIN" /> domeinuko pasahitza</translation>
 <translation id="1794791083288629568">Bidali informazioa arazoa konpon dezagun.</translation>
 <translation id="1795214765651529549">Erabili Klasikoa</translation>
@@ -1696,7 +1697,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2300383962156589922">Pertsonalizatu eta kontrolatu <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">% 80 geratzen denean, kargatzeari utziko zaio, bateriak gehiago iraun dezan.</translation>
 <translation id="2301382460326681002">Luzapenaren erro-direktorioak ez du balio.</translation>
-<translation id="2301402091755573488">Partekatutako fitxa</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305202347479035002">Nola funtzionatzen du?</translation>
 <translation id="2306794767168143227">Gorde <ph name="BRAND" /> zerbitzuan gailu honetarako</translation>
@@ -1715,6 +1715,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2322622365472107569">Amaiera-ordua: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gordetako wifi-sareak</translation>
 <translation id="2323685460575935191">Ezkutatu gora eta behera egiteko botoiak</translation>
+<translation id="2325004050205455346">Azkenaldiko historia</translation>
 <translation id="2325444234681128157">Gogoratu pasahitza</translation>
 <translation id="2326188115274135041">Berretsi PINa desblokeo automatikoa aktibatzeko</translation>
 <translation id="2326583548923775947">Hau ez da Google-ko kontu bat. Chrome-n gordetzen dituzun elementuak ez dira erabilgarri egongo beste gailu batzuetan.</translation>
@@ -2073,7 +2074,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2598710988533271874">Chrome berria erabilgarri</translation>
 <translation id="2599048253926156421">Kopiatu da erabiltzaile-izena arbelean</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Segurua ez den luzapen bat desaktibatu da}other{Seguruak ez diren {NUM_SITES} luzapen desaktibatu dira}}</translation>
-<translation id="2603121359676416582">Orri honetarako</translation>
 <translation id="2603656971249947488">Fitxen zinta</translation>
 <translation id="2604129989323098489">Webguneek pantailei buruzko informazioa eskatu ohi dute leihoak modu adimentsuan ireki eta kokatu ahal izateko (adibidez, dokumentuak edo pantaila osoko edukia alboz albo erakusteko)</translation>
 <translation id="2604255671529671813">Sareko konexioaren errorea</translation>
@@ -2937,6 +2937,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> editatzeko edo ezabatzeko aukera gehiago</translation>
 <translation id="3232754137068452469">Sareko aplikazioa</translation>
 <translation id="3233271424239923319">Egin Linux aplikazioen eta fitxategien babeskopiak</translation>
+<translation id="3233577317461669428">Ez da beste gailurik aurkitu</translation>
 <translation id="3234251228180563751">Erabiltzaile-izenak 1.000 karaktere baino gehiago ditu</translation>
 <translation id="3234978181857588512">Gorde gailuan</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> webgunean zatituta dagoen <ph name="SITE_NAME" /> webguneko datuak ezabatu nahi dituzu?</translation>
@@ -3011,7 +3012,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3292966601422448005"><ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak hark instalatzen dituen aplikazioei ere emango zaizkie.</translation>
 <translation id="3293080634164207409">Gehitu fitxak</translation>
 <translation id="329324683265785818">Erreproduzitzeko edo pausatzeko lasterbidea: k</translation>
-<translation id="3293644607209440645">Bidali orri hau</translation>
 <translation id="3294437725009624529">Gonbidatua</translation>
 <translation id="3294686910656423119">Erabilera-estatistikak eta hutsegite-txostenak</translation>
 <translation id="3295241308788901889">Fitxa bat igortzen</translation>
@@ -5074,7 +5074,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4852383141291180386">Kudeatu aplikazioen jakinarazpenak</translation>
 <translation id="4852916668365817106">Sagu-kurtsorearen kolorea</translation>
 <translation id="4853020600495124913">Ireki leiho &amp;berrian</translation>
-<translation id="4853328060971905294">Aktibatuta (gaitu lerro-fokua)</translation>
+<translation id="4853328060971905294">Aktibatuta (gaitu kontzentratzeko tresnak)</translation>
 <translation id="4854317507773910281">Aukeratu onartu beharreko guraso-kontua</translation>
 <translation id="4854603338816296098">Kendu da helbidea</translation>
 <translation id="485480310608090163">Ezarpen eta baimen gehiago</translation>
@@ -5710,6 +5710,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5344128444027639014">% <ph name="BATTERY_PERCENTAGE" /> (eskuinekoa)</translation>
 <translation id="534449933710420173">Izenik gabeko karpeta</translation>
 <translation id="5345916423802287046">Abiarazi aplikazioa saioa hasten duzunean</translation>
+<translation id="5346059693449184483">Zer darabilzu buruan?</translation>
 <translation id="5350116201946341974">Jostagarria</translation>
 <translation id="535123479159372765">Beste gailu batetik kopiatu da testua</translation>
 <translation id="5352257124367865087">Kudeatu webgunearen baimenak</translation>
@@ -6008,7 +6009,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5576472948015790634">Orain, toki berean kudea ditzakezu fitxa taldeak eta Gemini-ko elkarrizketak. Edonoiz kendu ahal izango diozu aingura honi.</translation>
 <translation id="5578059481725149024">Saio-hasiera automatikoa</translation>
 <translation id="5578387000057347457">Idatzi eskaera-mezu pertsonalizatu bat edo nabarmendu testua irudi bat sortzeko</translation>
-<translation id="557893471177655572">Probatu lerro-fokua</translation>
+<translation id="557893471177655572">Probatu kontzentratzeko tresnak</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 elementu gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, <ph name="BEGIN_LINK" />gorde ezazu Google-ko kontuan<ph name="END_LINK" />.}other{{ITEM_COUNT} elementu gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, <ph name="BEGIN_LINK" />gorde itzazu Google-ko kontuan<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Kendu <ph name="SITE" /> <ph name="SECTION_HEADER" /> zerrendatik</translation>
 <translation id="5581031802689147441">Ikuspegi zatitua</translation>
@@ -6983,6 +6984,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6356893102071098867">Egiaztatu kontu zuzena aukeratu duzun</translation>
 <translation id="6357305427698525450">Onartzen diren esteka batzuek <ph name="APP_NAME" /> edo <ph name="APP_NAME_2" /> aplikazioan irekitzen jarraituko dute.</translation>
 <translation id="6357750620525943720">Beste identifikatzaile egonkor batzuk (adib., hash-ak edo UUIDak)</translation>
+<translation id="6357830294871526418">Beste gailu batzuetako fitxak</translation>
 <translation id="6358884629796491903">Dragoia</translation>
 <translation id="6359640073754977254">Joan azken fitxara</translation>
 <translation id="6361850914223837199">Errorearen xehetasunak:</translation>
@@ -7130,7 +7132,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6472893788822429178">Erakutsi Hasiera botoia</translation>
 <translation id="6473315466413288899">Hautatu aukera bat</translation>
 <translation id="6474021817475285003">Ikusi gehiago Google Calendar-en</translation>
-<translation id="6474401088838630457">Eskatu Gemini-ri honi buruzko informazio gehiago</translation>
 <translation id="6474498546677193336">Ezin izan zaio utzi karpeta partekatzeari, aplikazio bat ari delako hura erabiltzen. Linux ixten den hurrengoan utziko zaio karpeta partekatzeari.</translation>
 <translation id="6474884162850599008">Deskonektatu Google Drive-ko kontua</translation>
 <translation id="6476482583633999078">Hizketaren abiadura</translation>
@@ -8485,7 +8486,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7502528909759062987">Pausatu fitxa <ph name="DEVICE_NAME" /> gailura igortzeko prozesua</translation>
 <translation id="750275011730776314">Itzuli Gemini-ra</translation>
 <translation id="7502804472671406749">Fitxa partekatuetan gora/behera egin, eta zooma erabil daiteke</translation>
-<translation id="750314150962284310">Lerro-fokua</translation>
+<translation id="750314150962284310">Kontzentratzeko tresnak</translation>
 <translation id="7503191893372251637">Netscape ziurtagiri mota</translation>
 <translation id="7503259455663961898">Aldatu nire izenean</translation>
 <translation id="7503985202154027481">Webgune hau bisitatu izana erregistratu egingo da segurtasun-giltzan.</translation>
@@ -10821,7 +10822,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> webguneak gailu mugikorretik informazioa lortu nahi du</translation>
 <translation id="988320949174893488">Noizbehinka moztu egiten da</translation>
 <translation id="988978206646512040">Pasaesaldia ezin da hutsik utzi</translation>
-<translation id="989111665033316622">Desaktibatuta (desgaitu lerro-fokua)</translation>
+<translation id="989111665033316622">Desaktibatuta (desgaitu kontzentratzeko tresnak)</translation>
 <translation id="992032470292211616">Luzapenek, aplikazioek eta gaiek gailua kalte diezazukete. Ziur aurrera jarraitu nahi duzula?</translation>
 <translation id="992256792861109788">Arrosa</translation>
 <translation id="994087375490600917">Alboko panelak</translation>

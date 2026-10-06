@@ -1139,6 +1139,17 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 사용 중지된 Chrome 앱을 실행하려고 하면 앱이 실행되지 않은 이유를 설명하는 메시지와 IT 부서에 문의하라는 메시지가 표시됩니다.
 
 ChromeOS M184는 Chrome 앱을 지원하는 마지막 ChromeOS 버전입니다.</translation>
+<translation id="1726477280489844651">사용자가 <ph name="MS_WIN_NAME" />에 로그인할 때 <ph name="PRODUCT_NAME" />에서 브라우저 창을 열지 여부를 제어합니다.
+
+<ph name="PRODUCT_NAME" />에는 사용자가 로그인하면 실행되도록 등록하는 '<ph name="MS_WIN_NAME" />로 <ph name="PRODUCT_NAME" /> 시작' 설정이 있으므로 브라우저가 바로 준비됩니다. 사용자에게 이 설정을 변경하라는 메시지가 표시될 수도 있습니다.
+
+정책을 사용으로 설정하면 사용자가 로그인할 때 <ph name="PRODUCT_NAME" />에서 브라우저 창을 실행하고 엽니다. 사용자는 설정을 변경할 수 없으며 설정을 변경하라는 메시지도 표시되지 않습니다.
+
+정책을 사용 중지로 설정하면 사용자가 로그인할 때 <ph name="PRODUCT_NAME" />이 실행되지 않습니다. 사용자는 설정을 변경할 수 없으며 설정을 변경하라는 메시지도 표시되지 않습니다.
+
+정책을 설정하지 않으면 사용자가 설정을 변경할 수 있습니다.
+
+이 정책은 '<ph name="MS_WIN_NAME" />로 <ph name="PRODUCT_NAME" /> 시작' 설정을 사용할 수 없는 <ph name="PRODUCT_NAME" /> 버전에는 영향을 미치지 않습니다.</translation>
 <translation id="1729169799290004131">정책을 설정하면 화면 밝기 비율을 지정할 수 있으며 자동 밝기 기능이 사용 중지됩니다. 초기 화면 밝기는 정책 값으로 조정되지만 사용자가 변경할 수 있습니다.
 
       정책을 설정하지 않으면 사용자 화면 제어 또는 자동 밝기 기능에 어떠한 영향도 미치지 않습니다.
@@ -1241,6 +1252,44 @@ ChromeOS M184는 Chrome 앱을 지원하는 마지막 ChromeOS 버전입니다.<
 
       정책을 설정하지 않으면 사용자가 기본 언어의 전체 목록을 변경할 수 있습니다.</translation>
 <translation id="1803646570632580723">런처에 표시되는 고정된 앱 목록</translation>
+<translation id="180432221123109556">고급 JavaScript 최적화가 사용 설정된 사이트를 지정하는
+사이트 URL 패턴 목록을 설정할 수 있습니다.
+
+유효한 사이트 URL 패턴에 관해 자세히 알아보려면
+https://chromeenterprise.google/policies/url-patterns를 참고하세요.
+와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다.
+
+전체 사이트뿐만 아니라 특정 하위 도메인에 대해서도 정책 예외를 설정할 수 있습니다.
+예를 들어 subdomain.site.com에 대해서만 설정된 정책은
+site.com에 영향을 주지 않고 subdomain.site.com에 적용됩니다.
+하위 도메인을 상위 사이트에서 격리할 수 없는 경우 site.com에 설정된 정책을
+상속받을 수 있습니다. 또한 사이트가 새 탭에서 열릴 때까지 기존 탭에 로드된 프레임에는
+예외가 적용되지 않을 수 있습니다. 메모리가 부족한
+<ph name="ANDROID_NAME" /> 기기에서는 사이트별 예외가 적용되지 않을 수 있으며,
+사이트에서 대신
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />의 정책(설정된 경우)을
+사용하거나 프로필의 JavaScript 최적화 설정을 기본값으로 사용합니다.
+
+예외를 적용하기 위해 <ph name="PRODUCT_NAME" />에서
+설정이 기본값과 다른 사이트 또는 하위 도메인을 전용 프로세스에
+배치할 수 있습니다. 이로 인해 특히
+<ph name="ANDROID_NAME" />에서 또는 와일드 카드 패턴이 여러 하위 도메인과 일치하는 경우
+메모리 사용량이 증가할 수 있습니다. 일치하는 각 출처가 별도로 격리될 수 있기 때문입니다. 또한
+격리된 하위 도메인은 document.domain을 사용하여 상위 사이트에 액세스할 수 없습니다.
+
+참고: 버전 138 이하에서는 정책 예외가 사이트 세부사항(eTLD+1)에서만
+시행되었습니다. subdomain.site.com에 대해서만 설정된 정책은
+적용되지 않았으며 이는 subdomain.site.com에도 해당되었습니다. site.com과
+subdomain.site.com에 모두 적용하려면 정책을 site.com에 설정해야 했습니다.
+
+이 정책은 최상위 출처 URL만을 기준으로 하지 않고
+프레임별로 적용됩니다. 예를 들어 site-one.com이 <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> 정책에 나열되어 있지만 site-one.com에서 site-two.com이 포함된 프레임을 로드하는 경우 site-one.com에서는 JavaScript 최적화가
+사용 설정되지만 site-two.com에서는 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />의 정책(설정된 경우)을 사용하거나 기본적으로 JavaScript 최적화가
+사용 설정됩니다. 차단 목록 항목은 허용 목록 항목보다 우선순위가 높으며,
+허용 목록 항목은 구성된 기본값보다 우선순위가 높습니다.
+
+어떤 사이트에 이 정책이 설정되지 않으면 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 의 정책이 사이트에 적용되며(정책이 설정되어 있는 경우), 그렇지 않으면 사이트에
+JavaScript 최적화가 사용 설정됩니다.</translation>
 <translation id="1807539058116290184">키오스크 모드에서 손가락을 모으거나 펼쳐 확대/축소 사용 중지</translation>
 <translation id="1808715480127969042">이 사이트에서 쿠키 차단</translation>
 <translation id="1810261428246410396">인스턴트 테더링 사용 허용</translation>
@@ -1469,6 +1518,7 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
       이 정책은 최상위 문서의 출처(일반적으로 주소 표시줄에도 표시되는 페이지 URL)가 패턴과 일치하는지에 따라 JavaScript를 차단합니다. 따라서 이 정책은 웹 공급망 공격을 완화하는 데 적합하지 않습니다. 예를 들어 'https://[*.]foo.com/' 패턴을 제공해도 https://example.com에서 호스팅되는 페이지가 https://www.foo.com/example.js에서 로드된 스크립트를 실행하지 못하게 막을 수는 없습니다. 또한 'https://example.com/' 패턴을 제공해도 최상위 문서가 아니라 다른 출처(예: https://www.bar.com)에서 호스팅되는 페이지에 하위 프레임으로 삽입된 경우 https://example.com 문서에서 스크립트를 실행하지 못하게 막을 수 없습니다.</translation>
 <translation id="1942015922182679826">복호화할 수 없는 비밀번호 삭제 사용 설정</translation>
 <translation id="1942626390957213764">데스크톱 공유 허브 사용 중지</translation>
+<translation id="1943628907052340534">사용자가 <ph name="MS_WIN_NAME" />에 로그인할 때 <ph name="PRODUCT_NAME" /> 열지 않음</translation>
 <translation id="194407941132272412">모든 웹사이트에 사이트 격리를 사용 중지하되 사용자에게 사용 설정 허용</translation>
 <translation id="1945994447126139909">이 기업 정책은 단기적인 적응을 위해 마련되었으며 <ph name="PRODUCT_NAME" /> 버전 88에서 삭제될 예정입니다.
 
@@ -2143,6 +2193,13 @@ Chrome 앱은 ID(예: pjkljhegncpnkpknbcohdijeoejaedia)로, Android 앱은 패�
 
 참고: 새로 시작된 렌더기 프로세스만 브라우저가 실행되는 동안 이 정책의 변경사항을 반영합니다.</translation>
 <translation id="2354439478396602136"><ph name="PRODUCT_OS_NAME" /> 런처에 추천 앱 표시</translation>
+<translation id="2355126045573728327">정책을 설정하면 사용자가 <ph name="PRODUCT_OS_NAME" />에 로그인할 때 자동으로 실행되는 <ph name="ANDROID_NAME" /> 애플리케이션 패키지 이름(예: <ph name="EXAMPLE_PACKAGE_NAME" />) 목록이 지정됩니다.
+
+또한 애플리케이션은 <ph name="ARC_POLICY_NAME" />를 통해 강제 설치되도록 구성되어야 합니다. 설치가 완료되면 자동으로 실행됩니다.
+
+현재는 목록의 첫 번째 애플리케이션만 실행됩니다.
+
+정책을 설정하지 않거나 비워 두면 로그인 시 <ph name="ANDROID_NAME" /> 애플리케이션이 자동으로 실행되지 않습니다.</translation>
 <translation id="2355876547176311490">원격 액세스 호스트의 릴레이 서버 사용 중지</translation>
 <translation id="2358176879566587521">이 정책은 삭제되었습니다. 이 <ph name="PRODUCT_NAME" /> 버전과 호환되지 않습니다 . 자세한 내용은 https://support.google.com/chrome/a/answer/7643500을 참조하세요.</translation>
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior는 <ph name="ABOUT_BLANK_PAGE" /> 및 <ph name="ABOUT_SRCDOC_PAGE" /> 프레임이 시작자의 기본 URL 스냅샷을 통해 기본 URL 값을 일관되게 상속하는 <ph name="PRODUCT_NAME" /> 기능입니다. 자세한 내용은 https://chromestatus.com/feature/5161101671530496 페이지를 참고하세요.
@@ -2306,6 +2363,7 @@ ServiceWorkerAutoPreload 기능은 ServiceWorker 부트스트랩 프로세스를
 <translation id="2479760962196319822">이 정책은 <ph name="PRODUCT_OS_NAME" /> 사용자가 데이터를 로컬로 저장할 수 있는지 제어합니다.
       정책을 False로 설정하면 <ph name="PRODUCT_OS_NAME" />에 로컬로 저장이 차단됩니다. 사용자는 데이터를 로컬로 저장할 수 없으며 로컬 디렉터리에 액세스할 수 없습니다.
       정책을 True로 설정하거나 설정하지 않으면 <ph name="PRODUCT_OS_NAME" />에서 로컬 저장이 허용됩니다. 사용자가 데이터를 저장할 수 있는 위치나 액세스할 수 있는 디렉터리에는 제한이 없습니다.</translation>
+<translation id="2481931731272002134">자동 완성에서 생성형 AI 기능을 허용하고 AI 모델을 개선합니다.</translation>
 <translation id="2482676533225429905">기본 메시지</translation>
 <translation id="2483146640187052324">모든 네트워크 연결의 네트워크 활동 예측</translation>
 <translation id="2487495476672607707"><ph name="PRODUCT_OS_NAME" /> 파일 동기화를 사용하면 자동으로 사용자의 내 드라이브에 있는 <ph name="GOOGLE_DRIVE_NAME" /> 파일을 <ph name="CHROMEBOOK_PLUS_NAME" /> 기기에서 오프라인(공간 허용)으로 사용할 수 있습니다.
@@ -2748,6 +2806,7 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
       </translation>
 <translation id="2697717608663878828">TLS Encrypted ClientHello 실험 사용</translation>
 <translation id="2699836109975228367">로그인 화면에서 모노 오디오 사용</translation>
+<translation id="2701554183194485203">로그인 시 자동으로 실행할 <ph name="ANDROID_NAME" /> 애플리케이션</translation>
 <translation id="2702023190395322609">미디어 추천 사용 설정</translation>
 <translation id="2702682139813393777">cmd.exe를 통해 Windows 기본 메시지 호스트 강제 실행</translation>
 <translation id="270582584528242502">사용자가 종료하려고 할 때 경고 대화상자 표시 안함</translation>
@@ -3004,6 +3063,25 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2890645751406497668">다음 사이트가 주어진 공급업체 및 제품 ID를 사용해 USB 기기에 연결할 수 있는 권한을 자동으로 부여합니다.</translation>
 <translation id="2893546967669465276">시스템 로그를 관리 서버로 전송합니다.</translation>
 <translation id="2893660462311365527">네트워크 텔레메트리 수집 속도(밀리초)</translation>
+<translation id="2894720693512285641">이 정책은 특정 규정 준수 체계에서 승인한 알고리즘에 대한 선호도를 반영하기 위해 <ph name="PRODUCT_NAME" />이 TLS 1.3에서 선호하는 암호화를 우선하도록 설정합니다.
+
+이 정책을 설정한다고 해서 특정 알고리즘이 협상된다는 보장은 없습니다.
+
+이 정책은 클라이언트의 규정 준수 요구사항 유무에 따라 클라이언트를 구분해 지원하려는 서버 운영자가 기본값이 아니라 암호화 강도가 강화된 특정 알고리즘을 선호하도록 명시적으로 설정한 클라이언트에 대해서만 해당 알고리즘을 사용하도록 허용하기 위해 존재합니다.
+
+정책을 '<ph name="CNSA_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 상업용 국가 보안 알고리즘 모음 버전 1.0 및 2.0(CNSA 1.0 및 2.0) 규정 준수에 요구되는 암호화를 선호하도록 구성됩니다.
+
+정책을 설정하지 않거나 '<ph name="DEFAULT_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 암호화를 사용하도록 구성됩니다.
+
+보안을 위해 이 정책을 설정할 필요는 없습니다. <ph name="PRODUCT_NAME" />에서 사용하는 기본 암호화 방식은 엄청난 연산량이 들어간 무차별 대입 공격을 견딜 수 있을 만큼 강력합니다.
+
+이 정책을 설정하면 웹사이트 액세스 시 <ph name="PRODUCT_NAME" />의 속도가 느려집니다.
+
+이 정책은 TLS 1.3 및 QUIC에만 영향을 미치며 TLS 이전 버전에는 영향을 미치지 않습니다.
+
+이 정책은 머신 및 사용자에 대해 설정할 수 있습니다. 사용자에게 설정된 경우 이 정책은 사용자 프로필에서 시작된 네트워크 요청에만 영향을 미치며, 브라우저 전체 백그라운드 작업을 실행하기 위해 <ph name="PRODUCT_NAME" />에서 수행하는 네트워크 요청에는 영향을 미치지 않을 수 있습니다. 이러한 요청은 머신 수준 값으로 제어됩니다. 이 정책이 머신 수준과 사용자 수준에서 모두 설정된 경우 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 정책에 의해 정책 우선순위가 변경되지 않는 한 머신 수준 값이 적용됩니다.
+
+버전 156 이하의 경우 이 정책은 머신 전체에만 적용됩니다.</translation>
 <translation id="2894914342151915910">Chrome이 지원되지 않는 시스템에서 실행 중인 경우 경고 표시 중단</translation>
 <translation id="2895444724612647239">사이트에 모든 HID 기기에 연결할 권한을 자동으로 부여합니다.</translation>
 <translation id="2896434627453256512">고스트 창 기능 사용에 관한 정책을 설정합니다.
@@ -3577,6 +3655,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 변형은 크로스 사이트 
 <translation id="322359555555487980"><ph name="PRODUCT_OS_NAME" />에서의 변형 사용 가능 여부 결정</translation>
 <translation id="3229163415739929305">정책을 사용 설정하거나 설정하지 않으면 페이지 로드 메타데이터와 머신러닝 모델을 가져와서 브라우저 사용 환경을 개선할 수 있습니다.
       정책을 사용 안함으로 설정하면 일부 기능이 제대로 작동하지 않을 수 있습니다.</translation>
+<translation id="3230956492238004242">동적 하위 모듈 패치 사용 설정</translation>
 <translation id="3231311173895401135">브라우저에서 지원 여부 결정</translation>
 <translation id="3231837273069128027">정책을 설정하면 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 펌웨어 업데이트의 사용 가능 여부 및 동작이 구성됩니다.
 
@@ -4284,6 +4363,7 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 콘텐츠 전송 앱이 제대로 작동하려면 테이크아웃을 통한 데이터 전송도 사용 설정해야 합니다. 자세한 내용은 https://support.google.com/a/answer/6364687에서 확인하세요.</translation>
 <translation id="3702518095257671450">원격 증명</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />(한 줄 입력란은 지원 중단되었으며 삭제될 예정입니다. 아래의 여러 줄 입력란을 사용해 주세요.)</translation>
+<translation id="370314752761795411"><ph name="MS_WIN_NAME" />로 <ph name="PRODUCT_NAME" /> 시작</translation>
 <translation id="3711895659073496551">일시중지</translation>
 <translation id="3712861436661566358">프로필 분리 적용</translation>
 <translation id="3719826155360621982">홈페이지</translation>
@@ -4769,6 +4849,7 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="4027608872760987929">기본 검색 공급자 사용</translation>
 <translation id="4030152268425532846">자동 로그인 취소 사용 중지</translation>
 <translation id="4032740546145417900">말하기로 입력 허용 안 함</translation>
+<translation id="4035252407064087455">자동 완성에서 생성형 AI 기능을 허용하되 AI 모델을 개선하지 않습니다.</translation>
 <translation id="4043796890723386527">사용자가 <ph name="LACROS_NAME" /> 브라우저에서 보조 프로필을 만들어 사용하거나 게스트 모드를 사용하지 못하도록 차단</translation>
 <translation id="4047633048700722778">이 정책을 설정하면 SafeSites URL 필터를 제어할 수 있습니다. 이 필터는 Google Safe Search API를 사용하여 음란물이 포함된 URL을 분류합니다.
 
@@ -5205,6 +5286,7 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 정책이 설정되어 있으면 사용자가 <ph name="PRODUCT_OS_NAME" />에서 지정된 블루투스 서비스에만 연결할 수 있습니다. 단, 예외적으로 목록이 비어 있는 경우 어느 서비스든 연결이 허용됩니다. Bluetooth SIG에 의해 예약된 UUID는 <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> 또는 <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />(으)로 표시됩니다. 맞춤 UUID는 <ph name="BLUETOOTH_CUSTOM_UUID" />(으)로 표시됩니다. UUID는 대소문자를 구분하지 않습니다. 정책을 설정하지 않으면 사용자가 어느 블루투스 서비스에나 연결할 수 있습니다.</translation>
 <translation id="4332177773549877617">Android 앱 설치 이벤트 로깅</translation>
 <translation id="4333940819293342439">앱 사용량 텔레메트리 수집 속도(밀리초)</translation>
+<translation id="4336096948197154521">사용자가 <ph name="MS_WIN_NAME" />에 로그인하면 <ph name="PRODUCT_NAME" /> 열기</translation>
 <translation id="4340121900958123942"><ph name="PRODUCT_OS_NAME" /> 위치정보 시스템 가용성 수준을 설정합니다.
 
 이는 추가 제어 레이어로, 앱 및 웹사이트의 권한 레이어 아래에 위치합니다. 예를 들어 정책을 <ph name="GLS_BLOCKED" /> 또는 <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />로 설정하면 각각의 위치 정보 액세스 권한과 관계없이 모든 앱 또는 웹사이트에서 위치를 확인할 수 없습니다. 그러나 위치 서비스가 <ph name="GLS_ALLOWED" />으로 설정되어 있는 경우, 권한이 있는 앱과 웹사이트에서 개별적으로 위치를 가져올 수 있습니다.
@@ -5978,6 +6060,7 @@ URL 패턴이 <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />와 충돌하는 경�
       필수 페이지 크기가 목록에 없을 경우 <ph name="PAGE_SIZE_NAME" />에는 나열된 형식 중 하나 또는 '맞춤 설정'이 포함되어야 합니다. '맞춤 설정' 값이 제공될 경우 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 속성이 지정되어야 합니다. 원하는 높이와 너비를 마이크로미터 단위로 설명합니다. 그 외의 경우에는 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 속성을 지정해서는 안 됩니다. 이 규칙을 위반하는 정책은 무시됩니다.
 
       사용자가 선택한 프린터에서 페이지 크기를 사용할 수 없는 경우 이 정책은 무시됩니다.</translation>
+<translation id="4787894429283141328">자동 완성에서 생성형 AI 기능을 허용하지 않습니다.</translation>
 <translation id="4789450349513792856">이 사이트에서 팝업 차단</translation>
 <translation id="4790391579868456557">검색에서 필수 및 비필수 쿠키를 사용합니다.</translation>
 <translation id="4790588245699320140">Google 어시스턴트가 화면 컨텍스트에 액세스하도록 허용</translation>
@@ -6315,6 +6398,13 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="4947257516265472776"><ph name="YOUTUBE_PRODUCT_NAME" />의 엄격한 제한 모드 강제 적용</translation>
 <translation id="494924690085329212">Android가 시작되었을 때 사용자가 로그아웃하면 재부팅</translation>
 <translation id="4950447493143157880">내장 DNS 클라이언트 사용 안함</translation>
+<translation id="4953257833692039804"><ph name="PRODUCT_NAME" />에서 전체 브라우저를 다시 시작하지 않고도 새로 실행된 하위 프로세스(예: 렌더기 프로세스)에 스테이징된 보안 업데이트를 동적으로 적용할지 제어합니다.
+
+<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />를 사용 중지하면 사용할 새 모듈이 설치되지 않습니다.
+
+정책을 사용 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 가능한 경우 동적으로 스테이징된 하위 모듈 바이너리를 사용하여 새 하위 프로세스를 실행할 수 있습니다.
+
+정책을 사용 중지로 설정하면 <ph name="PRODUCT_NAME" />에서 새로 실행된 하위 프로세스에 동적으로 스테이징된 하위 모듈 바이너리(이미 다운로드되었거나 로컬에서 스테이징된 업데이트 포함)를 즉시 적용하지 않으며, 업데이트를 적용하려면 브라우저를 완전히 다시 시작해야 합니다. 이미 실행 중인 하위 프로세스는 그대로 계속됩니다. 이 설정은 모든 구성요소 업데이트를 사용 중지하지 않고 동적 패치를 사용 중지합니다.</translation>
 <translation id="4953541641325278286">모든 사이트에서 사용자의 유휴 상태를 감지하도록 허용 안 함</translation>
 <translation id="4954352279763128540">미리 입력된 도메인을 Kerberos 인증 대화상자에 추가합니다.
 
@@ -6561,6 +6651,7 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
       </translation>
 <translation id="5118635822783657217">중요하지 않은 구성요소의 업데이트 사용 안함</translation>
 <translation id="5120168808610189805">처음 실행 시 홈페이지 가져오기 사용 설정</translation>
+<translation id="5124321040285474825">자동 완성의 생성형 AI 기능 설정</translation>
 <translation id="5124368997194894978">AC(교류 전원)로 부팅 사용</translation>
 <translation id="5124652340668722849"><ph name="PRODUCT_NAME" />에서 프록시 구성을 동적으로 가져오는 데 사용할 프로비저닝 도메인(PvD) 목록을 구성합니다.
 
@@ -6683,6 +6774,7 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
           유효한 URL 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요. <ph name="WILDCARD_VALUE" /> 값은 이 정책에 허용되는 값이 아닙니다.</translation>
 <translation id="5182483318861266793">앱 표시줄을 화면 오른쪽에 놓기</translation>
 <translation id="51859390023061147">전체 복원 기능 사용 안함</translation>
+<translation id="5188507662885416844">동적 하위 모듈 패치 사용 중지</translation>
 <translation id="5189360528842591274">목록에 있는 블루투스 서비스 연결만 허용</translation>
 <translation id="5191007233343702012">표준 탭 우선순위 지정 사용</translation>
 <translation id="5191476996923842491">setTimeout() 함수의 클램프 기본 동작입니다.</translation>
@@ -8920,6 +9012,27 @@ false로 설정하면 P2P가 사용되지 않습니다.
 화면 보호기가 시작되기까지의 유휴 상태 제한 시간과 이미지가 표시되는 간격은 각각 <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> 및 <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> 정책으로 수정할 수 있습니다. 설정되지 않은 정책이 있으면 기본값이 대신 사용됩니다.</translation>
 <translation id="651248769129998376">확장 프로그램 설치 요청을 만들거나 관리 콘솔에 업로드하지 않음</translation>
 <translation id="6513453889192806240">HTTPS 지연 시간</translation>
+<translation id="6514006253468048943"><ph name="PRODUCT_NAME" />의 이러한 기능은 생성형 AI 모델을 통해 사용자가 웹에서 양식을 작성하는 데 도움을 줍니다. 이러한 기능을 사용하려면 <ph name="PRODUCT_NAME" />에서 사용자가 상호작용하는 양식의 구조와 같은 데이터를 수집해야 하며, Gemini로 찾기 및 자동 완성의 경우 사용자가 연결된 Gemini 앱을 검색하기 위해 입력하는 자유 형식 텍스트 쿼리를 수집하고 이 데이터를 생성형 AI 모델을 실행하는 Google 소유의 서버로 전송해야 합니다.
+
+정책을 0(자동 완성에서 생성형 AI 기능 허용 및 AI 모델 개선)으로 설정하면 이 기능의 사용을 허용하여 Google에서 관련 데이터를 활용해 AI 모델을 개선할 수 있습니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
+
+정책을 1(자동 완성에서 생성형 AI 기능을 허용하되 AI 모델을 개선하지 않음)로 설정하면 기능을 사용할 수 있지만 Google에서 사용자 콘텐츠(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 활용해 모델을 개선할 수 없습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
+
+정책을 2(자동 완성에서 생성형 AI 기능을 허용하지 않음)로 설정하면 기능을 허용하지 않습니다.
+
+정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
+
+자동 완성의 생성형 AI 기능은 다음과 같습니다.
+
+- 스마트 양식 작성: AI를 사용하여 양식의 입력란을 식별하고 분류하므로 더 많은 입력란을 채울 수 있습니다.
+
+- Gemini로 정보 찾기 및 자동 완성: 사용자가 Gemini에 연결한 앱에서 정보를 찾아 양식에 대한 능동적 제안 형태로 또는 사용자가 작성한 질문에 대한 대답 형태로 자동 입력할 수 있습니다.
+
+이 정책은 <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" /> 정책보다 우선 적용되며, 해당 정책은 이 정책이 설정되지 않은 경우에도 적용됩니다. 'Gemini로 정보 찾기 및 자동 완성' 기능을 사용하려면 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책도 사용 중지된 상태가 아니어야 합니다.
+
+이 정책은 생성형 AI를 사용하지 않는 자동 완성 기능에는 영향을 미치지 않습니다.
+
+생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> 이미지</translation>
 <translation id="6515520014183265350">전용 프로세스에서 실행되는 출처 목록을 지정합니다.
 
@@ -10824,6 +10937,19 @@ URL 패턴은 <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책과 
 
 정책을 설정하지 않으면 브라우저에서 PDF 렌더러를 선택합니다.</translation>
 <translation id="7704244074621846004">SharedWorker에 수명 연장 사용 설정</translation>
+<translation id="7706986409083477132">JIT(Just In Time) 컴파일러가 사용 설정된 JavaScript를 실행할 수 있는 사이트를 지정하는 사이트 URL 패턴 목록을 설정할 수 있습니다.
+
+          유효한 사이트 URL 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요. 와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다.
+
+          전체 사이트뿐만 아니라 특정 하위 도메인에 대해서도 정책 예외를 설정할 수 있습니다. 예를 들어 subdomain.site.com에 대해서만 설정된 정책은 site.com에 영향을 주지 않고 subdomain.site.com에 적용됩니다. 하위 도메인을 상위 사이트에서 격리할 수 없는 경우 site.com에 설정된 정책을 상속받을 수 있습니다. 또한 사이트가 새 탭에서 열릴 때까지 기존 탭에 로드된 프레임에는 예외가 적용되지 않을 수 있습니다. 메모리가 부족한 <ph name="ANDROID_NAME" /> 기기에서는 사이트별 예외가 적용되지 않을 수 있으며, 사이트에서 대신 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />의 정책(설정된 경우)을 사용하거나 프로필의 JavaScript JIT 설정으로 기본값이 설정됩니다.
+
+          예외를 적용하기 위해 <ph name="PRODUCT_NAME" />에서 설정이 기본값과 다른 사이트 또는 하위 도메인을 전용 프로세스에 배치할 수 있습니다. 이로 인해 특히 <ph name="ANDROID_NAME" />에서 또는 와일드 카드 패턴이 여러 하위 도메인과 일치하는 경우 메모리 사용량이 증가할 수 있습니다. 일치하는 각 출처가 별도로 격리될 수 있기 때문입니다. 또한 격리된 하위 도메인은 document.domain을 사용하여 상위 사이트에 액세스할 수 없습니다.
+
+          참고: 버전 155 이하에서는 정책 예외가 사이트 세부사항(eTLD+1)에서만 시행되었습니다. subdomain.site.com에 대해서만 설정된 정책은 적용되지 않았으며 이는 subdomain.site.com에도 해당되었습니다. site.com과 subdomain.site.com에 모두 적용하려면 정책을 site.com에 설정해야 했습니다.
+
+          이 정책은 최상위 출처 URL만을 기준으로 하지 않고 프레임별로 적용됩니다. 예를 들어 site-one.com이 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 정책에 나열되어 있지만 site-one.com에서 site-two.com이 포함된 프레임을 로드하는 경우 site-one.com에서는 JavaScript JIT가 사용 설정되지만 site-two.com에서는 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />의 정책(설정된 경우)을 사용하거나 기본적으로 JavaScript JIT가 사용 설정됩니다. 차단 목록 항목은 허용 목록 항목보다 우선순위가 높으며, 허용 목록 항목은 구성된 기본값보다 우선순위가 높습니다.
+
+          어떤 사이트에 이 정책이 설정되지 않으면 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />의 정책이 사이트에 적용되며(정책이 설정되어 있는 경우), 그렇지 않으면 사이트에 JavaScript JIT가 사용 설정됩니다.</translation>
 <translation id="7707869387893611318">충전음 기능을 사용 설정합니다.
 
           이 기능은 충전음을 재생합니다.

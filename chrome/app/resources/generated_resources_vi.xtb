@@ -1042,6 +1042,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1790976235243700817">Xóa quyền truy cập</translation>
 <translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792619191750875668">Màn hình mở rộng</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Ẩn mật khẩu của <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Gửi ý kiến phản hồi để giúp chúng tôi khắc phục sự cố này.</translation>
 <translation id="1795214765651529549">Sử dụng chủ đề Cổ điển</translation>
@@ -1710,7 +1711,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2300383962156589922">Tùy chỉnh và kiểm soát <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Ngừng sạc ở mức 80% để giúp kéo dài thời lượng pin.</translation>
 <translation id="2301382460326681002">Thư mục gốc của tiện ích không hợp lệ.</translation>
-<translation id="2301402091755573488">Thẻ được chia sẻ</translation>
 <translation id="2304820083631266885">Hành tinh</translation>
 <translation id="2305202347479035002">Cách hoạt động</translation>
 <translation id="2306794767168143227">Lưu vào <ph name="BRAND" /> trên thiết bị này</translation>
@@ -1729,6 +1729,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2322622365472107569">Thời gian kết thúc <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Các mạng Wi-Fi đã lưu</translation>
 <translation id="2323685460575935191">Ẩn nút cuộn</translation>
+<translation id="2325004050205455346">Nhật ký gần đây</translation>
 <translation id="2325444234681128157">Ghi nhớ mật khẩu</translation>
 <translation id="2326188115274135041">Xác nhận mã PIN để bật tính năng tự động mở khóa</translation>
 <translation id="2326583548923775947">Đây không phải là Tài khoản Google. Các mục bạn lưu vào Chrome sẽ không có trên các thiết bị khác.</translation>
@@ -2087,7 +2088,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2598710988533271874">Hiện đã có Chrome mới</translation>
 <translation id="2599048253926156421">Đã sao chép tên người dùng vào bảng nhớ tạm</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Đã tắt 1 tiện ích không an toàn}other{Đã tắt {NUM_SITES} tiện ích không an toàn}}</translation>
-<translation id="2603121359676416582">Dành cho trang này</translation>
 <translation id="2603656971249947488">Dải thẻ</translation>
 <translation id="2604129989323098489">Các trang web thường yêu cầu thông tin về màn hình của bạn để có thể mở và sắp xếp các cửa sổ một cách thông minh, chẳng hạn như hiển thị các tài liệu hoặc nội dung toàn màn hình cạnh nhau</translation>
 <translation id="2604255671529671813">Lỗi kết nối mạng</translation>
@@ -2953,6 +2953,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="323262942975422760">Các lựa chọn khác để chỉnh sửa hoặc xoá <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Ứng dụng web</translation>
 <translation id="3233271424239923319">Sao lưu các ứng dụng và tệp Linux</translation>
+<translation id="3233577317461669428">Không tìm thấy thiết bị nào khác</translation>
 <translation id="3234251228180563751">Tên người dùng dài hơn 1000 ký tự</translation>
 <translation id="3234978181857588512">Lưu vào thiết bị</translation>
 <translation id="3237871032310650497">Xoá dữ liệu trang web cho <ph name="SITE_NAME" /> được phân vùng trên <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3027,7 +3028,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3292966601422448005">Các quyền bạn cấp cho <ph name="APP_NAME" /> cũng sẽ được cấp cho những ứng dụng mà ứng dụng này đã cài đặt.</translation>
 <translation id="3293080634164207409">Thêm thẻ</translation>
 <translation id="329324683265785818">Phát/tạm dừng, phím tắt k</translation>
-<translation id="3293644607209440645">Gửi trang này</translation>
 <translation id="3294437725009624529">Khách</translation>
 <translation id="3294686910656423119">Thống kê mức sử dụng và báo cáo sự cố</translation>
 <translation id="3295241308788901889">Truyền thẻ</translation>
@@ -5728,6 +5728,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Phải)</translation>
 <translation id="534449933710420173">Thư mục chưa đặt tên</translation>
 <translation id="5345916423802287046">Mở ứng dụng khi bạn đăng nhập</translation>
+<translation id="5346059693449184483">Bạn đang nghĩ gì?</translation>
 <translation id="5350116201946341974">Lạ thường</translation>
 <translation id="535123479159372765">Văn bản được sao chép từ thiết bị khác</translation>
 <translation id="5352257124367865087">Quản lý quyền của trang web</translation>
@@ -7004,6 +7005,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6356893102071098867">Kiểm tra để đảm bảo bạn đã chọn đúng tài khoản</translation>
 <translation id="6357305427698525450">Một số đường liên kết được hỗ trợ vẫn sẽ mở trong <ph name="APP_NAME" /> hoặc <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Các giá trị nhận dạng ổn định khác (ví dụ: Hàm băm hoặc mã nhận dạng duy nhất (UUID))</translation>
+<translation id="6357830294871526418">Thẻ trên các thiết bị khác</translation>
 <translation id="6358884629796491903">Rồng</translation>
 <translation id="6359640073754977254">Di chuyển đến thẻ cuối cùng</translation>
 <translation id="6361850914223837199">Chi tiết lỗi:</translation>
@@ -7151,7 +7153,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6472893788822429178">Hiển thị nút Trang chủ</translation>
 <translation id="6473315466413288899">Chọn một hành động:</translation>
 <translation id="6474021817475285003">Xem thêm trong Lịch Google</translation>
-<translation id="6474401088838630457">Hỏi Gemini thêm về điều này</translation>
 <translation id="6474498546677193336">Không thể ngừng chia sẻ vì một ứng dụng đang dùng thư mục này. Hệ thống sẽ ngừng chia sẻ thư mục này khi bạn tắt Linux vào lần tới.</translation>
 <translation id="6474884162850599008">Ngắt kết nối tài khoản Google Drive</translation>
 <translation id="6476482583633999078">Tốc độ lời nói</translation>

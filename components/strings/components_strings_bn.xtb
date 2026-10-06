@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">আপনার কম্পিউটারে বিভিন্ন ফন্ট ব্যবহার করুন যাতে হাই-ফিডালিটি কন্টেন্ট তৈরি করতে পারেন</translation>
 <translation id="1465457928007067810">IBAN, আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে</translation>
 <translation id="1467432559032391204">বামে</translation>
-<translation id="1471514598850585811">ল্যাপটপ</translation>
 <translation id="1472675084647422956">আরও দেখান</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">লেখার ব্যাপারে সহায়তা পেতে ৩টি বা তার চেয়ে বেশি শব্দ লিখুন</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">সিস্টেম প্রশাসকের সাথে যোগাযোগ করে দেখুন।</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-এ মেয়াদ শেষ হবে</translation>
-<translation id="1736420071277903564">কম্পিউটার</translation>
 <translation id="1739364174357629566">পরিচিত পর্যটকের নম্বর আপডেট করা</translation>
 <translation id="1740404923954980840">ফুল-স্ক্রিন থেকে বেরিয়ে আসতে উপর থেকে টেনে আনুন এবং ফিরে যাওয়ার বোতাম টাচ করুন</translation>
 <translation id="1741474054575634405">লয়ালটি কার্ডগুলি ম্যানেজ করুন...</translation>
@@ -888,7 +886,6 @@
 <translation id="2462724976360937186">শংসাপত্র কর্তৃত্ব কী ID</translation>
 <translation id="2465688316154986572">স্টেপল করুন</translation>
 <translation id="2465914000209955735">Chrome-এ ডাউনলোড করা ফাইল ম্যানেজ করুন</translation>
-<translation id="2466682894498377850">আপনার <ph name="DEVICE_NAME" /> থেকে ট্যাব পাঠানো হয়েছে</translation>
 <translation id="2467272921457885625">CPU/RAM ব্যবহারের ইতিহাসের মতো ডিভাইসের হার্ডওয়্যার স্পেসিফিকেশন ও পরিসংখ্যান</translation>
 <translation id="2467421459221956357">সেন্সর ব্যবহার করবেন?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />নেটওয়ার্ক ডায়গনিস্টিক্স চালান<ph name="END_LINK" /></translation>
@@ -930,7 +927,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />এইসব বিকল্প অফার করতে, চেক-আউট করার পৃষ্ঠা থেকে কন্টেন্ট Google-এর সাথে শেয়ার করা হয়।<ph name="END_BOLD" /> পেমেন্ট প্ল্যান উপযুক্ততার উপর নির্ভর করে। পরে পেমেন্ট করার বিকল্প লুকাতে, <ph name="BEGIN_LINK" />পেমেন্ট সেটিংসে<ph name="END_LINK" /> যান।</translation>
 <translation id="2526062290525841862">এই অ্যাপ চালাতে, আইসোলেটেড ওয়েব অ্যাপ ডেভেলপার মোড আবার চালু করুন</translation>
 <translation id="2526280916094749336">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT" />-এ এই ঠিকানা সেভ করা হবে।</translation>
-<translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="2527451058878391043">আপনার CVC কার্ডের সামনে আছে। এটি ৪ সংখ্যার একটি কোড যা ডানদিকে আপনার কার্ড নম্বরের উপরের রয়েছে।</translation>
 <translation id="2529899080962247600">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
 <translation id="2530042584066815841">মাউস লক ও ব্যবহার</translation>
@@ -1740,7 +1736,6 @@
 <translation id="3905894480064208252">{0,plural, =1{ফাইল ট্রান্সফার করা যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল ট্রান্সফার করা যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল ট্রান্সফার করা যাবে না}}</translation>
 <translation id="3906022360148923497">পেমেন্ট পদ্ধতির আইকন</translation>
 <translation id="3906234161316839040">অন্যান্য অর্ডার</translation>
-<translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">এম্বেড করা কন্টেন্ট সম্পর্কে আরও জানুন</translation>
 <translation id="3920504717067627103">সার্টিফিকেটের নীতিসমূহ</translation>

@@ -764,6 +764,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4092709865241032354">Google Parollar menejeriga kirish maʼlumotlaringizni saqlashga yordam berish uchun ushbu sayt uchun foydalanuvchi nomini kiriting</translation>
 <translation id="4095146165863963773">Bu ilova maʼlumotlari oʻchirilsinmi?</translation>
 <translation id="4095483462103784441">Yangi varaqlar guruhini yaratish</translation>
+<translation id="4098552968111329864">Chromeda ishingiz xavfsizligini taʼminlash uchun Chromega kirganingizda tashkilotingiz ayrim maʼlumotlarni koʻrishi yoki boshqarishi mumkin.</translation>
 <translation id="4105527135143631701">Google Parollar menejeri yangilanishi ochildi</translation>
 <translation id="4107207375883769436">Tashkilotingiz ish profilingizdagi brauzer maʼlumotlarini (masalan, ochilgan veb-sahifalar tarixi va parollarni) koʻrishi hamda boshqarishi mumkin.</translation>
 <translation id="4113030288477039509">Administratoringiz tomonidan boshqariladi</translation>
@@ -1770,6 +1771,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7929587383660661825">Chrome bezovta qiluvchi bildirishnoma chiqargan yoki yaqinda ochilmagan saytlardan ruxsatlarni avtomatik olib tashlaydi</translation>
 <translation id="7934668619883965330">Fayl yuklab olinmadi. Fayl formati dastaklanmaydi.</translation>
 <translation id="7951102827450076904">Yuklab olingan PDF fayllar doim ochilsin</translation>
+<translation id="7952148074468405586"><ph name="BEGIN_LINK" />Tashkilotingiz qanday maʼlumotlarni koʻrishi yoki boshqarishi mumkinligi<ph name="END_LINK" /> haqida batafsil</translation>
 <translation id="7952479614398473176">Yangi oyna ochish uchun jami faol oynalar sonini <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> taga yoki undan ham kamaytiring.</translation>
 <translation id="7956713633345437162">Mobil xatcho‘plar</translation>
 <translation id="7957413488482743710">Virtual karta haqiqiy kartani ehtimoliy firibgarlikdan himoya qilish maqsadida berkitadi. <ph name="BEGIN_LINK1" />Virtual kartalar haqida batafsil<ph name="END_LINK1" /></translation>

@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">移除存取權</translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792619191750875668">擴充顯示畫面</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">隱藏 <ph name="DOMAIN" /> 的密碼</translation>
 <translation id="1794791083288629568">提供意見，協助我們修正這個問題。</translation>
 <translation id="1795214765651529549">使用傳統版</translation>
@@ -1697,7 +1698,6 @@
 <translation id="2300383962156589922">自訂及控制 <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">充電到 80% 時停止，有助延長電池壽命。</translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
-<translation id="2301402091755573488">已分享的分頁</translation>
 <translation id="2304820083631266885">行星</translation>
 <translation id="2305202347479035002">運作方式</translation>
 <translation id="2306794767168143227">儲存至這部裝置的 <ph name="BRAND" /></translation>
@@ -1716,6 +1716,7 @@
 <translation id="2322622365472107569">結束時間 <ph name="TIME" /></translation>
 <translation id="2323018538045954000">已儲存的 Wi-Fi 網路</translation>
 <translation id="2323685460575935191">隱藏捲動按鈕</translation>
+<translation id="2325004050205455346">近期記錄</translation>
 <translation id="2325444234681128157">記住密碼</translation>
 <translation id="2326188115274135041">確認 PIN 碼以開啟自動解鎖功能</translation>
 <translation id="2326583548923775947">這不是 Google 帳戶，因此儲存到 Chrome 的項目將無法在其他裝置上使用。</translation>
@@ -2074,7 +2075,6 @@
 <translation id="2598710988533271874">有新版 Chrome 可安裝</translation>
 <translation id="2599048253926156421">使用者名稱已複製到剪貼簿</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{已關閉 1 個不安全的擴充功能}other{已關閉 {NUM_SITES} 個不安全的擴充功能}}</translation>
-<translation id="2603121359676416582">針對這個頁面</translation>
 <translation id="2603656971249947488">分頁列</translation>
 <translation id="2604129989323098489">網站通常會要求你提供螢幕的相關資訊，以便視情況開啟視窗並調整視窗位置，例如並排顯示文件或全螢幕內容</translation>
 <translation id="2604255671529671813">網路連線錯誤</translation>
@@ -2937,6 +2937,7 @@
 <translation id="323262942975422760">更多編輯或刪除「<ph name="ENTITY_INSTANCE_LABEL" />，<ph name="ENTITY_INSTANCE_SUBLABEL" />」的選項</translation>
 <translation id="3232754137068452469">網頁應用程式</translation>
 <translation id="3233271424239923319">備份 Linux 應用程式和檔案</translation>
+<translation id="3233577317461669428">找不到其他裝置</translation>
 <translation id="3234251228180563751">使用者名稱長度超過 1000 個半形字元</translation>
 <translation id="3234978181857588512">儲存到裝置</translation>
 <translation id="3237871032310650497">要刪除 <ph name="SITE_NAME" /> 在 <ph name="PARTITION_SITE_NAME" /> 上分割的網站資料嗎？</translation>
@@ -3011,7 +3012,6 @@
 <translation id="3292966601422448005">你授予「<ph name="APP_NAME" />」的權限，也會套用至其所安裝的應用程式。</translation>
 <translation id="3293080634164207409">新增分頁</translation>
 <translation id="329324683265785818">播放/暫停，鍵盤快速鍵為 K 鍵</translation>
-<translation id="3293644607209440645">傳送這個頁面</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3294686910656423119">使用統計資料和當機報告</translation>
 <translation id="3295241308788901889">投放分頁</translation>
@@ -5706,6 +5706,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
 <translation id="534449933710420173">未命名的資料夾</translation>
 <translation id="5345916423802287046">當你登入時啟動應用程式</translation>
+<translation id="5346059693449184483">想討論什麼嗎？</translation>
 <translation id="5350116201946341974">怪誕</translation>
 <translation id="535123479159372765">從其他裝置複製的文字</translation>
 <translation id="5352257124367865087">管理網站權限</translation>
@@ -6979,6 +6980,7 @@
 <translation id="6356893102071098867">請確認所選的帳戶是否正確</translation>
 <translation id="6357305427698525450">某些支援連結仍會在「<ph name="APP_NAME" />」或「<ph name="APP_NAME_2" />」中開啟。</translation>
 <translation id="6357750620525943720">其他穩定 ID (例如 雜湊或 UUID)</translation>
+<translation id="6357830294871526418">其他裝置上的分頁</translation>
 <translation id="6358884629796491903">龍</translation>
 <translation id="6359640073754977254">捲動至最後一個分頁</translation>
 <translation id="6361850914223837199">錯誤詳細資料：</translation>
@@ -7126,7 +7128,6 @@
 <translation id="6472893788822429178">顯示 [首頁] 按鈕</translation>
 <translation id="6473315466413288899">請選擇</translation>
 <translation id="6474021817475285003">前往 Google 日曆查看更多資訊</translation>
-<translation id="6474401088838630457">向 Gemini 詢問更多相關資訊</translation>
 <translation id="6474498546677193336">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Linux 時取消分享這個資料夾。</translation>
 <translation id="6474884162850599008">取消連結 Google 雲端硬碟帳戶</translation>
 <translation id="6476482583633999078">語音速度</translation>

@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Fjalëkalimet</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} nga {count} adresë}other{{position} nga {count} adresa}}</translation>
 <translation id="13813615483058219">Ndodhi një gabim. Kontrollo lidhjen tënde të internetit, rrit volumin ose provo përsëri.</translation>
+<translation id="138181280295369883">Identifikohu për të marrë informacionet e tua të ruajtura etj. në të gjitha pajisjet e tua</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="138618066238211776">Vazhdo si <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opsionet për të ruajtur kartën</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Përkthe faqen</translation>
 <translation id="1539535193627863227">Nuk u gjet asnjë fjalëkalim apo çelës kalimi për këtë sajt</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
+<translation id="1543035591122163372">Identifikohu për të marrë fjalëkalimet e tua etj. nga <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Hap skedat e marra nga pajisjet e tjera nga ekrani i kyçjes.</translation>
 <translation id="1544653821167545205">Përmblidh faqen</translation>
 <translation id="1545749641540134597">Skano kodin QR</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Si ta përdor këtë veçori?</translation>
 <translation id="1901600657316773839">Mbaje zgjedhjen</translation>
 <translation id="1902277226107477495">Zbulimi i adresës është joaktiv. Riaktivizoje atë te "Cilësimet".</translation>
+<translation id="1905582086181351638">Identifikohu për të marrë informacionet e ruajtura etj. nga <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Sajti u shtua dhe u gozhdua</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
 <translation id="1925706052394657380">Hap cilësimet për <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> në iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Sajtet mund të kërkojnë që të përdorin mikrofonin</translation>
 <translation id="2219935992754556187">Chrome i mban të dhënat e tua delikate të sigurta me Face ID</translation>
 <translation id="2220529011494928058">Raporto një problem</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" është bllokuar që të mos ketë qasje te kamera jote</translation>
 <translation id="2223461067862937305">Krijo një kod QR</translation>
 <translation id="222798989929574238">Ke përdorur mbi 20 fotografi për të kërkuar</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Do të kesh mundësinë që t'i ruash këto informacione te "Portofoli" herën tjetër kur të plotësosh një formular përkatës.</translation>
 <translation id="3868495844258915202">Shfaq URL-në e plotë</translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>
-<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" është bllokuar që të mos ketë qasje te mikrofoni yt</translation>
 <translation id="3878657761594430423">Marrësja e fletëve</translation>
 <translation id="3884810423191119660">Ruaj në mënyrë të sigurt fjalëkalimet që të mund të identifikohesh me lehtësi në sajte dhe aplikacione</translation>
 <translation id="3885587018298784481">Bashkohu në një grup familjeje</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Biblioteka e fotografive</translation>
 <translation id="429074084062258019">{count,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
 <translation id="4290920330097335010">Mos lejo asnjëherë</translation>
+<translation id="4293154608148215505">telefoni yt</translation>
 <translation id="4294506173142861371">Do të identifikohesh si <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Cakto pozicionin</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Për të monitoruar produktin, trokit te "Monitoro"</translation>
 <translation id="5121618895923301719">Po e monitoron tashmë këtë produkt. Kjo faqe është ruajtur te <ph name="BEGIN_LINK" />Faqeshënuesit për celular<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Ke disa probleme me fjalëkalimet.</translation>
+<translation id="5126335625961252141">tableti yt</translation>
 <translation id="5128788795241319992">Eksploro menynë e re</translation>
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
+<translation id="5137568953923142260">Lejo një herë</translation>
 <translation id="5141363746588976328">Fshih kartën "Uljet e çmimeve në skedat e tua"</translation>
 <translation id="514154868070499296">Fonti: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Largohu nga "Ndërruesi i skedave"</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Rrit madhësinë e tekstit</translation>
 <translation id="5376135254804080693">Hiq përzgjedhjen për të gjitha</translation>
 <translation id="537853552771686272">Menaxho temat dhe sajtet që të interesojnë</translation>
+<translation id="5385892579392932755">laptopi yt</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} u mbyll}other{{count} u mbyllën}}</translation>
 <translation id="5394975111793637642">Fshih kartën "Komentet e produktit për ty"</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
@@ -1967,6 +1972,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Skedat e tua do të mbyllen dhe të dhënat e shfletimit do të fshihen</translation>
 <translation id="714291438898585119">Me yll</translation>
+<translation id="7144458305574230431">Identifikohu për të marrë faqeshënuesit etj. nga <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Përditëso lejen e drejtimit</translation>
 <translation id="7146301801400584641">Ofrohet skedari i kalendarit</translation>
 <translation id="7149893636342594995">24 orët e fundit</translation>
@@ -1994,6 +2000,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="722339453342442311">Kontrollo tani</translation>
 <translation id="7227235818314667565">Menaxho ndarjen</translation>
 <translation id="7233006041370588369">Zgjidh një fjalëkalim për ta plotësuar.</translation>
+<translation id="7238074332967840767">Siguria</translation>
 <translation id="723874023660911012">Ndërro profilet</translation>
 <translation id="7241135764990439166">Modaliteti "i fshehtë" nuk ofrohet</translation>
 <translation id="7245288034498365666">Organizohu dhe kurse kohë</translation>
@@ -2377,7 +2384,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8393700583063109961">Dërgo mesazh</translation>
 <translation id="8393889347136007944">Skedat nuk janë përdorur për <ph name="THRESHOLD" /> ditë</translation>
 <translation id="8395180897620197612">Ndalo regjistrimin</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" mund të qaset te mikrofoni yt kur viziton këtë sajt</translation>
 <translation id="8407669440184693619">Nuk u gjetën fjalëkalime për këtë sajt</translation>
 <translation id="8407831512155324054">Fjalëkalimet e tua duken të forta</translation>
 <translation id="8414283596511250978">Mos harro asnjëherë fjalëkalimet</translation>
@@ -2392,7 +2398,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8439758443371991593">Fshih "Shto te 'Lista e leximit'"</translation>
 <translation id="8443986842926457191">URL-ja është më shumë se 2048 karaktere</translation>
 <translation id="8449869326050867919">Fjalëkalimi u nda</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" mund të qaset te kamera jote kur viziton këtë sajt</translation>
 <translation id="8461708300275916315">Nëse je nën 18 vjeç</translation>
 <translation id="8473815223723723001">Modifiko imazhin me Gemini</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>

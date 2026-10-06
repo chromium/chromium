@@ -22,6 +22,7 @@
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1186645291482254714">तुमच्या फोनवर Chromium सह किमतीचा माग ठेवण्याशी संबंधित अलर्ट मिळवा</translation>
 <translation id="1203500561924088507">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> प्रलंबित आहे. तुमचे ब्राउझिंग सुरक्षित ठेवण्यासाठी, तुम्ही पुढील वेळी <ph name="IDLE_DURATION" /> साठी इनॅक्टिव्ह असाल, तेव्हा Chromium अपडेट होईल.</translation>
 <translation id="1232234696885483911">तुम्ही इमेज शोध उघडता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय आपोआप सर्व्हरला पाठवला जाईल. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">तुम्ही साइन इन केलेले असताना, Chromium मध्ये तुमच्या Google खाते मधून तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी वापरू शकता. हे बदलण्यासाठी, “Chromium मधील तुमचे खाते” वर जा.</translation>
 <translation id="1244381985120794049">Mac मेनू बारमधील Chromium मधील Gemini दाखवा</translation>
@@ -229,6 +230,7 @@
 <translation id="3286538390144397061">त्वरित रीस्टार्ट करा</translation>
 <translation id="328888136576916638">Google API की गहाळ आहेत. Chromium ची काही कार्यक्षमता अक्षम केली जाईल.</translation>
 <translation id="3296368748942286671">Chromium बंद असताना पार्श्वभूमी ॲप्लिकेशन चालवणे सुरू ठेवा</translation>
+<translation id="3300632735252839402">तुम्ही इनॅक्टिव्ह असताना Chromium अपडेट होईल</translation>
 <translation id="3313189106987092621">असुरक्षित कनेक्शन वापरून कोणतीही साइट लोड करण्यापूर्वी Chromium तुम्हाला चेतावणी देईल</translation>
 <translation id="3316771292331273802">तुम्ही Chromium वर साइन इन केले असल्यास, सर्व Chromium विंडो बंद केल्यावर तुमचे Google खाते वगळता तुम्हाला बहुतांश साइटवरून साइन आउट केले जाईल. साइटना तुम्हाला लक्षात ठेवू देण्यासाठी, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">शोध क्षेत्राचा सर्वात वरचा उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, सर्वात वरती <ph name="TOP" />%</translation>
@@ -237,6 +239,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">सध्याच्या Chromium प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="3412460710772753638">या डिव्हाइसवरील पासवर्ड मॅनेजर मध्ये</translation>
+<translation id="3425452599984451640">Chromium ला अपडेट करायचे आहे</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> वरून तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, Chromium मध्ये साइन इन करा</translation>
 <translation id="3438772217992559640">इमेज शोध वापरून हा टॅब शोधा</translation>
 <translation id="3455907671758333080">तुमच्या फोनवर Chromium वापरून वर्धित सुरक्षित ब्राउझिंगचा विस्तार करा</translation>

@@ -1146,6 +1146,17 @@ Bu politika ayarlanmadan bırakılır veya Yanlış değerine ayarlanırsa cihaz
 Devre dışı bırakılmış bir Chrome Uygulaması başlatılmaya çalışıldığında, kullanıcıya uygulamanın neden başlatılamadığına dair bir mesaj gösterilir ve BT departmanlarıyla iletişime geçmeleri önerilir.
 
 ChromeOS M184, Chrome uygulamalarını destekleyen son ChromeOS sürümü olacak.</translation>
+<translation id="1726477280489844651">Kullanıcı <ph name="MS_WIN_NAME" /> cihazında oturum açtığında <ph name="PRODUCT_NAME" /> uygulamasının bir tarayıcı penceresi açıp açmayacağını kontrol eder.
+
+<ph name="PRODUCT_NAME" /> uygulamasında, kullanıcı oturum açtığında başlatılmak üzere kaydolmasını sağlayan bir "<ph name="PRODUCT_NAME" /> uygulamasını <ph name="MS_WIN_NAME" /> ile başlat" ayarı bulunur. Böylece tarayıcı hemen hazır olur. Kullanıcılara bu ayarı değiştirmelerini öneren uyarılar da gösterilebilir.
+
+Politika, Etkin değerine ayarlanırsa kullanıcı oturum açtığında <ph name="PRODUCT_NAME" /> başlatılır ve bir tarayıcı penceresi açılır. Kullanıcılar ayarı değiştiremez ve ayarı değiştirmeleri için uyarı gösterilmez.
+
+Politika, Devre Dışı değerine ayarlanırsa kullanıcı oturum açtığında <ph name="PRODUCT_NAME" /> başlatılmaz. Kullanıcılar ayarı değiştiremez ve ayarı değiştirmeleri için uyarı gösterilmez.
+
+Politika ayarlanmazsa kullanıcılar ayarı değiştirebilir.
+
+Bu politika, "<ph name="PRODUCT_NAME" /> uygulamasını <ph name="MS_WIN_NAME" /> ile başlat" ayarının kullanılamadığı <ph name="PRODUCT_NAME" /> sürümlerinde geçerli değildir.</translation>
 <translation id="1729169799290004131">Politika ayarlandığında otomatik parlaklık özellikleri devre dışı bırakılır ve ekran parlaklığı yüzdesi belirtilir. Başlangıçtaki ekran parlaklığı, politika değerine ayarlanır, ancak kullanıcılar bunu değiştirebilir.
 
       Politika ayarlanmadan bırakıldığında kullanıcı ekran kontrolleri veya otomatik parlaklık özellikleri etkilenmez.
@@ -1248,6 +1259,40 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 
       Politikanın ayarlanmadan bırakılması, kullanıcıların tercih edilen diller listesinin tamamını manipüle etmelerine olanak tanır.</translation>
 <translation id="1803646570632580723">Başlatıcıda gösterilecek sabitlenmiş uygulamalar listesi</translation>
+<translation id="180432221123109556">Gelişmiş JavaScript optimizasyonlarının etkinleştirildiği siteleri belirten site URL kalıplarının listesini oluşturmanıza olanak tanır.
+
+Geçerli site URL kalıpları hakkında ayrıntılı bilgi için
+https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz.
+Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+Politika istisnaları, belirli alt alan adlarının yanı sıra sitelerin tamamı için de ayarlanabilir.
+Örneğin, yalnızca altalanadi.site.com için ayarlanan bir politika, site.com'u
+etkilemeden altalanadi.site.com'a uygulanır. Bir alt alan adının, üst sitesinden
+izole edilemediği bazı durumlarda site.com'da ayarlanan politikayı devralabilir. Ayrıca
+istisnalar, site yeni bir sekmede açılana kadar mevcut bir sekmede yüklenen
+çerçeveler için geçerli olmayabilir. Düşük bellekli
+<ph name="ANDROID_NAME" /> cihazlarda siteye özel istisnalar zorunlu
+kılınmayabilir. Siteler bunun yerine, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> politikasını veya
+varsayılan olarak profilin JavaScript optimizasyon ayarını kullanır.
+
+<ph name="PRODUCT_NAME" />, istisnaları zorunlu kılmak
+için ayarları varsayılandan farklı olan siteleri veya alt alan adlarını
+özel işlemlere yerleştirebilir. Bu durum, özellikle <ph name="ANDROID_NAME" /> cihazlarda
+veya bir joker karakter kalıbı çok sayıda alt alan adıyla eşleştiğinde
+bellek kullanımını artırabilir. Bunun nedeni, eşleşen her kaynağın ayrı ayrı izole edilebilmesidir. İzole edilmiş
+alt alan adları, üst sitelerine erişmek için document.domain'i de kullanamaz.
+
+Not: 138 ve önceki sürümlerde politika istisnaları yalnızca site ayrıntı düzeyinde
+(eTLD+1) zorunlu kılınıyordu. Yalnızca altalanadi.site.com için ayarlanan bir politika,
+altalanadi.site.com için bile geçerli olmuyordu. Hem site.com hem de altalanadi.site.com'da geçerli olması
+için politikanın site.com üzerinde ayarlanması gerekiyordu.
+
+Bu politika, yalnızca üst düzey kaynak URL'ye göre değil, her bir çerçeve için
+ayrı ayrı uygulanır. Örneğin, site-bir.com sitesi <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> politikasında listelenmişse ancak site-iki.com'u içeren bir çerçeve yüklüyorsa site-bir.com'da JavaScript optimizasyonları etkinleştirilir.
+Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> politikasını kullanır veya varsayılan olarak JavaScript
+optimizasyonlarını etkinleştirir. Engellenenler listesindeki girişler, izin verilenler listesindeki girişlere göre daha yüksek önceliğe sahiptir. İzin verilenler listesindeki girişler de yapılandırılmış varsayılan değere göre daha yüksek önceliğe sahiptir.
+
+Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="1807539058116290184">Kiosk modunda iki parmakla yakınlaştırma hareketini devre dışı bırak</translation>
 <translation id="1808715480127969042">Bu sitelerdeki çerezleri engelle</translation>
 <translation id="1810261428246410396">Hızlı Tethering'in kullanılmasına izin ver.</translation>
@@ -1476,6 +1521,7 @@ Bu politika ayarlanmadan bırakılırsa Tıkla ve Ara özelliği varsayılan ola
       Bu politikanın, JavaScript'i üst düzey belgenin kaynağının (genellikle adres çubuğunda da görüntülenen sayfa URL'si) kalıplardan herhangi biriyle eşleşip eşleşmediğine göre engellediğini unutmayın. Dolayısıyla bu politika web tedarik zinciri saldırılarını azaltmak için uygun değildir. Örneğin "https://[*.]foo.com/" kalıbının kullanılması, https://example.com/ adresinde barındırılan bir sayfanın https://www.foo.com/example.js adresinden yüklenen bir komut dosyasını çalıştırmasını engellemez. Ayrıca, "https://example.com/" kalıbının kullanılması, https://example.com adresindeki bir belgenin üst düzey belge olmamasına rağmen başka bir kaynakta (ör. https://www.bar.com) barındırılan bir sayfanın alt çerçevesi olarak yerleştirilmiş olması durumunda bu belgenin komut dosyası çalıştırmasını da engellemez.</translation>
 <translation id="1942015922182679826">Şifresi çözülemeyen şifreleri silmeyi etkinleştir</translation>
 <translation id="1942626390957213764">Masaüstü paylaşım merkezini devre dışı bırak</translation>
+<translation id="1943628907052340534">Kullanıcı <ph name="MS_WIN_NAME" /> cihazında oturum açtığında <ph name="PRODUCT_NAME" /> uygulamasını açma</translation>
 <translation id="194407941132272412">Site izolasyonunu tüm web siteleri için devre dışı bırak, ancak kullanıcının bu özelliği etkinleştirmesine izin ver</translation>
 <translation id="1945994447126139909">Bu kurumsal politika, kısa süreli uyum süreci için geçerli olup <ph name="PRODUCT_NAME" /> 88 sürümünde kaldırılacaktır.
 
@@ -2159,6 +2205,13 @@ sonra eski uygulama kaldırılacaktır.
 NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
 yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="2354439478396602136"><ph name="PRODUCT_OS_NAME" /> başlatıcıda uygulama önerileri göster</translation>
+<translation id="2355126045573728327">Politika ayarlanırsa kullanıcı <ph name="PRODUCT_OS_NAME" /> cihazında oturum açtığında otomatik olarak başlatılacak <ph name="ANDROID_NAME" /> uygulama paketi adlarının (ör. <ph name="EXAMPLE_PACKAGE_NAME" />) listesi belirtilir.
+
+Uygulamalar ayrıca <ph name="ARC_POLICY_NAME" /> ile zorunlu yüklenmiş olarak yapılandırılmalıdır. Bu uygulamalar yükleme tamamlandığında otomatik olarak başlatılır.
+
+Şu anda yalnızca listedeki ilk uygulama başlatılır.
+
+Bu politika ayarlanmadan bırakılırsa veya boş bırakılırsa oturum açma sırasında hiçbir <ph name="ANDROID_NAME" /> uygulaması otomatik olarak başlatılmaz.</translation>
 <translation id="2355876547176311490">Uzaktan erişim ana makinesi tarafından geçiş sunucuları kullanılmasını devre dışı bırak</translation>
 <translation id="2358176879566587521">Bu politika kullanımdan kaldırılmıştır. <ph name="PRODUCT_NAME" /> ürününün bu versiyonuyla uyumlu değildir. Daha fazla bilgiyi https://support.google.com/chrome/a/answer/7643500 adresinde bulabilirsiniz</translation>
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior, <ph name="ABOUT_BLANK_PAGE" /> ve <ph name="ABOUT_SRCDOC_PAGE" /> çerçevelerinin, başlatıcılarına ait temel URL'nin anlık görüntülerini kullanarak temel URL değerlerini tutarlı bir şekilde devralmasına neden olan bir <ph name="PRODUCT_NAME" /> özelliğidir. Daha fazla ayrıntı için https://chromestatus.com/feature/5161101671530496 adresine bakın.
@@ -2324,6 +2377,7 @@ Bu politika, özelliği kontrol etmek için geçici bir çözüm olup M154 sür�
 <translation id="2479760962196319822">Bu politika, <ph name="PRODUCT_OS_NAME" /> kullanıcılarının yerel olarak veri depolayıp depolayamayacağını kontrol eder.
       Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> sisteminde yerel depolama engellenir. Dolayısıyla, kullanıcılar yerel olarak veri depolayamaz ve yerel dizinlere erişemez.
       Bu politika Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" /> sisteminde yerel depolamaya izin verilir. Kullanıcıların veri depolayabileceği yerler veya erişebilecekleri dizinler konusunda herhangi bir kısıtlama yoktur.</translation>
+<translation id="2481931731272002134">Otomatik doldurmada üretken yapay zeka özelliklerine izin ver ve yapay zeka modellerini daha iyi hale getir.</translation>
 <translation id="2482676533225429905">Yerel Mesajlaşma</translation>
 <translation id="2483146640187052324">Ağ bağlantılarında ağ işlemlerini tahmin et</translation>
 <translation id="2487495476672607707"><ph name="PRODUCT_OS_NAME" /> dosya senkronizasyonu, bir kullanıcının Drive'ım bölümündeki <ph name="GOOGLE_DRIVE_NAME" /> dosyalarını <ph name="CHROMEBOOK_PLUS_NAME" /> cihazlarda otomatik olarak çevrimdışı kullanılabilir hale getirir (yeterli alan varsa).
@@ -2779,6 +2833,7 @@ Politika, 2 - "Devre Dışı" değerine ayarlanırsa Google Developer Program'ı
       </translation>
 <translation id="2697717608663878828">TLS Encrypted ClientHello denemesini etkinleştir</translation>
 <translation id="2699836109975228367">Giriş ekranında mono sesi etkinleştir</translation>
+<translation id="2701554183194485203"><ph name="ANDROID_NAME" /> uygulamaları oturum açıldığında otomatik olarak başlatılır</translation>
 <translation id="2702023190395322609">Medya Önerilerini Etkinleştir</translation>
 <translation id="2702682139813393777">Windows yerel mesajlaşma ana makinelerini, cmd.exe aracılığıyla başlatmaya zorla</translation>
 <translation id="270582584528242502">Çıkmaya çalışan kullanıcılara uyarı iletişimi gösterme</translation>
@@ -3035,6 +3090,25 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="2890645751406497668">Bu sitelere, sağlanan tedarikçi ve ürün kimlikleriyle otomatik olarak USB cihazlarına bağlanma izni verir.</translation>
 <translation id="2893546967669465276">Yönetim sunucusuna sistem günlükleri gönder</translation>
 <translation id="2893660462311365527">Milisaniye olarak ağ telemetri toplama oranı.</translation>
+<translation id="2894720693512285641">Bu politika, <ph name="PRODUCT_NAME" /> ürününü, TLS 1.3'te tercih edilen şifreleme şifrelerini belirli bir uyumluluk rejimi tarafından onaylanmış algoritmalara öncelik verecek şekilde sıralamak için yapılandırır.
+
+Bu politikanın ayarlanması, belirli herhangi bir algoritmada anlaşılacağını garanti edilmez.
+
+Bu politika, uyumluluk gereksinimlerini karşılayan ve karşılamayan istemcileri desteklemek isteyen sunucu operatörlerinin, bu istemcileri ayırt etmesine ve yalnızca açıkça tercih edecek şekilde yapılandırılmış istemciler için kriptografik gücü artırılmış belirli, varsayılan olmayan algoritmaları kullanmasına olanak tanımak amacıyla tasarlanmıştır.
+
+Politika, "<ph name="CNSA_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_NAME" />, Commercial National Security Algorithm Suite 1.0 ve 2.0 (CNSA 1.0 ve 2.0) ile uygunluk için gerekli olan şifreleri tercih edecek şekilde yapılandırılır.
+
+Politika ayarlanmazsa veya "<ph name="DEFAULT_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_NAME" />, varsayılan şifrelerini kullanacak şekilde yapılandırılır.
+
+Güvenlik için bu politikanın ayarlanması gerekmez. <ph name="PRODUCT_NAME" /> tarafından kullanılan varsayılan kriptografi, Güneş'teki tüm enerjiyi kullanarak yapılacak kaba kuvvet saldırısına dayanacak kadar güçlüdür.
+
+Bu politika ayarlanırsa web sitelerine erişirken <ph name="PRODUCT_NAME" /> daha yavaş çalışır.
+
+Bu politika yalnızca TLS 1.3 ve QUIC'i etkiler. TLS'nin önceki sürümlerini etkilemez.
+
+Bu politika hem makine hem de kullanıcı için ayarlanabilir. Bu politika kullanıcı için ayarlanırsa yalnızca kullanıcı profili tarafından başlatılan ağ isteklerini etkiler. Tarayıcı genelindeki arka plan görevlerini yürütmek için <ph name="PRODUCT_NAME" /> tarafından yapılan ağ isteklerini etkilemeyebilir. Bu tür istekler, makine düzeyindeki değer tarafından kontrol edilir. Bu politika hem makine hem de kullanıcı düzeyinde ayarlanırsa politika öncelik sırası <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> politikasıyla değiştirilmediği sürece makine düzeyindeki değer geçerli olur.
+
+156 ve önceki sürümlerde bu politika yalnızca makine düzeyinde geçerlidir.</translation>
 <translation id="2894914342151915910">Chrome desteklenmeyen bir sistemde çalıştırıldığında uyarıları engelle</translation>
 <translation id="2895444724612647239">Sitelere, HID cihazlarına otomatik olarak bağlanma izni ver.</translation>
 <translation id="2896434627453256512">Politika ayarlanarak hayalet pencere özelliği etkinleştirilir.
@@ -3625,6 +3699,7 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
 <translation id="322359555555487980"><ph name="PRODUCT_OS_NAME" /> üzerinde varyasyonların kullanılabilirliğini belirle</translation>
 <translation id="3229163415739929305">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa göz atma deneyimini iyileştiren makine öğrenimi modellerinin ve sayfa yükleme meta verilerinin getirilmesi etkinleştirilir.
       Politika, Devre Dışı değerine ayarlanırsa bazı özellikler düzgün çalışmayabilir.</translation>
+<translation id="3230956492238004242">Dinamik alt modül yamasını etkinleştir</translation>
 <translation id="3231311173895401135">Desteğin etkinleştirilip etkinleştirilmeyeceğine tarayıcının karar vermesine izin ver</translation>
 <translation id="3231837273069128027">Politikayı ayarlamak <ph name="TPM_FIRMWARE_UPDATE_TPM" /> donanım yazılımı güncellemelerinin kullanılabilirliğini ve davranışını yapılandırır.
 
@@ -4332,6 +4407,7 @@ Hem <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> hem de <ph
 İçerik Aktarımı uygulamasının düzgün çalışması için Paket Servisi ile veri aktarımı da etkinleştirilmelidir. Daha fazla bilgi için https://support.google.com/a/answer/6364687 adresine göz atabilirsiniz.</translation>
 <translation id="3702518095257671450">Uzaktan onay</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Tek satırlı alanlar artık kullanılmamaktadır ve yakında kaldırılacaktır. Lütfen aşağıdaki çok satırlı metin kutusunu kullanın.)</translation>
+<translation id="370314752761795411"><ph name="PRODUCT_NAME" /> uygulamasını <ph name="MS_WIN_NAME" /> ile başlat</translation>
 <translation id="3711895659073496551">Askıya al</translation>
 <translation id="3712861436661566358">Profil ayırmayı zorunlu kıl</translation>
 <translation id="3719826155360621982">Ana sayfa</translation>
@@ -4817,6 +4893,7 @@ Dikkat edilmesi gereken noktalar:
 <translation id="4027608872760987929">Varsayılan arama sağlayıcıyı etkinleştir</translation>
 <translation id="4030152268425532846">Otomatik giriş kurtarmayı devre dışı bırak</translation>
 <translation id="4032740546145417900">"Konuşarak yazma" özelliğine izin verme.</translation>
+<translation id="4035252407064087455">Yapay zeka modellerini daha iyi hale getirmeden otomatik doldurmada üretken yapay zeka özelliklerine izin ver</translation>
 <translation id="4043796890723386527">Kullanıcıların, <ph name="LACROS_NAME" /> tarayıcıda ikinci profiller oluşturup kullanmalarını ve misafir modunu kullanmalarını engelle.</translation>
 <translation id="4047633048700722778">Politikanın ayarlanması, URL'lerin pornografik olup olmadığını sınıflandırmak için Google Safe Search API'yi kullanan SafeSites URL filtresini kontrol eder.
 
@@ -5255,6 +5332,7 @@ Politika ayarlanırsa kullanıcılar bunu <ph name="PRODUCT_NAME" /> ürününde
 Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmaması durumunda kullanıcıların yalnızca belirtilen Bluetooth hizmetlerine bağlanmalarına izin verir. Liste boşsa tüm hizmetlerin kullanımına izin verilir. Bluetooth SIG tarafından ayırtılan UUID'ler <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> veya <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" /> olarak gösterilebilir. Özel UUID'ler <ph name="BLUETOOTH_CUSTOM_UUID" /> olarak gösterilebilir. UUID'ler büyük/küçük harfe duyarlı değildir. Bu politika ayarlanmazsa kullanıcılar herhangi bir Bluetooth hizmetine bağlanabilirler.</translation>
 <translation id="4332177773549877617">Android uygulaması yüklemeleriyle ilgili etkinlikleri günlüğe kaydetme</translation>
 <translation id="4333940819293342439">Milisaniye olarak, uygulama kullanımıyla ilgili telemetri toplama hızı.</translation>
+<translation id="4336096948197154521">Kullanıcı <ph name="MS_WIN_NAME" /> cihazında oturum açtığında <ph name="PRODUCT_NAME" /> uygulamasını aç</translation>
 <translation id="4340121900958123942"><ph name="PRODUCT_OS_NAME" /> coğrafi konumu sistem kullanılabilirlik düzeyini ayarlayın.
 
 Bu, uygulama ve web sitelerine ait izin katmanının altındaki ek bir kontrol katmanıdır. Örneğin, bu politika <ph name="GLS_BLOCKED" /> veya <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" /> değerine ayarlanırsa ilgili konum izni ne olursa olsun hiçbir uygulama veya web sitesi, konumu çözümleyemez. Ancak, politika <ph name="GLS_ALLOWED" /> değerine ayarlanırsa uygulamalar ve web siteleri izinleri olduğunda ayrı ayrı konum bilgisini alabilir.
@@ -6011,6 +6089,7 @@ Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzant
       <ph name="PAGE_SIZE_NAME" />, listelenen biçimlerden birini veya gereken kağıt boyutu listede yoksa "özel" biçimi içermelidir. "Özel" değer sağlanıyorsa <ph name="PAGE_SIZE_CUSTOM_SIZE" /> özelliği belirtilmelidir. Bu özellik, istenilen yüksekliği ve genişliği mikrometre cinsinden verir. Aksi takdirde <ph name="PAGE_SIZE_CUSTOM_SIZE" /> özelliği belirtilmemelidir. Bu kuralları ihlal eden politika yok sayılır.
 
       Sayfa boyutu kullanıcı tarafından seçilen yazıcıda kullanılamıyorsa bu politika yok sayılır.</translation>
+<translation id="4787894429283141328">Otomatik doldurmada üretken yapay zeka özelliklerine izin verme.</translation>
 <translation id="4789450349513792856">Bu sitelerde pop-up'ları engelle</translation>
 <translation id="4790391579868456557">Aramada gerekli ve gerekli olmayan çerezleri kullan.</translation>
 <translation id="4790588245699320140">Google Asistan'ın ekran içeriğine erişmesine izin ver</translation>
@@ -6334,6 +6413,13 @@ Bu politika, kullanıcıların <ph name="PRODUCT_NAME" /> ürününde oturum aç
 <translation id="4947257516265472776"><ph name="YOUTUBE_PRODUCT_NAME" /> için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="494924690085329212">Android başlatılmışsa kullanıcı oturumu kapatıldığında cihazı yeniden başlat.</translation>
 <translation id="4950447493143157880">Yerleşik DNS istemcisini hiçbir zaman kullanma</translation>
+<translation id="4953257833692039804"><ph name="PRODUCT_NAME" /> uygulamasının, aşamalı güvenlik güncellemelerini tam kapsamlı tarayıcıyı tamamen yeniden başlatmaya gerek kalmadan yeni başlatılan alt işlemlere (ör. oluşturucu işlemleri) dinamik olarak uygulayıp uygulamayacağını kontrol eder.
+
+<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> devre dışı bırakılırsa kullanılmak üzere yeni modül yüklenmez.
+
+Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, dinamik olarak hazırlanan alt modül ikili dosyalarını kullanarak yeni alt süreçler başlatabilir.
+
+Bu politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, dinamik olarak hazırlanan alt modül ikili dosyalarını yeni başlatılan alt işlemlere (yerel olarak indirilmiş veya hazırlanmış güncellemeler dahil) uygulamayı hemen durdurur ve güncellemeleri uygulamak için tarayıcının tamamen yeniden başlatılmasını ister. Çalışmakta olan alt işlemler aynı şekilde devam eder. Bu ayar ile tüm bileşen güncellemeleri devre dışı bırakılmadan dinamik yama devre dışı bırakılır.</translation>
 <translation id="4953541641325278286">Hiçbir sitenin kullanıcının boşta kalma durumunu algılamasına izin verme</translation>
 <translation id="4954352279763128540">Kerberos kimlik doğrulaması iletişim kutusuna önceden doldurulmuş bir alan adı ekler.
 
@@ -6581,6 +6667,7 @@ Bu politika, web içeriğinin yeni davranışa geçirilmesi için zaman tanıyan
       </translation>
 <translation id="5118635822783657217">Kritik olmayan bileşenler için güncellemeleri devre dışı bırak</translation>
 <translation id="5120168808610189805">İlk çalıştırmada ana sayfanın içe aktarılmasını etkinleştir</translation>
+<translation id="5124321040285474825">Otomatik doldurmadaki üretken yapay zeka özellikleriyle ilgili ayarlar</translation>
 <translation id="5124368997194894978">AC'de (alternatif akım) başlat özeliğini etkinleştir</translation>
 <translation id="5124652340668722849"><ph name="PRODUCT_NAME" /> tarafından proxy yapılandırmalarını dinamik olarak getirmek için kullanılacak olan temel hazırlık alanlarının (PvD'ler) listesini yapılandırır.
 
@@ -6699,6 +6786,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
           Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="5182483318861266793">Rafı ekranın sağ tarafında konumlandır</translation>
 <translation id="51859390023061147">Tam geri yükleme özelliğini devre dışı bırak.</translation>
+<translation id="5188507662885416844">Dinamik alt modül yamasını devre dışı bırak</translation>
 <translation id="5189360528842591274">Yalnızca listedeki Bluetooth hizmetleriyle bağlantı kurmaya izin ver</translation>
 <translation id="5191007233343702012">Standart sekme önceliklendirmeyi kullan</translation>
 <translation id="5191476996923842491">setTimeout() fonksiyon zaman aşımı için varsayılan davranış.</translation>
@@ -8932,6 +9020,27 @@ Kullanıcı ekran koruyucusu, <ph name="SCREENSAVER_LOCK_SCREEN_IMAGES_POLICY_NA
 Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir resmin gösterildiği zaman aralığı sırasıyla <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> ve <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> politikalarıyla değiştirilebilir. Bu politikalardan biri ayarlanmazsa varsayılan değerler kullanılır.</translation>
 <translation id="651248769129998376">Uzantı yükleme isteklerini Yönetici Konsolu'nda oluşturma veya oraya yükleme</translation>
 <translation id="6513453889192806240">HTTPS Gecikmesi</translation>
+<translation id="6514006253468048943"><ph name="PRODUCT_NAME" /> içindeki bu özellikler, kullanıcıların web'deki formları doldurmasına yardımcı olmak için üretken yapay zeka modellerini kullanır. Bu özellikleri kullanabilmek için <ph name="PRODUCT_NAME" />, kullanıcının etkileşimde bulunduğu formların yapısı gibi verileri ve Gemini ile Bul ve Tamamla özelliğinde kullanıcının Gemini'a bağladığı uygulamalarda arama yapmak üzere girdiği serbest metin sorgularını toplamalı, bunları üretken yapay zeka modeli çalıştıran Google'a ait bir sunucuya göndermelidir.
+
+Politika 0 (Otomatik doldurmada üretken yapay zeka özelliklerine izin ver ve yapay zeka modellerini daha iyi hale getir) değerine ayarlanırsa özellikler kullanılabilir ve Google, yapay zeka modellerini daha iyi hale getirmek için ilgili verileri kullanabilir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+Politika 1 (Yapay zeka modellerini daha iyi hale getirmeden otomatik doldurmada üretken yapay zeka özelliklerine izin ver) değerine ayarlanırsa özellikler kullanılabilir ancak Google, kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) modellerini daha iyi hale getirmek için kullanamaz. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+Politika 2 (Otomatik doldurmada üretken yapay zeka özelliklerine izin verme) değerine ayarlanırsa bu özellikler kullanılamaz.
+
+Politika ayarlanmadığında davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikası belirler.
+
+Otomatik doldurmadaki üretken yapay zeka özellikleri şunlardır:
+
+- Akıllı form anlama: Bir formdaki alanları tanımlamak ve sınıflandırmak için yapay zeka kullanır. Böylece daha fazla alan doldurulabilir.
+
+- Gemini ile Bul ve Tamamla: Kullanıcının Gemini'a bağladığı uygulamalardaki bilgileri bulur ve bunları form doldurmak için formda proaktif öneriler olarak veya kullanıcının yazdığı sorguya yanıt olarak sunar.
+
+Bu politika, <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" /> politikasının yerini alır ancak ayarlanmazsa söz konusu politika geçerli olmaya devam eder. "Gemini ile Bul ve Tamamla" özelliğinin kullanılabilmesi için <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikasının da devre dışı bırakılmaması gerekir.
+
+Bu politika, üretken yapay zeka kullanmayan otomatik doldurma özelliklerini kontrol etmez.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> resmi</translation>
 <translation id="6515520014183265350">Özel işlem içinde çalışan kaynakların listesini belirtin.
 
@@ -10836,6 +10945,19 @@ Bu politika devre dışı bırakılırsa PDF görüntüleyici kendi AGG oluştur
 
 Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından seçilir.</translation>
 <translation id="7704244074621846004">SharedWorker'lar için uzatılmış kullanım ömrünü etkinleştir.</translation>
+<translation id="7706986409083477132">JIT (Just In Time) derleyicisi etkinken JavaScript çalıştırmasına izin verilen sitelerin belirtildiği bir site URL kalıpları listesini ayarlamanıza olanak tanır.
+
+          Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+          Politika istisnaları, belirli alt alan adlarının yanı sıra sitelerin tamamı için de ayarlanabilir. Örneğin, yalnızca altalanadi.site.com için ayarlanan bir politika, site.com'u etkilemeden altalanadi.site.com'a uygulanır. Bir alt alan adı, üst sitesinden izole edilemediği bazı durumlarda site.com'da ayarlanan politikayı devralabilir. Ayrıca istisnalar, site yeni bir sekmede açılana kadar mevcut bir sekmede yüklenen çerçeveler için geçerli olmayabilir. Düşük bellekli <ph name="ANDROID_NAME" /> cihazlarda siteye özel istisnalar zorunlu kılınmayabilir. Siteler bunun yerine, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> politikasını veya varsayılan olarak profilin JavaScript JIT ayarını kullanır.
+
+          <ph name="PRODUCT_NAME" />, istisnaları zorunlu kılmak için ayarları varsayılandan farklı olan siteleri veya alt alan adlarını özel işlemlere yerleştirebilir. Bu durum, özellikle <ph name="ANDROID_NAME" /> cihazlarda veya bir joker karakter kalıbı çok sayıda alt alan adıyla eşleştiğinde bellek kullanımını artırabilir. Bunun nedeni, eşleşen her kaynağın ayrı ayrı izole edilebilmesidir. İzole edilmiş alt alan adları, üst sitelerine erişmek için document.domain'i de kullanamaz.
+
+          Not: 155 ve önceki sürümlerde politika istisnaları yalnızca site ayrıntı düzeyinde (eTLD+1) zorunlu kılınıyordu. Yalnızca altalanadi.site.com için ayarlanan bir politika, altalanadi.site.com için bile geçerli olmuyordu. Hem site.com hem de altalanadi.site.com'da geçerli olması için politikanın site.com üzerinde ayarlanması gerekiyordu.
+
+          Bu politika, yalnızca üst düzey kaynak URL'ye göre değil, her bir çerçeve için ayrı ayrı uygulanır. Örneğin, site-bir.com sitesi <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> politikasında listelenmişse ancak site-iki.com'u içeren bir çerçeve yüklüyorsa site-bir.com'da JavaScript JIT etkinleştirilir. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> politikasını kullanır veya varsayılan olarak JavaScript JIT'yi etkinleştirir. Engellenenler listesindeki girişler, izin verilenler listesindeki girişlere göre daha yüksek önceliğe sahiptir. İzin verilenler listesindeki girişler de yapılandırılmış varsayılan değere göre daha yüksek önceliğe sahiptir.
+
+          Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript JIT site için etkinleştirilir.</translation>
 <translation id="7707869387893611318">Şarj sesleri özelliğini etkinleştirin.
 
           Bu özellik, şarj seslerini çalmaktan sorumludur.

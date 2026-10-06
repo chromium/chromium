@@ -774,6 +774,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />、複数選択された録画中の固定のタブ</translation>
 <translation id="4137746084635924146">現在のデバイスの言語</translation>
 <translation id="414128724510021958">PC 版サイトをデフォルトでリクエスト</translation>
+<translation id="4150837143272125910">アップデートがダウンロードされました</translation>
 <translation id="4162867837470729563">共有オプションのリストが画面全体に表示されています。</translation>
 <translation id="4164642020717536140">高速で安全なウェブ ブラウジング</translation>
 <translation id="4165077084524712774">その他のツール</translation>
@@ -1240,6 +1241,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6039379616847168523">次のタブに移動する</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="604124094241169006">自動設定</translation>
+<translation id="6041959688070413372">検索サービスと Google Workspace アプリ（Google ドライブなど）の接続を管理します</translation>
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6047066316630165190">グリッド タブ切り替えを開く</translation>
 <translation id="604996488070107836">不明なエラーが発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
@@ -1358,7 +1360,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="641643625718530986">印刷...</translation>
 <translation id="6433501201775827830">検索サービスの選択</translation>
 <translation id="6434309073475700221">破棄</translation>
-<translation id="6435307030888827407">ログアウト状態を保持する</translation>
+<translation id="6435307030888827407">ログアウト状態を保持</translation>
 <translation id="6437162790453527153">ログインすると、すべてのデバイスで同じブックマークやその他の設定を使用できるようになります</translation>
 <translation id="6437478888915024427">ページ情報</translation>
 <translation id="6440291723980579689">ページは開いてから読み込まれます。</translation>
@@ -1400,6 +1402,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6565959834589222080">可能な場合は Wi-Fi を使用します</translation>
 <translation id="657177046675873214">お使いのすべてのデバイスで同じブックマークを使用するには、設定で [ブックマーク] をオンにします</translation>
 <translation id="6573096386450695060">常に許可</translation>
+<translation id="657480975869429144">Chrome の新しいバージョンを利用できます</translation>
 <translation id="658099107946526506">PIN を使ってシークレット ブラウジングを保護し、不要なアクセスを防ぎます</translation>
 <translation id="6583199322650523874">現在のページをブックマークする</translation>
 <translation id="6588043302623806746">セキュア DNS を使用する</translation>
@@ -2037,7 +2040,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8969796057708736017">ファイルが組織のポリシーに準拠している場合はダウンロードされます</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
-<translation id="8987736167266086032">同じところから再開</translation>
+<translation id="8987736167266086032">中断したところから再開する</translation>
 <translation id="8992769679401294069">データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください。</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8995521496079646922">選択したアプリがデフォルトで使用されます。アプリがまだこのデバイスにインストールされていない場合は、まもなくダウンロードされます。</translation>

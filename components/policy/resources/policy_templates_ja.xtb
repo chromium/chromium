@@ -1181,6 +1181,7 @@ ChromeOS M184 は、Chrome アプリをサポートする最後の ChromeOS マ�
 <translation id="1798559516913615713">GPO のキャッシュ期間</translation>
 <translation id="180130467244315277">このポリシーでは、管理者が <ph name="PRODUCT_NAME" /> の設定で使用言語の順序を設定できるようにします。リストの順序は、chrome://settings/languages の [言語を希望の順序に並べ替えます] の順序と同じになります。ユーザーは、ポリシーで設定された言語を削除したり、並べ替えたりできませんが、ポリシーで設定された言語の下に言語を追加することができます。また、他のポリシーで強制されていない限り、ユーザーはブラウザの UI の言語と翻訳やスペルチェックの設定を自由に管理できます。このポリシーを未設定のままにした場合、ユーザーは使用言語のリスト全体を操作できます。</translation>
 <translation id="1803646570632580723">ランチャーに表示する固定アプリのリスト</translation>
+<translation id="180432221123109556">JavaScript の高度な最適化を有効にしたサイトの URL パターンのリストを設定できます。有効なサイトの URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。ポリシーの例外は、サイト全体だけでなく、特定のサブドメインにも設定できます。たとえば、subdomain.site.com でのみ設定したポリシーは、site.com に影響を与えることなく subdomain.site.com に適用されます。サブドメインを親サイトから分離できない場合は、site.com で設定されたポリシーが継承されることがあります。また、既存のタブで読み込まれたフレームについては、サイトが新しいタブで開かれるまで、例外が有効にならない場合があります。メモリ容量の少ない <ph name="ANDROID_NAME" /> デバイスでは、サイト固有の例外が適用されない場合があります。その場合、サイトでは <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが設定されていればそれが適用され、そうでなければデフォルトでプロファイルの JavaScript 最適化設定が使用されます。例外を適用するために、<ph name="PRODUCT_NAME" /> は、設定がデフォルトと異なるサイトまたはサブドメインを専用のプロセスに配置する場合があります。これにより、特に <ph name="ANDROID_NAME" /> で、またはワイルドカード パターンが多くのサブドメインに一致する場合に、メモリ使用量が増加する可能性があります。これは、一致するオリジンがそれぞれ個別に分離される可能性があるためです。また、分離されたサブドメインは、document.domain を使用して親サイトにアクセスすることもできません。注: バージョン 138 以前では、ポリシーの例外はサイトの詳細レベル（eTLD+1）でのみ適用されていました。subdomain.site.com のみに対して設定されたポリシーは、subdomain.site.com 自体に対しても有効になりませんでした。site.com と subdomain.site.com の両方に適用するには、site.com に対して設定する必要がありました。このポリシーは、最上位のオリジン URL のみに基づいて適用されるわけではなく、フレーム単位で適用されます。たとえば、<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> ポリシーに site-one.com が登録されていても、site-one.com が site-two.com を含むフレームを読み込む場合、site-one.com では JavaScript の最適化が有効になります。一方、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが設定されていればそれが適用され、そうでなければデフォルトで JavaScript の最適化が有効になります。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。サイトでこのポリシーが設定されていない場合は、<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが設定されていればそれがサイトに適用され、設定されていなければ、そのサイトで JavaScript の最適化が有効になります。</translation>
 <translation id="1807539058116290184">キオスクモードで「ピンチしてズーム」を許可しない</translation>
 <translation id="1808715480127969042">これらのサイトの Cookie をブロックする</translation>
 <translation id="1810261428246410396">インスタント テザリングの使用を許可する</translation>
@@ -2201,6 +2202,7 @@ ServiceWorkerAutoPreload 機能では、ServiceWorker ブートストラップ �
 <translation id="2479760962196319822">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> ユーザーがデータをローカルに保存できるかどうかを管理します。
       このポリシーを False に設定した場合、<ph name="PRODUCT_OS_NAME" /> でローカル ストレージがブロックされます。ユーザーはデータをローカルに保存できず、ローカル ディレクトリにもアクセスできません。
       このポリシーを True に設定するか未設定のままにした場合、<ph name="PRODUCT_OS_NAME" /> でローカル ストレージが許可されます。ユーザーがデータを保存できる場所やアクセスできるディレクトリに制限はありません。</translation>
+<translation id="2481931731272002134">自動入力での生成 AI 機能の使用を許可し、AI モデルを改善する。</translation>
 <translation id="2482676533225429905">ネイティブ メッセージング</translation>
 <translation id="2483146640187052324">ネットワーク接続でネットワーク動作を予測する</translation>
 <translation id="2487495476672607707"><ph name="PRODUCT_OS_NAME" /> のファイル同期機能では、<ph name="CHROMEBOOK_PLUS_NAME" /> デバイスでユーザーの [マイドライブ] の <ph name="GOOGLE_DRIVE_NAME" /> ファイルが自動的にオフラインで使用可能になります（容量に余裕がある場合）。
@@ -2883,6 +2885,7 @@ WebSocket 以外のリクエストの上限を変更するには、<ph name="MAX
 <translation id="2890645751406497668">特定のベンダー ID と製品 ID を持つ USB デバイスへの接続を自動的にこれらのサイトに許可する。</translation>
 <translation id="2893546967669465276">管理サーバーにシステムログを送信する</translation>
 <translation id="2893660462311365527">ネットワーク テレメトリーの収集の間隔（ミリ秒単位）。</translation>
+<translation id="2894720693512285641">このポリシーでは、<ph name="PRODUCT_NAME" /> で優先する TLS 1.3 の暗号の順序を指定し、特定のコンプライアンス体制で承認されたアルゴリズムの優先順序を反映するように設定します。このポリシーを設定しても、特定のアルゴリズムがネゴシエートされるとは限りません。このポリシーは、コンプライアンス要件の有無にかかわらずクライアントをサポートしたいサーバー オペレーターが、それらのクライアントを区別し、暗号強度の高い特定のデフォルトではないアルゴリズムを優先するように明示的に設定されたクライアントに対してのみ使用できるようにするためのものです。このポリシーを「<ph name="CNSA_NAME" />」に設定した場合は、<ph name="PRODUCT_NAME" /> で Commercial National Security Algorithm Suite バージョン 1.0 および 2.0（CNSA 1.0 および 2.0）に準拠するために必要な暗号を優先するように設定します。このポリシーを設定しない場合、または「<ph name="DEFAULT_NAME" />」に設定した場合、<ph name="PRODUCT_NAME" /> でデフォルトの暗号を使用するように設定します。このポリシーの設定はセキュリティ上必須ではありません。<ph name="PRODUCT_NAME" /> で使用するデフォルトの暗号は、いかなる総当たり攻撃にも十分耐えうるほど強力です。このポリシーを設定すると、ウェブサイトにアクセスする際に <ph name="PRODUCT_NAME" /> の動作が遅くなる場合があります。このポリシーは TLS 1.3 と QUIC にのみ影響し、以前のバージョンの TLS には影響しません。このポリシーは、マシンとユーザーに対して設定できます。このポリシーをユーザーに対して設定した場合、ユーザー プロファイルによって開始されたネットワーク リクエストにのみ影響します。ブラウザ全体のバックグラウンド タスクを実行するために <ph name="PRODUCT_NAME" /> によって行われたネットワーク リクエストには影響しない可能性があります。それらのリクエストはマシンレベルの値によって制御されます。このポリシーがマシンレベルとユーザーレベルの両方で設定されている場合は、<ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> ポリシーによって優先順位が変更されていない限り、マシンレベルの値が適用されます。バージョン 156 以前では、このポリシーはマシン全体にのみ適用されます。</translation>
 <translation id="2894914342151915910">サポートされていないシステムで Chrome を実行している場合の警告を非表示にする</translation>
 <translation id="2895444724612647239">あらゆる HID デバイスへの接続を自動的にサイトに許可します。</translation>
 <translation id="2896434627453256512">このポリシーを設定した場合、ゴースト ウィンドウ機能が有効になります。このポリシーが true の場合、クラッシュまたは再起動の後に ARC が起動する前に、復元のアプリ設定に基づいて ARC ゴースト ウィンドウが作成されます。このポリシーが false の場合、ARC が起動する前にゴースト ウィンドウは作成されません。ARC の起動後に ARC アプリが復元されます。</translation>
@@ -4612,6 +4615,7 @@ Protected Audience API のサポート終了により、このポリシーは <p
 <translation id="4027608872760987929">デフォルトの検索プロバイダを有効にする</translation>
 <translation id="4030152268425532846">自動ログインの回避を無効にする</translation>
 <translation id="4032740546145417900">音声入力を許可しない。</translation>
+<translation id="4035252407064087455">AI モデルを改善せずに、自動入力での生成 AI 機能の使用を許可する。</translation>
 <translation id="4043796890723386527">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可しない</translation>
 <translation id="4047633048700722778">このポリシーでは、セーフサイトの URL フィルタを制御できます。このフィルタは、Google Safe Search API を使用して URL をポルノとそれ以外に分類します。
 
@@ -5772,6 +5776,7 @@ URL が <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> の URL パターンと競
       <ph name="PAGE_SIZE_NAME" /> にはリストのいずれかの形式または「カスタム」（必要な用紙サイズがリストにない場合）を指定する必要があります。「カスタム」値を使用する場合は、<ph name="PAGE_SIZE_CUSTOM_SIZE" /> プロパティを指定する必要があります。このプロパティには、必要な高さと幅を mm 単位で指定します。それ以外の場合、<ph name="PAGE_SIZE_CUSTOM_SIZE" /> プロパティは指定しないでください。これらのルールにそぐわない場合、ポリシーは無視されます。
 
       ユーザーが選択したプリンタでこのページサイズを使用できない場合、このポリシーは無視されます。</translation>
+<translation id="4787894429283141328">自動入力での生成 AI 機能の使用を許可しない。</translation>
 <translation id="4789450349513792856">これらのサイトでポップアップをブロックする</translation>
 <translation id="4790391579868456557">検索に必須の Cookie と必須でない Cookie を使用する。</translation>
 <translation id="4790588245699320140">Google アシスタントに画面のコンテキストへのアクセスを許可する</translation>
@@ -6286,6 +6291,7 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
       </translation>
 <translation id="5118635822783657217">重要ではないコンポーネントの更新を無効にする</translation>
 <translation id="5120168808610189805">初回実行時のホームページのインポートを有効にする</translation>
+<translation id="5124321040285474825">自動入力での生成 AI 機能の設定</translation>
 <translation id="5124368997194894978">AC（交流電流）電源接続時の起動を有効にします</translation>
 <translation id="5124652340668722849"><ph name="PRODUCT_NAME" /> がプロキシ構成を動的に取得するために使用するプロビジョニング ドメイン（PvD）のリストを設定します。
 
@@ -8502,6 +8508,23 @@ False に設定すると、P2P は使用されません。
 スクリーンセーバーを開始するまでのアイドル タイムアウトと画像の表示間隔は、それぞれ <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> ポリシーと <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> ポリシーで変更できます。これらのポリシーが設定されていない場合は、代わりにデフォルト値が使用されます。</translation>
 <translation id="651248769129998376">拡張機能インストール リクエストの作成や管理コンソールへのアップロードを行わない</translation>
 <translation id="6513453889192806240">HTTPS レイテンシ</translation>
+<translation id="6514006253468048943"><ph name="PRODUCT_NAME" /> のこれらの機能は、生成 AI モデルを使用して、ユーザーによるウェブ上のフォームの入力を支援します。これらの機能を使用するために、<ph name="PRODUCT_NAME" /> はユーザーが操作するフォームの構造などのデータを収集する必要があります。また、Gemini で検索して自動入力する場合には、接続済みの Gemini アプリを検索するために、ユーザーが入力した自由形式の検索語句も収集する必要があります。これらのデータは、生成 AI モデルを実行する Google 所有のサーバーに送信されます。このポリシーを 0（自動入力での生成 AI 機能の使用を許可し、AI モデルを改善する）に設定した場合、この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することが許可されます。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。以下に記載している場合を除き、0 がデフォルト値です。
+
+このポリシーを 1（AI モデルを改善せずに、自動入力での生成 AI 機能の使用を許可する）に設定した場合、この機能の使用は許可されますが、Google が AI モデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可されません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
+
+ポリシーを 2（自動入力での生成 AI 機能の使用を許可しない）に設定した場合、この機能の使用は許可されません。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
+
+自動入力で使用される生成 AI 機能には、以下が含まれます。
+
+- より高度なフォーム認識: AI を使用してフォームの項目を識別、分類し、より多くの項目に入力できるようにします。
+
+Gemini で検索して自動入力: ユーザーが Gemini に接続したアプリから情報を検索し、フォーム上での先回りアシストによる提案、またはユーザーが入力した検索語句への回答に反映します。このポリシーは <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" /> ポリシー（このポリシーが未設定の場合は引き続き適用される）に優先して適用されます。「Gemini で検索して自動入力」機能を使用するには、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーが無効になっていてはなりません。
+
+このポリシーは、生成 AI を使用しない自動入力機能には適用されません。
+
+生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> の画像</translation>
 <translation id="6515520014183265350">専用のプロセスで処理されるオリジンのリストを指定します。
 
@@ -10269,6 +10292,7 @@ URL パターンは、<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> �
 
 このポリシーを設定しない場合、PDF のレンダラはブラウザによって選択されます。</translation>
 <translation id="7704244074621846004">SharedWorker の有効期間の延長を有効にする</translation>
+<translation id="7706986409083477132">JIT（Just In Time）コンパイラを有効にした JavaScript の実行を許可するサイトの URL パターンのリストを設定できます。有効なサイトの URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。ポリシーの例外は、サイト全体だけでなく、特定のサブドメインにも設定できます。たとえば、subdomain.site.com でのみ設定したポリシーは、site.com に影響を与えることなく subdomain.site.com に適用されます。サブドメインを親サイトから分離できない場合は、site.com で設定されたポリシーが継承されることがあります。また、既存のタブで読み込まれたフレームについては、サイトが新しいタブで開かれるまで、例外が有効にならない場合があります。メモリ容量の少ない <ph name="ANDROID_NAME" /> デバイスでは、サイト固有の例外が適用されない場合があります。その場合、サイトでは <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが設定されていればそれが適用され、そうでなければデフォルトでプロファイルの JavaScript JIT 設定が使用されます。例外を適用するために、<ph name="PRODUCT_NAME" /> は、設定がデフォルトと異なるサイトまたはサブドメインを専用のプロセスに配置する場合があります。これにより、特に <ph name="ANDROID_NAME" /> で、またはワイルドカード パターンが多くのサブドメインに一致する場合に、メモリ使用量が増加する可能性があります。これは、一致するオリジンがそれぞれ個別に分離される可能性があるためです。また、分離されたサブドメインは、document.domain を使用して親サイトにアクセスすることもできません。注: バージョン 155 以前では、ポリシーの例外はサイトの詳細レベル（eTLD+1）でのみ適用されていました。subdomain.site.com のみに対して設定されたポリシーは、subdomain.site.com 自体に対しても有効になりませんでした。site.com と subdomain.site.com の両方に適用するには、site.com に対して設定する必要がありました。このポリシーは、最上位のオリジン URL のみに基づいて適用されるわけでなく、フレーム単位で適用されます。たとえば、<ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> ポリシーに site-one.com が登録されていても、site-one.com が site-two.com を含むフレームを読み込む場合、site-one.com では JavaScript JIT が有効になります。一方、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが設定されていればそれが適用され、そうでなければデフォルトで JavaScript JIT が有効になります。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。サイトでこのポリシーが設定されていない場合、<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが設定されていればそれがサイトに適用され、設定されていなければ、そのサイトで JavaScript JIT が有効になります。</translation>
 <translation id="7707869387893611318">充電時のサウンド機能を有効にします。
 
           これは充電器に接続したときにサウンドを鳴らす機能です。

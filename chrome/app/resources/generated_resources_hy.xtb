@@ -1698,7 +1698,6 @@
 <translation id="2300383962156589922">«<ph name="APP_NAME" />» հավելվածի կարգավորում և կառավարում</translation>
 <translation id="2300434721407965566">Դադարեցնում է լիցքավորումը, երբ լիցքի մակարդակը հասնում է 80%-ի, որպեսզի մարտկոցն ավելի երկար ծառայի։</translation>
 <translation id="2301382460326681002">Ընդլայնման արմատային գրացուցակը սխալ է:</translation>
-<translation id="2301402091755573488">Ստացած ներդիր</translation>
 <translation id="2304820083631266885">Մոլորակ</translation>
 <translation id="2305202347479035002">Ինչպես է այն աշխատում</translation>
 <translation id="2306794767168143227">Պահել այս սարքում՝ <ph name="BRAND" />ում</translation>
@@ -1717,6 +1716,7 @@
 <translation id="2322622365472107569">Ավարտի ժամը՝ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Պահված Wi-Fi ցանցեր</translation>
 <translation id="2323685460575935191">Թաքցնել ոլորման կոճակները</translation>
+<translation id="2325004050205455346">Վերջին պատմությունը</translation>
 <translation id="2325444234681128157">Հիշել գաղտնաբառը</translation>
 <translation id="2326188115274135041">Ավտոմատ ապակողպումը միացնելու համար հաստատեք PIN կոդը</translation>
 <translation id="2326583548923775947">Սա Google հաշիվ չէ։ Տարրերը, որոնք պահում եք Chrome-ում, հասանելի չեն լինի մյուս սարքերում։</translation>
@@ -2073,7 +2073,6 @@
 <translation id="2598710988533271874">Հասանելի է Chrome-ի նոր տարբերակը</translation>
 <translation id="2599048253926156421">Օգտանունը պատճենվեց սեղմատախտակին</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Անջատվել է 1 չպահված ընդլայնում}one{Անջատվել է {NUM_SITES} չպահված ընդլայնում}other{Անջատվել է {NUM_SITES} չպահված ընդլայնում}}</translation>
-<translation id="2603121359676416582">Այս էջի համար</translation>
 <translation id="2603656971249947488">Ներդիրների հատված</translation>
 <translation id="2604129989323098489">Կայքը սովորաբար ուղարկում է ձեր էկրանների մասին տեղեկությունների հարցում, որպեսզի կարողանա խելացի կերպով բացել և տեղադրել պատուհաններ, օրինակ՝ կողք կողքի ցույց տալ փաստաթղթեր կամ լիաէկրան բովանդակություն</translation>
 <translation id="2604255671529671813">Ցանցի միացման սխալ</translation>
@@ -3014,7 +3013,6 @@
 <translation id="3292966601422448005">Թույլտվությունները, որոնք տրամադրում եք <ph name="APP_NAME" /> հավելվածին, նաև կգործեն այդ հավելվածի կողմից տեղադրված հավելվածների համար։</translation>
 <translation id="3293080634164207409">Ավելացրեք ներդիրներ</translation>
 <translation id="329324683265785818">Ստեղնային դյուրանցում k՝ նվագարկման/դադարեցման համար</translation>
-<translation id="3293644607209440645">Ուղարկել այս էջը</translation>
 <translation id="3294437725009624529">Հյուր</translation>
 <translation id="3294686910656423119">Օգտագործման վիճակագրություն և խափանման հաշվետվություններ</translation>
 <translation id="3295241308788901889">Ներդիր է հեռարձակվում</translation>
@@ -5712,6 +5710,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (աջ)</translation>
 <translation id="534449933710420173">Անանուն պանակ</translation>
 <translation id="5345916423802287046">Գործարկել հավելվածը մուտք գործելիս</translation>
+<translation id="5346059693449184483">Կիսվեք ձեր գաղափարներով</translation>
 <translation id="5350116201946341974">Տարօրինակ</translation>
 <translation id="535123479159372765">Տեքստը պատճենվեց այլ սարքից</translation>
 <translation id="5352257124367865087">Կառավարել կայքի թույլտվությունները</translation>
@@ -7133,7 +7132,6 @@
 <translation id="6472893788822429178">Ցույց տալ Սկիզբ կոճակը</translation>
 <translation id="6473315466413288899">Ընտրեք տարբերակ</translation>
 <translation id="6474021817475285003">Տեսնել ավելին Google Օրացույցում</translation>
-<translation id="6474401088838630457">Հարցրեք Gemini-ին ավելին այս թեմայի մասին</translation>
 <translation id="6474498546677193336">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ Լինուքսը հաջորդ անգամ անջատվի։</translation>
 <translation id="6474884162850599008">Google Drive հաշվի անջատում</translation>
 <translation id="6476482583633999078">Խոսքի արագությունը</translation>

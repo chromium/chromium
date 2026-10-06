@@ -1711,7 +1711,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2300383962156589922">Personoleiddio a rheoli <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Yn stopio gwefru ar 80% i helpu'ch batri i bara'n hirach.</translation>
 <translation id="2301382460326681002">Mae cyfeiriadur gwraidd yr estyniad yn annilys.</translation>
-<translation id="2301402091755573488">Tab wedi'i Rannu</translation>
 <translation id="2304820083631266885">Planed</translation>
 <translation id="2305202347479035002">Sut mae'n gweithio</translation>
 <translation id="2306794767168143227">Cadw i <ph name="BRAND" /> ar y ddyfais hon</translation>
@@ -2089,7 +2088,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2598710988533271874">Chrome newydd ar gael</translation>
 <translation id="2599048253926156421">Mae'r enw defnyddiwr wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 estyniad anniogel wedi'i ddiffodd}zero{{NUM_SITES} estyniad anniogel wedi'u diffodd}two{{NUM_SITES} estyniad anniogel wedi'u diffodd}few{{NUM_SITES} estyniad anniogel wedi'u diffodd}many{{NUM_SITES} estyniad anniogel wedi'u diffodd}other{{NUM_SITES} estyniad anniogel wedi'u diffodd}}</translation>
-<translation id="2603121359676416582">Ar gyfer y dudalen hon</translation>
 <translation id="2604129989323098489">Mae gwefannau fel arfer yn gofyn am wybodaeth am eich sgriniau fel y gallant agor a gosod ffenestri yn ddeallus, fel dangos dogfennau neu gynnwys sgrîn lawn ochr yn ochr</translation>
 <translation id="2604255671529671813">Bu gwall cysylltiad rhwydwaith</translation>
 <translation id="2604805099836652105">Ffurflen cyfeiriad <ph name="ADDRESS_LABEL" /> wedi'i llenwi.</translation>
@@ -3029,7 +3027,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3292966601422448005">Bydd caniatadau rydych yn eu caniatáu ar gyfer <ph name="APP_NAME" /> hefyd yn cael eu caniatáu ar gyfer ei apiau sydd wedi'u gosod.</translation>
 <translation id="3293080634164207409">Ychwanegu tabiau</translation>
 <translation id="329324683265785818">Chwarae / seibio, llwybr byr bysellfwrdd k</translation>
-<translation id="3293644607209440645">Anfon y dudalen hon</translation>
 <translation id="3294437725009624529">Gwestai</translation>
 <translation id="3294686910656423119">Ystadegau defnydd ac adroddiadau toriadau</translation>
 <translation id="3295241308788901889">Castio tab</translation>
@@ -5730,6 +5727,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Dde)</translation>
 <translation id="534449933710420173">Ffolder ddienw</translation>
 <translation id="5345916423802287046">Dechrau'r ap pan fyddwch yn mewngofnodi</translation>
+<translation id="5346059693449184483">Beth sydd ar eich meddwl?</translation>
 <translation id="5350116201946341974">Mympwyol</translation>
 <translation id="535123479159372765">Copïwyd y testun o ddyfais arall</translation>
 <translation id="5352257124367865087">Rheoli caniatadau gwefan</translation>
@@ -7154,7 +7152,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6472893788822429178">Dangos y Botwm Hafan</translation>
 <translation id="6473315466413288899">Dewiswch opsiwn</translation>
 <translation id="6474021817475285003">Gweld rhagor yn Google Calendar</translation>
-<translation id="6474401088838630457">Gofyn rhagor i Gemini am hyn</translation>
 <translation id="6474498546677193336">Methu â dadrannu oherwydd bod ap yn defnyddio'r ffolder hon. Bydd y ffolder yn cael ei dadrannu pan fydd Linux yn cael ei gau nesaf.</translation>
 <translation id="6474884162850599008">Datgysylltu cyfrif Google Drive</translation>
 <translation id="6476482583633999078">Cyflymder lleferydd</translation>

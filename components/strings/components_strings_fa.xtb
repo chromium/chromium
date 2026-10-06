@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">از قلم‌های موجود در رایانه استفاده کنید تا بتوانید محتوایی با شباهت زیاد به اصل ایجاد کنید</translation>
 <translation id="1465457928007067810">‏‫IBAN در «حساب Google» شما ذخیره شد</translation>
 <translation id="1467432559032391204">چپ</translation>
-<translation id="1471514598850585811">رایانه کیفی</translation>
 <translation id="1472675084647422956">بیشتر نشان دادن</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">برای دریافت کمک در نوشتن، ۳ کلمه یا بیشتر وارد کنید</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />،‏ <ph name="CARD_NETWORK_NAME" />،‏ <ph name="CARD_LAST_FOUR_DIGITS" />، در تاریخ <ph name="CARD_EXPIRATION" /> منقضی می‌شود</translation>
-<translation id="1736420071277903564">رایانه</translation>
 <translation id="1739364174357629566">به‌روز کردن شناسه مسافر شناخته‌شده</translation>
 <translation id="1740404923954980840">برای خارج شدن از حالت تمام‌صفحه، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="1741474054575634405">کارت‌های وفاداری را مدیریت کنید…</translation>
@@ -888,7 +886,6 @@
 <translation id="2462724976360937186">شناسه کلید ارائه دهنده مجوز</translation>
 <translation id="2465688316154986572">منگنه</translation>
 <translation id="2465914000209955735">‏مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید</translation>
-<translation id="2466682894498377850">زبانه از <ph name="DEVICE_NAME" /> شما ارسال شده است</translation>
 <translation id="2467272921457885625">‏مشخصات و آمار سخت‌افزاری دستگاه، مثل سابقه استفاده از CPU/RAM (واحد پردازش مرکزی/ حافظه دسترسی تصادفی)</translation>
 <translation id="2467421459221956357">از حسگرها استفاده شود؟</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />در حال اجرای عیب‌یابی شبکه<ph name="END_LINK" /></translation>
@@ -930,7 +927,6 @@
 <translation id="2524962131655207565">‏<ph name="BEGIN_BOLD" />محتوای صفحه تسویه‌حساب برای ارائه این گزینه‌ها، با Google هم‌رسانی می‌شود.<ph name="END_BOLD" /> طرح‌های پرداخت تابع واجدشرایط بودن هستند. برای پنهان کردن گزینه‌های بعداً پرداخت کنید، به <ph name="BEGIN_LINK" />تنظیمات پرداخت<ph name="END_LINK" /> بروید.</translation>
 <translation id="2526062290525841862">برای اجرا کردن این برنامه، «حالت توسعه‌دهنده برنامه وب مجزا» را دوباره فعال کنید</translation>
 <translation id="2526280916094749336">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره خواهد شد.</translation>
-<translation id="2526590354069164005">دسک تاپ</translation>
 <translation id="2527451058878391043">‏کد تأیید کارت (CVC) روی کارتتان درج شده است. این کد ۴ رقمی در بالا سمت راست شماره کارت قرار دارد.</translation>
 <translation id="2529899080962247600">این فیلد نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد. همه ورودی‌های بعدی نادیده گرفته خواهند شد.</translation>
 <translation id="2530042584066815841">قفل کردن و استفاده از موشواره</translation>
@@ -1740,7 +1736,6 @@
 <translation id="3905894480064208252">{0,plural, =1{انتقال فایل مسدود شده است}one{انتقال <ph name="FILE_COUNT" /> فایل مسدود شده است}other{انتقال <ph name="FILE_COUNT" /> فایل مسدود شده است}}</translation>
 <translation id="3906022360148923497">نماد ابزار پرداخت</translation>
 <translation id="3906234161316839040">سفارش‌های دیگر</translation>
-<translation id="3906954721959377182">رایانه لوحی</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">درباره محتوای جاسازی‌شده بیشتر بدانید</translation>
 <translation id="3920504717067627103">سیاست مربوط به گواهی</translation>

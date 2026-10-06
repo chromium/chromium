@@ -1697,7 +1697,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2300383962156589922"><ph name="APP_NAME" /> anpassen und verwalten</translation>
 <translation id="2300434721407965566">Der Ladevorgang wird bei 80 % beendet, damit der Akku länger hält.</translation>
 <translation id="2301382460326681002">Stammverzeichnis der Erweiterung ist ungültig.</translation>
-<translation id="2301402091755573488">Geteilter Tab</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305202347479035002">Funktionsweise</translation>
 <translation id="2306794767168143227">Auf diesem Gerät in <ph name="BRAND" /> speichern</translation>
@@ -2074,7 +2073,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2598710988533271874">Neue Chrome-Version verfügbar</translation>
 <translation id="2599048253926156421">Nutzername in Zwischenablage kopiert</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 unsichere Erweiterung deaktiviert}other{{NUM_SITES} unsichere Erweiterungen deaktiviert}}</translation>
-<translation id="2603121359676416582">Für diese Seite</translation>
 <translation id="2603656971249947488">Tableiste</translation>
 <translation id="2604129989323098489">Websites fragen in der Regel nach Informationen über deine Bildschirme, damit sie Fenster intelligent öffnen und platzieren können, z. B. um Dokumente oder Vollbildinhalte nebeneinander anzuzeigen</translation>
 <translation id="2604255671529671813">Fehler bei der Netzwerkverbindung</translation>
@@ -3012,7 +3010,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3292966601422448005">Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf Apps angewendet, die von der App installiert werden.</translation>
 <translation id="3293080634164207409">Tabs hinzufügen</translation>
 <translation id="329324683265785818">Wiedergabe/Pause, Tastenkombination „k“</translation>
-<translation id="3293644607209440645">Diese Seite senden</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3294686910656423119">Nutzungsstatistik und Absturzberichte</translation>
 <translation id="3295241308788901889">Ein Tab wird gestreamt</translation>
@@ -5711,6 +5708,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (rechts)</translation>
 <translation id="534449933710420173">Unbenannter Ordner</translation>
 <translation id="5345916423802287046">App beim Anmelden starten</translation>
+<translation id="5346059693449184483">Was kann ich für dich tun?</translation>
 <translation id="5350116201946341974">Verspielt</translation>
 <translation id="535123479159372765">Text wurde von einem anderen Gerät kopiert</translation>
 <translation id="5352257124367865087">Websiteberechtigungen verwalten</translation>
@@ -7131,7 +7129,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6472893788822429178">Button „Startseite“ anzeigen</translation>
 <translation id="6473315466413288899">Option auswählen</translation>
 <translation id="6474021817475285003">Mehr in Google Kalender anzeigen</translation>
-<translation id="6474401088838630457">Gemini mehr dazu fragen</translation>
 <translation id="6474498546677193336">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird aufgehoben, wenn Linux das nächste Mal heruntergefahren wird.</translation>
 <translation id="6474884162850599008">Verbindung zu Google Drive-Konto aufheben</translation>
 <translation id="6476482583633999078">Sprechgeschwindigkeit</translation>

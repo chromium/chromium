@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">आफ्नो कम्प्युटरमा भएका फन्टहरू प्रयोग गर्नुहोस्। यसो गर्दा तपाईं उच्च गुणस्तरका सामग्री बनाउन सक्नुहुन्छ</translation>
 <translation id="1465457928007067810">यो IBAN तपाईंको Google खातामा सेभ गरिएको छ</translation>
 <translation id="1467432559032391204">बाँया</translation>
-<translation id="1471514598850585811">ल्यापटप</translation>
 <translation id="1472675084647422956">थप देखाउनुहोस्</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">लेख्ने सम्बन्धमा मद्दत प्राप्त गर्न ३ वटा वा सोभन्दा बढी शब्द हाल्नुहोस्</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">प्रणालीको प्रशासकलाई सम्पर्क गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> मा म्याद सकिन्छ</translation>
-<translation id="1736420071277903564">कम्प्युटर</translation>
 <translation id="1739364174357629566">Known Traveler Number अपडेट गर्नुहोस्</translation>
 <translation id="1740404923954980840">फुल स्क्रिनबाट बाहिरिन सिरानबाट ड्र्याग गर्नुहोस् र 'पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
 <translation id="1741474054575634405">लोयल्टी कार्डहरू व्यवस्थापन गर्नुहोस्...</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">प्रमाणीकरण प्राधिकरण कुञ्जी आइडी</translation>
 <translation id="2465688316154986572">स्टिच</translation>
 <translation id="2465914000209955735">आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्नुहोस्</translation>
-<translation id="2466682894498377850">तपाईंको <ph name="DEVICE_NAME" /> बाट पठाइएको ट्याब</translation>
 <translation id="2467272921457885625">CPU/RAM को प्रयोगसम्बन्धी इतिहासलगायतका डिभाइसको हार्डवेयरसम्बन्धी विवरण तथा तथ्याङ्कहरू</translation>
 <translation id="2467421459221956357">सेन्सरहरू प्रयोग गर्ने हो?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />नेटवर्क सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />यी विकल्पहरू उपलब्ध गराउन चेकआउट पेजमा भएको कन्टेन्ट Google सँग सेयर गरिन्छ।<ph name="END_BOLD" /> तपाईंको योग्यताका आधारमा भुक्तानी योजनाहरू उपलब्ध हुने छन्। पछि भुक्तानी गर्ने विकल्पहरू लुकाउन <ph name="BEGIN_LINK" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="2526062290525841862">यो एप चलाउन आइसोलेटेड वेब एपको "विकासकर्ता" मोड फेरि अन गर्नुहोस्</translation>
 <translation id="2526280916094749336">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="ACCOUNT" />) मा सेभ गरिने छ।</translation>
-<translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="2527451058878391043">तपाईंको CVC तपाईंको कार्डको अगाडिको भागमा छ। यो तपाईंको कार्ड नम्बरको सिरानको दायाँतिर रहेको ४ अङ्कको कोड हो।</translation>
 <translation id="2529899080962247600">यो फिल्डमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी प्रविष्टि हुनु हुँदैन। थप सबै प्रविष्टि बेवास्ता गरिने छन्।</translation>
 <translation id="2530042584066815841">माउस लक र यसको प्रयोग</translation>
@@ -1736,7 +1732,6 @@
 <translation id="3905894480064208252">{0,plural, =1{फाइल ट्रान्सफर गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल ट्रान्सफर गर्न रोक लगाइएको छ}}</translation>
 <translation id="3906022360148923497">भुक्तानी साधनको आइकन</translation>
 <translation id="3906234161316839040">अन्य अर्डरहरू</translation>
-<translation id="3906954721959377182">ट्याब्लेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">इम्बेड गरिएको सामग्रीका बारेमा थप जान्नुहोस्</translation>
 <translation id="3920504717067627103">प्रमाणपत्र नीतिहरू</translation>

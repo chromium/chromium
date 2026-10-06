@@ -146,6 +146,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="417201473131094001">Application non prise en charge par Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome?</translation>
 <translation id="4314240881330431451">Vous pouvez utiliser Lentille Google dans Chrome pour rechercher tout ce que vous voyez</translation>
+<translation id="4315292299997584267">Connectez-vous à ce site et à Chrome pour obtenir vos mots de passe et plus encore à partir de l'adresse <ph name="DEVICE_TYPE" /></translation>
 <translation id="4409545895715116037">Les clés d'accès suivantes n'ont pas été importées dans le gestionnaire de mots de passe Google parce qu'elles ne répondent pas aux exigences.</translation>
 <translation id="4430797724889237570">Ouvrez des liens à partir de Gmail, Maps, YouTube et d'autres applis dans Chrome.</translation>
 <translation id="447252321002412580">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
@@ -163,6 +164,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4761869838909035636">Effectuer une vérification de sécurité de Chrome</translation>
 <translation id="4798859546468762093">Pour bénéficier de la personnalisation et d'autres fonctionnalités, incluez Chrome dans <ph name="FEATURE_NAME_1" /> et <ph name="FEATURE_NAME_2" /></translation>
+<translation id="4807700370495020449">Connectez-vous à ce site et à Chrome pour obtenir vos informations enregistrées et autres éléments sur tous vos appareils</translation>
 <translation id="4819268619367838612">Aux fins d'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">Faire de Chrome votre navigateur par défaut?</translation>
 <translation id="484033449593719797">Fonctionnalité non prise en charge par Chrome Beta</translation>
@@ -173,6 +175,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="496747131578053942">Astuce Chrome : Recherchez ce que vous voyez avec Lentille Google</translation>
 <translation id="498985224078955265">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires.</translation>
+<translation id="5085038751173179818">Connectez-vous à ce site et à Chrome pour obtenir vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="5109169629909011627">Voir les favoris Chrome</translation>
 <translation id="5112925986883715005">Voir la liste de lecture Chrome</translation>
 <translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applis</translation>
@@ -190,6 +193,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="5395376160638294582">S'assurer de toujours pouvoir utiliser les données Chrome dans votre compte Google</translation>
 <translation id="5404252374083197467">Définir Chrome comme navigateur par défaut?</translation>
 <translation id="5439191312780166229">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chrome.</translation>
+<translation id="544285856361623600">Connectez-vous à ce site et à Chrome pour obtenir vos favoris et autres éléments de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5453077102022695084">Vidéo en plein écran sur la façon de définir Chrome comme navigateur par défaut</translation>
 <translation id="5460571915754665838">4. Sélectionnez Chrome</translation>
 <translation id="5492504007368565877">Le gestionnaire de mots de passe de Google ne peut pas vérifier vos mots de passe.</translation>
@@ -309,6 +313,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="7642373780953416937">Recevez des alertes concernant tout problème de confidentialité ou de sécurité que Chrome détecte automatiquement pour vous.</translation>
 <translation id="7660356333829433649">Revenez ici pour consulter d'autres conseils utiles afin de tirer le meilleur parti de Chrome.</translation>
 <translation id="7662994914830945754">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous et activez la synchronisation</translation>
+<translation id="767157537088426800">Connectez-vous à ce site et à Chrome pour obtenir vos mots de passe et autres éléments sur tous vos appareils</translation>
 <translation id="7693590760643069321">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
 <translation id="7707877166818730835">Ouvrir Mon dernier onglet dans Chrome</translation>
@@ -386,6 +391,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="9122931302567044771">Cela signifie que Chrome demandera toujours la version bureau du site.</translation>
 <translation id="9176561303811134420">Gérer les modes de paiement dans Chrome</translation>
 <translation id="9181628561061032322">Ouvre les onglets récents de Chrome.</translation>
+<translation id="9199610579638564405">Connectez-vous à ce site et à Chrome pour obtenir vos informations enregistrées et plus encore à partir de l'adresse <ph name="DEVICE_TYPE" /></translation>
 <translation id="924447568950697217">Faites de Chrome votre navigateur par défaut</translation>
 <translation id="948597495737267756">Ouvre la page de votre historique Chrome.</translation>
 <translation id="954347330803595209">Importez vos données pour utiliser vos mots de passe, votre historique, vos favoris et vos cartes de crédit sur Chrome</translation>

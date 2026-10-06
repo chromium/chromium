@@ -943,6 +943,21 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="1635748761015837179">允许写入外部存储设备</translation>
 <translation id="1639468541408865385">启用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1639673466479276550">为登录屏幕启用屏保。</translation>
+<translation id="1640646094704433064">此政策允许您设置一个网站网址格式列表，用于指定允许哪些网站在运行 JavaScript 时启用 JIT（即时）编译器。
+
+          停用 JavaScript JIT 后，<ph name="PRODUCT_NAME" /> 渲染 Web 内容的速度可能会更慢，且 JavaScript 中的 WebAssembly 等某些部分也可能会随之停用，但这可能会让 <ph name="PRODUCT_NAME" /> 以更安全的配置渲染 Web 内容。
+
+          如需详细了解有效的网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。
+
+          您可为特定子网域以及整个网站设置政策例外情况。例如，仅针对 subdomain.site.com 设置的政策只会应用于该子网域，而不会影响 site.com。在某些情况下，如果子网域无法与其父级网站隔离，则可能会继承针对 site.com 设置的政策。此外，对于加载到现有标签页中的框架，例外情况也可能不会产生任何效力，除非在新标签页中打开该网站。在低内存 <ph name="ANDROID_NAME" /> 设备上，系统可能不会强制执行特定于网站的例外情况。网站会改用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策（若已设置），或默认应用个人资料的 JavaScript JIT 设置。
+
+          为强制执行例外情况，<ph name="PRODUCT_NAME" /> 可能会将设置不同于默认值的网站或子网域放入专用进程。这可能会增加内存用量，尤其是在 <ph name="ANDROID_NAME" /> 上或当通配符模式与多个子网域匹配时，因为每个匹配源都可能要单独隔离。此外，被隔离的子网域无法使用 document.domain 访问其父级网站。
+
+          注意：在 155 及更早版本中，系统仅会在网站层级 (eTLD+1) 强制执行政策例外情况。仅为 subdomain.site.com 设置的政策不会产生任何效力，即使对 subdomain.site.com 也不例外；必须针对 site.com 设置政策，才能将所设政策同时应用于 site.com 和 subdomain.site.com。
+
+          此政策会按框架逐一应用，而非仅基于顶级源网址。例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将停用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策（若已设置）或默认启用 JavaScript JIT。屏蔽清单条目的优先级高于许可清单条目，而许可清单条目的优先级高于配置的默认值。
+
+          没有为某个网站设置此政策时，如果 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策已设置，系统便会将它应用于该网站，否则就会为该网站启用 JavaScript JIT。</translation>
 <translation id="1640824698339859203">启用流动单点登录，并将用户的 Web 服务身份验证移至新设备</translation>
 <translation id="1643642938972654829">允许访问政策测试页面</translation>
 <translation id="1645793986494086629">架构：</translation>
@@ -1096,6 +1111,17 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 当用户尝试启动已停用的 Chrome 应用时，系统会向用户显示一条消息，说明该应用未启动的原因，并建议用户联系其 IT 部门。
 
 ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本。</translation>
+<translation id="1726477280489844651">控制 <ph name="PRODUCT_NAME" /> 是否在用户登录 <ph name="MS_WIN_NAME" /> 时打开浏览器窗口。
+
+<ph name="PRODUCT_NAME" /> 包含一项“在 <ph name="MS_WIN_NAME" /> 启动时启动 <ph name="PRODUCT_NAME" />”设置，开启后即可在用户登录时自动运行，确保浏览器随时待命。系统可能还会向用户显示提示，建议他们更改此设置。
+
+如果此政策已启用，<ph name="PRODUCT_NAME" /> 会在用户登录时启动并打开浏览器窗口。用户无法更改此设置，也不会看到更改此设置的提示。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 将不会在用户登录时启动。用户无法更改此设置，也不会看到更改此设置的提示。
+
+如果未设置此政策，用户可以更改此设置。
+
+对于不具有“在 <ph name="MS_WIN_NAME" /> 启动时启动 <ph name="PRODUCT_NAME" />”设置的 <ph name="PRODUCT_NAME" /> 版本，此政策不会产生任何影响。</translation>
 <translation id="1729169799290004131">通过设置此政策，您可以指定屏幕亮度百分比（关闭自动调节亮度功能）。系统会根据政策值调整初始屏幕亮度，但用户可以更改相关设置。
 
       如果此政策未设置，用户对屏幕的控制能力以及自动调节亮度功能都不会受到影响。
@@ -1196,6 +1222,21 @@ ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本
 
       如果此政策未设置，用户便可操控整个首选语言列表。</translation>
 <translation id="1803646570632580723">要在启动程序中显示的固定应用的列表</translation>
+<translation id="180432221123109556">此政策允许您设置一个网站网址格式列表，从而指定要为哪些网站启用高级 JavaScript 优化功能。
+
+如需详细了解有效的网站网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。
+允许使用通配符 <ph name="WILDCARD_VALUE" />。
+
+您可为特定子网域以及整个网站设置政策例外情况。
+例如，仅针对 subdomain.site.com 设置的政策只会应用于该子网域，而不会影响 site.com。在某些情况下，如果子网域无法与其父级网站隔离，则可能会继承针对 site.com 设置的政策。此外，对于加载到现有标签页中的框架，例外情况也可能不会产生任何效力，除非在新标签页中打开该网站。在低内存 <ph name="ANDROID_NAME" /> 设备上，系统可能不会强制执行特定于网站的例外情况。网站会改用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策（若已设置），或默认应用个人资料的 JavaScript 优化设置。
+
+为强制执行例外情况，<ph name="PRODUCT_NAME" /> 可能会将设置不同于默认值的网站或子网域放入专用进程。这可能会增加内存用量，尤其是在 <ph name="ANDROID_NAME" /> 上或当通配符模式与多个子网域匹配时，因为每个匹配源都可能要单独隔离。此外，被隔离的子网域无法使用 document.domain 访问其父级网站。
+
+注意：在 138 及更早版本中，系统仅会在网站层级 (eTLD+1) 强制执行政策例外情况。仅为 subdomain.site.com 设置的政策不会产生任何效力，即使对 subdomain.site.com 也不例外；必须针对 site.com 设置政策，才能将所设政策同时应用于 site.com 和 subdomain.site.com。
+
+此政策会按框架逐一应用，而非仅基于顶级源网址。例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将启用 JavaScript 优化功能，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策（若已设置）或默认启用 JavaScript 优化功能。屏蔽清单条目的优先级高于许可清单条目，而许可清单条目的优先级高于配置的默认值。
+
+没有为某个网站设置此政策时，如果 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策已设置，系统便会将它应用于该网站，否则就会为该网站启用 JavaScript 优化功能。</translation>
 <translation id="1807539058116290184">不允许在自助服务终端模式下双指张合缩放</translation>
 <translation id="1808715480127969042">在这些网站上阻止 Cookie</translation>
 <translation id="1810261428246410396">允许使用即时网络共享功能。</translation>
@@ -1420,6 +1461,7 @@ ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本
       请注意，此政策会根据顶级文档的源（通常是地址栏中显示的网页网址）是否与任何格式匹配来阻止运行 JavaScript。因此，此政策不适合用于缓解网络供应链攻击。例如，提供格式“https://[*.]foo.com/”不会阻止托管在 https://example.com 上的网页运行从 https://www.foo.com/example.js 加载的脚本。此外，如果 https://example.com 上的文档不是顶级文档，而是作为子框架嵌入到由其他源（例如 https://www.bar.com）托管的网页中，则提供格式“https://example.com/”不会阻止该文档运行脚本。</translation>
 <translation id="1942015922182679826">允许删除无法破解的密码</translation>
 <translation id="1942626390957213764">停用桌面分享中心</translation>
+<translation id="1943628907052340534">用户登录 <ph name="MS_WIN_NAME" /> 时不打开 <ph name="PRODUCT_NAME" /></translation>
 <translation id="194407941132272412">为所有网站停用网站隔离，但允许用户选择启用</translation>
 <translation id="1945994447126139909">这项企业政策只是短期的适应性措施，将在 <ph name="PRODUCT_NAME" /> 版本 88 中移除。
 
@@ -2094,6 +2136,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="2354439478396602136">在 <ph name="PRODUCT_OS_NAME" /> 启动器中显示推荐的应用</translation>
+<translation id="2355126045573728327">设置此政策后，系统会指定一个 <ph name="ANDROID_NAME" /> 应用软件包名称列表（例如 <ph name="EXAMPLE_PACKAGE_NAME" />），其中的应用会在用户登录 <ph name="PRODUCT_OS_NAME" /> 时自动启动。
+
+这些应用还必须通过 <ph name="ARC_POLICY_NAME" /> 配置为强制安装。安装完成后，这些应用会自动启动。
+
+目前，系统只会启动列表中的第一个应用。
+
+如果此政策未设置或为空，则系统不会在用户登录时自动启动任何 <ph name="ANDROID_NAME" /> 应用。</translation>
 <translation id="2355876547176311490">禁止远程访问主机使用中继服务器</translation>
 <translation id="2358176879566587521">此政策已被移除。它与这个版本的 <ph name="PRODUCT_NAME" /> 不兼容。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior 是 <ph name="PRODUCT_NAME" /> 的一项功能，可让 <ph name="ABOUT_BLANK_PAGE" /> 和 <ph name="ABOUT_SRCDOC_PAGE" /> 框架通过其启动器的基准网址快照一致地沿用其基准网址值。有关详情，请参阅 https://chromestatus.com/feature/5161101671530496。
@@ -2251,6 +2300,7 @@ ServiceWorkerAutoPreload 功能会在 ServiceWorker 引导过程开始的同时�
 <translation id="2479760962196319822">此政策旨在控制 <ph name="PRODUCT_OS_NAME" /> 用户能否在本地存储数据。
       如果此政策设为 False，则系统禁止在 <ph name="PRODUCT_OS_NAME" /> 上进行本地存储，用户将无法在本地存储任何数据，也无法访问任何本地目录。
       如果此政策设为 True 或未设置，则系统允许在 <ph name="PRODUCT_OS_NAME" /> 上进行本地存储，无论用户在何处存储数据或者访问哪些目录，都不会受到任何限制。</translation>
+<translation id="2481931731272002134">允许使用生成式 AI 自动填充功能并改进 AI 模型。</translation>
 <translation id="2482676533225429905">本地消息传递</translation>
 <translation id="2483146640187052324">采用任何网络连接时，均预测网络操作</translation>
 <translation id="2487495476672607707">在 <ph name="CHROMEBOOK_PLUS_NAME" /> 设备上，<ph name="PRODUCT_OS_NAME" /> 的文件同步功能会自动将用户的“我的云端硬盘”中的 <ph name="GOOGLE_DRIVE_NAME" />文件设为可离线使用（在空间允许的情况下）。
@@ -2688,6 +2738,7 @@ PAC 样式的字符串：
       </translation>
 <translation id="2697717608663878828">启用经过 TLS 加密的 ClientHello 实验</translation>
 <translation id="2699836109975228367">为登录屏幕启用单声道音频</translation>
+<translation id="2701554183194485203"><ph name="ANDROID_NAME" /> 应用会在登录时自动启动</translation>
 <translation id="2702023190395322609">启用媒体推荐内容</translation>
 <translation id="2702682139813393777">强制通过 cmd.exe 启动 Windows 原生消息传递主机</translation>
 <translation id="270582584528242502">在用户尝试退出时不显示警告对话框</translation>
@@ -2942,6 +2993,25 @@ PAC 样式的字符串：
 <translation id="2890645751406497668">自动授权这些网站通过给定的供应商 ID 和产品 ID 连接到 USB 设备。</translation>
 <translation id="2893546967669465276">将系统日志发送到管理服务器</translation>
 <translation id="2893660462311365527">网络遥测收集时间间隔（以毫秒为单位）。</translation>
+<translation id="2894720693512285641">此政策旨在配置 <ph name="PRODUCT_NAME" />，使其对 TLS 1.3 中的首选加密算法进行排序，以反映对特定合规制度所批准的算法的偏好程度。
+
+设置此政策并不能保证系统会协商使用任何特定算法。
+
+此政策旨在使服务器运营商能够区分具有或不具有合规性要求的客户端，从而仅针对明确配置为优先使用加密强度更高的算法的客户端，采用某些非默认算法。
+
+将此政策设为“<ph name="CNSA_NAME" />”后，<ph name="PRODUCT_NAME" /> 将优先采用符合商业国家安全算法套件 1.0 和 2.0 版（CNSA 1.0 和 2.0）要求的加密算法。
+
+如果不设置此政策，或将其设为“<ph name="DEFAULT_NAME" />”，<ph name="PRODUCT_NAME" /> 将使用其默认加密算法。
+
+设置此政策并非安全方面的必要措施。<ph name="PRODUCT_NAME" /> 使用的默认加密技术非常强大，足以抵御利用整个太阳的能量进行的暴力破解攻击。
+
+设置此政策会导致 <ph name="PRODUCT_NAME" /> 在访问网站时速度变慢。
+
+此政策仅影响 TLS 1.3 和 QUIC，不会影响早期版本的 TLS。
+
+您可针对机器和用户设置此政策。如果是针对用户进行设置，则此政策只会影响由用户个人资料发起的网络请求，可能不会影响 <ph name="PRODUCT_NAME" /> 为在整个浏览器中执行后台任务而发起的网络请求；这些均由机器级别的值控制。如果同时在机器级别和用户级别设置此政策，除非 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 政策更改了政策优先级顺序，否则系统会应用机器级别的值。
+
+在 156 及更低版本中，此政策仅适用于整机。</translation>
 <translation id="2894914342151915910">Chrome 在不受支持的系统上运行时不得显示警告</translation>
 <translation id="2895444724612647239">自动授权这些网站连接到任意 HID 设备。</translation>
 <translation id="2896434627453256512">通过设置此政策，您可以启用“ghost 窗口”功能。
@@ -3512,6 +3582,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="3222088741899353813">在登录屏幕上，鼠标左键是主按键</translation>
 <translation id="322359555555487980">确定变体在 <ph name="PRODUCT_OS_NAME" />中的可用情况</translation>
 <translation id="3229163415739929305">如果此政策已启用或未设置，系统会启用页面加载元数据提取功能和用以提升浏览体验的机器学习模型。如果此政策已停用，可能会导致某些功能无法正常运行。</translation>
+<translation id="3230956492238004242">启用动态子模块修补</translation>
 <translation id="3231311173895401135">让浏览器决定是否支持</translation>
 <translation id="3231837273069128027">通过设置此政策，您可以配置 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新的可用性和行为。
 
@@ -4195,6 +4266,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 还需要启用通过“导出”应用进行数据传输的功能，才能让 Content Transfer 应用正常运行。如需了解详情，请访问 https://support.google.com/a/answer/6364687。</translation>
 <translation id="3702518095257671450">远程证明</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（我们已弃用并将于日后移除单行字段。请开始使用下面的多行文本框。）</translation>
+<translation id="370314752761795411">在 <ph name="MS_WIN_NAME" /> 启动时启动 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3712861436661566358">强制执行资料分离</translation>
 <translation id="3719826155360621982">首页</translation>
@@ -4676,6 +4748,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
 <translation id="4030152268425532846">禁止取消自动登录</translation>
 <translation id="4032740546145417900">不允许使用“语音输入”功能。</translation>
+<translation id="4035252407064087455">允许使用生成式 AI 自动填充功能，但不改进 AI 模型。</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4047633048700722778">通过设置此政策，您可以控制 SafeSites 网址滤除机制，此机制使用 Google Safe Search API 来判断是否将网址归类为色情内容。
 
@@ -5093,6 +5166,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会仅允许用户连接到指定蓝牙服务，但列表为空（这意味着允许使用任何服务）时例外。蓝牙 SIG 预留的 UUID 可以表示为<ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" />或<ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />。自定义 UUID 可以表示为<ph name="BLUETOOTH_CUSTOM_UUID" />。UUID 不区分大小写。如果您未设置此政策，用户便可连接到任何蓝牙服务。</translation>
 <translation id="4332177773549877617">记录 Android 应用安装事件</translation>
 <translation id="4333940819293342439">应用使用情况遥测数据收集时间间隔（以毫秒为单位）。</translation>
+<translation id="4336096948197154521">在用户登录 <ph name="MS_WIN_NAME" /> 时打开 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4340121900958123942">设置 <ph name="PRODUCT_OS_NAME" /> 地理定位系统可用性级别。
 
 这是额外的控制层，位于应用和网站的权限层之下。例如，如果此政策设为 <ph name="GLS_BLOCKED" /> 或 <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />，任何应用或网站（无论其各自的位置信息权限如何）都无法解析位置信息。不过，如果此政策设为 <ph name="GLS_ALLOWED" />，那么具有相应权限的应用和网站便可单独获取位置信息。
@@ -5847,6 +5921,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       <ph name="PAGE_SIZE_NAME" /> 应包含所列格式之一，如果所需页面大小不在列表中，则应包含“custom”值。如果提供了“custom”值，则应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性，用于指定所需的高度和宽度（以微米为单位）。如果未提供“custom”值，便不应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性。系统会忽略违反这些规则的政策。
 
       如果这一页面大小在用户选择的打印机上不适用，系统会忽略此政策。</translation>
+<translation id="4787894429283141328">不允许使用生成式 AI 自动填充功能。</translation>
 <translation id="4789450349513792856">禁止这些网站显示弹出式窗口</translation>
 <translation id="4790391579868456557">在搜索中使用必需 Cookie 和非必需 Cookie。</translation>
 <translation id="4790588245699320140">允许 Google 助理访问屏幕上的内容</translation>
@@ -6159,6 +6234,13 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4947257516265472776">强制启用 <ph name="YOUTUBE_PRODUCT_NAME" />“严格”受限模式</translation>
 <translation id="494924690085329212">在用户退出后重新启动（如果 Android 已启动）。</translation>
 <translation id="4950447493143157880">一律不使用内置 DNS 客户端</translation>
+<translation id="4953257833692039804">控制 <ph name="PRODUCT_NAME" /> 是否动态地将已暂存的安全更新应用于新启动的子进程（例如渲染程序进程），而无需完全重启浏览器。
+
+如果 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 已停用，则不会安装任何新模块以供使用。
+
+如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 可能会使用动态暂存的子模块二进制文件（如果有）启动新的子进程。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 将立即停止将动态暂存的子模块二进制文件应用于新启动的子进程（包括已下载或暂存在本地的所有更新），并且需要完全重启浏览器才能应用更新。已在运行的子进程将继续保持原样。此设置会停用动态修补，但不会停用所有组件更新。</translation>
 <translation id="4953541641325278286">不允许任何网站检测用户的空闲状态</translation>
 <translation id="4954352279763128540">旨在将预填充的域名添加到 Kerberos 身份验证对话框。
 
@@ -6403,6 +6485,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       </translation>
 <translation id="5118635822783657217">停用非关键组件的更新</translation>
 <translation id="5120168808610189805">允许在首次运行时导入主页</translation>
+<translation id="5124321040285474825">生成式 AI 自动填充功能的设置</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
 <translation id="5124652340668722849">配置预配域 (PvD) 列表，供 <ph name="PRODUCT_NAME" /> 用于动态提取代理配置。
 
@@ -6518,6 +6601,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
           如需详细了解有效的网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="5182483318861266793">将文件架放置到屏幕右侧</translation>
 <translation id="51859390023061147">停用“完全还原”功能。</translation>
+<translation id="5188507662885416844">停用动态子模块修补</translation>
 <translation id="5189360528842591274">仅允许连接到此列表中的蓝牙服务</translation>
 <translation id="5191007233343702012">使用标准标签页优先级</translation>
 <translation id="5191476996923842491">setTimeout() 函数延迟的默认行为。</translation>
@@ -7943,6 +8027,23 @@ IP 地址空间覆盖有两种形式：
 <translation id="608788685013546076">设定用电高峰转移电量阈值（以百分比表示）</translation>
 <translation id="6089679180657323464">控制 Wilco 诊断和遥测控制器设置。</translation>
 <translation id="6091233616732024397">强制要求用户登录才能使用浏览器</translation>
+<translation id="6091279561320899147">此政策允许您设置一个网站网址格式列表，从而指定要为哪些网站停用高级 JavaScript 优化功能。
+
+停用 JavaScript 优化功能后，<ph name="PRODUCT_NAME" /> 渲染 Web 内容的速度可能会变慢。
+
+如需详细了解有效的网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。
+允许使用通配符 <ph name="WILDCARD_VALUE" />。
+
+您可为特定子网域以及整个网站设置政策例外情况。
+例如，仅针对 subdomain.site.com 设置的政策只会应用于该子网域，而不会影响 site.com。在某些情况下，如果子网域无法与其父级网站隔离，则可能会继承针对 site.com 设置的政策。此外，对于加载到现有标签页中的框架，例外情况也可能不会产生任何效力，除非在新标签页中打开该网站。在低内存 <ph name="ANDROID_NAME" /> 设备上，系统可能不会强制执行特定于网站的例外情况。网站会改用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策（若已设置），或默认应用个人资料的 JavaScript 优化设置。
+
+为强制执行例外情况，<ph name="PRODUCT_NAME" /> 可能会将设置不同于默认值的网站或子网域放入专用进程。这可能会增加内存用量，尤其是在 <ph name="ANDROID_NAME" /> 上或当通配符模式与多个子网域匹配时，因为每个匹配源都可能要单独隔离。此外，被隔离的子网域无法使用 document.domain 访问其父级网站。
+
+注意：在 138 及更早版本中，系统仅会在网站层级 (eTLD+1) 强制执行政策例外情况。仅为 subdomain.site.com 设置的政策不会产生任何效力，即使对 subdomain.site.com 也不例外；必须针对 site.com 设置政策，才能将所设政策同时应用于 site.com 和 subdomain.site.com。
+
+此政策会按框架逐一应用，而非仅基于顶级源网址。例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将停用 JavaScript 优化功能，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策（若已设置）或默认启用 JavaScript 优化功能。屏蔽清单条目的优先级高于许可清单条目，而许可清单条目的优先级高于配置的默认值。
+
+没有为某个网站设置此政策时，如果 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策已设置，系统便会将它应用于该网站，否则就会为该网站启用 JavaScript 优化功能。</translation>
 <translation id="6092073071805297119">允许使用无障碍性能过滤机制。</translation>
 <translation id="6093156968240188330">允许远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="6093551397728373988">强制在用户会话中启用所有允许的输入法</translation>
@@ -8675,6 +8776,27 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 如需修改用于启动屏保的空闲超时设置，请使用 <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> 政策；如需修改图片显示的间隔时间，请使用 <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> 政策。如果未设置上述任一政策，系统将改用相应的默认值。</translation>
 <translation id="651248769129998376">请勿创建扩展程序安装请求或将其上传到管理控制台</translation>
 <translation id="6513453889192806240">HTTPS 延迟</translation>
+<translation id="6514006253468048943"><ph name="PRODUCT_NAME" /> 中的这些功能采用生成式 AI 模型来帮助用户填写网页表单。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集数据（例如用户与之互动的表单的结构，以及用户使用 Gemini 智能查找和填充时，为搜索关联的 Gemini 应用而输入的自由文本查询），并将这些数据发送到用于运行生成式 AI 模型的 Google 服务器。
+
+如果将此政策设为 0（允许使用生成式 AI 自动填充功能并改进 AI 模型），表示允许使用这些功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。默认值是 0，但以下注明的情况除外。
+
+如果将此政策设为 1（允许使用生成式 AI 自动填充功能，但不改进 AI 模型），表示允许使用这些功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+如果将此政策设为 2（不允许使用生成式 AI 自动填充功能），表示不允许使用这些功能。
+
+如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+
+生成式 AI 自动填充功能包括：
+
+- 更智能地理解表单：使用 AI 识别表单中的字段并对其进行分类，以便填充更多字段。
+
+- Gemini 智能查找和填充：从用户关联到 Gemini 的应用中查找信息，并提供这些信息以供填充。这些信息既可以作为表单上的主动建议呈现，也可以是响应用户输入的查询。
+
+此政策会取代 <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" /> 政策；若未设置此政策，后者仍会生效。如需使用“Gemini 智能查找和填充”功能，还必须启用 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策。
+
+此政策不会控制不使用生成式 AI 的自动填充功能。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> 图片</translation>
 <translation id="6515520014183265350">指定在专用进程中运行的源列表。
 
@@ -10522,6 +10644,19 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 
 如果此政策未设置，由浏览器选择使用哪种 PDF 渲染程序。</translation>
 <translation id="7704244074621846004">为 SharedWorker 启用更长的生命周期</translation>
+<translation id="7706986409083477132">此政策允许您设置一个网站网址格式列表，用于指定允许哪些网站在运行 JavaScript 时启用 JIT（即时）编译器。
+
+          如需详细了解有效的网站网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。
+
+          您可为特定子网域以及整个网站设置政策例外情况。例如，仅针对 subdomain.site.com 设置的政策只会应用于该子网域，而不会影响 site.com。在某些情况下，如果子网域无法与其父级网站隔离，则可能会继承针对 site.com 设置的政策。此外，对于加载到现有标签页中的框架，例外情况也可能不会产生任何效力，除非在新标签页中打开该网站。在低内存 <ph name="ANDROID_NAME" /> 设备上，系统可能不会强制执行特定于网站的例外情况。网站会改用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策（若已设置），或默认应用个人资料的 JavaScript JIT 设置。
+
+          为强制执行例外情况，<ph name="PRODUCT_NAME" /> 可能会将设置不同于默认值的网站或子网域放入专用进程。这可能会增加内存用量，尤其是在 <ph name="ANDROID_NAME" /> 上或当通配符模式与多个子网域匹配时，因为每个匹配源都可能要单独隔离。此外，被隔离的子网域无法使用 document.domain 访问其父级网站。
+
+          注意：在 155 及更早版本中，系统仅会在网站层级 (eTLD+1) 强制执行政策例外情况。仅为 subdomain.site.com 设置的政策不会产生任何效力，即使对 subdomain.site.com 也不例外；必须针对 site.com 设置政策，才能将所设政策同时应用于 site.com 和 subdomain.site.com。
+
+          此政策会按框架逐一应用，而非仅基于顶级源网址。例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将启用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策（若已设置）或默认启用 JavaScript JIT。屏蔽清单条目的优先级高于许可清单条目，而许可清单条目的优先级高于配置的默认值。
+
+          没有为某个网站设置此政策时，如果 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策已设置，系统便会将它应用于该网站，否则就会为该网站启用 JavaScript JIT。</translation>
 <translation id="7707869387893611318">启用充电提示音功能。
 
           该功能负责播放充电提示音。
@@ -11718,6 +11853,13 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8489169564515126823">已停用：滚动条默认不可聚焦。</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">停用保存浏览器历史记录的功能</translation>
+<translation id="8494605948258449467">此政策用于控制当网页进入往返缓存时，是否断开活跃的 WebSocket 连接。以前，活跃的 WebSocket 连接会阻止网页存储在往返缓存中，但 <ph name="PRODUCT_NAME" /> 已更改此行为，改为断开 WebSocket 连接，从而允许缓存网页并在断开连接的状态下恢复网页。
+
+如果此政策已启用或未设置，当网页进入往返缓存时，WebSocket 会断开连接。
+
+如果此政策已停用，当网页进入往返缓存时，WebSocket 将不会断开连接。由于往返缓存不支持活跃的 WebSocket，这意味着具有活跃 WebSocket 的网页不会被缓存。
+
+此政策已在 <ph name="PRODUCT_NAME" /> 157 版中弃用，并将在 167 版中移除。</translation>
 <translation id="8499172469244085141">默认设置（用户可以覆盖）</translation>
 <translation id="8499359456965625209">此政策已被弃用。
 
@@ -12763,6 +12905,25 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9204863016826119209">已安装完毕且列在此政策中的 Android 应用可以使用企业密钥。</translation>
 <translation id="9206364386317031168">允许网站向本地设备发送网络请求。</translation>
 <translation id="9206472508136116830">不允许 NetBIOS 共享操作发现</translation>
+<translation id="9207289612253941907">此政策旨在配置 <ph name="PRODUCT_NAME" />，使其对 TLS 1.3 中的首选密钥协议算法（受支持的群组）进行排序，以反映对特定合规制度所批准的算法的偏好程度。
+
+设置此政策并不能保证系统会协商使用任何特定算法。
+
+此政策旨在使服务器运营商能够区分具有或不具有合规性要求的客户端，从而仅针对明确配置为优先使用加密强度更高的算法的客户端，采用某些非默认算法。
+
+将此政策设为“<ph name="CNSA2_NAME" />”后，<ph name="PRODUCT_NAME" /> 将优先采用符合商业国家安全算法套件 2.0 (CNSA 2.0) 要求的密钥交换方法。
+
+如果不设置此政策，或将其设为“<ph name="DEFAULT_NAME" />”，<ph name="PRODUCT_NAME" /> 将使用其默认密钥交换方法。
+
+设置此政策并非安全方面的必要措施。<ph name="PRODUCT_NAME" /> 使用的默认加密技术非常强大，足以抵御利用整个太阳的能量进行的暴力破解攻击。
+
+设置此政策会导致 <ph name="PRODUCT_NAME" /> 在访问网站时速度变慢。
+
+此政策仅影响 TLS 1.3 和 QUIC，不会影响早期版本的 TLS。
+
+您可针对机器和用户设置此政策。如果是针对用户设置，则此政策只会影响由用户个人资料发起的网络请求，可能不会影响 <ph name="PRODUCT_NAME" /> 为在整个浏览器中执行后台任务而发起的网络请求；这些均由机器级别的值控制。如果同时在机器级别和用户级别设置此政策，除非 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 政策更改了政策优先级顺序，否则系统会应用机器级别的值。
+
+在 156 及更低版本中，此政策仅适用于整机。</translation>
 <translation id="9207596996305971030">不报告登录/退出事件</translation>
 <translation id="9208328979373108724">允许独立式 Web 应用 (IWA) 源添加子应用，但需要提示用户</translation>
 <translation id="9210647066889383361">允许用户通过 Smart Lock 登录自己的设备</translation>

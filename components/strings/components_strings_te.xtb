@@ -284,7 +284,6 @@
 <translation id="1462951478840426066">మీ కంప్యూటర్‌లోని ఫాంట్‌లను ఉపయోగించండి, తద్వారా మీరు అధిక క్వాలిటీ గల కంటెంట్‌ను క్రియేట్ చేయవచ్చు</translation>
 <translation id="1465457928007067810">IBAN మీ Google ఖాతాలో సేవ్ అయింది</translation>
 <translation id="1467432559032391204">ఎడమ</translation>
-<translation id="1471514598850585811">ల్యాప్‌టాప్</translation>
 <translation id="1472675084647422956">మరిన్ని చూపించు</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">3 లేదా అంత కంటే ఎక్కువ పదాలను ఎంటర్ చేసి, రాయడంలో సహాయం పొందండి</translation>
@@ -447,7 +446,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">సిస్టమ్ అడ్మిన్‌ను సంప్రదించి ప్రయత్నించండి.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> తేదీన గడువు ముగుస్తుంది</translation>
-<translation id="1736420071277903564">కంప్యూటర్</translation>
 <translation id="1739364174357629566">తెలిసిన ప్రయాణీకుల నంబర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="1740404923954980840">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ అవ్వడానికి, పైనుండి లాగి, వెనుక బటన్‌ను తాకండి</translation>
 <translation id="1741474054575634405">లాయల్టీ కార్డ్‌లను మేనేజ్ చేయండి...</translation>
@@ -882,7 +880,6 @@
 <translation id="2462724976360937186">సర్టిఫికెట్ అధికార కీ ID</translation>
 <translation id="2465688316154986572">స్టేపుల్</translation>
 <translation id="2465914000209955735">Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్‌లను మేనేజ్ చేయండి</translation>
-<translation id="2466682894498377850">మీ <ph name="DEVICE_NAME" /> నుండి పంపిన ట్యాబ్</translation>
 <translation id="2467272921457885625">CPU/RAM వినియోగ హిస్టరీ వంటి పరికర హార్డ్‌వేర్ స్పెసిఫికేషన్‌లు, గణాంకాలు</translation>
 <translation id="2467421459221956357">సెన్సార్‌లను ఉపయోగించాలా?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను అమలు చేయడం<ph name="END_LINK" /></translation>
@@ -924,7 +921,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />ఈ ఆప్షన్‌లను అందించడానికి చెక్ అవుట్ పేజీలోని కంటెంట్ Googleతో షేర్ అవుతుంది.<ph name="END_BOLD" /> పేమెంట్ ప్లాన్‌లు అర్హతకు లోబడి ఉంటాయి. తర్వాత పేమెంట్ చేసే ఆప్షన్‌లను దాచడానికి, <ph name="BEGIN_LINK" />పేమెంట్ సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="2526062290525841862">ఈ యాప్‌ను రన్ చేయడానికి, ఐసోలేటెడ్ వెబ్ యాప్ డెవలపర్ మోడ్‌ను మళ్లీ ఎనేబుల్ చేయండి</translation>
 <translation id="2526280916094749336">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="ACCOUNT" />‌లో సేవ్ చేయబడుతుంది.</translation>
-<translation id="2526590354069164005">డెస్క్‌టాప్</translation>
 <translation id="2527451058878391043">మీ CVC అనేది మీ కార్డ్ ముందు భాగంలో ఉంది. ఇది ఎగువన కుడి వైపులో మీ కార్డ్ నంబర్ పైన కనిపించే 4 అంకెల కోడ్.</translation>
 <translation id="2529899080962247600">ఈ ఫీల్డ్‌లో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఎంట్రీలు ఉండకూడదు. అన్ని తదుపరి ఎంట్రీలు విస్మరించబడతాయి.</translation>
 <translation id="2530042584066815841">మౌస్ లాక్, దాని ఉపయోగం</translation>
@@ -1734,7 +1730,6 @@
 <translation id="3905894480064208252">{0,plural, =1{బదిలీ అవ్వకుండా ఫైల్ బ్లాక్ చేయబడింది}other{బదిలీ అవ్వకుండా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="3906022360148923497">పేమెంట్ ఆప్షన్ ఐకాన్ (చిహ్నం)</translation>
 <translation id="3906234161316839040">ఇతర ఆర్డర్‌లు</translation>
-<translation id="3906954721959377182">టాబ్లెట్</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">పొందుపరచబడిన కంటెంట్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3920504717067627103">సర్టిఫికెట్ విధానాలు</translation>

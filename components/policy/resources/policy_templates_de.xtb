@@ -5512,6 +5512,11 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
 <translation id="4561940244682063697">Nicht zulassen, dass Nutzer auf Websites aufgefordert werden, einen Videostream ihres Bildschirms freizugeben</translation>
 <translation id="4562165737444703281">Nutzern erlauben, Crostini-Portweiterleitung zu aktivieren bzw. zu konfigurieren</translation>
 <translation id="456450545863578630">Dateiübertragung in Remote-Supportverbindungen von Unternehmensadministratoren aktivieren</translation>
+<translation id="4567614489737189156">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Nutzungsdaten und Fehlerberichte, inklusive Absturzberichte, an Google. Ist die Richtlinie deaktiviert, werden Nutzungsdaten und Fehlerberichte nicht gemeldet.
+
+Wenn die Richtlinie für verwaltete Geräte nicht konfiguriert ist, bleibt die Berichterstellung für Messwerte und Diagnosedaten standardmäßig aktiviert.
+
+Bei nicht verwalteten Geräten gilt diese Richtlinie nicht und Nutzer können das Verhalten für die Berichterstellung zu Messwerten und Diagnosedaten während der Geräteeinrichtung oder später über die Einstellungen auswählen.</translation>
 <translation id="4570859815763368584">In M68 nicht mehr verfügbar. Verwende stattdessen „DefaultPopupsSetting“.
 
       Eine vollständige Erläuterung findest du unter https://www.chromestatus.com/feature/5675755719622656.
@@ -11282,6 +11287,7 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
 <translation id="8164687848393015214">Ist die Richtlinie aktiviert, werden Kontrollnetzwerkpakete (<ph name="HEARTBEATS_TERM" />) zur Überwachung des Onlinestatus an den Verwaltungsserver gesendet, damit er erkennt, wenn das Gerät offline ist.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden keine Pakete gesendet.</translation>
+<translation id="8165152191100365965">Messwerte auf verwalteten Geräten an Google senden oder dem Nutzer erlauben, auf nicht verwalteten Geräten zu entscheiden</translation>
 <translation id="8168359201203671567">Tastaturbeleuchtungsfarbe „Regenbogen“</translation>
 <translation id="8169452762291746260">Überwachung des Gerätestatus deaktivieren</translation>
 <translation id="8170359860920320269">Websites mit Inhalten nur für Erwachsene filtern</translation>
@@ -12731,6 +12737,21 @@ Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS
 <translation id="9122865885571719292">Legt fest, ob und wie <ph name="PRODUCT_OS_NAME" /> bei der Anmeldung die letzte Sitzung wiederherstellt.
 Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_RESTORE_ENABLED_NAME" />“ auf „true“ gesetzt ist.</translation>
 <translation id="9123464369663964441">Nutzern erlauben, Ausnahmen hinzuzufügen, um gemischte Inhalte zuzulassen</translation>
+<translation id="9123738611041078443">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Zum Konfigurieren von <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> müssen Administratoren Folgendes angeben:
+* Die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ODER
+* Alle drei Legacy-Parameter zusammen: „<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />“, „<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />“ und „<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />“. Wenn nur eine Teilmenge der drei Parameter ohne URL angegeben wird, bleibt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ muss eine gültige URL sein, die das HTTPS-Schema verwendet, auf eine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Domain verweist und keinen Nutzernamen oder kein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt unkonfiguriert.
+
+Falls sowohl der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ als auch die Legacy-Parameter konfiguriert sind, hat der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ Vorrang.
+
+Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Anbindung, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="9124770007620653639">Daten zur Domainzuverlässigkeit nie an Google senden</translation>
 <translation id="9126331659955304300">Auswahl des Nutzeravatars aus lokalem Dateisystem, Kamera und Google-Profil zulassen</translation>
 <translation id="9126694586349976283">Verwendung der integrierten KI-APIs zulassen.</translation>
@@ -12908,6 +12929,13 @@ Wenn du das aktuelle Verhalten, bei dem „<ph name="AUTOFILL_CREDIT_CARD_ENABLE
 Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer die Autofill-Vorschläge für Kreditkarten in der UI steuern.
 
 Ist sie auf „False“ gesetzt, schlägt Autofill keine Kreditkartendaten vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Kreditkartendaten gespeichert, die Nutzer beim Surfen im Internet eventuell senden.</translation>
+<translation id="963375545567956229">Diese Richtlinie ist veraltet und hat ab M145 keine Auswirkungen mehr. Die erweiterte Berichterstellung zu Safe Browsing wurde aus <ph name="PRODUCT_NAME" /> entfernt. Daher sendet <ph name="PRODUCT_NAME" /> diese Berichte nicht mehr – unabhängig davon, wie diese Richtlinie konfiguriert ist. Die entsprechende Einstellung wird Nutzern nicht mehr angezeigt.
+
+      Wenn du möchtest, dass <ph name="PRODUCT_NAME" /> zusätzliche Informationen sendet, um Safe Browsing zu verbessern, aktiviere stattdessen den erweiterten Schutz mit der Richtlinie „<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />“.
+
+      Vor M145 wurde durch Aktivieren der Richtlinie die erweiterte Berichterstellung von Safe Browsing in <ph name="PRODUCT_NAME" /> aktiviert. Dadurch wurden einige Systeminformationen und Seiteninhalte an Google-Server gesendet, um gefährliche Apps und Websites zu erkennen. Wenn die Richtlinie deaktiviert war, wurden nie Berichte gesendet. Wenn die Richtlinie konfiguriert war, konnten Nutzer sie nicht ändern. War sie nicht konfiguriert, konnten Nutzer entscheiden, ob Berichte gesendet werden sollen oder nicht.
+
+      Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
 <translation id="966425658642788645">Standardverhalten anwenden</translation>
 <translation id="971677226939413180">Macht die Option „Als Bild drucken“ nicht zur Auswahl durch den Nutzer verfügbar.</translation>
 <translation id="974349541138387272">Die URI-Vorlage des gewünschten DoH-Resolvers (DNS over HTTPS) angeben</translation>

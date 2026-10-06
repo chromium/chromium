@@ -774,6 +774,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin at Nagre-record na Tab</translation>
 <translation id="4137746084635924146">Kasalukuyang wika ng device</translation>
 <translation id="414128724510021958">Hinihiling bilang default ang mga pang-desktop na site</translation>
+<translation id="4150837143272125910">May na-download na update</translation>
 <translation id="4162867837470729563">Nakabukas nang buo ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="4164642020717536140">Mabilis at secure na pag-browse sa web</translation>
 <translation id="4165077084524712774">Higit pang tool</translation>
@@ -1240,6 +1241,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6039379616847168523">Pumunta sa susunod na tab</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="604124094241169006">Awtomatiko</translation>
+<translation id="6041959688070413372">Pamahalaan ang koneksyon sa pagitan ng mga serbisyo ng search at mga Google Workspace app, tulad ng Google Drive</translation>
 <translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="6047066316630165190">Buksan ang grid na tab switcher</translation>
 <translation id="604996488070107836">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa isang hindi alam na error.</translation>
@@ -1400,6 +1402,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6565959834589222080">Ginagamit ang Wi-Fi kapag available</translation>
 <translation id="657177046675873214">Para makuha ang iyong mga bookmark sa lahat ng device mo, i-on ang “Mga Bookmark” sa mga setting</translation>
 <translation id="6573096386450695060">Payagan sa lahat ng oras</translation>
+<translation id="657480975869429144">May available na bagong bersyon ng Chrome</translation>
 <translation id="658099107946526506">Protektahan ang iyong pribadong pagba-browse gamit ang isang pin para maiwasan ang hindi gustong pag-access</translation>
 <translation id="6583199322650523874">I-bookmark ang kasalukuyang page</translation>
 <translation id="6588043302623806746">Gamitin ang secure na DNS</translation>

@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">استخدام الخطوط المثبَّتة على جهاز الكمبيوتر حتى تتمكّن من إنشاء محتوى عالي الدقة</translation>
 <translation id="1465457928007067810">‏تم حفظ رقم الحساب بصيغة IBAN في حسابك على Google</translation>
 <translation id="1467432559032391204">اليسار</translation>
-<translation id="1471514598850585811">كمبيوتر محمول</translation>
 <translation id="1472675084647422956">عرض المزيد</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">يجب إدخال 3 كلمات أو أكثر للحصول على مساعدة في الكتابة.</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">جرّب الاتصال بمشرف النظام.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />، <ph name="CARD_NETWORK_NAME" />، <ph name="CARD_LAST_FOUR_DIGITS" />، تاريخ انتهاء الصلاحية <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">جهاز الكمبيوتر</translation>
 <translation id="1739364174357629566">تعديل رقم المسافر المعروف</translation>
 <translation id="1740404923954980840">للخروج من وضع ملء الشاشة، يمكنك السحب من أعلى الشاشة والنقر على زرّ الرجوع</translation>
 <translation id="1741474054575634405">إدارة بطاقات الولاء…</translation>
@@ -867,6 +865,7 @@
 <translation id="2436186046335138073">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" />؟</translation>
 <translation id="243815215670139125">‏تعذَّر حفظ هذه البطاقة في حسابك على Google، وتم حفظها في Chrome على هذا الجهاز بدلاً من ذلك.</translation>
 <translation id="2438874542388153331">عمل أربعة ثقوب يمينًا</translation>
+<translation id="2442033148418774391">تم إغلاق إشعار "ملء تلقائي أكثر ذكاءً مع الحفاظ على خصوصيتك"</translation>
 <translation id="2442865686365739754">‏<ph name="BEGIN_EMPHASIS" />لن يحفظ<ph name="END_EMPHASIS" /> Chrome ما يلي:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />سجلّ التصفُّح
@@ -879,13 +878,13 @@
 <translation id="2451607499823206582">التتبُّع</translation>
 <translation id="2452837234288608067">لا يمكننا مساعدتك في هذا الأمر. يُرجى إعادة المحاولة.</translation>
 <translation id="2453045048779611513">تفرض مؤسستك قيودًا على أنواع البيانات التي يمكنك حفظها</translation>
+<translation id="2456490423293803882">تم فتح إشعار "ملء تلقائي أكثر ذكاءً مع الحفاظ على خصوصيتك" بطول الشاشة</translation>
 <translation id="2459882793359532780">سياسات المتصفِّح المُطبَّقة (سياسات الأجهزة والملفات الشخصية)</translation>
 <translation id="2461385121573678775">‏يوفِّر لك إصدار Chrome Enterprise Core أداة مركزية لضبط سياسات المتصفِّح من السحابة الإلكترونية</translation>
 <translation id="2461822463642141190">حاليًا</translation>
 <translation id="2462724976360937186">معرّف مفتاح المرجع المصدق</translation>
 <translation id="2465688316154986572">وضع دبوس واحد</translation>
 <translation id="2465914000209955735">‏إدارة الملفات التي تم تنزيلها في Chrome</translation>
-<translation id="2466682894498377850">تم إرسال علامة التبويب من "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2467272921457885625">مواصفات الأجهزة وإحصاءاتها، مثل سجلّ استخدام وحدة المعالجة المركزية/ذاكرة الوصول العشوائي</translation>
 <translation id="2467421459221956357">استخدام أدوات الاستشعار؟</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />تشغيل بيانات تشخيص الشبكة<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@
 <translation id="2524962131655207565">‏<ph name="BEGIN_BOLD" />تتم مشاركة محتوى صفحة الدفع مع Google لتقديم هذه الخيارات.<ph name="END_BOLD" /> وتخضع خطط الدفع لمتطلبات الأهلية. لإخفاء خيارات "الدفع لاحقًا"، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />إعدادات الدفع<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">لتشغيل هذا التطبيق، يجب إعادة تفعيل "وضع مطوّر تطبيقات الويب المعزولة"</translation>
 <translation id="2526280916094749336">‏يمكنك استخدام العناوين المحفوظة مع جميع منتجات Google. سيتم حفظ هذا العنوان في حسابك على Google‏، <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">سطح المكتب</translation>
 <translation id="2527451058878391043">‏يظهر رمز التحقّق من البطاقة (CVC) في الجهة الأمامية من بطاقتك. إنّه الرمز المكوّن من 4 أرقام في أعلى يمين رقم البطاقة.</translation>
 <translation id="2529899080962247600">يجب ألا يحتوي هذا الحقل على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال. وسيتم تجاهل جميع الإدخالات الأخرى.</translation>
 <translation id="2530042584066815841">قفل الماوس واستخدامه</translation>
@@ -1108,6 +1106,7 @@
 <translation id="2878197950673342043">الطي على شكل ملصق</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">استخدام ميزة "قفل الشاشة" لملء كلمات المرور.</translation>
+<translation id="2880119244122776372">إنشاء وكتابة الرموز البرمجية</translation>
 <translation id="2881276955470682203">هل تريد حفظ البطاقة؟</translation>
 <translation id="2882280148032777436">حذف رقم المسافر المعروف</translation>
 <translation id="2882949212241984732">الطي على شكل بوابة مزدوجة</translation>
@@ -1736,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{تم حظر نقل الملف}zero{تم حظر نقل <ph name="FILE_COUNT" /> ملف}two{تم حظر نقل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر نقل <ph name="FILE_COUNT" /> ملفات}many{تم حظر نقل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر نقل <ph name="FILE_COUNT" /> ملف}}</translation>
 <translation id="3906022360148923497">رمز وسيلة الدفع</translation>
 <translation id="3906234161316839040">طلبات أخرى</translation>
-<translation id="3906954721959377182">جهاز لوحي</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">مزيد من المعلومات حول المحتوى المضمَّن</translation>
 <translation id="3920504717067627103">سياسات الشهادة</translation>
@@ -3914,6 +3912,7 @@
 <translation id="753713322968419914">‏إزالة عنوان المنزل من ميزة "الملء التلقائي" في Chrome؟</translation>
 <translation id="753714465667062283">يُرجى تسجيل الدخول لحفظ صورتك</translation>
 <translation id="7537536606612762813">إلزامية</translation>
+<translation id="7540924742308928499">استلهام الأفكار والتلخيص</translation>
 <translation id="7543525346216957623">طلب الإذن من والدَيك</translation>
 <translation id="7546409722674205727">جارٍ تشغيل "<ph name="APP_NAME" />"</translation>
 <translation id="7548892272833184391">إصلاح أخطاء الاتصال</translation>

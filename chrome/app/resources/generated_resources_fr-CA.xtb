@@ -1697,7 +1697,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2300383962156589922">Personnaliser et contrôler <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Arrête la recharge à 80 % pour aider à prolonger la durée de vie de la pile.</translation>
 <translation id="2301382460326681002">Le répertoire racine de l'extension n'est pas valide.</translation>
-<translation id="2301402091755573488">Onglet partagé</translation>
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2305202347479035002">Processus</translation>
 <translation id="2306794767168143227">Enregistrer dans <ph name="BRAND" /> sur cet appareil</translation>
@@ -1716,6 +1715,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2322622365472107569">Heure de fin : <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Réseaux Wi-Fi enregistrés</translation>
 <translation id="2323685460575935191">Masquer les boutons de défilement</translation>
+<translation id="2325004050205455346">Historique récent</translation>
 <translation id="2325444234681128157">Mémoriser le mot de passe</translation>
 <translation id="2326188115274135041">Entrez de nouveau votre NIP pour activer le déverrouillage automatique</translation>
 <translation id="2326583548923775947">Ceci n'est pas un compte Google. Les éléments que vous enregistrez sur Chrome ne seront pas accessibles sur d'autres appareils.</translation>
@@ -2075,7 +2075,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2598710988533271874">Nouveau Chrome disponible</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 extension dangereuse désactivée}one{{NUM_SITES} extension dangereuse désactivée}other{{NUM_SITES} extensions dangereuses désactivées}}</translation>
-<translation id="2603121359676416582">Pour cette page</translation>
 <translation id="2603656971249947488">Bande d'onglets</translation>
 <translation id="2604129989323098489">Les sites demandent généralement à accéder à des renseignements sur vos écrans pour pouvoir ouvrir et positionner des fenêtres intelligemment, comme afficher des documents ou du contenu en mode plein écran côte à côte.</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
@@ -3016,7 +3015,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3292966601422448005">Les autorisations que vous accordez à <ph name="APP_NAME" /> seront également accordées à ses applis installées.</translation>
 <translation id="3293080634164207409">Ajouter des onglets</translation>
 <translation id="329324683265785818">Lecture et pause, et raccourci-clavier k</translation>
-<translation id="3293644607209440645">Envoyer cette page</translation>
 <translation id="3294437725009624529">Invité</translation>
 <translation id="3294686910656423119">Statistiques d'utilisation et rapports de plantage</translation>
 <translation id="3295241308788901889">Diffusion d'onglet</translation>
@@ -5715,6 +5713,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droite)</translation>
 <translation id="534449933710420173">Dossier sans nom</translation>
 <translation id="5345916423802287046">Démarrer l'application lorsque vous vous connectez</translation>
+<translation id="5346059693449184483">À quoi pensez-vous?</translation>
 <translation id="5350116201946341974">Fantaisiste</translation>
 <translation id="535123479159372765">Texte copié à partir d'un autre appareil</translation>
 <translation id="5352257124367865087">Gérer les autorisations du site</translation>
@@ -7138,7 +7137,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6472893788822429178">Afficher le bouton Accueil</translation>
 <translation id="6473315466413288899">Choisir une option</translation>
 <translation id="6474021817475285003">En savoir plus dans Google Agenda</translation>
-<translation id="6474401088838630457">Demander à Gemini de vous en dire plus à ce sujet</translation>
 <translation id="6474498546677193336">Impossible d'annuler le partage parce qu'une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Linux.</translation>
 <translation id="6474884162850599008">Se déconnecter du compte Google Disque</translation>
 <translation id="6476482583633999078">Débit de parole</translation>

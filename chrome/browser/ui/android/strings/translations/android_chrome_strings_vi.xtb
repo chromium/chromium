@@ -774,6 +774,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Thẻ đang ghi, được ghim và được chọn cùng với nhiều thẻ khác</translation>
 <translation id="4137746084635924146">Ngôn ngữ hiện tại của thiết bị</translation>
 <translation id="414128724510021958">Yêu cầu trang web dành cho máy tính (theo mặc định)</translation>
+<translation id="4150837143272125910">Đã tải một bản cập nhật xuống</translation>
 <translation id="4162867837470729563">Danh sách các lựa chọn chia sẻ được mở trên toàn màn hình.</translation>
 <translation id="4164642020717536140">Duyệt web nhanh chóng và an toàn</translation>
 <translation id="4165077084524712774">Công cụ khác</translation>
@@ -1240,6 +1241,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6039379616847168523">Chuyển sang thẻ tiếp theo</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="604124094241169006">Tự động</translation>
+<translation id="6041959688070413372">Quản lý kết nối giữa các dịch vụ Tìm kiếm và ứng dụng trong Google Workspace, chẳng hạn như Google Drive</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
 <translation id="6047066316630165190">Mở trình chuyển đổi thẻ dạng lưới</translation>
 <translation id="604996488070107836">Không tải xuống được <ph name="FILE_NAME" /> do lỗi không xác định.</translation>
@@ -1400,6 +1402,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6565959834589222080">Dùng mạng Wi-Fi khi có sẵn</translation>
 <translation id="657177046675873214">Để sử dụng dấu trang trên tất cả các thiết bị của bạn, hãy bật "Dấu trang" trong phần cài đặt</translation>
 <translation id="6573096386450695060">Luôn cho phép</translation>
+<translation id="657480975869429144">Đã có phiên bản Chrome mới</translation>
 <translation id="658099107946526506">Bảo vệ hoạt động duyệt web ở chế độ riêng tư bằng mã PIN để ngăn chặn hành vi truy cập không mong muốn</translation>
 <translation id="6583199322650523874">Đánh dấu trang hiện tại</translation>
 <translation id="6588043302623806746">Sử dụng DNS bảo mật</translation>

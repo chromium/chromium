@@ -289,7 +289,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1462951478840426066">Use the fonts on your computer so that you can create high-fidelity content</translation>
 <translation id="1465457928007067810">IBAN saved to your Google Account</translation>
 <translation id="1467432559032391204">Left</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Show more</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Enter three or more words to get writing help</translation>
@@ -452,7 +451,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Try contacting the system admin.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expires <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Computer</translation>
 <translation id="1739364174357629566">Update known traveller number</translation>
 <translation id="1740404923954980840">To exit full screen, drag from the top and touch the back button</translation>
 <translation id="1741474054575634405">Manage loyalty cards…</translation>
@@ -887,7 +885,6 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2465688316154986572">Staple</translation>
 <translation id="2465914000209955735">Manage files that you have downloaded in Chrome</translation>
-<translation id="2466682894498377850">Tab sent from your <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Device hardware specifications and statistics such as CPU/RAM utilisation history</translation>
 <translation id="2467421459221956357">Use sensors?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Running network diagnostics<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Content from the checkout page is shared with Google to offer these options.<ph name="END_BOLD" /> Payment plans are subject to eligibility. To hide pay later options, go to <ph name="BEGIN_LINK" />Payment settings<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">To run this app, re-enable isolated web app developer mode</translation>
 <translation id="2526280916094749336">You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Desktop</translation>
 <translation id="2527451058878391043">Your CVC is on the front of your card. It’s the four-digit code at the top right above your card number.</translation>
 <translation id="2529899080962247600">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be ignored.</translation>
 <translation id="2530042584066815841">Mouse lock and use</translation>
@@ -958,6 +954,7 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Undo Edit</translation>
 <translation id="2559566667529177711">Multi-layer</translation>
+<translation id="2561224416042784023">View settings</translation>
 <translation id="2570734079541893434">Manage settings</translation>
 <translation id="257136025287118539">Your administrator is moving your files to <ph name="CLOUD_PROVIDER" />. You can modify these files once the upload is complete.</translation>
 <translation id="2571488850200220306">To help ensure security, it can also see the device's OS, browser version and what software is installed</translation>
@@ -1739,7 +1736,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3905894480064208252">{0,plural, =1{File blocked from transferring}other{<ph name="FILE_COUNT" /> files blocked from transferring}}</translation>
 <translation id="3906022360148923497">Payment instrument icon</translation>
 <translation id="3906234161316839040">Other orders</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Learn more about embedded content</translation>
 <translation id="3920504717067627103">Certificate Policies</translation>

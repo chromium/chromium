@@ -1042,6 +1042,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1790976235243700817">Cabut akses</translation>
 <translation id="1791662854739702043">Terinstal</translation>
 <translation id="1792619191750875668">Layar ekstensi</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Sembunyikan sandi untuk <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Kirim masukan untuk membantu kami menyelesaikan masalah ini.</translation>
 <translation id="1795214765651529549">Gunakan Klasik</translation>
@@ -1709,7 +1710,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2300383962156589922">Sesuaikan dan kontrol <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Hentikan pengisian daya pada 80% untuk membantu menjaga baterai tetap awet.</translation>
 <translation id="2301382460326681002">Direktori akar ekstensi tidak valid.</translation>
-<translation id="2301402091755573488">Tab Dibagikan</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305202347479035002">Cara kerjanya</translation>
 <translation id="2306794767168143227">Simpan ke <ph name="BRAND" /> di perangkat ini</translation>
@@ -1728,6 +1728,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2322622365472107569">Waktu berakhir <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Jaringan Wi-Fi tersimpan</translation>
 <translation id="2323685460575935191">Sembunyikan tombol scroll</translation>
+<translation id="2325004050205455346">Histori terbaru</translation>
 <translation id="2325444234681128157">Ingat sandi</translation>
 <translation id="2326188115274135041">Konfirmasi PIN untuk mengaktifkan buka kunci otomatis</translation>
 <translation id="2326583548923775947">Akun ini bukan Akun Google. Item yang Anda simpan ke Chrome tidak akan tersedia di perangkat lain.</translation>
@@ -2086,7 +2087,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2598710988533271874">Chrome baru tersedia</translation>
 <translation id="2599048253926156421">Nama pengguna disalin ke papan klip</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Menonaktifkan 1 ekstensi yang tidak aman}other{Menonaktifkan {NUM_SITES} ekstensi yang tidak aman}}</translation>
-<translation id="2603121359676416582">Untuk halaman ini</translation>
 <translation id="2603656971249947488">Tab setrip</translation>
 <translation id="2604129989323098489">Situs biasanya meminta informasi tentang layar agar dapat membuka dan menempatkan jendela dengan cerdas, seperti menampilkan dokumen atau konten layar penuh secara berdampingan</translation>
 <translation id="2604255671529671813">Error koneksi jaringan</translation>
@@ -2952,6 +2952,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="323262942975422760">Opsi lainnya untuk mengedit atau menghapus <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Aplikasi Web</translation>
 <translation id="3233271424239923319">Cadangkan file dan aplikasi Linux</translation>
+<translation id="3233577317461669428">Perangkat lain tidak ditemukan</translation>
 <translation id="3234251228180563751">Nama pengguna berisi lebih dari 1.000 karakter</translation>
 <translation id="3234978181857588512">Simpan ke perangkat</translation>
 <translation id="3237871032310650497">Hapus data situs untuk <ph name="SITE_NAME" /> yang dipartisi di <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3026,7 +3027,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3292966601422448005">Izin yang Anda berikan untuk <ph name="APP_NAME" /> juga akan diberikan untuk aplikasi yang diinstal.</translation>
 <translation id="3293080634164207409">Tambahkan tab</translation>
 <translation id="329324683265785818">Putar/jeda, pintasan keyboard k</translation>
-<translation id="3293644607209440645">Kirim halaman ini</translation>
 <translation id="3294437725009624529">Tamu</translation>
 <translation id="3294686910656423119">Statistik penggunaan dan laporan kerusakan</translation>
 <translation id="3295241308788901889">Mentransmisikan tab</translation>
@@ -5727,6 +5727,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="534449933710420173">Folder tanpa nama</translation>
 <translation id="5345916423802287046">Mulai aplikasi saat login</translation>
+<translation id="5346059693449184483">Apa yang sedang Anda pikirkan?</translation>
 <translation id="5350116201946341974">Aneh</translation>
 <translation id="535123479159372765">Teks disalin dari perangkat lain</translation>
 <translation id="5352257124367865087">Kelola izin situs</translation>
@@ -7003,6 +7004,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6356893102071098867">Pastikan Anda memilih akun yang benar</translation>
 <translation id="6357305427698525450">Beberapa link yang didukung akan tetap dibuka di <ph name="APP_NAME" /> atau <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">ID Stabil Lainnya (mis., Hash atau UUID)</translation>
+<translation id="6357830294871526418">Tab di perangkat lain</translation>
 <translation id="6358884629796491903">Naga</translation>
 <translation id="6359640073754977254">Scroll ke tab terakhir</translation>
 <translation id="6361850914223837199">Detail kesalahan:</translation>
@@ -7150,7 +7152,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6472893788822429178">Tampilkan tombol Beranda</translation>
 <translation id="6473315466413288899">Pilih opsi</translation>
 <translation id="6474021817475285003">Lihat selengkapnya di Google Kalender</translation>
-<translation id="6474401088838630457">Tanya Gemini lebih lanjut tentang hal ini</translation>
 <translation id="6474498546677193336">Tidak dapat mengurungkan berbagi karena ada aplikasi yang menggunakan folder ini. Berbagi folder akan diurungkan saat berikutnya Linux dimatikan.</translation>
 <translation id="6474884162850599008">Memutuskan hubungan akun Google Drive</translation>
 <translation id="6476482583633999078">Kecepatan ucapan</translation>

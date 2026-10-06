@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome blokeeris selle allalaadimise, kuna seda faili tüüpi ei laadita sageli alla ja see võib olla ohtlik</translation>
 <translation id="1197860368385086056">Järgmisel korral, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chrome'i, kuvatakse teile hinnajälgimise märguannete lubamise viip.</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
+<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" /> on ootel. Sirvimise turvalisuse tagamiseks värskendatakse Chrome'i järgmine kord, kui olete <ph name="IDLE_DURATION" /> inaktiivne.</translation>
 <translation id="1226003169284463347">Kõigis oma seadmetes järjehoidjatele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="1278833599417554002">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
 <translation id="1289911795790071537">Ava otsing Chrome'iga</translation>
@@ -503,6 +504,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5941830788786076944">Tee Google Chrome vaikebrauseriks</translation>
 <translation id="5947104538377036631">Chrome'i otsetee</translation>
 <translation id="5960071705175224773">Tundmatu rakendus muutis teie seadeid</translation>
+<translation id="5960404530854194706">Chrome'i värskendatakse, kui olete eemal.</translation>
 <translation id="5980111191913430208">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chrome soovitab need installida ainult järgmisest poest: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Allalaadimine … <ph name="HOURS" /> tund(i) on jäänud</translation>
 <translation id="6008161919456049856">Teie Google'i kontole salvestatud paroolid, makseviisid ja aadressid eemaldatakse sellest seadmest. Selleks et neid Chrome'is uuesti kasutada, logige taas sisse.</translation>
@@ -586,6 +588,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6556755379298048869">Otsige klaviatuuri otsetee abil.</translation>
 <translation id="6585124893636629274">Sulgege Gemini Chrome'is</translation>
 <translation id="659498884637196217">Selle seadme Google'i paroolihalduris</translation>
+<translation id="660312897435669152">Chrome soovib värskendada</translation>
 <translation id="6612152958212564387">Te ei saada Google'ile kasutusstatistikat ega krahhiaruandeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hoidke oma paroolid, järjehoidjad ja ajalugu seadmetes täielikult sünkroonituna, määrates Chrome'i oma vaikebrauseriks.</translation>
 <translation id="6621391692573306628">Selle vahelehe saatmiseks teise seadmesse logige mõlemas seadmes Chrome'i sisse</translation>

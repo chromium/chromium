@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">使用您计算机上的字体，以便您能够创作高保真内容</translation>
 <translation id="1465457928007067810">IBAN 已保存到您的 Google 账号</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1471514598850585811">笔记本电脑</translation>
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">输入 3 个或更多字词，即可获得写作帮助</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">美国运通卡</translation>
 <translation id="1734878702283171397">请尝试联系系统管理员。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，有效期至：<ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">计算机</translation>
 <translation id="1739364174357629566">更新已知旅客编号</translation>
 <translation id="1740404923954980840">如需退出全屏模式，请从顶部拖动，然后轻触返回按钮</translation>
 <translation id="1741474054575634405">管理会员卡…</translation>
@@ -867,6 +865,7 @@
 <translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="243815215670139125">此卡无法保存到您的 Google 账号中，已改为保存到此设备上的 Chrome 中。</translation>
 <translation id="2438874542388153331">四孔（右侧）</translation>
+<translation id="2442033148418774391">“更智能的自动填充，私密安全有保障”通知已关闭</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />您的浏览记录
@@ -879,13 +878,13 @@
 <translation id="2451607499823206582">正在跟踪</translation>
 <translation id="2452837234288608067">无法提供这方面的帮助。请重试。</translation>
 <translation id="2453045048779611513">您所在的组织限制了您可保存的内容</translation>
+<translation id="2456490423293803882">“更智能的自动填充，私密安全有保障”通知已以最大高度显示</translation>
 <translation id="2459882793359532780">已应用的浏览器政策（设备政策和资料政策）</translation>
 <translation id="2461385121573678775">Chrome 企业核心版提供了一站式工具，让您可以从云端配置浏览器政策</translation>
 <translation id="2461822463642141190">当前</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
 <translation id="2465688316154986572">订书钉</translation>
 <translation id="2465914000209955735">管理您已在 Chrome 中下载的文件</translation>
-<translation id="2466682894498377850">从您的“<ph name="DEVICE_NAME" />”发送的标签页</translation>
 <translation id="2467272921457885625">设备硬件规格和统计信息（例如 CPU/RAM 利用率记录）</translation>
 <translation id="2467421459221956357">使用传感器？</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />运行网络诊断<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />为提供以上选项，系统会将结账页中的内容分享给 Google。<ph name="END_BOLD" />付款方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如需运行此应用，请重新启用独立式 Web 应用 (IWA) 开发者模式</translation>
 <translation id="2526280916094749336">您可在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="ACCOUNT" /> 中。</translation>
-<translation id="2526590354069164005">桌面</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
 <translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
 <translation id="2530042584066815841">锁定和使用鼠标</translation>
@@ -1108,6 +1106,7 @@
 <translation id="2878197950673342043">海报折</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">使用屏幕锁定功能填充密码</translation>
+<translation id="2880119244122776372">构建和编码</translation>
 <translation id="2881276955470682203">要保存银行卡吗？</translation>
 <translation id="2882280148032777436">删除已知旅客编号</translation>
 <translation id="2882949212241984732">关门再对折</translation>
@@ -1732,7 +1731,6 @@
 <translation id="3905894480064208252">{0,plural, =1{此文件已被禁止传输}other{<ph name="FILE_COUNT" /> 个文件已被禁止传输}}</translation>
 <translation id="3906022360148923497">支付方式图标</translation>
 <translation id="3906234161316839040">其他订单</translation>
-<translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">详细了解嵌入式内容</translation>
 <translation id="3920504717067627103">证书政策</translation>
@@ -2162,7 +2160,7 @@
 <translation id="4619669610757527494">将驾照保存到 Google 钱包</translation>
 <translation id="4622292761762557753">仍然转移</translation>
 <translation id="4622647778991854660">在通知中心内启用通知。打开<ph name="LINK" />。</translation>
-<translation id="4623894491222334521">身份文件</translation>
+<translation id="4623894491222334521">身份证件</translation>
 <translation id="4627675673814409125">此政策无法在 Chrome 个人资料级别设置，因而会被忽略。</translation>
 <translation id="4628948037717959914">照片</translation>
 <translation id="4629370161347991046">A4x6</translation>
@@ -3909,6 +3907,7 @@
 <translation id="753713322968419914">要从 Chrome 自动填充中移除住址吗？</translation>
 <translation id="753714465667062283">登录后即可保存照片</translation>
 <translation id="7537536606612762813">强制</translation>
+<translation id="7540924742308928499">头脑风暴和总结</translation>
 <translation id="7543525346216957623">需要家长同意</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">修正网络连接错误</translation>

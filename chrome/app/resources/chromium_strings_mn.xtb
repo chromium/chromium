@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
 <translation id="1186645291482254714">Утсан дээрээ Chromium-р үнэ мөшгөх мэдэгдэл аваарай</translation>
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> хүлээгдэж байна. Таны хөтчийн хэрэглээний аюулгүй байдлыг хангахын тулд Chromium таныг дараагийн удаа <ph name="IDLE_DURATION" />-н турш идэвхгүй байхад шинэчлэгдэнэ.</translation>
 <translation id="1232234696885483911">Таныг Зурган хайлтыг нээхэд хуудасны гарчиг, URL болон PDF зэрэг контентыг сервер лүү автоматаар илгээнэ. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Та нэвтэрсэн байхдаа Chromium-д Google Бүртгэлээсээ нууц үг болон бусад зүйлээ ашиглах боломжтой. Үүнийг өөрчлөхийн тулд “Chromium дахь таны бүртгэл” рүү очно уу.</translation>
 <translation id="1244381985120794049">Mac-н цэсийн мөрд Chromium дахь Gemini-г харуулах</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
 <translation id="328888136576916638">Google-ийн API түлхүүр байхгүй байна. Chromium-ийн зарим функц идэвхгүй болно.</translation>
 <translation id="3296368748942286671">Chromium-ийг хаахад ард байгаа програмуудыг ажиллуулсан хэвээр бай.</translation>
+<translation id="3300632735252839402">Chromium таныг эзгүй үед шинэчлэгдэнэ</translation>
 <translation id="3313189106987092621">Chromium аюултай холболт ашиглан аливаа сайтыг ачаалахаас өмнө танд сануулна</translation>
 <translation id="3316771292331273802">Хэрэв та Chromium-д нэвтэрсэн бол таныг Chromium-н бүх цонхыг хаах үед Google Бүртгэлээс тань бусад ихэнх сайтаас гаргана. Сайтад таныг санахыг зөвшөөрөхийн тулд <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">хайлтын хэсгийн баруун дээд булан: баруун <ph name="RIGHT" />%, дээд <ph name="TOP" />%</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Chromium-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="3412460710772753638">Энэ төхөөрөмж дээрх Нууц үгний менежерт</translation>
+<translation id="3425452599984451640">Chromium шинэчлэгдэх хүсэлтэй байна</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" />-с хавчуурга болон бусад зүйлээ авахын тулд Chromium-д нэвтэрнэ үү</translation>
 <translation id="3438772217992559640">Зурган хайлтаар энэ табаас хайх</translation>
 <translation id="3455907671758333080">Утсан дээрээ Chromium-р Сайжруулсан аюулгүй хөтчийг өргөтгөх</translation>

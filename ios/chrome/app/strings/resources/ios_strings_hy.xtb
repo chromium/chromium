@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Գաղտնաբառեր</translation>
 <translation id="1381022135873211423">{count,plural, =1{Հասցե {position}՝ {count}-ից}one{Հասցե {position}՝ {count}-ից}other{Հասցե {position}՝ {count}-ից}}</translation>
 <translation id="13813615483058219">Սխալ առաջացավ։ Ստուգեք ինտերնետ կապը, բարձրացրեք ձայնի ուժգնությունը կամ նորից փորձեք։</translation>
+<translation id="138181280295369883">Մուտք գործեք՝ ձեր պահված տեղեկությունները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="138618066238211776">Շարունակել <ph name="USER_NAME" /> հաշվով</translation>
 <translation id="138692594145659985">Քարտը պահելու կարգավորումներ</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Թարգմանել էջը</translation>
 <translation id="1539535193627863227">Այս կայքի համար գաղտնաբառեր կամ մուտքի բանալիներ չեն գտնվել</translation>
 <translation id="1540800554400757039">Հասցե 1</translation>
+<translation id="1543035591122163372">Մուտք գործեք՝ ձեր գաղտնաբառերը և այլ տվյալներ <ph name="DEVICE_TYPE" /> օգտագործելու համար</translation>
 <translation id="154312949627292154">Բացեք ձեր մյուս սարքերից ստացված ներդիրները կողպէկրանից։</translation>
 <translation id="1544653821167545205">Ամփոփել էջը</translation>
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Ինչպե՞ս կարող եմ օգտագործել այս գործառույթը</translation>
 <translation id="1901600657316773839">Պահպանել ընտրությունը</translation>
 <translation id="1902277226107477495">Հասցեի հայտնաբերումն անջատված է։ Կրկին միացրեք այն Կարգավորումներում։</translation>
+<translation id="1905582086181351638">Մուտք գործեք՝ ձեր պահված տեղեկություններն ու այլ տվյալներ <ph name="DEVICE_TYPE" /> օգտագործելու համար</translation>
 <translation id="1909201414196501151">Կայքն ավելացվեց և ամրացվեց</translation>
 <translation id="1911619930368729126">Վերբեռնել Google Drive</translation>
 <translation id="1925706052394657380">Բացեք <ph name="BEGIN_BOLD" />Կանխադրված հավելվածներ (Default Apps)<ph name="END_BOLD" /> կարգավորումը iOS-ում</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Կայքերը կարող են ձեր խոսափողի օգտագործման թույլտվություն խնդրել</translation>
 <translation id="2219935992754556187">Chrome-ը պաշտպանում է ձեր զգայուն տվյալները Face ID-ի միջոցով</translation>
 <translation id="2220529011494928058">Հաղորդել խնդրի մասին</translation>
-<translation id="2222149859067335623">«<ph name="SITE_DOMAIN" />» կայքին արգելված է օգտագործել ձեր տեսախցիկը</translation>
 <translation id="2223461067862937305">Ստեղծել QR կոդ</translation>
 <translation id="222798989929574238">Դուք 20-ից ավելի լուսանկարներ եք օգտագործել որոնման համար</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
@@ -782,7 +784,6 @@
 <translation id="3459644598174926977">Անցեք «Gemini-ի հետ Live» ռեժիմին՝ էջի մասին հարցեր տալու, գաղափարներ քննարկելու և միմյանց հետ խոսելու համար։</translation>
 <translation id="3462768334899086950">Դուք կկորցնեք չպահված ֆայլը և ընթացիկ ներդիրները</translation>
 <translation id="3464194322481586217">Չհաջողվեց հետագծել գինը։</translation>
-<translation id="3468009081835548033">Թույլատրված է մեկ անգամ</translation>
 <translation id="3469117812148449995">Գաղտնաբառը պահելու տարբերակներ</translation>
 <translation id="3472469028191701821">Բացվում է նոր ներդիրում</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} կայքի կամ հավելվածի համար}one{{COUNT} կայքի կամ հավելվածի համար}other{{COUNT} կայքի և հավելվածի համար}}</translation>
@@ -902,7 +903,6 @@
 <translation id="386224966259596343">Հաջորդ անգամ, երբ համապատասխան ձև լրացնեք, կկարողանաք պահել այս տեղեկությունները Wallet-ում։</translation>
 <translation id="3868495844258915202">Ցույց տալ ամբողջ URL-ը</translation>
 <translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
-<translation id="3877211858413020188">«<ph name="SITE_DOMAIN" />» կայքին արգելված է օգտագործել ձեր խոսափողը</translation>
 <translation id="3878657761594430423">Աղյուսակների արտահանիչ</translation>
 <translation id="3884810423191119660">Ապահով պահեք գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ</translation>
 <translation id="3885587018298784481">Միացեք ընտանեկան խմբի</translation>
@@ -1039,6 +1039,7 @@
 <translation id="4289309730265289297">Ֆոտոդարան</translation>
 <translation id="429074084062258019">{count,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիր խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
 <translation id="4290920330097335010">Երբեք չթույլատրել</translation>
+<translation id="4293154608148215505">ձեր հեռախոսում</translation>
 <translation id="4294506173142861371">Մուտք գործե՞լ որպես <ph name="FIRST_NAME" /></translation>
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
@@ -1311,6 +1312,7 @@
 <translation id="5119329531859909472">Ապրանքին հետևելու համար հպեք «Հետևել»</translation>
 <translation id="5121618895923301719">Դուք արդեն հետագծում եք այս ապրանքը։ Այս էջը պահված է <ph name="BEGIN_LINK" />Mobile Bookmarks<ph name="END_LINK" />-ում։</translation>
 <translation id="512533434554095351">Դուք ունեք մի քանի ոչ հուսալի գաղտնաբառ։</translation>
+<translation id="5126335625961252141">ձեր պլանշետում</translation>
 <translation id="5128788795241319992">Բացահայտեք նոր ընտրացանկը</translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="5137568953923142260">Թույլատրել մեկ անգամ</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5371112366564891538">Մեծացնել տեքստի չափսը</translation>
 <translation id="5376135254804080693">Չեղարկել բոլոր ընտրությունները</translation>
 <translation id="537853552771686272">Կառավարեք ձեզ հետաքրքրող թեմաներն ու կայքերը</translation>
+<translation id="5385892579392932755">ձեր նոթբուքում</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}-ը փակված է}one{{count}-ը փակված է}other{{count}-ը փակված է}}</translation>
 <translation id="5394975111793637642">Թաքցնել ապրանքի կարծիքները ձեր քարտի համար</translation>
 <translation id="5414763847370083940">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի։</translation>
@@ -1969,6 +1972,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7140355148730164340"><ph name="EMAIL" />։ <ph name="AI_TIER" />։</translation>
 <translation id="7141960840225504692">Ներդիրները կփակվեն, իսկ այցելությունների պատմությունը կջնջվի</translation>
 <translation id="714291438898585119">Աստղանշված</translation>
+<translation id="7144458305574230431">Մուտք գործեք՝ ձեր էջանիշները և սարքից այլ բովանդակություն օգտագործելու համար (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7145337554745942724">Թարմացնել վարորդական վկայականը</translation>
 <translation id="7146301801400584641">Հասանելի է օրացույցի ֆայլ</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
@@ -2380,7 +2384,6 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8393889347136007944">Ներդիրները <ph name="THRESHOLD" /> օր չեն օգտագործվել</translation>
 <translation id="8395180897620197612">Դադարեցնել գրանցումը մատյանում</translation>
-<translation id="8399253661151100858">«<ph name="SITE_DOMAIN" />» կայքը կարող է օգտագործել ձեր խոսափողը, երբ այցելում եք այս կայք</translation>
 <translation id="8407669440184693619">Այս կայքի համար գաղտնաբառեր չեն գտնվել</translation>
 <translation id="8407831512155324054">Ձեր գաղտնաբառերը հուսալի են</translation>
 <translation id="8414283596511250978">Երբեք մի մոռացեք ձեր գաղտնաբառերը</translation>
@@ -2395,7 +2398,6 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8439758443371991593">Թաքցնել «Ավելացնել ընթերցանության ցանկում» գործողությունը</translation>
 <translation id="8443986842926457191">URL-ը կարող է պարունակել առավելագույնը 2048 նիշ</translation>
 <translation id="8449869326050867919">Գաղտնաբառը փոխանցվեց</translation>
-<translation id="8458009459729013424">«<ph name="SITE_DOMAIN" />» կայքը կարող է օգտագործել ձեր տեսախցիկը, երբ այցելում եք այս կայք</translation>
 <translation id="8461708300275916315">Եթե 18 տարեկանից փոքր եք</translation>
 <translation id="8473815223723723001">Խմբագրել պատկերը Gemini-ի օգնությամբ</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>

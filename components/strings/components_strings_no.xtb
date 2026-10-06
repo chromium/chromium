@@ -289,7 +289,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1462951478840426066">bruke skrifttypene på datamaskinen din, slik at du kan lage innhold av høy kvalitet</translation>
 <translation id="1465457928007067810">IBAN-nummeret er lagret i Google-kontoen din</translation>
 <translation id="1467432559032391204">Venstre</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Vis mer</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Skriv inn tre eller flere ord for å få skrivehjelp</translation>
@@ -452,7 +451,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Prøv å kontakte systemadministratoren.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, utløper <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Datamaskin</translation>
 <translation id="1739364174357629566">Oppdater known traveler-nummer</translation>
 <translation id="1740404923954980840">For å gå ut av fullskjerm, dra fra toppen og trykk på tilbakeknappen</translation>
 <translation id="1741474054575634405">Administrer stamkundekort …</translation>
@@ -867,6 +865,7 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2436186046335138073">Vil du la <ph name="HANDLER_HOSTNAME" /> åpne alle <ph name="PROTOCOL" />-linker?</translation>
 <translation id="243815215670139125">Kunne ikke lagre dette kortet i Google-kontoen din. Det ble lagret i Chrome på denne enheten i stedet.</translation>
 <translation id="2438874542388153331">Fire hull høyre</translation>
+<translation id="2442033148418774391">Varselet «Smartere og privat autofyll» er lukket</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />lagrer ikke<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />nettleserloggen din
@@ -879,13 +878,13 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2451607499823206582">Sporing</translation>
 <translation id="2452837234288608067">Vi kunne ikke hjelpe deg med det. Prøv på nytt.</translation>
 <translation id="2453045048779611513">Organisasjonen din begrenser hva du kan synkronisere</translation>
+<translation id="2456490423293803882">Merknaden «Smartere og privat autofyll» er åpnet i full høyde</translation>
 <translation id="2459882793359532780">Gjeldende nettleserregler (maskin- og profilregler)</translation>
 <translation id="2461385121573678775">Med Chrome Enterprise Core får du et sentralisert verktøy for konfigurering av nettleserregler fra nettskyen</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="2462724976360937186">Nøkkel-ID for sertifiseringsinstans</translation>
 <translation id="2465688316154986572">Stift</translation>
 <translation id="2465914000209955735">Administrer filer du har lastet ned i Chrome</translation>
-<translation id="2466682894498377850">Fanen fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Maskinvarespesifikasjoner og -statistikk for enheten, for eksempel brukslogg for prosessor og RAM</translation>
 <translation id="2467421459221956357">Vil du bruke sensorene?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Kjør Nettverksdiagnose<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Innhold fra betalingssiden deles med Google for å tilby disse alternativene.<ph name="END_BOLD" /> Betalingsavtaler er avhengig av godkjenning. Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> for å skjule alternativene for å betale senere.</translation>
 <translation id="2526062290525841862">For å kjøre denne appen, slå på igjen utviklermodus for isolerte nettapper</translation>
 <translation id="2526280916094749336">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen lagres i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="2527451058878391043">CVC-koden står på forsiden av kortet. Det er den firesifrede koden øverst til høyre over kortnummeret ditt.</translation>
 <translation id="2529899080962247600">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Eventuelle oppføringer som overskrider dette, ignoreres.</translation>
 <translation id="2530042584066815841">Muselås og -bruk</translation>
@@ -956,6 +954,7 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Angre endringen</translation>
 <translation id="2559566667529177711">Flerlags</translation>
+<translation id="2561224416042784023">Se innstillingene</translation>
 <translation id="2570734079541893434">Administrer innstillinger</translation>
 <translation id="257136025287118539">Administratoren din flytter filene dine til <ph name="CLOUD_PROVIDER" />. Du kan endre disse filene når opplastingen er fullført.</translation>
 <translation id="2571488850200220306">For å ivareta sikkerheten kan den også se enhetens OS, nettleserversjon og hvilken programvare som er installert</translation>
@@ -1108,6 +1107,7 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2878197950673342043">Kryssfals</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">bruke skjermlåsen til å fylle ut passord</translation>
+<translation id="2880119244122776372">Bygg og kod</translation>
 <translation id="2881276955470682203">Vil du lagre kortet?</translation>
 <translation id="2882280148032777436">Slett known traveler-nummeret</translation>
 <translation id="2882949212241984732">Lukket vindusfals</translation>
@@ -1736,7 +1736,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3905894480064208252">{0,plural, =1{Filen er blokkert for overføring}other{<ph name="FILE_COUNT" /> filer er blokkert for overføring}}</translation>
 <translation id="3906022360148923497">Ikon for betalingsmåte</translation>
 <translation id="3906234161316839040">Andre bestillinger</translation>
-<translation id="3906954721959377182">Nettbrett</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Finn ut mer om innebygd innhold</translation>
 <translation id="3920504717067627103">Administratorinnstillinger for sertifikater</translation>
@@ -3913,6 +3912,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="753713322968419914">Vil du fjerne hjemmeadressen fra autofyll i Chrome?</translation>
 <translation id="753714465667062283">Logg på for å lagre bildet</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
+<translation id="7540924742308928499">Idémyldre og oppsummer</translation>
 <translation id="7543525346216957623">Spør forelderen din</translation>
 <translation id="7546409722674205727">Starter <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Fiks tilkoblingsfeil</translation>
@@ -4264,7 +4264,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="813024282736408069">Slå på autofyll med virtuelt kort</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8135546115396015134">venstretast</translation>
-<translation id="8137185688006450980">Sammenlign alternativer for helseforsikringer</translation>
+<translation id="8137185688006450980">Sammenlign helseforsikringer</translation>
 <translation id="8138591088112729119">Basert på personlig tilpasset intelligens</translation>
 <translation id="814071672416123670">Innholdet kunne ikke kopieres på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Opprettet for én måned siden}other{Opprettet for {NUM_MONTHS} måneder siden}}</translation>

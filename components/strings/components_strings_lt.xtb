@@ -289,7 +289,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1462951478840426066">Naudokite kompiuterio šriftus, kad galėtumėte kurti didelio tikslumo turinį</translation>
 <translation id="1465457928007067810">IBAN išsaugotas „Google“ paskyroje</translation>
 <translation id="1467432559032391204">Kairė</translation>
-<translation id="1471514598850585811">Nešiojamasis kompiuteris</translation>
 <translation id="1472675084647422956">Rodyti daugiau</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Įveskite tris ar daugiau žodžių, kad gautumėte pagalbos rašydami</translation>
@@ -452,7 +451,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Pabandykite susisiekti su sistemos administratoriumi.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, „<ph name="CARD_NETWORK_NAME" />“, <ph name="CARD_LAST_FOUR_DIGITS" />, galioja iki <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Kompiuteris</translation>
 <translation id="1739364174357629566">Atnaujinkite žinomo keliautojo numerį</translation>
 <translation id="1740404923954980840">Jei norite išeiti iš viso ekrano režimo, vilkite nuo viršaus ir palieskite mygtuką „Atgal“</translation>
 <translation id="1741474054575634405">Tvarkykite lojalumo korteles...</translation>
@@ -887,7 +885,6 @@ Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus i�
 <translation id="2462724976360937186">Sertifikavimo institucijos rakto ID</translation>
 <translation id="2465688316154986572">Susegimas sankabėlėmis</translation>
 <translation id="2465914000209955735">Tvarkykite failus, kuriuos atsisiuntėte naršyklėje „Chrome“</translation>
-<translation id="2466682894498377850">Skirtukas išsiųstas iš jūsų „<ph name="DEVICE_NAME" />“</translation>
 <translation id="2467272921457885625">Įrenginio aparatinės įrangos specifikacijos ir statistika, pvz., centrinio procesoriaus ir (arba) laisvosios prieigos atminties naudojimo istorija</translation>
 <translation id="2467421459221956357">Naudoti jutiklius?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Paleistas įrankis „Windows Network Diagnostics“<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus i�
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Turinys iš atsiskaitymo puslapio bendrinamas su „Google“, kad būtų galima pasiūlyti šias parinktis.<ph name="END_BOLD" /> Mokėjimo planai priklauso nuo tinkamumo. Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK" />mokėjimo nustatymus<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Jei norite paleisti šią programą, iš naujo įgalinkite izoliuotos žiniatinklio programos kūrėjo režimą</translation>
 <translation id="2526280916094749336">Išsaugotus adresus galite naudoti „Google“ produktuose. Šis adresas bus išsaugotas jūsų „Google“ paskyroje (<ph name="ACCOUNT" />).</translation>
-<translation id="2526590354069164005">Darbalaukis</translation>
 <translation id="2527451058878391043">Jūsų kortelės saugos kodas (CVC) yra priekinėje kortelės pusėje. Tai yra keturių skaitmenų kodas, pateiktas viršuje dešinėje virš kortelės numerio.</translation>
 <translation id="2529899080962247600">Šiame lauke gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš. Į visus kitus įrašus nebus atsižvelgiama.</translation>
 <translation id="2530042584066815841">Pelės užrakinimas ir naudojimas</translation>
@@ -1740,7 +1736,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3905894480064208252">{0,plural, =1{Failas užblokuotas, kad nebūtų galima perkelti}one{<ph name="FILE_COUNT" /> failas užblokuotas, kad nebūtų galima perkelti}few{<ph name="FILE_COUNT" /> failai užblokuoti, kad nebūtų galima perkelti}many{<ph name="FILE_COUNT" /> failo užblokuota, kad nebūtų galima perkelti}other{<ph name="FILE_COUNT" /> failų užblokuota, kad nebūtų galima perkelti}}</translation>
 <translation id="3906022360148923497">Mokėjimo priemonės piktograma</translation>
 <translation id="3906234161316839040">Kiti užsakymai</translation>
-<translation id="3906954721959377182">Planšetinis kompiuteris</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Sužinokite daugiau apie įterptą turinį</translation>
 <translation id="3920504717067627103">Sertifikato politika</translation>

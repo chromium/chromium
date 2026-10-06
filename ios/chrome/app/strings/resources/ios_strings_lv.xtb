@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Paroles</translation>
 <translation id="1381022135873211423">{count,plural, =1{Numur {position}. Kopējais adrešu skaits ir {count}}zero{Numur {position}. Kopējais adrešu skaits ir {count}}one{Numur {position}. Kopējais adrešu skaits ir {count}}other{Numur {position}. Kopējais adrešu skaits ir {count}}}</translation>
 <translation id="13813615483058219">Radās kļūda. Pārbaudiet interneta savienojumu, palieliniet skaļumu vai mēģiniet vēlreiz.</translation>
+<translation id="138181280295369883">Pierakstieties, lai visās savās ierīcēs iegūtu savas grāmatzīmes un citu saturu.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="138618066238211776">Turpināt ar lietotāja <ph name="USER_NAME" /> kontu</translation>
 <translation id="138692594145659985">Kartītes saglabāšanas iespējas</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Tulkot lapu</translation>
 <translation id="1539535193627863227">Šai vietnei nav atrasta neviena parole vai piekļuves atslēga.</translation>
 <translation id="1540800554400757039">1. adrese</translation>
+<translation id="1543035591122163372">Pierakstieties, lai iegūtu savas paroles un citu saturu no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="154312949627292154">Bloķēšanas ekrānā varat atvērt no citām ierīcēm saņemtās cilnes.</translation>
 <translation id="1544653821167545205">Izveido lapas apkopojumu</translation>
 <translation id="1545749641540134597">Skenējiet kvadrātkodu</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Kā izmantot šo funkciju?</translation>
 <translation id="1901600657316773839">Saglabāt atlasi</translation>
 <translation id="1902277226107477495">Adreses noteikšana ir izslēgta. Iestatījumos varat to atkal ieslēgt.</translation>
+<translation id="1905582086181351638">Pierakstieties, lai iegūtu saglabāto informāciju un citu saturu no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1909201414196501151">Vietne ir pievienota un piesprausta.</translation>
 <translation id="1911619930368729126">Augšupielādēt Google diskā</translation>
 <translation id="1925706052394657380">Atveriet <ph name="BEGIN_BOLD" />noklusējuma lietotņu<ph name="END_BOLD" /> iestatījumus iOS ierīcē.</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Atļaut vietnēm piekļūt mikrofonam</translation>
 <translation id="2219935992754556187">Pārlūkā Chrome jūsu sensitīvie dati tiek aizsargāti, izmantojot Face ID.</translation>
 <translation id="2220529011494928058">Ziņot par problēmu</translation>
-<translation id="2222149859067335623">Vietnei <ph name="SITE_DOMAIN" /> ir bloķēta piekļuve jūsu kamerai</translation>
 <translation id="2223461067862937305">Izveidot kvadrātkodu</translation>
 <translation id="222798989929574238">Jūs meklēšanai izmantojāt vairāk nekā 20 fotoattēlus</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Nākamreiz, kad aizpildīsiet atbilstošu veidlapu, jums būs iespēja saglabāt šo informāciju lietotnē Maks.</translation>
 <translation id="3868495844258915202">Rādīt visu URL</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>
-<translation id="3877211858413020188">Vietnei <ph name="SITE_DOMAIN" /> ir bloķēta piekļuve jūsu mikrofonam</translation>
 <translation id="3878657761594430423">Lapas turētājs</translation>
 <translation id="3884810423191119660">Saglabājiet paroles drošā veidā, lai varētu ērti pierakstīties vietnēs un lietotnēs.</translation>
 <translation id="3885587018298784481">Pievienošanās ģimenes grupai</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Fotoattēlu bibliotēka</translation>
 <translation id="429074084062258019">{count,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
 <translation id="4290920330097335010">Nekad neatļaut</translation>
+<translation id="4293154608148215505">sava tālruņa</translation>
 <translation id="4294506173142861371">Vai pierakstīties ar kontu <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Iestatīt pozīciju</translation>
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Lai izsekotu produktam, pieskarieties pogai “Izsekošana”.</translation>
 <translation id="5121618895923301719">Jūs jau sekojat līdzi šī produkta informācijai. Šī lapa ir saglabāta sadaļā <ph name="BEGIN_LINK" />Mobilās grāmatzīmes<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Jums ir vairākas ar parolēm saistītas problēmas.</translation>
+<translation id="5126335625961252141">sava planšetdatora</translation>
 <translation id="5128788795241319992">Izpētiet jauno izvēlni</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
+<translation id="5137568953923142260">Atļaut vienreiz</translation>
 <translation id="5141363746588976328">Paslēpt kartīti “Cenu samazinājums cilnēs”</translation>
 <translation id="514154868070499296">Fonts: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Aizvērt ciļņu pārslēdzēju</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Palielināt teksta lielumu</translation>
 <translation id="5376135254804080693">Noņemt visu atlasi</translation>
 <translation id="537853552771686272">Pārvaldiet tēmas un vietnes, kas jūs interesē</translation>
+<translation id="5385892579392932755">sava klēpjdatora</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} aizvērta cilne}zero{{count} aizvērtu ciļņu}one{{count} aizvērta cilne}other{{count} aizvērtas cilnes}}</translation>
 <translation id="5394975111793637642">Paslēpt kartīti “Jums ieteiktās produktu atsauksmes”</translation>
 <translation id="5414763847370083940">Jūs saņemsiet brīdinājumu, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
@@ -1967,6 +1972,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Jūsu cilnes tiks aizvērtas, un pārlūkošanas dati tiks dzēsti</translation>
 <translation id="714291438898585119">Ar zvaigznīti</translation>
+<translation id="7144458305574230431">Pierakstieties, lai iegūtu savas grāmatzīmes un citu saturu no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7145337554745942724">Autovadītāja apliecības informācijas atjaunināšana</translation>
 <translation id="7146301801400584641">Pieejams kalendāra fails</translation>
 <translation id="7149893636342594995">Pēdējās 24 stundas</translation>
@@ -1994,6 +2000,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="722339453342442311">Pārbaudīt tūlīt</translation>
 <translation id="7227235818314667565">Pārvaldīt kopīgošanu</translation>
 <translation id="7233006041370588369">Atlasiet paroli, ko aizpildīt.</translation>
+<translation id="7238074332967840767">Drošība</translation>
 <translation id="723874023660911012">Mainīt profilus</translation>
 <translation id="7241135764990439166">Inkognito režīms nav pieejams</translation>
 <translation id="7245288034498365666">Ieviesiet kārtību un ietaupiet laiku</translation>
@@ -2377,7 +2384,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8393700583063109961">Sūtīt ziņojumu</translation>
 <translation id="8393889347136007944">Cilnes, kas nav izmantotas <ph name="THRESHOLD" /> dienu(-as)</translation>
 <translation id="8395180897620197612">Pārtraukt reģistrēšanu</translation>
-<translation id="8399253661151100858"><ph name="SITE_DOMAIN" /> var piekļūt jūsu mikrofonam ikreiz, kad apmeklējat šo vietni</translation>
 <translation id="8407669440184693619">Šai vietnei nav atrasta neviena parole</translation>
 <translation id="8407831512155324054">Šķiet, jūsu paroles ir drošas</translation>
 <translation id="8414283596511250978">Nekad neaizmirstiet savas paroles</translation>
@@ -2392,7 +2398,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8439758443371991593">Paslēpt vienumu “Pievienot lasīšanas sarakstam”</translation>
 <translation id="8443986842926457191">URL garums pārsniedz 2048 rakstzīmes</translation>
 <translation id="8449869326050867919">Parole ir kopīgota</translation>
-<translation id="8458009459729013424"><ph name="SITE_DOMAIN" /> var piekļūt jūsu kamerai ikreiz, kad apmeklējat šo vietni</translation>
 <translation id="8461708300275916315">Ja esat jaunāks par 18 gadiem</translation>
 <translation id="8473815223723723001">Rediģēt attēlu, izmantojot Gemini</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>

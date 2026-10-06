@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">להשתמש בגופנים שמותקנים במחשב כדי ליצור תוכן באיכות גבוהה</translation>
 <translation id="1465457928007067810">‏מספר ה-IBAN נשמר בחשבון שלך ב-Google</translation>
 <translation id="1467432559032391204">שמאלה</translation>
-<translation id="1471514598850585811">מחשב נייד</translation>
 <translation id="1472675084647422956">עוד</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">צריך להזין 3 מילים לפחות כדי לקבל עזרה בכתיבה</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">כדאי לפנות אל מנהל המערכת.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, בתוקף עד <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">מחשב</translation>
 <translation id="1739364174357629566">‏לעדכן את מספר ה-KTN?</translation>
 <translation id="1740404923954980840">כדי לצאת ממסך מלא, צריך לגרור מלמעלה וללחוץ על הכפתור "הקודם"</translation>
 <translation id="1741474054575634405">ניהול של כרטיסי מועדון לקוחות…</translation>
@@ -867,6 +865,7 @@
 <translation id="2436186046335138073">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">‏לא הצלחנו לשמור את הכרטיס הזה בחשבון שלך ב-Google. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה.</translation>
 <translation id="2438874542388153331">4 ניקובים בצד ימין</translation>
+<translation id="2442033148418774391">ההודעה "מילוי אוטומטי חכם יותר, עם שמירה על הפרטיות" נסגרה</translation>
 <translation id="2442865686365739754">‏<ph name="BEGIN_EMPHASIS" />לא יישמרו<ph name="END_EMPHASIS" /> ב-Chrome הנתונים הבאים:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />היסטוריית הגלישה שלך
@@ -879,13 +878,13 @@
 <translation id="2451607499823206582">במעקב</translation>
 <translation id="2452837234288608067">לא ניתן היה לעזור בבקשה הזו. אפשר לנסות שוב.</translation>
 <translation id="2453045048779611513">הארגון שלך מגביל את מה שאפשר לשמור</translation>
+<translation id="2456490423293803882">ההודעה "מילוי אוטומטי חכם יותר, עם שמירה על הפרטיות" נפתחה בגובה מלא</translation>
 <translation id="2459882793359532780">כללי המדיניות של הדפדפן שהוטמעו (מדיניות המחשב ומדיניות הפרופיל)</translation>
 <translation id="2461385121573678775">‏‫Chrome Enterprise Core הוא כלי מרכזי להגדרה של כללי מדיניות לדפדפן דרך הענן</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2462724976360937186">מזהה מפתח של רשות אישורים</translation>
 <translation id="2465688316154986572">סיכת הידוק</translation>
 <translation id="2465914000209955735">‏ניהול הקבצים שהורדת ב-Chrome</translation>
-<translation id="2466682894498377850">הכרטיסייה נשלחה מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">‏מפרטים של חומרת המכשיר ונתונים סטטיסטיים כמו היסטוריית הניצול של המעבד (CPU)/ה-RAM</translation>
 <translation id="2467421459221956357">להשתמש בחיישנים?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />להפעיל את אבחון הרשת<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@
 <translation id="2524962131655207565">‏<ph name="BEGIN_BOLD" />כדי להציע את האפשרויות האלה, התוכן של דף התשלום משותף עם Google.<ph name="END_BOLD" /> תוכניות התשלומים כפופות לעמידה בדרישות. כדי להסתיר את האפשרויות לתשלום אחר כך, צריך ללחוץ על <ph name="BEGIN_LINK" />הגדרות תשלומים<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">‏כדי להפעיל את האפליקציה הזו, צריך להפעיל מחדש את מצב הפיתוח של אפליקציות אינטרנט מבודדות (IWA)</translation>
 <translation id="2526280916094749336">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו תישמר בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">שולחן עבודה</translation>
 <translation id="2527451058878391043">‏קוד האימות (CVC) מופיע בצד הקדמי של הכרטיס. זהו הקוד בן 4 הספרות שמופיע בצד ימין מעל למספר הכרטיס.</translation>
 <translation id="2529899080962247600">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. המערכת תתעלם מרשומות נוספות.</translation>
 <translation id="2530042584066815841">נעילת העכבר ושימוש בו</translation>
@@ -1108,6 +1106,7 @@
 <translation id="2878197950673342043">קיפול כרזה</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">להשתמש בנעילת המסך למילוי סיסמאות</translation>
+<translation id="2880119244122776372">פיתוח ותכנות</translation>
 <translation id="2881276955470682203">לשמור את הכרטיס?</translation>
 <translation id="2882280148032777436">‏מחיקת מספר ה-KTN</translation>
 <translation id="2882949212241984732">שתי כנפיים בקיפול</translation>
@@ -1736,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{אין אפשרות להעביר את הקובץ}one{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}}</translation>
 <translation id="3906022360148923497">סמל אמצעי התשלום</translation>
 <translation id="3906234161316839040">הזמנות אחרות</translation>
-<translation id="3906954721959377182">טאבלט</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">מידע נוסף על תוכן מוטמע</translation>
 <translation id="3920504717067627103">מדיניות אישורים </translation>
@@ -3919,6 +3917,7 @@ Del</translation>
 <translation id="753713322968419914">‏להסיר את כתובת המגורים מהמילוי האוטומטי של Chrome?</translation>
 <translation id="753714465667062283">כדי לשמור את התמונה, צריך להיכנס לחשבון</translation>
 <translation id="7537536606612762813">חובה</translation>
+<translation id="7540924742308928499">סיעור מוחות וסיכומים</translation>
 <translation id="7543525346216957623">יש לבקש רשות מההורים</translation>
 <translation id="7546409722674205727">האפליקציה <ph name="APP_NAME" /> נפתחת</translation>
 <translation id="7548892272833184391">פתרון שגיאות חיבור</translation>

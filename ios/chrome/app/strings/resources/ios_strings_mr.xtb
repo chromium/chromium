@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">पासवर्ड</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} पैकी {position} क्रमांकाचा पत्ता}other{{count} पैकी {position} क्रमांकाचा पत्ता}}</translation>
 <translation id="13813615483058219">काहीतरी चूक झाली. तुमचे इंटरनेट कनेक्शन तपासा, व्हॉल्यूम वाढवा किंवा पुन्हा प्रयत्न करा.</translation>
+<translation id="138181280295369883">तुमच्या सर्व डिव्हाइसवर तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> म्हणून पुढे सुरू ठेवा</translation>
 <translation id="138692594145659985">कार्ड सेव्ह करण्यासाठी पर्याय</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">पेजचे भाषांतर करायचे आहे</translation>
 <translation id="1539535193627863227">या साइटसाठी कोणतेही पासवर्ड किंवा पासकी आढळल्या नाहीत</translation>
 <translation id="1540800554400757039">पत्ता 1</translation>
+<translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> वरून तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="154312949627292154">तुमच्या इतर डिव्हाइसवरून मिळालेले टॅब लॉक स्क्रीनवरून उघडा.</translation>
 <translation id="1544653821167545205">पेजचा सारांश द्या</translation>
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">मी हे वैशिष्ट्य कसे वापरावे?</translation>
 <translation id="1901600657316773839">निवड ठेवा</translation>
 <translation id="1902277226107477495">पत्त्याशी संबंधित डिटेक्शन बंद आहे. सेटिंग्ज मध्ये ते परत सुरू करा.</translation>
+<translation id="1905582086181351638"><ph name="DEVICE_TYPE" /> वरून तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="1909201414196501151">साइट जोडली आणि पिन केली आहे</translation>
 <translation id="1911619930368729126">Google ड्राइव्हवर अपलोड करा</translation>
 <translation id="1925706052394657380">iOS मध्ये <ph name="BEGIN_BOLD" />डीफॉल्ट अ‍ॅप्स<ph name="END_BOLD" /> सेटिंग्ज उघडा</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">साइट तुमच्या मायक्रोफोनची परवानगी मागू शकतात</translation>
 <translation id="2219935992754556187">Chrome हे फेस आयडी वापरून तुमचा संवेदनशील डेटा सुरक्षित ठेवते</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" ला तुमचा कॅमेरा अ‍ॅक्सेस करण्यापासून ब्लॉक केले आहे</translation>
 <translation id="2223461067862937305">QR कोड तयार करा</translation>
 <translation id="222798989929574238">तुम्ही शोधण्यासाठी २० हून अधिक फोटो वापरले आहेत</translation>
 <translation id="2230173723195178503">वेबपेज लोड केले</translation>
@@ -782,7 +784,6 @@
 <translation id="3459644598174926977">पेजबद्दल विचारण्यासाठी, मोठ्याने बोलून विचारविनिमय करण्यासाठी आणि संवाद साधण्यासाठी Gemini सह लाइव्ह जा.</translation>
 <translation id="3462768334899086950">याचा अर्थ असा, की तुम्ही तुमची अनसेव्ह केलेली फाइल आणि सद्य टॅब गमवाल</translation>
 <translation id="3464194322481586217">किमतीचा माग ठेवता आला नाही.</translation>
-<translation id="3468009081835548033">एकदा अनुमती दिली आहे</translation>
 <translation id="3469117812148449995">पासवर्ड सेव्ह करण्यासाठी पर्याय</translation>
 <translation id="3472469028191701821">नवीन टॅबमध्ये उघडेल</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} साइट किंवा अ‍ॅपसाठी}other{{COUNT} साइट आणि अ‍ॅप्ससाठी}}</translation>
@@ -902,7 +903,6 @@
 <translation id="386224966259596343">तुम्ही पुढील वेळी सुसंबद्ध फॉर्म भरता, तेव्हा तुम्हाला ही माहिती Wallet मध्ये सेव्ह करण्याची संधी मिळेल.</translation>
 <translation id="3868495844258915202">संपूर्ण URL दाखवा</translation>
 <translation id="3875783148670536197">मला कसे ते दाखवा</translation>
-<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" ला तुमचा मायक्रोफोन अ‍ॅक्सेस करण्यापासून ब्लॉक केले आहे</translation>
 <translation id="3878657761594430423">शीट ग्रॅबर</translation>
 <translation id="3884810423191119660">पासवर्ड सुरक्षितपणे सेव्ह करा, जेणेकरून तुम्ही साइट आणि अ‍ॅप्समध्ये सहजपणे साइन इन करू शकता</translation>
 <translation id="3885587018298784481">कुटुंब गटामध्ये सामील व्हा</translation>
@@ -1039,6 +1039,7 @@
 <translation id="4289309730265289297">फोटो लायब्ररी</translation>
 <translation id="429074084062258019">{count,plural, =1{गट मध्ये टॅब जोडा}other{गट मध्ये टॅब जोडा}}</translation>
 <translation id="4290920330097335010">कधीही अनुमती देऊ नका</translation>
+<translation id="4293154608148215505">तुमचा फोन</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> म्हणून साइन इन करायचे आहे का?</translation>
 <translation id="4302061870579014542">स्थान सेट करा</translation>
 <translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
@@ -1311,6 +1312,7 @@
 <translation id="5119329531859909472">उत्पादन ट्रॅक करण्यासाठी, ट्रॅक करा वर टॅप करा</translation>
 <translation id="5121618895923301719">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात. हे पेज <ph name="BEGIN_LINK" />मोबाइल बुकमार्क<ph name="END_LINK" /> मध्ये सेव्ह केले आहे.</translation>
 <translation id="512533434554095351">तुमच्याकडे पासवर्डसंबंधित अनेक समस्या आहेत.</translation>
+<translation id="5126335625961252141">तुमचा टॅबलेट</translation>
 <translation id="5128788795241319992">नवीन मेनू एक्सप्लोर करा</translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="5137568953923142260">एकदा अनुमती द्या</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5371112366564891538">मजकुराचा आकार वाढवा</translation>
 <translation id="5376135254804080693">सर्व निवडी रद्द करा</translation>
 <translation id="537853552771686272">तुम्हाला स्वारस्य असलेले विषय आणि साइट व्यवस्थापित करा</translation>
+<translation id="5385892579392932755">तुमचा लॅपटॉप</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} बंद केला आहे}other{{count} बंद केले आहेत}}</translation>
 <translation id="5394975111793637642">तुमच्या कार्डसाठीची उत्पादनांची परीक्षणे लपवा</translation>
 <translation id="5414763847370083940">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला सूचना मिळेल.</translation>
@@ -1970,6 +1973,7 @@
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">तुमचे टॅब बंद केले जातील आणि ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="714291438898585119">तारांकित</translation>
+<translation id="7144458305574230431"><ph name="DEVICE_TYPE" /> वरून तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="7145337554745942724">ड्रायव्हरच्या परवान्यासंबंधित माहिती अपडेट करा</translation>
 <translation id="7146301801400584641">कॅलेंडर फाइल उपलब्ध आहे</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
@@ -2381,7 +2385,6 @@
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8393889347136007944">टॅब <ph name="THRESHOLD" /> दिवस वापरलेले नाहीत</translation>
 <translation id="8395180897620197612">लॉग इन करणे थांबवा</translation>
-<translation id="8399253661151100858">तुम्ही या साइटला भेट देता, तेव्हा "<ph name="SITE_DOMAIN" />" तुमचा मायक्रोफोन अ‍ॅक्सेस करू शकते</translation>
 <translation id="8407669440184693619">या साइटसाठी पासवर्ड सापडले नाहीत</translation>
 <translation id="8407831512155324054">तुमचे पासवर्ड क्लिष्ट दिसत आहेत</translation>
 <translation id="8414283596511250978">तुमचे पासवर्ड कधीही विसरू नका</translation>
@@ -2396,7 +2399,6 @@
 <translation id="8439758443371991593">वाचन सूची मध्ये जोडा हे लपवा</translation>
 <translation id="8443986842926457191">URL मध्ये २०४८ पेक्षा जास्त वर्ण आहेत</translation>
 <translation id="8449869326050867919">पासवर्ड शेअर केला</translation>
-<translation id="8458009459729013424">तुम्ही या साइटला भेट देता, तेव्हा "<ph name="SITE_DOMAIN" />" तुमचा कॅमेरा अ‍ॅक्सेस करू शकते</translation>
 <translation id="8461708300275916315">तुमचे वय १८ वर्षांहून कमी असल्यास</translation>
 <translation id="8473815223723723001">Gemini वापरून इमेज संपादित करा</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>

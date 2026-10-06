@@ -289,7 +289,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1462951478840426066">Defnyddio'r ffontiau ar eich cyfrifiadur fel y gallwch greu cynnwys â manwl gywirdeb</translation>
 <translation id="1465457928007067810">IBAN wedi'i gadw i'ch Cyfrif Google</translation>
 <translation id="1467432559032391204">Wedi gadael</translation>
-<translation id="1471514598850585811">Gliniadur</translation>
 <translation id="1472675084647422956">Dangos mwy</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Rhowch 3 gair neu fwy i gael cymorth ysgrifennu</translation>
@@ -452,7 +451,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Rhowch gynnig ar gysylltu â gweinyddwr y system.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, yn darfod <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Cyfrifiadur</translation>
 <translation id="1739364174357629566">Diweddaru'r Rhif Teithiwr Hysbys</translation>
 <translation id="1740404923954980840">I adael y sgrîn lawn, llusgwch o'r brig a chyffwrdd â'r botwm yn ôl</translation>
 <translation id="1741474054575634405">Rheoli cardiau teyrngarwch...</translation>
@@ -887,7 +885,6 @@ Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael 
 <translation id="2462724976360937186">Rhif Adnabod Allwedd yr Awdurdod Ardystio</translation>
 <translation id="2465688316154986572">Stapl</translation>
 <translation id="2465914000209955735">Rheoli ffeiliau rydych wedi'u lawrlwytho yn Chrome</translation>
-<translation id="2466682894498377850">Tab wedi'i anfon o'ch <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Ystadegau a manylebau caledwedd dyfeisiau megis hanes defnydd CPU/RAM</translation>
 <translation id="2467421459221956357">Defnyddio synwyryddion?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Wrthi'n Rhedeg Diagnosteg Rhwydwaith<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael 
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Mae cynnwys o'r dudalen dalu yn cael ei rannu â Google i gynnig yr opsiynau hyn.<ph name="END_BOLD" /> Mae cynlluniau talu yn amodol ar gymhwysedd. I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiadau talu<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">I redeg yr ap hwn, ail-alluogwch y Modd Datblygwr Ap Gwe Ynysig</translation>
 <translation id="2526280916094749336">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Bwrdd gwaith</translation>
 <translation id="2527451058878391043">Mae eich CVC ar flaen eich cerdyn. Dyma'r cod 4 digid ar y dde uchaf, uwchben rhif eich cerdyn.</translation>
 <translation id="2529899080962247600">Ni ddylai'r maes hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion. Bydd pob cofnod arall yn cael ei anwybyddu.</translation>
 <translation id="2530042584066815841">Clo llygoden a defnydd</translation>
@@ -1739,7 +1735,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3905894480064208252">{0,plural, =1{Ffeil wedi'i rhwystro rhag cael ei throsglwyddo}zero{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu trosglwyddo}two{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu trosglwyddo}few{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu trosglwyddo}many{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu trosglwyddo}other{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu trosglwyddo}}</translation>
 <translation id="3906022360148923497">Eicon offeryn talu</translation>
 <translation id="3906234161316839040">Archebion eraill</translation>
-<translation id="3906954721959377182">Llechen</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Dysgu rhagor am gynnwys sydd wedi'i fewnblannu</translation>
 <translation id="3920504717067627103">Polisïau Tystysgrif</translation>

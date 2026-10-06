@@ -774,6 +774,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, višestruko odabrana zakačena kartica za snimanje</translation>
 <translation id="4137746084635924146">Trenutni jezik uređaja</translation>
 <translation id="414128724510021958">Web lokacije za računar se zahtijevaju prema zadanim postavkama</translation>
+<translation id="4150837143272125910">Ažuriranje je preuzeto</translation>
 <translation id="4162867837470729563">Lista opcija dijeljenja u punoj visini.</translation>
 <translation id="4164642020717536140">Brzo i sigurno pregledanje weba</translation>
 <translation id="4165077084524712774">Više alata</translation>
@@ -1401,6 +1402,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6565959834589222080">WiFi mreža se koristi kada je dostupna</translation>
 <translation id="657177046675873214">Da dobijete oznake na svim uređajima, uključite "Oznake" u postavkama</translation>
 <translation id="6573096386450695060">Uvijek dozvoli</translation>
+<translation id="657480975869429144">Dostupna je nova verzija Chromea</translation>
 <translation id="658099107946526506">Zaštitite privatno pregledavanje PIN-om da spriječite neželjeni pristup</translation>
 <translation id="6583199322650523874">Označavanje trenutne stranice</translation>
 <translation id="6588043302623806746">Koristite siguran DNS</translation>

@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">Utiliser les polices de votre ordinateur afin que vous puissiez créer du contenu haute-fidélité</translation>
 <translation id="1465457928007067810">IBAN enregistré sur votre compte Google</translation>
 <translation id="1467432559032391204">À gauche</translation>
-<translation id="1471514598850585811">Ordinateur portable</translation>
 <translation id="1472675084647422956">Plus</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Entrez trois mots ou plus pour obtenir de l'aide à la rédaction</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Essayez de communiquer avec l'administrateur système.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expire le <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Ordinateur</translation>
 <translation id="1739364174357629566">Mettez à jour le numéro de voyageur connu</translation>
 <translation id="1740404923954980840">Pour quitter le mode Plein écran, faites glisser le curseur à partir du haut de l'écran et touchez le bouton Précédent</translation>
 <translation id="1741474054575634405">Gérez les cartes de fidélité…</translation>
@@ -867,6 +865,7 @@ Vous pouvez retirer cette suggestion de Chrome. Votre source d'origine ne sera p
 <translation id="2436186046335138073">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Cette carte n'a pas pu être enregistrée dans votre compte Google. Elle est plutôt enregistrée dans Chrome sur cet appareil.</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
+<translation id="2442033148418774391">La notification « Un remplissage automatique plus intelligent, qui respecte votre vie privée » est fermée</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />n'enregistre pas<ph name="END_EMPHASIS" /> les informations suivantes :
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Votre historique de navigation
@@ -879,13 +878,13 @@ Vous pouvez retirer cette suggestion de Chrome. Votre source d'origine ne sera p
 <translation id="2451607499823206582">Suivi activé</translation>
 <translation id="2452837234288608067">Impossible de vous aider avec cette requête. Réessayez.</translation>
 <translation id="2453045048779611513">Votre organisation impose une limite quant à ce que vous pouvez enregistrer</translation>
+<translation id="2456490423293803882">La notification « Un remplissage automatique plus intelligent, qui respecte votre vie privée » est ouverte à pleine hauteur</translation>
 <translation id="2459882793359532780">Politiques de navigateur appliquées (politiques de machine et de profil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vous offre un outil centralisé pour configurer les politiques de navigateur à partir du nuage</translation>
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="2462724976360937186">Identifiant de clé d'autorité de certification</translation>
 <translation id="2465688316154986572">Agrafe</translation>
 <translation id="2465914000209955735">Gérez les fichiers que vous avez téléchargés dans Chrome</translation>
-<translation id="2466682894498377850">Onglet envoyé à partir de votre <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Spécifications matérielles de l'appareil et statistiques telles que l'historique d'utilisation du processeur et de la mémoire vive</translation>
 <translation id="2467421459221956357">Utiliser les capteurs?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />d'exécuter Network Diagnostics<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Vous pouvez retirer cette suggestion de Chrome. Votre source d'origine ne sera p
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Le contenu de la page de paiement est partagé avec Google pour proposer ces options.<ph name="END_BOLD" /> Les forfaits de paiement sont assujettis à des critères d'admissibilité. Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres des paiements<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Pour exécuter cette appli, réactivez le mode Développeur pour les applis Web isolées</translation>
 <translation id="2526280916094749336">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse sera enregistrée dans votre compte Google, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Ordinateur de bureau</translation>
 <translation id="2527451058878391043">Votre code CVC se trouve au recto de votre carte. Il s'agit du code à 4 chiffres en haut à droite au-dessus de votre numéro de carte.</translation>
 <translation id="2529899080962247600">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront ignorées.</translation>
 <translation id="2530042584066815841">Verrouillage et utilisation de la souris</translation>
@@ -1108,6 +1106,7 @@ Vous pouvez retirer cette suggestion de Chrome. Votre source d'origine ne sera p
 <translation id="2878197950673342043">Pli au format affiche</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">utilisez votre verrouillage d'écran pour remplir les mots de passe</translation>
+<translation id="2880119244122776372">Créer et coder</translation>
 <translation id="2881276955470682203">Enregistrer la carte?</translation>
 <translation id="2882280148032777436">Supprimer le numéro de voyageur connu</translation>
 <translation id="2882949212241984732">Pli portefeuille</translation>
@@ -1736,7 +1735,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3905894480064208252">{0,plural, =1{Le transfert du fichier a été bloqué}one{Le transfert de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le transfert de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
 <translation id="3906022360148923497">Icône du mode de paiement</translation>
 <translation id="3906234161316839040">Autres commandes</translation>
-<translation id="3906954721959377182">Tablette</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Apprenez-en plus à propos du contenu intégré</translation>
 <translation id="3920504717067627103">Politiques pour les certificats</translation>
@@ -3913,6 +3911,7 @@ Détails supplémentaires :
 <translation id="753713322968419914">Retirer l'adresse personnelle du remplissage automatique de Chrome?</translation>
 <translation id="753714465667062283">Connectez-vous pour enregistrer votre photo</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
+<translation id="7540924742308928499">Faire du remue-méninges et des résumés</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> en cours de démarrage…</translation>
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>

@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">તમારા કમ્પ્યુટર પર ફૉન્ટનો ઉપયોગ કરો, જેથી તમે હાઇ ફિડેલિટી કન્ટેન્ટ બનાવી શકો</translation>
 <translation id="1465457928007067810">IBAN તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="1467432559032391204">ડાબું</translation>
-<translation id="1471514598850585811">લૅપટૉપ</translation>
 <translation id="1472675084647422956">વધુ બતાવો</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">લેખન સંબંધિત સહાય મેળવવા માટે 3 કે તેથી વધુ શબ્દો દાખલ કરો</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />ના સમયસીમા સમાપ્ત થાય છે</translation>
-<translation id="1736420071277903564">કમ્પ્યુટર</translation>
 <translation id="1739364174357629566">નોન ટ્રાવેલર નંબર અપડેટ કરો</translation>
 <translation id="1740404923954980840">પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
 <translation id="1741474054575634405">લૉયલ્ટિ કાર્ડ મેનેજ કરો...</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">પ્રમાણન અધિકારી કી ID</translation>
 <translation id="2465688316154986572">સ્ટેપલ લગાવો</translation>
 <translation id="2465914000209955735">Chromeમાં તમે ડાઉનલોડ કરેલી ફાઇલો મેનેજ કરો</translation>
-<translation id="2466682894498377850">તમારા <ph name="DEVICE_NAME" />માંથી મોકલેલું ટૅબ</translation>
 <translation id="2467272921457885625">ડિવાઇસના હાર્ડવેરની વિશિષ્ટતાઓ અને આંકડાઓ, જેમ કે CPU/RAMના ઉપયોગનો ઇતિહાસ</translation>
 <translation id="2467421459221956357">સેન્સરનો ઉપયોગ કરીએ?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવી રહ્યાં છે<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />આ વિકલ્પો ઑફર કરવા માટે ચેકઆઉટ પેજ પરનું કન્ટેન્ટ Google સાથે શેર કરવામાં આવે છે.<ph name="END_BOLD" /> ચુકવણીના પ્લાન યોગ્યતાને આધીન છે. પછીથી ચુકવણી કરવાના વિકલ્પો છુપાવવા માટે, <ph name="BEGIN_LINK" />ચુકવણી માટેના સેટિંગ<ph name="END_LINK" /> પર જાઓ.</translation>
 <translation id="2526062290525841862">આ ઍપ ચલાવવા માટે, આઇસોલેટેડ વેબ ઍપ ડેવલપર મોડને ફરીથી ચાલુ કરો</translation>
 <translation id="2526280916094749336">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામું તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="2527451058878391043">તમારો CVC તમારા કાર્ડની આગળના ભાગ પર હોય છે. તે તમારા કાર્ડ નંબરની ઉપર જમણી બાજુએ 4-અંકનો કોડ છે.</translation>
 <translation id="2529899080962247600">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની તમામ એન્ટ્રી અવગણવામાં આવશે.</translation>
 <translation id="2530042584066815841">માઉસ લૉક અને તેનો ઉપયોગ</translation>
@@ -1739,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}one{<ph name="FILE_COUNT" /> ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}other{<ph name="FILE_COUNT" /> ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}}</translation>
 <translation id="3906022360148923497">ચુકવણીના ઇન્સ્ટ્રુમેન્ટનું આઇકન</translation>
 <translation id="3906234161316839040">અન્ય ઑર્ડર</translation>
-<translation id="3906954721959377182">ટૅબ્લેટ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">શામેલ કરેલા કન્ટેન્ટ વિશે વધુ જાણો</translation>
 <translation id="3920504717067627103">પ્રમાણપત્ર પૉલિસીઓ</translation>

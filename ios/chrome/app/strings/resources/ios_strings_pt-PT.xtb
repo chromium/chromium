@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Palavras-passe</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} morada}other{{position} de {count} moradas}}</translation>
 <translation id="13813615483058219">Algo correu mal. Verifique a ligação à Internet, aumente o volume ou tente novamente.</translation>
+<translation id="138181280295369883">Inicie sessão para ter acesso às suas informações guardadas e muito mais em todos os seus dispositivos</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opções para guardar o cartão</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Traduzir página</translation>
 <translation id="1539535193627863227">Não foram encontradas palavras-passe nem chaves de acesso para este site</translation>
 <translation id="1540800554400757039">Morada 1</translation>
+<translation id="1543035591122163372">Inicie sessão para ter acesso às suas palavras-passe e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Abra os separadores recebidos dos seus outros dispositivos a partir do ecrã de bloqueio.</translation>
 <translation id="1544653821167545205">Resumir página</translation>
 <translation id="1545749641540134597">Ler código QR</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Como posso usar esta funcionalidade?</translation>
 <translation id="1901600657316773839">Manter seleção</translation>
 <translation id="1902277226107477495">Deteção de morada desativada. Ative-a nas Definições.</translation>
+<translation id="1905582086181351638">Inicie sessão para aceder às suas informações guardadas e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Site adicionado e afixado</translation>
 <translation id="1911619930368729126">Carregar p/ Google Drive</translation>
 <translation id="1925706052394657380">Abra as definições de <ph name="BEGIN_BOLD" />Apps predefinidas<ph name="END_BOLD" /> no iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Os sites podem pedir acesso ao seu microfone</translation>
 <translation id="2219935992754556187">O Chrome mantém os seus dados confidenciais seguros com o Face ID</translation>
 <translation id="2220529011494928058">Comunicar um problema</translation>
-<translation id="2222149859067335623">O acesso do site "<ph name="SITE_DOMAIN" />" à sua câmara está bloqueado</translation>
 <translation id="2223461067862937305">Criar código QR</translation>
 <translation id="222798989929574238">Usou mais de 20 fotos para pesquisar</translation>
 <translation id="2230173723195178503">Página Web carregada</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Vai ter a oportunidade de guardar estas informações na Carteira da próxima vez que preencher um formulário relevante.</translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
-<translation id="3877211858413020188">O acesso do site "<ph name="SITE_DOMAIN" />" ao seu microfone está bloqueado</translation>
 <translation id="3878657761594430423">Controlo da página</translation>
 <translation id="3884810423191119660">Guarde as palavras-passe em segurança para poder iniciar sessão facilmente em sites e apps</translation>
 <translation id="3885587018298784481">Adira a um grupo familiar</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Fototeca</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="4290920330097335010">Nunca permitir</translation>
+<translation id="4293154608148215505">o seu telemóvel</translation>
 <translation id="4294506173142861371">Iniciar sessão como <ph name="FIRST_NAME" /></translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Para acompanhar o produto, toque em Acompanhar</translation>
 <translation id="5121618895923301719">Já está a acompanhar este produto. Esta página está guardada nos <ph name="BEGIN_LINK" />Marcadores dos dispositivos móveis<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tem vários problemas de palavras-passe.</translation>
+<translation id="5126335625961252141">o seu tablet</translation>
 <translation id="5128788795241319992">Explore o novo menu</translation>
 <translation id="5132942445612118989">Sincronize as suas palavras-passe, o histórico e muito mais em todos os dispositivos</translation>
+<translation id="5137568953923142260">Permitir 1 vez</translation>
 <translation id="5141363746588976328">Ocultar quedas de preço no seu cartão de separadores</translation>
 <translation id="514154868070499296">Tipo de letra: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Sair do Switcher de separadores</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Aumentar tamanho do texto</translation>
 <translation id="5376135254804080693">Desmarcar tudo</translation>
 <translation id="537853552771686272">Faça a gestão dos tópicos e sites que lhe interessam</translation>
+<translation id="5385892579392932755">seu portátil</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fechado}other{{count} fechados}}</translation>
 <translation id="5394975111793637642">Ocultar críticas sobre produtos no seu cartão</translation>
 <translation id="5414763847370083940">Vai receber um alerta se o preço descer nalgum site.</translation>
@@ -1967,6 +1972,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Os separadores vão ser fechados e os dados de navegação vão ser eliminados</translation>
 <translation id="714291438898585119">Marcado com estrela</translation>
+<translation id="7144458305574230431">Inicie sessão para aceder aos marcadores e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Atualize a carta de condução</translation>
 <translation id="7146301801400584641">Ficheiro de calendário disponível</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
@@ -1994,6 +2000,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="722339453342442311">Verificar agora</translation>
 <translation id="7227235818314667565">Gerir partilha</translation>
 <translation id="7233006041370588369">Selecione uma palavra-passe para preencher.</translation>
+<translation id="7238074332967840767">Segurança</translation>
 <translation id="723874023660911012">Mudar de perfil</translation>
 <translation id="7241135764990439166">O Modo de navegação anónima está indisponível</translation>
 <translation id="7245288034498365666">Organize-se e poupe tempo</translation>
@@ -2377,7 +2384,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8393889347136007944">Separadores não usados há <ph name="THRESHOLD" /> dias</translation>
 <translation id="8395180897620197612">Parar registo</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" pode aceder ao seu microfone sempre que visitar este site</translation>
 <translation id="8407669440184693619">Não foram encontradas palavras-passe para este site</translation>
 <translation id="8407831512155324054">As suas palavras-passe parecem fortes</translation>
 <translation id="8414283596511250978">Nunca se esqueça das suas palavras-passe</translation>
@@ -2392,7 +2398,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8439758443371991593">Ocultar Adicionar à Lista de leitura</translation>
 <translation id="8443986842926457191">O URL contém mais de 2048 carateres</translation>
 <translation id="8449869326050867919">Palavra-passe partilhada</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" pode aceder à sua câmara sempre que visitar este site</translation>
 <translation id="8461708300275916315">Se tiver menos de 18 anos</translation>
 <translation id="8473815223723723001">Editar imagem com o Gemini</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>

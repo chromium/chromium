@@ -2114,7 +2114,7 @@ Instal·lació nova</translation>
 <translation id="7064351585062927183">El <ph name="DAY_OF_WEEK" /> que ve</translation>
 <translation id="7064734931812204395">S'està configurant el contenidor de Linux. Aquest procés pot tardar fins a 30 minuts.</translation>
 <translation id="7066646422045619941">L'administrador ha desactivat aquesta xarxa.</translation>
-<translation id="7067196344162293536">Rotació automàtica</translation>
+<translation id="7067196344162293536">Gir automàtic</translation>
 <translation id="7076293881109082629">Inicia la sessió</translation>
 <translation id="7076878155205969899">Silencia el so</translation>
 <translation id="7083848064787091821">Sense distraccions</translation>
@@ -2606,7 +2606,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8507563469658346379">Tothom, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Crea un escriptori nou</translation>
 <translation id="85123341071060231">El Bluetooth del Chromebook està desactivat. Per desbloquejar el Chromebook, introdueix la contrasenya.</translation>
-<translation id="8513108775083588393">Rotació autom.</translation>
+<translation id="8513108775083588393">Gir automàtic</translation>
 <translation id="851458219935658693">Mostra les finestres de l'escriptori actual amb el botó d'opció seleccionat</translation>
 <translation id="851660987304951246">Utilitza Ajuda'm a llegir per resumir contingut o fer preguntes ràpidament</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>

@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">ရှင်းလင်းထင်ရှားသော အကြောင်းအရာများ ရေးသားနိုင်ရန် သင့်ကွန်ပျူတာရှိဖောင့်များ အသုံးပြုမည်</translation>
 <translation id="1465457928007067810">IBAN ကို သင်၏ Google Account တွင် သိမ်းလိုက်သည်</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
-<translation id="1471514598850585811">လက်ပ်တော့</translation>
 <translation id="1472675084647422956">ပိုပြပါ</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">ရေးသားမှုအကူအညီ ရယူရန် စာလုံး ၃ လုံးနှင့်အထက် ထည့်ပါ</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">AmEx</translation>
 <translation id="1734878702283171397">စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ကြည့်ပါ။</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />၊ <ph name="CARD_NETWORK_NAME" />၊ <ph name="CARD_LAST_FOUR_DIGITS" />၊ သက်တမ်းကုန်ဆုံးချိန် <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">ကွန်ပျူတာ</translation>
 <translation id="1739364174357629566">အတည်ပြုပြီးခရီးသည် နံပါတ် (KTN) အပ်ဒိတ်လုပ်မလား</translation>
 <translation id="1740404923954980840">ဖန်သားပြင်အပြည့်မှ ထွက်ရန် ထိပ်ဆုံးမှ ဖိဆွဲပြီး နောက်သို့ပြန်သည့် ခလုတ်ကို ထိပါ</translation>
 <translation id="1741474054575634405">ဖောက်သည်ကတ်များ စီမံရန်…</translation>
@@ -888,7 +886,6 @@
 <translation id="2462724976360937186">လက်မှတ်ထုတ်ပေးမှု အာဏာပိုင် သော့ ID</translation>
 <translation id="2465688316154986572">ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
 <translation id="2465914000209955735">Chrome တွင် သင် ဒေါင်းလုဒ်လုပ်ခဲ့သည့်ဖိုင်များကို စီမံပါ</translation>
-<translation id="2466682894498377850">သင့် <ph name="DEVICE_NAME" /> မှ ပို့ထားသော တဘ်</translation>
 <translation id="2467272921457885625">CPU/RAM အသုံးပြုမှုမှတ်တမ်းကဲ့သို့ စက်၏ ဟာ့ဒ်ဝဲ အသေးစိတ်ဖော်ပြချက်များနှင့် ကိန်းဂဏန်းစာရင်းများ</translation>
 <translation id="2467421459221956357">အာရုံခံကိရိယာများ သုံးမလား</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ကွန်ရက်ပြဿနာရှာဖွေမှု ပြုလုပ်ပါ<ph name="END_LINK" /></translation>
@@ -930,7 +927,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />ဤရွေးစရာများကို ကမ်းလှမ်းရန်အတွက် ငွေရှင်းရန်စာမျက်နှာမှ အကြောင်းအရာကို Google နှင့် မျှဝေထားသည်။<ph name="END_BOLD" /> ငွေပေးချေမှုအစီအစဉ်များသည် သတ်မှတ်ချက်ပြည့်မီမှုပေါ် မူတည်သည်။ ‘နောက်မှပေး’ ရွေးစရာများကို ဖျောက်ရန် <ph name="BEGIN_LINK" />ငွေပေးချေမှု ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="2526062290525841862">ဤအက်ပ်ကို လုပ်ဆောင်ရန် ‘သီးခြားခွဲထားသည့် ဝဘ်အက်ပ် ထုတ်လုပ်သူမုဒ်’ ကို ပြန်ဖွင့်ပါ</translation>
 <translation id="2526280916094749336">သိမ်းထားသောလိပ်စာများကို Google ထုတ်ကုန်များအနှံ့တွင် သုံးနိုင်သည်။ ဤလိပ်စာကို သင့် Google Account <ph name="ACCOUNT" /> တွင် သိမ်းမည်။</translation>
-<translation id="2526590354069164005">ဒက်စက်တော့</translation>
 <translation id="2527451058878391043">သင့်ကတ်၏ ရှေ့ခြမ်းတွင် CVC ရှိသည်။ ၎င်းသည် ကတ်နံပါတ်၏ ညာဘက်ထိပ်ရှိ ဂဏန်း ၄ လုံးပါကုဒ် ဖြစ်သည်။</translation>
 <translation id="2529899080962247600">ဤအကွက်တွင် ထည့်သွင်းမှု <ph name="MAX_ITEMS_LIMIT" /> ခုထက်မပိုရပါ။ နောက်ထပ် ထည့်သွင်းမှုအားလုံးကို လျစ်လျူရှုပါမည်။</translation>
 <translation id="2530042584066815841">မောက်စ်လော့ခ်ချပြီး အသုံးပြုခြင်း</translation>
@@ -1739,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{ဖိုင်ကို လွှဲပြောင်းခွင့် ပိတ်ထားသည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်ကို လွှဲပြောင်းခွင့် ပိတ်ထားသည်}}</translation>
 <translation id="3906022360148923497">ငွေပေးချေနည်းလမ်း သင်္ကေတ</translation>
 <translation id="3906234161316839040">အခြားမှာယူမှုများ</translation>
-<translation id="3906954721959377182">တက်ဘလက်</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">မြှုပ်သွင်းထားသော အကြောင်းအရာနှင့်ပတ်သက်၍ ပိုမိုလေ့လာရန်</translation>
 <translation id="3920504717067627103">လက်မှတ်ဆိုင်ရာ မူဝါဒများ</translation>

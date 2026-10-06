@@ -1041,6 +1041,7 @@
 <translation id="1790976235243700817">Премахване на достъпа</translation>
 <translation id="1791662854739702043">Инсталиран</translation>
 <translation id="1792619191750875668">Разширен екран</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Скриване на паролата за <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Изпращане на отзиви, за да ни помогнете да отстраним този проблем.</translation>
 <translation id="1795214765651529549">Използване на класическата тема</translation>
@@ -1709,7 +1710,6 @@
 <translation id="2300383962156589922">Персонализиране и управление на <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Спира зареждането при достигане на 80%, за да може батерията ви да издържа по-дълго.</translation>
 <translation id="2301382460326681002">Основната директория на разширението е невалидна.</translation>
-<translation id="2301402091755573488">Споделен раздел</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305202347479035002">Начин на работа</translation>
 <translation id="2306794767168143227">Запазване в(ъв) <ph name="BRAND" /> на това устройство</translation>
@@ -1728,6 +1728,7 @@
 <translation id="2322622365472107569">Краен час: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Запазени Wi-Fi мрежи</translation>
 <translation id="2323685460575935191">Скриване на бутоните за превъртане</translation>
+<translation id="2325004050205455346">Скорошна история</translation>
 <translation id="2325444234681128157">Запомняне на паролата</translation>
 <translation id="2326188115274135041">Потвърдете ПИН кода, за да включите функцията за автоматично отключване</translation>
 <translation id="2326583548923775947">Това не е профил в Google. Елементите, които запазвате в Chrome, няма да са налице на други устройства.</translation>
@@ -2086,7 +2087,6 @@
 <translation id="2598710988533271874">Има нова версия на Chrome</translation>
 <translation id="2599048253926156421">Потребителското име е копирано в буферната памет</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Изключено е 1 опасно разширение}other{Изключени са {NUM_SITES} опасни разширения}}</translation>
-<translation id="2603121359676416582">За тази страница</translation>
 <translation id="2603656971249947488">Лента с раздели</translation>
 <translation id="2604129989323098489">Сайтовете обикновено искат информация за дисплеите ви, за да могат да отварят и разполагат прозорци интелигентно, като например да показват успоредно документи или съдържание на цял екран</translation>
 <translation id="2604255671529671813">Грешка при свързване с мрежата</translation>
@@ -2952,6 +2952,7 @@
 <translation id="323262942975422760">Още опции за редактиране или изтриване на <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Уеб приложение</translation>
 <translation id="3233271424239923319">Създаване на резервно копие за приложенията и файловете на Linux</translation>
+<translation id="3233577317461669428">Няма друго намерено устройство</translation>
 <translation id="3234251228180563751">Потребителското име съдържа повече от 1000 знака</translation>
 <translation id="3234978181857588512">Запазване в устройството</translation>
 <translation id="3237871032310650497">Да се изтрият ли данните за сайта <ph name="SITE_NAME" />, отделени на <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3026,7 +3027,6 @@
 <translation id="3292966601422448005">Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на инсталираните от него приложения.</translation>
 <translation id="3293080634164207409">Добавяне на раздели</translation>
 <translation id="329324683265785818">Пускане/поставяне на пауза, активира се с клавиш k на клавиатурата</translation>
-<translation id="3293644607209440645">Изпращане на тази страница</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3294686910656423119">Статистически данни за употребата и сигнали за сривове</translation>
 <translation id="3295241308788901889">Предава се раздел</translation>
@@ -5727,6 +5727,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (дясна)</translation>
 <translation id="534449933710420173">Папка без име</translation>
 <translation id="5345916423802287046">Стартиране на приложението, когато влезете в профила си</translation>
+<translation id="5346059693449184483">За какво мислите?</translation>
 <translation id="5350116201946341974">Причудливо</translation>
 <translation id="535123479159372765">Текст, копиран от друго устройство</translation>
 <translation id="5352257124367865087">Управление на разрешенията за сайтовете</translation>
@@ -7004,6 +7005,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6356893102071098867">Проверете дали сте избрали правилния профил</translation>
 <translation id="6357305427698525450">Някои поддържани връзки ще продължат да се отварят в(ъв) <ph name="APP_NAME" /> или <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Други постоянни идентификатори (напр. хеш стойности или UUID)</translation>
+<translation id="6357830294871526418">Раздели на други устройства</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="6359640073754977254">Превъртане до последния раздел</translation>
 <translation id="6361850914223837199">Подробности за грешката:</translation>
@@ -7151,7 +7153,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6472893788822429178">Показване на бутона „Начална страница“</translation>
 <translation id="6473315466413288899">Изберете опция</translation>
 <translation id="6474021817475285003">Вижте още в Google Календар</translation>
-<translation id="6474401088838630457">Поискайте от Gemini повече информация за това</translation>
 <translation id="6474498546677193336">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на устройството с Linux.</translation>
 <translation id="6474884162850599008">Прекратяване на връзката с профила в Google Диск</translation>
 <translation id="6476482583633999078">Скорост на говора</translation>

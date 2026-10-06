@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">使用電腦上的字型，以便製作高傳真度內容</translation>
 <translation id="1465457928007067810">IBAN 已儲存到你的 Google 帳戶</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1471514598850585811">手提電腦</translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">請輸入 3 個以上的字詞，才能取得撰寫協助</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">美國運通信用卡</translation>
 <translation id="1734878702283171397">請嘗試聯絡系統管理員。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日係 <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">電腦</translation>
 <translation id="1739364174357629566">更新已知的旅客編號</translation>
 <translation id="1740404923954980840">如要離開全螢幕，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="1741474054575634405">管理會員卡…</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
 <translation id="2465688316154986572">釘書釘</translation>
 <translation id="2465914000209955735">管理您在 Chrome 中下載嘅檔案</translation>
-<translation id="2466682894498377850">你的<ph name="DEVICE_NAME" />傳來分頁</translation>
 <translation id="2467272921457885625">CPU/RAM 使用情況記錄等裝置硬件規格和統計資料</translation>
 <translation id="2467421459221956357">要使用感應器嗎？</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />執行網絡診斷<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />系統會與 Google 分享結帳頁面內容，以提供這些選項。<ph name="END_BOLD" />付款計劃須符合資格條件。如要隱藏「稍後付款」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如要執行此應用程式，請重新啟用「隔離的網絡應用程式開發人員模式」</translation>
 <translation id="2526280916094749336">您可在不同的 Google 產品中使用已儲存的地址。此地址將會儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
-<translation id="2526590354069164005">桌面電腦</translation>
 <translation id="2527451058878391043">CVC 喺信用卡嘅正面，即係信用卡號碼右上方嘅 4 位數字。</translation>
 <translation id="2529899080962247600">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會被忽略。</translation>
 <translation id="2530042584066815841">滑鼠鎖定與使用</translation>
@@ -958,6 +954,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">復原編輯(&amp;U)</translation>
 <translation id="2559566667529177711">多層</translation>
+<translation id="2561224416042784023">查看設定</translation>
 <translation id="2570734079541893434">管理設定</translation>
 <translation id="257136025287118539">管理員將你的檔案移至「<ph name="CLOUD_PROVIDER" />」。上載完成後，你可以修改檔案。</translation>
 <translation id="2571488850200220306">為確保安全，管理員也可查看裝置的作業系統、瀏覽器版本和已安裝的軟件</translation>
@@ -1738,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{禁止轉移檔案}other{禁止轉移 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="3906022360148923497">付款方式圖示</translation>
 <translation id="3906234161316839040">其他訂單</translation>
-<translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">進一步瞭解已嵌入的內容</translation>
 <translation id="3920504717067627103">憑證政策</translation>

@@ -290,7 +290,6 @@
 <translation id="1462951478840426066">ប្រើពុម្ពអក្សរ​នៅលើកុំព្យូទ័រ​របស់អ្នក ដើម្បីអាចឱ្យអ្នកបង្កើត​ខ្លឹមសារ​ដែលមានសុក្រឹតភាពកម្រិតខ្ពស់</translation>
 <translation id="1465457928007067810">បានរក្សាទុក IBAN ទៅក្នុងគណនី Google របស់អ្នក</translation>
 <translation id="1467432559032391204">ឆ្វេង</translation>
-<translation id="1471514598850585811">កុំព្យូទ័រយួរដៃ</translation>
 <translation id="1472675084647422956">បង្ហាញ​ច្រើនទៀត</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">បញ្ចូល 3 ឬច្រើនពាក្យ ដើម្បីទទួលបានជំនួយក្នុងការសរសេរ</translation>
@@ -453,7 +452,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">សូមសាកល្បងទាក់ទងទៅអ្នកគ្រប់គ្រងប្រព័ន្ធ</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ផុតកំណត់នៅខែ <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">កុំព្យូទ័រ</translation>
 <translation id="1739364174357629566">ធ្វើបច្ចុប្បន្នភាព​លេខ​អ្នកដំណើរ​ដែលស្គាល់</translation>
 <translation id="1740404923954980840">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូមអូស​ពីខាងលើ ហើយចុច​ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="1741474054575634405">គ្រប់គ្រង​កាត​សមាជិក...</translation>
@@ -890,7 +888,6 @@
 <translation id="2462724976360937186">លេខសម្គាល់សោអាជ្ញាធរវិញ្ញាបនប័ត្រ</translation>
 <translation id="2465688316154986572">កិប</translation>
 <translation id="2465914000209955735">គ្រប់គ្រងឯកសារ​ដែលអ្នកបាន​ទាញយកនៅក្នុង Chrome</translation>
-<translation id="2466682894498377850">ផ្ទាំង​ដែល​បានបញ្ជូនពី <ph name="DEVICE_NAME" /> របស់អ្នក</translation>
 <translation id="2467272921457885625">ស្ថិតិ និងសេចក្តីលម្អិតអំពីហាតវែររបស់ឧបករណ៍ដូចជា ប្រវត្តិនៃការប្រើប្រាស់ CPU/RAM ជាដើម</translation>
 <translation id="2467421459221956357">ប្រើសេនស័រឬ?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />កំពុងដំណើរការការវិភាគបណ្តាញ<ph name="END_LINK" /></translation>
@@ -932,7 +929,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />ខ្លឹមសារ​ពី​ទំព័របង់ប្រាក់ចេញ​ត្រូវបាន​ចែករំលែក​ជាមួយ Google ដើម្បី​ផ្ដល់ជូន​ជម្រើស​ទាំងនេះ។<ph name="END_BOLD" /> គម្រោង​បង់ប្រាក់​អាស្រ័យលើ​សិទ្ធិទទួលបាន។ ដើម្បី​លាក់​ជម្រើស​ទូទាត់​ពេលក្រោយ សូម​ចូលទៅកាន់<ph name="BEGIN_LINK" />ការកំណត់​ការបង់ប្រាក់<ph name="END_LINK" />។</translation>
 <translation id="2526062290525841862">ដើម្បី​ដំណើរការ​កម្មវិធីនេះ សូម​បើក​មុខងារអ្នក​អភិវឌ្ឍន៍​កម្មវិធីវេបដាច់តែឯង​ឡើងវិញ</translation>
 <translation id="2526280916094749336">អ្នកអាចប្រើអាសយដ្ឋានដែលបានរក្សាទុកនៅលើផលិតផល Google នានា។ អាសយដ្ឋាននេះ​នឹង​ត្រូវ​បាន​រក្សាទុក​នៅ​ក្នុង​គណនី Google (<ph name="ACCOUNT" />) របស់​អ្នក។</translation>
-<translation id="2526590354069164005">ដេស៍ថប</translation>
 <translation id="2527451058878391043">CVC របស់អ្នកស្ថិតនៅផ្នែកខាងមុខនៃកាតរបស់អ្នក។ វាជាកូដ 4 ខ្ទង់នៅខាងស្ដាំផ្នែកខាងលើពីលើលេខកាតរបស់អ្នក។</translation>
 <translation id="2529899080962247600">កន្លែងបញ្ចូលនេះ​មិន​គួរមានច្រើនជាង <ph name="MAX_ITEMS_LIMIT" /> ធាតុ​ទេ។ ធាតុទាំងអស់​ដែលលើសពីនេះ​នឹងមិនត្រូវបាន​អើពើទេ។</translation>
 <translation id="2530042584066815841">ការចាក់សោ និងការប្រើម៉ៅស៍</translation>
@@ -961,6 +957,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">បកក្រោយការកែប្រែ</translation>
 <translation id="2559566667529177711">ច្រើនស្រទាប់</translation>
+<translation id="2561224416042784023">មើល​ការកំណត់</translation>
 <translation id="2570734079541893434">គ្រប់គ្រង​ការកំណត់</translation>
 <translation id="257136025287118539">អ្នកគ្រប់គ្រង​របស់អ្នក​កំពុង​ផ្លាស់ទី​ឯកសារ​របស់អ្នក​ទៅ <ph name="CLOUD_PROVIDER" />។ អ្នកអាច​កែប្រែ​ឯកសារ​ទាំងនេះបាន បន្ទាប់ពី​បញ្ចប់​ការបង្ហោះ។</translation>
 <translation id="2571488850200220306">ដើម្បី​ជួយធានា​សុវត្ថិភាព អ្នកគ្រប់គ្រង​ក៏អាច​មើលឃើញ​កំណែ​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត ប្រព័ន្ធ​ប្រតិបត្តិការ​របស់​ឧបករណ៍នេះ និង​កម្មវិធី​ដែលត្រូវបាន​ដំឡើង​ផងដែរ</translation>
@@ -1742,7 +1739,6 @@
 <translation id="3905894480064208252">{0,plural, =1{បានទប់ស្កាត់​មិនឱ្យផ្ទេរ​ឯកសារ}other{បានទប់ស្កាត់​មិនឱ្យផ្ទេរ​ឯកសារ <ph name="FILE_COUNT" />}}</translation>
 <translation id="3906022360148923497">រូបឧបករណ៍​ទូទាត់</translation>
 <translation id="3906234161316839040">ការបញ្ជាទិញផ្សេងទៀត</translation>
-<translation id="3906954721959377182">ថេប្លេត</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">ស្វែងយល់​បន្ថែម​អំពី​ខ្លឹមសារ​ដែលបានបង្កប់</translation>
 <translation id="3920504717067627103">គោលការណ៍វិញ្ញាបនប័ត្រ</translation>

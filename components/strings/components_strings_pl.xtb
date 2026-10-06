@@ -289,7 +289,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1462951478840426066">korzystać z czcionek zainstalowanych na komputerze w celu tworzenia treści wysokiej jakości</translation>
 <translation id="1465457928007067810">Numer IBAN został zapisany na Twoim koncie Google</translation>
 <translation id="1467432559032391204">W lewo</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Pokaż więcej</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Aby uzyskać pomoc w pisaniu, wpisz co najmniej 3 słowa</translation>
@@ -452,7 +451,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Skontaktuj się z administratorem systemu.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, wygasa <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Komputer</translation>
 <translation id="1739364174357629566">Zaktualizuj numer KTN</translation>
 <translation id="1740404923954980840">Aby zamknąć pełny ekran, przeciągnij od góry i dotknij przycisku Wstecz</translation>
 <translation id="1741474054575634405">Zarządzaj kartami lojalnościowymi…</translation>
@@ -867,6 +865,7 @@ Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usun
 <translation id="2436186046335138073">Zezwolić usłudze <ph name="HANDLER_HOSTNAME" /> na otwieranie wszystkich linków <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Nie udało się zapisać tej karty na Twoim koncie Google. Zamiast tego została ona zapisana w Chrome na tym urządzeniu.</translation>
 <translation id="2438874542388153331">Cztery otwory po prawej</translation>
+<translation id="2442033148418774391">Powiadomienie o inteligentniejszym autouzupełnianiu z zachowaniem prywatności zamknięte</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />nie zapisuje<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Twojej historii przeglądania,
@@ -879,13 +878,13 @@ Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usun
 <translation id="2451607499823206582">Śledzenie</translation>
 <translation id="2452837234288608067">Nie udało się pomóc. Spróbuj ponownie.</translation>
 <translation id="2453045048779611513">Twoja organizacja nie pozwala na synchronizację niektórych typów danych</translation>
+<translation id="2456490423293803882">Powiadomienie o inteligentniejszym autouzupełnianiu z zachowaniem prywatności otwarte na całą wysokość</translation>
 <translation id="2459882793359532780">Zastosowane zasady przeglądarki (zasady dotyczące komputera i profilu)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core to centralne narzędzie do konfigurowania zasad przeglądarki w chmurze</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
 <translation id="2462724976360937186">Identyfikator klucza urzędu certyfikacji</translation>
 <translation id="2465688316154986572">Zszywka</translation>
 <translation id="2465914000209955735">Zarządzaj pobranymi plikami w Chrome</translation>
-<translation id="2466682894498377850">Karta została wysłana z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Specyfikacja sprzętu urządzenia i statystyki takie jak historia użycia procesora czy pamięci RAM</translation>
 <translation id="2467421459221956357">Użyć czujników?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Uruchom diagnostykę sieci<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usun
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Aby oferować te opcje, Google otrzymuje informacje o zawartości strony płatności.<ph name="END_BOLD" /> Subskrypcje podlegają kryteriom kwalifikacji. Aby ukryć opcje płatności odroczonej, otwórz <ph name="BEGIN_LINK" />ustawienia płatności<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Aby uruchomić tę aplikację, ponownie włącz tryb programisty izolowanych aplikacji internetowych</translation>
 <translation id="2526280916094749336">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Pulpit</translation>
 <translation id="2527451058878391043">Kod CVC znajduje się z przodu karty. To 4-cyfrowy kod widoczny w prawym górnym rogu, nad numerem karty.</translation>
 <translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
 <translation id="2530042584066815841">Blokowanie i używanie myszy</translation>
@@ -956,6 +954,7 @@ Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usun
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Cofnij edycję</translation>
 <translation id="2559566667529177711">Wielowarstwowy</translation>
+<translation id="2561224416042784023">Wyświetl ustawienia</translation>
 <translation id="2570734079541893434">Zarządzaj ustawieniami</translation>
 <translation id="257136025287118539">Administrator przenosi Twoje pliki do usługi <ph name="CLOUD_PROVIDER" />. Po zakończeniu przesyłania możesz je zmodyfikować.</translation>
 <translation id="2571488850200220306">Aby zapewnić bezpieczeństwo, administrator może też wyświetlać informacje o systemie operacyjnym urządzenia, wersji przeglądarki i zainstalowanym oprogramowaniu</translation>
@@ -1108,6 +1107,7 @@ Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usun
 <translation id="2878197950673342043">Składanie krzyżowe</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">używać blokady ekranu do wypełniania haseł</translation>
+<translation id="2880119244122776372">Twórz i programuj</translation>
 <translation id="2881276955470682203">Czy zapisać kartę?</translation>
 <translation id="2882280148032777436">Usuń numer KTN</translation>
 <translation id="2882949212241984732">Podwójne składanie do środka</translation>
@@ -1736,7 +1736,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3905894480064208252">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="3906022360148923497">Ikona instrumentu płatniczego</translation>
 <translation id="3906234161316839040">Inne zamówienia</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Więcej informacji o ustawieniu „Umieszczona treść”</translation>
 <translation id="3920504717067627103">Zasady certyfikatu</translation>
@@ -3914,6 +3913,7 @@ Dodatkowe informacje:
 <translation id="753713322968419914">Usunąć adres domowy z autouzupełniania w Chrome?</translation>
 <translation id="753714465667062283">Zaloguj się, aby zapisać zdjęcie</translation>
 <translation id="7537536606612762813">Obowiązkowa</translation>
+<translation id="7540924742308928499">Burza mózgów i podsumowanie</translation>
 <translation id="7543525346216957623">Poproś rodzica</translation>
 <translation id="7546409722674205727">Rozpoczyna się <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Naprawianie błędów połączenia</translation>

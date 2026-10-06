@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1186645291482254714">Få varsler om prissporing med Chromium på telefonen</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821">En <ph name="IMPORTANT_UPDATE" /> venter. For å holde surfingen din trygg oppdateres Chromium neste gang du er inaktiv i <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Når du åpner bildesøk, sendes sidetittel, nettadresse og innhold, inkludert PDF-filer, automatisk til tjeneren. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Når du er logget på, kan du bruke passord med mer fra Google-kontoen din i Chromium. Gå til «Kontoen din i Chromium» for å endre dette.</translation>
 <translation id="1244381985120794049">Vis Gemini i Chromium på Mac-menylinjen</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="328888136576916638">API-nøkler for Google mangler. Noe funksjonalitet i Chromium blir deaktivert.</translation>
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
+<translation id="3300632735252839402">Chromium oppdateres når du er borte</translation>
 <translation id="3313189106987092621">Chromium advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3316771292331273802">Du logges av de fleste nettsteder når du lukker alle Chromium-vinduer, men du blir ikke logget av Google-kontoen din hvis du er logget på Chromium. For å la nettsteder huske deg, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">øverst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, øverst <ph name="TOP" /> %</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
 <translation id="3412460710772753638">I Passordlagring på denne enheten</translation>
+<translation id="3425452599984451640">Chromium vil oppdatere</translation>
 <translation id="3427159664004296878">Logg på Chromium for å få bokmerkene med mer fra <ph name="DEVICE" />.</translation>
 <translation id="3438772217992559640">Søk på denne fanen med Bildesøk</translation>
 <translation id="3455907671758333080">Utvid Safe Browsing med økt beskyttelse med Chromium på telefonen</translation>

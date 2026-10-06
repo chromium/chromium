@@ -289,7 +289,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1462951478840426066">izmantot jūsu datorā pieejamos fontus, lai jūs varētu veidot saturu ar augstu precizitāti</translation>
 <translation id="1465457928007067810">IBAN ir saglabāts Google kontā.</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
-<translation id="1471514598850585811">Klēpjdators</translation>
 <translation id="1472675084647422956">Rādīt vairāk</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Ievadiet vismaz trīs vārdus, lai saņemtu palīdzību rakstīšanā.</translation>
@@ -452,7 +451,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Sazinieties ar sistēmas administratoru.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, derīguma termiņš: <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Dators</translation>
 <translation id="1739364174357629566">Zināmā ceļotāja numura atjaunināšana</translation>
 <translation id="1740404923954980840">Lai izietu no pilnekrāna režīma, velciet no augšdaļas un pieskarieties pogai Atpakaļ.</translation>
 <translation id="1741474054575634405">Pārvaldiet lojalitātes kartes...</translation>
@@ -887,7 +885,6 @@ Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzē
 <translation id="2462724976360937186">Sertifikāta izdevējiestādes atslēgas ID</translation>
 <translation id="2465688316154986572">Skavojums</translation>
 <translation id="2465914000209955735">Pārvaldīt pārlūkā Chrome lejupielādētos failus</translation>
-<translation id="2466682894498377850">Cilne tika nosūtīta no jūsu ierīces “<ph name="DEVICE_NAME" />”</translation>
 <translation id="2467272921457885625">Ierīces aparatūras specifikācijas un statistika, piemēram, centrālā procesora / RAM lietojuma vēsture</translation>
 <translation id="2467421459221956357">Vai izmantot sensorus?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Palaist tīkla diagnostiku<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzē
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Lai piedāvātu šīs iespējas, ar Google tiek kopīgots saturs no norēķināšanās lapas.<ph name="END_BOLD" /> Uz maksājumu plāniem attiecas piemērotības prasības. Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LINK" />maksājumu iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Lai varētu palaist šo lietotni, atkārtoti iespējojiet izolētas tīmekļa lietotnes izstrādātāja režīmu.</translation>
 <translation id="2526280916094749336">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />).</translation>
-<translation id="2526590354069164005">Darbvirsma</translation>
 <translation id="2527451058878391043">CVC kods ir norādīts kartes priekšpusē. Tas ir četrciparu kods augšējā labajā stūrī virs kartes numura.</translation>
 <translation id="2529899080962247600">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks ignorēti.</translation>
 <translation id="2530042584066815841">Peles bloķēšana un izmantošana</translation>
@@ -1738,7 +1734,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3905894480064208252">{0,plural, =1{Faila pārsūtīšana ir bloķēta}zero{<ph name="FILE_COUNT" /> failu pārsūtīšana ir bloķēta}one{<ph name="FILE_COUNT" /> faila pārsūtīšana ir bloķēta}other{<ph name="FILE_COUNT" /> failu pārsūtīšana ir bloķēta}}</translation>
 <translation id="3906022360148923497">Maksāšanas līdzekļa ikona</translation>
 <translation id="3906234161316839040">Citi pasūtījumi</translation>
-<translation id="3906954721959377182">Planšetdators</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Uzzināt vairāk par iegulto saturu</translation>
 <translation id="3920504717067627103">Sertifikātu politika</translation>
@@ -2581,7 +2576,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5286195392366054103">Šajā politikā ir vairāk nekā <ph name="MAX_URL_PATTERNS_LIMIT" /> URL rakstu. Tiks izmantoti tikai pirmie <ph name="MAX_URL_PATTERNS_LIMIT" /> vietrāžu URL modeļi.</translation>
 <translation id="5288108484102287882">Validējot politikas vērtības, tika konstatētas kļūdas</translation>
 <translation id="5289384342738547352">Vairāku dokumentu apstrāde</translation>
-<translation id="5293160437421672778">Atrodi ģimenei draudzīgus restorānus, kuros var veikt rezervācijas. Jābūt bērnu ēdienkartei un neformālai atmosfērai.</translation>
+<translation id="5293160437421672778">Atrodi ģimenei draudzīgus restorānus, kuros var veikt rezervācijas. Jābūt ēdienkartei bērniem un neformālai atmosfērai.</translation>
 <translation id="5298618990685278995">melnraksta pirmo versiju;</translation>
 <translation id="5299298092464848405">Parsējot politiku, radās kļūda.</translation>
 <translation id="5300062471671636390">Paslēpt ierīču sarakstu apraidei</translation>
@@ -4685,7 +4680,7 @@ Papildu informācija:
 <translation id="8874824191258364635">Ievadiet derīgu kartes numuru</translation>
 <translation id="8877356245007430672">Izveido atskaņošanas sarakstu pēc mana noskaņojuma</translation>
 <translation id="888117890813270681">Laukam “<ph name="DATA_CONTROLS_RESTRICTION" />” nevar iestatīt vērtību “<ph name="DATA_CONTROLS_LEVEL" />”.</translation>
-<translation id="888169490072887292">Atrodi ģimenēm piemērotus restorānus, kas piedāvā bērnu ēdienkarti</translation>
+<translation id="888169490072887292">Atrodi ģimenēm piemērotus restorānus, kas piedāvā ēdienkarti bērniem</translation>
 <translation id="8883863364960302898">Google diska mape</translation>
 <translation id="8884537526797090108">Konfidenciālu saturu nevar ierakstīt</translation>
 <translation id="8889525327610245418">Autovadītāja apliecības informācijas droša atjaunināšana Google makā</translation>

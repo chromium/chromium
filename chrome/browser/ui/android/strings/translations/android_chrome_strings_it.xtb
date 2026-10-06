@@ -774,6 +774,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, schede con registrazione fissate selezionate</translation>
 <translation id="4137746084635924146">Lingua attuale del dispositivo</translation>
 <translation id="414128724510021958">Siti desktop richiesti per impostazione predefinita</translation>
+<translation id="4150837143272125910">È stato scaricato un aggiornamento</translation>
 <translation id="4162867837470729563">Elenco di opzioni di condivisione a schermo intero.</translation>
 <translation id="4164642020717536140">Navigazione sul web veloce e sicura</translation>
 <translation id="4165077084524712774">Altri strumenti</translation>
@@ -1240,6 +1241,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="604124094241169006">Automatico</translation>
+<translation id="6041959688070413372">Gestisci la connessione tra i servizi di ricerca e le app Google Workspace, come Google Drive</translation>
 <translation id="6042308850641462728">Altro</translation>
 <translation id="6047066316630165190">Apri il selettore di schede a griglia</translation>
 <translation id="604996488070107836">Download del file <ph name="FILE_NAME" /> non riuscito a causa di un errore sconosciuto.</translation>
@@ -1358,7 +1360,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="641643625718530986">Stampa…</translation>
 <translation id="6433501201775827830">Scegli il motore di ricerca</translation>
 <translation id="6434309073475700221">Elimina</translation>
-<translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>
+<translation id="6435307030888827407">Continua senza accedere</translation>
 <translation id="6437162790453527153">Accedi per avere a disposizione i tuoi preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="6437478888915024427">Informazioni sulla pagina</translation>
 <translation id="6440291723980579689">Le pagine si caricano solo una volta aperte</translation>
@@ -1400,6 +1402,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6565959834589222080">Viene utilizzata la rete Wi-Fi quando è disponibile</translation>
 <translation id="657177046675873214">Per trovare i tuoi preferiti su tutti i dispositivi, attiva l'opzione "Preferiti" nelle impostazioni</translation>
 <translation id="6573096386450695060">Consenti sempre</translation>
+<translation id="657480975869429144">È disponibile una nuova versione di Chrome</translation>
 <translation id="658099107946526506">Proteggi la tua navigazione privata con un PIN per impedire l'accesso indesiderato</translation>
 <translation id="6583199322650523874">Aggiungi la pagina corrente ai Preferiti</translation>
 <translation id="6588043302623806746">Usa DNS sicuro</translation>
@@ -2037,7 +2040,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8969796057708736017">Il download verrà completato se il file è conforme alle policy della tua organizzazione</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8972098258593396643">Scaricare nella cartella predefinita?</translation>
-<translation id="8987736167266086032">Riprendi da dove eri rimasto</translation>
+<translation id="8987736167266086032">Riprendi da dove hai interrotto</translation>
 <translation id="8992769679401294069">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="8993760627012879038">Apri nuova scheda in mod. di navigaz. in incognito</translation>
 <translation id="8995521496079646922">Le app che hai scelto verranno usate per impostazione predefinita. Se un'app non è già presente su questo dispositivo, verrà scaricata a breve.</translation>
@@ -2095,7 +2098,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="916607977885256133">Picture in picture</translation>
 <translation id="9168847423516963845">Sposta la barra degli indirizzi in basso</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
-<translation id="9183563643084679152">Hai eseguito l'accesso a Chrome tramite la scansione di un codice QR. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
+<translation id="9183563643084679152">Hai usato la scansione di un codice QR per accedere a Chrome. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
 <translation id="9189607089796819144">Scaricare comunque "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati per poter continuare ciò che stavi facendo</translation>
 <translation id="9190355771000652811">Nella barra degli indirizzi, utilizza questa scorciatoia da tastiera con le scorciatoie per motori di ricerca e ricerca su sito.</translation>
@@ -2125,7 +2128,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="959544960061022767">La tua organizzazione richiede l'accesso per usare Chrome</translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>
 <translation id="963246339335003378">Apri Task Manager</translation>
-<translation id="966337994629449077">Hai effettuato l'accesso come <ph name="FROM_EMAIL" />.\n\nPer continuare dal computer, passa a <ph name="TO_EMAIL" />. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
+<translation id="966337994629449077">Hai usato <ph name="FROM_EMAIL" /> per accedere.\n\nPer continuare dal computer, passa a <ph name="TO_EMAIL" />. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>

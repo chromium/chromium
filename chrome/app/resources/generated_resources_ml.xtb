@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">ആക്‌സസ് നീക്കം ചെയ്യുക</translation>
 <translation id="1791662854739702043">ഇന്‍സ്റ്റാളുചെയ്തു</translation>
 <translation id="1792619191750875668">വിപുലീകരിച്ച ഡിസ്‌പ്ലേ</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> -നുള്ള പാസ്‍വേഡ് മറയ്ക്കുക</translation>
 <translation id="1794791083288629568">ഈ പ്രശ്‌നം പരിഹരിക്കാൻ ഞങ്ങളെ സഹായിക്കുന്നതിന് ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക.</translation>
 <translation id="1795214765651529549">ക്ലാസിക് ഉപയോഗിക്കുക</translation>
@@ -1696,7 +1697,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ഇഷ്ടാനുസൃതമാക്കുകയും നിയന്ത്രിക്കുകയും ചെയ്യുക</translation>
 <translation id="2300434721407965566">ബാറ്ററി ചാർജ് കൂടുതൽ നേരം നിലനിർത്താൻ സഹായിക്കുന്നതിന്, 80% ചാർജ് ആകുമ്പോൾ ചാർജിംഗ് നിർത്തുന്നു.</translation>
 <translation id="2301382460326681002">വിപുലീകരണ റൂട്ട് ഡയറക്‌റ്ററി അസാധുവാണ്.</translation>
-<translation id="2301402091755573488">പങ്കിട്ട ടാബ്</translation>
 <translation id="2304820083631266885">ഗ്രഹം</translation>
 <translation id="2305202347479035002">ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു</translation>
 <translation id="2306794767168143227">ഈ ഉപകരണത്തിൽ <ph name="BRAND" /> എന്നതിലേക്ക് സംരക്ഷിക്കുക</translation>
@@ -1715,6 +1715,7 @@
 <translation id="2322622365472107569">അവസാനിക്കുന്ന സമയം <ph name="TIME" /></translation>
 <translation id="2323018538045954000">സംരക്ഷിച്ചിരിക്കുന്ന വൈഫൈ നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="2323685460575935191">സ്ക്രോൾ ബട്ടണുകൾ മറയ്ക്കുക</translation>
+<translation id="2325004050205455346">അടുത്തിടെയുള്ള ചരിത്രം</translation>
 <translation id="2325444234681128157">പാസ്‌വേഡ് ഓർക്കുക</translation>
 <translation id="2326188115274135041">സ്വയമേവയുള്ള അൺലോക്ക് ഓണാക്കാൻ പിൻ സ്ഥിരീകരിക്കുക</translation>
 <translation id="2326583548923775947">ഇതൊരു Google Account അല്ല. നിങ്ങൾ Chrome-ൽ സംരക്ഷിക്കുന്ന ഇനങ്ങൾ മറ്റ് ഉപകരണങ്ങളിൽ ലഭ്യമാകില്ല.</translation>
@@ -2073,7 +2074,6 @@
 <translation id="2598710988533271874">പുതിയ Chrome ലഭ്യമാണ്</translation>
 <translation id="2599048253926156421">ഉപയോക്തൃനാമം ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{സുരക്ഷിതമല്ലാത്ത ഒരു വിപുലീകരണം ഓഫാക്കി}other{സുരക്ഷിതമല്ലാത്ത {NUM_SITES} വിപുലീകരണങ്ങൾ ഓഫാക്കി}}</translation>
-<translation id="2603121359676416582">ഈ പേജിനുള്ളത്</translation>
 <translation id="2603656971249947488">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകൾ</translation>
 <translation id="2604129989323098489">വശങ്ങളിലായി ഡോക്യുമെന്റുകളോ പൂർണ്ണ സ്ക്രീൻ ഉള്ളടക്കമോ കാണിക്കുന്നത് പോലെ, വിൻഡോകൾ തുറന്ന് അവ സമർത്ഥമായി പ്ലേസ് ചെയ്യാൻ സൈറ്റുകൾ സാധാരണയായി നിങ്ങളുടെ ഡിസ്‌പ്ലേകളെ കുറിച്ചുള്ള വിവരങ്ങൾ ചോദിക്കും</translation>
 <translation id="2604255671529671813">നെറ്റ്‌വർക്ക് കണക്ഷൻ പിശക്</translation>
@@ -2939,6 +2939,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> എഡിറ്റ് ചെയ്യാനോ ഇല്ലാതാക്കാനോ കൂടുതൽ ഓപ്ഷനുകൾ</translation>
 <translation id="3232754137068452469">വെബ് ആപ്പ്</translation>
 <translation id="3233271424239923319">Linux ആപ്പുകളും ഫയലുകളും ബാക്കപ്പെടുക്കുക</translation>
+<translation id="3233577317461669428">മറ്റ് ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="3234251228180563751">ഉപയോക്തൃനാമത്തിൽ 1000-ലേറെ പ്രതീകങ്ങൾ അടങ്ങിയിരിക്കുന്നു</translation>
 <translation id="3234978181857588512">ഉപകരണത്തിൽ സംരക്ഷിക്കുക</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> എന്നതിന്റെ ഭാഗമായ <ph name="SITE_NAME" /> എന്ന സൈറ്റിനുള്ള ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
@@ -3013,7 +3014,6 @@
 <translation id="3292966601422448005"><ph name="APP_NAME" /> എന്നതിന് നിങ്ങൾ അനുവദിക്കുന്ന അനുമതികൾ, അതിന്റെ ഭാഗമായി ഇൻസ്റ്റാൾ ചെയ്ത ആപ്പുകൾക്കും അനുവദിക്കും.</translation>
 <translation id="3293080634164207409">ടാബുകൾ ചേർക്കുക</translation>
 <translation id="329324683265785818">പ്ലേ ചെയ്യാൻ / താൽക്കാലികമായി നിർത്താൻ ഉള്ള കീബോഡ് കുറുക്കുവഴിയാണ് k</translation>
-<translation id="3293644607209440645">ഈ പേജ് അയയ്ക്കുക</translation>
 <translation id="3294437725009624529">അതിഥി</translation>
 <translation id="3294686910656423119">ഉപയോഗ വിവരക്കണക്കും ക്രാഷ് റിപ്പോർട്ടുകളും</translation>
 <translation id="3295241308788901889">ഒരു ടാബ് കാസ്റ്റ് ചെയ്യുന്നു</translation>
@@ -5713,6 +5713,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (വലത്)</translation>
 <translation id="534449933710420173">പേരിടാത്ത ഫോൾഡർ</translation>
 <translation id="5345916423802287046">നിങ്ങൾ സൈൻ ഇൻ ചെയ്യുമ്പോൾ ആപ്പ് ആരംഭിക്കുക</translation>
+<translation id="5346059693449184483">നിങ്ങളുടെ മനസ്സിൽ എന്താണ്?</translation>
 <translation id="5350116201946341974">ക്ഷണികബുദ്ധി</translation>
 <translation id="535123479159372765">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പകർത്തിയ ടെക്‌സ്‌റ്റ്</translation>
 <translation id="5352257124367865087">സൈറ്റ് അനുമതികൾ മാനേജ് ചെയ്യുക</translation>
@@ -6989,6 +6990,7 @@
 <translation id="6356893102071098867">നിങ്ങൾ ശരിയായ അക്കൗണ്ടാണോ തിരഞ്ഞെടുത്തതെന്ന് പരിശോധിക്കുക</translation>
 <translation id="6357305427698525450"><ph name="APP_NAME" />, <ph name="APP_NAME_2" /> എന്നിവയിൽ ചില പിന്തുണാ ലിങ്കുകൾ തുടർന്നും തുറക്കാനാകും.</translation>
 <translation id="6357750620525943720">മറ്റ് സ്റ്റേബിൾ ഐഡന്റിഫയറുകൾ (ഉദാ. ഹാഷുകൾ അല്ലെങ്കിൽ UUID-കൾ)</translation>
+<translation id="6357830294871526418">മറ്റ് ഉപകരണങ്ങളിലെ ടാബുകൾ</translation>
 <translation id="6358884629796491903">ഡ്രാഗൺ</translation>
 <translation id="6359640073754977254">അവസാനത്തെ ടാബിലേക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="6361850914223837199">പിശക് വിശദാംശങ്ങൾ‌:</translation>
@@ -7136,7 +7138,6 @@
 <translation id="6472893788822429178">ഹോം ബട്ടൺ കാണിക്കുക</translation>
 <translation id="6473315466413288899">ഒരു ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6474021817475285003">Google Calendar-ൽ കൂടുതൽ കാണുക</translation>
-<translation id="6474401088838630457">ഇതിനെക്കുറിച്ച് Gemini-യോട് കൂടുതൽ ചോദിക്കുക</translation>
 <translation id="6474498546677193336">ഒരു ആപ്പ് ഈ ഫോൾഡർ ഉപയോഗിക്കുന്നതിനാൽ പങ്കിടല്‍ മാറ്റാനായില്ല. Linux അടുത്ത തവണ ഷട്ട് ഡൗൺ ചെയ്യുമ്പോൾ ഫോൾഡർ പങ്കിടുന്നത് മാറ്റും.</translation>
 <translation id="6474884162850599008">Google ഡ്രൈവ് അക്കൗണ്ട് വിച്ഛേദിക്കുക</translation>
 <translation id="6476482583633999078">സംഭാഷണ വേഗത</translation>

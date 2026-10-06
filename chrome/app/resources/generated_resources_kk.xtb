@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">Кіру рұқсатын өшіру</translation>
 <translation id="1791662854739702043">Орнатылды</translation>
 <translation id="1792619191750875668">Кеңейтілген дисплей</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> құпия сөзін жасыру</translation>
 <translation id="1794791083288629568">Бұл мәселені шешуімізге көмектесу үшін пікір жіберіңіз.</translation>
 <translation id="1795214765651529549">Классикалық тақырыпты пайдалану</translation>
@@ -1697,7 +1698,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> қолданбасын реттеу және басқару</translation>
 <translation id="2300434721407965566">Батарея жұмысының ұзақтығын арттыру үшін зарядтауды 80%-да тоқтатады.</translation>
 <translation id="2301382460326681002">Кеңейтімнің түбір каталогі жарамсыз.</translation>
-<translation id="2301402091755573488">Бөліскен қойынды</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305202347479035002">Ол қалай істейді?</translation>
 <translation id="2306794767168143227">Бұл құрылғыда <ph name="BRAND" /> ішіне сақтау</translation>
@@ -1716,6 +1716,7 @@
 <translation id="2322622365472107569">Аяқталу уақыты: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Сақталған Wi-Fi желілері</translation>
 <translation id="2323685460575935191">Айналдыру түймелерін жасыру</translation>
+<translation id="2325004050205455346">Соңғы тарих</translation>
 <translation id="2325444234681128157">Құпия сөзді есте сақтау</translation>
 <translation id="2326188115274135041">Құлыпты автоматты түрде ашу функциясын қосу үшін PIN кодын растаңыз.</translation>
 <translation id="2326583548923775947">Бұл Google аккаунты емес. Сіз Chrome-ға сақтайтын элементтер басқа құрылғыларда қолжетімді болмайды.</translation>
@@ -2074,7 +2075,6 @@
 <translation id="2598710988533271874">Жаңа Chrome қолжетімді</translation>
 <translation id="2599048253926156421">Пайдаланушы аты буферге көшірілді.</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 қауіпті кеңейтім өшірілді}other{{NUM_SITES} қауіпті кеңейтім өшірілді}}</translation>
-<translation id="2603121359676416582">Осы бетке арналған</translation>
 <translation id="2603656971249947488">Қойындылар жолағы</translation>
 <translation id="2604129989323098489">Сайттар әдетте терезелерді өз бетімен аша және орналастыра алуы, соның ішінде құжаттарды көрсетуі немесе контентті толық экранға шығаруы үшін дисплейлер туралы ақпарат сұрайды.</translation>
 <translation id="2604255671529671813">Желімен байланыс қатесі</translation>
@@ -2938,6 +2938,7 @@
 <translation id="323262942975422760">"<ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" />" ақпаратын өзгертудің немесе жоюдың қосымша опциялары</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
 <translation id="3233271424239923319">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау</translation>
+<translation id="3233577317461669428">Басқа құрылғы табылмады</translation>
 <translation id="3234251228180563751">Пайдаланушы атында 1000 таңбадан артық таңба бар.</translation>
 <translation id="3234978181857588512">Құрылғыға сақтау</translation>
 <translation id="3237871032310650497"><ph name="SITE_NAME" /> үшін <ph name="PARTITION_SITE_NAME" /> бойынша бөлшектелген сайт деректерін жою керек пе?</translation>
@@ -3012,7 +3013,6 @@
 <translation id="3292966601422448005"><ph name="APP_NAME" /> қолданбасына берген рұқсаттарыңыз оның орнатылған қолданбаларына да беріледі.</translation>
 <translation id="3293080634164207409">Қойындылар қосу</translation>
 <translation id="329324683265785818">Ойнату / кідірту үшін k пернеcін басыңыз.</translation>
-<translation id="3293644607209440645">Осы бетті жіберу</translation>
 <translation id="3294437725009624529">Қонақ</translation>
 <translation id="3294686910656423119">Қолданыс статистикасы және жаңылыс туралы есептер</translation>
 <translation id="3295241308788901889">Қойынды трансляциялануда</translation>
@@ -5711,6 +5711,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (оң)</translation>
 <translation id="534449933710420173">Атаусыз қалта</translation>
 <translation id="5345916423802287046">Аккаунтқа кірген кезде, қолданбаны іске қосу</translation>
+<translation id="5346059693449184483">Қандай сұрағыңыз бар?</translation>
 <translation id="5350116201946341974">Өзгеше</translation>
 <translation id="535123479159372765">Мәтін басқа құрылғыдан көшірілді</translation>
 <translation id="5352257124367865087">Сайт рұқсаттарын басқару</translation>
@@ -6984,6 +6985,7 @@
 <translation id="6356893102071098867">Дұрыс аккаунт таңдалғанын тексеріңіз.</translation>
 <translation id="6357305427698525450">Кейбір қолдау көрсету сілтемелері <ph name="APP_NAME" /> немесе <ph name="APP_NAME_2" /> қолданбасында ашық болады.</translation>
 <translation id="6357750620525943720">Басқа тұрақты идентификаторлар (мысалы, хештер немесе UUID идентификаторлары)</translation>
+<translation id="6357830294871526418">Басқа құрылғылардағы қойындылар</translation>
 <translation id="6358884629796491903">Айдаһар</translation>
 <translation id="6359640073754977254">Соңғы қойындыға дейін айналдыру</translation>
 <translation id="6361850914223837199">Қате мәліметтері:</translation>
@@ -7131,7 +7133,6 @@
 <translation id="6472893788822429178">"Негізгі бет" түймесін көрсету</translation>
 <translation id="6473315466413288899">Опция таңдаңыз</translation>
 <translation id="6474021817475285003">Толық ақпаратты Google Calendar-дан көріңіз</translation>
-<translation id="6474401088838630457">Gemini-дан осы туралы толық ақпарат сұрау</translation>
 <translation id="6474498546677193336">Бөлісуден бас тарту мүмкін емес, себебі бұл қалтаны қолданба пайдаланып жатыр. Linux өшкеннен кейін, қалтаны бөлісуден бас тартылады.</translation>
 <translation id="6474884162850599008">Google Drive аккаунтын ажырату</translation>
 <translation id="6476482583633999078">Сөйлеу жылдамдығы</translation>

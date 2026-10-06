@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">Использование шрифтов на компьютере для создания высококачественного контента.</translation>
 <translation id="1465457928007067810">Код IBAN сохранен в аккаунте Google.</translation>
 <translation id="1467432559032391204">Слева</translation>
-<translation id="1471514598850585811">Ноутбук</translation>
 <translation id="1472675084647422956">Ещё</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Добавьте ещё три слова или более, чтобы получить помощь с написанием.</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Обратитесь за помощью к системному администратору.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, действительна до <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Компьютер</translation>
 <translation id="1739364174357629566">Обновить номер известного пассажира (Known Traveler Number)?</translation>
 <translation id="1740404923954980840">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="1741474054575634405">Перейти к картам постоянного клиента</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">Идентификатор ключа ЦС</translation>
 <translation id="2465688316154986572">Скоба</translation>
 <translation id="2465914000209955735">Управлять скачанными файлами в Chrome</translation>
-<translation id="2466682894498377850">Вкладка отправлена с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2467272921457885625">Аппаратные характеристики устройства и данные о его работе, например об использовании ЦП и ОЗУ.</translation>
 <translation id="2467421459221956357">Включить датчики</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Выполните диагностику сети<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Для показа этих вариантов данные о контенте на странице покупки передаются в Google.<ph name="END_BOLD" /> Платежи в рассрочку доступны при соответствии требованиям. Чтобы скрыть варианты оплаты в рассрочку, перейдите в <ph name="BEGIN_LINK" />платежные настройки<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Чтобы запустить это приложение, включите режим разработчика изолированных веб-приложений.</translation>
 <translation id="2526280916094749336">Сохраненные адреса можно использовать в разных продуктах Google. Этот адрес будет сохранен в вашем аккаунте Google, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Рабочий стол</translation>
 <translation id="2527451058878391043">CVC-код находится на лицевой стороне вашей карты. Это 4 цифры справа над номером карты.</translation>
 <translation id="2529899080962247600">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи будут игнорироваться.</translation>
 <translation id="2530042584066815841">Управление мышью</translation>
@@ -1738,7 +1734,6 @@
 <translation id="3905894480064208252">{0,plural, =1{Файл нельзя перенести}one{<ph name="FILE_COUNT" /> файл нельзя перенести}few{<ph name="FILE_COUNT" /> файла нельзя перенести}many{<ph name="FILE_COUNT" /> файлов нельзя перенести}other{<ph name="FILE_COUNT" /> файла нельзя перенести}}</translation>
 <translation id="3906022360148923497">Значок способа оплаты</translation>
 <translation id="3906234161316839040">Другие заказы</translation>
-<translation id="3906954721959377182">Планшет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />. <ph name="ERROR" />.</translation>
 <translation id="3910231615117880630">Подробнее о встроенном контенте…</translation>
 <translation id="3920504717067627103">Политики сертификатов</translation>

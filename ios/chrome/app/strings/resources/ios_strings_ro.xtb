@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Parole</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} din {count} adresă}few{{position} din {count} adrese}other{{position} din {count} de adrese}}</translation>
 <translation id="13813615483058219">A apărut o eroare. Verifică-ți conexiunea la internet, mărește volumul sau încearcă din nou.</translation>
+<translation id="138181280295369883">Conectează-te pentru a-ți accesa informațiile salvate și altele pe toate dispozitivele</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="138618066238211776">Continuă ca <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opțiuni pentru salvarea cardului</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Tradu pagina</translation>
 <translation id="1539535193627863227">Nu s-au găsit parole sau chei de acces pentru acest site</translation>
 <translation id="1540800554400757039">Adresă 1</translation>
+<translation id="1543035591122163372">Conectează-te pentru a-ți accesa parolele și alte date de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Deschide filele primite de pe alte dispozitive de pe ecranul de blocare.</translation>
 <translation id="1544653821167545205">Rezumă pagina</translation>
 <translation id="1545749641540134597">Scanează codul QR</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Cum folosesc această funcție?</translation>
 <translation id="1901600657316773839">Păstrează selecția</translation>
 <translation id="1902277226107477495">Detectarea adresei este dezactivată. Activeaz-o din nou în Setări.</translation>
+<translation id="1905582086181351638">Conectează-te pentru a accesa informațiile salvate și altele de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Site-ul a fost adăugat și fixat</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
 <translation id="1925706052394657380">Deschide setările pentru <ph name="BEGIN_BOLD" />Aplicații prestabilite<ph name="END_BOLD" /> în iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Site-urile pot solicita permisiunea de a folosi microfonul</translation>
 <translation id="2219935992754556187">Chrome îți păstrează în siguranță datele sensibile cu Face ID</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
-<translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> nu are permisiunea de a-ți accesa camera foto</translation>
 <translation id="2223461067862937305">Creează un cod QR</translation>
 <translation id="222798989929574238">Ai folosit peste 20 de fotografii pentru a căuta</translation>
 <translation id="2230173723195178503">Pagina web s-a încărcat</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Vei avea ocazia să salvezi aceste informații în Portofel când vei completa din nou un formular relevant.</translation>
 <translation id="3868495844258915202">Afișează adresa URL completă</translation>
 <translation id="3875783148670536197">Arată-mi cum</translation>
-<translation id="3877211858413020188"><ph name="SITE_DOMAIN" /> nu are permisiunea de a-ți accesa microfonul</translation>
 <translation id="3878657761594430423">Instrument pentru scoaterea foilor</translation>
 <translation id="3884810423191119660">Salvează parolele în siguranță pentru a te conecta ușor la site-uri și aplicații</translation>
 <translation id="3885587018298784481">Alătură-te unui grup de familie</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Fototecă</translation>
 <translation id="429074084062258019">{count,plural, =1{Adaugă fila într-un grup}few{Adaugă filele într-un grup}other{Adaugă filele într-un grup}}</translation>
 <translation id="4290920330097335010">Nu permite niciodată</translation>
+<translation id="4293154608148215505">pe propriul telefon</translation>
 <translation id="4294506173142861371">Te conectezi ca <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Setează poziția</translation>
 <translation id="4304713468139749426">Manager de parole</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Pentru a urmări produsul, atinge Urmărește</translation>
 <translation id="5121618895923301719">Urmărești deja acest produs. Pagina se salvează în <ph name="BEGIN_LINK" />Marcaje mobile<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Ai mai multe probleme legate de parole.</translation>
+<translation id="5126335625961252141">tableta ta</translation>
 <translation id="5128788795241319992">Explorează noul meniu</translation>
 <translation id="5132942445612118989">Sincronizează parolele, istoricul și alte date pe toate dispozitivele</translation>
+<translation id="5137568953923142260">Permite o dată</translation>
 <translation id="5141363746588976328">Ascunde scăderile de preț din cardul cu file</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Părăsește comutatorul de file</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Mărește dimensiunea textului</translation>
 <translation id="5376135254804080693">Debifează tot</translation>
 <translation id="537853552771686272">Gestionează subiectele și site-urile care te interesează</translation>
+<translation id="5385892579392932755">laptopul tău</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} închisă}few{{count} închise}other{{count} închise}}</translation>
 <translation id="5394975111793637642">Ascunde cardul Recenzii de produse pentru tine</translation>
 <translation id="5414763847370083940">Vei primi o alertă dacă prețul scade pe orice site.</translation>
@@ -1967,6 +1972,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Filele vor fi închise și datele de navigare vor fi șterse</translation>
 <translation id="714291438898585119">Cu stea</translation>
+<translation id="7144458305574230431">Conectează-te pentru a accesa marcajele și alte date de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Actualizează permisul de conducere</translation>
 <translation id="7146301801400584641">Este disponibil un fișier pentru calendar</translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>
@@ -1994,6 +2000,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="722339453342442311">Verifică acum</translation>
 <translation id="7227235818314667565">Gestionare colaborări</translation>
 <translation id="7233006041370588369">Selectează o parolă de completat.</translation>
+<translation id="7238074332967840767">Siguranță</translation>
 <translation id="723874023660911012">Schimbă profilul</translation>
 <translation id="7241135764990439166">Modul incognito nu este disponibil</translation>
 <translation id="7245288034498365666">Organizează-te și economisește timp</translation>
@@ -2377,7 +2384,6 @@ Poți reporni oricând.</translation>
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8393889347136007944">Filele nu au fost folosite de <ph name="THRESHOLD" /> zile</translation>
 <translation id="8395180897620197612">Oprește înregistrarea în jurnal</translation>
-<translation id="8399253661151100858"><ph name="SITE_DOMAIN" /> îți poate accesa microfonul ori de câte ori accesezi acest site</translation>
 <translation id="8407669440184693619">Nu s-au găsit parole pentru acest site</translation>
 <translation id="8407831512155324054">Parolele sunt puternice</translation>
 <translation id="8414283596511250978">Nu uita niciodată parolele</translation>
@@ -2392,7 +2398,6 @@ Poți reporni oricând.</translation>
 <translation id="8439758443371991593">Ascunde opțiunea Adaugă în lista de lecturi</translation>
 <translation id="8443986842926457191">Adresa URL are peste 2.048 de caractere.</translation>
 <translation id="8449869326050867919">S-a permis accesul la parolă</translation>
-<translation id="8458009459729013424"><ph name="SITE_DOMAIN" /> îți poate accesa camera foto ori de câte ori accesezi acest site</translation>
 <translation id="8461708300275916315">Dacă ai sub 18 ani</translation>
 <translation id="8473815223723723001">Editează imaginea cu Gemini</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>

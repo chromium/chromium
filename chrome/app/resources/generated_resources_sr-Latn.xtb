@@ -1033,6 +1033,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni prikaz</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Sakrijte lozinku za <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Šalji povratne informacije kao pomoć za rešavanje ovog problema.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
@@ -1696,7 +1697,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2300383962156589922">Prilagodite i kontrolišite aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Punjenje se zaustavlja na 80% da bi baterija trajala duže.</translation>
 <translation id="2301382460326681002">Osnovni direktorijum dodatka je nevažeći.</translation>
-<translation id="2301402091755573488">Deljena kartica</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305202347479035002">Princip rada</translation>
 <translation id="2306794767168143227">Sačuvaj u <ph name="BRAND" /> na ovom uređaju</translation>
@@ -2074,7 +2074,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2598710988533271874">Dostupan je novi Chrome</translation>
 <translation id="2599048253926156421">Korisničko ime je kopirano u privremenu memoriju</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Isključen je 1 nebezbedan dodatak}one{Isključen je {NUM_SITES} nebezbedan dodatak}few{Isključena su {NUM_SITES} nebezbedna dodatka}other{Isključeno je {NUM_SITES} nebezbednih dodataka}}</translation>
-<translation id="2603121359676416582">Za ovu stranicu</translation>
 <translation id="2603656971249947488">Traka sa karticama</translation>
 <translation id="2604129989323098489">Sajtovi obično traže informacije o ekranima kako bi mogli da inteligentno otvaraju i postavljaju prozore, na primer, da prikazuju dokumente ili sadržaj preko celog ekrana jedno do drugog</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
@@ -2940,6 +2939,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="323262942975422760">Još opcija za izmenu ili brisanje: <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Veb-aplikacija</translation>
 <translation id="3233271424239923319">Napravite rezervne kopije Linux aplikacija i datoteka</translation>
+<translation id="3233577317461669428">Nije pronađen nijedan drugi uređaj</translation>
 <translation id="3234251228180563751">Korisničko ime premašuje 1000 znakova</translation>
 <translation id="3234978181857588512">Sačuvaj na uređaju</translation>
 <translation id="3237871032310650497">Želite da izbrišete podatke o sajtovima za <ph name="SITE_NAME" /> izdeljene na <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3014,7 +3014,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3292966601422448005">Dozvole koje odobrite za aplikaciju <ph name="APP_NAME" /> važiće i za instalirane aplikacije.</translation>
 <translation id="3293080634164207409">Dodajte kartice</translation>
 <translation id="329324683265785818">Pustite ili pauzirajte, tasterska prečica k</translation>
-<translation id="3293644607209440645">Pošalji ovu stranicu</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3294686910656423119">Statistika korišćenja i izveštaji o otkazivanju</translation>
 <translation id="3295241308788901889">Prebacivanje kartice</translation>
@@ -5714,6 +5713,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (desna)</translation>
 <translation id="534449933710420173">Neimenovani folder</translation>
 <translation id="5345916423802287046">Pokreni aplikaciju kada se prijavim</translation>
+<translation id="5346059693449184483">O čemu razmišljate?</translation>
 <translation id="5350116201946341974">Šaljivo</translation>
 <translation id="535123479159372765">Tekst je kopiran sa nekog drugog uređaja</translation>
 <translation id="5352257124367865087">Upravljajte dozvolama za sajt</translation>
@@ -6990,6 +6990,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6356893102071098867">Proverite da li ste izabrali odgovarajući nalog</translation>
 <translation id="6357305427698525450">Neki podržani linkovi će se i dalje otvarati u <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Drugi stabilni identifikatori (npr. heševi ili UUID-ovi)</translation>
+<translation id="6357830294871526418">Kartice na drugim uređajima</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="6359640073754977254">Skroluj do poslednje kartice</translation>
 <translation id="6361850914223837199">Detalji greške:</translation>
@@ -7137,7 +7138,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6472893788822429178">Prikaži dugme Početak</translation>
 <translation id="6473315466413288899">Izaberite opciju</translation>
 <translation id="6474021817475285003">Prikaži više u Google kalendaru</translation>
-<translation id="6474401088838630457">Pitajte Gemini više o ovome</translation>
 <translation id="6474498546677193336">Opozivanje deljenja nije uspelo jer jedna aplikacija koristi ovaj folder. Deljenje foldera će biti opozvano kada se Linux sledeći put zatvori.</translation>
 <translation id="6474884162850599008">Prekini vezu sa nalogom Google diska</translation>
 <translation id="6476482583633999078">Brzina govora</translation>

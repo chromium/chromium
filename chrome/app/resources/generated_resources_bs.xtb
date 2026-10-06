@@ -1039,6 +1039,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni ekran</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Sakrivanje lozinke za domenu <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Šaljite nam povratne informacije kako bismo riješili ovaj problem.</translation>
 <translation id="1795214765651529549">Koristite klasičnu verziju</translation>
@@ -1707,7 +1708,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2300383962156589922">Prilagodite i kontrolirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Zaustavlja punjenje na 80% radi produženja trajanja baterije.</translation>
 <translation id="2301382460326681002">Temeljni direktorij ekstenzije je nevažeći.</translation>
-<translation id="2301402091755573488">Dijeljenja kartica</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305202347479035002">Kako ovo funkcionira</translation>
 <translation id="2306794767168143227">Sačuvaj na uslugu <ph name="BRAND" /> na ovom uređaju</translation>
@@ -1726,6 +1726,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2322622365472107569">Vrijeme završetka: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Sačuvane WiFi mreže</translation>
 <translation id="2323685460575935191">Sakrij dugmad za klizanje</translation>
+<translation id="2325004050205455346">Nedavna historija</translation>
 <translation id="2325444234681128157">Zapamti lozinku</translation>
 <translation id="2326188115274135041">Potvrdite PIN da uključite automatsko otključavanje</translation>
 <translation id="2326583548923775947">Ovo nije Google račun. Stavke koje sačuvate u Chrome neće biti dostupne na drugim uređajima.</translation>
@@ -2084,7 +2085,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2598710988533271874">Dostupan je novi Chrome</translation>
 <translation id="2599048253926156421">Korisničko ime kopirano u međumemoriju</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Isključena je 1 nesigurna ekstenzija}one{Isključena je {NUM_SITES} nesigurna ekstenzija}few{Isključene su {NUM_SITES} nesigurne ekstenzije}other{Isključeno je {NUM_SITES} nesigurnih ekstenzija}}</translation>
-<translation id="2603121359676416582">Za ovu stranicu</translation>
 <translation id="2603656971249947488">Traka kartice</translation>
 <translation id="2604129989323098489">Web lokacije obično traže informacije o vašim ekranima da mogu otvarati i postavljati prozore na pametan način, kao što je prikazivanje dokumenata ili sadržaja cijelog ekrana jednog pored drugog</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
@@ -2950,6 +2950,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="323262942975422760">Više opcija za uređivanje ili brisanje stavke <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Web aplikacija</translation>
 <translation id="3233271424239923319">Napravite sigurnosnu kopiju Linux aplikacija i fajlova</translation>
+<translation id="3233577317461669428">Nije pronađen nijedan drugi uređaj</translation>
 <translation id="3234251228180563751">Korisničko ime sadržava više od 1000 znakova</translation>
 <translation id="3234978181857588512">Sačuvaj na uređaj</translation>
 <translation id="3237871032310650497">Izbrisati podatke web lokacije <ph name="SITE_NAME" /> podijeljene na <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3024,7 +3025,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3292966601422448005">Odobrenja koja dozvolite za aplikaciju <ph name="APP_NAME" /> će se dozvoliti i za njene instalirane aplikacije.</translation>
 <translation id="3293080634164207409">Dodajte kartice</translation>
 <translation id="329324683265785818">Reproduciranje/pauziranje; prečica na tastaturi k</translation>
-<translation id="3293644607209440645">Pošalji ovu stranicu</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3294686910656423119">Statistika korištenja i izvještaji o padovima aplikacije</translation>
 <translation id="3295241308788901889">Emitiranje kartice</translation>
@@ -5725,6 +5725,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (desno)</translation>
 <translation id="534449933710420173">Neimenovani folder</translation>
 <translation id="5345916423802287046">Pokreni aplikaciju prilikom prijave</translation>
+<translation id="5346059693449184483">O čemu razmišljate?</translation>
 <translation id="5350116201946341974">Hirovito</translation>
 <translation id="535123479159372765">Tekst je kopiran s drugog uređaja</translation>
 <translation id="5352257124367865087">Upravljajte odobrenjima web lokacije</translation>
@@ -7001,6 +7002,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6356893102071098867">Provjerite jeste li odabrali pravi račun</translation>
 <translation id="6357305427698525450">Neki podržani linkovi će se i dalje otvarati u aplikaciji <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Drugi stabilni identifikatori (npr. hashevi ili UUID-ovi)</translation>
+<translation id="6357830294871526418">Kartice na drugim uređajima</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="6359640073754977254">Klizanje na posljednju karticu</translation>
 <translation id="6361850914223837199">Detalji o grešci</translation>
@@ -7148,7 +7150,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6472893788822429178">Prikaz dugmeta za početni ekran</translation>
 <translation id="6473315466413288899">Odaberite opciju</translation>
 <translation id="6474021817475285003">Prikaz više informacija na Google Kalendaru</translation>
-<translation id="6474401088838630457">Pitajte Gemini više o ovome</translation>
 <translation id="6474498546677193336">Prekidanje dijeljenja nije uspjelo jer neka aplikacija koristi ovaj folder. Dijeljenje foldera će se prekinuti nakon sljedećeg isključivanja Linuxa.</translation>
 <translation id="6474884162850599008">Prekini vezu s računom za Google Disk</translation>
 <translation id="6476482583633999078">Brzina govora</translation>

@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">使用電腦上的字型，方便你建立高傳真內容</translation>
 <translation id="1465457928007067810">已將 IBAN 儲存至 Google 帳戶</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1471514598850585811">筆記型電腦</translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">請輸入 3 個以上的字詞，才能取得撰寫協助</translation>
@@ -451,7 +450,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">建議您與系統管理員聯絡。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日為 <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">電腦</translation>
 <translation id="1739364174357629566">更新已知旅客號碼</translation>
 <translation id="1740404923954980840">如要退出全螢幕模式，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="1741474054575634405">管理會員卡...</translation>
@@ -866,6 +864,7 @@
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
 <translation id="243815215670139125">系統無法將這張卡片儲存到你的 Google 帳戶，因此改存到這部裝置的 Chrome。</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
+<translation id="2442033148418774391">「自動填入更聰明，隱私安全有保障」通知已關閉</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />瀏覽記錄
@@ -878,13 +877,13 @@
 <translation id="2451607499823206582">追蹤中</translation>
 <translation id="2452837234288608067">無法協助，請再試一次。</translation>
 <translation id="2453045048779611513">貴機構對你能儲存的內容設有限制</translation>
+<translation id="2456490423293803882">「自動填入更聰明，隱私安全有保障」通知已顯示在整個畫面</translation>
 <translation id="2459882793359532780">套用的瀏覽器政策 (電腦與設定檔政策)</translation>
 <translation id="2461385121573678775">Chrome Enterprise 基本版提供集中式工具，你可以從雲端設定瀏覽器政策</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
 <translation id="2465688316154986572">釘裝</translation>
 <translation id="2465914000209955735">管理在 Chrome 中下載的檔案</translation>
-<translation id="2466682894498377850">收到「<ph name="DEVICE_NAME" />」傳來的分頁</translation>
 <translation id="2467272921457885625">CPU/RAM 使用率記錄等裝置硬體規格和統計資料</translation>
 <translation id="2467421459221956357">使用感應器</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />執行網路診斷<ph name="END_LINK" /></translation>
@@ -926,7 +925,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />系統會將結帳頁面的內容分享給 Google，以便提供這些選項。<ph name="END_BOLD" />付款方案須符合資格條件。如要隱藏「先買後付」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如要執行這個應用程式，請重新啟用隔離網頁應用程式的開發人員模式</translation>
 <translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
-<translation id="2526590354069164005">桌面</translation>
 <translation id="2527451058878391043">信用卡驗證碼位於卡片正面，即卡號右上方的 4 位數字。</translation>
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
 <translation id="2530042584066815841">滑鼠鎖定和使用</translation>
@@ -1107,6 +1105,7 @@
 <translation id="2878197950673342043">十字摺</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">使用螢幕鎖定功能填入密碼</translation>
+<translation id="2880119244122776372">建構與寫程式</translation>
 <translation id="2881276955470682203">要儲存卡片嗎？</translation>
 <translation id="2882280148032777436">刪除已知旅客號碼</translation>
 <translation id="2882949212241984732">觀音摺</translation>
@@ -1734,7 +1733,6 @@
 <translation id="3905894480064208252">{0,plural, =1{禁止傳送這個檔案}other{禁止傳送這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="3906022360148923497">付款方式圖示</translation>
 <translation id="3906234161316839040">其他訂單</translation>
-<translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
 <translation id="3910231615117880630">進一步瞭解嵌入的內容</translation>
 <translation id="3920504717067627103">憑證原則</translation>
@@ -3912,6 +3910,7 @@
 <translation id="753713322968419914">要從 Chrome 自動填入內容移除住家地址嗎？</translation>
 <translation id="753714465667062283">登入即可儲存相片</translation>
 <translation id="7537536606612762813">強制</translation>
+<translation id="7540924742308928499">腦力激盪與重點摘要</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>
 <translation id="7548892272833184391">修正連線錯誤</translation>

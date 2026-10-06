@@ -289,7 +289,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1462951478840426066">Utilitza els tipus de lletra del teu ordinador per crear continguts d'alta fidelitat</translation>
 <translation id="1465457928007067810">S'ha desat l'IBAN al teu Compte de Google</translation>
 <translation id="1467432559032391204">Esquerra</translation>
-<translation id="1471514598850585811">Portàtil</translation>
 <translation id="1472675084647422956">Mostra'n més</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Introdueix tres paraules o més si vols obtenir ajuda per escriure</translation>
@@ -452,7 +451,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Prova de contactar amb l'administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />; data de caducitat: <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Ordinador</translation>
 <translation id="1739364174357629566">Actualitza el número de viatger conegut</translation>
 <translation id="1740404923954980840">Per sortir de la pantalla completa, arrossega des de la part superior i toca el botó Enrere</translation>
 <translation id="1741474054575634405">Gestiona les targetes de fidelització...</translation>
@@ -887,7 +885,6 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2462724976360937186">Identificador de clau d'entitat emissora de certificats</translation>
 <translation id="2465688316154986572">Grapat</translation>
 <translation id="2465914000209955735">Gestiona els fitxers que has baixat a Chrome</translation>
-<translation id="2466682894498377850">S'ha enviat una pestanya des del teu <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Especificacions i estadístiques de maquinari del dispositiu, com ara l'historial d'ús de CPU o RAM</translation>
 <translation id="2467421459221956357">Vols utilitzar els sensors?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar el diagnòstic de xarxes<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />El contingut de la pàgina de tramitació de la compra es comparteix amb Google per oferir aquestes opcions<ph name="END_BOLD" />. Els plans de pagament estan subjectes a la idoneïtat. Per amagar les opcions que permeten pagar més tard, ves a la <ph name="BEGIN_LINK" />configuració de pagament<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Per executar aquesta aplicació, torna a activar el mode de desenvolupador d'aplicacions web aïllades</translation>
 <translation id="2526280916094749336">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça es desarà al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Escriptori</translation>
 <translation id="2527451058878391043">El CVC és a l'anvers de la targeta. És el codi de 4 dígits que hi ha a la part superior dreta sobre el número de la targeta.</translation>
 <translation id="2529899080962247600">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Totes les altres entrades s'ignoraran.</translation>
 <translation id="2530042584066815841">Bloqueig i ús del ratolí</translation>
@@ -1739,7 +1735,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3905894480064208252">{0,plural, =1{S'ha bloquejat el fitxer perquè no es pugui transferir}other{S'han bloquejat <ph name="FILE_COUNT" /> fitxers perquè no es puguin transferir}}</translation>
 <translation id="3906022360148923497">Icona de l'instrument de pagament</translation>
 <translation id="3906234161316839040">Altres comandes</translation>
-<translation id="3906954721959377182">Tauleta</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Més informació sobre el contingut incrustat</translation>
 <translation id="3920504717067627103">Normes de certificats</translation>

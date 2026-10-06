@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">ਪਹੁੰਚ ਹਟਾਓ</translation>
 <translation id="1791662854739702043">ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1792619191750875668">ਵਿਸਤ੍ਰਿਤ ਡਿਸਪਲੇ</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> ਲਈ ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="1794791083288629568">ਇਸ ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਕਰਨ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ।</translation>
 <translation id="1795214765651529549">ਕਲਾਸਿਕ ਵਰਤੋ</translation>
@@ -1710,7 +1711,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਕੇ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="2300434721407965566">ਬੈਟਰੀ ਦੀ ਮਿਆਦ ਵਧਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, 80% ਚਾਰਜ ਹੋਣ 'ਤੇ ਬੈਟਰੀ ਚਾਰਜ ਹੋਣੀ ਬੰਦ ਹੋ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="2301382460326681002">ਐਕਸਟੈਂਸ਼ਨ ਰੂਟ ਡਾਇਰੈਕਟਰੀ ਅਵੈਧ ਹੈ।</translation>
-<translation id="2301402091755573488">ਸਾਂਝੀ ਕੀਤੀ ਟੈਬ</translation>
 <translation id="2304820083631266885">ਗ੍ਰਹਿ</translation>
 <translation id="2305202347479035002">ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ</translation>
 <translation id="2306794767168143227">ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="BRAND" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -1729,6 +1729,7 @@
 <translation id="2322622365472107569">ਸਮਾਪਤੀ ਦਾ ਸਮਾਂ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ਰੱਖਿਅਤ ਕੀਤੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ</translation>
 <translation id="2323685460575935191">ਸਕ੍ਰੋਲ ਬਟਨ ਲੁਕਾਓ</translation>
+<translation id="2325004050205455346">ਹਾਲੀਆ ਇਤਿਹਾਸ</translation>
 <translation id="2325444234681128157">ਪਾਸਵਰਡ ਯਾਦ ਰੱਖੋ</translation>
 <translation id="2326188115274135041">ਸਵੈਚਲਿਤ ਅਣਲਾਕ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਪਿੰਨ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="2326583548923775947">ਇਹ Google ਖਾਤਾ ਨਹੀਂ ਹੈ। ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਉਪਲਬਧ ਹੋਣਗੀਆਂ।</translation>
@@ -2087,7 +2088,6 @@
 <translation id="2598710988533271874">ਨਵਾਂ Chrome ਉਪਲਬਧ ਹੈ</translation>
 <translation id="2599048253926156421">ਵਰਤੋਂਕਾਰ ਨਾਮ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 ਅਸੁਰੱਖਿਅਤ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}one{{NUM_SITES} ਅਸੁਰੱਖਿਅਤ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}other{{NUM_SITES} ਅਸੁਰੱਖਿਅਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}}</translation>
-<translation id="2603121359676416582">ਇਸ ਪੰਨੇ ਲਈ</translation>
 <translation id="2603656971249947488">ਟੈਬ ਪੱਟੀ</translation>
 <translation id="2604129989323098489">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਤੁਹਾਡੀਆਂ ਡਿਸਪਲੇਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਮੰਗਦੀਆਂ ਹਨ ਤਾਂ ਜੋ ਉਹ ਵਿੰਡੋਆਂ ਨੂੰ ਸਮਝਦਾਰੀ ਨਾਲ ਖੋਲ੍ਹ ਸਕਣ ਅਤੇ ਵਿਵਸਥਿਤ ਕਰ ਸਕਣ, ਜਿਵੇਂ ਕਿ ਦਸਤਾਵੇਜ਼ਾਂ ਜਾਂ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਦੀ ਸਮੱਗਰੀ ਨੂੰ ਨਾਲੋ-ਨਾਲ ਦਿਖਾਉਣਾ</translation>
 <translation id="2604255671529671813">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਗੜਬੜ</translation>
@@ -2954,6 +2954,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਜਾਂ ਮਿਟਾਉਣ ਦੇ ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="3232754137068452469">ਵੈੱਬ ਐਪ</translation>
 <translation id="3233271424239923319">Linux ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲਓ</translation>
+<translation id="3233577317461669428">ਕੋਈ ਹੋਰ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="3234251228180563751">ਵਰਤੋਂਕਾਰ ਨਾਮ 1000 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਦਾ ਹੈ</translation>
 <translation id="3234978181857588512">ਡੀਵਾਈਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="3237871032310650497">ਕੀ <ph name="PARTITION_SITE_NAME" /> 'ਤੇ ਪਾਰਟੀਸ਼ਨ ਕੀਤੀ <ph name="SITE_NAME" /> ਲਈ ਸਾਈਟ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
@@ -3028,7 +3029,6 @@
 <translation id="3292966601422448005">ਜੋ ਇਜਾਜ਼ਤਾਂ ਤੁਸੀਂ <ph name="APP_NAME" /> ਨੂੰ ਦਿੰਦੇ ਹੋ, ਉਹ ਇਸਦੀਆਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਲਈ ਵੀ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ।</translation>
 <translation id="3293080634164207409">ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="329324683265785818">ਚਲਾਓ / ਰੋਕੋ, ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ k</translation>
-<translation id="3293644607209440645">ਇਸ ਪੰਨੇ ਨੂੰ ਭੇਜੋ</translation>
 <translation id="3294437725009624529">ਮਹਿਮਾਨ</translation>
 <translation id="3294686910656423119">ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ</translation>
 <translation id="3295241308788901889">ਟੈਬ ਨੂੰ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -5728,6 +5728,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ਸੱਜੇ ਪਾਸੇ)</translation>
 <translation id="534449933710420173">ਬੇਨਾਮ ਫੋਲਡਰ</translation>
 <translation id="5345916423802287046">ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਐਪ ਨੂੰ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="5346059693449184483">ਤੁਹਾਡੇ ਮਨ ਵਿੱਚ ਕੀ ਹੈ?</translation>
 <translation id="5350116201946341974">ਮਨਮੌਜੀ</translation>
 <translation id="535123479159372765">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਲਿਖਤ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="5352257124367865087">ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -7004,6 +7005,7 @@
 <translation id="6356893102071098867">ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਸੀਂ ਸਹੀ ਖਾਤਾ ਚੁਣਿਆ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="6357305427698525450">ਕੁਝ ਸਮਰਥਿਤ ਲਿੰਕ ਹਾਲੇ ਵੀ <ph name="APP_NAME" /> ਜਾਂ  <ph name="APP_NAME_2" /> ਵਿੱਚ ਖੁੱਲ੍ਹਣਗੇ।</translation>
 <translation id="6357750620525943720">ਹੋਰ ਸਥਿਰ ਪਛਾਣਕਰਤਾ (ਉਦਾਹਰਨ ਲਈ, ਹੈਸ਼ ਜਾਂ UUID)</translation>
+<translation id="6357830294871526418">ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਟੈਬਾਂ</translation>
 <translation id="6358884629796491903">ਡਰੈਗਨ</translation>
 <translation id="6359640073754977254">ਆਖਰੀ ਟੈਬ 'ਤੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="6361850914223837199">ਗੜਬੜ ਵੇਰਵੇ:</translation>
@@ -7151,7 +7153,6 @@
 <translation id="6472893788822429178">ਹੋਮ ਬਟਨ ਦਿਖਾਓ</translation>
 <translation id="6473315466413288899">ਕੋਈ ਵਿਕਲਪ ਚੁਣੋ</translation>
 <translation id="6474021817475285003">Google Calendar ਵਿੱਚ ਹੋਰ ਦੇਖੋ</translation>
-<translation id="6474401088838630457">ਇਸ ਬਾਰੇ Gemini ਤੋਂ ਹੋਰ ਪੁੱਛੋ</translation>
 <translation id="6474498546677193336">ਸਾਂਝਾਕਰਨ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਐਪਲੀਕੇਸ਼ਨ ਇਸ ਫੋਲਡਰ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ। ਅਗਲੀ ਵਾਰ Linux ਬੰਦ ਹੋਣ 'ਤੇ ਫੋਲਡਰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6474884162850599008">Google Drive ਖਾਤੇ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="6476482583633999078">ਬੋਲਣ ਦੀ ਗਤੀ</translation>

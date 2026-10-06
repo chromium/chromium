@@ -289,7 +289,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1462951478840426066">Brug skrifttyperne på din computer, så du kan oprette indhold i høj kvalitet</translation>
 <translation id="1465457928007067810">IBAN er gemt på din Google-konto</translation>
 <translation id="1467432559032391204">Venstre</translation>
-<translation id="1471514598850585811">Computer</translation>
 <translation id="1472675084647422956">Vis flere</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Angiv mindst 3 ord for at få hjælp til at skrive</translation>
@@ -452,7 +451,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Prøv at kontakte systemadministratoren.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, udløber <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Computer</translation>
 <translation id="1739364174357629566">Opdater Known Traveler-nummer</translation>
 <translation id="1740404923954980840">Du kan afslutte fuld skærm ved at trække fra toppen og trykke på knappen Tilbage</translation>
 <translation id="1741474054575634405">Administrer loyalitetskort…</translation>
@@ -887,7 +885,6 @@ Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph 
 <translation id="2462724976360937186">Nøgle-id for certifikatautoritet</translation>
 <translation id="2465688316154986572">Hæftning</translation>
 <translation id="2465914000209955735">Administrer de filer, du har downloadet i Chrome</translation>
-<translation id="2466682894498377850">Fanen er sendt fra din <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Enhedens hardwarespecifikationer og statistik som f.eks. brugshistorik for CPU/RAM</translation>
 <translation id="2467421459221956357">Vil du bruge sensorer?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Køre Netværksdiagnosticering<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph 
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Indhold fra betalingssiden deles med Google for at give disse valgmuligheder.<ph name="END_BOLD" /> Betalingsplaner forudsætter, at du er kvalificeret. Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> for at skjule valgmuligheder for Betal senere.</translation>
 <translation id="2526062290525841862">Hvis du vil køre denne app, skal du genaktivere udviklertilstanden for isolerede webapps</translation>
 <translation id="2526280916094749336">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse gemmes på din Google-konto, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Skrivebord</translation>
 <translation id="2527451058878391043">Din CVC er på forsiden af dit kort. Det er den 4-cifrede kode øverst til højre over dit kortnummer.</translation>
 <translation id="2529899080962247600">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster ignoreres.</translation>
 <translation id="2530042584066815841">Lås og brug af mus</translation>
@@ -1739,7 +1735,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3905894480064208252">{0,plural, =1{FIlen er blokeret, så den ikke kan overføres}one{<ph name="FILE_COUNT" /> fil er blokeret, så den ikke kan åbnes}other{<ph name="FILE_COUNT" /> filer er blokeret, så de ikke kan åbnes}}</translation>
 <translation id="3906022360148923497">Ikon for betalingsmetode</translation>
 <translation id="3906234161316839040">Andre ordrer</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Få flere oplysninger om indlejret indhold</translation>
 <translation id="3920504717067627103">Certifikatpolitikker</translation>

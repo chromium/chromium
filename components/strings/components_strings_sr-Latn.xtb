@@ -289,7 +289,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1462951478840426066">Koristi fontove na računaru da biste mogli da pravite sadržaj visoke vernosti</translation>
 <translation id="1465457928007067810">IBAN je sačuvan na Google nalogu</translation>
 <translation id="1467432559032391204">Ulevo</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Unesite 3 ili više reči da biste dobili pomoć pri pisanju</translation>
@@ -452,7 +451,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Pokušajte da kontaktirate administratora sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ističe <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Računar</translation>
 <translation id="1739364174357629566">Ažurirajte broj registrovanog putnika</translation>
 <translation id="1740404923954980840">Da biste izašli iz režima celog ekrana, prevucite od vrha i dodirnite dugme Nazad</translation>
 <translation id="1741474054575634405">Upravljaj karticama lojalnosti…</translation>
@@ -887,7 +885,6 @@ Možete da uklonite ovaj predlog iz Chrome-a. Originalni izvor neće biti izbri
 <translation id="2462724976360937186">ID ključa autoriteta za izdavanje sertifikata</translation>
 <translation id="2465688316154986572">Spajanje</translation>
 <translation id="2465914000209955735">Upravljajte fajlovima koje ste preuzeli u Chrome-u</translation>
-<translation id="2466682894498377850">Kartica je poslata sa uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Hardverske specifikacije uređaja i statistika, na primer, istorija korišćenja procesora ili RAM-a</translation>
 <translation id="2467421459221956357">Želite da koristite senzore?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />da pokrenete dijagnostiku mreže<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Možete da uklonite ovaj predlog iz Chrome-a. Originalni izvor neće biti izbri
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Sadržaj sa stranice za plaćanje deli se sa Google-om da bi Google pružao ove opcije<ph name="END_BOLD" />. Planovi plaćanja podležu uslovima. Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />podešavanja plaćanja<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Da biste pokrenuli ovu aplikaciju, ponovo omogućite režim programera za izolovanu veb-aplikaciju</translation>
 <translation id="2526280916094749336">Možete da koristite sačuvane adrese u svim Google proizvodima. Ova adresa će biti sačuvana na Google nalogu <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Radna površina</translation>
 <translation id="2527451058878391043">CVC je na prednjoj strani kartice. To je 4-cifreni kôd u gornjem desnom uglu iznad broja kartice.</translation>
 <translation id="2529899080962247600">Ovo polje ne sme da ima više od <ph name="MAX_ITEMS_LIMIT" /> unosa. Svi budući unosi će se zanemariti.</translation>
 <translation id="2530042584066815841">Zaključavanje i korišćenje miša</translation>
@@ -1739,7 +1735,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3905894480064208252">{0,plural, =1{Prenos fajla je blokiran}one{Prenos <ph name="FILE_COUNT" /> fajla je blokiran}few{Prenos <ph name="FILE_COUNT" /> fajla je blokiran}other{Prenos <ph name="FILE_COUNT" /> fajlova je blokiran}}</translation>
 <translation id="3906022360148923497">Ikona načina plaćanja</translation>
 <translation id="3906234161316839040">Druge porudžbine</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saznajte više o ugrađenom sadržaju</translation>
 <translation id="3920504717067627103">Smernice sertifikata</translation>

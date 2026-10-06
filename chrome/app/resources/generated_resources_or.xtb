@@ -1034,6 +1034,7 @@
 <translation id="1790976235243700817">ଆକ୍ସେସ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1791662854739702043">ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
 <translation id="1792619191750875668">ସମ୍ପ୍ରସାରିତ ଡିସ୍‌ପ୍ଲେ</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> ପାଇଁ ପାସୱାର୍ଡ ଲୁଚାନ୍ତୁ</translation>
 <translation id="1794791083288629568">ଏହି ସମସ୍ୟାକୁ ସମାଧାନ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରିବାକୁ ମତାମତ ପଠାନ୍ତୁ।</translation>
 <translation id="1795214765651529549">କ୍ଲାସିକ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1699,7 +1700,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" />କୁ କଷ୍ଟମାଇଜ୍ କରି ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="2300434721407965566">ଆପଣଙ୍କ ବେଟେରୀକୁ ଅଧିକ ସମୟ ପର୍ଯ୍ୟନ୍ତ ଚାଲିବାରେ ସାହାଯ୍ୟ କରିବାକୁ 80%ରେ ଚାର୍ଜିଂକୁ ବନ୍ଦ କରିଦିଏ।</translation>
 <translation id="2301382460326681002">ଏକ୍ସଟେନ୍‌ସନ୍ ରୁଟ୍ ଡିରେକ୍ଟୋରୀ ଅବୈଧ ଅଟେ।</translation>
-<translation id="2301402091755573488">ସେୟାର୍ କରାଯାଇଥିବା ଟାବ୍</translation>
 <translation id="2304820083631266885">ଗ୍ରହ</translation>
 <translation id="2305202347479035002">ଏହା କିପରି କାମ କରେ</translation>
 <translation id="2306794767168143227">ଏହି ଡିଭାଇସରେ <ph name="BRAND" />ରେ ସେଭ କରନ୍ତୁ</translation>
@@ -1718,6 +1718,7 @@
 <translation id="2322622365472107569">ସମାପ୍ତି ସମୟ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ସେଭ୍ କରାଯାଇଥିବା ୱାଇ-ଫାଇ ନେଟୱାର୍କଗୁଡ଼ିକ</translation>
 <translation id="2323685460575935191">ସ୍କ୍ରୋଲ ବଟନଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
+<translation id="2325004050205455346">ବର୍ତ୍ତମାନର ଇତିହାସ</translation>
 <translation id="2325444234681128157">ପାସ୍‌ୱାର୍ଡ ମନେ ରଖନ୍ତୁ</translation>
 <translation id="2326188115274135041">ସ୍ୱଚାଳିତ ଭାବେ ଅନଲକ୍ ଚାଲୁ କରିବାକୁ PIN ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2326583548923775947">ଏହା ଏକ Google ଆକାଉଣ୍ଟ ନୁହେଁ। Chromeରେ ଆପଣ ସେଭ କରୁଥିବା ଆଇଟମଗୁଡ଼ିକ ଅନ୍ୟ ଡିଭାଇସରେ ଉପଲବ୍ଧ ହେବ ନାହିଁ।</translation>
@@ -2076,7 +2077,6 @@
 <translation id="2598710988533271874">ନୂଆ Chrome ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="2599048253926156421">ଉପଯୋଗକର୍ତ୍ତାନାମ କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 ଅସୁରକ୍ଷିତ ଏକ୍ସଟେନସନକୁ ବନ୍ଦ କରାଯାଇଛି}other{{NUM_SITES} ଅସୁରକ୍ଷିତ ଏକ୍ସଟେନସନକୁ ବନ୍ଦ କରାଯାଇଛି}}</translation>
-<translation id="2603121359676416582">ଏହି ପୃଷ୍ଠା ପାଇଁ</translation>
 <translation id="2603656971249947488">ଟ୍ୟାବଷ୍ଟ୍ରିପ୍</translation>
 <translation id="2604129989323098489">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ ଡିସପ୍ଲେ ବିଷୟରେ ସୂଚନା ପଚାରିଥାନ୍ତି, ଫଳରେ ସେମାନେ ଡକ୍ୟୁମେଣ୍ଟ କିମ୍ବା ପୂର୍ଣ୍ଣ-ସ୍କ୍ରିନ ବିଷୟବସ୍ତୁକୁ ପାଖାପାଖି ଦେଖାଇବା ପରି ବୁଝିବିଚାରି ୱିଣ୍ଡୋକୁ ଖୋଲି ଓ ପ୍ଲେସ କରିପାରିବେ</translation>
 <translation id="2604255671529671813">ନେଟ୍‍ୱାର୍କ ସଂଯୋଗରେ ତ୍ରୁଟି</translation>
@@ -2942,6 +2942,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" />କୁ ଏଡିଟ କିମ୍ବା ଡିଲିଟ କରିବା ପାଇଁ ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="3232754137068452469">ୱେବ୍ ଆପ୍</translation>
 <translation id="3233271424239923319">Linux ଆପ୍ସ ଏବଂ ଫାଇଲ୍‌ଗୁଡ଼ିକର ବ୍ୟାକ୍‍ଅପ୍ ନିଅନ୍ତୁ</translation>
+<translation id="3233577317461669428">ଅନ୍ୟ କୌଣସି ଡିଭାଇସ ମିଳିଲା ନାହିଁ</translation>
 <translation id="3234251228180563751">ଉପଯୋଗକର୍ତ୍ତାନାମରେ 1000ରୁ ଅଧିକ କେରେକ୍ଟର ଅଛି</translation>
 <translation id="3234978181857588512">ଡିଭାଇସରେ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" />ରେ ପାର୍ଟିସନ କରାଯାଇଥିବା <ph name="SITE_NAME" /> ପାଇଁ ସାଇଟ ଡାଟା ଡିଲିଟ କରିବେ?</translation>
@@ -3016,7 +3017,6 @@
 <translation id="3292966601422448005"><ph name="APP_NAME" /> ପାଇଁ ଆପଣ ଦେଇଥିବା ଅନୁମତିଗୁଡ଼ିକୁ ଏହାର ଇନଷ୍ଟଲ ହୋଇଥିବା ଆପ୍ସ ପାଇଁ ମଧ୍ୟ ଦିଆଯିବ।</translation>
 <translation id="3293080634164207409">ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="329324683265785818">ପ୍ଲେ / ବିରତ କରିବାର କୀବୋର୍ଡ ସର୍ଟକଟ କୀ ହେଉଛି k</translation>
-<translation id="3293644607209440645">ଏହି ପୃଷ୍ଠାକୁ ପଠାନ୍ତୁ</translation>
 <translation id="3294437725009624529">ଅତିଥି</translation>
 <translation id="3294686910656423119">ବ୍ୟବହାର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାସ୍ ରିପୋର୍ଟଗୁଡ଼ିକ</translation>
 <translation id="3295241308788901889">ଏକ ଟାବକୁ କାଷ୍ଟ କରାଯାଉଛି</translation>
@@ -5715,6 +5715,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ଡାହାଣ)</translation>
 <translation id="534449933710420173">ବେନାମୀ ଫୋଲ୍ଡର</translation>
 <translation id="5345916423802287046">ଆପଣ ସାଇନ୍ ଇନ୍ କରି ଆପ୍ ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="5346059693449184483">ଆପଣଙ୍କର ମନରେ କ'ଣ ଅଛି?</translation>
 <translation id="5350116201946341974">ମନମୁଖୀ</translation>
 <translation id="535123479159372765">ଅନ୍ୟ ଏକ ଡିଭାଇସରୁ କପି କରାଯାଇଥିବା ଟେକ୍ସଟ୍</translation>
 <translation id="5352257124367865087">ସାଇଟ ଅନୁମତିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -6988,6 +6989,7 @@
 <translation id="6356893102071098867">ଆପଣ ସଠିକ ଆକାଉଣ୍ଟ ବାଛିଛନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6357305427698525450">କିଛି ସମର୍ଥିତ ଲିଙ୍କ ଏବେ ବି <ph name="APP_NAME" /> କିମ୍ବା <ph name="APP_NAME_2" />ରେ ଖୋଲିବ।</translation>
 <translation id="6357750620525943720">ଅନ୍ୟ ସ୍ଥିର ଚିହ୍ନଟକାରୀଗୁଡ଼ିକ (ଉ.ଦା., ହାସ କିମ୍ବା UUIDଗୁଡ଼ିକ)</translation>
+<translation id="6357830294871526418">ଅନ୍ୟ ଡିଭାଇସରେ ଟାବ</translation>
 <translation id="6358884629796491903">ଡ୍ରାଗନ୍</translation>
 <translation id="6359640073754977254">ସ୍କ୍ରୋଲ କରି ଶେଷ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6361850914223837199">ତ୍ରୁଟି ବିବରଣୀ:</translation>
@@ -7135,7 +7137,6 @@
 <translation id="6472893788822429178">ମୂଳ ବଟନ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="6473315466413288899">ଏକ ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6474021817475285003">Google Calendarରେ ଅଧିକ ଦେଖନ୍ତୁ</translation>
-<translation id="6474401088838630457">ଏହି ବିଷୟରେ Geminiକୁ ଅଧିକ ପଚାରନ୍ତୁ</translation>
 <translation id="6474498546677193336">ଏକ ଆପ୍ଲିକେସନ୍ ଏହି ଫୋଲ୍ଡରକୁ ବ୍ୟବହାର କରୁଥିବା ଯୋଗୁଁ ଅନସେୟାର୍ କରାଯାଇପାରିଲା ନାହିଁ। ପରବର୍ତ୍ତୀ ସମୟରେ Linux ବନ୍ଦ ହେଲେ ଫୋଲ୍ଡରକୁ ଅନସେୟାର୍ କରାଯିବ।</translation>
 <translation id="6474884162850599008">Google Driveର ଆକାଉଣ୍ଟ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="6476482583633999078">ସ୍ପିଚ ସ୍ପିଡ</translation>

@@ -146,6 +146,7 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="417201473131094001">Understøttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4314240881330431451">Du kan bruge Google Lens i Chrome til at søge efter alt det, du ser</translation>
+<translation id="4315292299997584267">Log ind på dette website og i Chrome for at få adgang til dine adgangskoder og meget mere fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="4409545895715116037">Følgende adgangsnøgler blev ikke importeret til Google Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>
 <translation id="4430797724889237570">Åbn links fra Gmail, Maps, YouTube og andre apps i Chrome</translation>
 <translation id="447252321002412580">Vær med til at forbedre Chromes funktioner og ydeevne</translation>
@@ -163,6 +164,7 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="4742795653798179840">Chrome-dataene er slettet</translation>
 <translation id="4761869838909035636">Kør Chrome-sikkerhedstjekket</translation>
 <translation id="4798859546468762093">For at få personlig tilpasning og andre funktioner skal du medtage Chrome i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
+<translation id="4807700370495020449">Log ind på dette website og i Chrome for at få adgang til dine gemte oplysninger og meget mere på alle dine enheder</translation>
 <translation id="4819268619367838612">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">Vil du gøre Chrome til din standardbrowser?</translation>
 <translation id="484033449593719797">Understøttes ikke i Chrome Beta</translation>
@@ -173,6 +175,7 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="496747131578053942">Tip til Chrome: Søg efter det, du ser, med Google Lens</translation>
 <translation id="498985224078955265">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="5030102366287574140">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
+<translation id="5085038751173179818">Log ind på dette website og i Chrome for at få adgang til dine bogmærker og meget mere på alle dine enheder</translation>
 <translation id="5109169629909011627">Se Chrome-bogmærker</translation>
 <translation id="5112925986883715005">Se Chrome-læselisten</translation>
 <translation id="5116239826668864748">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
@@ -190,6 +193,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="5395376160638294582">Sørg for, at du altid kan bruge Chrome-dataene på din Google-konto</translation>
 <translation id="5404252374083197467">Vil du angive Chrome som standard?</translation>
 <translation id="5439191312780166229">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chrome-advarsler over.</translation>
+<translation id="544285856361623600">Log ind på dette website og i Chrome for at få adgang til dine bogmærker og meget mere fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="5453077102022695084">Video i fuld skærm, der viser, hvordan du angiver Chrome som standard</translation>
 <translation id="5460571915754665838">4. Vælg Chrome</translation>
 <translation id="5492504007368565877">Google Adgangs­kode­admin­istrator kan ikke tjekke dine adgangskoder.</translation>
@@ -309,6 +313,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="7642373780953416937">Modtag underretninger om eventuelle privatlivsrelaterede eller sikkerhedsmæssige problemer, som Chrome automatisk registrerer for dig.</translation>
 <translation id="7660356333829433649">Tjek igen på et andet tidspunkt for at få flere nyttige tips til, hvordan du får mest muligt ud af Chrome.</translation>
 <translation id="7662994914830945754">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
+<translation id="767157537088426800">Log ind på dette website og i Chrome for at få adgang til dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="7693590760643069321">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="7698568245838009292">Chrome anmoder om adgang til kameraet</translation>
 <translation id="7707877166818730835">Åbn min seneste fane i Chrome</translation>
@@ -386,6 +391,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="9122931302567044771">Det betyder, at Chrome anmoder om computerwebsitet hver gang.</translation>
 <translation id="9176561303811134420">Administrer betalingsmetoder i Chrome</translation>
 <translation id="9181628561061032322">Åbner de seneste faner i Chrome.</translation>
+<translation id="9199610579638564405">Log ind på dette website og i Chrome for at få adgang til dine gemte oplysninger og meget mere fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="924447568950697217">Gør Chrome til din standardbrowser</translation>
 <translation id="948597495737267756">Åbner siden med din Chrome-historik.</translation>
 <translation id="954347330803595209">Importér dine data for at bruge dine adgangskoder, din historik, dine bogmærker og dine kreditkort i Chrome</translation>

@@ -1040,6 +1040,7 @@
 <translation id="1790976235243700817">መዳረሻን አስወግድ</translation>
 <translation id="1791662854739702043">የተጫነ</translation>
 <translation id="1792619191750875668">የተቀጠለ ማሳያ</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">ለ<ph name="DOMAIN" /> የይለፍ ቃል ደብቅ</translation>
 <translation id="1794791083288629568">እኛ ይህን ችግር እንድንፈታው ለማገዝ ግብረመልስ ይላኩ።</translation>
 <translation id="1795214765651529549">የታወቀ ገጽታን ተጠቀም</translation>
@@ -1705,7 +1706,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" />ን ያብጁት እና ይቆጣጠሩት</translation>
 <translation id="2300434721407965566">ባትሪዎ የበለጠ እንዲቆይ ለማገዝ 80% ላይ ኃይል መሙላት ያቆማል</translation>
 <translation id="2301382460326681002">የቅጥያ ስርወ ማውጫ ልክ አይደለም።</translation>
-<translation id="2301402091755573488">የተጋራ ትር</translation>
 <translation id="2304820083631266885">ፕላኔት</translation>
 <translation id="2305202347479035002">እንዴት እንደሚሠራ</translation>
 <translation id="2306794767168143227">በዚህ መሣሪያ ላይ በ<ph name="BRAND" /> ላይ ያስቀምጡ</translation>
@@ -1724,6 +1724,7 @@
 <translation id="2322622365472107569">ማብቂያ ሰዓት <ph name="TIME" /></translation>
 <translation id="2323018538045954000">የተቀመጡ የWi-Fi አውታረ መረቦች</translation>
 <translation id="2323685460575935191">የሸብልል አዝራሮችን ደብቅ</translation>
+<translation id="2325004050205455346">የቅርብ ጊዜ ታሪክ</translation>
 <translation id="2325444234681128157">የይለፍ ቃል አስታውስ</translation>
 <translation id="2326188115274135041">ራስ-ሰር መክፈትን ለማብራት ፒን ያረጋግጡ</translation>
 <translation id="2326583548923775947">ይህ Google መለያ አይደለም። Chrome ላይ የሚያስቀምጧቸው ንጥሎች በሌሎች መሣሪያዎች ላይ አይገኙም።</translation>
@@ -2082,7 +2083,6 @@
 <translation id="2598710988533271874">አዲስ Chrome ይገኛል</translation>
 <translation id="2599048253926156421">የተጠቃሚው ስም ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 ደኅንነቱ ያልተጠበቀ ቅጥያ ጠፍቷል}one{{NUM_SITES} ደኅንነቱ ያልተጠበቀ ቅጥያ ጠፍቷል}other{{NUM_SITES} ደኅንነታቸው ያልተጠበቀ ቅጥያዎች ጠፍተዋል}}</translation>
-<translation id="2603121359676416582">ለዚህ ገጽ</translation>
 <translation id="2603656971249947488">የትር ድርድር</translation>
 <translation id="2604129989323098489">መስኮቶችን በብልሃት ለመክፈት እና ለማስቀመጥ ጣቢያዎች ብዙ ጊዜ ሰነዶችን ወይም የሙሉ መስኮት ማሳያ ይዘትን ጎን ለጎን እንደማሳየት ያሉ የእርስዎ ማሳያዎች መረጃን ይጠይቃሉ</translation>
 <translation id="2604255671529671813">የአውታረ መረብ ግንኙነት ስህተት</translation>
@@ -2948,6 +2948,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />፣ <ph name="ENTITY_INSTANCE_SUBLABEL" />ን ለማርትዕ ወይም ለመሰረዝ ተጨማሪ አማራጮች</translation>
 <translation id="3232754137068452469">የድር መተግበሪያ</translation>
 <translation id="3233271424239923319">Linux መተግበሪያዎችን እና ፋይሎችን በምትኬ ያስቀምጡ</translation>
+<translation id="3233577317461669428">ሌላ መሣሪያ አልተገኘም</translation>
 <translation id="3234251228180563751">የተጠቃሚው ስም ከ1000 ቁምፊዎች በላይ ነው</translation>
 <translation id="3234978181857588512">ወደ መሣሪያ አስቀምጥ</translation>
 <translation id="3237871032310650497">ለ<ph name="SITE_NAME" /> በ<ph name="PARTITION_SITE_NAME" /> ላይ የተከፋፈለ የጣቢያ ውሂብ ይሰረዝ?</translation>
@@ -3022,7 +3023,6 @@
 <translation id="3292966601422448005">ለ<ph name="APP_NAME" /> የሚፈቅዷቸው ፈቃዶች ለተጫኑ መተግበሪያዎቹም ይፈቀዳሉ።</translation>
 <translation id="3293080634164207409">ትሮችን ያክሉ</translation>
 <translation id="329324683265785818">አጫውት / ባለበት አቁም የቁልፍ ሰሌዳ አቋራጭ k</translation>
-<translation id="3293644607209440645">ይህን ገፅ ላክ</translation>
 <translation id="3294437725009624529">እንግዳ</translation>
 <translation id="3294686910656423119">የአጠቃቀም ስታቲስቲክስ እና የብልሽት ሪፖርቶች</translation>
 <translation id="3295241308788901889">አንድን ትር cast በማድረግ ላይ</translation>
@@ -5721,6 +5721,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ቀኝ)</translation>
 <translation id="534449933710420173">ያልተሰየመ አቃፊ</translation>
 <translation id="5345916423802287046">ሲገቡ መተግበሪያውን ይጀምሩ</translation>
+<translation id="5346059693449184483">ምን እያሰቡ ነው?</translation>
 <translation id="5350116201946341974">አስቂኝ</translation>
 <translation id="535123479159372765">ጽሁፍ ከሌላ መሣሪያ ተቀድቷል</translation>
 <translation id="5352257124367865087">የጣቢያ ፈቃዶችን አስተዳድር</translation>
@@ -6997,6 +6998,7 @@
 <translation id="6356893102071098867">ትክክለኛውን መለያ እንደመረጡ ይፈትሹ</translation>
 <translation id="6357305427698525450">አንዳንድ የሚደገፉ አገናኞች አሁንም በ<ph name="APP_NAME" /> ወይም <ph name="APP_NAME_2" /> ውስጥ ይከፈታሉ።</translation>
 <translation id="6357750620525943720">ሌሎች ቋሚ ለዪዎች (ለምሳሌ፣ ሃሾች ወይም UUIDዎች)</translation>
+<translation id="6357830294871526418">በሌሎች መሣሪያዎች ላይ ያሉ ትሮች</translation>
 <translation id="6358884629796491903">ድራጎን</translation>
 <translation id="6359640073754977254">ወደ መጨረሻ ትር ያሸብልሉ</translation>
 <translation id="6361850914223837199">የስህተት ዝርዝሮች፦</translation>
@@ -7144,7 +7146,6 @@
 <translation id="6472893788822429178">መነሻ አዝራር አሳይ</translation>
 <translation id="6473315466413288899">አንድ አማራጭ ይምረጡ</translation>
 <translation id="6474021817475285003">Google ቀን መቁጠሪያ ውስጥ ተጨማሪ ይመልከቱ</translation>
-<translation id="6474401088838630457">ስለዚህ ጉዳይ ተጨማሪ Gemini ጠይቅ</translation>
 <translation id="6474498546677193336">አንድ መተግበሪያ ይህን አቃፊ እየተጠቀመበት ስለሆነ አለማጋራት አልተቻለም። Linux በሚዘጋበት ቀጣዩ ጊዜ ላይ አቃፊው እንዳይጋራ ይደረጋል።</translation>
 <translation id="6474884162850599008">የGoogle Drive መለያን አላቅቅ</translation>
 <translation id="6476482583633999078">የንግግር ፍጥነት</translation>

@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">পাসওয়ার্ড</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}টি ঠিকানার মধ্যে {position} নম্বর}one{{count}টি ঠিকানার মধ্যে {position} নম্বর}other{{count}টি ঠিকানার মধ্যে {position} নম্বর}}</translation>
 <translation id="13813615483058219">কোনও সমস্যা হয়েছে। আপনার ইন্টারনেট কানেকশন চেক করুন, ভলিউম বাড়ান অথবা আবার চেষ্টা করুন।</translation>
+<translation id="138181280295369883">আপনার সব ডিভাইসে সেভ করা তথ্য ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="138692594145659985">কার্ড সেভ করার বিকল্প</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">পৃষ্ঠাটি অনুবাদ করুন</translation>
 <translation id="1539535193627863227">এই সাইটের জন্য কোনও পাসওয়ার্ড বা পাসকী পাওয়া যায়নি</translation>
 <translation id="1540800554400757039">ঠিকানা ১</translation>
+<translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> থেকে আপনার সব পাসওয়ার্ড ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="154312949627292154">আপনার অন্য ডিভাইস থেকে পাওয়া ট্যাবগুলি লক স্ক্রিনে খুলুন।</translation>
 <translation id="1544653821167545205">পৃষ্ঠার সারসংক্ষেপ দাও</translation>
 <translation id="1545749641540134597">QR কোড স্ক্যান করুন</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">আমি এই ফিচার কীভাবে ব্যবহার করব?</translation>
 <translation id="1901600657316773839">বেছে নেওয়া বজায় রাখুন</translation>
 <translation id="1902277226107477495">ঠিকানা শনাক্ত করার সুবিধা বন্ধ আছে। সেটিংস থেকে সেটি আবার চালু করুন।</translation>
+<translation id="1905582086181351638"><ph name="DEVICE_TYPE" /> থেকে আপনার সেভ করা তথ্য ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="1909201414196501151">সাইট যোগ করা ও পিন করা হয়েছে</translation>
 <translation id="1911619930368729126">Google ড্রাইভে আপলোড করুন</translation>
 <translation id="1925706052394657380">iOS-এ <ph name="BEGIN_BOLD" />ডিফল্ট অ্যাপ<ph name="END_BOLD" /> সেটিংস খুলুন</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">আপনার মাইক্রোফোন ব্যবহারের জন্য, সাইটগুলি অনুমতি চাইতে পারে</translation>
 <translation id="2219935992754556187">Chrome, ফেস আইডির মাধ্যমে আপনার সংবেদনশীল ব্যক্তিগত তথ্য সুরক্ষিত রাখে</translation>
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" আপনার ক্যামেরা অ্যাক্সেস করতে পারবে না</translation>
 <translation id="2223461067862937305">একটি QR কোড তৈরি করুন</translation>
 <translation id="222798989929574238">সার্চ করার জন্য আপনি ২০টির বেশি ফটো ব্যবহার করেছেন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">পরেরবার কোনও প্রাসঙ্গিক ফর্ম পূরণ করার সময়, Wallet-এ এই তথ্য সেভ করার সুযোগ পাবেন।</translation>
 <translation id="3868495844258915202">সম্পূর্ণ URL দেখুন</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
-<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" আপনার মাইক্রোফোন অ্যাক্সেস করতে পারবে না</translation>
 <translation id="3878657761594430423">শিট গ্র্যাবার</translation>
 <translation id="3884810423191119660">পাসওয়ার্ড নিরাপদে সেভ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন</translation>
 <translation id="3885587018298784481">ফ্যামিলি গ্রুপে যোগ দিন</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">ফটো লাইব্রেরি</translation>
 <translation id="429074084062258019">{count,plural, =1{গ্রুপে ট্যাব যোগ করুন}one{গ্রুপে ট্যাব যোগ করুন}other{গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="4290920330097335010">কখনও অনুমতি দেবেন না</translation>
+<translation id="4293154608148215505">আপনার ফোন</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> হিসেবে সাইন-ইন করেছেন?</translation>
 <translation id="4302061870579014542">পজিশন সেট করুন</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">প্রোডাক্ট ট্র্যাক করতে, 'ট্র্যাক করুন' বিকল্পে ট্যাপ করুন</translation>
 <translation id="5121618895923301719">আপনি আগে থেকেই এই প্রোডাক্টটি ট্র্যাক করছেন। এই পৃষ্ঠাটি <ph name="BEGIN_LINK" />মোবাইল বুকমার্কে<ph name="END_LINK" /> সেভ করা আছে।</translation>
 <translation id="512533434554095351">আপনার পাসওয়ার্ডের ক্ষেত্রে বিভিন্ন ধরনের সমস্যা আছে।</translation>
+<translation id="5126335625961252141">আপনার ট্যাবলেট</translation>
 <translation id="5128788795241319992">নতুন মেনু দেখুন</translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
+<translation id="5137568953923142260">একবার অনুমতি দিন</translation>
 <translation id="5141363746588976328">'আপনার ট্যাবে দাম কমার তথ্য সংক্রান্ত' কার্ড লুকান</translation>
 <translation id="514154868070499296">ফন্ট: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ট্যাব পাল্টানোর ফিচার থেকে বেরিয়ে আসুন</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">টেক্সটের সাইজ বড় করুন</translation>
 <translation id="5376135254804080693">সবকটি বাদ দিন</translation>
 <translation id="537853552771686272">আপনার আগ্রহের বিষয় ও সাইট ম্যানেজ করুন</translation>
+<translation id="5385892579392932755">আপনার ল্যাপটপ</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}টি বন্ধ আছে}one{{count}টি বন্ধ আছে}other{{count}টি বন্ধ আছে}}</translation>
 <translation id="5394975111793637642">'আপনার জন্য প্রোডাক্টের পর্যালোচনা' কার্ড লুকান</translation>
 <translation id="5414763847370083940">কোনও সাইটে দাম কমলে সেই সম্পর্কে আপনি বিজ্ঞপ্তি পাবেন।</translation>
@@ -1968,6 +1973,7 @@
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">আপনার ট্যাব বন্ধ করে এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="714291438898585119">তারা চিহ্নিত</translation>
+<translation id="7144458305574230431"><ph name="DEVICE_TYPE" /> থেকে আপনার সব বুকমার্ক ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="7145337554745942724">ড্রাইভিং লাইসেন্স সম্পর্কিত তথ্য আপডেট করা</translation>
 <translation id="7146301801400584641">ক্যালেন্ডার ফাইল উপলভ্য</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
@@ -1995,6 +2001,7 @@
 <translation id="722339453342442311">এখনই চেক করুন</translation>
 <translation id="7227235818314667565">শেয়ারিং ম্যানেজ করুন</translation>
 <translation id="7233006041370588369">লেখার জন্য পাসওয়ার্ড বেছে নিন।</translation>
+<translation id="7238074332967840767">নিরাপত্তা</translation>
 <translation id="723874023660911012">প্রোফাইল সুইচ করুন</translation>
 <translation id="7241135764990439166">ছদ্মবেশী মোড উপলভ্য নেই</translation>
 <translation id="7245288034498365666">সবকিছু গুছিয়ে রাখুন এবং সময় বাঁচান</translation>
@@ -2378,7 +2385,6 @@
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> দিন ট্যাব ব্যবহার করা হয়নি</translation>
 <translation id="8395180897620197612">লগ করা বন্ধ করুন</translation>
-<translation id="8399253661151100858">আপনি যখনই এই সাইটটি ভিজিট করবেন, "<ph name="SITE_DOMAIN" />" আপনার মাইক্রোফোন অ্যাক্সেস করতে পারবে</translation>
 <translation id="8407669440184693619">এই সাইটের জন্য কোনও পাসওয়ার্ড পাওয়া যায়নি</translation>
 <translation id="8407831512155324054">আপনার পাসওয়ার্ডটি শক্তিশালী বলে মনে হচ্ছে</translation>
 <translation id="8414283596511250978">আর কখনও পাসওয়ার্ড ভুলে যাবেন না</translation>
@@ -2393,7 +2399,6 @@
 <translation id="8439758443371991593">'পড়ার তালিকায় যোগ করুন' বিকল্পটি লুকান</translation>
 <translation id="8443986842926457191">URL-এ ২০৪৮টির বেশি অক্ষর রয়েছে</translation>
 <translation id="8449869326050867919">পাসওয়ার্ড শেয়ার করা হয়েছে</translation>
-<translation id="8458009459729013424">আপনি যখনই এই সাইটটি ভিজিট করবেন, "<ph name="SITE_DOMAIN" />" আপনার ক্যামেরা অ্যাক্সেস করতে পারবে</translation>
 <translation id="8461708300275916315">আপনার বয়স ১৮ বছরের চেয়ে কম হলে</translation>
 <translation id="8473815223723723001">Gemini-এর সাহায্যে ছবি এডিট করুন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>

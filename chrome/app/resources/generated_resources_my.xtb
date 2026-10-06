@@ -1041,6 +1041,7 @@
 <translation id="1790976235243700817">အသုံးပြုခွင့်ကို ဖယ်ရှားရန်</translation>
 <translation id="1791662854739702043">ထည့်သွင်းပြီးပါပြီ</translation>
 <translation id="1792619191750875668">ထပ်တိုးထားသည့် မျက်နှာပြင် ပြသမှု</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> အတွက် စကားဝှက်ဖျောက်ရန်</translation>
 <translation id="1794791083288629568">ဤပြဿနာကို ဖြေရှင်းရာတွင် ကူညီပေးရန် အကြံပြုချက် ပေးပို့ပါ။</translation>
 <translation id="1795214765651529549">ဂန္ထဝင်ကို အသုံးပြုရန်</translation>
@@ -1708,7 +1709,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ကို စိတ်ကြိုက်ပြင်ဆင်ပြီး ထိန်းချုပ်ပါ</translation>
 <translation id="2300434721407965566">သင့်ဘက်ထရီ ပိုကြာရှည်ခံအောင် ကူညီပေးရန် အားသွင်းခြင်းကို ၈၀% တွင် ရပ်လိုက်သည်။</translation>
 <translation id="2301382460326681002">အိတ်စတန်းရှင်း ရင်းမြစ် ဒါရိုက်ထရီ မမှန်ကန်ပါ။</translation>
-<translation id="2301402091755573488">မျှဝေထားသောတဘ်</translation>
 <translation id="2304820083631266885">ဂြိုဟ်</translation>
 <translation id="2305202347479035002">အလုပ်လုပ်ပုံ</translation>
 <translation id="2306794767168143227">ဤစက်ပေါ်ရှိ <ph name="BRAND" /> တွင် သိမ်းရန်</translation>
@@ -1727,6 +1727,7 @@
 <translation id="2322622365472107569">ပြီးဆုံးချိန်- <ph name="TIME" /></translation>
 <translation id="2323018538045954000">သိမ်းထားသော Wi-Fi ကွန်ရက်များ</translation>
 <translation id="2323685460575935191">လှိမ့်ရန်ခလုတ်များ ဖျောက်ရန်</translation>
+<translation id="2325004050205455346">လတ်တလော မှတ်တမ်း</translation>
 <translation id="2325444234681128157">စကားဝှက်ကို မှတ်ထားရန်</translation>
 <translation id="2326188115274135041">အလိုအလျောက်ဖွင့်ရန်ကို ဖွင့်ရန် ပင်နံပါတ်ကို အတည်ပြုပါ</translation>
 <translation id="2326583548923775947">၎င်းက Google Account မဟုတ်ပါ။ Chrome တွင် သိမ်းသောဖိုင်များကို အခြားစက်များတွင် သုံးနိုင်မည်မဟုတ်ပါ။</translation>
@@ -2085,7 +2086,6 @@
 <translation id="2598710988533271874">Chrome အသစ် ရပါပြီ</translation>
 <translation id="2599048253926156421">အသုံးပြုသူအမည်ကို ကလစ်ဘုတ်သို့ ကူးပြီးပြီ</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{မလုံခြုံသော နောက်ဆက်တွဲ ၁ ခုကို ပိတ်ထားသည်}other{မလုံခြုံသော နောက်ဆက်တွဲ {NUM_SITES} ခုကို ပိတ်ထားသည်}}</translation>
-<translation id="2603121359676416582">ဤစာမျက်နှာအတွက်</translation>
 <translation id="2603656971249947488">တဘ်ဘားတန်း</translation>
 <translation id="2604129989323098489">မှတ်တမ်းများ (သို့) စခရင်အပြည့် အကြောင်းအရာများကို ဘေးတိုက် ယှဉ်ပြခြင်းကဲ့သို့ ဝင်းဒိုးများဖွင့်ပြီး မှန်ကန်စွာ နေရာချနိုင်ရန် သင့်ဖန်သားပြင်ဆိုင်ရာ အချက်အလက်များကို ဝဘ်ဆိုက်များက ပုံမှန်အားဖြင့် တောင်းဆိုတတ်သည်</translation>
 <translation id="2604255671529671813">ကွန်ရက် ချိတ်ဆက်မှု အမှား</translation>
@@ -2952,6 +2952,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />၊ <ph name="ENTITY_INSTANCE_SUBLABEL" /> ကို တည်းဖြတ်ရန် (သို့) ဖျက်ရန် နောက်ထပ် ရွေးစရာများ</translation>
 <translation id="3232754137068452469">ဝဘ် အက်ပ်</translation>
 <translation id="3233271424239923319">Linux အက်ပ်နှင့် ဖိုင်များ အရန်သိမ်းသည်</translation>
+<translation id="3233577317461669428">အခြားစက် မတွေ့ပါ</translation>
 <translation id="3234251228180563751">အသုံးပြုသူအမည်က စာလုံးရေ ၁၀၀၀ ထက်များနေသည်</translation>
 <translation id="3234978181857588512">စက်တွင်သိမ်းရန်</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> တွင် ပိုင်းခြားထားသည့် <ph name="SITE_NAME" /> အတွက် ဝဘ်ဆိုက် ဒေတာကို ဖျက်မလား။</translation>
@@ -3026,7 +3027,6 @@
 <translation id="3292966601422448005"><ph name="APP_NAME" /> အတွက် သင်ခွင့်ပြုသော ခွင့်ပြုချက်များကို ၎င်းတွင် ထည့်သွင်းထားသော အက်ပ်များအတွက်လည်း ခွင့်ပြုပါမည်။</translation>
 <translation id="3293080634164207409">တဘ်များထည့်ရန်</translation>
 <translation id="329324683265785818">ဖွင့်ရန် / ခဏရပ်ရန်၊ လက်ကွက်ဖြတ်လမ်းများ k</translation>
-<translation id="3293644607209440645">ဤစာမျက်နှာကို ပို့ရန်</translation>
 <translation id="3294437725009624529">ဧည့်သည်</translation>
 <translation id="3294686910656423119">သုံးစွဲမှုဆိုင်ရာ အချက်အလက်ကိန်းဂဏန်းများနှင့် ပျက်စီးမှု အစီရင်ခံစာများ</translation>
 <translation id="3295241308788901889">တဘ်တစ်ခု ကာစ်လုပ်နေသည်</translation>
@@ -5726,6 +5726,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ညာ)</translation>
 <translation id="534449933710420173">အမည်မရှိဖိုင်တွဲ</translation>
 <translation id="5345916423802287046">သင်လက်မှတ်ထိုးဝင်သောအခါ အက်ပ်စတင်ရန်</translation>
+<translation id="5346059693449184483">သင် ဘာစဉ်းစားနေသလဲ</translation>
 <translation id="5350116201946341974">စိတ်ကစားခြင်း</translation>
 <translation id="535123479159372765">အခြားစက်မှ မိတ္တူကူးထားသည့် စာသား</translation>
 <translation id="5352257124367865087">ဝဘ်ဆိုက်ခွင့်ပြုချက်များ စီမံရန်</translation>
@@ -7004,6 +7005,7 @@
 <translation id="6356893102071098867">မှန်ကန်သည့်အကောင့်ကို ရွေးထားခြင်းရှိ၊ မရှိ ကြည့်ပါ</translation>
 <translation id="6357305427698525450">ပံ့ပိုးထားသောလင့်ခ်အချို့ကို <ph name="APP_NAME" /> (သို့) <ph name="APP_NAME_2" /> တွင် ဖွင့်နိုင်ပါဦးမည်။</translation>
 <translation id="6357750620525943720">အခြားတည်ငြိမ်သော သတ်မှတ်မှုစနစ်များ (ဥပမာ ဟက်ရှ်ကုဒ်များ သို့မဟုတ် UUID များ)</translation>
+<translation id="6357830294871526418">အခြားစက်များရှိ တဘ်များ</translation>
 <translation id="6358884629796491903">နဂါး</translation>
 <translation id="6359640073754977254">နောက်ဆုံးတဘ်သို့ လှိမ့်ရန်</translation>
 <translation id="6361850914223837199">မှားယွင်းမှု အသေးစိတ်များ:</translation>
@@ -7151,7 +7153,6 @@
 <translation id="6472893788822429178">မူလစာမျက်နှာ ခလုတ် ပြရန်</translation>
 <translation id="6473315466413288899">တစ်ခု ရွေးပါ</translation>
 <translation id="6474021817475285003">Google Calendar တွင် ပိုမြင်ရရန်</translation>
-<translation id="6474401088838630457">၎င်းအကြောင်း Gemini ကို ပိုမေးရန်</translation>
 <translation id="6474498546677193336">အပလီကေးရှင်းက ဤဖိုင်တွဲကို အသုံးပြုနေသဖြင့် မျှဝေမှု မလုပ်၍မရပါ။ နောင်တွင် Linux ပိတ်လိုက်သည့်အခါ ဖိုင်တွဲကို မျှဝေမှု မလုပ်တော့ပါ။</translation>
 <translation id="6474884162850599008">Google Drive အကောင့်နှင့် ချိတ်ဆက်မှု ဖြတ်တောက်ရန်</translation>
 <translation id="6476482583633999078">စကားသံ မြန်နှုန်း</translation>

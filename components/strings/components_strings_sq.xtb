@@ -289,7 +289,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1462951478840426066">Përdor fontet në kompjuterin tënd që të mund të krijosh përmbajtje me saktësi të lartë</translation>
 <translation id="1465457928007067810">Numri IBAN u ruajt në "Llogarinë tënde të Google"</translation>
 <translation id="1467432559032391204">Majtas</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Shfaq më shumë</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Fut 3 ose më shumë fjalë për të marrë ndihmë për të shkruarit</translation>
@@ -452,7 +451,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Kompjuter</translation>
 <translation id="1739364174357629566">Përditëso numrin e udhëtarit të njohur</translation>
 <translation id="1740404923954980840">Për të dalë nga ekrani i plotë, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="1741474054575634405">Menaxho kartat e besnikërisë...</translation>
@@ -887,7 +885,6 @@ Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshih
 <translation id="2462724976360937186">ID-ja e çelësit të Autoritetit të Certifikimit</translation>
 <translation id="2465688316154986572">Kapje me tel</translation>
 <translation id="2465914000209955735">Menaxho skedarët që ke shkarkuar në Chrome</translation>
-<translation id="2466682894498377850">Skeda u dërgua nga pajisja jote <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Specifikimet dhe statistikat e harduerit të pajisjes, si p.sh. historiku i përdorimit të CPU/RAM</translation>
 <translation id="2467421459221956357">Të përdoren sensorët?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e rrjetit<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshih
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Përmbajtja nga faqja e përfundimit të blerjes ndahet me Google për të ofruar këto opsione.<ph name="END_BOLD" /> Planet e pagesave janë objekt i kualifikueshmërisë. Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />cilësimet e pagesës<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Për ta ekzekutuar këtë aplikacion, aktivizo përsëri modalitetin "si zhvillues" për "Aplikacionin e izoluar të uebit"</translation>
 <translation id="2526280916094749336">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë do të ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Desktopi</translation>
 <translation id="2527451058878391043">Numri CVC është në pjesën e përparme të kartës sate. Ai është kodi me 4 shifra në krye djathtas mbi numrin e kartës sate.</translation>
 <translation id="2529899080962247600">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha hyrjet e mëtejshme do të shpërfillen.</translation>
 <translation id="2530042584066815841">Kyçja dhe përdorimi i miut</translation>
@@ -1739,7 +1735,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3905894480064208252">{0,plural, =1{Transferimi i skedarit është bllokuar}other{Transferimi i <ph name="FILE_COUNT" /> skedarëve është bllokuar}}</translation>
 <translation id="3906022360148923497">Ikona e instrumentit të pagesës</translation>
 <translation id="3906234161316839040">Porositë e tjera</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Mëso më shumë për përmbajtjet e integruara</translation>
 <translation id="3920504717067627103">Politikat e certifikatës</translation>

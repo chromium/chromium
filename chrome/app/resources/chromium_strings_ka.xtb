@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Chromium-ის შესახებ</translation>
 <translation id="1186645291482254714">მიიღეთ თქვენს ტელეფონში ფასების მეთვალყურის გაფრთხილებები Chromium-ის მეშვეობით</translation>
 <translation id="1203500561924088507">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ბრაუზერი უნდა გადატვირთოთ.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> მოლოდინის რეჟიმშია. დათვალიერების უსაფრთხოების დასაცავად Chromium განახლდება, როდესაც <ph name="IDLE_DURATION" /> განმავლობაში უმოქმედო იქნებით.</translation>
 <translation id="1232234696885483911">სურათების ძიების გახსნისას გვერდის სათაური, URL და კონტენტი, PDF-ების ჩათვლით, ავტომატურად გაიგზავნება სერვერზე. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">როცა შესული ხართ, Chromium-ში შეგიძლიათ გამოიყენოთ თქვენი პაროლები და სხვა კონტენტი თქვენი Google ანგარიშიდან. ამ პარამეტრის შესაცვლელად გახსენით „თქვენი ანგარიში Chromium-ში“.</translation>
 <translation id="1244381985120794049">Gemini-ს ჩვენება Chromium-ში Mac-ის მენიუს ზოლში</translation>
@@ -230,6 +231,7 @@
 <translation id="3286538390144397061">გადატვირთეთ ახლა</translation>
 <translation id="328888136576916638">Google API გასაღები გამოტოვებულია. Chromium-ის ზოგიერთი ფუნქცია გამორთული იქნება.</translation>
 <translation id="3296368748942286671">ფონური პროგრამების გაშვების გაგრძელება, როდესაც Chromium იხურება</translation>
+<translation id="3300632735252839402">Chromium განახლდება, როცა გასული იქნებით</translation>
 <translation id="3313189106987092621">Chromium გაგაფრთხილებთ ნებისმიერი საიტის დაუცველი კავშირის გამოყენებით ჩატვირთვამდე</translation>
 <translation id="3316771292331273802">Chromium-ის ყველა ფანჯრის დახურვისას სისტემიდან გამოხვალთ საიტების უმეტესობაზე, გამონაკლისია თქვენი Google ანგარიში, თუ მასში შესული ხართ Chromium-იდან. ვებსაიტებმა რომ დაგიმახსოვროთ, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">ძიების არეალის ზედა მარჯვენა კუთხე: მარჯვნივ <ph name="RIGHT" />%, ზემოთ <ph name="TOP" />%</translation>
@@ -238,6 +240,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">გსურთ არსებულ Chromium პროფილზე გადართვა?</translation>
 <translation id="3412460710772753638">პაროლების მმართველში ამ მოწყობილობაზე</translation>
+<translation id="3425452599984451640">Chromium-ს სურს განახლება</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" />-დან თქვენი სანიშნეებისა და სხვა კონტენტის მისაღებად გაიარეთ ავტორიზაცია Chromium-ში</translation>
 <translation id="3438772217992559640">ამ ჩანართში ძიება სურათების ძიებით</translation>
 <translation id="3455907671758333080">გაახანგრძლივეთ გაძლიერებული Safe Browsing Chromium-ით თქვენს ტელეფონში</translation>

@@ -764,6 +764,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4092709865241032354">For å hjelpe Google Passordlagring med å lagre påloggingsinformasjonen din, legg til brukernavnet ditt for dette nettstedet</translation>
 <translation id="4095146165863963773">Slette appdataene?</translation>
 <translation id="4095483462103784441">Opprett en ny fanegruppe</translation>
+<translation id="4098552968111329864">For å sikre arbeidet ditt i Chrome kan organisasjonen din se eller administrere bestemt informasjon når du er logget på Chrome</translation>
 <translation id="4105527135143631701">Oppdatering av Google Passordlagring er åpnet</translation>
 <translation id="4107207375883769436">Organisasjonen din kan ha behov for å se og administrere nettlesingsdata i jobbprofilen din, for eksempel nettleserlogg og passord</translation>
 <translation id="4113030288477039509">Styres av administratoren din</translation>
@@ -1241,6 +1242,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6039379616847168523">Gå til den neste fanen</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="604124094241169006">Automatisk</translation>
+<translation id="6041959688070413372">Administrer tilkoblingen mellom søketjenester og Google Workspace-apper, for eksempel Google Disk</translation>
 <translation id="6042308850641462728">Mer</translation>
 <translation id="6047066316630165190">Åpne fanevelgeren i rutenettet</translation>
 <translation id="604996488070107836">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av en ukjent feil.</translation>
@@ -1769,6 +1771,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7929587383660661825">Chrome fjerner automatisk tillatelser fra nettsteder som misbruker varsler, eller som du ikke har besøkt nylig</translation>
 <translation id="7934668619883965330">Kan ikke laste ned filen. Filformatet støttes ikke.</translation>
 <translation id="7951102827450076904">Åpne alltid nedlastede PDF-filer</translation>
+<translation id="7952148074468405586">Finn ut mer om <ph name="BEGIN_LINK" />informasjon organisasjonen din kan se eller administrere<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">For å åpne et nytt vindu må du redusere det totale antallet aktive vinduer til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre.</translation>
 <translation id="7956713633345437162">Bokmerker for mobil</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler det faktiske kortet ditt for å beskytte deg mot potensiell svindel. <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>

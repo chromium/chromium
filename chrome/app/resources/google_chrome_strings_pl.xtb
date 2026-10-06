@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Pobieranie zostało zablokowane przez Chrome, ponieważ ten typ pliku nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="1197860368385086056">Gdy następnym razem otworzysz Chrome na urządzeniu <ph name="DEVICE_TYPE" />, pojawi się komunikat przypominający o włączeniu alertów funkcji śledzenia cen.</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
+<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" /> oczekuje na instalację. Aby zapewnić Ci bezpieczeństwo podczas przeglądania, Chrome zaktualizuje się, gdy przez <ph name="IDLE_DURATION" /> nie będziesz nic robić.</translation>
 <translation id="1226003169284463347">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="1278833599417554002">Uruchom ponownie, aby zaktualizować &amp;Chrome</translation>
 <translation id="1289911795790071537">Otwórz wyszukiwanie w Chrome</translation>
@@ -498,6 +499,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5941830788786076944">Ustaw Google Chrome jako domyślną przeglądarkę</translation>
 <translation id="5947104538377036631">Skrót w Chrome</translation>
 <translation id="5960071705175224773">Twoje ustawienia zmieniła nieznana aplikacja</translation>
+<translation id="5960404530854194706">Chrome zaktualizuje się, gdy nie będziesz korzystać z urządzenia</translation>
 <translation id="5980111191913430208">Rozszerzenia, aplikacje i motywy z nieznanych źródeł mogą wyrządzić szkody na Twoim urządzeniu. Zespół Chromium zaleca, aby instalować je tylko ze sklepu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Pobieram… Pozostało: <ph name="HOURS" /> godz.</translation>
 <translation id="6008161919456049856">Hasła, formy płatności i adresy zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chrome, zaloguj się ponownie.</translation>
@@ -581,6 +583,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6556755379298048869">Wyszukuj za pomocą skrótu klawiszowego.</translation>
 <translation id="6585124893636629274">Zamknij Gemini w Chrome</translation>
 <translation id="659498884637196217">W menedżerze haseł Google w przypadku tego urządzenia</translation>
+<translation id="660312897435669152">Chrome chce się zaktualizować</translation>
 <translation id="6612152958212564387">Nie wysyłasz do Google statystyk użytkowania ani raportów o awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Ustaw Chrome jako domyślną przeglądarkę, aby synchronizować hasła, zakładki i historię na wszystkich swoich urządzeniach.</translation>
 <translation id="6621391692573306628">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome</translation>

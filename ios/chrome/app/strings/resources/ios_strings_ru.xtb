@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{Адрес {position} из {count}}one{Адрес {position} из {count}}few{Адрес {position} из {count}}many{Адрес {position} из {count}}other{Адрес {position} из {count}}}</translation>
 <translation id="13813615483058219">Что-то пошло не так. Проверьте подключение к интернету, увеличьте громкость или повторите попытку.</translation>
+<translation id="138181280295369883">Войдите, чтобы получить доступ к сохраненной информации и другим данным на всех устройствах.</translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="138618066238211776">Продолжить как <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Параметры сохранения карты</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Перевести страницу</translation>
 <translation id="1539535193627863227">Нет паролей или ключей доступа для этого сайта.</translation>
 <translation id="1540800554400757039">Адрес, строка 1</translation>
+<translation id="1543035591122163372">Войдите, чтобы получить доступ к паролям и другим данным с <ph name="DEVICE_TYPE" />.</translation>
 <translation id="154312949627292154">Открывать вкладки, полученные с других ваших устройств, на заблокированном экране.</translation>
 <translation id="1544653821167545205">Пересказать страницу</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Как использовать функцию</translation>
 <translation id="1901600657316773839">Сохранить выбор</translation>
 <translation id="1902277226107477495">Обнаружение адресов выключено. Снова включить его можно в настройках.</translation>
+<translation id="1905582086181351638">Войдите в аккаунт, чтобы получить доступ к сохраненной информации и другим данным с <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1909201414196501151">Сайт добавлен и закреплен.</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1925706052394657380">Откройте <ph name="BEGIN_BOLD" />Приложения по умолчанию<ph name="END_BOLD" /> в настройках iOS.</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Сайты могут запрашивать разрешение на использование микрофона</translation>
 <translation id="2219935992754556187">Chrome защищает ваши конфиденциальные данные с помощью Face ID.</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
-<translation id="2222149859067335623">У сайта <ph name="SITE_DOMAIN" /> нет доступа к камере.</translation>
 <translation id="2223461067862937305">Создать QR-код</translation>
 <translation id="222798989929574238">Вы использовали для поиска более 20 фото</translation>
 <translation id="2230173723195178503">Веб-страница загружена</translation>
@@ -901,7 +903,6 @@
 <translation id="386224966259596343">Вы сможете сохранить эту информацию в Кошельке, когда в следующий раз будете заполнять подходящую форму.</translation>
 <translation id="3868495844258915202">Показать URL полностью</translation>
 <translation id="3875783148670536197">Подробнее</translation>
-<translation id="3877211858413020188">У сайта <ph name="SITE_DOMAIN" /> нет доступа к микрофону.</translation>
 <translation id="3878657761594430423">Маркер нижнего экрана</translation>
 <translation id="3884810423191119660">Сохраняйте пароли в безопасности, чтобы упростить вход на сайты и в приложения.</translation>
 <translation id="3885587018298784481">Вступите в семейную группу</translation>
@@ -1038,6 +1039,7 @@
 <translation id="4289309730265289297">Фотогалерея</translation>
 <translation id="429074084062258019">{count,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
 <translation id="4290920330097335010">Запретить</translation>
+<translation id="4293154608148215505">вашего телефона</translation>
 <translation id="4294506173142861371">Войти как <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Выбрать</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
@@ -1310,8 +1312,10 @@
 <translation id="5119329531859909472">Чтобы отслеживать цену на товар, выберите "Отслеживать".</translation>
 <translation id="5121618895923301719">Вы уже отслеживаете этот товар. Эта страница добавлена в папку <ph name="BEGIN_LINK" />Закладки на мобильном устройстве<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">У вас есть несколько ненадежных паролей.</translation>
+<translation id="5126335625961252141">вашего планшета</translation>
 <translation id="5128788795241319992">Узнайте больше о возможностях нового меню</translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
+<translation id="5137568953923142260">Только сейчас</translation>
 <translation id="5141363746588976328">Скрыть карточку "Скидки на вкладках"</translation>
 <translation id="514154868070499296">Шрифт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Закрыть переключатель вкладок</translation>
@@ -1390,6 +1394,7 @@
 <translation id="5371112366564891538">Увеличить размер шрифта</translation>
 <translation id="5376135254804080693">Отменить выбор</translation>
 <translation id="537853552771686272">Управляйте темами и сайтами, которые вам интересны</translation>
+<translation id="5385892579392932755">вашего ноутбука</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} вкладка закрыта}one{{count} вкладка закрыта}few{{count} вкладки закрыты}many{{count} вкладок закрыты}other{{count} вкладки закрыто}}</translation>
 <translation id="5394975111793637642">Скрыть карточку "Отзывы о товарах для вас"</translation>
 <translation id="5414763847370083940">Если на одном из сайтов появится скидка, вы получите оповещение.</translation>
@@ -1967,6 +1972,7 @@
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Вкладки будут закрыты, а данные о работе в браузере удалены</translation>
 <translation id="714291438898585119">Помеченные</translation>
+<translation id="7144458305574230431">Войдите в аккаунт, чтобы получить доступ к закладкам и другим данным с <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7145337554745942724">Обновить данные водительского удостоверения?</translation>
 <translation id="7146301801400584641">Доступен файл календаря</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
@@ -1994,6 +2000,7 @@
 <translation id="722339453342442311">Выполнить проверку</translation>
 <translation id="7227235818314667565">Общий доступ</translation>
 <translation id="7233006041370588369">Выберите, какой пароль использовать.</translation>
+<translation id="7238074332967840767">Безопасность</translation>
 <translation id="723874023660911012">Выбрать другой профиль</translation>
 <translation id="7241135764990439166">Режим инкогнито недоступен.</translation>
 <translation id="7245288034498365666">Организуйте работу и экономьте время.</translation>
@@ -2377,7 +2384,6 @@
 <translation id="8393700583063109961">Отправить сообщение</translation>
 <translation id="8393889347136007944">Не использовались в течение <ph name="THRESHOLD" /> дн.</translation>
 <translation id="8395180897620197612">Не вести журнал</translation>
-<translation id="8399253661151100858">Сайт <ph name="SITE_DOMAIN" /> может использовать микрофон, когда вы его посещаете.</translation>
 <translation id="8407669440184693619">Нет паролей для этого сайта.</translation>
 <translation id="8407831512155324054">Нет простых паролей</translation>
 <translation id="8414283596511250978">Ваши пароли всегда с вами</translation>
@@ -2392,7 +2398,6 @@
 <translation id="8439758443371991593">Скрыть действие "Добавить в список для чтения"</translation>
 <translation id="8443986842926457191">URL должен быть не длиннее 2048 символов.</translation>
 <translation id="8449869326050867919">Доступ к паролю предоставлен</translation>
-<translation id="8458009459729013424">Сайт <ph name="SITE_DOMAIN" /> может использовать камеру, когда вы его посещаете.</translation>
 <translation id="8461708300275916315">Если вам ещё нет 18 лет</translation>
 <translation id="8473815223723723001">Изменить изображение с помощью Gemini</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>

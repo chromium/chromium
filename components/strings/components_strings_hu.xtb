@@ -289,7 +289,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1462951478840426066">A számítógépen lévő betűtípusok használata nagy pontosságú tartalmak készítéséhez</translation>
 <translation id="1465457928007067810">IBAN-kód mentve a Google-fiókjába</translation>
 <translation id="1467432559032391204">Balra</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Továbbiak megjelenítése</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Ha segítségre van szüksége az írással kapcsolatban, írjon be legalább három szót</translation>
@@ -452,7 +451,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Próbálja felvenni a kapcsolatot a rendszergazdával.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, lejárat dátuma: <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Számítógép</translation>
 <translation id="1739364174357629566">Ismert utazói szám (known traveler number, KTN) frissítése</translation>
 <translation id="1740404923954980840">A teljes képernyős nézetből való kilépéshez húzza lefelé az ujját a képernyő tetejétől, és érintse meg a Vissza gombot.</translation>
 <translation id="1741474054575634405">Hűségkártyák kezelése…</translation>
@@ -887,7 +885,6 @@ Ezt a javaslatot eltávolíthatja a Chrome-ból. Az eredeti forrás nem fog tör
 <translation id="2462724976360937186">Tanúsítványkibocsátó kulcsazonosítója</translation>
 <translation id="2465688316154986572">Kapocs</translation>
 <translation id="2465914000209955735">Kezelheti a Chrome-ban letöltött fájlokat.</translation>
-<translation id="2466682894498377850">A(z) <ph name="DEVICE_NAME" /> eszközéről küldött lap</translation>
 <translation id="2467272921457885625">Eszköz hardverspecifikációi és statisztikai adatai (például a CPU/RAM kihasználtságának előzményei)</translation>
 <translation id="2467421459221956357">Engedélyezi az érzékelőket?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Hálózati diagnosztika futtatása<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Ezt a javaslatot eltávolíthatja a Chrome-ból. Az eredeti forrás nem fog tör
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />A fizetési oldal tartalmát megosztjuk a Google-lal, hogy felkínálhassuk ezeket a lehetőségeket.<ph name="END_BOLD" /> A fizetési konstrukciók a jogosultságtól függnek. A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LINK" />fizetési beállításokhoz<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Az alkalmazás futtatásához engedélyezze újra az izolált internetes alkalmazások fejlesztői módját</translation>
 <translation id="2526280916094749336">A mentett címeket használhatja a Google-termékekben. Ezt a címet az Ön Google-fiókjába (<ph name="ACCOUNT" />) menti a rendszer.</translation>
-<translation id="2526590354069164005">Asztal</translation>
 <translation id="2527451058878391043">A CVC-kód a kártyája elején található. Ez egy négyjegyű kód a kártyaszám jobb felső sarkában.</translation>
 <translation id="2529899080962247600">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A további bejegyzéseket figyelmen kívül hagyja a rendszer.</translation>
 <translation id="2530042584066815841">Egér zárolása és használata</translation>
@@ -1737,7 +1733,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3905894480064208252">{0,plural, =1{A fájl átvitele le van tiltva}other{<ph name="FILE_COUNT" /> fájl átvitele le van tiltva}}</translation>
 <translation id="3906022360148923497">Fizetési eszköz ikonja</translation>
 <translation id="3906234161316839040">További rendelések</translation>
-<translation id="3906954721959377182">Táblagép</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">További információ a beágyazott tartalmakról</translation>
 <translation id="3920504717067627103">Tanúsítvány-irányelvek</translation>

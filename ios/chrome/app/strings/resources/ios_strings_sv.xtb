@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Lösenord</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} av {count} adress}other{{position} av {count} adresser}}</translation>
 <translation id="13813615483058219">Något gick fel. Kontrollera internetanslutningen, höj volymen eller försök igen.</translation>
+<translation id="138181280295369883">Logga in om du vill få din sparade information med mera på alla dina enheter</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="138618066238211776">Fortsätt som <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Alternativ för att spara kort</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Översätt sidan</translation>
 <translation id="1539535193627863227">Inga lösenord eller nycklar hittades för den här webbplatsen</translation>
 <translation id="1540800554400757039">Adressrad 1</translation>
+<translation id="1543035591122163372">Logga in om du vill få dina lösenord med mera från <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Öppna flikar som du har fått från andra enheter från låsskärmen.</translation>
 <translation id="1544653821167545205">Sammanfatta sidan</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">Hur använder jag den här funktionen?</translation>
 <translation id="1901600657316773839">Behåll markeringen</translation>
 <translation id="1902277226107477495">Adressidentifiering har inaktiverats. Aktivera funktionen igen i inställningarna.</translation>
+<translation id="1905582086181351638">Logga in för att få din sparade information med mera från <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Webbplatsen har lagts till och fästs</translation>
 <translation id="1911619930368729126">Ladda upp till Google Drive</translation>
 <translation id="1925706052394657380">Öppna inställningarna för <ph name="BEGIN_BOLD" />standardappar<ph name="END_BOLD" /> i iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Webbplatser får begära åtkomst till mikrofonen</translation>
 <translation id="2219935992754556187">Chrome skyddar dina känsliga uppgifter med Face ID</translation>
 <translation id="2220529011494928058">Rapportera ett problem</translation>
-<translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> blockeras från att komma åt kameran</translation>
 <translation id="2223461067862937305">Skapa en QR-kod</translation>
 <translation id="222798989929574238">Du använde över 20 foton för att söka</translation>
 <translation id="2230173723195178503">Webbsidan har lästs in</translation>
@@ -782,7 +784,6 @@
 <translation id="3459644598174926977">Använd Gemini Live för att ställa frågor om en sida, brainstorma högt och diskutera fram och tillbaka.</translation>
 <translation id="3462768334899086950">Det innebär att du förlorar din osparade fil och dina aktuella flikar</translation>
 <translation id="3464194322481586217">Det gick inte att bevaka priset.</translation>
-<translation id="3468009081835548033">Tillåts en gång</translation>
 <translation id="3469117812148449995">Alternativ för att spara lösenord</translation>
 <translation id="3472469028191701821">Öppnas i en ny flik</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{för {COUNT} webbplats eller app}other{för {COUNT} webbplatser och appar}}</translation>
@@ -902,7 +903,6 @@
 <translation id="386224966259596343">Du får möjlighet att spara dessa uppgifter i Wallet nästa gång du fyller i ett relevant formulär.</translation>
 <translation id="3868495844258915202">Visa fullständig webbadress</translation>
 <translation id="3875783148670536197">Visa hur man gör</translation>
-<translation id="3877211858413020188"><ph name="SITE_DOMAIN" /> blockeras från att komma åt mikrofonen</translation>
 <translation id="3878657761594430423">Arkplockare</translation>
 <translation id="3884810423191119660">Spara lösenord på ett säkert sätt så att du enkelt kan logga in på webbplatser och i appar</translation>
 <translation id="3885587018298784481">Gå med i en familjegrupp</translation>
@@ -1039,6 +1039,7 @@
 <translation id="4289309730265289297">Fotobibliotek</translation>
 <translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="4290920330097335010">Tillåt aldrig</translation>
+<translation id="4293154608148215505">din mobil</translation>
 <translation id="4294506173142861371">Vill du logga in som <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
@@ -1311,6 +1312,7 @@
 <translation id="5119329531859909472">Tryck på Bevaka för att bevaka produkten</translation>
 <translation id="5121618895923301719">Du bevakar redan den här produkten. Den här sidan har sparats i <ph name="BEGIN_LINK" />bokmärken på telefonen<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flera problem med lösenord.</translation>
+<translation id="5126335625961252141">din surfplatta</translation>
 <translation id="5128788795241319992">Utforska den nya menyn</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="5137568953923142260">Tillåt en gång</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5371112366564891538">Öka textstorleken</translation>
 <translation id="5376135254804080693">Avmarkera alla</translation>
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
+<translation id="5385892579392932755">din laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} har stängts}other{{count} har stängts}}</translation>
 <translation id="5394975111793637642">Dölj kortet Produktrecensioner för dig</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
@@ -1969,6 +1972,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Flikarna stängs och webbinformationen rensas</translation>
 <translation id="714291438898585119">Stjärnmärkta</translation>
+<translation id="7144458305574230431">Logga in om du vill ha dina bokmärken och annat från <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Uppdatera körkortet</translation>
 <translation id="7146301801400584641">Kalenderfil tillgänglig</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
@@ -2380,7 +2384,6 @@ Du kan starta om när som helst.</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8393889347136007944">Flikar som inte har använts på <ph name="THRESHOLD" /> dagar</translation>
 <translation id="8395180897620197612">Stoppa loggning</translation>
-<translation id="8399253661151100858"><ph name="SITE_DOMAIN" /> har åtkomst till mikrofonen när du besöker den här webbplatsen</translation>
 <translation id="8407669440184693619">Inga lösenord hittades för webbplatsen</translation>
 <translation id="8407831512155324054">Lösenorden ser starka ut</translation>
 <translation id="8414283596511250978">Glöm aldrig dina lösenord</translation>
@@ -2395,7 +2398,6 @@ Du kan starta om när som helst.</translation>
 <translation id="8439758443371991593">Dölj Lägg till i läslistan</translation>
 <translation id="8443986842926457191">Webbadressen är längre än 2 048 tecken</translation>
 <translation id="8449869326050867919">Lösenordet har delats</translation>
-<translation id="8458009459729013424"><ph name="SITE_DOMAIN" /> har åtkomst till kameran när du besöker den här webbplatsen</translation>
 <translation id="8461708300275916315">Om du är under 18 år</translation>
 <translation id="8473815223723723001">Redigera bild med Gemini</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>

@@ -1034,6 +1034,7 @@
 <translation id="1790976235243700817">ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1791662854739702043">ಇನ್‌ಸ್ಟಾಲ್ ಆಗಿದೆ</translation>
 <translation id="1792619191750875668">ವಿಸ್ತರಿಸಲಾದ ಡಿಸ್‌ಪ್ಲೇ</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="1794791083288629568">ಈ ಸಮಸ್ಯೆಯನ್ನು ಸರಿಪಡಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ.</translation>
 <translation id="1795214765651529549">ಕ್ಲಾಸಿಕ್ ಬಳಸಿ</translation>
@@ -1701,7 +1702,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="2300434721407965566">ನಿಮ್ಮ ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸಲು, ಬ್ಯಾಟರಿ 80% ಚಾರ್ಜ್ ತಲುಪಿದಾಗ ಚಾರ್ಜ್ ಆಗುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತದೆ.</translation>
 <translation id="2301382460326681002">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
-<translation id="2301402091755573488">ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್</translation>
 <translation id="2304820083631266885">ಗ್ರಹ</translation>
 <translation id="2305202347479035002">ಅದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ</translation>
 <translation id="2306794767168143227">ಈ ಸಾಧನದಲ್ಲಿ <ph name="BRAND" /> ಗೆ ಸೇವ್ ಮಾಡಿ</translation>
@@ -1720,6 +1720,7 @@
 <translation id="2322622365472107569">ಮುಕ್ತಾಯದ ಸಮಯ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2323685460575935191">ಸ್ಕ್ರಾಲ್ ಬಟನ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="2325004050205455346">ಇತ್ತೀಚಿನ ಇತಿಹಾಸ</translation>
 <translation id="2325444234681128157">ಪಾಸ್‌ವರ್ಡ್‌ ನೆನಪಿಟ್ಟುಕೊಳ್ಳಿ</translation>
 <translation id="2326188115274135041">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನ್‌ಲಾಕ್ ಆನ್ ಮಾಡಲು, ಪಿನ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="2326583548923775947">ಇದು Google ಖಾತೆಯಲ್ಲ. ನೀವು Chrome ಗೆ ಸೇವ್ ಮಾಡುವ ಐಟಂಗಳು ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವುದಿಲ್ಲ.</translation>
@@ -2078,7 +2079,6 @@
 <translation id="2598710988533271874">ಹೊಸ Chrome ಲಭ್ಯವಿದೆ</translation>
 <translation id="2599048253926156421">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 ಅಸುರಕ್ಷಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}one{{NUM_SITES} ಅಸುರಕ್ಷಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}other{{NUM_SITES} ಅಸುರಕ್ಷಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}}</translation>
-<translation id="2603121359676416582">ಈ ಪುಟಕ್ಕಾಗಿ</translation>
 <translation id="2603656971249947488">ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌</translation>
 <translation id="2604129989323098489">ಪಕ್ಕಪಕ್ಕದಲ್ಲಿರುವ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಅಥವಾ ಫುಲ್ ಸ್ಕ್ರೀನ್ ವಿಷಯವನ್ನು ತೋರಿಸುವಂತಹ ವಿಂಡೋಗಳನ್ನು ಬುದ್ಧಿವಂತಿಕೆಯಿಂದ ತೆರೆಯಲು ನಿಮ್ಮ ಡಿಸ್‌ಪ್ಲೇಗಳ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕೇಳುತ್ತವೆ.</translation>
 <translation id="2604255671529671813">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ದೋಷ</translation>
@@ -2942,6 +2942,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> ಅನ್ನು ಎಡಿಟ್ ಮಾಡುವ ಅಥವಾ ಅಳಿಸುವ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="3232754137068452469">ವೆಬ್ ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="3233271424239923319">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ</translation>
+<translation id="3233577317461669428">ಯಾವುದೇ ಇತರ ಸಾಧನ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="3234251228180563751">ಬಳಕೆದಾರರ ಹೆಸರು 1000 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ</translation>
 <translation id="3234978181857588512">ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> ನಲ್ಲಿ ಪಾರ್ಟಿಶನ್ ಆಗಿರುವ <ph name="SITE_NAME" /> ನ ಸೈಟ್ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
@@ -3016,7 +3017,6 @@
 <translation id="3292966601422448005">ನೀವು <ph name="APP_NAME" /> ಗೆ ನೀಡುವ ಅನುಮತಿಗಳನ್ನು ಅದರ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಆ್ಯಪ್‌ಗಳಿಗೂ ನೀಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="3293080634164207409">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="329324683265785818">ಪ್ಲೇ ಮಾಡಲು / ವಿರಾಮಗೊಳಿಸಲು, ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ k</translation>
-<translation id="3293644607209440645">ಈ ಪುಟವನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="3294437725009624529">ಅತಿಥಿ</translation>
 <translation id="3294686910656423119">ಬಳಕೆ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳು</translation>
 <translation id="3295241308788901889">ಟ್ಯಾಬ್ ಕ್ಯಾಸ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -5717,6 +5717,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ಬಲಬದಿ)</translation>
 <translation id="534449933710420173">ಹೆಸರಿಲ್ಲದ ಫೋಲ್ಡರ್</translation>
 <translation id="5345916423802287046">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ಆ್ಯಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="5346059693449184483">ನಿಮ್ಮ ಮನಸ್ಸಿನಲ್ಲೇನಿದೆ?</translation>
 <translation id="5350116201946341974">ವಿಚಿತ್ರವಾದ</translation>
 <translation id="535123479159372765">ಇತರ ಸಾಧನದಿಂದ ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5352257124367865087">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -6994,6 +6995,7 @@
 <translation id="6356893102071098867">ನೀವು ಸರಿಯಾದ ಖಾತೆಯನ್ನು ಆರಿಸಿರುವಿರಾ ಎಂದು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6357305427698525450">ಕೆಲವು ಬೆಂಬಲಿಸಿದ ಲಿಂಕ್‌ಗಳು ಈಗಲೂ <ph name="APP_NAME" /> ಅಥವಾ <ph name="APP_NAME_2" /> ನಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತವೆ.</translation>
 <translation id="6357750620525943720">ಇತರ ಸ್ಥಿರ ಗುರುತಿಸುವಿಕೆಗಳು (ಉದಾ., ಹ್ಯಾಶ್‌ಗಳು ಅಥವಾ UUID ಗಳು)</translation>
+<translation id="6357830294871526418">ಇತರ ಸಾಧನಗಳಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6358884629796491903">ಡ್ರ್ಯಾಗನ್‌</translation>
 <translation id="6359640073754977254">ಕೊನೆಯ ಟ್ಯಾಬ್‌ಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="6361850914223837199">ದೋಷ  ವಿವರಗಳು:</translation>
@@ -7141,7 +7143,6 @@
 <translation id="6472893788822429178">ಹೋಮ್ ಬಟನ್‌ ತೋರಿಸಿ</translation>
 <translation id="6473315466413288899">ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ</translation>
 <translation id="6474021817475285003">Google Calendar ನಲ್ಲಿ ಇನ್ನಷ್ಟು ನೋಡಿ</translation>
-<translation id="6474401088838630457">ಇದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಲು Gemini ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="6474498546677193336">ಒಂದು ಅಪ್ಲಿಕೇಶನ್, ಈ ಫೋಲ್ಡರ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಕಾರಣ, ಅದರ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ಮುಂದಿನ ಸಲ Linux ಅನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಿದಾಗ, ಈ ಫೋಲ್ಡರ್ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6474884162850599008">Google ಡ್ರೈವ್ ಖಾತೆಗೆ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="6476482583633999078">ಧ್ವನಿಯ ವೇಗ</translation>

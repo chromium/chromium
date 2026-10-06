@@ -1033,6 +1033,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1790976235243700817">Hiq qasjen</translation>
 <translation id="1791662854739702043">I instaluar</translation>
 <translation id="1792619191750875668">Ekrani i zgjeruar</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Fshih fjalëkalimin për <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Dërgo komente për të na ndihmuar ta rregullojmë këtë problem.</translation>
 <translation id="1795214765651529549">Përdor temën klasike</translation>
@@ -1697,7 +1698,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2300383962156589922">Personalizo dhe kontrollo <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Ndalon karikimin në 80% për të ndihmuar që bateria jote të zgjasë më shumë.</translation>
 <translation id="2301382460326681002">Direktoria rrënjë e shtesës është e pavlefshme.</translation>
-<translation id="2301402091755573488">Skeda e ndarë</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305202347479035002">Si funksionon</translation>
 <translation id="2306794767168143227">Ruaj te "<ph name="BRAND" />" në këtë pajisje</translation>
@@ -2075,7 +2075,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2598710988533271874">Ofrohet një versioni i ri i Chrome</translation>
 <translation id="2599048253926156421">Emri i përdoruesit u kopjua te kujtesa e fragmenteve</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 shtesë e pasigurt është çaktivizuar}other{{NUM_SITES} shtesa të pasigurta janë çaktivizuar}}</translation>
-<translation id="2603121359676416582">Për këtë faqe</translation>
 <translation id="2603656971249947488">Shiriti i skedave</translation>
 <translation id="2604129989323098489">Sajtet zakonisht kërkojnë informacione për ekranet e tua që të mund t'i hapin dhe t'i vendosin dritaret në mënyrë inteligjente, si p.sh. duke i shfaqur krah për krah përmbajtjet në ekran të plotë dhe dokumentet</translation>
 <translation id="2604255671529671813">Gabim në lidhjen e rrjetit</translation>
@@ -2941,6 +2940,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="323262942975422760">Opsione të tjera për të modifikuar ose fshirë <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Aplikacioni i uebit</translation>
 <translation id="3233271424239923319">Rezervo aplikacionet dhe skedarët Linux</translation>
+<translation id="3233577317461669428">Nuk u gjet asnjë pajisje tjetër</translation>
 <translation id="3234251228180563751">Emri i përdoruesit është më shumë se 1000 karaktere</translation>
 <translation id="3234978181857588512">Ruaj te pajisja</translation>
 <translation id="3237871032310650497">Të fshihen të dhënat e sajtit për <ph name="SITE_NAME" /> të ndara në <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3015,7 +3015,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3292966601422448005">Lejet që jep për <ph name="APP_NAME" /> do të lejohen edhe për aplikacionet e instaluara nga ai.</translation>
 <translation id="3293080634164207409">Shto skedat</translation>
 <translation id="329324683265785818">Shkurtorja k në tastierë për luajtjen/vendosjen në pauzë</translation>
-<translation id="3293644607209440645">Dërgoje këtë faqe</translation>
 <translation id="3294437725009624529">Vizitor</translation>
 <translation id="3294686910656423119">Raportet e statistikave të përdorimit dhe të ndërprerjeve aksidentale</translation>
 <translation id="3295241308788901889">Po transmetohet një skedë</translation>
@@ -5714,6 +5713,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (djathtas)</translation>
 <translation id="534449933710420173">Dosje pa emër</translation>
 <translation id="5345916423802287046">Nis aplikacionin kur identifikohesh</translation>
+<translation id="5346059693449184483">Çfarë po mendon?</translation>
 <translation id="5350116201946341974">E çuditshme</translation>
 <translation id="535123479159372765">Teksti u kopjua nga pajisja tjetër</translation>
 <translation id="5352257124367865087">Menaxho lejet e sajtit</translation>
@@ -6990,6 +6990,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6356893102071098867">Kontrollo nëse ke zgjedhur llogarinë e duhur</translation>
 <translation id="6357305427698525450">Disa lidhje të mbështetura do të vazhdojnë të hapen në <ph name="APP_NAME" /> ose <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Identifikues të tjerë të qëndrueshëm (p.sh. hash-et ose UUID-të)</translation>
+<translation id="6357830294871526418">Skedat në pajisjet e tjera</translation>
 <translation id="6358884629796491903">Dragua</translation>
 <translation id="6359640073754977254">Lëviz te skeda e fundit</translation>
 <translation id="6361850914223837199">Detajet e gabimit:</translation>
@@ -7137,7 +7138,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6472893788822429178">Shfaq butonin "Faqja kryesore"</translation>
 <translation id="6473315466413288899">Zgjidh një opsion</translation>
 <translation id="6474021817475285003">Shiko më shumë në "Kalendarin e Google"</translation>
-<translation id="6474401088838630457">Pyet Gemini më shumë për këtë</translation>
 <translation id="6474498546677193336">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Linux të ndalojë punën më pas.</translation>
 <translation id="6474884162850599008">Shkëput llogarinë e "Diskut të Google"</translation>
 <translation id="6476482583633999078">Shpejtësia e të folurës</translation>

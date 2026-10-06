@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Passwords</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} of {count} address}other{{position} of {count} addresses}}</translation>
 <translation id="13813615483058219">Something went wrong. Check your Internet connection, increase your volume or try again.</translation>
+<translation id="138181280295369883">Sign in to get your saved info and more on all your devices</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776">Continue as <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Options to save card</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">Translate page</translation>
 <translation id="1539535193627863227">No passwords or passkeys found for this site</translation>
 <translation id="1540800554400757039">Address 1</translation>
+<translation id="1543035591122163372">Sign in to get your passwords and more from <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Open tabs received from your other devices from the lock screen.</translation>
 <translation id="1544653821167545205">Summarise page</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">How do I use this feature?</translation>
 <translation id="1901600657316773839">Keep selection</translation>
 <translation id="1902277226107477495">Address detection off. Turn it back on in Settings.</translation>
+<translation id="1905582086181351638">Sign in to get your saved info and more from <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Site added and pinned</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1925706052394657380">Open <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> settings in iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">Sites can ask for your microphone</translation>
 <translation id="2219935992754556187">Chrome keeps your sensitive data secure with Face ID</translation>
 <translation id="2220529011494928058">Report an issue</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" is blocked from accessing your camera</translation>
 <translation id="2223461067862937305">Create a QR code</translation>
 <translation id="222798989929574238">You used 20+ photos to search</translation>
 <translation id="2230173723195178503">Web page loaded</translation>
@@ -782,7 +784,6 @@
 <translation id="3459644598174926977">Go Live with Gemini to ask about a page, brainstorm out loud and talk back and forth.</translation>
 <translation id="3462768334899086950">This means that you will lose your unsaved file and current tabs</translation>
 <translation id="3464194322481586217">Couldn't track the price.</translation>
-<translation id="3468009081835548033">Allowed once</translation>
 <translation id="3469117812148449995">Options to save password</translation>
 <translation id="3472469028191701821">Opens in new tab</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
@@ -902,7 +903,6 @@
 <translation id="386224966259596343">You'll have the chance to save this info to Wallet the next time that you fill in a relevant form.</translation>
 <translation id="3868495844258915202">Show full URL</translation>
 <translation id="3875783148670536197">Show me how</translation>
-<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" is blocked from accessing your microphone</translation>
 <translation id="3878657761594430423">Sheet grabber</translation>
 <translation id="3884810423191119660">Securely save passwords so that you can easily sign in to sites and apps</translation>
 <translation id="3885587018298784481">Join a family group</translation>
@@ -1039,6 +1039,7 @@
 <translation id="4289309730265289297">Photo Library</translation>
 <translation id="429074084062258019">{count,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
 <translation id="4290920330097335010">Never allow</translation>
+<translation id="4293154608148215505">your phone</translation>
 <translation id="4294506173142861371">Sign in as <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
@@ -1311,6 +1312,7 @@
 <translation id="5119329531859909472">To track the product, tap Track</translation>
 <translation id="5121618895923301719">You're already tracking this product. This page is saved in <ph name="BEGIN_LINK" />Mobile bookmarks<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">You have several password issues.</translation>
+<translation id="5126335625961252141">your tablet</translation>
 <translation id="5128788795241319992">Explore the new menu</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
 <translation id="5137568953923142260">Allow once</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5371112366564891538">Increase text size</translation>
 <translation id="5376135254804080693">Deselect all</translation>
 <translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
+<translation id="5385892579392932755">your laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} closed}other{{count} closed}}</translation>
 <translation id="5394975111793637642">Hide product reviews for you card</translation>
 <translation id="5414763847370083940">You'll get an alert if the price drops on any site.</translation>
@@ -1969,6 +1972,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Your tabs will be closed and browsing data will be deleted</translation>
 <translation id="714291438898585119">Starred</translation>
+<translation id="7144458305574230431">Sign in to get your bookmarks and more from <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Update driving licence</translation>
 <translation id="7146301801400584641">Calendar file available</translation>
 <translation id="7149893636342594995">Last 24 hours</translation>
@@ -2380,7 +2384,6 @@ You can restart at any time.</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8393889347136007944">Tabs not used for <ph name="THRESHOLD" /> days</translation>
 <translation id="8395180897620197612">Stop logging</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" can access your microphone whenever you visit this site</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>
 <translation id="8407831512155324054">Your passwords look strong</translation>
 <translation id="8414283596511250978">Never forget your passwords</translation>
@@ -2395,7 +2398,6 @@ You can restart at any time.</translation>
 <translation id="8439758443371991593">Hide Add to reading list</translation>
 <translation id="8443986842926457191">URL is more than 2048 characters</translation>
 <translation id="8449869326050867919">Password shared</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" can access your camera whenever you visit this site</translation>
 <translation id="8461708300275916315">If you’re under 18</translation>
 <translation id="8473815223723723001">Edit image with Gemini</translation>
 <translation id="8473863474539038330">Addresses and more</translation>

@@ -1710,7 +1710,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2300383962156589922">Dhibiti na uweke mapendeleo kwenye <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Husimamisha kuchaji ifikapo asilimia 80 ili kusaidia betri yako idumu kwa muda mrefu.</translation>
 <translation id="2301382460326681002">Saraka la shina la kiendelezi ni batili.</translation>
-<translation id="2301402091755573488">Umeshiriki Kichupo</translation>
 <translation id="2304820083631266885">Sayari</translation>
 <translation id="2305202347479035002">Jinsi kinavyofanya kazi</translation>
 <translation id="2306794767168143227">Hifadhi katika <ph name="BRAND" /> kwenye kifaa hiki</translation>
@@ -2088,7 +2087,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2598710988533271874">Chrome mpya inapatikana</translation>
 <translation id="2599048253926156421">Jina la mtumiaji limenakiliwa kwenye ubao wa kunakili</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Tumezima kiendelezi 1 kisicho salama}other{Tumezima viendelezi {NUM_SITES} visivyo salama}}</translation>
-<translation id="2603121359676416582">Kwa ukurasa huu</translation>
 <translation id="2603656971249947488">Ukanda wa vichupo</translation>
 <translation id="2604129989323098489">Tovuti huhitaji maelezo kuhusu skrini zako ili ziweze kufungua na kuweka madirisha kwa umahiri, kama vile kuonyesha hati au maudhui ya skrini nzima upande kwa upande</translation>
 <translation id="2604255671529671813">Hitilafu ya muunganisho wa mtandao</translation>
@@ -3029,7 +3027,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3292966601422448005">Ruhusa unazoruhusu kwenye <ph name="APP_NAME" /> zitaruhusiwa pia kwenye programu zake ulizoweka.</translation>
 <translation id="3293080634164207409">Weka vichupo</translation>
 <translation id="329324683265785818">Mikato ya kibodi ya kucheza/ kusitisha ya k</translation>
-<translation id="3293644607209440645">Tuma ukurasa huu</translation>
 <translation id="3294437725009624529">Mgeni</translation>
 <translation id="3294686910656423119">Takwimu za matumizi na ripoti za kuacha kufanya kazi</translation>
 <translation id="3295241308788901889">Inatuma kichupo</translation>
@@ -5728,6 +5725,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kulia)</translation>
 <translation id="534449933710420173">Folda isiyo na jina</translation>
 <translation id="5345916423802287046">Fungua programu unapoingia katika akaunti</translation>
+<translation id="5346059693449184483">Una wazo gani?</translation>
 <translation id="5350116201946341974">Kutania</translation>
 <translation id="535123479159372765">Maandishi yamenakiliwa kutoka kwenye kifaa kingine</translation>
 <translation id="5352257124367865087">Dhibiti ruhusa za tovuti</translation>
@@ -7152,7 +7150,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6472893788822429178">Onyesha Kitufe cha Mwanzo</translation>
 <translation id="6473315466413288899">Teua chaguo</translation>
 <translation id="6474021817475285003">Angalia zaidi katika Kalenda ya Google</translation>
-<translation id="6474401088838630457">Iulize Gemini zaidi kuhusu hili</translation>
 <translation id="6474498546677193336">Imeshindwa kughairi kushiriki kwa sababu programu inatumia folda hii. Itaghairi kushiriki folda wakati Linux imefungwa.</translation>
 <translation id="6474884162850599008">Ondoa akaunti ya Hifadhi ya Google</translation>
 <translation id="6476482583633999078">Kasi ya matamshi</translation>

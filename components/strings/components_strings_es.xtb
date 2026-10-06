@@ -289,7 +289,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1462951478840426066">Usar las fuentes del ordenador para que puedas crear contenido de alta fidelidad</translation>
 <translation id="1465457928007067810">IBAN guardado en tu cuenta de Google</translation>
 <translation id="1467432559032391204">Izquierda</translation>
-<translation id="1471514598850585811">Portátil</translation>
 <translation id="1472675084647422956">Mostrar más</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Introduce 3 o más palabras para obtener ayuda con la escritura</translation>
@@ -452,7 +451,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Intenta ponerte en contacto con el administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Ordenador</translation>
 <translation id="1739364174357629566">Actualizar número de viajero conocido</translation>
 <translation id="1740404923954980840">Para salir de la pantalla completa, arrastra desde la parte superior y toca el botón para volver</translation>
 <translation id="1741474054575634405">Gestionar tarjetas de fidelización...</translation>
@@ -867,6 +865,7 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="2436186046335138073">¿Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los enlaces de <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">No se ha podido guardar esta tarjeta en tu cuenta de Google. Se ha guardado en Chrome en este dispositivo.</translation>
 <translation id="2438874542388153331">Perforado cuádruple en la parte derecha</translation>
+<translation id="2442033148418774391">Aviso de Función Autocompletar más inteligente y privada cerrado</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Tu historial de navegación
@@ -879,13 +878,13 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2452837234288608067">No hemos podido ayudarte con eso. Inténtalo de nuevo.</translation>
 <translation id="2453045048779611513">Tu organización limita lo que puedes guardar</translation>
+<translation id="2456490423293803882">Aviso de Función Autocompletar más inteligente y privada abierto a altura completa</translation>
 <translation id="2459882793359532780">Políticas de navegador aplicadas (políticas de equipo y de perfil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core te ofrece una herramienta centralizada para configurar políticas del navegador desde la nube</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462724976360937186">ID de clave de la entidad emisora de certificados</translation>
 <translation id="2465688316154986572">Grapar</translation>
 <translation id="2465914000209955735">Gestiona archivos que has descargado en Chrome</translation>
-<translation id="2466682894498377850">Pestaña enviada desde tu <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Especificaciones de hardware y estadísticas del dispositivo, como el historial de uso de la CPU/RAM</translation>
 <translation id="2467421459221956357">¿Usar sensores?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Ejecutar Diagnósticos de red<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />El contenido de la página de tramitación de la compra se comparte con Google para ofrecer estas opciones.<ph name="END_BOLD" /> Los planes de pago están sujetos a requisitos. Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />configuración de pago<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Para ejecutar esta aplicación, vuelve a habilitar el modo Desarrollador de aplicaciones web aisladas</translation>
 <translation id="2526280916094749336">Puedes usar las direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Escritorio</translation>
 <translation id="2527451058878391043">El CVC se encuentra en el anverso de tu tarjeta. Es el código de 4 dígitos situado encima del número de la tarjeta, en la parte superior derecha.</translation>
 <translation id="2529899080962247600">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán las demás entradas.</translation>
 <translation id="2530042584066815841">Bloqueo y uso del ratón</translation>
@@ -1108,6 +1106,7 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="2878197950673342043">Plegado en cruz</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">usar el bloqueo de pantalla para rellenar contraseñas</translation>
+<translation id="2880119244122776372">Crear y programar</translation>
 <translation id="2881276955470682203">¿Quieres guardar la tarjeta?</translation>
 <translation id="2882280148032777436">Eliminar número de viajero conocido</translation>
 <translation id="2882949212241984732">Plegado en ventana doble</translation>
@@ -1736,7 +1735,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3905894480064208252">{0,plural, =1{No se ha podido transferir el archivo}other{No se han podido transferir <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="3906022360148923497">Icono de forma de pago</translation>
 <translation id="3906234161316839040">Otros pedidos</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Más información sobre el contenido insertado</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>
@@ -3914,6 +3912,7 @@ Más información:
 <translation id="753713322968419914">¿Quitar dirección de casa de Autocompletar de Chrome?</translation>
 <translation id="753714465667062283">Inicia sesión para guardar tu foto</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
+<translation id="7540924742308928499">Explorar ideas y resumir</translation>
 <translation id="7543525346216957623">Pide permiso a tu padre o madre</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Solucionar errores de conexión</translation>

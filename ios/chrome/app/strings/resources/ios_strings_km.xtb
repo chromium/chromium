@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">ពាក្យ​សម្ងាត់</translation>
 <translation id="1381022135873211423">{count,plural, =1{អាសយដ្ឋានទី {position} នៃ {count}}other{អាសយដ្ឋានទី {position} នៃ {count}}}</translation>
 <translation id="13813615483058219">មានអ្វីមួយខុសប្រក្រតី។ សូម​ពិនិត្យមើល​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក បង្កើន​កម្រិត​សំឡេង​របស់អ្នក ឬព្យាយាម​ម្ដងទៀត។</translation>
+<translation id="138181280295369883">ចូលគណនី ដើម្បី​ទទួលបាន​ព័ត៌មាន​ដែលអ្នក​បានរក្សាទុក និងអ្វីៗជា​ច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="138618066238211776">បន្តជា <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">ជម្រើស​សម្រាប់រក្សា​ទុកកាត</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">បកប្រែ​ទំព័រ</translation>
 <translation id="1539535193627863227">រកមិនឃើញ​ពាក្យសម្ងាត់ ឬ​កូដសម្ងាត់​សម្រាប់​គេហទំព័រ​នេះទេ</translation>
 <translation id="1540800554400757039">អាសយដ្ឋាន 1</translation>
+<translation id="1543035591122163372">ចូលគណនី ដើម្បី​ទទួលបាន​ពាក្យសម្ងាត់​របស់អ្នក និងអ្វីៗជាច្រើនទៀត​ពី<ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">បានទទួលផ្ទាំងដែលបើកពីឧបករណ៍ផ្សេងទៀតរបស់អ្នកពីអេក្រង់ចាក់សោ។</translation>
 <translation id="1544653821167545205">សង្ខេប​ទំព័រ</translation>
 <translation id="1545749641540134597">ស្កេនកូដ QR</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">តើខ្ញុំប្រើមុខងារនេះយ៉ាងដូចម្ដេច?</translation>
 <translation id="1901600657316773839">រក្សាការជ្រើសរើស</translation>
 <translation id="1902277226107477495">ការចាប់​អាសយដ្ឋាន​ត្រូវបានបិទ។ បើកវាវិញ​នៅក្នុង "ការកំណត់"។</translation>
+<translation id="1905582086181351638">ចូលគណនី ដើម្បីទទួលបានព័ត៌មានដែលអ្នកបានរក្សាទុក និងអ្វីៗជាច្រើនទៀតពី<ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">បាន​បញ្ចូល និង​បានខ្ទាស់​គេហទំព័រ</translation>
 <translation id="1911619930368729126">អាប់ឡូត Google Drive</translation>
 <translation id="1925706052394657380">បើក​ការ​កំណត់ <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> នៅក្នុង iOS</translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">គេហទំព័រ​អាចស្នើសុំ​ប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="2219935992754556187">Chrome រក្សាសុវត្ថិភាព​ទិន្នន័យរសើប​របស់អ្នក​ដោយប្រើ Face ID</translation>
 <translation id="2220529011494928058">រាយការណ៍ពីបញ្ហា</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ចូលប្រើ​កាមេរ៉ា​របស់អ្នក</translation>
 <translation id="2223461067862937305">បង្កើតកូដ QR</translation>
 <translation id="222798989929574238">អ្នកបានប្រើរូបថត 20 សន្លឹកឡើងទៅ ដើម្បីស្វែងរក</translation>
 <translation id="2230173723195178503">បាន​ផ្ទុក​គេហទំព័រ​</translation>
@@ -782,7 +784,6 @@
 <translation id="3459644598174926977">ចាប់ផ្ដើម Live ជាមួយ Gemini ដើម្បី​សួរ​អំពី​ទំព័រ រិះរកគំនិត​ដោយ​និយាយ​ចេញមក និង​និយាយ​ឆ្លើយឆ្លងគ្នា។</translation>
 <translation id="3462768334899086950">មានន័យថា អ្នកនឹងបាត់បង់ឯកសារដែលមិនបានរក្សាទុក និងផ្ទាំងបច្ចុប្បន្នរបស់អ្នក</translation>
 <translation id="3464194322481586217">មិនអាចតាមដានតម្លៃនេះបានទេ។</translation>
-<translation id="3468009081835548033">បានអនុញ្ញាត​ម្ដង</translation>
 <translation id="3469117812148449995">ជម្រើស​សម្រាប់​រក្សាទុក​ពាក្យ​សម្ងាត់</translation>
 <translation id="3472469028191701821">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{សម្រាប់​កម្មវិធី ឬ​គេហទំព័រ {COUNT}}other{សម្រាប់កម្មវិធី និង​គេហទំព័រ {COUNT}}}</translation>
@@ -902,7 +903,6 @@
 <translation id="386224966259596343">អ្នកនឹងមានឱកាសរក្សាទុកព័ត៌មាននេះទៅក្នុង Wallet នៅពេលអ្នកបំពេញទម្រង់បែបបទដែលពាក់ព័ន្ធនៅពេលក្រោយ។</translation>
 <translation id="3868495844258915202">បង្ហាញ URL ពេញលេញ</translation>
 <translation id="3875783148670536197">បង្ហាញខ្ញុំ​អំពី​របៀប</translation>
-<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ចូលប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="3878657761594430423">កម្មវិធី​ស្រង់យក​ទិន្នន័យសន្លឹក</translation>
 <translation id="3884810423191119660">រក្សាទុក​ពាក្យសម្ងាត់​យ៉ាងមាន​សុវត្ថិភាព ដើម្បីឱ្យ​អ្នកអាច​ចូលគណនី​នៅលើ​គេហទំព័រ និង​កម្មវិធី​បានយ៉ាង​ងាយស្រួល</translation>
 <translation id="3885587018298784481">ចូលរួមក្រុមគ្រួសារ</translation>
@@ -1039,6 +1039,7 @@
 <translation id="4289309730265289297">បណ្ណាល័យរូបថត</translation>
 <translation id="429074084062258019">{count,plural, =1{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}other{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}}</translation>
 <translation id="4290920330097335010">កុំ​អនុញ្ញាត</translation>
+<translation id="4293154608148215505">ទូរសព្ទរបស់អ្នក</translation>
 <translation id="4294506173142861371">ចូលគណនី​ជា <ph name="FIRST_NAME" /> ឬ?</translation>
 <translation id="4302061870579014542">កំណត់ទីតាំង</translation>
 <translation id="4304713468139749426">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
@@ -1311,6 +1312,7 @@
 <translation id="5119329531859909472">ដើម្បី​តាមដាន​ផលិតផល សូមចុច "តាមដាន"</translation>
 <translation id="5121618895923301719">អ្នកកំពុងតាមដានផលិតផលនេះស្រាប់ហើយ។ ទំព័រ​នេះ​ត្រូ​វបាន​រក្សាទុក​នៅ​ក្នុង<ph name="BEGIN_LINK" />ចំណាំរបស់ឧបករណ៍​ចល័ត<ph name="END_LINK" />។</translation>
 <translation id="512533434554095351">អ្នកមាន​បញ្ហា​ពាក្យសម្ងាត់​មួយចំនួន។</translation>
+<translation id="5126335625961252141">ថេប្លេតរបស់អ្នក</translation>
 <translation id="5128788795241319992">រុករក​ម៉ឺនុយ​ថ្មី</translation>
 <translation id="5132942445612118989">ធ្វើសម​កាល​កម្មពាក្យសម្ងាត់ ប្រវត្តិ និងអ្វីៗ​ជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
 <translation id="5137568953923142260">អនុញ្ញាត​ម្ដង</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5371112366564891538">បង្កើន​ទំហំ​អក្សរ</translation>
 <translation id="5376135254804080693">ដក​ការ​ជ្រើសរើស​ទាំងអស់</translation>
 <translation id="537853552771686272">គ្រប់គ្រង​ប្រធានបទ និង​គេហទំព័រ​ដែលអ្នក​ចាប់អារម្មណ៍</translation>
+<translation id="5385892579392932755">កុំព្យូទ័រ​យួរ​ដៃរបស់អ្នក</translation>
 <translation id="5390458669633674385">{count,plural, =1{បានបិទ {count}}other{បានបិទ {count}}}</translation>
 <translation id="5394975111793637642">លាក់​កាត "ការវាយតម្លៃ​អំពី​ផលិតផល​សម្រាប់អ្នក"</translation>
 <translation id="5414763847370083940">អ្នក​នឹង​ទទួលបាន​ការ​ជូនដំណឹង ប្រសិនបើ​មានការ​ធ្លាក់​តម្លៃ​នៅ​លើ​គេហទំព័រ​ណា​មួយ។</translation>
@@ -1969,6 +1972,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7140355148730164340"><ph name="EMAIL" />។ <ph name="AI_TIER" />។</translation>
 <translation id="7141960840225504692">ផ្ទាំងរបស់អ្នកនឹងត្រូវបានបិទ ហើយទិន្នន័យរុករកនឹងត្រូវបានលុប</translation>
 <translation id="714291438898585119">មានផ្កាយ</translation>
+<translation id="7144458305574230431">ចូលគណនី ដើម្បី​ទទួលបាន​ចំណាំ​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​ពី<ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">ធ្វើបច្ចុប្បន្នភាព​បណ្ណ​បើកបរ</translation>
 <translation id="7146301801400584641">មានឯកសារ​ប្រតិទិន</translation>
 <translation id="7149893636342594995">24 ម៉ោងមុន</translation>
@@ -2380,7 +2384,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8393700583063109961">ផ្ញើ​សារ</translation>
 <translation id="8393889347136007944">ផ្ទាំង​មិន​ត្រូ​វបានប្រើប្រាស់​រយៈពេល <ph name="THRESHOLD" /> ថ្ងៃ</translation>
 <translation id="8395180897620197612">បញ្ឈប់​ការធ្វើកំណត់​ហេតុ</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" អាចចូលប្រើ​មីក្រូហ្វូន​របស់អ្នក​បាន រាល់ពេល​ដែលអ្នក​ចូលមើល​គេហទំព័រ​នេះ</translation>
 <translation id="8407669440184693619">រកមិនឃើញ​ពាក្យសម្ងាត់​សម្រាប់គេហទំព័រ​នេះទេ</translation>
 <translation id="8407831512155324054">ពាក្យសម្ងាត់របស់អ្នកមើលទៅខ្លាំង</translation>
 <translation id="8414283596511250978">មិនភ្លេច​ពាក្យ​សម្ងាត់​របស់អ្នក​ឡើយ</translation>
@@ -2395,7 +2398,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8439758443371991593">លាក់ "បញ្ចូល​ទៅ​ក្នុងបញ្ជីអាន"</translation>
 <translation id="8443986842926457191">URL មានតួអក្សរ​ច្រើនជាង 2048 តួ</translation>
 <translation id="8449869326050867919">បានចែករំលែក​ពាក្យសម្ងាត់</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" អាចចូលប្រើ​កាមេរ៉ា​របស់អ្នក​បាន រាល់ពេល​ដែលអ្នក​ចូលមើល​គេហទំព័រ​នេះ</translation>
 <translation id="8461708300275916315">ប្រសិនបើអ្នក​មានអាយុ​ក្រោម 18 ឆ្នាំ</translation>
 <translation id="8473815223723723001">កែ​រូបភាព​ដោយប្រើ Gemini</translation>
 <translation id="8473863474539038330">អាសយដ្ឋាន​ និងច្រើន​ទៀត</translation>

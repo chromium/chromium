@@ -289,7 +289,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1462951478840426066">Usar os tipos de letra presentes no computador para que possa criar conteúdo de alta-fidelidade.</translation>
 <translation id="1465457928007067810">IBAN guardado na sua Conta Google</translation>
 <translation id="1467432559032391204">Esquerda</translation>
-<translation id="1471514598850585811">Portátil</translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Introduza 3 ou mais palavras para obter ajuda na escrita</translation>
@@ -452,7 +451,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Experimente contactar o gestor do sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira a <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Computador</translation>
 <translation id="1739364174357629566">Atualize o número de viajante conhecido</translation>
 <translation id="1740404923954980840">Para sair do ecrã inteiro, arraste a partir da parte superior e toque no botão anterior</translation>
 <translation id="1741474054575634405">Faça a gestão dos cartões de fidelidade…</translation>
@@ -887,7 +885,6 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
 <translation id="2465688316154986572">Agrafar</translation>
 <translation id="2465914000209955735">Faça a gestão dos ficheiros que transferiu no Chrome</translation>
-<translation id="2466682894498377850">Separador enviado do seu <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Especificações de hardware do dispositivo e estatísticas como o histórico de utilização da CPU/RAM</translation>
 <translation id="2467421459221956357">Usar sensores?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar o Diagnóstico de rede<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />O conteúdo da página de pagamento é partilhado com a Google para oferecer estas opções.<ph name="END_BOLD" /> Os planos de pagamento estão sujeitos a elegibilidade. Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />definições de pagamento<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Para executar esta app, reative o modo de programador para apps Web isoladas</translation>
 <translation id="2526280916094749336">Pode usar moradas guardadas em produtos Google. Esta morada vai ser guardada na sua Conta Google, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Ambiente de trabalho</translation>
 <translation id="2527451058878391043">O seu Código de Segurança/CVC encontra-se na parte da frente do cartão. É o código de 4 dígitos no canto superior direito acima do número do cartão.</translation>
 <translation id="2529899080962247600">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão ignoradas.</translation>
 <translation id="2530042584066815841">Bloqueio e utilização do rato</translation>
@@ -1739,7 +1735,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3905894480064208252">{0,plural, =1{A transferência do ficheiro foi bloqueada}other{A transferência de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
 <translation id="3906022360148923497">Ícone do meio de pagamento</translation>
 <translation id="3906234161316839040">Outras encomendas</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saiba mais sobre conteúdo incorporado</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>

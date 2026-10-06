@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">액세스 권한 삭제</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792619191750875668">확장 디스플레이</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" />(<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> 비밀번호 숨기기</translation>
 <translation id="1794791083288629568">이 문제를 해결하는 데 도움이 되도록 의견 전송</translation>
 <translation id="1795214765651529549">기본 테마 사용</translation>
@@ -1711,7 +1712,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> 맞춤설정 및 제어</translation>
 <translation id="2300434721407965566">배터리 수명을 늘리기 위해 80%에서 충전을 중지합니다.</translation>
 <translation id="2301382460326681002">확장 프로그램 루트 디렉터리가 잘못되었습니다.</translation>
-<translation id="2301402091755573488">공유된 탭</translation>
 <translation id="2304820083631266885">행성</translation>
 <translation id="2305202347479035002">작동 방식</translation>
 <translation id="2306794767168143227">이 기기의 <ph name="BRAND" />에 저장</translation>
@@ -1730,6 +1730,7 @@
 <translation id="2322622365472107569">종료 시간: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">저장된 Wi-Fi 네트워크</translation>
 <translation id="2323685460575935191">스크롤 버튼 숨기기</translation>
+<translation id="2325004050205455346">최근 기록</translation>
 <translation id="2325444234681128157">비밀번호 저장</translation>
 <translation id="2326188115274135041">자동 잠금 해제를 사용 설정하려면 PIN을 확인하세요.</translation>
 <translation id="2326583548923775947">Google 계정이 아닙니다. Chrome에 저장한 항목은 다른 기기에서 사용할 수 없습니다.</translation>
@@ -2088,7 +2089,6 @@
 <translation id="2598710988533271874">새로운 Chrome 사용 가능</translation>
 <translation id="2599048253926156421">사용자 이름이 클립보드에 복사됨</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{안전하지 않은 확장 프로그램 1개를 사용 중지함}other{안전하지 않은 확장 프로그램 {NUM_SITES}개를 사용 중지함}}</translation>
-<translation id="2603121359676416582">이 페이지에서</translation>
 <translation id="2603656971249947488">탭 표시줄</translation>
 <translation id="2604129989323098489">일반적으로 사이트에서는 문서 또는 전체 화면 콘텐츠를 나란히 표시하는 등 창을 지능적으로 열고 배치하기 위해 디스플레이에 관한 정보를 요청합니다.</translation>
 <translation id="2604255671529671813">네트워크 연결 오류</translation>
@@ -2954,6 +2954,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> 수정 또는 삭제 옵션 더보기</translation>
 <translation id="3232754137068452469">웹 앱</translation>
 <translation id="3233271424239923319">Linux 앱 및 파일 백업</translation>
+<translation id="3233577317461669428">다른 기기를 찾을 수 없음</translation>
 <translation id="3234251228180563751">사용자 이름이 1,000자(영문 기준)를 초과합니다.</translation>
 <translation id="3234978181857588512">기기에 저장</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" />에서 파티션을 나눈 <ph name="SITE_NAME" />의 사이트 데이터를 삭제하시겠습니까?</translation>
@@ -3028,7 +3029,6 @@
 <translation id="3292966601422448005"><ph name="APP_NAME" />에 허용하는 권한은 설치된 앱에도 허용됩니다.</translation>
 <translation id="3293080634164207409">탭 추가</translation>
 <translation id="329324683265785818">재생/일시중지, 키보드 단축키 k</translation>
-<translation id="3293644607209440645">이 페이지 전송</translation>
 <translation id="3294437725009624529">게스트</translation>
 <translation id="3294686910656423119">사용 통계 및 비정상 종료 보고서</translation>
 <translation id="3295241308788901889">탭 전송 중</translation>
@@ -5727,6 +5727,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%(오른쪽)</translation>
 <translation id="534449933710420173">이름이 없는 폴더</translation>
 <translation id="5345916423802287046">로그인 시 앱 실행</translation>
+<translation id="5346059693449184483">지금 무슨 생각을 하고 계시나요?</translation>
 <translation id="5350116201946341974">엉뚱함</translation>
 <translation id="535123479159372765">다른 기기에서 텍스트가 복사됨</translation>
 <translation id="5352257124367865087">사이트 권한 관리</translation>
@@ -7003,6 +7004,7 @@
 <translation id="6356893102071098867">올바른 계정을 선택했는지 확인</translation>
 <translation id="6357305427698525450">지원되는 링크 일부는 <ph name="APP_NAME" /> 또는 <ph name="APP_NAME_2" />에서 계속 열 수 있습니다.</translation>
 <translation id="6357750620525943720">기타 안정적인 식별자(예: 해시 또는 UUID)</translation>
+<translation id="6357830294871526418">다른 기기의 탭</translation>
 <translation id="6358884629796491903">용</translation>
 <translation id="6359640073754977254">마지막 탭으로 스크롤</translation>
 <translation id="6361850914223837199">오류 세부정보:</translation>
@@ -7150,7 +7152,6 @@
 <translation id="6472893788822429178">홈 버튼 표시</translation>
 <translation id="6473315466413288899">옵션 선택</translation>
 <translation id="6474021817475285003">Google Calendar에서 더보기</translation>
-<translation id="6474401088838630457">Gemini에게 이 내용에 관해 더 자세히 물어보기</translation>
 <translation id="6474498546677193336">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Linux가 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="6474884162850599008">Google Drive 계정 연결 해제</translation>
 <translation id="6476482583633999078">음성 속도</translation>

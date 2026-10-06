@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Contraseñas</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} dirección}other{{position} de {count} direcciones}}</translation>
 <translation id="13813615483058219">Se produjo un error. Revisa tu conexión a Internet, aumenta el volumen o vuelve a intentarlo.</translation>
+<translation id="138181280295369883">Accede para obtener tu información guardada y más en todos tus dispositivos</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opciones para guardar una tarjeta</translation>
@@ -161,6 +162,7 @@
 <translation id="1466035273550360103">No hay pestañas abiertas</translation>
 <translation id="1469381646033328562">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">desde que completaste "Crear un grupo de pestañas"</translation>
 <translation id="147982357559798527">Se cambió</translation>
 <translation id="1481450969185702334">Buscar y completar</translation>
 <translation id="1483493594462132177">Enviar</translation>
@@ -187,6 +189,7 @@
 <translation id="1536390784834419204">Traducir la página</translation>
 <translation id="1539535193627863227">No se encontraron contraseñas ni llaves de acceso para este sitio</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
+<translation id="1543035591122163372">Accede para obtener tus contraseñas y más de <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Abre las pestañas que recibes de tus otros dispositivos desde la pantalla de bloqueo.</translation>
 <translation id="1544653821167545205">Resumir página</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
@@ -313,6 +316,7 @@
 <translation id="1901366738768303267">¿Cómo uso esta función?</translation>
 <translation id="1901600657316773839">Conservar la selección</translation>
 <translation id="1902277226107477495">La detección de direcciones está desactivada. Vuelve a activarla en Configuración.</translation>
+<translation id="1905582086181351638">Accede para obtener tu información guardada y más de <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">El sitio se agregó y se fijó</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
 <translation id="1925706052394657380">Abrir la configuración de <ph name="BEGIN_BOLD" />Apps predeterminadas<ph name="END_BOLD" /> en iOS</translation>
@@ -407,8 +411,8 @@
 <translation id="2218389616572918761">Permitir que los sitios soliciten el uso de tu micrófono</translation>
 <translation id="2219935992754556187">Chrome protege tus datos sensibles con Face ID</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
-<translation id="2222149859067335623">Se bloqueó el acceso de "<ph name="SITE_DOMAIN" />" a tu cámara</translation>
 <translation id="2223461067862937305">Crear un código QR</translation>
+<translation id="222798989929574238">Usaste más de 20 fotos para buscar</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2236949375853147973">Mi actividad</translation>
 <translation id="2237869114829007407">Obtén un resumen y datos clave de cualquier página o tema</translation>
@@ -899,7 +903,6 @@
 <translation id="386224966259596343">Tendrás la oportunidad de guardar esta información en la Billetera la próxima vez que completes un formulario pertinente.</translation>
 <translation id="3868495844258915202">Mostrar URL completa</translation>
 <translation id="3875783148670536197">Cómo hacerlo</translation>
-<translation id="3877211858413020188">Se bloqueó el acceso de "<ph name="SITE_DOMAIN" />" a tu micrófono</translation>
 <translation id="3878657761594430423">Control de la hoja</translation>
 <translation id="3884810423191119660">Guarda contraseñas de forma segura para acceder fácilmente a sitios y apps</translation>
 <translation id="3885587018298784481">Únete a un grupo familiar</translation>
@@ -1036,6 +1039,7 @@
 <translation id="4289309730265289297">Biblioteca de fotos</translation>
 <translation id="429074084062258019">{count,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="4290920330097335010">No permitir nunca</translation>
+<translation id="4293154608148215505">tu teléfono</translation>
 <translation id="4294506173142861371">¿Quieres acceder como <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
@@ -1308,8 +1312,10 @@
 <translation id="5119329531859909472">Para hacer un seguimiento del producto, presiona Realizar seguimiento</translation>
 <translation id="5121618895923301719">Ya estás realizando un seguimiento de este producto. Se guardó esta página en <ph name="BEGIN_LINK" />Favoritos del celular<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tienes varios problemas relacionados con las contraseñas.</translation>
+<translation id="5126335625961252141">tu tablet</translation>
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, historial y más en todos los dispositivos</translation>
+<translation id="5137568953923142260">Permitir una vez</translation>
 <translation id="5141363746588976328">Ocultar la tarjeta Reducciones de precio en las pestañas</translation>
 <translation id="514154868070499296">Fuente: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Salir del alternador de pestañas</translation>
@@ -1388,6 +1394,7 @@
 <translation id="5371112366564891538">Aumentar el tamaño del texto</translation>
 <translation id="5376135254804080693">Anular selección</translation>
 <translation id="537853552771686272">Administra los temas y los sitios que te interesan</translation>
+<translation id="5385892579392932755">tu laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} cerrada}other{{count} cerradas}}</translation>
 <translation id="5394975111793637642">Ocultar la tarjeta Opiniones sobre productos para ti</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio disminuye en algún sitio.</translation>
@@ -1763,6 +1770,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6525550806864373485">Editar menú</translation>
 <translation id="6527208859483186860">fondo {position} de {total}</translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="6529706885792457023">Organizaste más de 15 pestañas</translation>
 <translation id="6532106788206463496">Guardar cambios</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1816,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6642362222295953972">Cambiar a la pestaña existente</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Revisaste más de 25 contraseñas</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659660757330712663">Puedes deslizar la barra de herramientas para pasar de una pestaña a otra.</translation>
 <translation id="6663529247339810546">Error al guardar la imagen</translation>
@@ -1963,9 +1972,11 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Se cerrarán las pestañas y se borrarán los datos de navegación</translation>
 <translation id="714291438898585119">Destacados</translation>
+<translation id="7144458305574230431">Accede para obtener tus favoritos y más de <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Actualizar la licencia de conducir</translation>
 <translation id="7146301801400584641">Hay un archivo del calendario disponible</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="7151361008641622036">{count,plural, =1{Organizaste 1 pestaña}other{Organizaste # pestañas}}</translation>
 <translation id="7154417656353909837">Quitar direcciones</translation>
 <translation id="7161230316646448869">Sincroniza tus favoritos, historial y más en todos los dispositivos</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -1989,6 +2000,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="722339453342442311">Verificar ahora</translation>
 <translation id="7227235818314667565">Administrar el uso compartido</translation>
 <translation id="7233006041370588369">Selecciona una contraseña para completarla.</translation>
+<translation id="7238074332967840767">Seguridad</translation>
 <translation id="723874023660911012">Cambiar de perfil</translation>
 <translation id="7241135764990439166">El modo Incógnito no está disponible</translation>
 <translation id="7245288034498365666">Organízate y ahorra tiempo.</translation>
@@ -2372,7 +2384,6 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8393889347136007944">Pestañas que no se usaron durante <ph name="THRESHOLD" /> días</translation>
 <translation id="8395180897620197612">Detener registro</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" puede acceder a tu micrófono cada vez que visites este sitio</translation>
 <translation id="8407669440184693619">No se encontraron contraseñas para este sitio</translation>
 <translation id="8407831512155324054">Tus contraseñas parecen seguras</translation>
 <translation id="8414283596511250978">Nunca olvides tus contraseñas</translation>
@@ -2387,7 +2398,6 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="8439758443371991593">Ocultar la opción Agregar a la Lista de lectura</translation>
 <translation id="8443986842926457191">La URL tiene más de 2048 caracteres.</translation>
 <translation id="8449869326050867919">Se compartió la contraseña</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" puede acceder a tu cámara cada vez que visites este sitio</translation>
 <translation id="8461708300275916315">Si eres menor de 18 años</translation>
 <translation id="8473815223723723001">Edita imágenes con Gemini</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
@@ -2396,6 +2406,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="8481184073299279701">Presiona el botón "Iniciar registro" para recopilar todos los futuros registros de la Consola de JavaScript y errores de todas las pestañas. Se recopilarán los registros (y se almacenarán solo en memoria) hasta que se cierre esta página o se presione el botón "Detener registro".</translation>
 <translation id="8487667956631253959">Encendida</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
+<translation id="8488065047914929586">desde que completaste "Guardar una contraseña"</translation>
 <translation id="8488923644885757471">Nueva ventana</translation>
 <translation id="8490629238792920282">No se puede crear el vínculo</translation>
 <translation id="8501469528283376592">Elimina las descargas automáticamente</translation>
@@ -2543,6 +2554,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="8890516388109605451">Fuentes</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">Envía a Google las URLs de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>
+<translation id="890009681345348416">Se autocompletaron más de 40 contraseñas</translation>
 <translation id="8900845556227858314">App del navegador</translation>
 <translation id="890565330728586731">Atrás</translation>
 <translation id="8907722425137681851">Buscar en la página…</translation>

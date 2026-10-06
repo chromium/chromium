@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1186645291482254714">Saat puhelimeen hintaseurantailmoituksia Chromiumin avulla</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> odottaa. Chromium päivittyy, kun olet ollut epäaktiivinen <ph name="IDLE_DURATION" />. Näin selaaminen pysyy turvallisena.</translation>
 <translation id="1232234696885483911">Kun avaat kuvahaun, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään automaattisesti palvelimelle. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromiumissa. Jos haluat muuttaa tätä, siirry kohtaan "Tilisi Chromiumissa".</translation>
 <translation id="1244381985120794049">Näytä Gemini in Chromium Macin valikkopalkissa</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
 <translation id="328888136576916638">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Chromiumin toiminnoista poistetaan käytöstä.</translation>
 <translation id="3296368748942286671">Jätä taustasovellukset käyntiin, kun Chromium suljetaan</translation>
+<translation id="3300632735252839402">Chromium päivittyy, kun olet poissa</translation>
 <translation id="3313189106987092621">Chromium varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="3316771292331273802">Sinut kirjataan ulos useimmilta sivustoilta, kun suljet kaikki Chromium-ikkunat. Tämä ei kuitenkaan koske Google-tiliäsi, jos olet kirjautuneena Chromiumiin. <ph name="SETTINGS_LINK" />, jotta sivustot muistavat sinut.</translation>
 <translation id="3352986031709923790">hakualueen oikea yläkulma: oikea <ph name="RIGHT" /> %, ylä <ph name="TOP" /> %</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
 <translation id="3406848076815591792">Vaihdetaanko nykyiseen Chromium-profiiliin?</translation>
 <translation id="3412460710772753638">Googlen Salasanojen ylläpidossa tällä laitteella</translation>
+<translation id="3425452599984451640">Chromium pyytää päivittämään</translation>
 <translation id="3427159664004296878">Kirjaudu Chromiumiin, niin voit käyttää esimerkiksi kirjanmerkkejä tältä laitteelta: <ph name="DEVICE" /></translation>
 <translation id="3438772217992559640">Hae tältä välilehdeltä kuvahaulla</translation>
 <translation id="3455907671758333080">Laajenna parannettua selaussuojaa Chromiumin avulla puhelimella</translation>

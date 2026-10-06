@@ -1117,6 +1117,17 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur "False", le co
 Si l'utilisateur tente de lancer une Application Chrome désactivée, un message lui indique pourquoi elle n'a pas été lancée et lui suggère de contacter son service informatique.
 
 ChromeOS M184 sera la dernière version de ChromeOS compatible avec les Applications Chrome.</translation>
+<translation id="1726477280489844651">Détermine si <ph name="PRODUCT_NAME" /> ouvre une fenêtre de navigateur lorsque l'utilisateur se connecte à <ph name="MS_WIN_NAME" />.
+
+<ph name="PRODUCT_NAME" /> dispose d'un paramètre "Démarrer <ph name="PRODUCT_NAME" /> avec <ph name="MS_WIN_NAME" />" qui configure son lancement automatique lorsque l'utilisateur se connecte, afin que le navigateur soit prêt immédiatement. Les utilisateurs peuvent également voir des invites leur suggérant de modifier ce paramètre.
+
+Si cette règle est activée, <ph name="PRODUCT_NAME" /> se lance et ouvre une fenêtre de navigateur lorsque l'utilisateur se connecte. Les utilisateurs ne peuvent pas modifier le paramètre et ne sont pas invités à le faire.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne se lance pas lorsque l'utilisateur se connecte. Les utilisateurs ne peuvent pas modifier le paramètre et ne sont pas invités à le faire.
+
+Si cette règle n'est pas configurée, les utilisateurs peuvent modifier le paramètre.
+
+Cette règle n'a aucun effet sur les versions de <ph name="PRODUCT_NAME" /> où le paramètre "Démarrer <ph name="PRODUCT_NAME" /> avec <ph name="MS_WIN_NAME" />" n'est pas disponible.</translation>
 <translation id="1729169799290004131">Cette règle permet de définir le niveau de luminosité de l'écran (en pourcentage), ce qui désactive les fonctionnalités de réglage automatique de la luminosité. En outre, le niveau initial de luminosité de l'écran est ajusté à la valeur définie dans cette règle. Toutefois, les utilisateurs peuvent modifier ce paramètre.
 
       Si cette règle n'est pas configurée, les réglages de l'utilisateur concernant l'écran ou les fonctionnalités de réglage automatique de la luminosité ne sont pas affectés.
@@ -1219,6 +1230,19 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 
       Si cette règle n'est pas définie, les utilisateurs peuvent manipuler toute la liste des langues préférées.</translation>
 <translation id="1803646570632580723">Liste des applications épinglées à afficher dans le lanceur d'applications</translation>
+<translation id="180432221123109556">Permet de lister les formats d'URL des sites pour lesquels les optimisations JavaScript avancées sont activées.
+
+Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns.
+Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
+
+Des exceptions à la règle peuvent être définies pour certains sous-domaines, ainsi que pour des sites entiers.
+Par exemple, une règle configurée uniquement pour sous-domaine.site.com s'applique à sous-domaine.site.com sans affecter site.com. Dans certains cas où un sous-domaine ne peut pas être isolé de son site parent, il peut hériter de la règle configurée sur site.com. Il est également possible que les exceptions ne prennent pas effet pour les frames chargés dans un onglet existant tant que le site n'a pas été ouvert dans un nouvel onglet. Sur les appareils <ph name="ANDROID_NAME" /> disposant de peu de mémoire, il est possible que les exceptions propres à un site ne soient pas appliquées. Les sites utiliseront alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est définie) ou, par défaut, le paramètre d'optimisation JavaScript du profil.
+
+Pour appliquer des exceptions, <ph name="PRODUCT_NAME" /> peut placer les sites ou sous-domaines dont le paramètre diffère de celui par défaut dans des processus dédiés. Cela peut augmenter l'utilisation de mémoire, en particulier sur <ph name="ANDROID_NAME" /> ou lorsqu'un format de caractères génériques correspond à de nombreux sous-domaines, car chaque origine correspondante peut être isolée séparément. Les sous-domaines isolés ne peuvent pas non plus utiliser document.domain pour accéder à leur site parent.
+
+Remarque : Dans les versions 138 et antérieures, les exceptions aux règles n'étaient appliquées qu'au niveau des sites (eTLD+1). Une règle définie uniquement pour sous-domaine.site.com ne prenait pas effet, même pour sous-domaine.site.com. Elle devait être définie sur site.com pour s'appliquer à la fois à site.com et à sous-domaine.site.com. Cette règle s'applique frame par frame et pas uniquement en fonction de l'URL d'origine de premier niveau. Par exemple, si site-1.com est répertorié dans la règle <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, mais que site-1.com charge un frame contenant site-2.com, les optimisations JavaScript sont activées pour site-1.com, mais site-2.com utilise la règle de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est définie) ou active les optimisations JavaScript par défaut. Les entrées de la liste de blocage ont une priorité plus élevée que celles de la liste d'autorisation, qui ont une priorité plus élevée que la valeur configurée par défaut.
+
+Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, les optimisations JavaScript sont activées pour le site.</translation>
 <translation id="1807539058116290184">Désactiver le zoom par pincement en mode Kiosque</translation>
 <translation id="1808715480127969042">Bloquer les cookies sur ces sites</translation>
 <translation id="1810261428246410396">Autoriser le partage de connexion instantané</translation>
@@ -1447,6 +1471,7 @@ Si cette règle n'est pas configurée, la fonctionnalité Appel direct est activ
       Notez que cette règle bloque JavaScript selon que l'origine du document de premier niveau (généralement l'URL de la page qui s'affiche également dans la barre d'adresse) correspond ou non à l'un des formats. Par conséquent, cette règle n'est pas adaptée pour limiter les attaques de la chaîne d'approvisionnement Web. Par exemple, si vous indiquez le format "https://[*.]foo.com/", cela n'empêchera pas une page hébergée sur https://example.com d'exécuter un script chargé à partir de https://www.foo.com/example.js. De plus, si vous indiquez le format "https://example.com/", cela n'empêchera pas un document provenant de https://example.com d'exécuter des scripts, même s'il ne s'agit pas du document de premier niveau, mais d'un sous-cadre intégré dans une page hébergée sur une autre origine, par exemple https://www.bar.com.</translation>
 <translation id="1942015922182679826">Activer la suppression des mots de passe indéchiffrables</translation>
 <translation id="1942626390957213764">Désactiver le hub de partage du bureau</translation>
+<translation id="1943628907052340534">Ne pas ouvrir <ph name="PRODUCT_NAME" /> lorsque l'utilisateur se connecte à <ph name="MS_WIN_NAME" /></translation>
 <translation id="194407941132272412">Désactiver l'isolation pour tous les sites Web, mais autoriser l'utilisateur à l'activer</translation>
 <translation id="1945994447126139909">Cette règle permet d'assurer la transition à court terme vers <ph name="PRODUCT_NAME" /> 88, après quoi elle sera supprimée.
 
@@ -2121,6 +2146,13 @@ Si vous devez utiliser cette règle, veuillez signaler un bug sur crbug.com en e
 
 REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="2354439478396602136">Afficher des recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2355126045573728327">Cette règle permet de spécifier une liste de noms de packages d'applis <ph name="ANDROID_NAME" /> (par exemple, <ph name="EXAMPLE_PACKAGE_NAME" />) qui se lanceront automatiquement lorsque l'utilisateur se connectera à <ph name="PRODUCT_OS_NAME" />.
+
+Les applis doivent également être configurées pour être installées d'office via <ph name="ARC_POLICY_NAME" />. Elles se lancent automatiquement une fois l'installation terminée.
+
+Actuellement, seule la première appli de la liste est lancée.
+
+Si cette règle n'est pas configurée, ou si elle est vide, aucune appli <ph name="ANDROID_NAME" /> ne se lancera automatiquement à la connexion.</translation>
 <translation id="2355876547176311490">Désactiver l'utilisation des serveurs de relais pour l'hôte d'accès à distance</translation>
 <translation id="2358176879566587521">Cette règle est supprimée. Elle n'est pas compatible avec cette version de <ph name="PRODUCT_NAME" />. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior est une fonctionnalité <ph name="PRODUCT_NAME" /> qui entraîne l'héritage systématique des valeurs d'URL de base par les frames <ph name="ABOUT_BLANK_PAGE" /> et <ph name="ABOUT_SRCDOC_PAGE" /> via des instantanés de l'URL de base de leur créateur. Pour en savoir plus, consultez https://chromestatus.com/feature/5161101671530496.
@@ -2278,6 +2310,7 @@ Cette règle est une mesure temporaire pour contrôler la fonctionnalité et ser
 <translation id="2479760962196319822">Cette règle détermine si les utilisateurs de <ph name="PRODUCT_OS_NAME" /> peuvent stocker des données localement ou non.
       Si cette règle est définie sur "False", le stockage local est bloqué sur <ph name="PRODUCT_OS_NAME" /> : les utilisateurs ne peuvent ni stocker des données localement, ni accéder aux répertoires locaux.
       Si elle est définie sur "True" ou n'est pas configurée, le stockage local est autorisé sur <ph name="PRODUCT_OS_NAME" />. Aucune restriction ne s'applique aux emplacements où les utilisateurs peuvent stocker des données, ni aux répertoires auxquels ils peuvent accéder.</translation>
+<translation id="2481931731272002134">Autoriser les fonctionnalités d'IA générative dans la Saisie automatique et améliorer les modèles d'IA.</translation>
 <translation id="2482676533225429905">Messagerie native</translation>
 <translation id="2483146640187052324">Prédire les actions réseau lors d'une connexion au réseau</translation>
 <translation id="2487495476672607707">Sur les appareils <ph name="CHROMEBOOK_PLUS_NAME" />, la synchronisation de fichiers <ph name="PRODUCT_OS_NAME" /> rend automatiquement disponibles hors connexion les fichiers <ph name="GOOGLE_DRIVE_NAME" /> du dossier "Mon Drive" de l'utilisateur (si l'espace le permet).
@@ -2715,6 +2748,7 @@ Si la règle est définie sur 2 (désactivée), l'intégration du Google Develo
       </translation>
 <translation id="2697717608663878828">Activer le test TLS Encrypted ClientHello</translation>
 <translation id="2699836109975228367">Activer l'audio mono sur l'écran de connexion</translation>
+<translation id="2701554183194485203">Applis <ph name="ANDROID_NAME" /> à lancer automatiquement à la connexion</translation>
 <translation id="2702023190395322609">Activer les recommandations de contenus multimédias</translation>
 <translation id="2702682139813393777">Forcer le lancement des hôtes de messagerie native Windows via cmd.exe</translation>
 <translation id="270582584528242502">Ne pas afficher de boîte de dialogue d'avertissement quand l'utilisateur tente de quitter</translation>
@@ -2970,6 +3004,25 @@ Cette règle ne peut être configurée que comme règle relative aux utilisateur
 <translation id="2890645751406497668">Autoriser automatiquement ces sites à se connecter à des appareils USB correspondant au fournisseur et aux ID de produit indiqués.</translation>
 <translation id="2893546967669465276">Envoyer des journaux système au serveur de gestion</translation>
 <translation id="2893660462311365527">Fréquence de collecte des données télémétriques du réseau en millisecondes.</translation>
+<translation id="2894720693512285641">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes de chiffrement préférés dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
+
+Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
+
+Si vous définissez la règle sur "<ph name="CNSA_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les algorithmes de chiffrement requis pour la conformité avec les versions 1.0 et 2.0 de la suite Commercial National Security Algorithm (CNSA 1.0 et 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses algorithmes de chiffrement par défaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.
+
+Cette règle peut être définie pour l'appareil et pour l'utilisateur. Si elle est définie pour l'utilisateur, cette règle n'affectera que les requêtes réseau initiées par le profil utilisateur et n'affectera peut-être pas les requêtes réseau effectuées par <ph name="PRODUCT_NAME" /> pour exécuter des tâches en arrière-plan à l'échelle du navigateur. Ces tâches étant, en effet, contrôlées par la valeur définie au niveau de l'appareil. Si cette règle est définie à la fois au niveau de l'appareil et de l'utilisateur, la valeur au niveau de l'appareil s'applique, sauf si l'ordre de priorité des règles a été modifié par la règle <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
+
+Pour les versions 156 et antérieures, cette règle ne s'applique qu'au niveau de l'appareil.</translation>
 <translation id="2894914342151915910">Supprimer les avertissements lorsque Chrome s'exécute sur un système non compatible</translation>
 <translation id="2895444724612647239">Autoriser automatiquement les sites à se connecter à tous les appareils HID.</translation>
 <translation id="2896434627453256512">Cette règle permet d'activer ou non la fonctionnalité Fenêtre fantôme.
@@ -3542,6 +3595,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="322359555555487980">Déterminer la disponibilité des variantes de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3229163415739929305">Si cette règle est activée, ou si elle n'est pas définie, l'extraction des métadonnées de chargement de la page et les modèles de machine learning qui améliorent l'expérience de navigation sont activés.
       Si cette règle est désactivée, certaines fonctionnalités peuvent ne pas fonctionner correctement.</translation>
+<translation id="3230956492238004242">Activer la mise à jour dynamique des modules enfants</translation>
 <translation id="3231311173895401135">Laisser le navigateur décider de la prise en charge</translation>
 <translation id="3231837273069128027">Cette règle permet de configurer la disponibilité et le comportement des mises à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
@@ -4227,6 +4281,7 @@ Si les règles <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />
 Le transfert de données avec Takeout doit aussi être activé pour que l'appli fonctionne correctement. Pour en savoir plus, consultez https://support.google.com/a/answer/6364687.</translation>
 <translation id="3702518095257671450">Attestation à distance</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Le champ constitué d'une seule ligne est abandonné et va être supprimé prochainement. Utilisez à la place la zone de texte à plusieurs lignes ci-dessous.)</translation>
+<translation id="370314752761795411">Démarrer <ph name="PRODUCT_NAME" /> avec <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Arrêter</translation>
 <translation id="3712861436661566358">Activer la séparation des profils</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
@@ -4711,6 +4766,7 @@ Pendant les intervalles de restriction, les sessions en cours sont fermées et l
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
 <translation id="4030152268425532846">Désactiver l'annulation de la connexion automatique</translation>
 <translation id="4032740546145417900">Ne pas autoriser la fonctionnalité Parler pour écrire.</translation>
+<translation id="4035252407064087455">Autoriser les fonctionnalités d'IA générative dans la Saisie automatique sans améliorer les modèles d'IA.</translation>
 <translation id="4043796890723386527">Empêcher les utilisateurs de créer et d'utiliser des profils secondaires, et d'utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Permet de contrôler l'application du filtre d'URL SafeSites, qui utilise l'API Google Safe Search pour déterminer si une URL est associée ou non à du contenu pornographique.
 
@@ -5136,6 +5192,7 @@ Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dan
 Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les utilisateurs à se connecter qu'aux services Bluetooth spécifiés. Exception : si la liste est vide, tous les services sont autorisés. Les IDUU réservés par Bluetooth SIG peuvent être représentés par <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> ou <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Les IDUU personnalisés peuvent être représentés par <ph name="BLUETOOTH_CUSTOM_UUID" />. Les IDUU ne sont pas sensibles à la casse. Si cette règle n'est pas définie, les utilisateurs peuvent se connecter à n'importe quel service Bluetooth.</translation>
 <translation id="4332177773549877617">Enregistrer des événements pour les installations d'applications Android</translation>
 <translation id="4333940819293342439">Fréquence de collecte des données télémétriques d'utilisation des applis en millisecondes.</translation>
+<translation id="4336096948197154521">Ouvrir <ph name="PRODUCT_NAME" /> lorsque l'utilisateur se connecte à <ph name="MS_WIN_NAME" /></translation>
 <translation id="4340121900958123942">Permet de définir le niveau de disponibilité du système de géolocalisation <ph name="PRODUCT_OS_NAME" />.
 
 Il s'agit d'une couche de contrôle supplémentaire, située en dessous de la couche d'autorisation pour les applis et sites Web. Par exemple, si cette règle est définie sur <ph name="GLS_BLOCKED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, aucune appli ni aucun site ne peuvent déterminer la position, quelles que soient leur autorisation respective d'accéder à la position. Toutefois, si cette règle est définie sur <ph name="GLS_ALLOWED" />, les applis et sites peuvent obtenir la position individuellement s'ils ont l'autorisation correspondante.
@@ -5903,6 +5960,7 @@ Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</transl
       La propriété <ph name="PAGE_SIZE_NAME" /> doit contenir l'un des formats répertoriés ou être définie sur "Personnalisé" si le format du papier requis ne figure pas dans la liste. Si elle est définie sur "Personnalisé", il est obligatoire de spécifier également la propriété <ph name="PAGE_SIZE_CUSTOM_SIZE" />. La hauteur et la largeur souhaitées sont exprimées en micromètres. Dans le cas contraire, la propriété <ph name="PAGE_SIZE_CUSTOM_SIZE" /> ne doit pas être renseignée. Toute règle qui ne respecte pas ces consignes sera ignorée.
 
       Si la taille de la page n'est pas disponible pour l'imprimante sélectionnée, cette règle est ignorée.</translation>
+<translation id="4787894429283141328">Ne pas autoriser les fonctionnalités d'IA générative dans la Saisie automatique.</translation>
 <translation id="4789450349513792856">Bloquer les pop-up sur ces sites</translation>
 <translation id="4790391579868456557">Utiliser des cookies essentiels et non essentiels dans la recherche.</translation>
 <translation id="4790588245699320140">Autoriser l'Assistant Google à accéder au contexte de l'écran</translation>
@@ -6227,6 +6285,13 @@ Cette règle permet de contrôler la présentation de contenus promotionnels, y 
 <translation id="4947257516265472776">Appliquer le mode restreint strict sur <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="494924690085329212">Redémarrer en cas de déconnexion de l'utilisateur si Android est lancé.</translation>
 <translation id="4950447493143157880">Ne jamais utiliser le client DNS intégré</translation>
+<translation id="4953257833692039804">Détermine si <ph name="PRODUCT_NAME" /> applique de manière dynamique les mises à jour de sécurité préparées aux nouveaux processus enfants (comme les processus de moteur de rendu) sans nécessiter un redémarrage complet du navigateur.
+
+Si <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> est désactivée, aucun nouveau module ne sera installé.
+
+Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> peut lancer de nouveaux processus enfants à l'aide de binaires de modules enfants préparés de manière dynamique, lorsqu'ils sont disponibles.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cessera immédiatement d'appliquer les binaires de module enfant préparés de manière dynamique aux nouveaux processus enfants (y compris les mises à jour déjà téléchargées ou préparées localement) et nécessitera un redémarrage complet du navigateur pour appliquer les mises à jour. Les processus enfants déjà en cours d'exécution continueront de s'exécuter normalement. Ce paramètre désactive la mise à jour dynamique sans pour autant désactiver toutes les mises à jour de composants.</translation>
 <translation id="4953541641325278286">Interdire à tous les sites de détecter l'état d'inactivité de l'utilisateur</translation>
 <translation id="4954352279763128540">Ajoute un domaine prérempli à la boîte de dialogue d'authentification Kerberos.
 
@@ -6471,6 +6536,7 @@ Cette règle est proposée pour une durée limitée afin de laisser le temps de 
       </translation>
 <translation id="5118635822783657217">Désactiver les mises à jour pour les composants non essentiels</translation>
 <translation id="5120168808610189805">Activer l'importation de la page d'accueil à la première exécution</translation>
+<translation id="5124321040285474825">Paramètres des fonctionnalités d'IA générative dans la Saisie automatique</translation>
 <translation id="5124368997194894978">Activer le démarrage au branchement de l'alimentation CA (courant alternatif)</translation>
 <translation id="5124652340668722849">Configure une liste de domaines de provisionnement (PvD) que <ph name="PRODUCT_NAME" /> utilisera pour récupérer dynamiquement les configurations de proxy.
 
@@ -6588,6 +6654,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
           Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="5182483318861266793">Placer l'étagère sur le côté droit de l'écran</translation>
 <translation id="51859390023061147">Désactiver la fonctionnalité de restauration complète.</translation>
+<translation id="5188507662885416844">Désactiver la mise à jour dynamique des modules enfants</translation>
 <translation id="5189360528842591274">N'autoriser la connexion qu'aux services Bluetooth de la liste</translation>
 <translation id="5191007233343702012">Utiliser un ordre de priorité standard pour les onglets</translation>
 <translation id="5191476996923842491">Comportement par défaut pour l'écrêtage de la fonction setTimeout().</translation>
@@ -8776,6 +8843,27 @@ L'économiseur d'écran de l'utilisateur affiche les images référencées par l
 Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur d'écran et l'intervalle d'affichage des images avec les règles <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> et <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivement. Si l'une de ces règles n'est pas définie, les valeurs par défaut sont utilisées à la place.</translation>
 <translation id="651248769129998376">Ne pas créer ni importer de demandes d'installation d'extensions dans la console d'administration</translation>
 <translation id="6513453889192806240">Latence des requêtes HTTPS</translation>
+<translation id="6514006253468048943">Ces fonctionnalités de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour aider les utilisateurs à remplir des formulaires sur le Web. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données (comme la structure des formulaires avec lesquels un utilisateur interagit et, pour Rechercher et remplir avec Gemini, les requêtes en texte libre qu'un utilisateur saisit pour effectuer des recherches dans les applications Gemini connectées), puis envoyer ces données à un serveur appartenant à Google qui exécute un modèle d'IA générative.
+
+Si vous définissez la règle sur 0 (Autoriser les fonctionnalités d'IA générative dans la Saisie automatique et améliorer les modèles d'IA), les fonctionnalités peuvent être utilisées, et Google peut utiliser les données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+Si vous définissez la règle sur 1 (Autoriser les fonctionnalités d'IA générative dans la Saisie automatique sans améliorer les modèles d'IA), les fonctionnalités peuvent être utilisées, mais Google n'est pas autorisé à utiliser le contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les commentaires écrits) pour améliorer ses modèles. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si la règle est définie sur 2 (Ne pas autoriser les fonctionnalités d'IA générative dans la Saisie automatique), les fonctionnalités ne sont pas autorisées.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Les fonctionnalités d'IA générative dans la Saisie automatique incluent :
+
+– Analyse intelligente des formulaires : utilise l'IA pour identifier et classer les champs d'un formulaire, afin de pouvoir en remplir davantage.
+
+– Rechercher et remplir avec Gemini : recherche des informations dans les applications qu'un utilisateur a connectées à Gemini et les propose pour remplir un formulaire, sous forme de suggestions proactives ou en réponse à une requête de l'utilisateur.
+
+Cette règle remplace la règle <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />, qui s'applique toujours lorsque cette règle n'est pas définie. La fonctionnalité Rechercher et remplir avec Gemini nécessite également que la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ne soit pas désactivée.
+
+Cette règle ne contrôle pas les fonctionnalités de Saisie automatique qui n'utilisent pas l'IA générative.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6515357889978918016">Fichier image <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6515520014183265350">Indique une liste d'origines qui s'exécutent dans un processus dédié.
 
@@ -10641,6 +10729,18 @@ Si elle est désactivée, la visionneuse de PDF utilise son moteur de rendu AGG 
 
 Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélectionné par le navigateur.</translation>
 <translation id="7704244074621846004">Activer la durée de vie étendue pour les SharedWorkers</translation>
+<translation id="7706986409083477132">Permet de lister les formats d'URL pour lesquels les sites sont autorisés à exécuter JavaScript avec le compilateur JIT (Just In Time) activé.
+
+          Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
+
+          Des exceptions à la règle peuvent être définies pour certains sous-domaines, ainsi que pour des sites entiers. Par exemple, une règle configurée uniquement pour sous-domaine.site.com s'applique à sous-domaine.site.com sans affecter site.com. Dans certains cas où un sous-domaine ne peut pas être isolé de son site parent, il peut hériter de la règle configurée sur site.com. Il est également possible que les exceptions ne prennent pas effet pour les frames chargés dans un onglet existant tant que le site n'a pas été ouvert dans un nouvel onglet. Sur les appareils <ph name="ANDROID_NAME" /> disposant de peu de mémoire, il est possible que les exceptions propres à un site ne soient pas appliquées. Les sites utiliseront alors la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est définie) ou, par défaut, le paramètre JIT pour JavaScript du profil.
+
+          Pour appliquer des exceptions, <ph name="PRODUCT_NAME" /> peut placer les sites ou sous-domaines dont le paramètre diffère de celui par défaut dans des processus dédiés. Cela peut augmenter l'utilisation de mémoire, en particulier sur <ph name="ANDROID_NAME" /> ou lorsqu'un format de caractères génériques correspond à de nombreux sous-domaines, car chaque origine correspondante peut être isolée séparément. Les sous-domaines isolés ne peuvent pas non plus utiliser document.domain pour accéder à leur site parent.
+
+          Remarque : Dans les versions 155 et antérieures, les exceptions aux règles n'étaient appliquées qu'au niveau des sites (eTLD+1). Une règle définie uniquement pour sous-domaine.site.com ne prenait pas effet, même pour sous-domaine.site.com. Elle devait être définie sur site.com pour s'appliquer à la fois à site.com et à sous-domaine.site.com.
+Cette règle s'applique frame par frame et pas uniquement en fonction de l'URL d'origine de premier niveau. Par exemple, si site-1.com est répertorié dans la règle <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, mais que site-1.com charge un frame contenant site-2.com, le JIT pour JavaScript est activé pour site-1.com, mais site-2.com utilise la règle de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est définie) ou active le JIT pour JavaScript par défaut. Les entrées de la liste de blocage ont une priorité plus élevée que celles de la liste d'autorisation, qui ont une priorité plus élevée que la valeur configurée par défaut.
+
+          Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, le JIT pour JavaScript est activé pour le site.</translation>
 <translation id="7707869387893611318">Active la fonctionnalité des sons de recharge.
 
           Cette fonctionnalité permet d'émettre les sons de recharge.

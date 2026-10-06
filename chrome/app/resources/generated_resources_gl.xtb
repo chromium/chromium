@@ -1033,6 +1033,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Completouse a instalación</translation>
 <translation id="1792619191750875668">Pantalla ampliada</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Ocultar o contrasinal para <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Enviar comentarios para axudar a solucionar este problema.</translation>
 <translation id="1795214765651529549">Usar tema clásico</translation>
@@ -1697,7 +1698,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2300383962156589922">Personaliza e controla <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">O proceso de carga detense ao 80 % para que dure máis a batería.</translation>
 <translation id="2301382460326681002">O directorio raíz da extensión non é válido.</translation>
-<translation id="2301402091755573488">Pestana compartida</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305202347479035002">Como funciona?</translation>
 <translation id="2306794767168143227">Gardar no <ph name="BRAND" /> deste dispositivo</translation>
@@ -2075,7 +2075,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2598710988533271874">Nova versión de Chrome dispoñible</translation>
 <translation id="2599048253926156421">Copiouse o nome do usuario no portapapeis</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Desactivouse 1 extensión non segura}other{Desactiváronse {NUM_SITES} extensións non seguras}}</translation>
-<translation id="2603121359676416582">Para esta páxina</translation>
 <translation id="2603656971249947488">Franxa de pestanas</translation>
 <translation id="2604129989323098489">Os sitios adoitan pedir información acerca das túas pantallas para poder abrir e colocar ventás de xeito intelixente (por exemplo, para mostrar documentos ou contido en pantalla completa en paralelo)</translation>
 <translation id="2604255671529671813">Produciuse un erro de conexión de rede</translation>
@@ -2941,6 +2940,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="323262942975422760">Máis opcións para editar ou eliminar <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3233271424239923319">Crea unha copia de seguranza das aplicacións e os ficheiros de Linux</translation>
+<translation id="3233577317461669428">Non se atopou ningún outro dispositivo</translation>
 <translation id="3234251228180563751">O nome de usuario ten máis de 1000 caracteres</translation>
 <translation id="3234978181857588512">Gardar no dispositivo</translation>
 <translation id="3237871032310650497">Queres eliminar os datos do sitio <ph name="SITE_NAME" /> con particións en <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3015,7 +3015,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3292966601422448005">Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se lles outorgarán ás súas aplicacións instaladas.</translation>
 <translation id="3293080634164207409">Engadir pestanas</translation>
 <translation id="329324683265785818">Atallo de teclado para reproducir ou pór en pausa: tecla K</translation>
-<translation id="3293644607209440645">Enviar esta páxina</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3294686910656423119">Estatísticas de uso e informes de fallos</translation>
 <translation id="3295241308788901889">Emitindo unha pestana</translation>
@@ -5719,6 +5718,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dispositivo dereito)</translation>
 <translation id="534449933710420173">Cartafol sen nome</translation>
 <translation id="5345916423802287046">Iniciar aplicación ao iniciar sesión</translation>
+<translation id="5346059693449184483">En que pensas?</translation>
 <translation id="5350116201946341974">Extravagante</translation>
 <translation id="535123479159372765">Copiouse o texto desde outro dispositivo</translation>
 <translation id="5352257124367865087">Xestionar permisos dos sitios</translation>
@@ -6992,6 +6992,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6356893102071098867">Comproba se seleccionaches a conta correcta</translation>
 <translation id="6357305427698525450">Algunhas ligazóns compatibles seguirán abríndose nas aplicacións <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Outros identificadores estables (por exemplo, hash ou UUID)</translation>
+<translation id="6357830294871526418">Pestanas noutros dispositivos</translation>
 <translation id="6358884629796491903">Dragón</translation>
 <translation id="6359640073754977254">Desprazarse ata a última pestana</translation>
 <translation id="6361850914223837199">Detalles dos erros:</translation>
@@ -7139,7 +7140,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6472893788822429178">Mostrar botón de inicio</translation>
 <translation id="6473315466413288899">Selecciona unha opción</translation>
 <translation id="6474021817475285003">Ver máis en Google Calendar</translation>
-<translation id="6474401088838630457">Pregúntalle a Gemini máis sobre isto</translation>
 <translation id="6474498546677193336">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando Linux se apague.</translation>
 <translation id="6474884162850599008">Desconectar a conta de Google Drive</translation>
 <translation id="6476482583633999078">Velocidade da fala</translation>

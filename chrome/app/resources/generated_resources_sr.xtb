@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">Уклони приступ</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Проширени приказ</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Сакријте лозинку за <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Шаљи повратне информације као помоћ за решавање овог проблема.</translation>
 <translation id="1795214765651529549">Користи класичну</translation>
@@ -1696,7 +1697,6 @@
 <translation id="2300383962156589922">Прилагодите и контролишите апликацију <ph name="APP_NAME" /></translation>
 <translation id="2300434721407965566">Пуњење се зауставља на 80% да би батерија трајала дуже.</translation>
 <translation id="2301382460326681002">Основни директоријум додатка је неважећи.</translation>
-<translation id="2301402091755573488">Дељена картица</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305202347479035002">Принцип рада</translation>
 <translation id="2306794767168143227">Сачувај у <ph name="BRAND" /> на овом уређају</translation>
@@ -2074,7 +2074,6 @@
 <translation id="2598710988533271874">Доступан је нови Chrome</translation>
 <translation id="2599048253926156421">Корисничко име је копирано у привремену меморију</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Искључен је 1 небезбедан додатак}one{Искључен је {NUM_SITES} небезбедан додатак}few{Искључена су {NUM_SITES} небезбедна додатка}other{Искључено је {NUM_SITES} небезбедних додатака}}</translation>
-<translation id="2603121359676416582">За ову страницу</translation>
 <translation id="2603656971249947488">Трака са картицама</translation>
 <translation id="2604129989323098489">Сајтови обично траже информације о екранима како би могли да интелигентно отварају и постављају прозоре, на пример, да приказују документе или садржај преко целог екрана једно до другог</translation>
 <translation id="2604255671529671813">Грешка мрежне везе</translation>
@@ -2940,6 +2939,7 @@
 <translation id="323262942975422760">Још опција за измену или брисање: <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3233271424239923319">Направите резервне копије Linux апликација и датотека</translation>
+<translation id="3233577317461669428">Није пронађен ниједан други уређај</translation>
 <translation id="3234251228180563751">Корисничко име премашује 1000 знакова</translation>
 <translation id="3234978181857588512">Сачувај на уређају</translation>
 <translation id="3237871032310650497">Желите да избришете податке о сајтовима за <ph name="SITE_NAME" /> издељене на <ph name="PARTITION_SITE_NAME" />?</translation>
@@ -3014,7 +3014,6 @@
 <translation id="3292966601422448005">Дозволе које одобрите за апликацију <ph name="APP_NAME" /> важиће и за инсталиране апликације.</translation>
 <translation id="3293080634164207409">Додајте картице</translation>
 <translation id="329324683265785818">Пустите или паузирајте, тастерска пречица k</translation>
-<translation id="3293644607209440645">Пошаљи ову страницу</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3294686910656423119">Статистика коришћења и извештаји о отказивању</translation>
 <translation id="3295241308788901889">Пребацивање картице</translation>
@@ -5714,6 +5713,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (десна)</translation>
 <translation id="534449933710420173">Неименовани фолдер</translation>
 <translation id="5345916423802287046">Покрени апликацију када се пријавим</translation>
+<translation id="5346059693449184483">О чему размишљате?</translation>
 <translation id="5350116201946341974">Шаљиво</translation>
 <translation id="535123479159372765">Текст је копиран са неког другог уређаја</translation>
 <translation id="5352257124367865087">Управљајте дозволама за сајт</translation>
@@ -6990,6 +6990,7 @@
 <translation id="6356893102071098867">Проверите да ли сте изабрали одговарајући налог</translation>
 <translation id="6357305427698525450">Неки подржани линкови ће се и даље отварати у <ph name="APP_NAME" /> или <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Други стабилни идентификатори (нпр. хешеви или UUID-ови)</translation>
+<translation id="6357830294871526418">Картице на другим уређајима</translation>
 <translation id="6358884629796491903">Змај</translation>
 <translation id="6359640073754977254">Скролуј до последње картице</translation>
 <translation id="6361850914223837199">Детаљи грешке:</translation>
@@ -7137,7 +7138,6 @@
 <translation id="6472893788822429178">Прикажи дугме Почетак</translation>
 <translation id="6473315466413288899">Изаберите опцију</translation>
 <translation id="6474021817475285003">Прикажи више у Google календару</translation>
-<translation id="6474401088838630457">Питајте Gemini више о овоме</translation>
 <translation id="6474498546677193336">Опозивање дељења није успело јер једна апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се Linux следећи пут затвори.</translation>
 <translation id="6474884162850599008">Прекини везу са налогом Google диска</translation>
 <translation id="6476482583633999078">Брзина говора</translation>

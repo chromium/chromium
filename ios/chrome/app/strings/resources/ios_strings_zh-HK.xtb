@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">密碼</translation>
 <translation id="1381022135873211423">{count,plural, =1{第 {position} 個地址，總共有 {count} 個}other{第 {position} 個地址，總共有 {count} 個}}</translation>
 <translation id="13813615483058219">發生問題。請檢查互聯網連線、調高音量或再試一次。</translation>
+<translation id="138181280295369883">登入帳戶即可在所有裝置上取用已儲存的資料及其他內容</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="138618066238211776">以<ph name="USER_NAME" />的身分繼續</translation>
 <translation id="138692594145659985">付款卡儲存選項</translation>
@@ -188,6 +189,7 @@
 <translation id="1536390784834419204">翻譯網頁</translation>
 <translation id="1539535193627863227">找不到此網站的密碼或密鑰</translation>
 <translation id="1540800554400757039">地址行 1</translation>
+<translation id="1543035591122163372">登入即可在<ph name="DEVICE_TYPE" />上取用密碼及其他內容</translation>
 <translation id="154312949627292154">在上鎖畫面開啟其他裝置傳送的分頁。</translation>
 <translation id="1544653821167545205">總結頁面</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
@@ -314,6 +316,7 @@
 <translation id="1901366738768303267">如何使用此功能？</translation>
 <translation id="1901600657316773839">保留所選項目</translation>
 <translation id="1902277226107477495">已關閉地址偵測，你可前往「設定」重啟此功能。</translation>
+<translation id="1905582086181351638">登入即可在<ph name="DEVICE_TYPE" />上取用已儲存的資料及其他內容</translation>
 <translation id="1909201414196501151">已新增並固定網站</translation>
 <translation id="1911619930368729126">上載至「Google 雲端硬碟」</translation>
 <translation id="1925706052394657380">在 iOS 中開啟「預設應用程式」設定<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
@@ -408,7 +411,6 @@
 <translation id="2218389616572918761">網站可以要求使用麥克風</translation>
 <translation id="2219935992754556187">Chrome 會使用 Face ID 保護你的敏感資料安全</translation>
 <translation id="2220529011494928058">報告問題</translation>
-<translation id="2222149859067335623">「<ph name="SITE_DOMAIN" />」無法取用你的鏡頭</translation>
 <translation id="2223461067862937305">建立 QR 碼</translation>
 <translation id="222798989929574238">你使用了超過 20 張相片搜尋</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
@@ -782,7 +784,6 @@
 <translation id="3459644598174926977">「使用 Gemini Live」功能可讓你就網頁內容提問、盡情集思廣益，甚至與 Gemini 來回對話。</translation>
 <translation id="3462768334899086950">這樣會遺失未儲存的檔案和當前分頁</translation>
 <translation id="3464194322481586217">無法追蹤價格。</translation>
-<translation id="3468009081835548033">允許一次</translation>
 <translation id="3469117812148449995">儲存密碼選項</translation>
 <translation id="3472469028191701821">喺新分頁度打開</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{來自 {COUNT} 個網站或應用程式}other{來自 {COUNT} 個網站或應用程式}}</translation>
@@ -902,7 +903,6 @@
 <translation id="386224966259596343">下次填寫相關表格時，你可以選擇將資料儲存至「錢包」。</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
 <translation id="3875783148670536197">顯示方法</translation>
-<translation id="3877211858413020188">「<ph name="SITE_DOMAIN" />」無法取用你的麥克風</translation>
 <translation id="3878657761594430423">表格擷取器</translation>
 <translation id="3884810423191119660">安全地儲存密碼，輕鬆登入網站和應用程式</translation>
 <translation id="3885587018298784481">加入家庭群組</translation>
@@ -1039,6 +1039,7 @@
 <translation id="4289309730265289297">相片庫</translation>
 <translation id="429074084062258019">{count,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
 <translation id="4290920330097335010">永不允許</translation>
+<translation id="4293154608148215505">你的手機</translation>
 <translation id="4294506173142861371">要以<ph name="FIRST_NAME" />的身分登入嗎？</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
@@ -1311,6 +1312,7 @@
 <translation id="5119329531859909472">如要追蹤產品，請輕按 [追蹤]</translation>
 <translation id="5121618895923301719">您已追蹤此產品。此網頁已儲存在「<ph name="BEGIN_LINK" />流動裝置書籤<ph name="END_LINK" />」中。</translation>
 <translation id="512533434554095351">你有幾個密碼問題。</translation>
+<translation id="5126335625961252141">你的平板電腦</translation>
 <translation id="5128788795241319992">探索新選單</translation>
 <translation id="5132942445612118989">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
 <translation id="5137568953923142260">允許一次</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5371112366564891538">放大文字</translation>
 <translation id="5376135254804080693">全部取消選取</translation>
 <translation id="537853552771686272">管理感興趣的主題和網站</translation>
+<translation id="5385892579392932755">你的手提電腦</translation>
 <translation id="5390458669633674385">{count,plural, =1{已關閉 {count} 個}other{已關閉 {count} 個}}</translation>
 <translation id="5394975111793637642">隱藏「為你推薦的產品評論」資訊卡</translation>
 <translation id="5414763847370083940">如果產品在任何網站上降價，系統將通知您。</translation>
@@ -1967,6 +1970,7 @@
 <translation id="7140355148730164340"><ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="7141960840225504692">系統將關閉分頁並刪除瀏覽資料</translation>
 <translation id="714291438898585119">已加星號</translation>
+<translation id="7144458305574230431">登入即可在<ph name="DEVICE_TYPE" />上取用書籤及其他內容</translation>
 <translation id="7145337554745942724">更新駕駛執照</translation>
 <translation id="7146301801400584641">有可用的日曆檔案</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
@@ -2378,7 +2382,6 @@
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8393889347136007944">分頁已有 <ph name="THRESHOLD" /> 日未曾使用</translation>
 <translation id="8395180897620197612">停止記錄</translation>
-<translation id="8399253661151100858">每當你瀏覽此網站時，「<ph name="SITE_DOMAIN" />」都可取用你的麥克風</translation>
 <translation id="8407669440184693619">找不到此網站的密碼</translation>
 <translation id="8407831512155324054">你密碼的安全度夠高</translation>
 <translation id="8414283596511250978">不再忘記密碼</translation>
@@ -2393,7 +2396,6 @@
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
 <translation id="8443986842926457191">網址超過 2048 個字元</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
-<translation id="8458009459729013424">每當你瀏覽此網站時，「<ph name="SITE_DOMAIN" />」都可取用你的鏡頭</translation>
 <translation id="8461708300275916315">如果你未滿 18 歲</translation>
 <translation id="8473815223723723001">使用 Gemini 編輯圖像</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>

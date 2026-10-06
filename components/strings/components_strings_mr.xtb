@@ -289,7 +289,6 @@
 <translation id="1462951478840426066">तुमच्या कॉंप्युटरवरील फॉंट वापरा जेणेकरून, तुम्ही उच्च फायडेलिटी आशय तयार करू शकाल</translation>
 <translation id="1465457928007067810">तुमच्या Google खाते वर IBAN सेव्ह केला गेला</translation>
 <translation id="1467432559032391204">डावे</translation>
-<translation id="1471514598850585811">लॅपटॉप</translation>
 <translation id="1472675084647422956">अधिक दर्शवा</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">लेखनाशी संबंधित मदत मिळवण्यासाठी ३ किंवा आणखी शब्द एंटर करा</translation>
@@ -452,7 +451,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">सिस्टीम अ‍ॅडमिनशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, एक्स्पायर होईल <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">काँप्युटर</translation>
 <translation id="1739364174357629566">ओळखीच्या प्रवाशाचा नंबर अपडेट करा</translation>
 <translation id="1740404923954980840">फुल स्क्रीनमधून बाहेर पडण्यासाठी, वरून ड्रॅग करा आणि मागे जा बटणाला स्पर्श करा</translation>
 <translation id="1741474054575634405">लॉयल्टी कार्ड व्यवस्थापित करा...</translation>
@@ -887,7 +885,6 @@
 <translation id="2462724976360937186">प्रमाणन अधिकृतता की आयडी</translation>
 <translation id="2465688316154986572">स्टेपल</translation>
 <translation id="2465914000209955735">तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करा</translation>
-<translation id="2466682894498377850">तुमच्या <ph name="DEVICE_NAME" /> वरून टॅब पाठवला आहे</translation>
 <translation id="2467272921457885625">डिव्हाइसच्या हार्डवेअरचे तपशील आणि आकडेवारी, जसे की सीपीयू/रॅमच्या वापराचा इतिहास</translation>
 <translation id="2467421459221956357">सेन्सर वापरा</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />नेटवर्क निदान चालविणे<ph name="END_LINK" /></translation>
@@ -929,7 +926,6 @@
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />हे पर्याय देण्यासाठी चेकआउट पेजवरील आशय Google सोबत शेअर केला जातो.<ph name="END_BOLD" /> पेमेंट प्लॅन हे पात्रतेच्या अधीन आहेत. नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="BEGIN_LINK" />पेमेंट सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="2526062290525841862">हे अ‍ॅप रन करण्यासाठी, आयसोलेटेड वेब ॲप विकसक मोड पुन्हा सुरू करा</translation>
 <translation id="2526280916094749336">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा पत्ता तुमच्या Google खाते <ph name="ACCOUNT" /> मध्ये सेव्ह केला जाईल.</translation>
-<translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2527451058878391043">तुमचा CVC हा तुमच्या कार्डच्या समोरील बाजूस असतो. तुमच्या कार्ड नंबरच्या सर्वात वरती हा चार अंकी कोड आहे.</translation>
 <translation id="2529899080962247600">या भागात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत. उरलेल्या सर्व नोंदी दुर्लक्षित केल्या जातील.</translation>
 <translation id="2530042584066815841">माउस लॉक आणि वापर</translation>
@@ -958,6 +954,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp; संपादित करा पूर्ववत करा</translation>
 <translation id="2559566667529177711">मल्टी-लेअर</translation>
+<translation id="2561224416042784023">सेटिंग्ज पहा</translation>
 <translation id="2570734079541893434">सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="257136025287118539">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमच्या फाइल <ph name="CLOUD_PROVIDER" /> वर हलवत आहे. तुम्ही अपलोड पूर्ण झाल्यावर या फाइलमध्ये फेरबदल करू शकता.</translation>
 <translation id="2571488850200220306">सुरक्षा सुनिश्चित करण्यासाठी, ती डिव्हाइसची OS, ब्राउझरची आवृत्ती आणि कोणते सॉफ्टवेअर इंस्टॉल केले आहे हेदेखील पाहू शकते</translation>
@@ -1738,7 +1735,6 @@
 <translation id="3905894480064208252">{0,plural, =1{फाइल ट्रान्सफर करण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल ट्रान्सफर करण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="3906022360148923497">पेमेंट पद्धतीचा आयकन</translation>
 <translation id="3906234161316839040">इतर ऑर्डर</translation>
-<translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">एंबेड केलेल्या आशयाविषयी अधिक जाणून घ्या</translation>
 <translation id="3920504717067627103">सर्टिफिकेट धोरणे</translation>

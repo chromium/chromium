@@ -133,6 +133,7 @@
 <translation id="1377508275003315939">Password</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} di {count} indirizzo}other{{position} di {count} indirizzi}}</translation>
 <translation id="13813615483058219">Si è verificato un problema. Verifica la tua connessione a internet, alza il volume o riprova.</translation>
+<translation id="138181280295369883">Accedi per avere a disposizione le tue informazioni salvate e altri dati su tutti i dispositivi</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="138618066238211776">Continua come <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opzioni per salvare la carta</translation>
@@ -161,6 +162,7 @@
 <translation id="1466035273550360103">Nessuna scheda aperta</translation>
 <translation id="1469381646033328562">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">da quando hai completato "Crea un gruppo di schede"</translation>
 <translation id="147982357559798527">Modificata</translation>
 <translation id="1481450969185702334">Trova e compila</translation>
 <translation id="1483493594462132177">Invia</translation>
@@ -187,6 +189,7 @@
 <translation id="1536390784834419204">Traduci pagina</translation>
 <translation id="1539535193627863227">Nessuna password o passkey trovata per questo sito</translation>
 <translation id="1540800554400757039">Indirizzo 1</translation>
+<translation id="1543035591122163372">Accedi per trovare le password e altri dati del <ph name="DEVICE_TYPE" /></translation>
 <translation id="154312949627292154">Apri le schede ricevute dagli altri dispositivi dalla schermata di blocco.</translation>
 <translation id="1544653821167545205">Riassumi la pagina</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
@@ -313,6 +316,7 @@
 <translation id="1901366738768303267">Come faccio a utilizzare questa funzionalità?</translation>
 <translation id="1901600657316773839">Mantieni selezione</translation>
 <translation id="1902277226107477495">Rilevamento dell'indirizzo disattivato. Riattivalo in Impostazioni.</translation>
+<translation id="1905582086181351638">Accedi per visualizzare le informazioni salvate e altro del <ph name="DEVICE_TYPE" /></translation>
 <translation id="1909201414196501151">Sito aggiunto e fissato</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
 <translation id="1925706052394657380">Apri le impostazioni <ph name="BEGIN_BOLD" />App predefinite<ph name="END_BOLD" /> in iOS</translation>
@@ -407,8 +411,8 @@
 <translation id="2218389616572918761">I siti possono chiedere di utilizzare il microfono</translation>
 <translation id="2219935992754556187">Chrome protegge i tuoi dati sensibili con Face ID</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
-<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" non può accedere alla fotocamera</translation>
 <translation id="2223461067862937305">Crea un codice QR</translation>
+<translation id="222798989929574238">Hai utilizzato più di 20 foto per la ricerca</translation>
 <translation id="2230173723195178503">Pagina web caricata</translation>
 <translation id="2236949375853147973">Le mie attività</translation>
 <translation id="2237869114829007407">Ottieni una panoramica e informazioni chiave per qualsiasi pagina o argomento</translation>
@@ -899,7 +903,6 @@
 <translation id="386224966259596343">Avrai la possibilità di salvare queste informazioni in Wallet la prossima volta che compilerai un modulo pertinente.</translation>
 <translation id="3868495844258915202">Mostra URL completo</translation>
 <translation id="3875783148670536197">Mostrami come fare</translation>
-<translation id="3877211858413020188">L'accesso al microfono è bloccato per "<ph name="SITE_DOMAIN" />"</translation>
 <translation id="3878657761594430423">Pinza per fogli</translation>
 <translation id="3884810423191119660">Salva le password in modo sicuro per accedere facilmente a siti e app</translation>
 <translation id="3885587018298784481">Unisciti a un gruppo Famiglia</translation>
@@ -1036,6 +1039,7 @@
 <translation id="4289309730265289297">Raccolta fotografica</translation>
 <translation id="429074084062258019">{count,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
 <translation id="4290920330097335010">Non consentire mai</translation>
+<translation id="4293154608148215505">tuo smartphone</translation>
 <translation id="4294506173142861371">Accedere come <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Imposta posizione</translation>
 <translation id="4304713468139749426">Gestore delle password</translation>
@@ -1308,8 +1312,10 @@
 <translation id="5119329531859909472">Per monitorare il prodotto, tocca Monitora</translation>
 <translation id="5121618895923301719">Stai già monitorando questo prodotto. Questa pagina viene salvata nella sezione <ph name="BEGIN_LINK" />Preferiti mobile<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Sono presenti diversi problemi relativi alle password.</translation>
+<translation id="5126335625961252141">tuo tablet</translation>
 <translation id="5128788795241319992">Esplora il nuovo menu</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
+<translation id="5137568953923142260">Consenti una volta</translation>
 <translation id="5141363746588976328">Nascondi scheda Cali di prezzo nelle tue schede</translation>
 <translation id="514154868070499296">Carattere: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Chiudi Selettore di schede</translation>
@@ -1388,6 +1394,7 @@
 <translation id="5371112366564891538">Aumenta dimensioni testo</translation>
 <translation id="5376135254804080693">Deseleziona tutto</translation>
 <translation id="537853552771686272">Gestisci gli argomenti e i siti che ti interessano</translation>
+<translation id="5385892579392932755">tuo laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} chiusa}other{{count} chiuse}}</translation>
 <translation id="5394975111793637642">Nascondi la scheda Recensioni prodotto per te</translation>
 <translation id="5414763847370083940">Riceverai un avviso se il prezzo calerà su qualsiasi sito.</translation>
@@ -1728,7 +1735,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6421038304268477484">Testo tradotto</translation>
 <translation id="6429213933892582367">Apri Opzioni password</translation>
 <translation id="6435236283694032571">Aggiungi all'elenco di lettura</translation>
-<translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>
+<translation id="6435307030888827407">Continua senza accedere</translation>
 <translation id="6436318499800111867">Condivisi con me il: <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442327260099531031"><ph name="BEGIN_LINK" />Rispetta la privacy degli altri<ph name="END_LINK" /> e chiedi l'autorizzazione prima di registrarli o includerli in una chat Live.</translation>
 <translation id="6442697326824312960">Sblocca scheda</translation>
@@ -1763,6 +1770,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6525550806864373485">Modifica menu</translation>
 <translation id="6527208859483186860">sfondo {position} di {total}</translation>
 <translation id="6527303717912515753">Condividi</translation>
+<translation id="6529706885792457023">Hai organizzato più di 15 schede</translation>
 <translation id="6532106788206463496">Salva modifiche</translation>
 <translation id="6536759809440150308">Apri <ph name="GROUP_TITLE" />, gruppo di <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1816,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6642362222295953972">Passa alla scheda esistente</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6645899968535965230">Codice QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Hai controllato più di 25 password</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659660757330712663">Puoi far scorrere la barra degli strumenti per passare da una scheda all'altra.</translation>
 <translation id="6663529247339810546">Impossibile salvare l'immagine</translation>
@@ -1872,7 +1881,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6858718102216837409">Aggiungi lingua…</translation>
 <translation id="6858855187367714033">Scansione eseguita</translation>
 <translation id="6859944681507688231">Per eseguire la scansione di un codice QR o di una carta di credito, attiva la fotocamera dalle impostazioni.</translation>
-<translation id="6862212368460840758">Hai eseguito l'accesso come <ph name="SIGNED_EMAIL" />.
+<translation id="6862212368460840758">Hai usato <ph name="SIGNED_EMAIL" /> per accedere.
 
 Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
 <translation id="6867369562105931222">password</translation>
@@ -1963,9 +1972,11 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Le schede verranno chiuse e i dati di navigazione eliminati</translation>
 <translation id="714291438898585119">Speciali</translation>
+<translation id="7144458305574230431">Accedi per trovare i tuoi preferiti e altri dati del <ph name="DEVICE_TYPE" /></translation>
 <translation id="7145337554745942724">Aggiorna la patente di guida</translation>
 <translation id="7146301801400584641">File del calendario disponibile</translation>
 <translation id="7149893636342594995">Ultime 24 ore</translation>
+<translation id="7151361008641622036">{count,plural, =1{Hai organizzato 1 scheda}other{Hai organizzato # schede}}</translation>
 <translation id="7154417656353909837">Rimuovi indirizzi</translation>
 <translation id="7161230316646448869">Sincronizza i tuoi preferiti, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
 <translation id="7165323152084385463">Numero telaio</translation>
@@ -1989,6 +2000,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="722339453342442311">Controlla ora</translation>
 <translation id="7227235818314667565">Gestisci condivisione</translation>
 <translation id="7233006041370588369">Seleziona una password da inserire.</translation>
+<translation id="7238074332967840767">Sicurezza</translation>
 <translation id="723874023660911012">Cambia profilo</translation>
 <translation id="7241135764990439166">Modalità Incognito non disponibile</translation>
 <translation id="7245288034498365666">Organizzati e risparmia tempo</translation>
@@ -2372,7 +2384,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8393889347136007944">Schede non utilizzate per <ph name="THRESHOLD" /> giorni</translation>
 <translation id="8395180897620197612">Interrompi logging</translation>
-<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" può accedere al microfono ogni volta che visiti questo sito</translation>
 <translation id="8407669440184693619">Non è stata trovata alcuna password per questo sito</translation>
 <translation id="8407831512155324054">Le tue password sembrano efficaci</translation>
 <translation id="8414283596511250978">Le tue password sempre con te</translation>
@@ -2387,7 +2398,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8439758443371991593">Nascondi Aggiungi all'elenco di lettura</translation>
 <translation id="8443986842926457191">L'URL contiene più di 2048 caratteri</translation>
 <translation id="8449869326050867919">Password condivisa</translation>
-<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" può accedere alla fotocamera ogni volta che visiti questo sito</translation>
 <translation id="8461708300275916315">Se non sei ancora maggiorenne</translation>
 <translation id="8473815223723723001">Modifica immagine con Gemini</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
@@ -2396,6 +2406,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8481184073299279701">Tocca il pulsante "Avvia logging" per raccogliere i futuri log della console JavaScript ed errori di tutte le schede. I log verranno raccolti e archiviati unicamente in memoria fino alla chiusura della pagina o finché non toccherai "Interrompi logging".</translation>
 <translation id="8487667956631253959">Attiva</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
+<translation id="8488065047914929586">da quando hai completato "Salva una password"</translation>
 <translation id="8488923644885757471">Nuova finestra</translation>
 <translation id="8490629238792920282">Impossibile creare il link</translation>
 <translation id="8501469528283376592">Eliminazione automatica dei download</translation>
@@ -2543,6 +2554,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8890516388109605451">Origini</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del web.</translation>
+<translation id="890009681345348416">Più di 40 password compilate automaticamente</translation>
 <translation id="8900845556227858314">App browser</translation>
 <translation id="890565330728586731">Indietro</translation>
 <translation id="8907722425137681851">Trova nella pagina…</translation>
@@ -2630,7 +2642,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="9162432979321511934">Attiva l'opzione Compila automaticamente le password.</translation>
 <translation id="9165320910061267720">Per ricevere notifiche relative agli avvisi sui cali di prezzo, devi attivare le notifiche nelle impostazioni di iOS.</translation>
 <translation id="9179151630575358778">Nasconde questo elemento</translation>
-<translation id="9183563643084679152">Hai eseguito l'accesso a Chrome tramite la scansione di un codice QR. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
+<translation id="9183563643084679152">Hai usato la scansione di un codice QR per accedere a Chrome. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
 <translation id="9183733013282108610">Ricerca in incognito</translation>
 <translation id="9186762474139509529">Avvia logging</translation>
 <translation id="9191031968346938109">Aggiungi a…</translation>

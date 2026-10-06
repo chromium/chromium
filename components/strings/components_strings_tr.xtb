@@ -289,7 +289,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1462951478840426066">Farklı platformlarda tutarlı görünen bir içerik oluşturabilmeniz için bilgisayarınızdaki yazı tiplerini kullanma</translation>
 <translation id="1465457928007067810">IBAN, Google Hesabınıza kaydedildi</translation>
 <translation id="1467432559032391204">Sola</translation>
-<translation id="1471514598850585811">Dizüstü bilgisayar</translation>
 <translation id="1472675084647422956">Daha fazla</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Yazma konusunda yardım almak için en az 3 kelime girin</translation>
@@ -452,7 +451,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Sistem yöneticisiyle iletişime geçmeyi deneyin.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, geçerlilik sonu <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Bilgisayar</translation>
 <translation id="1739364174357629566">Known Traveler Number'ı güncelleyin</translation>
 <translation id="1740404923954980840">Tam ekrandan çıkmak için yukarıdan sürükleyip geri düğmesine dokunun</translation>
 <translation id="1741474054575634405">Bağlılık kartlarını yönet...</translation>
@@ -867,6 +865,7 @@ Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph 
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ana makinesinin tüm <ph name="PROTOCOL" /> bağlantılarını açmasına izin verilsin mi?</translation>
 <translation id="243815215670139125">Bu kart, Google Hesabınıza kaydedilemedi. Bunun yerine bu cihazdaki Chrome'a kaydedildi.</translation>
 <translation id="2438874542388153331">Sağda dörtlü delik</translation>
+<translation id="2442033148418774391">Gizliliği korunan daha akıllı otomatik doldurma bildirimi kapatıldı</translation>
 <translation id="2442865686365739754">Chrome aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Tarama geçmişiniz
@@ -879,13 +878,13 @@ Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph 
 <translation id="2451607499823206582">İzleniyor</translation>
 <translation id="2452837234288608067">Bu konuda yardımcı olamadım. Tekrar deneyin.</translation>
 <translation id="2453045048779611513">Kaydedebilecekleriniz kuruluşunuz tarafından kısıtlanmıştır</translation>
+<translation id="2456490423293803882">Gizliliği korunan daha akıllı otomatik doldurma bildirimi tam ekranda açıldı</translation>
 <translation id="2459882793359532780">Uygulanan tarayıcı politikaları (makine ve profil politikaları)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core, tarayıcı politikalarını buluttan yapılandırmanız için merkezi bir araç sağlar</translation>
 <translation id="2461822463642141190">Şu an</translation>
 <translation id="2462724976360937186">Sertifika Yetkilisi Anahtar Kimliği</translation>
 <translation id="2465688316154986572">Tel zımba</translation>
 <translation id="2465914000209955735">Chrome'da indirdiğiniz dosyaları yönetin</translation>
-<translation id="2466682894498377850">Sekme <ph name="DEVICE_NAME" /> cihazınızdan gönderildi</translation>
 <translation id="2467272921457885625">CPU/RAM kullanım geçmişi gibi cihaz donanım spesifikasyonları ve istatistikleri</translation>
 <translation id="2467421459221956357">Sensörler kullanılsın mı?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Ağ Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph 
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Bu seçenekleri sunmak için ödeme sayfasındaki sayfa içeriği Google ile paylaşılır.<ph name="END_BOLD" /> Ödeme planları, uygunluk durumuna bağlıdır. Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarlarına<ph name="END_LINK" /> gidin.</translation>
 <translation id="2526062290525841862">Bu uygulamayı çalıştırmak için Yalıtılmış Web Uygulaması Geliştirici Modu'nu yeniden etkinleştirin</translation>
 <translation id="2526280916094749336">Kayıtlı adresleri tüm Google ürünlerinde kullanabilirsiniz. Bu adres Google Hesabınıza (<ph name="ACCOUNT" />) kaydedilir.</translation>
-<translation id="2526590354069164005">Masaüstü</translation>
 <translation id="2527451058878391043">CVC'niz, kartınızın ön tarafında yer alır. Bu, kart numaranızın sağ üst tarafında bulunan 4 haneli koddur.</translation>
 <translation id="2529899080962247600">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Bundan sonraki tüm girişler yok sayılacak.</translation>
 <translation id="2530042584066815841">Fare kilidi ve kullanımı</translation>
@@ -1108,6 +1106,7 @@ Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph 
 <translation id="2878197950673342043">Poster katlama</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">şifreleri doldurmak için ekran kilidinizi kullanmak</translation>
+<translation id="2880119244122776372">Oluşturun ve kodlayın</translation>
 <translation id="2881276955470682203">Kart kaydedilsin mi?</translation>
 <translation id="2882280148032777436">"Known Traveler Number"ı sil</translation>
 <translation id="2882949212241984732">İki kırımlı katlama</translation>
@@ -1736,7 +1735,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3905894480064208252">{0,plural, =1{Dosyanın aktarılması engellendi}other{<ph name="FILE_COUNT" /> dosyanın aktarılması engellendi}}</translation>
 <translation id="3906022360148923497">Ödeme aracı simgesi</translation>
 <translation id="3906234161316839040">Diğer siparişler</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Yerleştirilmiş içerik hakkında daha fazla bilgi</translation>
 <translation id="3920504717067627103">Sertifika Politikaları</translation>
@@ -3914,6 +3912,7 @@ Ek ayrıntılar:
 <translation id="753713322968419914">Ev adresi, Chrome otomatik doldurma özelliğinden kaldırılsın mı?</translation>
 <translation id="753714465667062283">Fotoğrafınızı kaydetmek için oturum açın</translation>
 <translation id="7537536606612762813">Zorunlu</translation>
+<translation id="7540924742308928499">Beyin fırtınası yapın ve özetleyin</translation>
 <translation id="7543525346216957623">Anne veya babanıza sorun</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> başlatılıyor</translation>
 <translation id="7548892272833184391">Bağlantı hatalarını düzeltme</translation>

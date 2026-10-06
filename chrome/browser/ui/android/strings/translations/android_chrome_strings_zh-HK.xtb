@@ -764,6 +764,7 @@
 <translation id="4092709865241032354">請新增你在此網站的使用者名稱，「Google 密碼管理工具」才能儲存登入資料</translation>
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
 <translation id="4095483462103784441">建立新分頁群組</translation>
+<translation id="4098552968111329864">為確保你在 Chrome 上的工作成果安全，你的機構將可在你登入 Chrome 時查看或管理特定資料</translation>
 <translation id="4105527135143631701">打開咗「Google 密碼管理工具」更新</translation>
 <translation id="4107207375883769436">機構可能需要查看和管理工作設定檔中的瀏覽資料 (例如瀏覽記錄和密碼)</translation>
 <translation id="4113030288477039509">由管理員管理</translation>
@@ -1770,6 +1771,7 @@
 <translation id="7929587383660661825">如果網站濫用通知或你最近未瀏覽，Chrome 都會自動移除權限</translation>
 <translation id="7934668619883965330">無法下載檔案，因為系統不支援檔案格式。</translation>
 <translation id="7951102827450076904">一律開啟已下載的 PDF</translation>
+<translation id="7952148074468405586">進一步瞭解<ph name="BEGIN_LINK" />你機構可查看或管理的資料<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">如要開啟新視窗，請將使用中視窗的總數減至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個或以下。</translation>
 <translation id="7956713633345437162">流動版書籤</translation>
 <translation id="7957413488482743710">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>

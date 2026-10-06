@@ -289,7 +289,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1462951478840426066">Ordenagailuko letrak erabili goi-fidelitateko edukia sor dezazun.</translation>
 <translation id="1465457928007067810">Gorde da IBANa Google-ko kontuan</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
-<translation id="1471514598850585811">Ordenagailu eramangarria</translation>
 <translation id="1472675084647422956">Erakutsi gehiago</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Idazteko laguntza jasotzeko, idatzi 3 hitz gutxienez</translation>
@@ -452,7 +451,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Jarri sistemaren administratzailearekin harremanetan.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> datan iraungiko da</translation>
-<translation id="1736420071277903564">Ordenagailua</translation>
 <translation id="1739364174357629566">Eguneratu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="1740404923954980840">Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta sakatu atzera egiteko botoia</translation>
 <translation id="1741474054575634405">Kudeatu fideltasun-txartelak…</translation>
@@ -867,6 +865,7 @@ Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <p
 <translation id="2436186046335138073"><ph name="PROTOCOL" /> esteka guztiak irekitzeko baimena eman nahi diozu <ph name="HANDLER_HOSTNAME" /> maneiatzaileari?</translation>
 <translation id="243815215670139125">Ezin izan da gorde txartela Google-ko kontuan. Horren ordez, gailu honetako Chrome-n gorde da.</translation>
 <translation id="2438874542388153331">Lau zulo eskuinean</translation>
+<translation id="2442033148418774391">Betetze automatiko adimentsuagoaren oharra (pribatutasuna mantenduta) itxi da</translation>
 <translation id="2442865686365739754">Chrome-k <ph name="BEGIN_EMPHASIS" />ez ditu gordeko<ph name="END_EMPHASIS" /> hauek:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />arakatze-historia
@@ -879,13 +878,13 @@ Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <p
 <translation id="2451607499823206582">Jarraipena egiten</translation>
 <translation id="2452837234288608067">Ezin izan dizut lagundu horrekin. Saiatu berriro.</translation>
 <translation id="2453045048779611513">Erakundeak sinkroniza dezakezuna mugatzen du</translation>
+<translation id="2456490423293803882">Betetze automatiko adimentsuagoaren oharra (pribatutasuna mantenduta) altuera osoan irekita dago</translation>
 <translation id="2459882793359532780">arakatzaile-gidalerro aplikatuak (gailuaren eta profilaren gidalerroak)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core-k arakatzailearen gidalerroak hodeitik konfiguratzeko tresna zentralizatu bat ematen dizu</translation>
 <translation id="2461822463642141190">Oraingoa</translation>
 <translation id="2462724976360937186">Ziurtagiri-emailearen gako-identifikatzailea</translation>
 <translation id="2465688316154986572">Grapatu</translation>
 <translation id="2465914000209955735">Kudeatu Chrome-ren bidez deskargatu dituzun fitxategiak</translation>
-<translation id="2466682894498377850"><ph name="DEVICE_NAME" /> gailutik bidalitako fitxa</translation>
 <translation id="2467272921457885625">gailuaren hardware-zehaztapenak eta estatistikak (adibidez, PUZaren edo RAMaren erabilera-historia)</translation>
 <translation id="2467421459221956357">Sentsoreak erabili nahi dituzu?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Sare-diagnostikoak exekutatzen<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <p
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Ordainketa-orriaren edukia Google-rekin partekatzen da aukera horiek eskaintzeko.<ph name="END_BOLD" /> Ordainketa-planak baldintza batzuk betetzen dituztenentzat daude erabilgarri. Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa-ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2526062290525841862">Aplikazio hau exekutatzeko, gaitu berriro sareko aplikazio isolatuen garatzaile modua</translation>
 <translation id="2526280916094749336">Gordetako helbideak Google-ren produktu guztietan erabil ditzakezu. Helbidea Google-ko kontuan (<ph name="ACCOUNT" />) gordeko da.</translation>
-<translation id="2526590354069164005">Ordenagailua</translation>
 <translation id="2527451058878391043">CVCa txartelaren aurrealdean dago. Txartel-zenbakiaren gainean, eskuinaldean dagoen lau digituko kodea da.</translation>
 <translation id="2529899080962247600">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Sarrera gehiagorik badago, ez ikusi egingo zaie.</translation>
 <translation id="2530042584066815841">Saguaren blokeoa eta erabilera</translation>
@@ -1108,6 +1106,7 @@ Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <p
 <translation id="2878197950673342043">Horma-irudi tolestura</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">pantailaren blokeoa pasahitzen eremuak betetzeko erabili behar du</translation>
+<translation id="2880119244122776372">Garatu eta programatu</translation>
 <translation id="2881276955470682203">Txartela gorde nahi duzu?</translation>
 <translation id="2882280148032777436">Ezabatu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="2882949212241984732">Leiho bikoitz erako tolestura</translation>
@@ -1732,7 +1731,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3905894480064208252">{0,plural, =1{Fitxategia ezin da transferitu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira transferitu}}</translation>
 <translation id="3906022360148923497">Ordainketa-metodoaren ikonoa</translation>
 <translation id="3906234161316839040">Beste eskaera batzuk</translation>
-<translation id="3906954721959377182">Tableta</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Lortu eduki kapsulatuari buruzko informazio gehiago</translation>
 <translation id="3920504717067627103">Ziurtagiri-gidalerroak</translation>
@@ -3908,6 +3906,7 @@ Xehetasun gehiago:
 <translation id="753713322968419914">Chrome-ren betetze automatikotik etxeko helbidea kendu nahi duzu?</translation>
 <translation id="753714465667062283">Hasi saioa argazkia gordetzeko</translation>
 <translation id="7537536606612762813">Derrigorrezkoa</translation>
+<translation id="7540924742308928499">Egin ideia-jasak eta laburpenak</translation>
 <translation id="7543525346216957623">Galdetu gurasoei</translation>
 <translation id="7546409722674205727">Hasiera-ordua: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Konpondu konexio-erroreak</translation>

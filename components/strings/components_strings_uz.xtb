@@ -289,7 +289,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1462951478840426066">Yuqori tiniqlikdagi yozuvlarni yaratish uchun kompyuteringizda oʻrnatilgan shriftlardan foydalaning</translation>
 <translation id="1465457928007067810">IBAN raqami Google hisobingizga saqlandi</translation>
 <translation id="1467432559032391204">Chapga</translation>
-<translation id="1471514598850585811">Laptop</translation>
 <translation id="1472675084647422956">Yana</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Yozishda yordam olish uchun kamida 3 ta soʻz kiriting</translation>
@@ -451,7 +450,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Tizim administratori bilan bog‘lanish.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, muddati: <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Kompyuter</translation>
 <translation id="1739364174357629566">Tanish sayohatchi raqamini (KTN) yangilash</translation>
 <translation id="1740404923954980840">Butun ekran rejimidan chiqish uchun ekranni yuqori chetidan pastga torting va “Orqaga” tugmasini bosing.</translation>
 <translation id="1741474054575634405">Sodiq mijoz kartalarini boshqarish...</translation>
@@ -886,7 +884,6 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2462724976360937186">Sertifikat markazi kaliti identifikatori</translation>
 <translation id="2465688316154986572">Steplerlash</translation>
 <translation id="2465914000209955735">Chromeda yuklab olingan fayllarni boshqarish</translation>
-<translation id="2466682894498377850"><ph name="DEVICE_NAME" /> yuborgan varaq</translation>
 <translation id="2467272921457885625">Qurilmaning apparat xususiyatlari va uning ishlashi haqidagi maʼlumotlar, masalan, CPU va RAM ishlatishi.</translation>
 <translation id="2467421459221956357">Sensorlardan foydalanilsinmi?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Tarmoq diagnostikasini ishga tushiring<ph name="END_LINK" /></translation>
@@ -928,7 +925,6 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Ushbu variantlarni taklif qilish uchun hisob-kitob sahifasidagi kontent Googlega yuboriladi.<ph name="END_BOLD" /> Toʻlov tariflari muvofiqlik asosida taqdim etiladi. Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov sozlamalarini<ph name="END_LINK" /> oching.</translation>
 <translation id="2526062290525841862">Bu ilovani ishga tushirish uchun izolyatsiyalangan veb-ilovani dasturchi rejimida qayta yoqing</translation>
 <translation id="2526280916094749336">Saqlangan manzillardan Google xizmatlarida foydalanish mumkin. Bu manzil Google hisobingizda (<ph name="ACCOUNT" />) saqlanadi.</translation>
-<translation id="2526590354069164005">Ish soli</translation>
 <translation id="2527451058878391043">CVC – kartangizning old tomonida. U 4 ta raqamdan iborat kod boʻlib, karta raqamining yuqori oʻng tomonida joylashgan.</translation>
 <translation id="2529899080962247600">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Qolganlari inobatga olinmaydi.</translation>
 <translation id="2530042584066815841">Sichqonchani boshqarish</translation>
@@ -957,6 +953,7 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Tahrirni bekor qilish</translation>
 <translation id="2559566667529177711">Koʻp qatlamli</translation>
+<translation id="2561224416042784023">Sozlamalarni ochish</translation>
 <translation id="2570734079541893434">Sozlamalarni boshqarish</translation>
 <translation id="257136025287118539">Administrator fayllaringizni <ph name="CLOUD_PROVIDER" /> omboriga koʻchirmoqda. Bu fayllarni faqat yuklanganidan keyin tahrirlash mumkin.</translation>
 <translation id="2571488850200220306">Xavfsizlikni taʼminlash maqsadida administrator qurilmadagi OT, brauzer versiyasi va oʻrnatilgan dasturlarni ham koʻrishi mumkin.</translation>
@@ -1734,7 +1731,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3905894480064208252">{0,plural, =1{Faylni uzatish taqiqlangan}other{<ph name="FILE_COUNT" /> ta faylni uzatish taqiqlangan}}</translation>
 <translation id="3906022360148923497">Toʻlov vositasi belgisi</translation>
 <translation id="3906234161316839040">Boshqa buyurtmalar</translation>
-<translation id="3906954721959377182">Planshet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Joylashtirilgan kontent haqida batafsil</translation>
 <translation id="3920504717067627103">Sertifikat siyosati</translation>

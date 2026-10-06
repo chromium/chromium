@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1186645291482254714">在手機上透過 Chromium 接收價格追蹤通知</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" />有待處理。為確保瀏覽安全，Chromium 會在你下次閒置 <ph name="IDLE_DURATION" />後更新。</translation>
 <translation id="1232234696885483911">開啟「圖片搜尋」時，網頁標題、網址和內容 (包括 PDF) 會自動傳送至伺服器。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">登入後，你可以在 Chromium 使用 Google 帳戶儲存的密碼和其他資料。如要變更此設定，請前往「你在 Chromium 的帳戶」。</translation>
 <translation id="1244381985120794049">在 Mac 選單列顯示 Chromium 版 Gemini</translation>
@@ -229,6 +230,7 @@
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>
+<translation id="3300632735252839402">Chromium 會在你閒置時更新</translation>
 <translation id="3313189106987092621">Chromium 會在使用不安全的連線載入任何網站前顯示警告</translation>
 <translation id="3316771292331273802">關閉所有 Chromium 視窗後，系統會將你登出所有網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。如要允許網站記住你的資料，請<ph name="SETTINGS_LINK" />。</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
@@ -237,6 +239,7 @@
 <translation id="3387527074123400161">Chromium 作業系統</translation>
 <translation id="3406848076815591792">要切換至現有 Chromium 設定檔嗎？</translation>
 <translation id="3412460710772753638">儲存在此裝置的「密碼管理工具」中</translation>
+<translation id="3425452599984451640">Chromium 需要更新</translation>
 <translation id="3427159664004296878">如要取用<ph name="DEVICE" />上的書籤及其他設定，請登入 Chromium</translation>
 <translation id="3438772217992559640">使用「圖片搜尋」搜尋此分頁</translation>
 <translation id="3455907671758333080">透過手機的 Chromium 擴大「強化安全瀏覽」範圍</translation>

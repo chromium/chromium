@@ -289,7 +289,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1462951478840426066">Upotrijebite fontove na svojem računalu za izradu vjerne reprodukcije sadržaja</translation>
 <translation id="1465457928007067810">IBAN je spremljen na vaš Google račun</translation>
 <translation id="1467432559032391204">Ulijevo</translation>
-<translation id="1471514598850585811">Prijenosno računalo</translation>
 <translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Unesite najmanje tri riječi da biste dobili pomoć pri pisanju</translation>
@@ -452,7 +451,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Pokušajte kontaktirati administratora sustava.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, istječe <ph name="CARD_EXPIRATION" /></translation>
-<translation id="1736420071277903564">Računalo</translation>
 <translation id="1739364174357629566">Ažurirajte broj poznatog putnika</translation>
 <translation id="1740404923954980840">Da biste zatvorili prikaz na cijelom zaslonu, povucite od vrha zaslona i dodirnite gumb za povratak</translation>
 <translation id="1741474054575634405">Upravljajte karticama vjernosti...</translation>
@@ -867,6 +865,7 @@ Ovaj prijedlog možete ukloniti iz Chromea. Vaš se izvorni izvor neće izbrisat
 <translation id="2436186046335138073">Želite li dopustiti da <ph name="HANDLER_HOSTNAME" /> otvori sve veze protokola <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Kartica se nije mogla spremiti na vaš Google račun. Spremljena je u Chromeu na ovom uređaju.</translation>
 <translation id="2438874542388153331">Četverostruko bušenje s desne strane</translation>
+<translation id="2442033148418774391">Obavijest o pametnijem automatskom popunjavanju uz zaštitu privatnosti je zatvorena</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />neće spremati<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />vašu povijest pregledavanja
@@ -879,13 +878,13 @@ Ovaj prijedlog možete ukloniti iz Chromea. Vaš se izvorni izvor neće izbrisat
 <translation id="2451607499823206582">Praćenje</translation>
 <translation id="2452837234288608067">Ne možemo vam pomoći s tim. Pokušajte ponovno.</translation>
 <translation id="2453045048779611513">Vaša organizacija ograničava sadržaj koji možete spremiti</translation>
+<translation id="2456490423293803882">Obavijest o pametnijem automatskom popunjavanju uz zaštitu privatnosti otvorena je u punoj visini</translation>
 <translation id="2459882793359532780">Primijenjena pravila preglednika (pravila uređaja i profila)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core pruža vam centralizirani alat za konfiguriranje pravila preglednika iz oblaka</translation>
 <translation id="2461822463642141190">Trenutačno</translation>
 <translation id="2462724976360937186">ID ključa tijela za izdavanje certifikata</translation>
 <translation id="2465688316154986572">Spajanje</translation>
 <translation id="2465914000209955735">Upravljajte datotekama koje ste preuzeli u Chromeu</translation>
-<translation id="2466682894498377850">Kartica je poslana s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Specifikacije hardvera uređaja i statistički podaci kao što je povijest upotrebe CPU-a/RAM-a</translation>
 <translation id="2467421459221956357">Upotrebljavati senzore?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />pokrenuti Mrežnu dijagnostiku<ph name="END_LINK" /></translation>
@@ -927,7 +926,6 @@ Ovaj prijedlog možete ukloniti iz Chromea. Vaš se izvorni izvor neće izbrisat
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Sadržaj stranice za naplatu dijeli se s Googleom kako bi Google ponudio te opcije<ph name="END_BOLD" />. Planovi plaćanja ovise o ispunjavanju kriterija. Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />postavke plaćanja<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Da biste pokrenuli ovu aplikaciju, ponovno omogućite način rada razvojnog programera za izolirane web-aplikacije</translation>
 <translation id="2526280916094749336">Spremljene adrese možete upotrijebiti na Googleovim proizvodima. Ta će se adresa spremiti na vaš Google račun, <ph name="ACCOUNT" />.</translation>
-<translation id="2526590354069164005">Radna površina</translation>
 <translation id="2527451058878391043">CVC možete pronaći na prednjoj strani kartice. To je četveroznamenkasti kôd u gornjem desnom kutu iznad broja kartice.</translation>
 <translation id="2529899080962247600">Broj unosa u ovom polju ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />. Svi će se daljnji unosi zanemariti.</translation>
 <translation id="2530042584066815841">Zaključavanje i upotreba miša</translation>
@@ -1108,6 +1106,7 @@ Ovaj prijedlog možete ukloniti iz Chromea. Vaš se izvorni izvor neće izbrisat
 <translation id="2878197950673342043">Presavijanje u obliku postera</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">upotrijebiti zaključavanje zaslona za unos zaporki</translation>
+<translation id="2880119244122776372">Izradite i kodirajte</translation>
 <translation id="2881276955470682203">Želite li spremiti karticu?</translation>
 <translation id="2882280148032777436">Izbrišite broj poznatog putnika</translation>
 <translation id="2882949212241984732">Dvostruko presavijanje u obliku prozora</translation>
@@ -1735,7 +1734,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3905894480064208252">{0,plural, =1{Blokiran je prijenos datoteke}one{Blokiran je prijenos <ph name="FILE_COUNT" /> datoteke}few{Blokiran je prijenos <ph name="FILE_COUNT" /> datoteke}other{Blokiran je prijenos <ph name="FILE_COUNT" /> datoteka}}</translation>
 <translation id="3906022360148923497">Ikona instrumenta plaćanja</translation>
 <translation id="3906234161316839040">Druge narudžbe</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saznajte više o ugrađenom sadržaju</translation>
 <translation id="3920504717067627103">Pravila certifikata</translation>
@@ -3913,6 +3911,7 @@ Dodatne pojedinosti:
 <translation id="753713322968419914">Želite li ukloniti kućnu adresu iz automatskog popunjavanja u Chromeu?</translation>
 <translation id="753714465667062283">Prijavite se da biste spremili fotografiju</translation>
 <translation id="7537536606612762813">Obavezno</translation>
+<translation id="7540924742308928499">Razmatrajte ideje i sažimajte</translation>
 <translation id="7543525346216957623">Zamoli roditelja</translation>
 <translation id="7546409722674205727">Pokretanje aplikacije <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ispravljanje pogrešaka veze</translation>

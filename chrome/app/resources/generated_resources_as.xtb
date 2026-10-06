@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">এক্সেছ আঁতৰাওক</translation>
 <translation id="1791662854739702043">ইনষ্টল কৰা হ’ল</translation>
 <translation id="1792619191750875668">বিস্তাৰিত ডিছপ্লে’</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" />ৰ পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="1794791083288629568">আমাক এই সমস্যা সামাধান কৰাত সহায় কৰিবলৈ মতামত পঠিয়াওক।</translation>
 <translation id="1795214765651529549">ক্লাছিক থীম ব্যৱহাৰ কৰক</translation>
@@ -1710,7 +1711,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="2300434721407965566">আপোনাৰ বেটাৰী দীঘলীয়া সময়ৰ বাবে কাৰ্যক্ষম কৰাত সহায় কৰিবলৈ ৮০%ৰ পাছত ছাৰ্জ কৰা বন্ধ কৰে।</translation>
 <translation id="2301382460326681002">এক্সটেনশ্বন ৰুট ডাইৰেক্টৰী মান্য নহয়।</translation>
-<translation id="2301402091755573488">শ্বেয়াৰ কৰা টেব</translation>
 <translation id="2304820083631266885">গ্ৰহ</translation>
 <translation id="2305202347479035002">এইটোৱে কেনেকৈ কাম কৰে</translation>
 <translation id="2306794767168143227">এই ডিভাইচটোত <ph name="BRAND" />ত ছেভ কৰক</translation>
@@ -1729,6 +1729,7 @@
 <translation id="2322622365472107569">সমাপ্ত হোৱাৰ সময় <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ছেভ হৈ থকা ৱাই-ফাই নেটৱৰ্কসমূহ</translation>
 <translation id="2323685460575935191">স্ক্ৰ’ল কৰাৰ বুটাম লুকুৱাওক</translation>
+<translation id="2325004050205455346">শেহতীয়া ইতিহাস</translation>
 <translation id="2325444234681128157">পাছৱৰ্ড মনত ৰাখক</translation>
 <translation id="2326188115274135041">স্বয়ংক্ৰিয়ভাৱে আনলক হোৱাৰ সুবিধাটো অন কৰিবলৈ পিনটো নিশ্চিত কৰক</translation>
 <translation id="2326583548923775947">এইটো Google একাউণ্ট নহয়। আপুনি Chromeত ছেভ কৰা বস্তুবোৰ অন্য ডিভাইচসমূহত উপলব্ধ নহয়।</translation>
@@ -2087,7 +2088,6 @@
 <translation id="2598710988533271874">নতুন Chrome উপলব্ধ</translation>
 <translation id="2599048253926156421">ব্যৱহাৰকাৰীৰ নাম ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{১ টা অসুৰক্ষিত এক্সটেনশ্বন অফ কৰা হৈছে}one{{NUM_SITES} টা অসুৰক্ষিত এক্সটেনশ্বন অফ কৰা হৈছে}other{{NUM_SITES} টা অসুৰক্ষিত এক্সটেনশ্বন অফ কৰা হৈছে}}</translation>
-<translation id="2603121359676416582">এই পৃষ্ঠাখনৰ বাবে</translation>
 <translation id="2603656971249947488">টেবৰ ষ্ট্ৰিপ</translation>
 <translation id="2604129989323098489">ছাইটসমূহে সাধাৰণতে আপোনাৰ ডিছপ্লে’ সম্পৰ্কীয় তথ্য বিচাৰে যাতে সেইসমূহে ৱিণ্ড’সমূহ সুবিধাজনকভাৱে খুলিব পাৰে আৰু দেখুৱাব পাৰে, যেনে নথিসমূহ আৰু পূৰ্ণ স্ক্ৰীনৰ সমল লগা-লগিকৈ দেখুওৱা</translation>
 <translation id="2604255671529671813">নেটৱৰ্ক সংযোগ সম্পর্কীয় আসোঁৱাহ</translation>
@@ -2953,6 +2953,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> সম্পাদনা কৰা বা মচাৰ অধিক বিকল্প</translation>
 <translation id="3232754137068452469">ৱেব এপ্‌</translation>
 <translation id="3233271424239923319">Linux এপ্‌ আৰু ফাইলসমূহ বেক আপ কৰক</translation>
+<translation id="3233577317461669428">অন্য কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="3234251228180563751">ব্যৱহাৰকাৰীৰ নামত ১০০০ টাতকৈ অধিক বৰ্ণ আছে</translation>
 <translation id="3234978181857588512">ডিভাইচত ছেভ কৰক</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" />ত বিভাজন কৰা <ph name="SITE_NAME" />ৰ বাবে ছাইটৰ ডেটা মচিবনে?</translation>
@@ -3027,7 +3028,6 @@
 <translation id="3292966601422448005">আপুনি <ph name="APP_NAME" />ৰ বাবে দিয়া অনুমতিসমূহ ইয়াৰ ইনষ্টল কৰি থোৱা এপ্‌সমূহৰ ক্ষেত্ৰতো প্ৰযোজ্য হ’ব।</translation>
 <translation id="3293080634164207409">টেব যোগ দিয়ক</translation>
 <translation id="329324683265785818">প্লে’ কৰক / পজ কৰক, কীব’ৰ্ডৰ শ্বৰ্টকাট k</translation>
-<translation id="3293644607209440645">এই পৃষ্ঠাটো পঠিয়াওক</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3294686910656423119">ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্টসমূহ</translation>
 <translation id="3295241308788901889">এটা টেব কাষ্ট কৰি থকা হৈছে</translation>
@@ -5727,6 +5727,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (সোঁফালে)</translation>
 <translation id="534449933710420173">নামবিহীন ফ’ল্ডাৰ</translation>
 <translation id="5345916423802287046">আপুনি ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক</translation>
+<translation id="5346059693449184483">আপুনি কি ভাবি আছে?</translation>
 <translation id="5350116201946341974">খামখেয়ালি স্বভাৱৰ</translation>
 <translation id="535123479159372765">অন্য ডিভাইচৰ পৰা প্ৰতিলিপি কৰা পাঠ</translation>
 <translation id="5352257124367865087">ছাইটৰ অনুমতি পৰিচালনা কৰক</translation>
@@ -7003,6 +7004,7 @@
 <translation id="6356893102071098867">আপুনি সঠিক একাউণ্টটো বাছনি কৰিছেনে নাই পৰীক্ষা কৰক</translation>
 <translation id="6357305427698525450"><ph name="APP_NAME" /> অথবা  <ph name="APP_NAME_2" />ত কিছুমান সমৰ্থিত লিংক তথাপিও খুলিব।</translation>
 <translation id="6357750620525943720">অন্য সুস্থিৰ চিনাক্তকাৰী (যেনে, হেশ্ব অথবা UUID)</translation>
+<translation id="6357830294871526418">অন্য ডিভাইচত থকা টেব</translation>
 <translation id="6358884629796491903">ড্ৰেগন</translation>
 <translation id="6359640073754977254">শেষৰ টেবটোলৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="6361850914223837199">আসোঁৱাহৰ সবিশেষ:</translation>
@@ -7150,7 +7152,6 @@
 <translation id="6472893788822429178">গৃহপৃষ্ঠালৈ যোৱা বুটামটো দেখুৱাওক</translation>
 <translation id="6473315466413288899">এটা বিকল্প বাছনি কৰক</translation>
 <translation id="6474021817475285003">Google Calendarত অধিক চাওক</translation>
-<translation id="6474401088838630457">এইটোৰ বিষয়ে Geminiক অধিক সোধক</translation>
 <translation id="6474498546677193336">এটা এপ্লিকেশ্বনে এই ফ’ল্ডাৰটো ব্যৱহাৰ কৰি থকা কাৰণে শ্বেয়াৰ কৰাটো বাতিল কৰিব পৰা নগ’ল। পাছৰবাৰ Linux বন্ধ হ’লে ফ’ল্ডাৰটো শ্বেয়াৰ কৰাটো বাতিল কৰা হ’ব।</translation>
 <translation id="6474884162850599008">Google Drive একাউণ্ট সংযোগৰ পৰা আঁতৰাওক</translation>
 <translation id="6476482583633999078">কথনৰ গতিবেগ</translation>

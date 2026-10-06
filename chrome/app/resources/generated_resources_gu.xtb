@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">ઍક્સેસ કાઢી નાખો</translation>
 <translation id="1791662854739702043">ઇન્સ્ટોલ કરેલું</translation>
 <translation id="1792619191750875668">વિસ્તૃત ડિસ્પ્લે</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> માટે પાસવર્ડ છુપાવો</translation>
 <translation id="1794791083288629568">આ સમસ્યાને ઠીક કરવામાં અમારી સહાય કરવા માટે પ્રતિસાદ મોકલો.</translation>
 <translation id="1795214765651529549">ક્લાસિકનો ઉપયોગ કરો</translation>
@@ -1698,7 +1699,6 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" />ને કસ્ટમાઇઝ કરો અને નિયંત્રિત કરો</translation>
 <translation id="2300434721407965566">તમારી બૅટરી લાંબો સમય ચાલે એટલે 80% પર ચાર્જ થવાનું બંધ કરે છે.</translation>
 <translation id="2301382460326681002">એક્સ્ટેંશન રૂટ ડિરેક્ટરી અમાન્ય છે.</translation>
-<translation id="2301402091755573488">શેર કરેલી ટૅબ</translation>
 <translation id="2304820083631266885">ગ્રહ</translation>
 <translation id="2305202347479035002">તેની કાર્ય કરવાની રીત</translation>
 <translation id="2306794767168143227">આ ડિવાઇસ પર <ph name="BRAND" />માં સાચવો</translation>
@@ -1717,6 +1717,7 @@
 <translation id="2322622365472107569">સમાપ્તિ સમય <ph name="TIME" /></translation>
 <translation id="2323018538045954000">સાચવેલા વાઇ-ફાઇ નેટવર્ક</translation>
 <translation id="2323685460575935191">સ્ક્રોલ બટન છુપાવો</translation>
+<translation id="2325004050205455346">તાજેતરનો ઇતિહાસ</translation>
 <translation id="2325444234681128157">પાસવર્ડ યાદ રાખો</translation>
 <translation id="2326188115274135041">ઑટોમૅટિક રીતે અનલૉક કરવાની સુવિધા ચાલુ કરવા માટે પિન કન્ફર્મ કરો</translation>
 <translation id="2326583548923775947">આ Google એકાઉન્ટ નથી. તમે Chrome પર સાચવો છો તે આઇટમ અન્ય ડિવાઇસ પર ઉપલબ્ધ રહેશે નહીં.</translation>
@@ -2075,7 +2076,6 @@
 <translation id="2598710988533271874">નવું Chrome ઉપલબ્ધ છે</translation>
 <translation id="2599048253926156421">વપરાશકર્તાનું નામ ક્લિપબોર્ડ પર કૉપિ કર્યું</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 અસુરક્ષિત એક્સ્ટેન્શન બંધ કર્યું}one{{NUM_SITES} અસુરક્ષિત એક્સ્ટેન્શન બંધ કર્યું}other{{NUM_SITES} અસુરક્ષિત એક્સ્ટેન્શન બંધ કર્યા}}</translation>
-<translation id="2603121359676416582">આ પેજ માટે</translation>
 <translation id="2603656971249947488">ટૅબ સ્ટ્રિપ</translation>
 <translation id="2604129989323098489">સાઇટ સામાન્ય રીતે તમારા ડિસ્પ્લે વિશેની માહિતી માગે છે, જેથી તેઓ ઇન્ટેલિજન્ટ રીતે વિન્ડો ખોલી શકે અને તેને મૂકી શકે, જેમ કે દસ્તાવેજો અથવા પૂર્ણ-સ્ક્રીન કન્ટેન્ટને એકબીજાની આજુબાજુમાં બતાવવા</translation>
 <translation id="2604255671529671813">નેટવર્ક કનેક્શનમાં ભૂલ</translation>
@@ -2941,6 +2941,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" />માં ફેરફાર કરવાના અને તેને ડિલીટ કરવાના વધુ વિકલ્પો</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
 <translation id="3233271424239923319">Linux ઍપ અને ફાઇલો</translation>
+<translation id="3233577317461669428">બીજું કોઈ ડિવાઇસ મળ્યું નથી</translation>
 <translation id="3234251228180563751">વપરાશકર્તાનું નામ 1000 કરતાં વધુ અક્ષર ધરાવે છે</translation>
 <translation id="3234978181857588512">ડિવાઇસમાં સાચવો</translation>
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> પર વિભાજિત કરેલી <ph name="SITE_NAME" /> માટે સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
@@ -3015,7 +3016,6 @@
 <translation id="3292966601422448005">તમે <ph name="APP_NAME" /> માટે જે પરવાનગીઓ મંજૂર કરો છો, તે તેની ઇન્સ્ટૉલ કરેલી ઍપ માટે પણ મંજૂર કરવામાં આવશે.</translation>
 <translation id="3293080634164207409">ટૅબ ઉમેરો</translation>
 <translation id="329324683265785818">વગાડો / થોભાવો, કીબોર્ડ શૉર્ટકટ k</translation>
-<translation id="3293644607209440645">આ પેજ મોકલો</translation>
 <translation id="3294437725009624529">અતિથિ</translation>
 <translation id="3294686910656423119">વપરાશનાં આંકડા અને ક્રૅશ રિપોર્ટ</translation>
 <translation id="3295241308788901889">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
@@ -5716,6 +5716,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (જમણે)</translation>
 <translation id="534449933710420173">નામ વિનાનું ફોલ્ડર</translation>
 <translation id="5345916423802287046">તમે સાઇન ઇન કરો ત્યારે ઍપ શરૂ કરો</translation>
+<translation id="5346059693449184483">તમારા મનમાં શું છે?</translation>
 <translation id="5350116201946341974">તરંગી</translation>
 <translation id="535123479159372765">અન્ય ડિવાઇસમાંથી કૉપિ કરવામાં આવેલી ટેક્સ્ટ</translation>
 <translation id="5352257124367865087">સાઇટની પરવાનગીઓ મેનેજ કરો</translation>
@@ -6994,6 +6995,7 @@ USB ડિવાઇસ</translation>
 <translation id="6356893102071098867">ચેક કરો કે તમે યોગ્ય એકાઉન્ટ પસંદ કર્યું હોય</translation>
 <translation id="6357305427698525450">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" /> અથવા <ph name="APP_NAME_2" />માં ખૂલશે.</translation>
 <translation id="6357750620525943720">અન્ય સ્થિર ઓળખકર્તાઓ (દા.ત., હૅશ કે UUID)</translation>
+<translation id="6357830294871526418">અન્ય ડિવાઇસ પરના ટૅબ</translation>
 <translation id="6358884629796491903">ડ્રેગન</translation>
 <translation id="6359640073754977254">છેલ્લા ટૅબ પર સ્ક્રોલ કરો</translation>
 <translation id="6361850914223837199">ભૂલ વિગતો:</translation>
@@ -7141,7 +7143,6 @@ USB ડિવાઇસ</translation>
 <translation id="6472893788822429178">હોમ બટન બતાવો</translation>
 <translation id="6473315466413288899">વિકલ્પ પસંદ કરો</translation>
 <translation id="6474021817475285003">Google Calendarમાં વધુ જુઓ</translation>
-<translation id="6474401088838630457">Geminiને આના વિશે વધુ પૂછો</translation>
 <translation id="6474498546677193336">કોઈ ઍપ્લિકેશન આ ફોલ્ડરનો ઉપયોગ કરી રહી હોવાને કારણે આને અનશેર કરી શકાતું નથી. જ્યારે આગલી વાર Linux શટ ડાઉન થશે, ત્યારે ફોલ્ડરને અનશેર કરવામાં આવશે.</translation>
 <translation id="6474884162850599008">Google ડ્રાઇવ એકાઉન્ટ ડિસ્કનેક્ટ કરો</translation>
 <translation id="6476482583633999078">સ્પીચની સ્પીડ</translation>

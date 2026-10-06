@@ -146,6 +146,7 @@
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="424864128008805179">要在 Chrome 中退出账号吗？</translation>
 <translation id="4314240881330431451">您可以在 Chrome 中使用 Google 智能镜头搜索您看到的任何内容</translation>
+<translation id="4315292299997584267">登录此网站和 Chrome，即可获取<ph name="DEVICE_TYPE" />中的密码等信息</translation>
 <translation id="4409545895715116037">以下通行密钥不符合要求，因此未导入 Google 密码管理工具。</translation>
 <translation id="4430797724889237570">在 Chrome 中打开 Gmail、Google 地图、YouTube 和其他应用中的链接</translation>
 <translation id="447252321002412580">帮助我们改进 Chrome 的功能和性能</translation>
@@ -163,6 +164,7 @@
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
 <translation id="4798859546468762093">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chrome</translation>
+<translation id="4807700370495020449">登录此网站和 Chrome，即可在自己的所有设备上获取保存的信息等内容</translation>
 <translation id="4819268619367838612">为帮助改进应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">将 Chrome 设为默认浏览器？</translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
@@ -173,6 +175,7 @@
 <translation id="496747131578053942">Chrome 提示：使用 Google 智能镜头搜索所见内容</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可为您提供保护，帮助您免受数据泄露、不安全网站等问题的影响。</translation>
+<translation id="5085038751173179818">登录此网站和 Chrome，即可在所有设备上获取保存的书签及其他信息</translation>
 <translation id="5109169629909011627">查看 Chrome 书签</translation>
 <translation id="5112925986883715005">查看 Chrome 阅读清单</translation>
 <translation id="5116239826668864748">当您点按消息、文档和其他应用中的链接时，可以随时使用 Chrome 打开链接</translation>
@@ -190,6 +193,7 @@
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
 <translation id="5404252374083197467">将 Chrome 设为默认浏览器？</translation>
 <translation id="5439191312780166229">基于比“标准保护”更全面的网站数据进行分析，针对危险网站（甚至是 Google 之前未知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
+<translation id="544285856361623600">登录此网站和 Chrome，即可获取<ph name="DEVICE_TYPE" />中的书签等信息</translation>
 <translation id="5453077102022695084">介绍如何将 Chrome 设为默认浏览器的全屏视频</translation>
 <translation id="5460571915754665838">4. 选择“Chrome”</translation>
 <translation id="5492504007368565877">Google 密码管理工具无法检查您的密码。</translation>
@@ -307,6 +311,7 @@
 <translation id="7642373780953416937">接收有关 Chrome 为您自动检测到的任何隐私或安全问题的提醒。</translation>
 <translation id="7660356333829433649">欢迎回来查看更多实用提示，了解如何充分利用 Chrome。</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录账号并开启同步功能</translation>
+<translation id="767157537088426800">登录此网站和 Chrome，即可在自己的所有设备上获取密码等信息</translation>
 <translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
 <translation id="7707877166818730835">在 Chrome 中打开我最近打开的标签页</translation>
@@ -382,6 +387,7 @@
 <translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
 <translation id="9176561303811134420">在 Chrome 中管理支付方式</translation>
 <translation id="9181628561061032322">打开最近使用 Chrome 打开的标签页。</translation>
+<translation id="9199610579638564405">登录此网站和 Chrome，即可获取<ph name="DEVICE_TYPE" />中保存的信息等内容</translation>
 <translation id="924447568950697217">将 Chrome 设置为您的默认浏览器</translation>
 <translation id="948597495737267756">打开 Chrome 历史记录页面。</translation>
 <translation id="954347330803595209">导入数据，以便在 Chrome 上使用您的密码、历史记录、书签和信用卡</translation>
