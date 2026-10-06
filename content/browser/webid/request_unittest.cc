@@ -5987,6 +5987,34 @@ TEST_F(RequestTest, AccountsSortedWithTimestamps) {
   EXPECT_EQ(all_accounts_for_display()[2]->id, kAccountIdNicolas);
 }
 
+// Tests that non-returning (kSignUp) accounts keep the order returned by the
+// IdP among themselves, even if some of them have a last used timestamp.
+TEST_F(RequestTest, SignUpAccountsKeepOrderRegardlessOfTimestamp) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+  // Make all three accounts non-returning.
+  configuration.idp_info[kProviderUrlFull]
+      .accounts[1]
+      ->idp_claimed_login_state = LoginState::kSignUp;
+
+  EXPECT_CALL(*test_permission_delegate_, GetLastUsedTimestamp(_, _, _, _))
+      .WillRepeatedly(Return(std::nullopt));
+  // Only the last account has a last used timestamp. Since it is still a
+  // non-returning account, it should not be moved ahead of the others.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdZach))
+      .WillRepeatedly(Return(std::make_optional<base::Time>(
+          base::Time() + base::Microseconds(1))));
+
+  RunTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  ASSERT_EQ(all_accounts_for_display().size(), 3u);
+  EXPECT_EQ(all_accounts_for_display()[0]->id, kAccountIdNicolas);
+  EXPECT_EQ(all_accounts_for_display()[1]->id, kAccountIdPeter);
+  EXPECT_EQ(all_accounts_for_display()[2]->id, kAccountIdZach);
+}
+
 TEST_F(RequestTest, AccountLabelMultipleAccountsNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   const RequestExpectations expectations = {
@@ -8650,6 +8678,60 @@ TEST_F(RequestTest, UseOtherAccountMultipleNewAccounts) {
       static_cast<int>(UseOtherAccountResult::kUserSignsInWithNewAccount));
 }
 
+// Tests that when multiple accounts are newly logged in via "use a different
+// account", they keep the order returned by the IdP among themselves, even if
+// one of them is a returning account with a last used timestamp.
+TEST_F(RequestTest, UseOtherAccountMultipleNewAccountsKeepOrder) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  // The second new account (kAccountIdZach) is a returning account that has
+  // been used on this RP before, while the first one (kAccountIdNicolas) is
+  // not. Without the newly logged in tie-break, kAccountIdZach would be shown
+  // first.
+  kTwoAccounts[1]->idp_claimed_login_state = LoginState::kSignIn;
+  EXPECT_CALL(*test_permission_delegate_, GetLastUsedTimestamp(_, _, _, _))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdZach))
+      .WillRepeatedly(Return(std::make_optional<base::Time>(
+          base::Time() + base::Microseconds(1))));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>([&modal, this](const GURL& url) {
+        // The user signs in with kAccountIdNicolas and kAccountIdZach. User now
+        // has accounts kAccountId, kAccountIdNicolas, and kAccountIdZach, in
+        // that order.
+        test_network_request_manager_->accounts_list_ = {
+            kSingleAccount[0], kTwoAccounts[0], kTwoAccounts[1]};
+        RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+            ->GetActiveRequestForTesting()
+            ->OnIdpSigninStatusReceived(OriginFromString(kProviderUrlFull),
+                                        true);
+        return modal.get();
+      }));
+
+  RunDontWaitForCallback(kDefaultRequestParameters, configuration);
+
+  ASSERT_EQ(all_accounts_for_display().size(), 3u);
+  ASSERT_EQ(new_accounts().size(), 2u);
+
+  // The new accounts are displayed first, in the order returned by the IdP.
+  EXPECT_EQ(all_accounts_for_display()[0]->id, kAccountIdNicolas);
+  EXPECT_EQ(all_accounts_for_display()[1]->id, kAccountIdZach);
+  EXPECT_EQ(all_accounts_for_display()[2]->id, kAccountId);
+
+  WaitForCurrentRequest();
+}
+
 TEST_F(RequestTest, UseOtherAccountNoNewAccount) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
@@ -8760,6 +8842,58 @@ TEST_F(RequestTest, MultipleIdpSigninDueToHint) {
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(request_->HasUserTriedToSignInToIdp(GURL(kProviderUrlFull)));
   }
+}
+
+// Tests that when all accounts are filtered out by the login hint and the user
+// logs in to the IdP without adding a matching account, the filtered out
+// accounts are displayed in the order returned by the IdP.
+TEST_F(RequestTest, FilteredAccountsKeepOrderAfterLoginToIdp) {
+  url::Origin idp_origin = OriginFromString(kProviderUrlFull);
+
+  // None of the accounts match the login hint so all are filtered out.
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = "not_a_matching_hint";
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kClose;
+  // kAccountIdPeter is a returning account while the other two are not. This
+  // should not affect the relative order of filtered out accounts.
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  // The IdP sign-in status must be signed in for the mismatch dialog, which
+  // allows logging in to the IdP, to be shown.
+  test_permission_delegate_->idp_signin_statuses_[idp_origin] = true;
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(Return(modal.get()));
+
+  RunDontWaitForCallback(parameters, configuration);
+  EXPECT_FALSE(did_show_accounts_dialog());
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+
+  SimulateLoginToIdP();
+  // Simulate the user logging in to the IdP without changing the accounts, so
+  // that they are all still filtered out.
+  request_->OnIdpSigninStatusReceived(idp_origin, /*idp_signin_status=*/true);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return did_show_accounts_dialog(); }));
+
+  ASSERT_EQ(all_accounts_for_display().size(), 3u);
+  for (const auto& account : all_accounts_for_display()) {
+    EXPECT_TRUE(account->is_filtered_out);
+  }
+  EXPECT_EQ(all_accounts_for_display()[0]->id, kAccountIdNicolas);
+  EXPECT_EQ(all_accounts_for_display()[1]->id, kAccountIdPeter);
+  EXPECT_EQ(all_accounts_for_display()[2]->id, kAccountIdZach);
+
+  WaitForCurrentRequest();
 }
 
 TEST_F(RequestTest, VerifyingDialogCancelExplicitMetrics) {
