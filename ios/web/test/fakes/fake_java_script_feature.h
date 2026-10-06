@@ -61,6 +61,9 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
                     int addend2,
                     ExecuteJavaScriptCallbackWithError callback);
 
+  // Executes `feature_script` in `web_frame` on demand.
+  bool ExecuteScript(WebFrame* web_frame, const FeatureScript& feature_script);
+
   WebState* last_received_web_state() const { return last_received_web_state_; }
 
   const ScriptMessage* last_received_message() const {

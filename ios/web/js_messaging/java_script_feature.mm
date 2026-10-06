@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "build/blink_buildflags.h"
@@ -390,6 +391,33 @@ bool JavaScriptFeature::CallJavaScriptFunction(
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world, std::move(callback), timeout);
 #endif  // BUILDFLAG(USE_BLINK)
+}
+
+bool JavaScriptFeature::ExecuteFeatureScript(
+    WebFrame* web_frame,
+    const FeatureScript& feature_script) {
+  CHECK(web_frame);
+  CHECK(feature_script.GetOriginFilter() == origin_filter_);
+
+  if (feature_script.GetTargetFrames() ==
+          FeatureScript::TargetFrames::kMainFrame &&
+      !web_frame->IsMainFrame()) {
+    return false;
+  }
+
+  // ExecuteJavaScript() performs this check as well, but doing it first avoids
+  // loading the script from disk for frames whose origin is not allowed.
+  if (!ShouldAllowCallingFunctionInOrigin(web_frame->GetSecurityOrigin())) {
+    return false;
+  }
+
+  NSString* script = feature_script.GetScriptString();
+  if (!script.length) {
+    return false;
+  }
+
+  return ExecuteJavaScript(web_frame, base::SysNSStringToUTF16(script),
+                           base::DoNothing());
 }
 
 bool JavaScriptFeature::ExecuteJavaScript(

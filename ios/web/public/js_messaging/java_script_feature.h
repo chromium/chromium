@@ -231,6 +231,22 @@ class JavaScriptFeature {
                                    const base::DictValue& parameters,
                                    ExecuteJavaScriptCallbackWithError callback);
 
+  // Executes `feature_script` in `web_frame` within the content world that
+  // this feature has been configured. Unlike scripts registered at
+  // construction, which WebKit injects at their injection time before page
+  // scripts run, the script executes asynchronously once the request reaches
+  // the frame, so its injection time is ignored. The script's target frames
+  // and origin filter are honored, and a script with `kInjectOncePerWindow`
+  // reinjection behavior is a no-op if the same `FeatureScript` already ran in
+  // the frame's current window. Returns true if the execution was requested,
+  // false otherwise. `web_frame` must not be null and this feature must be
+  // registered with the BrowserState associated with `web_frame`.
+  // TODO(crbug.com/568527962): Split `FeatureScript` into injected and
+  // executed variants so that this function does not accept injection-only
+  // properties such as the injection time.
+  bool ExecuteFeatureScript(WebFrame* web_frame,
+                            const FeatureScript& feature_script);
+
   // Use of this function is DISCOURAGED. Prefer the `CallJavaScriptFunction`
   // family of functions instead to keep the API clear and well defined.
   // Executes `script` in `web_frame` within the content world that this feature

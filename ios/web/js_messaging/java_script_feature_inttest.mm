@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <string>
+
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -12,10 +14,12 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/test/fakes/fake_java_script_feature.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
+#import "testing/gtest_mac.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -29,6 +33,37 @@ static NSString* kPageHTML =
 const char kReplyString[] = "reply_string";
 
 namespace web {
+
+namespace {
+
+// Returns the main frame of `feature`'s content world in `web_state` once it
+// has been registered, or null if it is not registered within
+// `kWaitForJSCompletionTimeout`. Frame registration happens asynchronously
+// after the page load completes.
+WebFrame* WaitForMainFrame(FakeJavaScriptFeature* feature,
+                           WebState* web_state) {
+  WebFramesManager* manager = feature->GetWebFramesManager(web_state);
+  if (!WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+        return manager->GetMainWebFrame() != nullptr;
+      })) {
+    return nullptr;
+  }
+  return manager->GetMainWebFrame();
+}
+
+// Returns true once evaluating `script` in `feature`'s content world returns
+// `expected`, or false if it does not within `kWaitForJSCompletionTimeout`.
+bool WaitForFeatureJavaScriptResult(WebState* web_state,
+                                    NSString* script,
+                                    FakeJavaScriptFeature* feature,
+                                    id expected) {
+  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [test::ExecuteJavaScriptForFeatureAndReturnResult(
+        web_state, script, feature) isEqual:expected];
+  });
+}
+
+}  // namespace
 
 // Sets up a FakeJavaScriptFeature in the page content world.
 class JavaScriptFeaturePageContentWorldTest : public WebTestWithWebState {
@@ -76,6 +111,153 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
 
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "updated"));
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
+}
+
+// Tests that a FeatureScript can be executed on demand and honors its
+// reinjection behavior across documents.
+TEST_F(JavaScriptFeaturePageContentWorldTest, ExecuteFeatureScriptOnDemand) {
+  const JavaScriptFeature::FeatureScript script =
+      JavaScriptFeature::FeatureScript::CreateWithString(
+          "window.onDemandExecutionCount = "
+          "    (window.onDemandExecutionCount || 0) + 1;",
+          JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame);
+
+  LoadHtml(kPageHTML);
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  WebFrame* main_frame = WaitForMainFrame(feature(), web_state());
+  ASSERT_TRUE(main_frame);
+  EXPECT_NSEQ(
+      @"undefined",
+      test::ExecuteJavaScriptForFeatureAndReturnResult(
+          web_state(), @"typeof window.onDemandExecutionCount", feature()));
+
+  EXPECT_TRUE(feature()->ExecuteScript(main_frame, script));
+  EXPECT_TRUE(WaitForFeatureJavaScriptResult(
+      web_state(), @"window.onDemandExecutionCount", feature(), @(1)));
+
+  // The default reinjection behavior prevents another execution in the same
+  // window.
+  EXPECT_TRUE(feature()->ExecuteScript(main_frame, script));
+  EXPECT_NSEQ(@(1),
+              test::ExecuteJavaScriptForFeatureAndReturnResult(
+                  web_state(), @"window.onDemandExecutionCount", feature()));
+
+  // A navigation creates a new JavaScript context, so the same script can run
+  // in the new document.
+  const std::string first_frame_id = main_frame->GetFrameId();
+  LoadHtml(kPageHTML);
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  main_frame = WaitForMainFrame(feature(), web_state());
+  ASSERT_TRUE(main_frame);
+  ASSERT_NE(first_frame_id, main_frame->GetFrameId());
+  EXPECT_NSEQ(
+      @"undefined",
+      test::ExecuteJavaScriptForFeatureAndReturnResult(
+          web_state(), @"typeof window.onDemandExecutionCount", feature()));
+  EXPECT_TRUE(feature()->ExecuteScript(main_frame, script));
+  EXPECT_TRUE(WaitForFeatureJavaScriptResult(
+      web_state(), @"window.onDemandExecutionCount", feature(), @(1)));
+}
+
+// Tests that a FeatureScript with kReinjectOnDocumentRecreation runs again
+// when executed on demand a second time in the same window.
+TEST_F(JavaScriptFeaturePageContentWorldTest,
+       ExecuteReinjectableFeatureScriptOnDemandTwice) {
+  const JavaScriptFeature::FeatureScript script =
+      JavaScriptFeature::FeatureScript::CreateWithString(
+          "window.reinjectableExecutionCount = "
+          "    (window.reinjectableExecutionCount || 0) + 1;",
+          JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame,
+          JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+              kReinjectOnDocumentRecreation);
+
+  LoadHtml(kPageHTML);
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  WebFrame* main_frame = WaitForMainFrame(feature(), web_state());
+  ASSERT_TRUE(main_frame);
+
+  EXPECT_TRUE(feature()->ExecuteScript(main_frame, script));
+  EXPECT_TRUE(WaitForFeatureJavaScriptResult(
+      web_state(), @"window.reinjectableExecutionCount", feature(), @(1)));
+
+  EXPECT_TRUE(feature()->ExecuteScript(main_frame, script));
+  EXPECT_TRUE(WaitForFeatureJavaScriptResult(
+      web_state(), @"window.reinjectableExecutionCount", feature(), @(2)));
+}
+
+// Tests that a main-frame-only FeatureScript is not executed in a child
+// frame.
+TEST_F(JavaScriptFeaturePageContentWorldTest,
+       DoNotExecuteMainFrameFeatureScriptInChildFrame) {
+  LoadHtml(@"<html><body><iframe></iframe></body></html>");
+
+  WebFramesManager* manager = feature()->GetWebFramesManager(web_state());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return manager->GetAllWebFrames().size() == 2;
+      }));
+
+  WebFrame* child_frame = nullptr;
+  for (WebFrame* frame : manager->GetAllWebFrames()) {
+    if (!frame->IsMainFrame()) {
+      child_frame = frame;
+      break;
+    }
+  }
+  ASSERT_TRUE(child_frame);
+
+  const JavaScriptFeature::FeatureScript script =
+      JavaScriptFeature::FeatureScript::CreateWithString(
+          "window.mainFrameOnlyScriptWasExecuted = true;",
+          JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame);
+  EXPECT_FALSE(feature()->ExecuteScript(child_frame, script));
+}
+
+// Tests that an all-frames FeatureScript is executed in a child frame.
+TEST_F(JavaScriptFeaturePageContentWorldTest,
+       ExecuteAllFramesFeatureScriptInChildFrame) {
+  LoadHtml(@"<html><body><iframe></iframe></body></html>");
+
+  WebFramesManager* manager = feature()->GetWebFramesManager(web_state());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return manager->GetAllWebFrames().size() == 2;
+      }));
+
+  WebFrame* child_frame = nullptr;
+  for (WebFrame* frame : manager->GetAllWebFrames()) {
+    if (!frame->IsMainFrame()) {
+      child_frame = frame;
+      break;
+    }
+  }
+  ASSERT_TRUE(child_frame);
+
+  const JavaScriptFeature::FeatureScript script =
+      JavaScriptFeature::FeatureScript::CreateWithString(
+          "window.allFramesScriptWasExecuted = true;",
+          JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames);
+  EXPECT_TRUE(feature()->ExecuteScript(child_frame, script));
+
+  __block bool completion_block_called = false;
+  __block std::optional<base::Value> result_value;
+  child_frame->ExecuteJavaScript(u"window.allFramesScriptWasExecuted",
+                                 base::BindOnce(^(const base::Value* value) {
+                                   completion_block_called = true;
+                                   if (value) {
+                                     result_value = value->Clone();
+                                   }
+                                 }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return completion_block_called;
+  }));
+  ASSERT_TRUE(result_value.has_value());
+  ASSERT_TRUE(result_value->is_bool());
+  EXPECT_TRUE(result_value->GetBool());
 }
 
 // Tests that a JavaScriptFeature receives post messages from JavaScript for
@@ -436,6 +618,31 @@ TEST_F(JavaScriptFeatureIsolatedWorldTest,
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
 }
 
+// Tests that a FeatureScript executed on demand by a feature configured in an
+// isolated world runs in that world only and is not visible to the page
+// content world.
+TEST_F(JavaScriptFeatureIsolatedWorldTest,
+       ExecuteFeatureScriptInIsolatedWorldOnly) {
+  const JavaScriptFeature::FeatureScript script =
+      JavaScriptFeature::FeatureScript::CreateWithString(
+          "window.isolatedWorldScriptWasExecuted = true;",
+          JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame);
+
+  LoadHtml(kPageHTML);
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+
+  WebFrame* main_frame = WaitForMainFrame(feature(), web_state());
+  ASSERT_TRUE(main_frame);
+  EXPECT_TRUE(feature()->ExecuteScript(main_frame, script));
+
+  EXPECT_TRUE(WaitForFeatureJavaScriptResult(
+      web_state(), @"window.isolatedWorldScriptWasExecuted", feature(), @YES));
+  EXPECT_NSEQ(
+      @"undefined",
+      ExecuteJavaScript(@"typeof window.isolatedWorldScriptWasExecuted"));
+}
+
 // Sets up a private FakeJavaScriptFeature.
 class JavaScriptFeaturePrivateTest : public WebTestWithWebState {
  protected:
@@ -606,6 +813,52 @@ TEST_F(JavaScriptFeaturePrivateTest, DirectMessageHandlerOnFilteredPage) {
   ASSERT_FALSE(WaitUntilConditionOrTimeout(base::Seconds(1), ^bool {
     return feature()->last_received_web_state();
   }));
+}
+
+// Tests that a private JavaScriptFeature can execute a FeatureScript on demand
+// when on an authorized page.
+TEST_F(JavaScriptFeaturePrivateTest, ExecuteFeatureScriptOnAllowedPage) {
+  LoadHtml(kPageHTML, GURL("https://test.test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  WebFrame* main_frame = WaitForMainFrame(feature(), web_state());
+  ASSERT_TRUE(main_frame);
+
+  const JavaScriptFeature::FeatureScript script =
+      JavaScriptFeature::FeatureScript::CreateWithString(
+          "window.privateScriptWasExecuted = true;",
+          JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame,
+          JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+              kInjectOncePerWindow,
+          JavaScriptFeature::FeatureScript::PlaceholderReplacementsCallback(),
+          OriginFilter::kValidTestOriginForTesting);
+  EXPECT_TRUE(feature()->ExecuteScript(main_frame, script));
+  EXPECT_TRUE(WaitForFeatureJavaScriptResult(
+      web_state(), @"window.privateScriptWasExecuted", feature(), @YES));
+}
+
+// Tests that a private JavaScriptFeature does not execute a FeatureScript on
+// demand when on an unauthorized page.
+TEST_F(JavaScriptFeaturePrivateTest, ExecuteFeatureScriptOnUnauthorizedPage) {
+  LoadHtml(kPageHTML, GURL("http://invalid.test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  WebFrame* main_frame = WaitForMainFrame(feature(), web_state());
+  ASSERT_TRUE(main_frame);
+
+  const JavaScriptFeature::FeatureScript script =
+      JavaScriptFeature::FeatureScript::CreateWithString(
+          "window.privateScriptWasExecuted = true;",
+          JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame,
+          JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+              kInjectOncePerWindow,
+          JavaScriptFeature::FeatureScript::PlaceholderReplacementsCallback(),
+          OriginFilter::kValidTestOriginForTesting);
+  EXPECT_FALSE(feature()->ExecuteScript(main_frame, script));
+  EXPECT_NSEQ(
+      @"undefined",
+      test::ExecuteJavaScriptForFeatureAndReturnResult(
+          web_state(), @"typeof window.privateScriptWasExecuted", feature()));
 }
 
 }  // namespace web

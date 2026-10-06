@@ -111,6 +111,11 @@ bool FakeJavaScriptFeature::CallAsyncSum(
                                      parameters, std::move(callback));
 }
 
+bool FakeJavaScriptFeature::ExecuteScript(WebFrame* web_frame,
+                                          const FeatureScript& feature_script) {
+  return ExecuteFeatureScript(web_frame, feature_script);
+}
+
 std::optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()
     const {
   return std::string(kFakeJavaScriptFeatureScriptHandlerName);
