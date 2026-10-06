@@ -8,6 +8,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_modal_content_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -202,6 +203,7 @@
     if (!self->_webState) {
       return;
     }
+    RecordGeminiWebModalNavigatedToNewTab();
     Browser* browser = self.browser;
     [HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands)
         minimizeGeminiIfInvoked];

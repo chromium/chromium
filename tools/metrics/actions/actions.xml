@@ -20427,6 +20427,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiImmersiveLearningCardWebModalOpened">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the Gemini web modal is opened for an immersive learning card
+    (e.g. a quiz). iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiInputPlateAttachmentOptionTapped">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -20727,6 +20736,15 @@ should be able to be added at any place in this file.
   <owner>bling-alchemy@google.com</owner>
   <description>
     Reported when the user opens a URL from a BWG session. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiWebModalNavigatedToNewTab">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when a navigation in the Gemini web modal closes the modal and
+    opens the URL in a new tab. iOS only.
   </description>
 </action>
 

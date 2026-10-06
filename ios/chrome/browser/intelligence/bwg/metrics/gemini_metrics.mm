@@ -655,6 +655,16 @@ void RecordURLOpened() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiURLOpened"));
 }
 
+void RecordGeminiImmersiveLearningCardWebModalOpened() {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileGeminiImmersiveLearningCardWebModalOpened"));
+}
+
+void RecordGeminiWebModalNavigatedToNewTab() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiWebModalNavigatedToNewTab"));
+}
+
 void RecordGeminiEntryPointClick(gemini::EntryPoint entry_point,
                                  bool is_fre_flow) {
   if (entry_point == gemini::EntryPoint::Promo) {
