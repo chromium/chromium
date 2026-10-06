@@ -33,7 +33,7 @@ class ASH_EXPORT AccessibilityFocusRingLayer : public FocusRingLayer {
                      FocusRingStackingOrder stacking_order,
                      SkColor color,
                      SkColor secondary_color,
-                     SkColor background_alpha);
+                     SkColor background_color);
 
   SkColor color_for_testing() { return custom_color(); }
 
@@ -49,12 +49,12 @@ class ASH_EXPORT AccessibilityFocusRingLayer : public FocusRingLayer {
   // The outline of the current focus ring.
   AccessibilityFocusRing ring_;
   // The type of focus ring.
-  FocusRingType type_;
+  FocusRingType type_ = FocusRingType::GLOW;
   // How the focus ring should be stacked relative to other layers.
   FocusRingStackingOrder stacking_order_ =
       FocusRingStackingOrder::ABOVE_ACCESSIBILITY_BUBBLES;
   // The secondary color.
-  SkColor secondary_color_;
+  SkColor secondary_color_ = SK_ColorTRANSPARENT;
   // The color of the background. When fully transparent, no background will be
   // drawn.
   SkColor background_color_ = SK_ColorTRANSPARENT;

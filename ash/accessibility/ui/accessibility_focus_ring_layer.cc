@@ -87,6 +87,20 @@ SkPath MakePath(const AccessibilityFocusRing& input_ring,
   return path.detach();
 }
 
+// Returns the parent container for `stacking_order` on `display`.
+aura::Window* GetParentContainer(const display::Display& display,
+                                 FocusRingStackingOrder stacking_order) {
+  aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
+  if (!root_window) {
+    return nullptr;
+  }
+  int container_id =
+      stacking_order == FocusRingStackingOrder::ABOVE_ACCESSIBILITY_BUBBLES
+          ? kShellWindowId_OverlayContainer
+          : kShellWindowId_AccessibilityBubbleContainer;
+  return Shell::GetContainer(root_window, container_id);
+}
+
 }  // namespace
 
 AccessibilityFocusRingLayer::AccessibilityFocusRingLayer(
@@ -100,9 +114,10 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
 
   gfx::Rect bounds = ring.GetBounds();
   display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
-  aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
-  aura::Window* container = Shell::GetContainer(
-      root_window, kShellWindowId_AccessibilityBubbleContainer);
+  aura::Window* container = GetParentContainer(display, stacking_order_);
+  if (!container) {
+    return;
+  }
 
   if (SkColorGetA(background_color_) > 0) {
     bounds = display.bounds();

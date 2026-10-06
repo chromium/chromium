@@ -66,10 +66,16 @@ void AccessibilityFocusRingGroup::UpdateFocusRingsFromInfo(
   if (focus_rings_.empty())
     return;
 
+  // Set() reads stacking order and background color set by SetAppearance().
   for (size_t i = 0; i < focus_rings_.size(); ++i) {
-    if (!focus_layers_[i])
+    if (!focus_layers_[i]) {
       focus_layers_[i] =
           std::make_unique<AccessibilityFocusRingLayer>(delegate);
+    }
+    focus_layers_[i]->SetAppearance(
+        focus_ring_info_->type, focus_ring_info_->stacking_order,
+        focus_ring_info_->color, focus_ring_info_->secondary_color,
+        focus_ring_info_->background_color);
   }
 
   if (focus_ring_info_->behavior == FocusRingBehavior::PERSIST &&
@@ -77,19 +83,18 @@ void AccessibilityFocusRingGroup::UpdateFocusRingsFromInfo(
     // In PERSIST mode, animate the first ring to its destination
     // location, then set the rest of the rings directly.
     // If no_fade_for_testing_ is set, don't wait for animation.
-    for (size_t i = 1; i < focus_rings_.size(); ++i)
+    if (previous_focus_rings_.empty()) {
+      previous_focus_rings_ = focus_rings_;
+    }
+    focus_layers_[0]->Set(previous_focus_rings_[0]);
+    for (size_t i = 1; i < focus_rings_.size(); ++i) {
       focus_layers_[i]->Set(focus_rings_[i]);
+    }
   } else {
     // In FADE mode, set all focus rings to their destination location.
-    for (size_t i = 0; i < focus_rings_.size(); ++i)
+    for (size_t i = 0; i < focus_rings_.size(); ++i) {
       focus_layers_[i]->Set(focus_rings_[i]);
-  }
-
-  for (size_t i = 0; i < focus_rings_.size(); ++i) {
-    focus_layers_[i]->SetAppearance(
-        focus_ring_info_->type, focus_ring_info_->stacking_order,
-        focus_ring_info_->color, focus_ring_info_->secondary_color,
-        focus_ring_info_->background_color);
+    }
   }
 
   // Start watching for animations.
