@@ -50,6 +50,7 @@ static_library("service_launcher") {
     "//chrome/browser/ash/arc/wallpaper",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
     "//chromeos/ash/components/browser_context_helper",

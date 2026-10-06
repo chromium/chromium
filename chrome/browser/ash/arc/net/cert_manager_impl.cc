@@ -10,13 +10,12 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/net/nss_service.h"
-#include "chrome/browser/net/nss_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -69,7 +68,8 @@ void DeleteCertAndKeyCallback(arc::CertManagerImpl::DeleteCertCallback callback,
 
 namespace arc {
 
-CertManagerImpl::CertManagerImpl(Profile* profile) : profile_(profile) {}
+CertManagerImpl::CertManagerImpl(NssService* nss_service)
+    : nss_service_(CHECK_DEREF(nss_service)) {}
 
 CertManagerImpl::~CertManagerImpl() = default;
 
@@ -231,8 +231,7 @@ void CertManagerImpl::ImportPrivateKeyAndCert(
       FROM_HERE,
       base::BindOnce(
           &GetCertDBOnIOThread,
-          NssServiceFactory::GetForContext(profile_)
-              ->CreateNSSCertDatabaseGetterForIOThread(),
+          nss_service_->CreateNSSCertDatabaseGetterForIOThread(),
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &CertManagerImpl::DeleteAndImportPrivateKeyAndCertWithDB,
               weak_factory_.GetWeakPtr(), key_pem, cert_pem,

@@ -15,6 +15,14 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/net",
-  "+chrome/browser/profiles",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # CertManagerImplTest installs a FakeNssService, whose ChromeOS constructor
+  # looks the user up for the profile, so it needs a logged-in user session.
+  # Only the test needs these.
+  "cert_manager_impl_unittest\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+    "+chrome/test/base",
+  ],
+}

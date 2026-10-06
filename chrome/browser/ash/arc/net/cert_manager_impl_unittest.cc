@@ -8,13 +8,21 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/net/fake_nss_service.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
@@ -133,8 +141,25 @@ class CertManagerImplTest : public testing::Test {
   ~CertManagerImplTest() override = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-    cert_manager_ = std::make_unique<CertManagerImpl>(profile());
+    // NssService's ChromeOS constructor looks the user up for the profile, so
+    // the user session has to exist before FakeNssService is installed.
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
+    const user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(
+            AccountId::FromUserEmailGaiaId("test-user@example.com",
+                                           GaiaId("12345")));
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    nss_service_ = FakeNssService::InitializeForBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user),
+        /*enable_system_slot=*/false);
+    cert_manager_ = std::make_unique<CertManagerImpl>(nss_service_);
+
+    // Created after the FakeNssService so that the crypto::ScopedTestNSSDBs in
+    // the process are torn down in reverse order of creation.
     nss_db_ = std::make_unique<crypto::ScopedTestNSSDB>();
     cert_db_ = std::make_unique<net::NSSCertDatabase>(
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_db_->slot())),
@@ -145,24 +170,25 @@ class CertManagerImplTest : public testing::Test {
     // Ensure that nothing is running before tearing down.
     base::RunLoop().RunUntilIdle();
 
-    profile_.reset();
     cert_manager_.reset();
     cert_db_.reset();
     nss_db_.reset();
+    nss_service_ = nullptr;
+    user_session_test_environment_.reset();
   }
 
-  Profile* profile() { return profile_.get(); }
   CertManagerImpl* cert_manager() { return cert_manager_.get(); }
   net::NSSCertDatabase* cert_db() { return cert_db_.get(); }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<FakeNssService> nss_service_ = nullptr;
   std::unique_ptr<CertManagerImpl> cert_manager_;
 
   std::unique_ptr<crypto::ScopedTestNSSDB> nss_db_;
   std::unique_ptr<net::NSSCertDatabase> cert_db_;
-
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 // Imports with a valid certificate and key succeed.

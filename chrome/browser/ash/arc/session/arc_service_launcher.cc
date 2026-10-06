@@ -68,6 +68,7 @@
 #include "chrome/browser/ash/arc/wallpaper/arc_wallpaper_service.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -350,8 +351,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(
   {
     auto* arc_net_host_impl = ArcNetHostImpl::GetForBrowserContext(profile);
     arc_net_host_impl->SetPrefService(profile->GetPrefs());
-    arc_net_host_impl->SetCertManager(
-        std::make_unique<CertManagerImpl>(profile));
+    arc_net_host_impl->SetCertManager(std::make_unique<CertManagerImpl>(
+        NssServiceFactory::GetForContext(profile)));
     arc_net_url_opener_ = std::make_unique<BrowserUrlOpenerImpl>();
   }
   ArcOemCryptoBridge::GetForBrowserContext(profile);
