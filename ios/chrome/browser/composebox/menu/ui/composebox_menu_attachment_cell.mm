@@ -40,6 +40,15 @@ const CGFloat kPointerInteractionRadius = 20.0;
         [[UIPointerInteraction alloc] initWithDelegate:self];
     [self addInteraction:pointerInteraction];
 
+    // The attachment card title is capped at 24pt and its icon doesn't grow
+    // with Dynamic Type, so show its full content in the Large Content Viewer
+    // on long press at accessibility text sizes. `-configureWithItem:` sets
+    // the content.
+    self.showsLargeContentViewer = YES;
+    self.scalesLargeContentImage = YES;
+    [self addInteraction:[[UILargeContentViewerInteraction alloc]
+                             initWithDelegate:nil]];
+
     [self.contentView addSubview:_attachmentView];
     AddSameConstraints(_attachmentView, self.contentView);
   }
@@ -49,6 +58,11 @@ const CGFloat kPointerInteractionRadius = 20.0;
 - (void)configureWithItem:(ComposeboxMenuItem*)item {
   _attachmentView.title = item.title;
   self.accessibilityLabel = item.title;
+  self.largeContentTitle = item.title;
+  // `UILargeContentViewer` renders `largeContentImage` as a monochrome mask,
+  // which turns bitmap favicons into solid gray rectangles. Always use the SF
+  // Symbol in `item.image` instead of `item.favicon`.
+  self.largeContentImage = item.image;
 
   self.accessibilityIdentifier =
       AccessibilityIdentifierForMenuItemType(item.type);
@@ -77,6 +91,14 @@ const CGFloat kPointerInteractionRadius = 20.0;
     self.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
     self.isAccessibilityElement = YES;
   }
+}
+
+#pragma mark - UICollectionReusableView
+
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  self.largeContentTitle = nil;
+  self.largeContentImage = nil;
 }
 
 #pragma mark - UIPointerInteractionDelegate

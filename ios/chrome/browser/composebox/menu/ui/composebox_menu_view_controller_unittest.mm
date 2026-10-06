@@ -6,10 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/unguessable_token.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_cell.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_list_cell.h"
@@ -47,6 +49,16 @@ UIImage* CreateTestImage() {
   return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
     UIRectFill(CGRectMake(0, 0, 10, 10));
   }];
+}
+
+// Returns whether `view` has a `UILargeContentViewerInteraction`.
+BOOL HasLargeContentViewerInteraction(UIView* view) {
+  for (id<UIInteraction> interaction in view.interactions) {
+    if ([interaction isKindOfClass:[UILargeContentViewerInteraction class]]) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 // Tests that the Shared Tabs cell is configured without a leading image, with
@@ -260,6 +272,84 @@ TEST_F(ComposeboxMenuViewControllerTest, TestDriveAccessibilityIdentifier) {
   EXPECT_NSEQ(AccessibilityIdentifierForMenuItemType(
                   ComposeboxMenuItemType::kAttachmentDrive),
               kComposeboxAttachDriveActionAccessibilityIdentifier);
+}
+
+// Tests that each attachment cell configures `UILargeContentViewer` with its
+// title and SF Symbol.
+TEST_F(ComposeboxMenuViewControllerTest,
+       TestAttachmentCellsLargeContentViewer) {
+  base::test::ScopedFeatureList scopedFeatureList;
+  scopedFeatureList.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  ComposeboxMenuViewController* viewController =
+      [[ComposeboxMenuViewController alloc] init];
+  viewController.view.frame =
+      CGRectMake(0, 0, kIPhoneScreenWidth, kTestViewHeight);
+
+  ComposeboxUIInputState* inputState = [[ComposeboxUIInputState alloc] init];
+  inputState.uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
+  inputState.currentTabFavicon = CreateTestImage();
+  inputState.allowedAttachments = {
+      ComposeboxAttachmentOption::kCurrentTab,
+      ComposeboxAttachmentOption::kTab,
+      ComposeboxAttachmentOption::kCamera,
+      ComposeboxAttachmentOption::kGallery,
+      ComposeboxAttachmentOption::kFile,
+      ComposeboxAttachmentOption::kDrive,
+  };
+
+  [viewController setUIInputState:inputState];
+  [viewController.view layoutIfNeeded];
+  [viewController.collectionView layoutIfNeeded];
+
+  UICollectionView* collectionView = viewController.collectionView;
+  ASSERT_NE(collectionView, nil);
+  ASSERT_GE(collectionView.numberOfSections, 1);
+  ASSERT_EQ([collectionView numberOfItemsInSection:0], 6);
+
+  for (NSInteger itemIndex = 0; itemIndex < 6; ++itemIndex) {
+    SCOPED_TRACE(testing::Message() << "itemIndex=" << itemIndex);
+    NSIndexPath* indexPath = [NSIndexPath indexPathForItem:itemIndex
+                                                 inSection:0];
+    UICollectionViewCell* rawCell =
+        [collectionView cellForItemAtIndexPath:indexPath];
+    ComposeboxMenuAttachmentCell* cell =
+        base::apple::ObjCCastStrict<ComposeboxMenuAttachmentCell>(rawCell);
+    ASSERT_NE(cell, nil);
+
+    // Each attachment card must configure UILargeContentViewer with its title
+    // and SF Symbol (never a bitmap favicon).
+    EXPECT_TRUE(cell.showsLargeContentViewer);
+    EXPECT_TRUE(cell.scalesLargeContentImage);
+    EXPECT_TRUE(HasLargeContentViewerInteraction(cell));
+    EXPECT_GT(cell.largeContentTitle.length, 0u);
+    EXPECT_NSEQ(cell.largeContentTitle, cell.accessibilityLabel);
+    ASSERT_NE(cell.largeContentImage, nil);
+    EXPECT_TRUE(cell.largeContentImage.isSymbolImage);
+    EXPECT_NE(cell.largeContentImage, inputState.currentTabFavicon);
+  }
+}
+
+// Tests that preparing an attachment cell for reuse clears its Large Content
+// Viewer properties.
+TEST_F(ComposeboxMenuViewControllerTest,
+       TestAttachmentCellPrepareForReuseClearsLargeContent) {
+  ComposeboxMenuAttachmentCell* cell =
+      [[ComposeboxMenuAttachmentCell alloc] initWithFrame:CGRectZero];
+  ComposeboxMenuItem* item = [[ComposeboxMenuItem alloc]
+      initWithTitle:@"Gallery"
+              image:CreateTestImage()
+               type:ComposeboxMenuItemType::kAttachmentGallery
+           disabled:NO];
+  [cell configureWithItem:item];
+  ASSERT_NSEQ(cell.largeContentTitle, @"Gallery");
+  ASSERT_NE(cell.largeContentImage, nil);
+
+  [cell prepareForReuse];
+
+  EXPECT_EQ(cell.largeContentTitle, nil);
+  EXPECT_EQ(cell.largeContentImage, nil);
 }
 
 }  // namespace
