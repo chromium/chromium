@@ -491,8 +491,15 @@ inline constexpr char
         "Enables showing suggestions for multiple attachments";
 
 inline constexpr char kComposeboxPlusButtonBottomSheetName[] =
-    "Enable the bottom sheet for plus button in Composebox";
+    "Enable the large carousel in the bottom sheet for plus button in the plus "
+    "button";
 inline constexpr char kComposeboxPlusButtonBottomSheetDescription[] =
+    "Uses the larger size of the carousel in the bottom sheet for the plus "
+    "button multimodal menu.";
+
+inline constexpr char kComposeboxPlusButtonLargeCarouselName[] =
+    "Enable the bottom sheet for plus button in Composebox";
+inline constexpr char kComposeboxPlusButtonLargeCarouselDescription[] =
     "Uses the updated bottom sheet for the plus button multimodal menu.";
 
 inline constexpr char kComposeboxServerSideStateName[] =

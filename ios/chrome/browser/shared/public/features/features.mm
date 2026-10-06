@@ -830,6 +830,13 @@ bool IsComposeboxPlusButtonBottomSheet() {
   return base::FeatureList::IsEnabled(kComposeboxPlusButtonBottomSheet);
 }
 
+BASE_FEATURE(kComposeboxPlusButtonLargeCarousel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxPlusButtonLargeCarousel() {
+  return base::FeatureList::IsEnabled(kComposeboxPlusButtonLargeCarousel);
+}
+
 BASE_FEATURE(kChromeNextIa, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsChromeNextIaEnabled() {

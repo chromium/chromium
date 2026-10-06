@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -36,6 +37,7 @@ namespace {
 
 // The estimated height of the attachments group.
 const CGFloat kAttachmentGroupEstimatedHeight = 80.0f;
+const CGFloat kAttachmentGroupEstimatedLargeHeight = 100.0f;
 
 // The width of the sheet in landscape.
 const CGFloat kLandscapeSheetWidth = 400.0f;
@@ -50,6 +52,7 @@ const CGFloat kAttachmentItemSpacing = 6.0f;
 // wide. When items would be narrower than this, the section scrolls
 // horizontally.
 const CGFloat kAttachmentItemMinimumWidth = 60.0f;
+const CGFloat kAttachmentItemLargeMinimumWidth = 80.0f;
 
 // Insets for the model and tools sections.
 const NSDirectionalEdgeInsets kListSectionInsets = {0, 16.0, 20.0, 16.0};
@@ -358,14 +361,21 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
     CGFloat totalSpacing = (itemsCount - 1) * kAttachmentItemSpacing;
     CGFloat naturalItemWidth =
         AlignValueToLowerPixel((availableWidth - totalSpacing) / itemsCount);
-    CGFloat itemWidth = MAX(naturalItemWidth, kAttachmentItemMinimumWidth);
+    CGFloat attachmentItemMinimumWidth = IsComposeboxPlusButtonLargeCarousel()
+                                             ? kAttachmentItemLargeMinimumWidth
+                                             : kAttachmentItemMinimumWidth;
+    CGFloat itemWidth = MAX(naturalItemWidth, attachmentItemMinimumWidth);
 
+    CGFloat attachmentGroupEstimatedHeight =
+        IsComposeboxPlusButtonLargeCarousel()
+            ? kAttachmentGroupEstimatedLargeHeight
+            : kAttachmentGroupEstimatedHeight;
     NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
         sizeWithWidthDimension:[NSCollectionLayoutDimension
                                    absoluteDimension:itemWidth]
                heightDimension:
                    [NSCollectionLayoutDimension
-                       estimatedDimension:kAttachmentGroupEstimatedHeight]];
+                       absoluteDimension:attachmentGroupEstimatedHeight]];
 
     NSCollectionLayoutItem* item =
         [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
@@ -375,7 +385,7 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
                                    absoluteDimension:itemWidth]
                heightDimension:
                    [NSCollectionLayoutDimension
-                       estimatedDimension:kAttachmentGroupEstimatedHeight]];
+                       absoluteDimension:attachmentGroupEstimatedHeight]];
     NSCollectionLayoutGroup* group =
         [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
                                                       subitems:@[ item ]];

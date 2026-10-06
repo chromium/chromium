@@ -2136,6 +2136,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "composebox-plus-button-bottom-sheet-large-carousel",
+    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 168
+  },
+  {
     "name": "composebox-realbox-outside-click",
     "owners": [ "yvonneshi@google.com", "jilinyang@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 165

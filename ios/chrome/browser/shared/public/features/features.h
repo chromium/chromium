@@ -668,6 +668,12 @@ BASE_DECLARE_FEATURE(kComposeboxPlusButtonBottomSheet);
 // Returns true if the ComposeboxPlusButtonBottomSheet feature is enabled.
 bool IsComposeboxPlusButtonBottomSheet();
 
+// Enables the ComposeboxPlusButtonLargeCarousel feature.
+BASE_DECLARE_FEATURE(kComposeboxPlusButtonLargeCarousel);
+
+// Returns true if the ComposeboxPlusButtonLargeCarousel feature is enabled.
+bool IsComposeboxPlusButtonLargeCarousel();
+
 // Enables the ChromeNextIa feature.
 BASE_DECLARE_FEATURE(kChromeNextIa);
 
