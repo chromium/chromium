@@ -254,6 +254,8 @@ class InteractiveTestPrivate : public InteractionSequence::TestDelegate {
 
   bool sequence_skipped() const { return sequence_skipped_; }
 
+  void set_timed_out(bool timed_out) { timed_out_ = timed_out; }
+
   base::WeakPtr<InteractiveTestPrivate> GetAsWeakPtr();
 
   void SetDefaultContext(ElementContext default_context,
@@ -453,6 +455,8 @@ class InteractiveTestPrivate : public InteractionSequence::TestDelegate {
 
   ImplementationList<InteractiveTestPrivateFrameworkBase>
       framework_implementations_;
+
+  bool timed_out_ = false;
 
   // Safely tracks the most recent native window targeted in each context.
   // For actions like ClickMouse() or ReleaseMouse(), a pivot element is used

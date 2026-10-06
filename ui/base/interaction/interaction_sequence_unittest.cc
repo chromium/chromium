@@ -763,7 +763,7 @@ TEST_P(InteractionSequenceTest,
   EXPECT_ASYNC_CALL_IN_SCOPE(
       aborted,
       Run(test::SequenceAbortedMatcher(
-          1, &element1, element1.identifier(),
+          1, nullptr, element1.identifier(),
           InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementHiddenDuringStep,
           testing::_,
@@ -2906,7 +2906,7 @@ TEST_P(InteractionSequenceTest,
   EXPECT_ASYNC_CALL_IN_SCOPE(
       aborted,
       Run(test::SequenceAbortedMatcher(
-          4, &element3, element3.identifier(),
+          4, nullptr, element3.identifier(),
           InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementHiddenDuringStep)),
       element3.Hide());
@@ -2975,7 +2975,7 @@ TEST_P(InteractionSequenceTest,
   EXPECT_ASYNC_CALL_IN_SCOPE(
       aborted,
       Run(test::SequenceAbortedMatcher(
-          4, &element3, element3.identifier(),
+          4, nullptr, element3.identifier(),
           InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementHiddenDuringStep)),
       element3.Hide());

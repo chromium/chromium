@@ -467,6 +467,7 @@ bool InteractiveTestApi::RunTestSequenceImpl(
                     oss << "\n * " << ctx;
                   }
                 }
+                oss << "\n";
                 impl->DebugDumpElements(context).PrintTo(oss);
                 if (!impl->deferred_failures_.empty()) {
                   oss << "\nSome previous steps failed:";
@@ -474,6 +475,7 @@ bool InteractiveTestApi::RunTestSequenceImpl(
                     oss << "\n" << failure;
                   }
                 }
+                impl->set_timed_out(true);
               }
               return oss.str();
             },

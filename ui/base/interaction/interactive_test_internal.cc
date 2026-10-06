@@ -501,7 +501,7 @@ void InteractiveTestPrivate::OnSequenceAborted(
     } else {
       DCHECK_EQ(OnIncompatibleAction::kHaltTest, on_incompatible_action_);
     }
-  } else {
+  } else if (!timed_out_) {
     std::ostringstream additional_message;
     if (data.aborted_reason == InteractionSequence::AbortedReason::
                                    kElementHiddenBetweenTriggerAndStepStart) {
@@ -520,6 +520,7 @@ void InteractiveTestPrivate::OnSequenceAborted(
         additional_message << "\n * " << ctx;
       }
     }
+    additional_message << "\n";
     DebugDumpElements(data.context).PrintTo(additional_message);
     if (!deferred_failures_.empty()) {
       additional_message << "\n" << "Some prior steps also failed:";
