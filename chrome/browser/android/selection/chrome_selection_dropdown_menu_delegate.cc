@@ -9,6 +9,7 @@
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_context_menu_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -35,6 +36,10 @@
 namespace android {
 
 namespace {
+
+// The display order for the At Memory menu item in the selection dropdown menu.
+// Placed at the very beginning of the selection dropdown menu.
+constexpr int kAtMemoryMenuItemOrder = 5;
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // The display order for the Print menu item in the selection dropdown menu.
@@ -92,6 +97,11 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
           return GetDisplayOrderAt(next);
         }
       }
+      // Trailing separator at the end of the model uses the preceding item's
+      // section order:
+      if (index > 0 && GetTypeAt(index - 1) != ui::MenuModel::TYPE_SEPARATOR) {
+        return GetDisplayOrderAt(index - 1);
+      }
       return BaseSelectionDropdownMenuModel::GetDisplayOrderAt(index);
     }
     int command_id = GetCommandIdAt(index);
@@ -103,6 +113,9 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
 #endif
     if (command_id == IDC_CONTENT_CONTEXT_INSPECTELEMENT) {
       return kInspectElementItemOrder;
+    }
+    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+      return kAtMemoryMenuItemOrder;
     }
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     int base_order = BaseSelectionDropdownMenuModel::GetDisplayOrderAt(index);
@@ -148,6 +161,14 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
     }
 #endif
 
+    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+      auto* rfh = content::RenderFrameHost::FromID(rfh_id_);
+      if (rfh && rfh->IsRenderFrameLive()) {
+        autofill::ExecuteAtMemoryContextMenuCommand(*rfh, params_);
+      }
+      return;
+    }
+
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     BaseSelectionDropdownMenuModel::ExecuteCommand(command_id, event_flags);
 #endif
@@ -162,6 +183,9 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
       return true;
     }
 #endif
+    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+      return true;
+    }
     return false;
   }
 
@@ -197,6 +221,9 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
                  blink::mojom::FormControlType::kInputPassword;
     }
 #endif
+    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+      return true;
+    }
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     return BaseSelectionDropdownMenuModel::IsCommandIdEnabled(command_id);
@@ -257,6 +284,12 @@ ChromeSelectionDropdownMenuDelegate::GetSelectionPopupExtraItems(
     }
     model->AddItemWithStringId(IDC_CONTENT_CONTEXT_INSPECTELEMENT,
                                IDS_INSPECT_ELEMENT_ANDROID);
+  }
+
+  if (autofill::ShouldShowAtMemoryContextMenuItem(render_frame_host, params)) {
+    model->AddItemWithStringId(IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
+                               IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
+    model->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
   return model;
