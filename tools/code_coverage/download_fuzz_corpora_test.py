@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import argparse
+import ntpath
 import os
 import shutil
 import subprocess
@@ -148,6 +149,34 @@ class DownloadFuzzCorporaTest(unittest.TestCase):
         )
         # Should complete without error even when downloads fail
         download_fuzz_corpora.Main()
+
+  def test_download_corpus_url_uses_forward_slashes_on_windows(self):
+    with (
+      patch('download_fuzz_corpora.os.path', ntpath),
+      patch('download_fuzz_corpora.os.makedirs'),
+      patch('download_fuzz_corpora._gsutil') as mock_gsutil,
+    ):
+      mock_gsutil.return_value.returncode = 0
+      download_fuzz_corpora._download_corpus(
+        ('fake_1_fuzzer', self.fake_download_dir, 'libfuzzer')
+      )
+      download_fuzz_corpora._download_corpus(
+        ('autozilli-1.tgz', self.fake_download_dir, 'fuzzilli')
+      )
+
+    mock_gsutil.assert_any_call(
+      [
+        'cp',
+        'gs://clusterfuzz-libfuzzer-backup/corpus/libfuzzer/fake_1_fuzzer/'
+        'latest.zip',
+        'fake_1_fuzzer',
+      ],
+      self.fake_download_dir,
+    )
+    mock_gsutil.assert_any_call(
+      ['cp', 'gs://autozilli/autozilli-1.tgz', 'autozilli-1'],
+      self.fake_download_dir,
+    )
 
 
 if __name__ == '__main__':

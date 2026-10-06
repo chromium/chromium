@@ -30,6 +30,7 @@ import argparse
 import logging
 from multiprocessing import cpu_count, Pool
 import os
+import posixpath
 import re
 import shutil
 import subprocess
@@ -67,14 +68,15 @@ def _download_corpus(args):
   download_dir = args[1]
   corpora_type = args[2]
   url = CORPORA_BUCKET_BASE_URL_BY_TYPE[corpora_type]
+  # Use posixpath so Windows does not emit backslashes in gs:// URLs.
   if corpora_type == FUZZILLI_CORPORA_TYPE:
     # For a corpora file autozilli-1.tgz, it will be downloaded to
     # [DOWNLOAD_DIR]/autozilli-1/autozilli-1.tgz
     corpus_dir, _ = os.path.splitext(target)
-    corpus_url = os.path.join(url, target)
+    corpus_url = posixpath.join(url, target)
   else:
     corpus_dir = target
-    corpus_url = os.path.join(url, target, 'latest.zip')
+    corpus_url = posixpath.join(url, target, 'latest.zip')
 
   os.makedirs(os.path.join(download_dir, corpus_dir), exist_ok=True)
   cmd = ['cp', corpus_url, corpus_dir]

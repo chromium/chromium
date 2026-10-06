@@ -40,7 +40,9 @@ FUZZILLI = 'fuzzilli'
 ALL_FUZZER_TYPES = [BLACKBOX, LIBFUZZER, CENTIPEDE, FUZZILLI]
 REPORT_DIR = 'out/report'
 
-LLVM_PROFDATA = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
+LLVM_PROFDATA = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata' + (
+  '.exe' if sys.platform == 'win32' else ''
+)
 
 
 class EngineRunner(abc.ABC):
@@ -346,20 +348,32 @@ def _run_and_log(
       cmd, env=env, timeout=timeout, capture_output=True, check=True, cwd=cwd
     )
     return True
-  except Exception as e:
-    if type(e) == subprocess.TimeoutExpired:
-      logging.warning(
-        'Command %s (%s) timed out after %s seconds', cmd, annotation, e.timeout
-      )
-    else:
-      logging.warning(
-        'Command %s (%s) return code: %i\nStdout:\n%s\nStderr:\n%s',
-        cmd,
-        annotation,
-        e.returncode,
-        e.output,
-        e.stderr,
-      )
+  except subprocess.TimeoutExpired as e:
+    logging.warning(
+      'Command %s (%s) timed out after %s seconds', cmd, annotation, e.timeout
+    )
+  except subprocess.CalledProcessError as e:
+    logging.warning(
+      'Command %s (%s) return code: %i\nStdout:\n%s\nStderr:\n%s',
+      cmd,
+      annotation,
+      e.returncode,
+      e.output,
+      e.stderr,
+    )
+  except OSError as e:
+    # Process creation failures (e.g. FileNotFoundError, WinError 193) have
+    # no `returncode`.
+    size_info = ''
+    if cmd and os.path.isfile(cmd[0]):
+      size_info = ' (%s is %d bytes)' % (cmd[0], os.path.getsize(cmd[0]))
+    logging.warning(
+      'Command %s (%s) could not be started%s: %s',
+      cmd,
+      annotation,
+      size_info,
+      e,
+    )
   return False
 
 
@@ -372,6 +386,14 @@ def _run_with_duration(
     True if the command finishes within the duration, otherwise returns False if
     the command is stopped after the duration.
   """
+  # On POSIX, `timeout --signal=SIGTERM` is used so the fuzzer binary can shut
+  # down cleanly and flush coverage data to its profile before exiting.
+  # Windows does not have the `timeout` utility and `subprocess.run` terminates
+  # timed-out processes directly, so we should monitor Windows builders to
+  # ensure timeouts do not cause coverage data to be dropped.
+  if sys.platform == 'win32':
+    return _run_and_log(cmd, env, duration, annotation)
+
   # subprocess.run doesn't support sending a specific signal on timeout
   # directly in a way that guarantees flushing, so we use 'timeout'
   duration_secs = f'{duration}s'
@@ -421,21 +443,18 @@ def _accumulated_profdata_merge(inputs: Sequence[str], profdata: str) -> bool:
   if not os.path.exists(profdata):
     return _profdata_merge(inputs, profdata)
 
-  # This file will be used as a clone of the initial profdata file.
-  copy = tempfile.NamedTemporaryFile()
-  # This file will be used as a copy of the profdata file to be used as input
-  # of the _profdata_merge function. It will always be deleted by
-  # `_profdata_merge`, so we disable `delete` to avoid a warning from cpython.
-  file = tempfile.NamedTemporaryFile(delete=False)
-  shutil.copy2(profdata, copy.name)
-  shutil.copy2(profdata, file.name)
-  res = _profdata_merge(inputs + [file.name], profdata)
-  if not res:
-    # If the merge wasn't successful, let's ensure that the profdata file is
-    # reverted with its previous content. This helps keep track of the profile
-    # information gathered from the successful runs.
-    shutil.copy2(copy.name, profdata)
-  return res
+  with tempfile.TemporaryDirectory() as temp_dir:
+    copy_path = os.path.join(temp_dir, 'copy.profdata')
+    input_path = os.path.join(temp_dir, 'input.profdata')
+    shutil.copy2(profdata, copy_path)
+    shutil.copy2(profdata, input_path)
+    res = _profdata_merge(inputs + [input_path], profdata)
+    if not res:
+      # If the merge wasn't successful, let's ensure that the profdata file is
+      # reverted with its previous content. This helps keep track of the profile
+      # information gathered from the successful runs.
+      shutil.copy2(copy_path, profdata)
+    return res
 
 
 def _get_target_corpus_files(target_details) -> Sequence[str]:
@@ -744,10 +763,17 @@ def _run_fuzzer_target(args):
   # Note: TMPDIR is POSIX-only (not read on Windows/macOS).
   # We also set SQL_RECOVERY_FUZZER_TEMP_DIR for sql_recovery_lpm_fuzzer,
   # which bypasses TMPDIR and uses base::GetShmemTempDir().
-  target_temp_dir = os.path.join('/dev/shm', f'fuzzer_temp_{target}')
+  # /dev/shm only exists on Linux
+  base_temp_dir = (
+    '/dev/shm' if sys.platform == 'linux' else tempfile.gettempdir()
+  )
+  target_temp_dir = os.path.join(base_temp_dir, f'fuzzer_temp_{target}')
   os.makedirs(target_temp_dir, exist_ok=True)
   env['TMPDIR'] = target_temp_dir
   env['SQL_RECOVERY_FUZZER_TEMP_DIR'] = target_temp_dir
+  if sys.platform == 'win32':
+    env['TEMP'] = target_temp_dir
+    env['TMP'] = target_temp_dir
 
   try:
     res = _run_full_corpus(target_details) or _run_corpus_in_chunks(
@@ -840,28 +866,39 @@ def _parse_command_arguments():
   return args
 
 
+def _resolve_target_binary(binaries_dir: str, target: str) -> str | None:
+  """Returns the path to the executable for `target` in `binaries_dir`."""
+  if sys.platform == 'win32' and not target.endswith('.exe'):
+    target += '.exe'
+  target_binary = os.path.join(binaries_dir, target)
+  if not os.path.isfile(target_binary):
+    return None
+  if sys.platform != 'win32' and not os.access(target_binary, os.X_OK):
+    return None
+  return target_binary
+
+
 def _get_all_target_details(args):
   incomplete_targets = []
   all_target_details = []
 
-  centipede_target_binpath = os.path.join(args.fuzzer_binaries_dir, "centipede")
+  centipede_target_binpath = _resolve_target_binary(
+    args.fuzzer_binaries_dir, 'centipede'
+  )
   if args.fuzzer == CENTIPEDE:
-    if not os.path.isfile(centipede_target_binpath):
-      logging.warning('%s does not exist.', centipede_target_binpath)
+    if not centipede_target_binpath:
+      logging.warning('No centipede binary in %s.', args.fuzzer_binaries_dir)
       return []
 
   for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
-    fuzzer_target_binpath = os.path.join(
+    fuzzer_target_binpath = _resolve_target_binary(
       args.fuzzer_binaries_dir, fuzzer_target
     )
     fuzzer_target_corporadir = os.path.join(
       args.fuzzer_corpora_dir, fuzzer_target
     )
 
-    if not (
-      os.path.isfile(fuzzer_target_binpath)
-      and os.path.isdir(fuzzer_target_corporadir)
-    ):
+    if not (fuzzer_target_binpath and os.path.isdir(fuzzer_target_corporadir)):
       logging.warning(
         'Could not find binary file for %s, or, the provided corpora path is '
         'not a directory',
@@ -907,21 +944,30 @@ def _get_all_target_details(args):
   # of code in the Chrome binary being marked as 0 in the code coverage
   # report. Without doing this step, many of the files of Chrome source
   # code simply don't appear in the coverage report at all.
-  chrome_target_binpath = os.path.join(args.fuzzer_binaries_dir, "chrome")
-  if not os.path.isfile(chrome_target_binpath):
-    logging.warning('Could not find binary file for Chrome itself')
-  else:
-    env = {'DISPLAY': 'not-a-real-display'}
-    all_target_details.append(
-      {
-        'name': "chrome",
-        'profdata_file': os.path.join(REPORT_DIR, "chrome.profdata"),
-        'env': env,
-        'cmd_runner': AlwaysSuccessfulRunner([chrome_target_binpath]),
-        'corpus': None,
-        'files': None,
-      }
+  # TODO(crbug.com/570145474): Find a way to immediately exit Chrome while
+  # dumping a zero-coverage baseline profile on Windows (where DISPLAY is not
+  # used).
+  if sys.platform != 'win32':
+    chrome_target_binpath = _resolve_target_binary(
+      args.fuzzer_binaries_dir, 'chrome'
     )
+    if not chrome_target_binpath:
+      logging.warning(
+        'Could not find binary file for Chrome itself in %s',
+        args.fuzzer_binaries_dir,
+      )
+    else:
+      env = {'DISPLAY': 'not-a-real-display'}
+      all_target_details.append(
+        {
+          'name': "chrome",
+          'profdata_file': os.path.join(REPORT_DIR, "chrome.profdata"),
+          'env': env,
+          'cmd_runner': AlwaysSuccessfulRunner([chrome_target_binpath]),
+          'corpus': None,
+          'files': None,
+        }
+      )
   logging.warning(
     "Incomplete targets (couldn't find binary): %s", incomplete_targets
   )
@@ -932,9 +978,15 @@ def _get_blackbox_target_details(args):
   target_details = []
   # Blackbox fuzzers run the provided target against the files in
   # fuzzer_corpora_dir. e.g. run 'chrome corpora/fuzz-output.html'
-  fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir, args.target)
-  if not os.path.isfile(fuzzer_target_binpath):
-    logging.warning('Could not find binary file for %s', fuzzer_target_binpath)
+  fuzzer_target_binpath = _resolve_target_binary(
+    args.fuzzer_binaries_dir, args.target
+  )
+  if not fuzzer_target_binpath:
+    logging.warning(
+      'Could not find binary file for %s in %s',
+      args.target,
+      args.fuzzer_binaries_dir,
+    )
     return target_details
 
   file_pattern = '*.html' if args.target == 'chrome' else '*.js'
@@ -958,10 +1010,10 @@ def _get_blackbox_target_details(args):
 
 def _get_fuzzilli_target_details(args):
   all_target_details = []
-  fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir, 'd8')
+  fuzzer_target_binpath = _resolve_target_binary(args.fuzzer_binaries_dir, 'd8')
   source_dir = os.path.abspath(os.path.join(args.fuzzer_binaries_dir, '../../'))
-  if not os.path.isfile(fuzzer_target_binpath):
-    logging.warning('Could not find binary file: %s', fuzzer_target_binpath)
+  if not fuzzer_target_binpath:
+    logging.warning('Could not find d8 binary in %s', args.fuzzer_binaries_dir)
     return all_target_details
 
   for corpora_dir in os.listdir(args.fuzzer_corpora_dir):
@@ -1062,16 +1114,12 @@ def main():
     'Finished getting coverage information. Copying to %s', args.profdata_outdir
   )
   for fuzzer in verified_fuzzer_targets:
-    cmd = [
-      'cp',
-      os.path.join(REPORT_DIR, fuzzer + '.profdata'),
-      args.profdata_outdir,
-    ]
-    logging.info(cmd)
+    src_profdata = os.path.join(REPORT_DIR, fuzzer + '.profdata')
+    logging.info('Copying %s to %s', src_profdata, args.profdata_outdir)
     try:
-      subprocess.check_call(cmd)
-    except:
-      logging.warning('Warning: failed to copy profdata for %s', fuzzer)
+      shutil.copy(src_profdata, args.profdata_outdir)
+    except Exception as e:
+      logging.warning('Warning: failed to copy profdata for %s: %s', fuzzer, e)
 
 
 if __name__ == '__main__':

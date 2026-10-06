@@ -1,13 +1,17 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import argparse
 import os
 import pathlib
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
-import sys
+from unittest import mock
+
+import run_all_fuzzers
 
 
 @unittest.skipUnless(sys.platform == 'linux', 'Only linux is supported')
@@ -173,6 +177,66 @@ class RunAllFuzzersTest(unittest.TestCase):
           ]
           # Verify the script runs without crashing when blackbox is specified.
           subprocess.check_call(cmd, cwd=self.chromium_src_dir)
+
+
+class TargetDetailsWindowsTest(unittest.TestCase):
+  def setUp(self):
+    self.bin_dir = tempfile.mkdtemp()
+    self.corpora_dir = tempfile.mkdtemp()
+
+  def tearDown(self):
+    shutil.rmtree(self.bin_dir, ignore_errors=True)
+    shutil.rmtree(self.corpora_dir, ignore_errors=True)
+
+  def test_get_all_target_details_windows_exe_resolution(self):
+    pathlib.Path(os.path.join(self.bin_dir, 'target1.exe')).touch()
+    pathlib.Path(os.path.join(self.bin_dir, 'stamp_fuzzer')).touch()
+    pathlib.Path(os.path.join(self.bin_dir, 'chrome.exe')).touch()
+    os.makedirs(os.path.join(self.corpora_dir, 'target1'))
+    os.makedirs(os.path.join(self.corpora_dir, 'stamp_fuzzer'))
+
+    args = argparse.Namespace(
+      fuzzer_binaries_dir=self.bin_dir,
+      fuzzer_corpora_dir=self.corpora_dir,
+      fuzzer='libfuzzer',
+      testcase_timeout=60,
+    )
+
+    with mock.patch('sys.platform', 'win32'):
+      details = run_all_fuzzers._get_all_target_details(args)
+
+    target_map = {d['name']: d for d in details}
+    self.assertIn('target1', target_map)
+    self.assertNotIn('chrome', target_map)
+    self.assertNotIn('stamp_fuzzer', target_map)
+    self.assertEqual(
+      target_map['target1']['cmd_runner'].cmd[0],
+      os.path.join(self.bin_dir, 'target1.exe'),
+    )
+
+  def test_resolve_target_binary_non_windows_requires_executable_bit(self):
+    exec_bin = os.path.join(self.bin_dir, 'exec_fuzzer')
+    non_exec_bin = os.path.join(self.bin_dir, 'non_exec_fuzzer')
+    pathlib.Path(exec_bin).touch()
+    pathlib.Path(non_exec_bin).touch()
+    os.chmod(exec_bin, 0o755)
+    os.chmod(non_exec_bin, 0o644)
+
+    with mock.patch('sys.platform', 'linux'):
+      self.assertEqual(
+        run_all_fuzzers._resolve_target_binary(self.bin_dir, 'exec_fuzzer'),
+        exec_bin,
+      )
+      self.assertIsNone(
+        run_all_fuzzers._resolve_target_binary(self.bin_dir, 'non_exec_fuzzer')
+      )
+
+  def test_run_and_log_oserror_returns_false(self):
+    err = OSError(8, '%1 is not a valid Win32 application')
+    with mock.patch('subprocess.run', side_effect=err):
+      self.assertFalse(
+        run_all_fuzzers._run_and_log(['fuzzer.exe'], {}, 1, 'annotation')
+      )
 
 
 if __name__ == '__main__':
