@@ -21,7 +21,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.MemoryPressureLevel;
+import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -41,6 +46,7 @@ public class ScreenshotBoundsManagerTest {
 
     @Before
     public void setUp() {
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(MemoryPressureLevel.NONE);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mRenderCoordinates.getPageScaleFactorInt()).thenReturn(1);
@@ -57,10 +63,34 @@ public class ScreenshotBoundsManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_NUM_VIEWPORTS)
     public void testCaptureBounds() {
         ScreenshotBoundsManager boundsManager =
                 ScreenshotBoundsManager.createForTests(mContext, mTab, 100);
         compareRects(0, 999, boundsManager.getCaptureBounds());
+
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
+                MemoryPressureLevel.CRITICAL);
+        boundsManager = ScreenshotBoundsManager.createForTests(mContext, mTab, 100);
+        compareRects(0, 999, boundsManager.getCaptureBounds());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_NUM_VIEWPORTS)
+    public void testCaptureBounds_MemoryPressure() {
+        ScreenshotBoundsManager boundsManager =
+                ScreenshotBoundsManager.createForTests(mContext, mTab, 100);
+        compareRects(0, 999, boundsManager.getCaptureBounds());
+
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
+                MemoryPressureLevel.MODERATE);
+        boundsManager = ScreenshotBoundsManager.createForTests(mContext, mTab, 100);
+        compareRects(0, 699, boundsManager.getCaptureBounds());
+
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
+                MemoryPressureLevel.CRITICAL);
+        boundsManager = ScreenshotBoundsManager.createForTests(mContext, mTab, 100);
+        compareRects(0, 499, boundsManager.getCaptureBounds());
     }
 
     @Test

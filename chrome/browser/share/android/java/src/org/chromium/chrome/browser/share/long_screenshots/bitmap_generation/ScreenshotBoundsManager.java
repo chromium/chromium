@@ -11,8 +11,11 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
+import org.chromium.base.MemoryPressureLevel;
+import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.paint_preview.mojom.ClipCoordOverride;
@@ -80,9 +83,20 @@ public class ScreenshotBoundsManager {
 
     /** Defines the bounds of the capture. */
     private void calculateCaptureBounds() {
+        int numViewports = NUM_VIEWPORTS_CAPTURE;
+        if (ChromeFeatureList.sLongScreenshotsNumViewports.isEnabled()) {
+            int pressure = MemoryPressureMonitor.INSTANCE.getLastReportedPressure();
+            if (pressure >= MemoryPressureLevel.CRITICAL) {
+                numViewports =
+                        ChromeFeatureList.sLongScreenshotsNumViewportsCriticalMemory.getValue();
+            } else if (pressure == MemoryPressureLevel.MODERATE) {
+                numViewports =
+                        ChromeFeatureList.sLongScreenshotsNumViewportsModerateMemory.getValue();
+            }
+        }
         // We subtract -1 from the bottom so mCaptureRect.height() will be a multiple of
         // mClipHeightScaled.
-        mCaptureRect = new Rect(0, 0, 0, mClipHeightScaled * NUM_VIEWPORTS_CAPTURE - 1);
+        mCaptureRect = new Rect(0, 0, 0, mClipHeightScaled * numViewports - 1);
     }
 
     /**
