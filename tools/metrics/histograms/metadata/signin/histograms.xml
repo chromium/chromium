@@ -1639,7 +1639,7 @@ prefs when the profile is loaded.  -->
 
 <histogram
     name="Signin.ChromeOS.IsEstimateNewSignInUsersWithFinchAvailablePopulationEnabled"
-    enum="Boolean" expires_after="2027-02-01">
+    enum="Boolean" expires_after="2027-04-04">
   <owner>mmrashad@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>

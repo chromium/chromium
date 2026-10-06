@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Session.Duration.AioToCobr" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-04-04">
   <owner>juanmojica@google.com</owner>
   <owner>mercerd@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

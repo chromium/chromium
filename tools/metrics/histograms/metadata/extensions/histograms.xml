@@ -4678,7 +4678,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.SettingsOverridden.UnacknowledgedMatchingDseExtensionPresent"
-    enum="BooleanPresent" expires_after="2027-02-01">
+    enum="BooleanPresent" expires_after="2027-04-04">
   <owner>yeroshkin@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -4746,7 +4746,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Storage.OnSettingsChangedTime" units="ms"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>nafisabedin@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

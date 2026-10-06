@@ -4183,7 +4183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.EverConnected"
-    enum="BooleanConnected" expires_after="2026-12-31">
+    enum="BooleanConnected" expires_after="2027-04-04">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4198,7 +4198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.LastConnected" units="days"
-    expires_after="2026-12-31">
+    expires_after="2027-04-04">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4212,7 +4212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.HiddenSSIDEverConnected"
-    enum="BooleanEverConnected" expires_after="2026-12-31">
+    enum="BooleanEverConnected" expires_after="2027-04-04">
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
@@ -4225,7 +4225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.HiddenSSIDNetworkCount" units="units"
-    expires_after="2026-12-31">
+    expires_after="2027-04-04">
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
@@ -4294,7 +4294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Passpoint.ConnectionResult"
-    enum="NetworkServiceError" expires_after="2026-12-31">
+    enum="NetworkServiceError" expires_after="2027-04-04">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4500,7 +4500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.RememberedNetworkCount" units="units"
-    expires_after="2026-12-31">
+    expires_after="2027-04-04">
   <owner>kglund@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4513,7 +4513,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Shill.WiFi.RememberedSystemNetworkCount{ShillWiFiRememberedNetworkSecurityMode}"
-    units="units" expires_after="2026-12-31">
+    units="units" expires_after="2027-04-04">
   <owner>kglund@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4535,7 +4535,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Shill.WiFi.RememberedUserNetworkCount{ShillWiFiRememberedNetworkSecurityMode}"
-    units="units" expires_after="2026-12-31">
+    units="units" expires_after="2027-04-04">
   <owner>kglund@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>

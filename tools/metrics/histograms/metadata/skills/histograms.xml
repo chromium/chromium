@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//chrome/browser/resources/skills/v2/skills_webview_bridge_constants.ts:LoadingStage) -->
 
 <histogram name="Skills.Dialog.PromptRefinementOutcome"
-    enum="SkillsPromptRefinementOutcome" expires_after="2027-02-01">
+    enum="SkillsPromptRefinementOutcome" expires_after="2027-04-04">
   <owner>howardcha@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Dialog.{DialogType}{EntryPointAndState}.Action"
-    enum="SkillsDialogAction" expires_after="2027-02-01">
+    enum="SkillsDialogAction" expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Downloader.FirstParty.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2027-02-01">
+    enum="HttpResponseCode" expires_after="2027-04-04">
   <owner>aashnas@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>The HTTP response code received when downloading skills.</summary>
@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Management.Error" enum="SkillsManagementError"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>aashnas@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Management.FirstParty.DownloadRequestStatus"
-    enum="SkillsDownloadRequestStatus" expires_after="2027-02-01">
+    enum="SkillsDownloadRequestStatus" expires_after="2027-04-04">
   <owner>aashnas@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Management.{Page}.Action" enum="SkillsManagementAction"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>aashnas@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
   <token key="Page" variants="Page"/>
 </histogram>
 
-<histogram name="Skills.Refine.Latency" units="ms" expires_after="2027-02-01">
+<histogram name="Skills.Refine.Latency" units="ms" expires_after="2027-04-04">
   <owner>howardcha@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Refine.Result" enum="SkillsRefineResult"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Save.Result" enum="SkillsSaveResult"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.UserSkills.Count" units="skills"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Webview.Handshake.Result" enum="Boolean"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Webview.LoadingStageDuration.{Stage}" units="ms"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Webview.TotalInitLatency" units="ms"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>

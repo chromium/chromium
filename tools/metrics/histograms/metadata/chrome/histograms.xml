@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.BuildState.PageBlockingUpdate"
-    enum="PageBlockingUpdate" expires_after="2027-02-02">
+    enum="PageBlockingUpdate" expires_after="2027-04-04">
   <owner>ajgo@chromium.org</owner>
   <owner>ellyjones@chromium.org</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.BuildState.PendingUpdateState"
-    enum="PendingUpdateState" expires_after="2027-02-02">
+    enum="PendingUpdateState" expires_after="2027-04-04">
   <owner>ajgo@chromium.org</owner>
   <owner>ellyjones@chromium.org</owner>
   <summary>
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.BuildState.TimeSinceUpdateAvailable" units="minutes"
-    expires_after="2027-02-02">
+    expires_after="2027-04-04">
   <owner>ajgo@chromium.org</owner>
   <owner>ellyjones@chromium.org</owner>
   <summary>

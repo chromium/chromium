@@ -1252,7 +1252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.DeclarativePerformanceObserver.DatabaseSize"
-    units="KB" expires_after="2026-12-19">
+    units="KB" expires_after="2027-04-04">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1284,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Storage.DeclarativePerformanceObserver.ReadReportResult"
     enum="DeclarativePerformanceObserverStoreReadResult"
-    expires_after="2026-12-19">
+    expires_after="2027-04-04">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1295,7 +1295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.DeclarativePerformanceObserver.StoredOriginCount"
-    units="origins" expires_after="2026-12-19">
+    units="origins" expires_after="2027-04-04">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1306,7 +1306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.DeclarativePerformanceObserver.StoredReportCount"
-    units="reports" expires_after="2026-12-19">
+    units="reports" expires_after="2027-04-04">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

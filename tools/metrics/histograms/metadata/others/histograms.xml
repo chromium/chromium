@@ -858,7 +858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DeclarativePerformanceObserver.BufferLimitExceeded"
-    enum="Boolean" expires_after="2026-12-19">
+    enum="Boolean" expires_after="2027-04-04">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -869,7 +869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DeclarativePerformanceObserver.PeakBufferSize" units="KB"
-    expires_after="2026-12-19">
+    expires_after="2027-04-04">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2816,7 +2816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.PredictorDatabaseFileSize" units="KiB"
-    expires_after="2026-11-22">
+    expires_after="2027-04-04">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <component>1457018</component>
@@ -3085,7 +3085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2"
-    enum="IpczBlockAllocationSize" expires_after="2027-02-01">
+    enum="IpczBlockAllocationSize" expires_after="2027-04-04">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <summary>
@@ -3098,7 +3098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Ipcz.BufferPoolAllocateBlockResult" enum="BooleanSuccess"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <summary>
@@ -3109,7 +3109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2"
-    enum="IpczBlockAllocationSize" expires_after="2027-02-01">
+    enum="IpczBlockAllocationSize" expires_after="2027-04-04">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <summary>

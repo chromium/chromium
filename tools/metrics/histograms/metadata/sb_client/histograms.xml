@@ -615,7 +615,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.ClipboardCopyApi.PayloadExtraction.IsOverallSuspicious"
-    enum="Boolean" expires_after="2027-02-02">
+    enum="Boolean" expires_after="2027-04-04">
   <owner>liu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1528,7 +1528,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.{Verdict}"
-    units="score" expires_after="2027-01-31">
+    units="score" expires_after="2027-04-04">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1600,7 +1600,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SBClientPhishing.VisualExtractionFrameState"
     enum="SBClientPhishingVisualExtractionFrameState"
-    expires_after="2027-02-01">
+    expires_after="2027-04-04">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

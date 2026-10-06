@@ -2776,7 +2776,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.BrowserAccessibilityCocoa::childrenChanged"
-    units="microseconds" expires_after="2026-12-04">
+    units="microseconds" expires_after="2027-04-04">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2852,7 +2852,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.FinalizingTreeLifecycleStage"
-    units="microseconds" expires_after="2026-12-04">
+    units="microseconds" expires_after="2027-04-04">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
   <owner>lucasradaelli@google.com</owner>
