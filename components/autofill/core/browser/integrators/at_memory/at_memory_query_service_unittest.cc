@@ -779,33 +779,21 @@ TEST_F(AtMemoryQueryServiceTest,
                     ElementsAre(Field(&EntryMetadata::value, u"San Diego"))))));
 }
 
-// Tests that deduplication prefers explicitly saved local Autofill results.
-TEST_F(AtMemoryQueryServiceTest,
-       Query_DeduplicatesResults_PrefersLocalAutofill) {
-  MemorySearchResult remote_result(MemoryDataType::kNameFull, u"Name",
-                                   u"John Doe", /*confidence_score=*/0.9);
-  remote_result.is_local = false;
-
-  MemorySearchResult local_result(MemoryDataType::kNameFull, u"Name",
-                                  u"John Doe", /*confidence_score=*/0.5);
-  local_result.is_local = true;
-
-  // Insert remote first to test tiebreaker overriding the first entry.
-  const MemorySearchResults& result =
-      RunDeduplicationQueryWithLocalResults({remote_result, local_result});
-  EXPECT_THAT(result.entries, ElementsAre(local_result));
-}
-
-// Tests that deduplication prefers results with more non-empty metadata fields.
+// Tests that deduplication prefers results with more non-empty metadata fields,
+// even over local Autofill-sourced results with higher confidence scores.
 TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_PrefersMoreMetadata) {
   MemorySearchResult less_meta(MemoryDataType::kNameFull, u"Name", u"John Doe",
                                /*confidence_score=*/0.9);
+  less_meta.is_local = true;
+  less_meta.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   less_meta.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
                                        u"San Diego");
 
   MemorySearchResult more_meta(MemoryDataType::kNameFull, u"Name", u"John Doe",
                                /*confidence_score=*/0.5);
+  more_meta.is_local = false;
+  more_meta.sources.emplace_back(MemoryEntrySourceType::kGmail);
   more_meta.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
                                        u"San Diego");
   more_meta.metadata_list.emplace_back(MemoryDataType::kAddressState, u"State",
@@ -816,7 +804,8 @@ TEST_F(AtMemoryQueryServiceTest,
   EXPECT_THAT(result.entries, ElementsAre(more_meta));
 }
 
-// Tests that deduplication prefers results sourced from Autofill.
+// Tests that deduplication prefers results sourced from Autofill when metadata
+// counts are equal.
 TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_PrefersAutofillSource) {
   MemorySearchResult gmail_result(MemoryDataType::kNameFull, u"Name",
@@ -831,6 +820,26 @@ TEST_F(AtMemoryQueryServiceTest,
   const MemorySearchResults& result =
       RunDeduplicationQueryWithLocalResults({gmail_result, autofill_result});
   EXPECT_THAT(result.entries, ElementsAre(autofill_result));
+}
+
+// Tests that deduplication prefers higher ranking (confidence score) when
+// metadata counts and sources are equal, rather than prioritizing local
+// entities over server entities.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_PrefersHigherRankingScore) {
+  MemorySearchResult local_result1(MemoryDataType::kNameFull, u"Name",
+                                   u"John Doe", /*confidence_score=*/0.9);
+  local_result1.is_local = false;
+  local_result1.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+
+  MemorySearchResult local_result2(MemoryDataType::kNameFull, u"Name",
+                                   u"John Doe", /*confidence_score=*/0.5);
+  local_result2.is_local = true;
+  local_result2.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({local_result2, local_result1});
+  EXPECT_THAT(result.entries, ElementsAre(local_result1));
 }
 
 // Tests that deduplication for Autofill AI entities is determined by merge
