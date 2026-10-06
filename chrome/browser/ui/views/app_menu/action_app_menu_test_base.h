@@ -51,6 +51,9 @@ class ActionAppMenuTestBase : public ChromeViewsTestBase {
                                  actions::ActionItem*,
                                  actions::ActionInvocationContext)>;
 
+  actions::BaseAction* FindBaseAction(actions::BaseAction* parent,
+                                      actions::ActionId action_id);
+
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockBrowserWindowInterface> mock_window_interface_;
   testing::NiceMock<MockAppMenuDragAndDropHost> mock_drag_and_drop_host_;

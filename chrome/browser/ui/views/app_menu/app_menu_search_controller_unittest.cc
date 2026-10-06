@@ -674,7 +674,7 @@ TEST_F(AppMenuSearchControllerTest,
           .text_override = u"Hide bookmark bar",
       }));
 
-  // Add a non-actionable child (kSearch DisplayType on the delegate ActionItem)
+  // Add a non-actionable child (kSearch DisplayType on the IndirectActionItem)
   // that should be skipped by CanProcessItem().
   bookmarks_submenu->AddChild(AppMenuActionItem::CreateIndirect(
       kActionNewTab, scope_.get(),
@@ -689,9 +689,9 @@ TEST_F(AppMenuSearchControllerTest,
   const auto& items = controller_->search_items_for_testing();
   ASSERT_EQ(items.size(), 1u);
 
-  // Verifies kTextOverrideKey was read from the IndirectActionItem wrapper for
-  // both the leaf title and parent submenu breadcrumb, while kDisplayTypeKey on
-  // the delegate skipped the search item.
+  // Verifies kTextOverrideKey and kDisplayTypeKey were read from the
+  // IndirectActionItem wrapper for the leaf title, parent submenu breadcrumb,
+  // and search filtering.
   EXPECT_EQ(items[0]->GetTitle(), u"Hide bookmark bar");
   EXPECT_EQ(items[0]->GetSecondaryText(), u"Bookmarks and lists");
 }

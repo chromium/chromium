@@ -225,3 +225,20 @@ void ActionAppMenuTestBase::TearDown() {
   actions::ActionManager::Get().ResetActions();
   ChromeViewsTestBase::TearDown();
 }
+
+actions::BaseAction* ActionAppMenuTestBase::FindBaseAction(
+    actions::BaseAction* parent,
+    actions::ActionId action_id) {
+  if (!parent) {
+    return nullptr;
+  }
+  for (const auto& child : parent->GetChildren().children()) {
+    if (child->GetActionItem()->GetActionId() == action_id) {
+      return child.get();
+    }
+    if (actions::BaseAction* found = FindBaseAction(child.get(), action_id)) {
+      return found;
+    }
+  }
+  return nullptr;
+}

@@ -188,17 +188,14 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
       if (recent_tab.action_id().has_value()) {
         action_item = AppMenuActionItem::CreateIndirect(
             recent_tab.action_id().value(),
-            BrowserActions::From(browser_window_interface_)
-                ->root_action_item());
-
-        action_item.get()->GetActionItem()->SetText(recent_tab.title());
-        action_item.get()->GetActionItem()->SetImage(recent_tab.icon());
-        action_item.get()->GetActionItem()->SetProperty(
-            AppMenuActionItem::kContainerColorKey, ui::kColorMenuBackground);
-        if (recent_tab.accelerator().has_value()) {
-          action_item.get()->GetActionItem()->SetAccelerator(
-              recent_tab.accelerator().value());
-        }
+            BrowserActions::From(browser_window_interface_)->root_action_item(),
+            {.container_color = ui::kColorMenuBackground,
+             .text_override = recent_tab.title().empty()
+                                  ? std::nullopt
+                                  : std::make_optional(recent_tab.title()),
+             .icon_override = recent_tab.icon().IsEmpty()
+                                  ? std::nullopt
+                                  : std::make_optional(recent_tab.icon())});
       } else {
         auto builder = actions::ActionItem::Builder();
         builder.SetText(recent_tab.title())

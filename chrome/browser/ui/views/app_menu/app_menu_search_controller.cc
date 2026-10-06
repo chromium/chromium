@@ -68,35 +68,34 @@ AppMenuSearchItem::Type GetSearchItemType(
 // Determines if an action item can be processed for search indexing (must be
 // visible, enabled, and have an actionable or traversable container display
 // type).
-bool CanProcessItem(const actions::ActionItem* action_item) {
-  if (!action_item || !action_item->GetVisible() ||
-      !action_item->GetEnabled()) {
+bool CanProcessItem(actions::BaseAction* action) {
+  if (!action || !action->GetActionItem() ||
+      !action->GetActionItem()->GetVisible() ||
+      !action->GetActionItem()->GetEnabled()) {
     return false;
   }
 
-  return action_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) <
+  return action->GetProperty(AppMenuActionItem::kDisplayTypeKey) <
          AppMenuActionItem::DisplayType::kMaxSearchable;
 }
 
 // Determines if an action item is a submenu or container (e.g. has children or
 // has a dynamic populate callback).
-bool IsSubmenuContainer(const actions::BaseAction* action,
-                        const actions::ActionItem* action_item) {
+bool IsSubmenuContainer(const actions::BaseAction* action) {
   return !action->GetChildren().children().empty() ||
-         action->HasPopulateChildActionsCallback() ||
-         (action_item && action_item->HasPopulateChildActionsCallback());
+         action->HasPopulateChildActionsCallback();
 }
 
 // Extracts the display title for an item with fallback priority:
 // 1. Text override -> 2. ActionItem text -> 3. Tooltip text fallback.
-std::u16string_view ExtractItemTitle(const actions::BaseAction* action,
-                                     const actions::ActionItem* action_item) {
+std::u16string_view ExtractItemTitle(actions::BaseAction* action) {
   const std::u16string* text_override =
       action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   const std::u16string_view raw_text = text_override
                                            ? std::u16string_view(*text_override)
-                                           : action_item->GetText();
-  return raw_text.empty() ? action_item->GetTooltipText() : raw_text;
+                                           : action->GetActionItem()->GetText();
+  return raw_text.empty() ? action->GetActionItem()->GetTooltipText()
+                          : raw_text;
 }
 
 }  // namespace
@@ -165,19 +164,18 @@ void AppMenuSearchController::FlattenHierarchyRecursive(
 
   // Skip invisible, disabled, or non-actionable items (dividers, headers,
   // etc.).
-  actions::ActionItem* const action_item = action->GetActionItem();
-  if (!CanProcessItem(action_item)) {
+  if (!CanProcessItem(action)) {
     return;
   }
 
-  const std::u16string_view title = ExtractItemTitle(action, action_item);
+  const std::u16string_view title = ExtractItemTitle(action);
   const auto& children = action->GetChildren().children();
 
   // Recurse if the node is a container/submenu (even if currently empty).
   // Filter out all submenu headers/containers.
-  if (IsSubmenuContainer(action, action_item)) {
+  if (IsSubmenuContainer(action)) {
     const AppMenuSearchItem::Type next_type =
-        GetSubmenuType(action_item->GetActionId(), current_type);
+        GetSubmenuType(action->GetActionItem()->GetActionId(), current_type);
     const std::u16string_view next_context = title.empty() ? context : title;
 
     for (const auto& child : children) {
@@ -187,8 +185,9 @@ void AppMenuSearchController::FlattenHierarchyRecursive(
   }
 
   if (!title.empty()) {
-    AddSearchItem(action, GetSearchItemType(action_item, current_type), title,
-                  context);
+    AddSearchItem(action,
+                  GetSearchItemType(action->GetActionItem(), current_type),
+                  title, context);
   }
 }
 

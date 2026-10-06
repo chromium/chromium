@@ -117,23 +117,23 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
     return nullptr;
   }
 
-  action->SetProperty(kDisplayTypeKey,
-                      params.display_type.value_or(DisplayType::kRow));
+  auto item = std::make_unique<actions::IndirectActionItem>(action);
+
+  item->SetProperty(kDisplayTypeKey,
+                    params.display_type.value_or(DisplayType::kRow));
 
   if (params.container_color.has_value()) {
-    action->SetProperty(kContainerColorKey, params.container_color.value());
+    item->SetProperty(kContainerColorKey, params.container_color.value());
   }
 
   if (params.is_checkable.has_value()) {
-    action->SetProperty(kIsCheckableKey, params.is_checkable.value());
+    item->SetProperty(kIsCheckableKey, params.is_checkable.value());
   }
 
-  action->SetProperty(kItemHeightKey,
-                      params.item_height.value_or(ItemHeight::kCompact));
+  item->SetProperty(kItemHeightKey,
+                    params.item_height.value_or(ItemHeight::kCompact));
 
-  action->SetProperty(kNewBadgeFeatureKey, params.new_badge_feature.get());
-
-  auto item = std::make_unique<actions::IndirectActionItem>(action);
+  item->SetProperty(kNewBadgeFeatureKey, params.new_badge_feature.get());
 
   if (params.element_id) {
     item->SetProperty(views::kElementIdentifierKey, params.element_id);

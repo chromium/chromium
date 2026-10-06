@@ -2228,8 +2228,12 @@ TEST_F(ActionAppMenuTest, MenuItemNewBadgeProperty) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  actions::ActionItem* print_action = actions::ActionManager::Get().FindAction(
-      kActionPrint, browser_actions_->root_action_item());
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot, browser_actions_->root_action_item());
+  ASSERT_NE(app_menu_root, nullptr);
+
+  actions::BaseAction* print_action =
+      FindBaseAction(app_menu_root, kActionPrint);
   ASSERT_NE(print_action, nullptr);
   print_action->SetProperty(AppMenuActionItem::kNewBadgeFeatureKey,
                             &tabs::kVerticalTabsNewBadge);

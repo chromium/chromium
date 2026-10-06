@@ -74,9 +74,9 @@ bool ShouldRoundBottomCorners(size_t index,
                               const actions::ActionListVector& items) {
   // An item rounds its bottom corners if it is the last non-divider item in
   // its list, if it is a notification item, OR if it is the zoom submenu.
-  actions::ActionItem* const item = items[index]->GetActionItem();
-  if (item->GetActionId() == kActionZoomSubmenu ||
-      item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+  actions::BaseAction* const base_item = items[index].get();
+  if (base_item->GetActionItem()->GetActionId() == kActionZoomSubmenu ||
+      base_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
           AppMenuActionItem::DisplayType::kNotification) {
     return true;
   }
@@ -84,8 +84,8 @@ bool ShouldRoundBottomCorners(size_t index,
     if (!items[i]->GetActionItem()->GetVisible()) {
       continue;
     }
-    const auto display_type = items[i]->GetActionItem()->GetProperty(
-        AppMenuActionItem::kDisplayTypeKey);
+    const auto display_type =
+        items[i]->GetProperty(AppMenuActionItem::kDisplayTypeKey);
     if (display_type != AppMenuActionItem::DisplayType::kDivider &&
         display_type != AppMenuActionItem::DisplayType::kHeader) {
       return false;
@@ -103,8 +103,8 @@ bool ShouldRoundTopCorners(size_t index,
     if (!items[prev_index]->GetActionItem()->GetVisible()) {
       continue;
     }
-    const auto display_type = items[prev_index]->GetActionItem()->GetProperty(
-        AppMenuActionItem::kDisplayTypeKey);
+    const auto display_type =
+        items[prev_index]->GetProperty(AppMenuActionItem::kDisplayTypeKey);
     if (display_type == AppMenuActionItem::DisplayType::kDivider ||
         display_type == AppMenuActionItem::DisplayType::kHeader) {
       continue;
@@ -114,25 +114,25 @@ bool ShouldRoundTopCorners(size_t index,
   return true;
 }
 
-bool SupportsVerticalPadding(const actions::ActionItem* item) {
+bool SupportsVerticalPadding(const actions::BaseAction* item) {
   return item->GetProperty(AppMenuActionItem::kItemHeightKey) ==
          AppMenuActionItem::ItemHeight::kCompact;
 }
 
 bool ShouldAddTopPadding(size_t index, const actions::ActionListVector& items) {
-  if (!SupportsVerticalPadding(items[index]->GetActionItem())) {
+  if (!SupportsVerticalPadding(items[index].get())) {
     return false;
   }
   for (size_t i = index; i > 0; --i) {
-    actions::ActionItem* const prev_item = items[i - 1]->GetActionItem();
+    actions::BaseAction* const prev_base = items[i - 1].get();
     const auto display_type =
-        prev_item->GetProperty(AppMenuActionItem::kDisplayTypeKey);
-    if (!prev_item->GetVisible() ||
+        prev_base->GetProperty(AppMenuActionItem::kDisplayTypeKey);
+    if (!prev_base->GetActionItem()->GetVisible() ||
         display_type == AppMenuActionItem::DisplayType::kDivider ||
         display_type == AppMenuActionItem::DisplayType::kHeader) {
       continue;
     }
-    if (SupportsVerticalPadding(prev_item)) {
+    if (SupportsVerticalPadding(prev_base)) {
       return false;
     }
   }
@@ -141,7 +141,7 @@ bool ShouldAddTopPadding(size_t index, const actions::ActionListVector& items) {
 
 bool ShouldAddBottomPadding(size_t index,
                             const actions::ActionListVector& items) {
-  return SupportsVerticalPadding(items[index]->GetActionItem()) &&
+  return SupportsVerticalPadding(items[index].get()) &&
          ShouldRoundBottomCorners(index, items);
 }
 
@@ -373,13 +373,14 @@ const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
     return nullptr;
   }
 
-  actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
-  CHECK(action_ptr);
-  if (action_ptr->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+  actions::BaseAction* base_action = action_iterator->second;
+  CHECK(base_action);
+  if (base_action->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
       AppMenuActionItem::DisplayType::kHeader) {
     return &views::TypographyProvider::Get().GetFont(
         views::style::CONTEXT_LABEL, views::style::STYLE_HEADLINE_5);
-  } else if (action_ptr->GetActionId() == kActionProfileSubmenu) {
+  } else if (base_action->GetActionItem()->GetActionId() ==
+             kActionProfileSubmenu) {
     return &views::TypographyProvider::Get().GetFont(
         views::style::CONTEXT_MENU, views::style::STYLE_BODY_3_MEDIUM);
   }
@@ -393,9 +394,8 @@ std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
     return std::nullopt;
   }
 
-  actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
-  CHECK(action_ptr);
-  if (action_ptr->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+  actions::BaseAction* base_action = action_iterator->second;
+  if (base_action->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
           AppMenuActionItem::DisplayType::kHeader &&
       root_ && root_->GetSubmenu()->GetColorProvider()) {
     return root_->GetSubmenu()->GetColorProvider()->GetColor(
@@ -563,7 +563,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
     }
 
     const auto display_type =
-        child_ptr->GetProperty(AppMenuActionItem::kDisplayTypeKey);
+        child_base->GetProperty(AppMenuActionItem::kDisplayTypeKey);
 
     if (display_type == AppMenuActionItem::DisplayType::kSearch) {
       PopulateSearchBar(view_parent, child_ptr);
@@ -614,16 +614,16 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
   // Items marked as kCustom lay out their child actions inline in the same row
   // rather than spawning a popup submenu.
   const AppMenuActionItem::DisplayType display_type =
-      action_item->GetProperty(AppMenuActionItem::kDisplayTypeKey);
+      base_action_item->GetProperty(AppMenuActionItem::kDisplayTypeKey);
   const bool has_submenu =
       display_type != AppMenuActionItem::DisplayType::kCustom &&
-      (action_item->GetProperty(AppMenuActionItem::kIsSubmenuKey) ||
+      (base_action_item->GetProperty(AppMenuActionItem::kIsSubmenuKey) ||
        !base_action_item->GetChildren().children().empty());
 
   command_to_action_map_[command_id] = base_action_item;
 
   const bool is_checkable =
-      action_item->GetProperty(AppMenuActionItem::kIsCheckableKey);
+      base_action_item->GetProperty(AppMenuActionItem::kIsCheckableKey);
 
   views::MenuItemView::Type menu_item_type =
       has_submenu ? views::MenuItemView::Type::kSubMenu
@@ -680,7 +680,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   const auto* provider = ChromeLayoutProvider::Get();
   const bool is_notification =
-      action_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+      child_base->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
       AppMenuActionItem::DisplayType::kNotification;
   const int default_icon_size = provider->GetDistanceMetric(
       is_notification ? DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE
@@ -720,7 +720,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   }
 
   if (const base::Feature* new_badge_feature =
-          action_item->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey)) {
+          child_base->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey)) {
     const bool show_new_badge =
         ShouldShowNewBadge(browser_window_interface_, *new_badge_feature);
     menu_item->set_new_badge_type(
@@ -733,7 +733,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   }
 
   int target_item_height = 0;
-  switch (action_item->GetProperty(AppMenuActionItem::kItemHeightKey)) {
+  switch (child_base->GetProperty(AppMenuActionItem::kItemHeightKey)) {
     case AppMenuActionItem::ItemHeight::kCompact:
       target_item_height = provider->GetDistanceMetric(
           DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT);
@@ -756,7 +756,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   menu_item->set_vertical_margin(vertical_padding);
 
   const ui::ColorId container_color =
-      action_item->GetProperty(AppMenuActionItem::kContainerColorKey);
+      child_base->GetProperty(AppMenuActionItem::kContainerColorKey);
 
   // Get the styling from the ActionItem and apply it to its menu item.
   if (container_color != ui::kColorMenuBackground) {
