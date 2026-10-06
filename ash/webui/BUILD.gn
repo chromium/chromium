@@ -50,6 +50,7 @@ test("ash_webui_unittests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//chromeos/ash/components:test_support",
     "//content/test:test_support",
     "//mojo/core/embedder",
     "//ui/accessibility:test_support",
@@ -57,11 +58,6 @@ test("ash_webui_unittests") {
     "//ui/color",
     "//ui/gl",
     "//ui/gl:test_support",
-  ]
-
-  data_deps = [
-    "//chromeos/strings:chromeos_test_strings",
-    "//ui/resources:ui_test_pak_data",
   ]
 }
 

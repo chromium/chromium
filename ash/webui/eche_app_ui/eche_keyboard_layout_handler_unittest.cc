@@ -11,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::eche_app {
 
@@ -74,8 +72,6 @@ class EcheKeyboardLayoutHandlerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     DCHECK(test_web_view_factory_.get());
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     keyboard_handler_ = std::make_unique<EcheKeyboardLayoutHandler>();

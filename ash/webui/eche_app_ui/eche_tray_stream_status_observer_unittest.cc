@@ -18,8 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -61,8 +59,6 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
         /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
     DCHECK(test_web_view_factory_.get());
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     eche_tray_ =
         ash::StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();

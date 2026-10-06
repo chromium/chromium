@@ -38,12 +38,10 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -99,11 +97,6 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-
-    // Need to use test resources instead to have `AshTestBase` work on
-    // //ash/webui.
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
 
     AshTestBase::SetUp();
 

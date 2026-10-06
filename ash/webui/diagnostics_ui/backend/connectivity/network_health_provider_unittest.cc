@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -45,7 +44,6 @@
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::diagnostics {
 
@@ -172,9 +170,6 @@ class NetworkHealthProviderTest : public AshTestBase {
   }
 
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
-
     user_session_test_environment_ =
         std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
     const AccountId account_id =

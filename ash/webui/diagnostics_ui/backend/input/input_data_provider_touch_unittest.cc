@@ -8,9 +8,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 
 namespace ash::diagnostics {
@@ -52,8 +50,6 @@ class InputDataProviderTouchTest : public ash::AshTestBase {
   void SetUp() override {
     input_data_provider_touch_ = std::make_unique<InputDataProviderTouch>();
 
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
   }
 

@@ -22,9 +22,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::shortcut_ui {
 
@@ -35,8 +33,6 @@ class ShortcutsAppManagerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     local_search_service_proxy_ =

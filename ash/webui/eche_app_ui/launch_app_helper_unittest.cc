@@ -21,9 +21,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -84,8 +82,6 @@ class LaunchAppHelperTest : public ash::AshTestBase {
 
   // ash::AshTestBase:
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheSWA},

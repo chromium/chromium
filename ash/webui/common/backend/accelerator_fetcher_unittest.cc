@@ -16,9 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 
@@ -80,8 +78,6 @@ class AcceleratorFetcherTest : public AshTestBase {
   AcceleratorFetcherTest() = default;
 
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     accelerator_lookup_ = Shell::Get()->accelerator_lookup();
     accelerator_fetcher_ = std::make_unique<AcceleratorFetcher>();

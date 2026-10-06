@@ -21,7 +21,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -29,7 +28,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::eche_app {
 
@@ -169,8 +167,6 @@ class EcheSignalerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     DCHECK(test_web_view_factory_.get());
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     eche_connection_status_handler_ =

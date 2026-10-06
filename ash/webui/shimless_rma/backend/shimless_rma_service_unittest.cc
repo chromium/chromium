@@ -34,7 +34,6 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -42,7 +41,6 @@
 #include "components/user_manager/user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 namespace shimless_rma {
@@ -135,9 +133,6 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
     UpdateEngineClient::InitializeFake();
     FakeRmadClientForTest::Initialize();
     rmad_client_ = RmadClient::Get();
-
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
 
     user_session_test_environment_ =
         std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());

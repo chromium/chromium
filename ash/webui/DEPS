@@ -15,7 +15,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\\.cc": [
+  "ash_webui_test_suite\\.cc": [
     "+chromeos/ash/components/test",
   ],
 }

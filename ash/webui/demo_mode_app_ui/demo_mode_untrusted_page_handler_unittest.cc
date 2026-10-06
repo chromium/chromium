@@ -9,13 +9,11 @@
 #include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_untrusted_ui.mojom.h"
 #include "ash/wm/container_finder.h"
 #include "base/test/run_until.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -29,8 +27,6 @@ class MockAppDelegate : public DemoModeAppDelegate {
 class DemoModeUntrustedPageHandlerTest : public AshTestBase {
  public:
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     widget_ = AshTestBase::CreateTestWidget(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET);

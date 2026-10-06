@@ -13,13 +13,10 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_paths.h"
 
 namespace ash {
 
@@ -74,8 +71,6 @@ class AccessibilityFeaturesTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     accessibility_features_ = std::make_unique<AccessibilityFeatures>();

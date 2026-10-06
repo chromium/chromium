@@ -14,9 +14,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -69,8 +67,6 @@ class ShortcutInputProviderTest : public AshTestBase {
   ShortcutInputProviderTest() = default;
 
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     shortcut_input_handler_ = Shell::Get()->shortcut_input_handler();

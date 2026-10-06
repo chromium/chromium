@@ -12,9 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::eche_app {
 
@@ -33,8 +31,6 @@ class EcheStreamOrientationObserverTest : public AshTestBase {
         /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
     DCHECK(test_web_view_factory_.get());
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     eche_tray_ =

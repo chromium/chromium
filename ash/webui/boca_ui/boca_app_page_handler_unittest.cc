@@ -59,7 +59,6 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/content_settings/core/browser/content_settings_policy_provider.h"
@@ -88,7 +87,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
-#include "ui/base/resource/resource_bundle.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -3018,15 +3016,7 @@ TEST_F(BocaAppPageHandlerProducerTest, SetViewScreenSessionActiveFailed) {
       google_apis::ApiErrorCode::HTTP_FORBIDDEN, 1);
 }
 
-class BocaAppPageHandlerFloatModeTest : public AshTestBase {
- public:
-  BocaAppPageHandlerFloatModeTest() = default;
-  void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
-    AshTestBase::SetUp();
-  }
-};
+using BocaAppPageHandlerFloatModeTest = AshTestBase;
 
 TEST_F(BocaAppPageHandlerFloatModeTest, SetFloatModeTest) {
   UpdateDisplay("1366x768");
@@ -4146,8 +4136,6 @@ class BocaAppPageHandlerProducerMarkerModeTest : public AshTestBase {
  public:
   BocaAppPageHandlerProducerMarkerModeTest() = default;
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     AnnotatorController* annotator_controller =

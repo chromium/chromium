@@ -25,7 +25,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
@@ -33,7 +32,6 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::diagnostics {
 
@@ -228,8 +226,6 @@ class SystemRoutineControllerTest : public AshTestBase {
   ~SystemRoutineControllerTest() override = default;
 
   void SetUp() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     cros_healthd::FakeCrosHealthd::Initialize();
     auto delegate = std::make_unique<FakeSystemRoutineControllerDelegate>();

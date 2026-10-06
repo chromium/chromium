@@ -5,35 +5,11 @@
 #include "ash/webui/ash_webui_test_suite.h"
 
 #include "ash/constants/ash_paths.h"
-#include "base/base_paths.h"
-#include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/gl/test/gl_surface_test_support.h"
-
-namespace {
-
-// Initializes the i18n stack and loads the necessary strings. The locale is
-// already pinned to en-US by base::TestSuite, so that the tests can compare
-// against golden strings without depending on the environment.
-void InitI18n() {
-  ui::RegisterPathProvider();
-
-  base::FilePath ui_test_pak_path;
-  ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
-  ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
-
-  base::FilePath dir_assets_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &dir_assets_path));
-  base::FilePath chromeos_test_strings_path =
-      dir_assets_path.Append(FILE_PATH_LITERAL("chromeos_test_strings.pak"));
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      chromeos_test_strings_path, ui::kScaleFactorNone);
-}
-
-}  // namespace
 
 AshWebUITestSuite::AshWebUITestSuite(int argc, char** argv)
     : TestSuite(argc, argv) {}
@@ -45,7 +21,8 @@ void AshWebUITestSuite::Initialize() {
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
-  InitI18n();
+  ui::RegisterPathProvider();
+  ash::AshTestSuite::LoadTestResources();
 
   ash::RegisterPathProvider();
   CHECK(user_data_dir_.CreateUniqueTempDir());

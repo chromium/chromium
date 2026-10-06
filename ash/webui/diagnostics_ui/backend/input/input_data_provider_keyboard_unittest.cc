@@ -19,9 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event.h"
@@ -115,8 +113,6 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
 
     InitInputDeviceInformation(ui::kEveKeyboard);
 
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);

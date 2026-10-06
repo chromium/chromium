@@ -46,7 +46,6 @@
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -659,8 +658,6 @@ class InputDataProviderTest : public AshTestBase {
     scoped_feature_list_->InitAndEnableFeature(
         features::kEnableExternalKeyboardsInDiagnostics);
 
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     // Note: some init for creating widgets is performed in base SetUp

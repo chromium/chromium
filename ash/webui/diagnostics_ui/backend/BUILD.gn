@@ -117,7 +117,6 @@ source_set("unit_tests") {
     "//ash/webui/diagnostics_ui/mojom",
     "//base",
     "//base/test:test_support",
-    "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/login/login_state",
