@@ -766,10 +766,10 @@ constexpr NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
                                              DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf signinForImportFinishedWithCoordinator:coordinator
-                                                identity:identity];
+                                                identity:result.value_or(nil)];
       };
   [_signinCoordinator start];
 }

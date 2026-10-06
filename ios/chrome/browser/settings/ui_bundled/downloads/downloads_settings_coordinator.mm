@@ -187,13 +187,12 @@
                                    prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
-  _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> signinIdentity) {
-        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator
-                                                      result:result
-                                              signinIdentity:signinIdentity];
-      };
+  _signinCoordinator.signinCompletion = ^(
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity result) {
+    [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator
+                                          signinIdentity:result.value_or(nil)];
+  };
   [_signinCoordinator start];
 }
 
@@ -206,12 +205,11 @@
 
 - (void)
     signinCoordinatorCompletionWithCoordinator:(SigninCoordinator*)coordinator
-                                        result:(SigninCoordinatorResult)result
                                 signinIdentity:
                                     (id<SystemIdentity>)signinIdentity {
   CHECK_EQ(_signinCoordinator, coordinator);
   [self stopSigninCoordinator];
-  if (result == SigninCoordinatorResultSuccess && signinIdentity) {
+  if (signinIdentity) {
     GaiaId gaiaID = signinIdentity.gaiaId;
     [_saveToPhotosSettingsMediator setSelectedIdentityGaiaID:&gaiaID];
   }

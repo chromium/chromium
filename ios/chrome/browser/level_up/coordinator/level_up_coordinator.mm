@@ -417,8 +417,7 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinator* coordinator,
-                          SigninCoordinatorResult result,
-                          id<SystemIdentity> identity) {
+                          SigninCoordinatorResultOrIdentity result) {
                [weakSelf handleSignInResult:result];
              }];
   id<SceneSignInCommands> sceneSignInHandler = HandlerForProtocol(
@@ -428,8 +427,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 }
 
 // Handles completed sign in request after non-signed in user accepts Level Up.
-- (void)handleSignInResult:(SigninCoordinatorResult)result {
-  if (result == SigninCoordinatorResultSuccess) {
+- (void)handleSignInResult:(SigninCoordinatorResultOrIdentity)result {
+  if (result.has_value()) {
     _prefService->SetBoolean(prefs::kLevelUpOptIn, true);
     [self showLevelUp];
   } else {

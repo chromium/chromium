@@ -231,8 +231,8 @@ using signin_metrics::PromoAction;
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> completionIdentity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf addAccountToDeviceCompletedWithCoordinator:coordinator];
       };
   [_addAccountSigninCoordinator start];

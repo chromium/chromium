@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -255,10 +256,13 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
                 continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       _signinCoordinator.signinCompletion =
-          ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-            id<SystemIdentity>) {
+          ^(SigninCoordinator* coordinator,
+            SigninCoordinatorResultOrIdentity result) {
+            SigninCoordinatorResult signinResult = signin::
+                SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+                    result);
             [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
-                                                         result:result];
+                                                         result:signinResult];
           };
       [_signinCoordinator start];
       return;
@@ -274,10 +278,13 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
                 continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       _signinCoordinator.signinCompletion =
-          ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-            id<SystemIdentity>) {
+          ^(SigninCoordinator* coordinator,
+            SigninCoordinatorResultOrIdentity result) {
+            SigninCoordinatorResult signinResult = signin::
+                SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+                    result);
             [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
-                                                         result:result];
+                                                         result:signinResult];
           };
       [_signinCoordinator start];
       return;

@@ -415,8 +415,7 @@ TEST_F(BrowserCoordinatorTest, TestPrimaryAccountReauthCompletion) {
 
   OCMExpect([signin_mock stop]);
   signin_coordinator_callback(
-      signin_mock, SigninCoordinatorResult::SigninCoordinatorResultSuccess,
-      nil);
+      signin_mock, base::unexpected(SigninCoordinatorResultInterrupted));
   EXPECT_TRUE(completion_was_called);
 
   [browser_coordinator stop];

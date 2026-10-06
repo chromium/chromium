@@ -236,11 +236,14 @@
                                  _changeProfileContinuationProvider];
   __weak __typeof(self) weakSelf = self;
   self.addAccountSigninCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
-      id<SystemIdentity> signinCompletionIdentity) {
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity result) {
+    SigninCoordinatorResult signinResult =
+        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+            result);
     [weakSelf addAccountSigninCompleteWithCoordinator:coordinator
                                          signinResult:signinResult
-                                   completionIdentity:signinCompletionIdentity];
+                                   completionIdentity:result.value_or(nil)];
   };
   [self.addAccountSigninCoordinator start];
 }

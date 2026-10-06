@@ -426,14 +426,17 @@
                                    prefilledEmail:nil
                              continuationProvider:_continuationProvider];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
-  self.addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
-        id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf addAccountCompletionWithCoordinator:coordinator
-                                         SigninResult:signinResult
-                                   completionIdentity:signinCompletionIdentity
-                                          hasAccounts:hasAccounts];
-      };
+  self.addAccountCoordinator.signinCompletion = ^(
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity result) {
+    SigninCoordinatorResult signinResult =
+        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+            result);
+    [weakSelf addAccountCompletionWithCoordinator:coordinator
+                                     SigninResult:signinResult
+                               completionIdentity:result.value_or(nil)
+                                      hasAccounts:hasAccounts];
+  };
   [self.addAccountCoordinator start];
 }
 

@@ -251,19 +251,19 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
   }
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf signinDidFinishWithResult:result];
       };
   [_signinCoordinator start];
 }
 
 // Called when sign-in completes or is cancelled.
-- (void)signinDidFinishWithResult:(SigninCoordinatorResult)result {
+- (void)signinDidFinishWithResult:(SigninCoordinatorResultOrIdentity)result {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
 
-  if (result != SigninCoordinatorResultSuccess) {
+  if (!result.has_value()) {
     [self finishWithResult:kGeminiEntryFlowResultCancelled];
     return;
   }

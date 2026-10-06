@@ -377,14 +377,17 @@ using signin_metrics::PromoAction;
                                 continuationProvider:_continuationProvider];
 
   __weak AddAccountSigninCoordinator* weakSelf = self;
-  self.postSigninManagerCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
-        id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf postSigninManagerCoordinatorDoneWithCoordinator:coordinator
-                                                           result:signinResult
-                                         signinCompletionIdentity:
-                                             signinCompletionIdentity];
-      };
+  self.postSigninManagerCoordinator.signinCompletion = ^(
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity result) {
+    SigninCoordinatorResult signinResult =
+        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+            result);
+    [weakSelf
+        postSigninManagerCoordinatorDoneWithCoordinator:coordinator
+                                                 result:signinResult
+                               signinCompletionIdentity:result.value_or(nil)];
+  };
   [self.postSigninManagerCoordinator start];
 }
 

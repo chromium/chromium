@@ -330,8 +330,8 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninOnly
             accessPoint:signin_metrics::AccessPoint::kAgeMismatchSignout];
-  [command addSigninCompletion:^(SigninCoordinator*, SigninCoordinatorResult,
-                                 id<SystemIdentity>){
+  [command addSigninCompletion:^(SigninCoordinator*,
+                                 SigninCoordinatorResultOrIdentity){
       // The completion is required by the API, this is a rare case where there
       // is no action to do once being signed in.
   }];

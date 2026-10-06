@@ -95,11 +95,10 @@ TEST_F(AddAccountSigninCoordinatorTest, StopCoordinatorWhileShowingErrorAlert) {
   OCMExpect([add_account_signin_manager_mock_
       showSigninWithIntent:AddAccountSigninIntent::kAddAccount]);
   __block BOOL signinCompletionCalled = NO;
-  coordinator_.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
-        signinCompletionCalled = YES;
-      };
+  coordinator_.signinCompletion = ^(SigninCoordinator* coordinator,
+                                    SigninCoordinatorResultOrIdentity result) {
+    signinCompletionCalled = YES;
+  };
   [coordinator_ start];
   // Generate an error from AddAccountSigninManager.
   base::RunLoop run_loop1;

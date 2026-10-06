@@ -10,6 +10,7 @@
 #import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "components/collaboration/public/collaboration_controller_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
 @class AlertCoordinator;
@@ -143,10 +144,10 @@ class IOSCollaborationControllerDelegate
                                ResultCallback result);
 
   // Called when the authentication ui flow is complete.
-  void OnAuthenticationComplete(ResultCallback result,
-                                SigninCoordinator* coordinator,
-                                SigninCoordinatorResult sign_in_result,
-                                id<SystemIdentity> completion_info);
+  void OnAuthenticationComplete(
+      ResultCallback result,
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity sign_in_result);
 
   // Called when the join flow has successfully joined the collaboration group,
   // but the tab group hasn't been sync'ed yet. `dismiss_join_screen` needs to

@@ -69,8 +69,8 @@ class SigninCoordinatorTest : public PlatformTest {
 
     // signinCompletion must be set before start.
     coordinator_.signinCompletion =
-        ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-          id<SystemIdentity> identity) {
+        ^(SigninCoordinator* coordinator,
+          SigninCoordinatorResultOrIdentity result) {
         };
   }
 

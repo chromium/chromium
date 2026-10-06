@@ -2130,9 +2130,9 @@ const char kContextPanelDismissedHistogram[] =
   __weak __typeof(_promosManagerCoordinator) weakPromosManagerCoordinator =
       _promosManagerCoordinator;
   [HandlerForProtocol(self.dispatcher, SceneSignInCommands)
-      showFullscreenSigninPromoWithCompletion:^(SigninCoordinator* coordinator,
-                                                SigninCoordinatorResult result,
-                                                id<SystemIdentity>) {
+      showFullscreenSigninPromoWithCompletion:^(
+          SigninCoordinator* coordinator,
+          SigninCoordinatorResultOrIdentity result) {
         [weakPromosManagerCoordinator promoWasDismissed];
       }];
 }

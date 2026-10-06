@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -175,13 +176,14 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
   __block SigninCoordinatorResult coordinator_result;
   __block id<SystemIdentity> signed_in_identity = nil;
   __block bool signin_completion_called = false;
-  coordinator_.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
-        coordinator_result = result;
-        signed_in_identity = identity;
-        signin_completion_called = true;
-      };
+  coordinator_.signinCompletion = ^(SigninCoordinator* coordinator,
+                                    SigninCoordinatorResultOrIdentity result) {
+    coordinator_result =
+        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+            result);
+    signed_in_identity = result.value_or(nil);
+    signin_completion_called = true;
+  };
   StartCoordinator();
   // Simulate cancel from the user.
   OCMExpect([base_view_controller_mock_

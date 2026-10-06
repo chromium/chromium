@@ -260,8 +260,7 @@
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinator* coordinator,
-                          SigninCoordinatorResult result,
-                          id<SystemIdentity> completionIdentity) {
+                          SigninCoordinatorResultOrIdentity result) {
                [coordinator stop];
                __strong __typeof(weakSelf) strongSelf = weakSelf;
                if (strongSelf) {

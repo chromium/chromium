@@ -439,13 +439,12 @@ void ConfirmChangeProfileWithCompletion(
 }
 
 - (void)addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
-                                     result:(SigninCoordinatorResult)result
-                         completionIdentity:
-                             (id<SystemIdentity>)completionIdentity {
+                                     result:(SigninCoordinatorResultOrIdentity)
+                                                result {
   CHECK_EQ(_addAccountCoordinator, coordinator);
-  if (result == SigninCoordinatorResultSuccess) {
-    CHECK(completionIdentity);
-    [self addAndSelectNewIdentity:completionIdentity];
+  if (result.has_value()) {
+    CHECK(result.value());
+    [self addAndSelectNewIdentity:result.value()];
   } else {
     [self reportAddingIdentityFailure];
   }
@@ -471,13 +470,11 @@ void ConfirmChangeProfileWithCompletion(
                                    prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
-  _addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> completionIdentity) {
-        [weakSelf addAccountCompletionWithCoordinator:coordinator
-                                               result:result
-                                   completionIdentity:completionIdentity];
-      };
+  _addAccountCoordinator.signinCompletion = ^(
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity result) {
+    [weakSelf addAccountCompletionWithCoordinator:coordinator result:result];
+  };
   [_addAccountCoordinator start];
 }
 
@@ -494,9 +491,8 @@ void ConfirmChangeProfileWithCompletion(
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinator* coordinator,
-                          SigninCoordinatorResult result,
-                          id<SystemIdentity> identity) {
-               [weakSelf handleSignInResult:result identity:identity];
+                          SigninCoordinatorResultOrIdentity result) {
+               [weakSelf handleSignInResult:result];
              }];
   command.confirmChangeProfile = ^(void (^completion)(BOOL)) {
     ConfirmChangeProfileWithCompletion(weakSelf, completion);
@@ -508,12 +504,14 @@ void ConfirmChangeProfileWithCompletion(
   [_signinCoordinator start];
 }
 
-- (void)handleSignInResult:(SigninCoordinatorResult)result
-                  identity:(id<SystemIdentity>)identity {
+- (void)handleSignInResult:(SigninCoordinatorResultOrIdentity)result {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
-  [_metricsHelper reportDriveSignInResult:result];
-  if (result == SigninCoordinatorResultSuccess) {
+  [_metricsHelper
+      reportDriveSignInResult:
+          signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+              result)];
+  if (result.has_value()) {
     [self startRootFilePicker];
     return;
   }

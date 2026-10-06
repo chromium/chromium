@@ -418,8 +418,9 @@ using signin_metrics::PromoAction;
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
-  signin::CheckSigninCoordinatorResultAndIdentity(signinResult,
-                                                  completionIdentity);
+  SigninCoordinatorResultOrIdentity result =
+      signin::SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
+          signinResult, completionIdentity);
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
   CHECK(self.signinCompletion);
@@ -427,7 +428,7 @@ using signin_metrics::PromoAction;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
-  signinCompletion(self, signinResult, completionIdentity);
+  signinCompletion(self, result);
 }
 
 #pragma mark - BuggyAuthenticationViewOwner

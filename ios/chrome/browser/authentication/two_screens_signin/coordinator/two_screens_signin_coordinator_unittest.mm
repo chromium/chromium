@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -112,10 +113,13 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
                                        PROMO_ACTION_NO_SIGNIN_PROMO
               continuationProvider:NotReachedContinuationProvider()];
     coordinator_.signinCompletion = ^(
-        SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
-        id<SystemIdentity> signinCompletionIdentity) {
-      EXPECT_EQ(signinResult, expected_result);
-      EXPECT_EQ(expected_signin_completion_identity, signinCompletionIdentity);
+        SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+      EXPECT_EQ(
+          signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
+              result),
+          expected_result);
+      EXPECT_EQ(expected_signin_completion_identity, result.value_or(nil));
       StopCoordinator();
       completion_block_done_ = true;
     };

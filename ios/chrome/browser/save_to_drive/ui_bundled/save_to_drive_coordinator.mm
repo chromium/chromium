@@ -316,9 +316,8 @@
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinator* coordinator,
-                          SigninCoordinatorResult result,
-                          id<SystemIdentity> identity) {
-               [weakSelf doSigninCompletionWithResult:result identity:identity];
+                          SigninCoordinatorResultOrIdentity result) {
+               [weakSelf doSigninCompletionWithResult:result];
              }];
   command.confirmChangeProfile = ^(void (^completion)(BOOL)) {
     [weakSelf confirmChangeProfileWithCompletion:completion];
@@ -330,16 +329,16 @@
   [_signinCoordinator start];
 }
 
-- (void)doSigninCompletionWithResult:(SigninCoordinatorResult)result
-                            identity:(id<SystemIdentity>)identity {
+- (void)doSigninCompletionWithResult:(SigninCoordinatorResultOrIdentity)result {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
-  switch (result) {
-    case SigninCoordinatorResultSuccess:
-      base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
-                                    SaveToDriveSignInResult::kSignInSuccess);
-      [_mediator saveWithSelectedIdentity:identity];
-      return;
+  if (result.has_value()) {
+    base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
+                                  SaveToDriveSignInResult::kSignInSuccess);
+    [_mediator saveWithSelectedIdentity:result.value()];
+    return;
+  }
+  switch (result.error()) {
     case SigninCoordinatorResultCanceledByUser:
       base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
                                     SaveToDriveSignInResult::kSignInCanceled);

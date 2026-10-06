@@ -578,15 +578,14 @@ void IOSCollaborationControllerDelegate::ShowLeaveOrDeleteDialog(
 void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
     SigninCoordinator* coordinator,
-    SigninCoordinatorResult sign_in_result,
-    id<SystemIdentity> completion_info) {
+    SigninCoordinatorResultOrIdentity sign_in_result) {
   StopSigninCoordinator();
-  if (sign_in_result == SigninCoordinatorResultCanceledByUser) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kCancel);
-    return;
-  }
+  if (!sign_in_result.has_value()) {
+    if (sign_in_result.error() == SigninCoordinatorResultCanceledByUser) {
+      std::move(result).Run(CollaborationControllerDelegate::Outcome::kCancel);
+      return;
+    }
 
-  if (sign_in_result != SigninCoordinatorResultSuccess) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
     return;
   }

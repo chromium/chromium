@@ -392,8 +392,8 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
                                  DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
-        id<SystemIdentity> signinCompletionIdentity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_addAccountSigninCoordinator start];

@@ -1159,8 +1159,8 @@ using ntp_tiles::AimButtonRefactorArm;
                                          continuationProvider:
                                              DoNothingContinuationProvider()];
     _signinCoordinator.signinCompletion =
-        ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-          id<SystemIdentity> completionIdentity) {
+        ^(SigninCoordinator* coordinator,
+          SigninCoordinatorResultOrIdentity result) {
           [weakSelf showSigninCommandDidFinishWithCoordinator:coordinator];
         };
     [_signinCoordinator start];
@@ -1231,21 +1231,21 @@ using ntp_tiles::AimButtonRefactorArm;
       // because the part that check the coordinator value is in the
       // `addSigninCompletion:` below, and so not integrated in the completion
       // function yet.
-      completion(nil, SigninCoordinatorResultInterrupted, nil);
+      completion(nil, base::unexpected(SigninCoordinatorResultInterrupted));
     }
     return;
   } else if (_signinCoordinator) {
     // There may be a signin-coordinator being presented. Due to uncertainty,
     // let’s close the current sign-in coordinator and start the new one.
     _signinCoordinator.signinCompletion(
-        _signinCoordinator, SigninCoordinatorResultInterrupted, nil);
+        _signinCoordinator,
+        base::unexpected(SigninCoordinatorResultInterrupted));
     // The signin-completion should have unset the sign-in coordinator.
     CHECK(!_signinCoordinator);
   }
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinator* coordinator,
-                                 SigninCoordinatorResult result,
-                                 id<SystemIdentity>) {
+                                 SigninCoordinatorResultOrIdentity result) {
     [weakSelf showSigninCommandDidFinishWithCoordinator:coordinator];
   }];
   _signinCoordinator =
@@ -1455,8 +1455,8 @@ using ntp_tiles::AimButtonRefactorArm;
                                       DoNothingContinuationProvider()];
   }
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> completionIdentity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf showSigninCommandDidFinishWithCoordinator:coordinator];
       };
   [_signinCoordinator start];

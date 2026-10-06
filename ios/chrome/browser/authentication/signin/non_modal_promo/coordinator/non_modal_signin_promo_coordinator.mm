@@ -300,8 +300,8 @@ constexpr CGFloat kLogoSize = 22;
                                            DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf actionCallbackWithCoordinator:coordinator];
       };
   [_signinCoordinator start];

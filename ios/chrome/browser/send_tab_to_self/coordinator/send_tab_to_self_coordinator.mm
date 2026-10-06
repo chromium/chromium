@@ -458,9 +458,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 - (void)showSigninPromo {
   __weak __typeof(self) weakSelf = self;
   SigninCoordinatorCompletionCallback completion = ^(
-      SigninCoordinator* coordinator, SigninCoordinatorResult result,
-      id<SystemIdentity> completionIdentity) {
-    BOOL succeeded = result == SigninCoordinatorResultSuccess;
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity result) {
+    BOOL succeeded = result.has_value();
     [weakSelf onSigninCompleteWithCoordinator:coordinator succeeded:succeeded];
   };
   ChangeProfileContinuationProvider provider = base::BindRepeating(

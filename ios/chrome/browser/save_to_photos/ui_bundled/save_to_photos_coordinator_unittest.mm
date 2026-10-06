@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
@@ -246,8 +247,13 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
     base::HistogramTester histogram_tester;
 
     ASSERT_TRUE(signin_completion);
-    signin_completion(signin_coordinator, simulated_signin_result,
-                      fake_identity_);
+    signin_completion(
+        signin_coordinator,
+        signin::SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
+            simulated_signin_result,
+            simulated_signin_result == SigninCoordinatorResultSuccess
+                ? fake_identity_
+                : nil));
 
     histogram_tester.ExpectUniqueSample(kSaveToPhotosSignInResultHistogram,
                                         expected_histogram, 1);

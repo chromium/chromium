@@ -134,10 +134,10 @@
             continuationProvider:DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf addAccountDoneWithSigninCoordinator:coordinator
-                                             identity:identity];
+                                             identity:result.value_or(nil)];
       };
   [_addAccountSigninCoordinator start];
 }

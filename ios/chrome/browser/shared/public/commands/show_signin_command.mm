@@ -152,11 +152,11 @@
   CHECK(completion);
   SigninCoordinatorCompletionCallback firstCompletion = self.completion;
   _completion = ^(SigninCoordinator* coordinator,
-                  SigninCoordinatorResult result, id<SystemIdentity> identity) {
+                  SigninCoordinatorResultOrIdentity result) {
     if (firstCompletion) {
-      firstCompletion(coordinator, result, identity);
+      firstCompletion(coordinator, result);
     }
-    completion(coordinator, result, identity);
+    completion(coordinator, result);
   };
 }
 

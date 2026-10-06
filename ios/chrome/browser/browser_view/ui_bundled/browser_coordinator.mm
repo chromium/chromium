@@ -1944,8 +1944,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
                                  DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
@@ -2513,8 +2513,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
 
         if (completion) {
@@ -2636,8 +2636,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
                                           DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
         [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
