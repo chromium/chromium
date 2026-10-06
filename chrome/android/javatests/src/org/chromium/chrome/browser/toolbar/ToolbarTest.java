@@ -53,13 +53,13 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.R;
@@ -108,6 +108,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.UiAndroidFeatures;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for toolbar manager behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -735,8 +736,10 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @EnableFeatures({UiAndroidFeatures.MAXIMUM_WINDOW_FOR_GESTURE_NAV_DETECTION})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/570134281
+    // Predictive back gesture navigation requires Android U+ and is not used on desktop or
+    // automotive devices.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBackPressCancelledOnTabNull() throws Exception {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
