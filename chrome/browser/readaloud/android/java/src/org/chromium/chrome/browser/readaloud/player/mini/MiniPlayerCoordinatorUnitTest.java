@@ -5,20 +5,24 @@
 package org.chromium.chrome.browser.readaloud.player.mini;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -52,25 +57,21 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MiniPlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MiniPlayerCoordinatorUnitTest {
     private static final String TITLE = "Title";
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
 
-    @Mock private Activity mActivity;
-    @Mock private Context mContextForInflation;
-    @Mock private LayoutInflater mLayoutInflater;
-    @Mock private ViewStub mViewStub;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private LayoutManager mLayoutManager;
-    @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
     @Mock private ReadAloudMiniPlayerSceneLayer mSceneLayer;
     @Mock private PlayerCoordinator mPlayerCoordinator;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private View mView;
+    private Activity mActivity;
+    private FrameLayout mContentView;
+    private MiniPlayerLayout mLayout;
     private PropertyModel mSharedModel;
     private PropertyModel mModel;
 
@@ -78,11 +79,17 @@ public class MiniPlayerCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        doReturn(mLayout).when(mViewStub).inflate();
-        doReturn(mViewStub).when(mActivity).findViewById(eq(R.id.readaloud_mini_player_stub));
-        doReturn(mLayoutInflater)
-                .when(mContextForInflation)
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContentView = new FrameLayout(mActivity);
+        mActivity.setContentView(mContentView);
+        mLayout =
+                (MiniPlayerLayout)
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(
+                                        R.layout.readaloud_mini_player_layout, mContentView, false);
+        mContentView.addView(mLayout);
         mSharedModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
         mModel = new PropertyModel.Builder(Properties.ALL_KEYS).build();
         ReadAloudMiniPlayerSceneLayerJni.setInstanceForTesting(mSceneLayerNativeMock);
@@ -91,7 +98,7 @@ public class MiniPlayerCoordinatorUnitTest {
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mCoordinator =
                 new MiniPlayerCoordinator(
-                        mContextForInflation,
+                        mActivity,
                         mSharedModel,
                         mMediator,
                         mLayout,
@@ -105,19 +112,24 @@ public class MiniPlayerCoordinatorUnitTest {
     @Test
     public void testViewInflated() {
         // Test the real constructor
-        reset(mViewStub);
-        doReturn(mLayout).when(mViewStub).inflate();
+        ViewStub viewStub = new ViewStub(mActivity, R.layout.readaloud_mini_player_layout);
+        viewStub.setId(R.id.readaloud_mini_player_stub);
+        mContentView.addView(viewStub);
         mCoordinator =
                 new MiniPlayerCoordinator(
                         mActivity,
-                        mContextForInflation,
+                        mActivity,
                         mSharedModel,
                         mBottomControlsStacker,
                         mLayoutManager,
                         mPlayerCoordinator,
                         mUserEducationHelper,
                         /* sideUiStateProviderSupplier= */ null);
-        verify(mViewStub).inflate();
+        // The stub was replaced by the inflated layout.
+        assertNull(viewStub.getParent());
+        assertTrue(
+                mContentView.getChildAt(mContentView.getChildCount() - 1)
+                        instanceof MiniPlayerLayout);
         verify(mLayoutManager).addSceneOverlay(eq(mSceneLayer));
     }
 
@@ -126,8 +138,6 @@ public class MiniPlayerCoordinatorUnitTest {
         mCoordinator.show(/* animate= */ false);
         verify(mMediator).show(eq(false));
 
-        // Second show() shouldn't inflate the stub again.
-        reset(mViewStub);
         mCoordinator.show(/* animate= */ false);
         verify(mMediator, times(2)).show(eq(false));
     }
@@ -138,7 +148,7 @@ public class MiniPlayerCoordinatorUnitTest {
         mCoordinator.onShown(/* iphAnchorView= */ null);
         verify(mUserEducationHelper, never()).requestShowIph(any(IphCommand.class));
 
-        mCoordinator.onShown(mView);
+        mCoordinator.onShown(new View(mActivity));
         verify(mUserEducationHelper).requestShowIph(any(IphCommand.class));
     }
 
@@ -159,47 +169,51 @@ public class MiniPlayerCoordinatorUnitTest {
     public void testBindPlaybackState() {
         mCoordinator.show(/* animate= */ true);
         mSharedModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PLAYING);
-        verify(mLayout).onPlaybackStateChanged(eq(PlaybackListener.State.PLAYING));
+        assertEquals(
+                mActivity.getString(R.string.readaloud_pause),
+                mLayout.findViewById(R.id.play_button).getContentDescription());
     }
 
     @Test
     public void testBindTitle() {
         mCoordinator.show(/* animate= */ true);
         mSharedModel.set(PlayerProperties.TITLE, TITLE);
-        verify(mLayout).setTitle(eq(TITLE));
+        assertEquals(TITLE, ((TextView) mLayout.findViewById(R.id.title)).getText().toString());
     }
 
     @Test
     public void testBindSubtitle() {
         mCoordinator.show(/* animate= */ true);
         mSharedModel.set(PlayerProperties.PLAYBACK_MODE, PlaybackMode.OVERVIEW.getValue());
-        verify(mLayout).setPlaybackMode(eq(PlaybackMode.OVERVIEW));
+        assertEquals(
+                mActivity.getString(R.string.readaloud_chrome_now_playing_audio_overview),
+                ((TextView) mLayout.findViewById(R.id.subtitle)).getText().toString());
     }
 
     @Test
     public void testBindProgress() {
         mCoordinator.show(/* animate= */ true);
         mSharedModel.set(PlayerProperties.PROGRESS, 0.5f);
-        verify(mLayout).setProgress(eq(0.5f));
+        ProgressBar progressBar = mLayout.findViewById(R.id.progress_bar);
+        assertEquals((int) (0.5f * progressBar.getMax()), progressBar.getProgress());
     }
 
     @Test
     public void testBindYOffset() {
         mCoordinator.show(/* animate= */ true);
         mModel.set(Properties.Y_OFFSET, -100);
-        verify(mLayout).setYOffset(eq(-100));
+        assertEquals(100, ((MarginLayoutParams) mLayout.getLayoutParams()).bottomMargin);
     }
 
     @Test
     public void testSideUiStateProviderRegistration() {
         OneshotSupplierImpl<SideUiStateProvider> supplier = new OneshotSupplierImpl<>();
         SideUiStateProvider provider = Mockito.mock(SideUiStateProvider.class);
-        MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
-        doReturn(layoutParams).when(mLayout).getLayoutParams();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mLayout.getLayoutParams();
 
         mCoordinator =
                 new MiniPlayerCoordinator(
-                        mContextForInflation,
+                        mActivity,
                         mSharedModel,
                         mMediator,
                         mLayout,

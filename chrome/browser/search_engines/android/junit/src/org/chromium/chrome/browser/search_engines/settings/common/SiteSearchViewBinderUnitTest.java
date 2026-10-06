@@ -5,15 +5,18 @@
 package org.chromium.chrome.browser.search_engines.settings.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,25 +48,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link SiteSearchViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SiteSearchViewBinderUnitTest {
     private static final float TOLERANCE = 0.001f;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mView;
-    @Mock private TextView mTitleView;
-    @Mock private TextView mShortcutView;
-    @Mock private ImageView mIconView;
-    @Mock private TextView mTextView;
-    @Mock private ImageView mActionIconView;
-    @Mock private ListMenuButton mMenuButtonView;
-    @Mock private Bitmap mBitmap;
     @Mock private View.OnClickListener mOnClickListener;
     @Mock private ListMenuDelegate mMenuDelegate;
     @Mock private RecyclerView.Adapter mAdapter;
     @Mock private SearchEngineListPreference mPreference;
 
     private Context mContext;
+    private FrameLayout mView;
+    private TextView mTitleView;
+    private TextView mShortcutView;
+    private ImageView mIconView;
+    private TextView mTextView;
+    private ImageView mActionIconView;
+    private ListMenuButton mMenuButtonView;
     private PropertyModel mModel;
     private SiteSearchViewBinder.ViewHolder mViewHolder;
 
@@ -74,18 +75,24 @@ public class SiteSearchViewBinderUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
-        when(mView.findViewById(R.id.name)).thenReturn(mTitleView);
-        when(mView.findViewById(R.id.shortcut)).thenReturn(mShortcutView);
-        when(mView.findViewById(R.id.favicon)).thenReturn(mIconView);
-        when(mView.findViewById(R.id.text)).thenReturn(mTextView);
-        when(mView.findViewById(R.id.action_icon)).thenReturn(mActionIconView);
-        when(mView.findViewById(R.id.overflow_menu_button)).thenReturn(mMenuButtonView);
-        when(mView.getContext()).thenReturn(mContext);
+        mView = new FrameLayout(mContext);
+        mTitleView = addChild(new TextView(mContext), R.id.name);
+        mShortcutView = addChild(new TextView(mContext), R.id.shortcut);
+        mIconView = addChild(new ImageView(mContext), R.id.favicon);
+        mTextView = addChild(new TextView(mContext), R.id.text);
+        mActionIconView = addChild(new ImageView(mContext), R.id.action_icon);
+        mMenuButtonView = addChild(new ListMenuButton(mContext, null), R.id.overflow_menu_button);
 
         mViewHolder = new SiteSearchViewBinder.ViewHolder(mView);
-        when(mView.getTag()).thenReturn(mViewHolder);
+        mView.setTag(mViewHolder);
 
         mModel = new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS).build();
+    }
+
+    private <T extends View> T addChild(T child, int id) {
+        child.setId(id);
+        mView.addView(child);
+        return child;
     }
 
     @Test
@@ -94,7 +101,7 @@ public class SiteSearchViewBinderUnitTest {
         mModel.set(SiteSearchProperties.SITE_NAME, siteName);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.SITE_NAME);
 
-        verify(mTitleView).setText(siteName);
+        assertEquals(siteName, mTitleView.getText().toString());
     }
 
     @Test
@@ -103,15 +110,16 @@ public class SiteSearchViewBinderUnitTest {
         mModel.set(SiteSearchProperties.SITE_SHORTCUT, shortcut);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.SITE_SHORTCUT);
 
-        verify(mShortcutView).setText(shortcut);
+        assertEquals(shortcut, mShortcutView.getText().toString());
     }
 
     @Test
     public void testBindIcon() {
-        mModel.set(SiteSearchProperties.ICON, mBitmap);
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        mModel.set(SiteSearchProperties.ICON, bitmap);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.ICON);
 
-        verify(mIconView).setImageBitmap(mBitmap);
+        assertEquals(bitmap, ((BitmapDrawable) mIconView.getDrawable()).getBitmap());
     }
 
     @Test
@@ -119,7 +127,8 @@ public class SiteSearchViewBinderUnitTest {
         mModel.set(SiteSearchProperties.ON_CLICK, mOnClickListener);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.ON_CLICK);
 
-        verify(mView).setOnClickListener(mOnClickListener);
+        mView.performClick();
+        verify(mOnClickListener).onClick(mView);
     }
 
     @Test
@@ -128,7 +137,7 @@ public class SiteSearchViewBinderUnitTest {
         mModel.set(SiteSearchProperties.TEXT, buttonText);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.TEXT);
 
-        verify(mTextView).setText(buttonText);
+        assertEquals(buttonText, mTextView.getText().toString());
     }
 
     @Test
@@ -136,7 +145,9 @@ public class SiteSearchViewBinderUnitTest {
         mModel.set(SiteSearchProperties.IS_EXPANDED, true);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.IS_EXPANDED);
 
-        verify(mActionIconView).setImageResource(R.drawable.ic_expand_less_black_24dp);
+        assertEquals(
+                R.drawable.ic_expand_less_black_24dp,
+                shadowOf(mActionIconView.getDrawable()).getCreatedFromResId());
     }
 
     @Test
@@ -144,16 +155,20 @@ public class SiteSearchViewBinderUnitTest {
         mModel.set(SiteSearchProperties.IS_EXPANDED, false);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.IS_EXPANDED);
 
-        verify(mActionIconView).setImageResource(R.drawable.ic_expand_more_black_24dp);
+        assertEquals(
+                R.drawable.ic_expand_more_black_24dp,
+                shadowOf(mActionIconView.getDrawable()).getCreatedFromResId());
     }
 
     @Test
     public void testBindMenuDelegate_NotNull() {
+        mMenuButtonView.setEnabled(false);
         mModel.set(SiteSearchProperties.MENU_DELEGATE, mMenuDelegate);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.MENU_DELEGATE);
 
-        verify(mMenuButtonView).setDelegate(mMenuDelegate);
-        verify(mMenuButtonView).setEnabled(true);
+        // setDelegate() installs a click listener that shows the menu.
+        assertTrue(mMenuButtonView.hasOnClickListeners());
+        assertTrue(mMenuButtonView.isEnabled());
     }
 
     @Test
@@ -161,8 +176,7 @@ public class SiteSearchViewBinderUnitTest {
         mModel.set(SiteSearchProperties.MENU_DELEGATE, null);
         SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.MENU_DELEGATE);
 
-        verify(mMenuButtonView).setDelegate(null);
-        verify(mMenuButtonView).setEnabled(false);
+        assertFalse(mMenuButtonView.isEnabled());
     }
 
     @Test
@@ -223,56 +237,50 @@ public class SiteSearchViewBinderUnitTest {
 
     @Test
     public void testBindIsExpanded_True_Accessibility() {
-        View realView = new View(mContext);
-        realView.setTag(mViewHolder);
-
         mModel.set(SiteSearchProperties.IS_EXPANDED, true);
-        SiteSearchViewBinder.bind(mModel, realView, SiteSearchProperties.IS_EXPANDED);
+        SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.IS_EXPANDED);
 
-        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(realView);
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(mView);
         assertNotNull(delegate);
 
         AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
-        delegate.onInitializeAccessibilityNodeInfo(realView, info);
+        delegate.onInitializeAccessibilityNodeInfo(mView, info);
 
         assertEquals(AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL, info.getExpandedState());
         List<AccessibilityActionCompat> actionList = info.getActionList();
         assertTrue(actionList.contains(AccessibilityActionCompat.ACTION_COLLAPSE));
 
         AtomicBoolean clicked = new AtomicBoolean(false);
-        realView.setOnClickListener(v -> clicked.set(true));
+        mView.setOnClickListener(v -> clicked.set(true));
 
         boolean handled =
                 delegate.performAccessibilityAction(
-                        realView, AccessibilityActionCompat.ACTION_COLLAPSE.getId(), null);
+                        mView, AccessibilityActionCompat.ACTION_COLLAPSE.getId(), null);
         assertTrue(handled);
         assertTrue(clicked.get());
     }
 
     @Test
     public void testBindIsExpanded_False_Accessibility() {
-        View realView = new View(mContext);
-        realView.setTag(mViewHolder);
-
         mModel.set(SiteSearchProperties.IS_EXPANDED, false);
-        SiteSearchViewBinder.bind(mModel, realView, SiteSearchProperties.IS_EXPANDED);
+        SiteSearchViewBinder.bind(mModel, mView, SiteSearchProperties.IS_EXPANDED);
 
-        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(realView);
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(mView);
         assertNotNull(delegate);
 
         AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
-        delegate.onInitializeAccessibilityNodeInfo(realView, info);
+        delegate.onInitializeAccessibilityNodeInfo(mView, info);
 
         assertEquals(AccessibilityNodeInfoCompat.EXPANDED_STATE_COLLAPSED, info.getExpandedState());
         List<AccessibilityActionCompat> actionList = info.getActionList();
         assertTrue(actionList.contains(AccessibilityActionCompat.ACTION_EXPAND));
 
         AtomicBoolean clicked = new AtomicBoolean(false);
-        realView.setOnClickListener(v -> clicked.set(true));
+        mView.setOnClickListener(v -> clicked.set(true));
 
         boolean handled =
                 delegate.performAccessibilityAction(
-                        realView, AccessibilityActionCompat.ACTION_EXPAND.getId(), null);
+                        mView, AccessibilityActionCompat.ACTION_EXPAND.getId(), null);
         assertTrue(handled);
         assertTrue(clicked.get());
     }

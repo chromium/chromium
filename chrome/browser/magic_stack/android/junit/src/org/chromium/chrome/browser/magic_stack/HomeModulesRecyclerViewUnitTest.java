@@ -7,47 +7,38 @@ package org.chromium.chrome.browser.magic_stack;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
 
 import java.util.ArrayList;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HomeModulesRecyclerViewUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private View mView;
-    @Mock private View mView1;
+    private static final int WIDTH = 500;
+    private static final int HEIGHT = 2000;
 
     private Activity mActivity;
     private HomeModulesRecyclerView mRecyclerView;
-    private HomeModulesRecyclerView mRecyclerViewSpy;
     private int mModuleInternalPaddingPx;
 
     @Before
@@ -60,12 +51,62 @@ public class HomeModulesRecyclerViewUnitTest {
                                 .getLayoutInflater()
                                 .inflate(R.layout.home_modules_recycler_view_layout, null);
         mActivity.setContentView(mRecyclerView);
-        mRecyclerViewSpy = spy(mRecyclerView);
 
         mModuleInternalPaddingPx =
                 ApplicationProvider.getApplicationContext()
                         .getResources()
                         .getDimensionPixelSize(R.dimen.module_internal_padding);
+    }
+
+    /** Populates the RecyclerView with the given item views, and lays it out. */
+    private void setItemViews(View... views) {
+        // The RecyclerView is GONE by default in the layout.
+        mRecyclerView.setVisibility(View.VISIBLE);
+        for (View view : views) {
+            // Give items a non-zero height so that the RecyclerView lays them all out.
+            if (view.getLayoutParams() == null) {
+                view.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, 100));
+            }
+        }
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+        mRecyclerView.setAdapter(
+                new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    @Override
+                    public int getItemCount() {
+                        return views.length;
+                    }
+
+                    @Override
+                    public int getItemViewType(int position) {
+                        return position;
+                    }
+
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(
+                            ViewGroup parent, int viewType) {
+                        return new RecyclerView.ViewHolder(views[viewType]) {};
+                    }
+
+                    @Override
+                    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+                });
+        layout(mRecyclerView);
+        assertEquals(views.length, mRecyclerView.getChildCount());
+    }
+
+    /** Synchronously measures and lays out the given view, clearing any pending layout request. */
+    private static void layout(View view) {
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(HEIGHT, View.MeasureSpec.AT_MOST));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        assertFalse(view.isLayoutRequested());
+    }
+
+    /** Sets the height of an item view (which must already be laid out by the RecyclerView). */
+    private static void setHeight(View view, int height) {
+        view.setBottom(view.getTop() + height);
+        assertEquals(height, view.getHeight());
     }
 
     @Test
@@ -75,22 +116,25 @@ public class HomeModulesRecyclerViewUnitTest {
         int measuredWidth = 500;
         mRecyclerView.initialize(/* isTablet= */ true, startMarginPx, itemPerScreen);
 
+        View view = new View(mActivity);
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(100, 100);
-        when(mView.getLayoutParams()).thenReturn(marginLayoutParams);
+        view.setLayoutParams(marginLayoutParams);
+        layout(view);
         startMarginPx = 5;
         mRecyclerView.setStartMarginPxForTesting(startMarginPx);
 
         // Verifies when there is one item per screen, the width is set to MATCH_PARENT.
-        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
+        mRecyclerView.onDrawImplTablet(view, 3, measuredWidth);
         assertEquals(MATCH_PARENT, marginLayoutParams.width);
         assertEquals(startMarginPx, marginLayoutParams.getMarginStart());
         assertEquals(startMarginPx, marginLayoutParams.getMarginEnd());
-        verify(mView).setLayoutParams(eq(marginLayoutParams));
+        assertTrue(view.isLayoutRequested());
 
         // Verifies that setLayoutParams() is called again to update the margins.
-        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
+        layout(view);
+        mRecyclerView.onDrawImplTablet(view, 3, measuredWidth);
         assertEquals(MATCH_PARENT, marginLayoutParams.width);
-        verify(mView, times(2)).setLayoutParams(eq(marginLayoutParams));
+        assertTrue(view.isLayoutRequested());
     }
 
     @Test
@@ -100,25 +144,28 @@ public class HomeModulesRecyclerViewUnitTest {
         int measuredWidth = 500;
         mRecyclerView.initialize(/* isTablet= */ true, startMarginPx, itemPerScreen);
 
+        View view = new View(mActivity);
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(100, 100);
-        when(mView.getLayoutParams()).thenReturn(marginLayoutParams);
+        view.setLayoutParams(marginLayoutParams);
+        layout(view);
         startMarginPx = 10;
         mRecyclerView.setStartMarginPxForTesting(startMarginPx);
         int expectedWidth =
                 (measuredWidth - mModuleInternalPaddingPx * (itemPerScreen - 1)) / itemPerScreen;
 
         // Verifies the width becomes the half of the parent's width.
-        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
+        mRecyclerView.onDrawImplTablet(view, 3, measuredWidth);
         assertEquals(expectedWidth, marginLayoutParams.width);
         assertEquals(startMarginPx, marginLayoutParams.getMarginStart());
         assertEquals(startMarginPx, marginLayoutParams.getMarginEnd());
-        verify(mView).setLayoutParams(eq(marginLayoutParams));
+        assertTrue(view.isLayoutRequested());
 
         // Verifies that setLayoutParams() isn't called again whether there isn't any change to the
         // width of the view.
-        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
+        layout(view);
+        mRecyclerView.onDrawImplTablet(view, 3, measuredWidth);
         assertEquals(expectedWidth, marginLayoutParams.width);
-        verify(mView).setLayoutParams(eq(marginLayoutParams));
+        assertFalse(view.isLayoutRequested());
     }
 
     @Test
@@ -142,27 +189,54 @@ public class HomeModulesRecyclerViewUnitTest {
         int itemPerScreen = 1;
         int startMarginPx = 0;
         mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
-        mRecyclerViewSpy = spy(mRecyclerView);
 
-        View focused = mock(View.class);
-        View nextFocus = mock(View.class);
-        View moduleView = mock(View.class);
+        // A module containing a single focusable view.
+        FrameLayout moduleView = new FrameLayout(mActivity);
+        moduleView.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, 100));
+        View focused = new View(mActivity);
+        focused.setFocusable(true);
+        moduleView.addView(focused, new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        setItemViews(moduleView);
+        int descendantFocusability = mRecyclerView.getDescendantFocusability();
+        boolean isFocusable = mRecyclerView.isFocusable();
 
-        // Mock findContainingItemView to return currentItemView.
-        doReturn(moduleView).when(mRecyclerViewSpy).findContainingItemView(focused);
-
-        // Verify FOCUS_FORWARD exhausts the current card and triggers the escape sequence.
-        View result = mRecyclerViewSpy.focusSearch(focused, View.FOCUS_FORWARD);
+        // Verify FOCUS_FORWARD exhausts the current card and triggers the escape sequence. Since
+        // there is nothing else to focus on the page, the focused view is returned.
+        View result = mRecyclerView.focusSearch(focused, View.FOCUS_FORWARD);
         assertEquals(focused, result);
 
-        // Verify descendant focusability was temporarily blocked during the escape.
-        verify(mRecyclerViewSpy).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        // Verify descendant focusability and focusability were restored after the escape.
+        assertEquals(descendantFocusability, mRecyclerView.getDescendantFocusability());
+        assertEquals(isFocusable, mRecyclerView.isFocusable());
+    }
 
-        // Verify unrestricted directions (e.g. FOCUS_RIGHT) fall back to the default
-        // implementation.
-        doReturn(nextFocus).when(mRecyclerViewSpy).focusSearch(focused, View.FOCUS_RIGHT);
-        result = mRecyclerViewSpy.focusSearch(focused, View.FOCUS_RIGHT);
-        assertEquals(nextFocus, result);
+    @Test
+    public void testFocusSearch_escapesToNextViewOutside() {
+        int itemPerScreen = 1;
+        int startMarginPx = 0;
+        mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
+
+        // Place a focusable view after the RecyclerView.
+        LinearLayout root = new LinearLayout(mActivity);
+        root.setOrientation(LinearLayout.VERTICAL);
+        ((ViewGroup) mRecyclerView.getParent()).removeView(mRecyclerView);
+        root.addView(mRecyclerView, new LinearLayout.LayoutParams(MATCH_PARENT, 100));
+        View nextView = new View(mActivity);
+        nextView.setFocusable(true);
+        root.addView(nextView, new LinearLayout.LayoutParams(MATCH_PARENT, 100));
+        mActivity.setContentView(root);
+
+        FrameLayout moduleView = new FrameLayout(mActivity);
+        moduleView.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, 100));
+        View focused = new View(mActivity);
+        focused.setFocusable(true);
+        moduleView.addView(focused, new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        setItemViews(moduleView);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Focus escapes the RecyclerView (rather than going back into its descendants) and moves
+        // to the next view on the page.
+        assertEquals(nextView, mRecyclerView.focusSearch(focused, View.FOCUS_FORWARD));
     }
 
     @Test
@@ -170,21 +244,18 @@ public class HomeModulesRecyclerViewUnitTest {
         int itemPerScreen = 1;
         int startMarginPx = 0;
         mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
-        mRecyclerViewSpy = spy(mRecyclerView);
         int miniModuleHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.home_module_height);
 
-        int childCount = 1;
-        when(mRecyclerViewSpy.getChildCount()).thenReturn(childCount);
-        when(mRecyclerViewSpy.getChildAt(eq(0))).thenReturn(mView);
+        View view = new View(mActivity);
+        setItemViews(view);
 
-        int height = miniModuleHeight - 10;
-        when(mView.getHeight()).thenReturn(height);
-        assertEquals(miniModuleHeight, mRecyclerViewSpy.getMaxHeight());
+        setHeight(view, miniModuleHeight - 10);
+        assertEquals(miniModuleHeight, mRecyclerView.getMaxHeight());
 
-        height = miniModuleHeight * 2;
-        when(mView.getHeight()).thenReturn(height);
-        assertEquals(height, mRecyclerViewSpy.getMaxHeight());
+        int height = miniModuleHeight * 2;
+        setHeight(view, height);
+        assertEquals(height, mRecyclerView.getMaxHeight());
     }
 
     @Test
@@ -192,29 +263,29 @@ public class HomeModulesRecyclerViewUnitTest {
         int itemPerScreen = 1;
         int startMarginPx = 0;
         mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
-        mRecyclerViewSpy = spy(mRecyclerView);
         int miniModuleHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.home_module_height);
         int childCount = 1;
-        when(mRecyclerViewSpy.getChildCount()).thenReturn(childCount);
-        when(mRecyclerViewSpy.getChildAt(eq(0))).thenReturn(mView);
+        View view = new View(mActivity);
+        setItemViews(view);
 
         int height = miniModuleHeight * 2;
-        when(mView.getHeight()).thenReturn(height);
-        assertEquals(height, mRecyclerViewSpy.getMaxHeight());
-        mRecyclerViewSpy.updateHeight(childCount);
+        setHeight(view, height);
+        assertEquals(height, mRecyclerView.getMaxHeight());
+        mRecyclerView.updateHeight(childCount);
         // Verifies requestLayout() isn't called if the child view is higher than the minimal
         // height.
-        verify(mRecyclerViewSpy, never()).requestLayout();
+        assertFalse(mRecyclerView.isLayoutRequested());
+        assertEquals(0, view.getMinimumHeight());
 
         height = miniModuleHeight - 10;
-        when(mView.getHeight()).thenReturn(height);
-        assertEquals(miniModuleHeight, mRecyclerViewSpy.getMaxHeight());
-        mRecyclerViewSpy.updateHeight(childCount);
+        setHeight(view, height);
+        assertEquals(miniModuleHeight, mRecyclerView.getMaxHeight());
+        mRecyclerView.updateHeight(childCount);
         // Verifies requestLayout() is called to change the height of the child view to be the
         // minimal height.
-        verify(mRecyclerViewSpy).requestLayout();
-        verify(mView).setMinimumHeight(eq(miniModuleHeight));
+        assertTrue(mRecyclerView.isLayoutRequested());
+        assertEquals(miniModuleHeight, view.getMinimumHeight());
     }
 
     @Test
@@ -222,25 +293,25 @@ public class HomeModulesRecyclerViewUnitTest {
         int itemPerScreen = 1;
         int startMarginPx = 0;
         mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
-        mRecyclerViewSpy = spy(mRecyclerView);
         int miniModuleHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.home_module_height);
 
+        View view = new View(mActivity);
+        View view1 = new View(mActivity);
+        setItemViews(view, view1);
+
         int height = miniModuleHeight * 2;
         int height1 = miniModuleHeight + 1;
-        when(mView.getHeight()).thenReturn(height);
-        when(mView1.getHeight()).thenReturn(height1);
+        setHeight(view, height);
+        setHeight(view1, height1);
         int childCount = 2;
-        when(mRecyclerViewSpy.getChildCount()).thenReturn(childCount);
-        when(mRecyclerViewSpy.getChildAt(eq(0))).thenReturn(mView);
-        when(mRecyclerViewSpy.getChildAt(eq(1))).thenReturn(mView1);
-        assertEquals(height, mRecyclerViewSpy.getMaxHeight());
+        assertEquals(height, mRecyclerView.getMaxHeight());
 
-        mRecyclerViewSpy.updateHeight(childCount);
+        mRecyclerView.updateHeight(childCount);
         // Verifies that requestLayout() is called to adjust the minimal height of the child view
         // with lower height.
-        verify(mView, never()).setMinimumHeight(eq(height));
-        verify(mView1).setMinimumHeight(eq(height));
-        verify(mRecyclerViewSpy).requestLayout();
+        assertEquals(0, view.getMinimumHeight());
+        assertEquals(height, view1.getMinimumHeight());
+        assertTrue(mRecyclerView.isLayoutRequested());
     }
 }
