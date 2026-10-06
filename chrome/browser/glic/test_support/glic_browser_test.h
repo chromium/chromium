@@ -257,6 +257,12 @@ template <typename Trigger>
       browser, "Window did not become active");
 }
 
+[[nodiscard]] inline TestResult<> ActivateWindow(
+    BrowserWindowInterface* browser) {
+  browser->GetWindow()->Activate();
+  return WaitForWindowActive(browser);
+}
+
 [[nodiscard]] inline TestResult<> WaitForSidePanelState(
     tabs::TabInterface* tab,
     GlicSidePanelCoordinator::State expected_state) {
