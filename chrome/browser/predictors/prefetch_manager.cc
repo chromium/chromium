@@ -11,8 +11,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/predictors/perform_network_context_prefetch.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -138,7 +136,6 @@ struct PrefetchJob {
   PrefetchJob(PrefetchRequest prefetch_request, PrefetchInfo& info)
       : url(prefetch_request.url),
         destination(prefetch_request.destination),
-        creation_time(base::TimeTicks::Now()),
         info(info.weak_factory.GetWeakPtr()) {
     DCHECK(url.is_valid());
     DCHECK(url.SchemeIsHTTPOrHTTPS());
@@ -155,7 +152,6 @@ struct PrefetchJob {
 
   GURL url;
   network::mojom::RequestDestination destination;
-  base::TimeTicks creation_time;
 
   // PrefetchJob lives until the URL load completes, so it can outlive the
   // PrefetchManager and therefore the PrefetchInfo.
@@ -353,9 +349,6 @@ void PrefetchManager::PrefetchUrl(
     options |= network::mojom::kURLLoadOptionReadAndDiscardBody;
   }
 
-  base::UmaHistogramBoolean("Navigation.Prefetch.IsHttps",
-                            request.url.SchemeIsCryptographic());
-
   std::unique_ptr<blink::ThrottlingURLLoader> loader =
       blink::ThrottlingURLLoader::CreateLoaderAndStart(
           std::move(factory), std::move(throttles),
@@ -400,11 +393,6 @@ void PrefetchManager::OnPrefetchFinished(
 void PrefetchManager::TryToLaunchPrefetchJobs() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // We assume that the number of jobs in the queue will be relatively small at
-  // any given time. We can revisit this as needed.
-  UMA_HISTOGRAM_COUNTS_100("Navigation.Prefetch.PrefetchJobQueueLength",
-                           queued_jobs_.size());
-
   if (queued_jobs_.empty() || inflight_jobs_count_ >= kMaxInflightPrefetches) {
     return;
   }
@@ -424,11 +412,6 @@ void PrefetchManager::TryToLaunchPrefetchJobs() {
     base::WeakPtr<PrefetchInfo> info = job->info;
     // |this| owns all infos.
     DCHECK(info);
-
-    // Note: PrefetchJobs are put into |queued_jobs_| immediately on creation,
-    // so their creation time is also the time at which they started queueing.
-    UMA_HISTOGRAM_TIMES("Navigation.Prefetch.PrefetchJobQueueingTime",
-                        base::TimeTicks::Now() - job->creation_time);
 
     if (job->url.is_valid() && factory && !info->was_canceled)
       PrefetchUrl(std::move(job), factory);

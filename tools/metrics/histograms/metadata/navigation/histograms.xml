@@ -2125,18 +2125,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Prefetch.IsHttps" enum="Boolean"
-    expires_after="2025-04-27">
-  <owner>ricea@chromium.org</owner>
-  <owner>chikamune@chromium.org</owner>
-  <summary>
-    Records whether or not a prefetch requested a URL with an https scheme.
-    Recorded once for each prefetch performed by PrefetchManager. This is based
-    on what the PrefetchManager requested and doesn't take into account
-    subsequent internal or external redirects to https.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.Prefetch.IsPrefetchingSRPUrl.{PreloadingEmbedderType}"
     enum="Boolean" expires_after="2026-09-27">
@@ -2153,30 +2141,6 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingEmbedderType">
     <variant name="Embedder_BookmarkBar" summary="BookmarkBar"/>
   </token>
-</histogram>
-
-<histogram name="Navigation.Prefetch.PrefetchJobQueueingTime" units="ms"
-    expires_after="2023-03-19">
-  <owner>blundell@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <summary>
-    Measures the amount of time that a requested prefetch job spends queueing
-    before being executed (e.g., due to a max # of prefetches being in flight).
-    Recorded for each prefetch job.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.Prefetch.PrefetchJobQueueLength" units="count"
-    expires_after="2023-03-19">
-  <owner>blundell@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <summary>
-    Measures the length of the queue of prefetch jobs at the beginning of
-    PrefetchManager processing this queue to execute jobs. Recorded each time
-    that PrefetchManager processes the queue of pending jobs.
-  </summary>
 </histogram>
 
 <histogram
