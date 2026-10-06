@@ -13,6 +13,7 @@ source_set("coordinator") {
     "//components/history/core/browser",
     "//components/ntp_tiles",
     "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser",
     "//components/prefs",
     "//components/strings",
     "//components/url_formatter",

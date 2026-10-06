@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/callback_list.h"
 #import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -24,6 +25,7 @@
 #import "components/ntp_tiles/ntp_tile.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/ntp_tiles/tile_source.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
@@ -125,6 +127,12 @@ GURL GetValidUrl(NSString* urlString) {
   NSString* _lastSnackbarMessage;
   // Tracker for cancellable tasks initiated by the mediator.
   base::CancelableTaskTracker _cancelableTaskTracker;
+  // Service to check AIM eligibility.
+  raw_ptr<AimEligibilityService> _aimEligibilityService;
+  // Subscription for eligibility changes.
+  base::CallbackListSubscription _aimEligibilitySubscription;
+  // Whether AI Mode is allowed.
+  BOOL _isAIMAllowed;
 }
 
 - (instancetype)
@@ -137,7 +145,8 @@ GURL GetValidUrl(NSString* urlString) {
      URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
           engagementTracker:(feature_engagement::Tracker*)engagementTracker
-          layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
+          layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+      aimEligibilityService:(AimEligibilityService*)aimEligibilityService {
   self = [super init];
   if (self) {
     CHECK(historyService);
@@ -170,6 +179,20 @@ GURL GetValidUrl(NSString* urlString) {
     _mostVisitedSites->AddMostVisitedURLsObserver(
         _mostVisitedBridge.get(), MaximumMostVisitedTilesCount(),
         kMaxNumNonCustomMostVisitedTiles);
+
+    if (ntp_tiles::GetAimButtonRefactorArm() ==
+        ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+      _aimEligibilityService = aimEligibilityService;
+      if (_aimEligibilityService) {
+        __weak __typeof(self) weakSelf = self;
+        _aimEligibilitySubscription =
+            _aimEligibilityService->RegisterEligibilityChangedCallback(
+                base::BindRepeating(^(void) {
+                  [weakSelf updateAIMAvailability];
+                }));
+      }
+      [self updateAIMAvailability];
+    }
   }
   return self;
 }
@@ -178,6 +201,11 @@ GURL GetValidUrl(NSString* urlString) {
   if (_lastSnackbarMessage) {
     [self.snackbarHandler dismissSnackbarWithMessage:_lastSnackbarMessage
                                             animated:YES];
+  }
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    _aimEligibilitySubscription = {};
+    _aimEligibilityService = nullptr;
   }
   _cancelableTaskTracker.TryCancelAll();
   _mostVisitedBridge.reset();
@@ -243,10 +271,8 @@ GURL GetValidUrl(NSString* urlString) {
   int index = 0;
   const GURL aimURL(ntp_tiles::kAiModeTileUrl);
   for (const ntp_tiles::NTPTile& tile : tiles) {
-    if (tile.url == aimURL) {
-      CHECK(IsAimEnabledInNtp());
-      CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-               ntp_tiles::AimButtonRefactorArm::kAimAsMvt);
+    if (tile.url == aimURL && !_isAIMAllowed) {
+      continue;
     }
     MostVisitedItem* item = [self convertNTPTile:tile];
     item.commandHandler = self;
@@ -760,6 +786,17 @@ GURL GetValidUrl(NSString* urlString) {
           base::BindOnce(presentIPHForRepeatingVisits),
           &_cancelableTaskTracker);
     }
+  }
+}
+
+// Updates for changes to AI Mode eligibility on the NTP.
+- (void)updateAIMAvailability {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           ntp_tiles::AimButtonRefactorArm::kAimAsMvt);
+  _isAIMAllowed = IsAimEnabledInNtp() && _aimEligibilityService &&
+                  _aimEligibilityService->IsAimEligible();
+  if (_mostVisitedSites) {
+    _mostVisitedSites->RefreshTiles();
   }
 }
 
