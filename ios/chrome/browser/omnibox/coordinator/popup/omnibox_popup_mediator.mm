@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -519,7 +520,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             actionHandler:openInNewIncognitoTabBlock];
     [actions addObject:openInIncognitoNewTab];
   }
-  if (base::ios::IsMultipleScenesSupported()) {  // Open in new window
+  if (self.sceneState.multipleScenesAvailable) {  // Open in new window
     UIAccessibilityCustomActionHandler openInNewWindowBlock = ^BOOL(
         UIAccessibilityCustomAction*) {
       NSUserActivity* activity =

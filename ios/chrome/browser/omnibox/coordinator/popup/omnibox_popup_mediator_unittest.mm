@@ -26,6 +26,7 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
@@ -35,11 +36,14 @@
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_swift.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/suggest_action.h"
+#import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/favicon_retriever.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/image_retriever.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -47,6 +51,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
 
@@ -241,6 +246,42 @@ TEST_F(OmniboxPopupMediatorTest, PedalMetricLogged) {
   [mediator_ selectSuggestion:match2 inRow:1];
 
   histogram_tester.ExpectUniqueSample("Omnibox.PedalShown", 1, 1);
+}
+
+// Test that the "Open in New Window" accessibility custom action for a carousel
+// item is included only when `sceneState.multipleScenesAvailable` is YES.
+TEST_F(OmniboxPopupMediatorTest,
+       CarouselAccessibilityActionsMultipleScenesAvailable) {
+  SceneState* scene_state = [[SceneState alloc] init];
+  mediator_.sceneState = scene_state;
+
+  CarouselItem* item = [[CarouselItem alloc] init];
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://example.com")];
+  UIView* view = [[UIView alloc] init];
+  NSString* open_in_new_window_name =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
+
+  scene_state.multipleScenesAvailable = NO;
+  NSArray<UIAccessibilityCustomAction*>* actions_unavailable =
+      [mediator_ accessibilityActionsForCarouselItem:item fromView:view];
+  BOOL found_when_unavailable = NO;
+  for (UIAccessibilityCustomAction* action in actions_unavailable) {
+    if ([action.name isEqualToString:open_in_new_window_name]) {
+      found_when_unavailable = YES;
+    }
+  }
+  EXPECT_FALSE(found_when_unavailable);
+
+  scene_state.multipleScenesAvailable = YES;
+  NSArray<UIAccessibilityCustomAction*>* actions_available =
+      [mediator_ accessibilityActionsForCarouselItem:item fromView:view];
+  BOOL found_when_available = NO;
+  for (UIAccessibilityCustomAction* action in actions_available) {
+    if ([action.name isEqualToString:open_in_new_window_name]) {
+      found_when_available = YES;
+    }
+  }
+  EXPECT_TRUE(found_when_available);
 }
 
 }  // namespace
