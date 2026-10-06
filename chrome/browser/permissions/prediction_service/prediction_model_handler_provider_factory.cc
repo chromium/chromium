@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/passage_embeddings/core/passage_embedder_model_observer.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 #include "components/permissions/features.h"
@@ -107,5 +109,5 @@ PredictionModelHandlerProviderFactory::BuildServiceInstanceForBrowserContext(
 
 bool PredictionModelHandlerProviderFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  return !features::IsLazyOptimizationGuideModelsEnabled();
 }

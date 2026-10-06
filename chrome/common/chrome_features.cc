@@ -1394,6 +1394,19 @@ BASE_FEATURE_PARAM(bool,
                    &kLazyKeyedServiceInstantiation,
                    true);
 
+// When enabled, Optimization Guide model keyed services are instantiated
+// after startup or on demand rather than eagerly during BrowserContext
+// creation.
+BASE_FEATURE_PARAM(bool,
+                   kLazyKeyedServiceInstantiationOptimizationGuideModels,
+                   &kLazyKeyedServiceInstantiation,
+                   true);
+
+bool IsLazyOptimizationGuideModelsEnabled() {
+  return base::FeatureList::IsEnabled(kLazyKeyedServiceInstantiation) &&
+         kLazyKeyedServiceInstantiationOptimizationGuideModels.Get();
+}
+
 // When enabled, Safe Browsing keyed services are instantiated lazily.
 BASE_FEATURE_PARAM(bool,
                    kLazyKeyedServiceInstantiationSafeBrowsing,

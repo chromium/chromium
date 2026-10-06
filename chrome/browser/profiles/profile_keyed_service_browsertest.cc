@@ -626,6 +626,13 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   ASSERT_FALSE(guest_otr_profile->IsRegularProfile());
   ASSERT_TRUE(guest_otr_profile->IsOffTheRecord());
   ASSERT_TRUE(guest_otr_profile->IsGuestSession());
+  if (features::IsLazyOptimizationGuideModelsEnabled()) {
+    // OptimizationGuideGlobalStateHolderKeyedService remains active here
+    // because CreateGuestBrowser() creates a WebContents whose
+    // ChromeTranslateClient instantiates LanguageDetectionModelService.
+    guest_otr_active_services.erase("OnDeviceTailModelService");
+    guest_otr_active_services.erase("PredictionModelHandlerProvider");
+  }
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationExtensions.Get()) {
     guest_otr_active_services.erase("SafeBrowsingPrivateEventRouter");
@@ -1092,6 +1099,13 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
       features::kLazyKeyedServiceInstantiationOptimizationGuide.Get()) {
     guest_active_services.erase("PageContentAnnotationsService");
     guest_active_services.erase("ZeroSuggestCacheServiceFactory");
+  }
+  if (features::IsLazyOptimizationGuideModelsEnabled()) {
+    guest_active_services.erase("AutocompleteScoringModelService");
+    guest_active_services.erase("OnDeviceTailModelService");
+    guest_active_services.erase(
+        "OptimizationGuideGlobalStateHolderKeyedService");
+    guest_active_services.erase("PredictionModelHandlerProvider");
   }
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationExtensions.Get()) {

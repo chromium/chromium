@@ -40,6 +40,9 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
+#include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
@@ -68,6 +71,7 @@
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
@@ -119,6 +123,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -929,6 +934,27 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(this);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  if (features::IsLazyOptimizationGuideModelsEnabled() && IsRegularProfile()) {
+    // Warm up Optimization Guide model services after startup so that model
+    // observers register and downloads start soon after startup, without
+    // blocking profile creation. Guest and OTR profiles skip this warmup on
+    // purpose so these services are created on first use there.
+    AfterStartupTaskUtils::PostTask(
+        FROM_HERE, content::GetUIThreadTaskRunner({}),
+        base::BindOnce(
+            [](base::WeakPtr<Profile> profile) {
+              if (!profile || profile->ShutdownStarted()) {
+                return;
+              }
+              AutocompleteScoringModelServiceFactory::GetForProfile(
+                  profile.get());
+              OnDeviceTailModelServiceFactory::GetForProfile(profile.get());
+              PredictionModelHandlerProviderFactory::GetForBrowserContext(
+                  profile.get());
+            },
+            GetWeakPtr()));
+  }
 
   // The announcement notification  service might not be available for some
   // irregular profiles, like the System Profile.

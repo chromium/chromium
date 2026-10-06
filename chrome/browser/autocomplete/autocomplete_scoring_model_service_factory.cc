@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 
@@ -66,7 +67,7 @@ AutocompleteScoringModelServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool AutocompleteScoringModelServiceFactory::
     ServiceIsCreatedWithBrowserContext() const {
-  return true;
+  return !features::IsLazyOptimizationGuideModelsEnabled();
 }
 
 bool AutocompleteScoringModelServiceFactory::ServiceIsNULLWhileTesting() const {
