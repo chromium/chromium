@@ -96,6 +96,8 @@ static_library("engine") {
     "loopback_server/loopback_connection_manager.h",
     "loopback_server/loopback_server.cc",
     "loopback_server/loopback_server.h",
+    "loopback_server/loopback_server_bookmark_migration.cc",
+    "loopback_server/loopback_server_bookmark_migration.h",
     "loopback_server/loopback_server_entity.cc",
     "loopback_server/loopback_server_entity.h",
     "loopback_server/persistent_bookmark_entity.cc",

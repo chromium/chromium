@@ -270,6 +270,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   int64_t version_ = 0;
 
   int64_t store_birthday_ = 0;
+  bool bookmarks_migrated_to_client_tag_hash_ = false;
 
   DataTypeSet throttled_types_;
   DataTypeSet full_update_types_;

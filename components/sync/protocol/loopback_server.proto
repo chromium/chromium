@@ -45,4 +45,8 @@ message LoopbackServerProto {
 
   // The last entity ID that was assigned to an entity.
   optional int64 last_version_assigned = 5;
+
+  // Set to true if bookmarks have been migrated to modern schema with client
+  // tag hash and specifics hierarchy fields.
+  optional bool bookmarks_migrated_to_client_tag_hash = 6;
 }

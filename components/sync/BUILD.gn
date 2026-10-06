@@ -211,6 +211,7 @@ source_set("unit_tests") {
     "engine/debug_info_event_listener_unittest.cc",
     "engine/events/protocol_event_buffer_unittest.cc",
     "engine/get_updates_processor_unittest.cc",
+    "engine/loopback_server/loopback_server_bookmark_migration_unittest.cc",
     "engine/loopback_server/loopback_server_unittest.cc",
     "engine/loopback_server/persistent_bookmark_entity_unittest.cc",
     "engine/loopback_server/persistent_permanent_entity_unittest.cc",

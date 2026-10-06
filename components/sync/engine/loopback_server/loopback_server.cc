@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/map_util.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -24,6 +25,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
+#include "components/sync/engine/loopback_server/loopback_server_bookmark_migration.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 #include "components/sync/engine/loopback_server/persistent_permanent_entity.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
@@ -286,6 +289,8 @@ void LoopbackServer::Init() {
 
   store_birthday_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
   keystore_keys_.push_back(GenerateNewKeystoreKey());
+  bookmarks_migrated_to_client_tag_hash_ = base::FeatureList::IsEnabled(
+      syncer::kSyncMigrateLoopbackServerBookmarksToClientTagHash);
 
   const bool create_result = CreateDefaultPermanentItems();
   DCHECK(create_result) << "Permanent items were not created successfully.";
@@ -642,7 +647,7 @@ string LoopbackServer::CommitEntity(
   std::unique_ptr<LoopbackServerEntity> entity;
   if (client_entity.deleted()) {
     entity = PersistentTombstoneEntity::CreateFromEntity(client_entity);
-    if (entity) {
+    if (entity && !bookmarks_migrated_to_client_tag_hash_) {
       DeleteChildren(client_entity.id_string());
     }
   } else if (type == syncer::NIGORI) {
@@ -651,7 +656,8 @@ string LoopbackServer::CommitEntity(
     CHECK(server_entity);
     entity = PersistentPermanentEntity::CreateUpdatedNigoriEntity(
         client_entity, *server_entity);
-  } else if (type == syncer::BOOKMARKS) {
+  } else if (type == syncer::BOOKMARKS &&
+             !bookmarks_migrated_to_client_tag_hash_) {
     // TODO(pvalenzuela): Validate entity's parent ID.
     if (server_entity) {
       entity = PersistentBookmarkEntity::CreateUpdatedVersion(
@@ -937,6 +943,8 @@ void LoopbackServer::SerializeState(sync_pb::LoopbackServerProto* proto) const {
   proto->set_version(kCurrentLoopbackServerProtoVersion);
   proto->set_store_birthday(store_birthday_);
   proto->set_last_version_assigned(version_);
+  proto->set_bookmarks_migrated_to_client_tag_hash(
+      bookmarks_migrated_to_client_tag_hash_);
   for (const std::vector<uint8_t>& key : keystore_keys_) {
     proto->add_keystore_keys(key.data(), key.size());
   }
@@ -952,10 +960,12 @@ bool LoopbackServer::DeSerializeState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(proto.version(), kCurrentLoopbackServerProtoVersion);
 
+  bookmarks_migrated_to_client_tag_hash_ =
+      proto.bookmarks_migrated_to_client_tag_hash();
   store_birthday_ = proto.store_birthday();
   version_ = proto.last_version_assigned();
   for (int i = 0; i < proto.keystore_keys_size(); ++i) {
-    const auto& key = proto.keystore_keys(i);
+    const std::string& key = proto.keystore_keys(i);
     keystore_keys_.emplace_back(key.begin(), key.end());
   }
   for (int i = 0; i < proto.entities_size(); ++i) {
@@ -1022,7 +1032,25 @@ bool LoopbackServer::LoadStateFromFile() {
   if (base::ReadFileToString(persistent_file_, &serialized)) {
     sync_pb::LoopbackServerProto proto;
     if (serialized.length() > 0 && proto.ParseFromString(serialized)) {
-      return DeSerializeState(proto);
+      bool was_migrated = false;
+      if (base::FeatureList::IsEnabled(
+              syncer::kSyncMigrateLoopbackServerBookmarksToClientTagHash) &&
+          !proto.bookmarks_migrated_to_client_tag_hash()) {
+        MigrateLoopbackServerLegacyBookmarks(&proto);
+        proto.set_bookmarks_migrated_to_client_tag_hash(true);
+        was_migrated = true;
+      }
+      if (!DeSerializeState(proto)) {
+        return false;
+      }
+      if (was_migrated) {
+        // Save a backup of the pre-migration state file before scheduling a
+        // rewrite with the migrated state.
+        base::CopyFile(persistent_file_,
+                       persistent_file_.AddExtension(FILE_PATH_LITERAL("bak")));
+        ScheduleSaveStateToFile();
+      }
+      return true;
     }
     DVLOG(1) << "Loopback sync cannot parse the persistent state file ("
              << persistent_file_ << ").";

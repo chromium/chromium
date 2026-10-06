@@ -244,6 +244,10 @@ BASE_DECLARE_FEATURE(kSyncNigoriAuthenticateIV);
 // CUSTOM_PASSPHRASE (if encrypt_everything is true).
 BASE_DECLARE_FEATURE(kSyncMigrateFromImplicitPassphrase);
 
+// When enabled, on-disk LoopbackServer state is migrated to use client tag
+// hash and deterministic server IDs for bookmarks.
+BASE_DECLARE_FEATURE(kSyncMigrateLoopbackServerBookmarksToClientTagHash);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

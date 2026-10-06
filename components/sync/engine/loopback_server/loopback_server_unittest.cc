@@ -4,12 +4,16 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/loopback_connection_manager.h"
 #include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/loopback_server.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -75,7 +79,8 @@ std::map<std::string, SyncEntity> ResponseToMap(
 class LoopbackServerTest : public testing::Test {
  public:
   void SetUp() override {
-    base::CreateTemporaryFile(&persistent_file_);
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    persistent_file_ = temp_dir_.GetPath().AppendASCII("profile.pb");
     lcm_ = std::make_unique<LoopbackConnectionManager>(persistent_file_);
   }
 
@@ -143,8 +148,8 @@ class LoopbackServerTest : public testing::Test {
     EXPECT_FALSE(response.has_commit());
   }
 
+  base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
-
   base::FilePath persistent_file_;
   std::unique_ptr<LoopbackConnectionManager> lcm_;
 };
@@ -377,6 +382,105 @@ TEST_F(LoopbackServerTest,
   entity.mutable_specifics()->mutable_bookmark()->set_url(kUrl1);
 
   EXPECT_EQ("32904_bookmark_bar", CommitVerifySuccess(entity));
+}
+
+TEST_F(LoopbackServerTest, ShouldMigrateLegacyBookmarksOnLoadAndPersistToDisk) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncMigrateLoopbackServerBookmarksToClientTagHash);
+
+  // Release initial connection manager created in SetUp so file can be
+  // overwritten.
+  lcm_.reset();
+
+  const std::string bookmark_guid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string legacy_id = "32904_" + bookmark_guid;
+  const std::string client_tag_hash =
+      ClientTagHash::FromUnhashed(BOOKMARKS, bookmark_guid).value();
+  const std::string modern_id =
+      LoopbackServerEntity::CreateId(BOOKMARKS, client_tag_hash, 0);
+
+  // Write a legacy proto to persistent_file_.
+  sync_pb::LoopbackServerProto proto;
+  proto.set_version(1);
+  proto.set_store_birthday(55555);
+  proto.set_last_version_assigned(1);
+
+  sync_pb::LoopbackServerEntity* bookmark_entity = proto.add_entities();
+  bookmark_entity->set_type(sync_pb::LoopbackServerEntity_Type_BOOKMARK);
+  sync_pb::SyncEntity* sync_entity = bookmark_entity->mutable_entity();
+  sync_entity->set_id_string(legacy_id);
+  sync_entity->set_version(1);
+  sync_entity->set_name("Test URL");
+  sync_entity->set_parent_id_string("bookmark_bar");
+  sync_entity->set_originator_cache_guid("originator_cache");
+  sync_entity->set_originator_client_item_id(bookmark_guid);
+  sync_entity->mutable_specifics()->mutable_bookmark()->set_url(kUrl1);
+
+  std::string serialized;
+  ASSERT_TRUE(proto.SerializeToString(&serialized));
+  ASSERT_TRUE(base::WriteFile(persistent_file_, serialized));
+
+  std::string birthday_after_migration;
+  {
+    // Loading state should trigger migration.
+    LoopbackConnectionManager connection(persistent_file_);
+
+    ClientToServerMessage get_updates_msg;
+    SyncerProtoUtil::SetProtocolVersion(&get_updates_msg);
+    get_updates_msg.set_share("required");
+    get_updates_msg.set_message_contents(ClientToServerMessage::GET_UPDATES);
+    get_updates_msg.mutable_get_updates()
+        ->add_from_progress_marker()
+        ->set_data_type_id(EntitySpecifics::kBookmarkFieldNumber);
+
+    ClientToServerResponse response;
+    EXPECT_TRUE(
+        CallPostAndProcessHeaders(&connection, get_updates_msg, &response));
+    EXPECT_EQ(SyncEnums::SUCCESS, response.error_code());
+    EXPECT_NE("55555", response.store_birthday());
+    birthday_after_migration = response.store_birthday();
+
+    std::map<std::string, SyncEntity> entries = ResponseToMap(response);
+    ASSERT_EQ(1U, entries.count(modern_id));
+    const SyncEntity& migrated_entity = entries[modern_id];
+    EXPECT_FALSE(migrated_entity.has_folder());
+    EXPECT_EQ(client_tag_hash, migrated_entity.client_tag_hash());
+    EXPECT_EQ(bookmark_guid, migrated_entity.specifics().bookmark().guid());
+    EXPECT_EQ("82b081ec-3dd3-529c-8475-ab6c344590dd",
+              migrated_entity.specifics().bookmark().parent_guid());
+    EXPECT_EQ(sync_pb::BookmarkSpecifics::URL,
+              migrated_entity.specifics().bookmark().type());
+  }
+
+  // Verify that a backup file was created with the pre-migration contents.
+  std::string backup_serialized;
+  EXPECT_TRUE(base::ReadFileToString(
+      persistent_file_.AddExtension(FILE_PATH_LITERAL("bak")),
+      &backup_serialized));
+  EXPECT_EQ(serialized, backup_serialized);
+
+  // Immediately reload the file (without running background tasks) to verify
+  // the migrated state was flushed synchronously on destruction and is
+  // idempotent.
+  LoopbackConnectionManager reloaded_connection(persistent_file_);
+  ClientToServerMessage get_updates_msg;
+  SyncerProtoUtil::SetProtocolVersion(&get_updates_msg);
+  get_updates_msg.set_share("required");
+  get_updates_msg.set_message_contents(ClientToServerMessage::GET_UPDATES);
+  get_updates_msg.mutable_get_updates()
+      ->add_from_progress_marker()
+      ->set_data_type_id(EntitySpecifics::kBookmarkFieldNumber);
+
+  ClientToServerResponse reloaded_response;
+  EXPECT_TRUE(CallPostAndProcessHeaders(&reloaded_connection, get_updates_msg,
+                                        &reloaded_response));
+  EXPECT_EQ(SyncEnums::SUCCESS, reloaded_response.error_code());
+  EXPECT_EQ(birthday_after_migration, reloaded_response.store_birthday());
+  std::map<std::string, SyncEntity> reloaded_entries =
+      ResponseToMap(reloaded_response);
+  EXPECT_EQ(1U, reloaded_entries.count(modern_id));
 }
 
 }  // namespace syncer
