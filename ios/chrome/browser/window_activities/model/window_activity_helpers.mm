@@ -5,7 +5,11 @@
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/window_activities/model/move_tab_activity_type_buildflags.h"
@@ -25,6 +29,7 @@ NSString* const kOriginKey = @"LoadParams_Origin";
 NSString* const kTabIdentifierKey = @"TabIdentifier";
 NSString* const kTabIncognitoKey = @"TabIncognito";
 NSString* const kProfileNameKey = @"ProfileName";
+NSString* const kMenuScenarioKey = @"MenuScenario";
 
 namespace {
 
@@ -167,4 +172,49 @@ std::string GetProfileNameFromActivity(NSUserActivity* activity) {
   NSString* passed_profile_name =
       base::apple::ObjCCast<NSString>(activity.userInfo[kProfileNameKey]);
   return base::SysNSStringToUTF8(passed_profile_name);
+}
+
+void AttachMenuScenarioToActivity(NSUserActivity* activity,
+                                  MenuScenarioHistogram scenario) {
+  NSDictionary* params = @{kMenuScenarioKey : @(static_cast<int>(scenario))};
+  [activity addUserInfoEntriesFromDictionary:params];
+}
+
+std::optional<MenuScenarioHistogram> GetMenuScenarioFromActivity(
+    NSUserActivity* activity) {
+  NSNumber* scenario =
+      base::apple::ObjCCast<NSNumber>(activity.userInfo[kMenuScenarioKey]);
+  if (!scenario) {
+    return std::nullopt;
+  }
+  return static_cast<MenuScenarioHistogram>(scenario.intValue);
+}
+
+UIWindowSceneActivationConfiguration* CreateWindowSceneActivationConfiguration(
+    NSUserActivity* activity,
+    ProfileIOS* profile,
+    UIScene* requesting_scene) {
+  CHECK(profile);
+  AttachProfileNameToActivity(activity, profile->GetProfileName());
+  PrefService* prefs = profile->GetPrefs();
+  if (IsIncognitoModeForced(prefs)) {
+    activity = AdaptUserActivityToIncognito(activity, true);
+  } else if (IsIncognitoModeDisabled(prefs)) {
+    activity = AdaptUserActivityToIncognito(activity, false);
+  }
+
+  UIWindowSceneActivationRequestOptions* options =
+      [[UIWindowSceneActivationRequestOptions alloc] init];
+  options.requestingScene = requesting_scene;
+  if (@available(iOS 26.0, *)) {
+    // For iOS26 windowing, ensure the new window doesn't fully overlap the
+    // prior window.
+    options.placement = [UIWindowSceneProminentPlacement prominentPlacement];
+  }
+
+  UIWindowSceneActivationConfiguration* config =
+      [[UIWindowSceneActivationConfiguration alloc]
+          initWithUserActivity:activity];
+  config.options = options;
+  return config;
 }

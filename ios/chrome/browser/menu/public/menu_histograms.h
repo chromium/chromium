@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_HISTOGRAMS_H_
 #define IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_HISTOGRAMS_H_
 
+#ifdef __cplusplus
+#import "ios/chrome/browser/menu/public/menu_action_type.h"
+#endif
+
 // Enum representing the existing set of menu scenarios. Current values should
 // not be renumbered. Please keep in sync with "IOSMenuScenario" in
 // src/tools/metrics/histograms/metadata/mobile/enums.xml.
@@ -56,6 +60,12 @@ enum MenuScenarioHistogram {
 
 // Records a menu shown histogram metric for the `scenario`.
 void RecordMenuShown(enum MenuScenarioHistogram scenario);
+
+#ifdef __cplusplus
+// Records a menu action histogram metric for `scenario` and `action`.
+void RecordMenuAction(enum MenuScenarioHistogram scenario,
+                      MenuActionType action);
+#endif
 
 // Retrieves a histogram name for the given menu `scenario`'s actions.
 const char* GetActionsHistogramName(enum MenuScenarioHistogram scenario);

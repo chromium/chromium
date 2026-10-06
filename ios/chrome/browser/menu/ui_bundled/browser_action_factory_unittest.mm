@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -155,7 +156,13 @@ TEST_F(BrowserActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
   EXPECT_EQ(expectedImage, actionWithBlock.image);
 }
 
-// Tests that the Open in New Window action has the right title and image.
+@interface UIWindowSceneActivationAction (Testing)
+@property(nonatomic, readonly)
+    UIWindowSceneActivationActionConfigurationProvider _configurationProvider;
+@end
+
+// Test that the Open in New Window action is a UIWindowSceneActivationAction
+// with the right title, image, and activation configuration.
 TEST_F(BrowserActionFactoryTest, OpenInNewWindowAction) {
   GURL testURL = GURL("https://example.com");
 
@@ -169,22 +176,48 @@ TEST_F(BrowserActionFactoryTest, OpenInNewWindowAction) {
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
 
-  // Test URL variant
-  UIAction* action =
-      [factory actionToOpenInNewWindowWithURL:testURL
-                               activityOrigin:WindowActivityToolsOrigin];
+  // Test URL variant.
+  UIWindowSceneActivationAction* action =
+      base::apple::ObjCCast<UIWindowSceneActivationAction>([factory
+          actionToOpenInNewWindowWithURL:testURL
+                          activityOrigin:WindowActivityToolsOrigin]);
 
+  ASSERT_TRUE(action);
   EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
+  ASSERT_TRUE(action._configurationProvider);
 
-  // Test user activity variant
-  action = [factory
+  UIWindowSceneActivationConfiguration* config =
+      action._configurationProvider(action);
+  ASSERT_TRUE(config);
+  EXPECT_EQ(OriginOfActivity(config.userActivity), WindowActivityToolsOrigin);
+  EXPECT_EQ(LoadParamsFromActivity(config.userActivity).web_params.url,
+            testURL);
+  EXPECT_EQ(GetProfileNameFromActivity(config.userActivity),
+            profile_->GetProfileName());
+  EXPECT_EQ(GetMenuScenarioFromActivity(config.userActivity),
+            kTestMenuScenario);
+
+  // Test user activity variant.
+  action = base::apple::ObjCCast<UIWindowSceneActivationAction>([factory
       actionToOpenInNewWindowWithActivity:ActivityToLoadURL(
                                               WindowActivityToolsOrigin,
-                                              testURL)];
+                                              testURL)]);
 
+  ASSERT_TRUE(action);
   EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
+  ASSERT_TRUE(action._configurationProvider);
+
+  config = action._configurationProvider(action);
+  ASSERT_TRUE(config);
+  EXPECT_EQ(OriginOfActivity(config.userActivity), WindowActivityToolsOrigin);
+  EXPECT_EQ(LoadParamsFromActivity(config.userActivity).web_params.url,
+            testURL);
+  EXPECT_EQ(GetProfileNameFromActivity(config.userActivity),
+            profile_->GetProfileName());
+  EXPECT_EQ(GetMenuScenarioFromActivity(config.userActivity),
+            kTestMenuScenario);
 }
 
 // Tests that the open image action has the right title and image.

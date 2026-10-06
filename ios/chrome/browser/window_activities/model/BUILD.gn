@@ -10,9 +10,15 @@ source_set("model") {
     "window_activity_helpers.h",
     "window_activity_helpers.mm",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/menu/public",
+  ]
   deps = [
     ":ios_move_tab_activity_type_buildflags",
+    "//components/prefs",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/web/public",
@@ -20,6 +26,7 @@ source_set("model") {
     "//net",
     "//url",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 buildflag_header("ios_move_tab_activity_type_buildflags") {

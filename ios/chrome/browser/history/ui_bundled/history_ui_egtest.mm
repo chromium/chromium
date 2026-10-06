@@ -367,9 +367,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewWindowButton()]
       performAction:grey_tap()];
-  GREYAssert([ChromeCoordinatorAppInterface
-                 selectorWasDispatched:@"openNewWindowWithActivity:"],
-             @"Command was not dispatched");
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   // Assert that the Context Menu History Entry Actions metric is populated.
   ExpectContextMenuHistoryEntryActionsHistogram(

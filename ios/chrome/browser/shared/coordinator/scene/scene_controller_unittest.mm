@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
+#import "base/ios/ios_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -29,6 +30,8 @@
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
+#import "ios/chrome/browser/menu/public/menu_action_type.h"
+#import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -54,6 +57,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
@@ -465,5 +469,35 @@ TEST_F(SceneControllerTest, TestAppSwitcherAISummarizationAccountStatusMetric) {
   histogram_tester.ExpectUniqueSample(
       "IOS.Gemini.AISummarization.AccountStatus",
       static_cast<int>(GeminiAppSwitcherAccountStatus::kBothSignedOut), 1);
+}
+
+// Tests that connecting a new scene with an activity that has a menu scenario
+// attached records the `OpenInNewWindow` menu action histogram for that
+// scenario.
+TEST_F(SceneControllerTest, RecordWindowCreationMenuActionHistogram) {
+  if (!base::ios::IsMultipleScenesSupported()) {
+    GTEST_SKIP() << "Multiple scenes not supported on this device.";
+  }
+
+  [profile_state_ sceneStateConnected:[[SceneState alloc] init]];
+  [profile_state_ sceneStateConnected:scene_state_];
+  scene_state_.currentOrigin = WindowActivityContextMenuOrigin;
+
+  NSUserActivity* activity = ActivityToLoadURL(WindowActivityContextMenuOrigin,
+                                               GURL("https://example.com"));
+  AttachMenuScenarioToActivity(activity, kMenuScenarioHistogramHistoryEntry);
+
+  id mock_connection_options = OCMClassMock([UISceneConnectionOptions class]);
+  NSSet<NSUserActivity*>* activities = [NSSet setWithObject:activity];
+  OCMStub([mock_connection_options userActivities]).andReturn(activities);
+  scene_state_.connectionOptions = mock_connection_options;
+
+  base::HistogramTester histogram_tester;
+  [scene_controller_ sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  histogram_tester.ExpectUniqueSample(
+      GetActionsHistogramName(kMenuScenarioHistogramHistoryEntry),
+      MenuActionType::OpenInNewWindow, 1);
 }
 }  // namespace

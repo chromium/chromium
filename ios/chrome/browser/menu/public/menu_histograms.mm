@@ -171,3 +171,7 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       NOTREACHED();
   }
 }
+
+void RecordMenuAction(MenuScenarioHistogram scenario, MenuActionType action) {
+  base::UmaHistogramEnumeration(GetActionsHistogramName(scenario), action);
+}

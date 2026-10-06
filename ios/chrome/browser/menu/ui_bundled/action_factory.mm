@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 
 #import "base/check.h"
-#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
@@ -38,8 +37,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 @interface ActionFactory ()
 
-// Histogram to record executed actions.
-@property(nonatomic, assign) const char* histogram;
+// Scenario to record executed actions.
+@property(nonatomic, assign) MenuScenarioHistogram scenario;
 
 @end
 
@@ -47,7 +46,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (instancetype)initWithScenario:(MenuScenarioHistogram)scenario {
   if ((self = [super init])) {
-    _histogram = GetActionsHistogramName(scenario);
+    _scenario = scenario;
   }
   return self;
 }
@@ -56,13 +55,13 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
                        image:(UIImage*)image
                         type:(MenuActionType)type
                        block:(ProceduralBlock)block {
-  // Capture only the histogram name's pointer to be copied by the block.
-  const char* histogram = self.histogram;
+  // Capture only the scenario enum to be copied by the block.
+  MenuScenarioHistogram scenario = self.scenario;
   return [UIAction actionWithTitle:title
                              image:image
                         identifier:nil
                            handler:^(UIAction* action) {
-                             base::UmaHistogramEnumeration(histogram, type);
+                             RecordMenuAction(scenario, type);
                              if (block) {
                                block();
                              }

@@ -6,13 +6,18 @@
 #define IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_MODEL_WINDOW_ACTIVITY_HELPERS_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
+#import <optional>
+
+#import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "url/gurl.h"
 
 namespace web {
 class WebStateID;
 }  // namespace web
+class ProfileIOS;
 struct UrlLoadParams;
 
 // Window activity origins.  Please add new origins at the end, to keep
@@ -100,5 +105,24 @@ BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity);
 void AttachProfileNameToActivity(NSUserActivity* activity,
                                  std::string_view profile_name);
 std::string GetProfileNameFromActivity(NSUserActivity* activity);
+
+// Attaches the menu scenario to the activity. This is used for activities that
+// open a new window from a menu, so the menu action metric can be recorded when
+// the window is created.
+void AttachMenuScenarioToActivity(NSUserActivity* activity,
+                                  MenuScenarioHistogram scenario);
+
+// Retrieves the menu scenario attached to `activity`, or `std::nullopt` if no
+// menu scenario is attached.
+std::optional<MenuScenarioHistogram> GetMenuScenarioFromActivity(
+    NSUserActivity* activity);
+
+// Creates a UIWindowSceneActivationConfiguration for opening a new window with
+// `activity` from `requesting_scene`, attaching `profile`'s name and adapting
+// `activity` to incognito policies in `profile`'s prefs.
+UIWindowSceneActivationConfiguration* CreateWindowSceneActivationConfiguration(
+    NSUserActivity* activity,
+    ProfileIOS* profile,
+    UIScene* requesting_scene);
 
 #endif  // IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_MODEL_WINDOW_ACTIVITY_HELPERS_H_
