@@ -62,3 +62,5 @@ crbug.com/422282936 external/wpt/css/css-overflow/root-scroll-button.html [ Fail
 # Sheriff 2026-01-26
 crbug.com/478659066 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure Pass Crash ]
 crbug.com/424246290 external/wpt/payment-handler/same-object-attributes.https.html [ Pass Failure ]
+
+crbug.com/567487270 external/wpt/trusted-types/navigate-to-javascript-url-009-crash.html [ Crash ]
