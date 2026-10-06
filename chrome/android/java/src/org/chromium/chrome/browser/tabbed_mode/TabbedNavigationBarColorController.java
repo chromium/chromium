@@ -321,8 +321,9 @@ class TabbedNavigationBarColorController
                             enableOverviewMode();
                             updateNavigationBarColor();
                         } else if (layoutType == LayoutType.TOOLBAR_SWIPE
-                                && isBottomChinEnabled()) {
-                            // Hide the nav bar during omnibox swipes.
+                                && isBottomChinEnabled()
+                                && !useBottomAttachedUiColor()) {
+                            // Hide the nav bar during omnibox swipes when no bottom UI is attached.
                             mNavigationBarColor = Color.TRANSPARENT;
                             mNavigationBarDividerColor = Color.TRANSPARENT;
                             endNavigationBarColorAnimationIfRunning();

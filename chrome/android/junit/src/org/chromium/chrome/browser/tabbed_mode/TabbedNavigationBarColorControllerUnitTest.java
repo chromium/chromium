@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -363,6 +365,38 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
         verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.TRANSPARENT));
         verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarDividerColor(eq(Color.TRANSPARENT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    public void testNavBarDuringOmniboxSwipe_withBottomAttachedUi() {
+        mNavColorController.setIsBottomChinEnabledForTesting(true);
+        mNavColorController.onBottomAttachedColorChanged(
+                Color.GRAY, /* forceShowDivider= */ false, /* disableAnimation= */ true);
+        runColorUpdateAnimation();
+
+        Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
+
+        ArgumentCaptor<LayoutStateObserver> argumentCaptor =
+                ArgumentCaptor.forClass(LayoutStateObserver.class);
+        verify(mLayoutManager).addObserver(argumentCaptor.capture());
+        LayoutStateObserver layoutStateObserver = argumentCaptor.getValue();
+
+        // Simulate omnibox swipe.
+        layoutStateObserver.onStartedShowing(LayoutType.TOOLBAR_SWIPE);
+        runColorUpdateAnimation();
+
+        assertEquals(Color.GRAY, mNavColorController.getNavigationBarColor());
+        verifyNoInteractions(mEdgeToEdgeSystemBarColorHelper);
+
+        // Simulate swipe commit to browsing layout with a new tab color.
+        when(mTab.getBackgroundColor()).thenReturn(Color.RED);
+        layoutStateObserver.onFinishedShowing(LayoutType.BROWSING);
+
+        assertEquals(Color.GRAY, mNavColorController.getNavigationBarColor());
+        assertNull(mNavColorController.getNavbarColorTransitionAnimationForTesting());
+        verify(mEdgeToEdgeSystemBarColorHelper, never()).setNavigationBarColor(eq(Color.RED));
     }
 
     @Test
