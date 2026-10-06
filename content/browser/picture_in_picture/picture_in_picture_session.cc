@@ -96,7 +96,9 @@ void PictureInPictureSession::Shutdown() {
 }
 
 void PictureInPictureSession::StopInternal(StopCallback callback) {
-  CHECK(!is_stopping_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/568395724): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!is_stopping_);
 
   is_stopping_ = true;
 
