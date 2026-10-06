@@ -446,38 +446,35 @@ void FormSubmissionTracker::FireFormSubmission(
 
   std::optional<FormData> form_data =
       GetSubmittedForm(source, submitted_form_element);
-
-  if (form_data) {
-    FireHostSubmitEvents(*form_data, source);
+  if (!form_data) {
+    return;
   }
 
-  if (form_data) {
-    switch (source) {
-      // Resetting here would hurt PasswordManager submissions because it
-      // ignores FORM_SUBMISSION.
-      case mojom::SubmissionSource::FORM_SUBMISSION:
-      // Resetting here would hurt Autofill submissions because it ignores
-      // DOM_MUTATION_AFTER_AUTOFILL.
-      case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
-        break;
-      // Resetting here would hurt PasswordManager submissions because it
-      // ignores PROBABLY_FORM_SUBMITTED.
-      case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
-        // TODO(crbug.com/40281981): Figure out if this is still needed, and
-        // document the reason, otherwise remove.
-        OnFormNoLongerSubmittable();
-        break;
-      case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
-      case mojom::SubmissionSource::XHR_SUCCEEDED:
-      case mojom::SubmissionSource::FRAME_DETACHED:
-        // TODO(crbug.com/40281981): Figure out if this is still needed, and
-        // document the reason, otherwise remove.
-        ResetLastInteractedElements();
-        OnFormNoLongerSubmittable();
-        break;
-      case mojom::SubmissionSource::NONE:
-        NOTREACHED();
-    }
+  FireHostSubmitEvents(*form_data, source);
+  switch (source) {
+    // Resetting here would hurt PasswordManager submissions because it ignores
+    // FORM_SUBMISSION and PROBABLY_FORM_SUBMITTED.
+    case mojom::SubmissionSource::FORM_SUBMISSION:
+    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+    // Resetting here would hurt Autofill submissions because it ignores
+    // DOM_MUTATION_AFTER_AUTOFILL.
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+    // Resetting here is irrelevant because frame detachment immediately
+    // destroys the render frame and `this`.
+    case mojom::SubmissionSource::FRAME_DETACHED:
+      break;
+    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+    case mojom::SubmissionSource::XHR_SUCCEEDED:
+      // Both Autofill and PasswordManager treat these as final submission
+      // signals while the document remains alive. Reset state so that
+      // subsequent interactions/submissions on the same page (e.g., multi-step
+      // flows sharing a <form> or unowned FormRendererId()) can be effectively
+      // tracked as new submissions.
+      ResetLastInteractedElements();
+      OnFormNoLongerSubmittable();
+      break;
+    case mojom::SubmissionSource::NONE:
+      NOTREACHED();
   }
 }
 
@@ -625,9 +622,7 @@ std::optional<FormData> FormSubmissionTracker::GetSubmittedForm(
 
   // Behavior when the submission is a result of a detached iframe:
   // - Look at the cached form and don't try extracting the form from the frame
-  //   since the frame became disconnected.
-  // TODO(crbug.com/40281981): Investigate following the default behavior for
-  // this source (i.e. trying to extract anyways).
+  //   since the frame's document was already shutdown.
   if (source == mojom::SubmissionSource::FRAME_DETACHED) {
     LogSubmittedFormMetric(source, cached_form ? SubmittedFormType::kCached
                                                : SubmittedFormType::kNull);
