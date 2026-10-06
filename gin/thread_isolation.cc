@@ -9,7 +9,6 @@
 #include <sys/mman.h>
 #include <sys/utsname.h>
 
-#include <cerrno>
 #include <cstddef>
 
 #include "base/check.h"
@@ -87,14 +86,9 @@ void PkeyDisableWriteAccess(int pkey) {
 }
 
 void PkeyMprotectData(ThreadIsolationData* data, int pkey) {
-  if (!pkey_mprotect) {
-    base::UmaHistogramSparse("V8.CFIPkeyMprotect", -1);
-    return;
-  }
-
-  int res = pkey_mprotect(data, sizeof(ThreadIsolationData),
-                          PROT_READ | PROT_WRITE, pkey);
-  base::UmaHistogramSparse("V8.CFIPkeyMprotect", res == 0 ? 0 : errno);
+  CHECK(pkey_mprotect);
+  CHECK_EQ(0, pkey_mprotect(data, sizeof(ThreadIsolationData),
+                            PROT_READ | PROT_WRITE, pkey));
 }
 
 }  // namespace
