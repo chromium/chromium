@@ -32,6 +32,9 @@ class SessionController {
   // Called when the session encounters an error.
   virtual void OnError(ErrorCode error) = 0;
 
+  // Ends the session asynchronously
+  virtual void EndSessionAsync() = 0;
+
   // Fetches the context of the page this session is operating on, invoking
   // `callback` with the result. Any fetch already in flight is cancelled and
   // its callback will not be run.
@@ -46,7 +49,7 @@ class SessionController {
   // The current lifecycle state of this session.
   virtual SessionLifecycle GetSessionLifecycle() const = 0;
 
-  // Moves this session to the `lifecycle` state.
+  // Sets the current lifecycle state of this session.
   virtual void SetSessionLifecycle(SessionLifecycle lifecycle) = 0;
 
   // Runs a tool (using parameters provided in `tool_request`) and calls

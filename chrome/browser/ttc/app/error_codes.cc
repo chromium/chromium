@@ -36,4 +36,21 @@ std::ostream& operator<<(std::ostream& os, ErrorCode error) {
   NOTREACHED();
 }
 
+bool IsFatal(ErrorCode error) {
+  switch (error) {
+    case ErrorCode::kUnknown:
+    case ErrorCode::kRateLimited:
+    case ErrorCode::kSafetyBlocked:
+    case ErrorCode::kInternalBackendError:
+    case ErrorCode::kSessionExpired:
+    case ErrorCode::kOptimizationGuideUnavailable:
+    case ErrorCode::kExecutionSessionCreationFailed:
+    case ErrorCode::kAudioNoMicrophoneDetected:
+    case ErrorCode::kAudioMicrophoneInUse:
+    case ErrorCode::kAudioUnknownError:
+      return true;
+  }
+  NOTREACHED();
+}
+
 }  // namespace ttc

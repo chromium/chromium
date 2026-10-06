@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
+#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
@@ -143,13 +144,26 @@ TEST_F(TtcKeyedServiceUnitTest, ConversationStartedAndStoppedWithSession) {
   EXPECT_EQ(conversation_stopped_count(), 1);
 }
 
-TEST_F(TtcKeyedServiceUnitTest, FinishedSessionIsEnded) {
+TEST_F(TtcKeyedServiceUnitTest, EndSessionAsyncEndsSession) {
   service_->StartSession();
   SessionController* controller = service_->session_controller();
   ASSERT_NE(controller, nullptr);
 
-  // Finishing the session should post a task to end it.
-  controller->SetSessionLifecycle(SessionLifecycle::kFinished);
+  // The session is marked finished right away and torn down asynchronously.
+  controller->EndSessionAsync();
+  EXPECT_EQ(controller->GetSessionLifecycle(), SessionLifecycle::kFinished);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return service_->session_controller() == nullptr; }));
+}
+
+TEST_F(TtcKeyedServiceUnitTest, FatalErrorEndsSession) {
+  service_->StartSession();
+  SessionController* controller = service_->session_controller();
+  ASSERT_NE(controller, nullptr);
+
+  controller->OnError(ErrorCode::kUnknown);
+  EXPECT_EQ(controller->GetSessionLifecycle(), SessionLifecycle::kFinished);
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service_->session_controller() == nullptr; }));

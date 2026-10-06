@@ -8,9 +8,12 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/state_transitions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -41,6 +44,20 @@ std::unique_ptr<SessionView> MakeSessionView(
 #else
   return std::make_unique<SessionViewImpl>(delegate);
 #endif
+}
+
+void DCheckSessionLifecycleTransition(SessionLifecycle from,
+                                      SessionLifecycle to) {
+#if DCHECK_IS_ON()
+  static const base::NoDestructor<base::StateTransitions<SessionLifecycle>>
+      kTransitions(base::StateTransitions<SessionLifecycle>({
+          {SessionLifecycle::kInitializing,
+           {SessionLifecycle::kLive, SessionLifecycle::kFinished}},
+          {SessionLifecycle::kLive, {SessionLifecycle::kFinished}},
+          {SessionLifecycle::kFinished, {}},
+      }));
+  DCHECK_STATE_TRANSITION(kTransitions, from, to);
+#endif  // DCHECK_IS_ON()
 }
 
 }  // namespace
@@ -89,16 +106,14 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
     return;
   }
 
+  DCheckSessionLifecycleTransition(session_lifecycle_, lifecycle);
+
   GetJournal().Log("TtcSessionLifecycle",
                    actor::JournalDetailsBuilder()
                        .Add("current_state", session_lifecycle_)
                        .Add("new_state", lifecycle)
                        .Build());
   session_lifecycle_ = lifecycle;
-
-  if (session_lifecycle_ == SessionLifecycle::kFinished) {
-    EndSessionAsync();
-  }
 }
 
 void SessionControllerImpl::GetPageContext(FetchCompleteCallback callback) {
@@ -158,6 +173,21 @@ void SessionControllerImpl::OnSessionInitialized() {
 }
 
 void SessionControllerImpl::OnError(ErrorCode error) {
+  const bool is_fatal = IsFatal(error);
+  GetJournal().Log("TtcError", actor::JournalDetailsBuilder()
+                                   .AddError(error)
+                                   .Add("fatal", is_fatal)
+                                   .Build());
+
+  if (fatal_error_reported_) {
+    return;
+  }
+
+  if (is_fatal) {
+    EndSessionAsync();
+    fatal_error_reported_ = true;
+  }
+
   if (!session_view_) {
     NOTIMPLEMENTED();
     return;
@@ -167,6 +197,8 @@ void SessionControllerImpl::OnError(ErrorCode error) {
 }
 
 void SessionControllerImpl::EndSessionAsync() {
+  SetSessionLifecycle(SessionLifecycle::kFinished);
+
   // Ending the session destroys this object so it must be done asynchronously.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

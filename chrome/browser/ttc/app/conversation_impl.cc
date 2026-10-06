@@ -105,18 +105,11 @@ void ConversationImpl::OnApplicationInitialized() {
 
 void ConversationImpl::OnApplicationClosed() {
   session_controller_->GetJournal().Log("TtcBackendClosed", {});
-  session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
+  session_controller_->EndSessionAsync();
 }
 
 void ConversationImpl::OnApplicationError(ErrorCode error) {
-  session_controller_->GetJournal().Log(
-      "TtcError", actor::JournalDetailsBuilder().AddError(error).Build());
-  if (ending_due_to_error_) {
-    return;
-  }
-  ending_due_to_error_ = true;
   session_controller_->OnError(error);
-  session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
 }
 
 void ConversationImpl::OnTranscriptions(

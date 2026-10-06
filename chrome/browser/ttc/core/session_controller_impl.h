@@ -38,6 +38,7 @@ class SessionControllerImpl : public SessionController,
 
   // SessionController and SessionViewDelegate implementation:
   Profile* GetProfile() override;
+  void EndSessionAsync() override;
 
   // SessionController implementation:
   void OnSessionInitialized() override;
@@ -53,7 +54,6 @@ class SessionControllerImpl : public SessionController,
 
   // SessionViewDelegate implementation:
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  void EndSessionAsync() override;
 
   // VoiceFocusedContentsTracker::Observer implementation:
   void OnVoiceFocusedContentsChanged(
@@ -86,6 +86,8 @@ class SessionControllerImpl : public SessionController,
   ToolController tool_controller_;
 
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
+
+  bool fatal_error_reported_ = false;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

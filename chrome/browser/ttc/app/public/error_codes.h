@@ -39,6 +39,9 @@ enum class ErrorCode {
   kAudioUnknownError = 1005,
 };
 
+// Whether an error is fatal to the session. Fatal errors end the session.
+bool IsFatal(ErrorCode error);
+
 std::ostream& operator<<(std::ostream& os, ErrorCode error);
 
 }  // namespace ttc

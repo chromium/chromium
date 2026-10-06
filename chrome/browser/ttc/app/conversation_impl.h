@@ -91,8 +91,6 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
   base::CallbackListSubscription audio_energy_subscription_;
   base::CallbackListSubscription playback_completion_subscription_;
   base::CallbackListSubscription audio_capture_error_subscription_;
-
-  bool ending_due_to_error_ = false;
 };
 
 }  // namespace ttc

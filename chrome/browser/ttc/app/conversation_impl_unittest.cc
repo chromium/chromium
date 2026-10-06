@@ -75,10 +75,12 @@ class FakeSessionController : public SessionController {
     last_error_ = error;
     ++error_count_;
   }
+  void EndSessionAsync() override { ++end_session_count_; }
 
   const ToolRequest& last_request() const { return last_request_; }
   std::optional<ErrorCode> last_error() const { return last_error_; }
   int error_count() const { return error_count_; }
+  int end_session_count() const { return end_session_count_; }
 
   void AddToolDefinition(const std::string& name) {
     ToolDefinition tool;
@@ -91,6 +93,7 @@ class FakeSessionController : public SessionController {
   ToolRequest last_request_;
   std::optional<ErrorCode> last_error_;
   int error_count_ = 0;
+  int end_session_count_ = 0;
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
   actor::AggregatedJournal journal_;
@@ -197,17 +200,6 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
   EXPECT_FALSE(audio_controller().is_playing());
 }
 
-TEST_F(ConversationImplTest, ApplicationErrorFinishesSession) {
-  ConversationImpl& conversation = CreateConversation();
-
-  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
-            SessionLifecycle::kInitializing);
-
-  conversation.OnApplicationError(ErrorCode::kUnknown);
-  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
-            SessionLifecycle::kFinished);
-}
-
 TEST_F(ConversationImplTest, ApplicationErrorIsReportedToSessionController) {
   ConversationImpl& conversation = CreateConversation();
 
@@ -217,15 +209,15 @@ TEST_F(ConversationImplTest, ApplicationErrorIsReportedToSessionController) {
   EXPECT_EQ(session_controller_.last_error(), ErrorCode::kRateLimited);
 }
 
-TEST_F(ConversationImplTest, ApplicationClosedFinishesSession) {
+TEST_F(ConversationImplTest, ApplicationClosedEndsSession) {
   ConversationImpl& conversation = CreateConversation();
 
   conversation.OnApplicationInitialized();
   EXPECT_EQ(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
 
   conversation.OnApplicationClosed();
-  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
-            SessionLifecycle::kFinished);
+  EXPECT_EQ(session_controller_.end_session_count(), 1);
+  EXPECT_EQ(session_controller_.error_count(), 0);
 }
 
 TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
@@ -380,12 +372,10 @@ TEST_F(ConversationImplTest, AudioCaptureErrorAfterStopIsIgnored) {
   run_loop.Run();
 
   EXPECT_EQ(session_controller_.error_count(), 0);
-  EXPECT_NE(session_controller_.GetSessionLifecycle(),
-            SessionLifecycle::kFinished);
 }
 
 // The backend can report a disconnection as a clean close before the error
-// that caused it, which must still be reported.
+// that caused it, which must still be forwarded.
 TEST_F(ConversationImplTest, ApplicationErrorAfterCloseIsReported) {
   ConversationImpl& conversation = CreateConversation();
 
@@ -394,29 +384,6 @@ TEST_F(ConversationImplTest, ApplicationErrorAfterCloseIsReported) {
 
   EXPECT_EQ(session_controller_.error_count(), 1);
   EXPECT_EQ(session_controller_.last_error(), ErrorCode::kUnknown);
-  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
-            SessionLifecycle::kFinished);
-}
-
-TEST_F(ConversationImplTest, OnlyFirstApplicationErrorIsReported) {
-  ConversationImpl& conversation = CreateConversation();
-
-  conversation.OnApplicationError(ErrorCode::kRateLimited);
-  conversation.OnApplicationError(ErrorCode::kUnknown);
-
-  EXPECT_EQ(session_controller_.error_count(), 1);
-  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kRateLimited);
-}
-
-TEST_F(ConversationImplTest, CloseAfterApplicationErrorIsIgnored) {
-  ConversationImpl& conversation = CreateConversation();
-
-  conversation.OnApplicationError(ErrorCode::kRateLimited);
-  conversation.OnApplicationClosed();
-
-  EXPECT_EQ(session_controller_.error_count(), 1);
-  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
-            SessionLifecycle::kFinished);
 }
 
 }  // namespace ttc
