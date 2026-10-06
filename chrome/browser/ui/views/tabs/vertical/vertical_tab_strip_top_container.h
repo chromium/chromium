@@ -58,7 +58,6 @@ class VerticalTabStripTopContainer : public views::View,
   views::LabelButton* AddChildButtonFor(actions::ActionId action_id);
 
   TabStripComboButton* GetComboButton();
-  TabStripFlatEdgeButton* GetTabSearchButton();
   views::LabelButton* GetCollapseButton() { return collapse_button_; }
   views::LabelButton* GetUnfocusButton() { return unfocus_button_; }
 

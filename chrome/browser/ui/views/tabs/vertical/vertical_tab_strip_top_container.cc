@@ -295,10 +295,6 @@ TabStripComboButton* VerticalTabStripTopContainer::GetComboButton() {
   return combo_button_.get();
 }
 
-TabStripFlatEdgeButton* VerticalTabStripTopContainer::GetTabSearchButton() {
-  return combo_button_->end_button();
-}
-
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
     const gfx::Point& point) {
   if (combo_button_ && IsHitInView(combo_button_, point)) {
