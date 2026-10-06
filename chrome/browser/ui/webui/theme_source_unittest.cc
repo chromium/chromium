@@ -200,11 +200,14 @@ TEST_F(WebUISourcesTest, ThemeSourceShouldServiceRequest) {
       GURL("devtools://theme/css/new_tab_theme.css"), nullptr, -1));
   EXPECT_FALSE(theme_source()->ShouldServiceRequest(GURL("devtools://theme/"),
                                                     nullptr, -1));
-  // TODO(https://crbug.com/562108905): URLDataSource currently allows both
-  // chrome: and chrome-untrusted: requests by default. We should tighten this
-  // so that chrome: sources only service chrome: requests.
-  EXPECT_TRUE(theme_source()->ShouldServiceRequest(
+  EXPECT_FALSE(theme_source()->ShouldServiceRequest(
       GURL("chrome-untrusted://theme/colors.css"), nullptr, -1));
   EXPECT_FALSE(theme_source()->ShouldServiceRequest(
       GURL("https://theme/colors.css"), nullptr, -1));
+
+  ThemeSource untrusted_theme_source(profile(), /*serve_untrusted=*/true);
+  EXPECT_TRUE(untrusted_theme_source.ShouldServiceRequest(
+      GURL("chrome-untrusted://theme/colors.css"), nullptr, -1));
+  EXPECT_FALSE(untrusted_theme_source.ShouldServiceRequest(
+      GURL("chrome://theme/colors.css"), nullptr, -1));
 }

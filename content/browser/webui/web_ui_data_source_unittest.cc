@@ -533,10 +533,7 @@ TEST_F(WebUIDataSourceTest, ShouldServiceRequest) {
       chrome_source->ShouldServiceRequest(GURL("chrome://host/"), nullptr, -1));
   EXPECT_FALSE(chrome_source->ShouldServiceRequest(GURL("devtools://host/"),
                                                    nullptr, -1));
-  // TODO(https://crbug.com/562108905): URLDataSource currently allows both
-  // chrome: and chrome-untrusted: requests by default. We should tighten this
-  // to only allow the matching scheme.
-  EXPECT_TRUE(chrome_source->ShouldServiceRequest(
+  EXPECT_FALSE(chrome_source->ShouldServiceRequest(
       GURL("chrome-untrusted://host/"), nullptr, -1));
   EXPECT_FALSE(
       chrome_source->ShouldServiceRequest(GURL("https://host/"), nullptr, -1));
@@ -545,10 +542,8 @@ TEST_F(WebUIDataSourceTest, ShouldServiceRequest) {
   URLDataSource* untrusted_source = source()->source();
   EXPECT_TRUE(untrusted_source->ShouldServiceRequest(
       GURL("chrome-untrusted://host/"), nullptr, -1));
-  // TODO(https://crbug.com/562108905): Tighten this to only allow the matching
-  // scheme.
-  EXPECT_TRUE(untrusted_source->ShouldServiceRequest(GURL("chrome://host/"),
-                                                     nullptr, -1));
+  EXPECT_FALSE(untrusted_source->ShouldServiceRequest(GURL("chrome://host/"),
+                                                      nullptr, -1));
   EXPECT_FALSE(untrusted_source->ShouldServiceRequest(GURL("devtools://host/"),
                                                       nullptr, -1));
   EXPECT_FALSE(untrusted_source->ShouldServiceRequest(GURL("https://host/"),
