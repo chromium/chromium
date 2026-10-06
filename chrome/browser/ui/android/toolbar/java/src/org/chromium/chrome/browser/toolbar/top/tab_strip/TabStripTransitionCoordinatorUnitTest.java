@@ -12,20 +12,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.View;
+import android.view.View.MeasureSpec;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -68,7 +63,6 @@ import java.util.concurrent.TimeUnit;
 /** Unit test for {@link TabStripTransitionCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w600dp-h800dp", shadows = ShadowLooper.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabStripTransitionCoordinatorUnitTest {
     private static final int TEST_TAB_STRIP_HEIGHT = 40;
     private static final int TEST_TOOLBAR_HEIGHT = 56;
@@ -89,7 +83,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Captor private ArgumentCaptor<Callback<Resource>> mOnCaptureReadyCallback;
 
-    private TestControlContainerView mSpyControlContainer;
+    private FrameLayout mControlContainerView;
     private TabStripTransitionCoordinator mCoordinator;
     private TestActivity mActivity;
     private final TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
@@ -104,15 +98,20 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Before
     public void setup() {
         mActivityScenario.getScenario().onActivity(activity -> mActivity = activity);
-        mSpyControlContainer = TestControlContainerView.createSpy(mActivity);
-        mActivity.setContentView(mSpyControlContainer);
+        // The control container view is intentionally left detached so that its size is fully
+        // controlled by the test (no real layout passes).
+        mControlContainerView = new FrameLayout(mActivity);
+        // Set a test size for the control container as if it's already being measured.
+        setControlContainerSize(
+                mActivity.getResources().getDisplayMetrics().widthPixels,
+                TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT);
         mReservedTopPadding =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.tab_strip_reserved_top_padding);
 
         // Set the mocks for control container and its view resource adapter.
-        doReturn(mSpyControlContainer).when(mControlContainer).getView();
+        doReturn(mControlContainerView).when(mControlContainer).getView();
         doReturn(mViewResourceAdapter).when(mControlContainer).getToolbarResourceAdapter();
         doNothing()
                 .when(mViewResourceAdapter)
@@ -331,8 +330,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Test
     public void hideTabStripBeforeLayout() {
         // Simulate the control container hasn't been measured yet.
-        doReturn(0).when(mSpyControlContainer).getWidth();
-        doReturn(0).when(mSpyControlContainer).getHeight();
+        setControlContainerSize(0, 0);
 
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         assertEquals(
@@ -551,8 +549,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         settleTransitionDuringInitForNarrowWindow();
 
         // Simulate the control container hasn't been measured yet.
-        doReturn(0).when(mSpyControlContainer).getWidth();
-        doReturn(0).when(mSpyControlContainer).getHeight();
+        setControlContainerSize(0, 0);
 
         setDeviceWidthDp(600);
         assertEquals(
@@ -684,8 +681,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Test
     public void enterDesktopWindow_WithoutControlContainerLayout() {
         // Set the height as if the first measure pass hasn't happened yet.
-        doReturn(0).when(mSpyControlContainer).getHeight();
-        doReturn(0).when(mSpyControlContainer).getWidth();
+        setControlContainerSize(0, 0);
 
         // Create the transition coordinator for a desktop window.
         setUpTabStripTransitionCoordinator(
@@ -1021,7 +1017,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     public void transitionUpdatesTopPaddingOnAppThemeChange() {
         // Simulate re-instantiation of the coordinator when the control container hasn't been
         // measured yet, that happens on an app theme change.
-        doReturn(0).when(mSpyControlContainer).getHeight();
+        setControlContainerSize(mControlContainerView.getWidth(), 0);
         setUpTabStripTransitionCoordinator(
                 /* isInDesktopWindow= */ true, LARGE_DESKTOP_WINDOW_WIDTH);
         assertEquals(
@@ -1032,9 +1028,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Simulate a layout pass where the control container is measured, upon navigation back to
         // the active tab from theme settings.
-        doReturn(TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT)
-                .when(mSpyControlContainer)
-                .getHeight();
+        setControlContainerSize(
+                mControlContainerView.getWidth(), TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT);
         simulateLayoutChange(LARGE_DESKTOP_WINDOW_WIDTH);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(
@@ -1047,8 +1042,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_HEIGHT_TRANSITION_GLITCH_FIX)
     public void appHeaderStateChanged_HeightTransitionPending_TriggeredOnNextStateChanged() {
         // Set the height/width as if the first measure pass hasn't happened yet.
-        doReturn(0).when(mSpyControlContainer).getHeight();
-        doReturn(0).when(mSpyControlContainer).getWidth();
+        setControlContainerSize(0, 0);
 
         // Create the transition coordinator for a desktop window.
         setUpTabStripTransitionCoordinator(
@@ -1059,10 +1053,8 @@ public class TabStripTransitionCoordinatorUnitTest {
                 mTestHandler.heightRequested);
 
         // Simulate control container being measured.
-        doReturn(TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT)
-                .when(mSpyControlContainer)
-                .getHeight();
-        doReturn(LARGE_DESKTOP_WINDOW_WIDTH).when(mSpyControlContainer).getWidth();
+        setControlContainerSize(
+                LARGE_DESKTOP_WINDOW_WIDTH, TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT);
 
         // Trigger onAppHeaderStateChanged again. Since the control container is now measured,
         // the pending height transition should be triggered.
@@ -1268,6 +1260,9 @@ public class TabStripTransitionCoordinatorUnitTest {
             mDelegateSupplier.set(mDelegate);
         }
         mTestHandler = new TestHandler();
+        // Destroy any previous coordinator so its layout listener no longer observes the (real)
+        // control container view.
+        if (mCoordinator != null) mCoordinator.destroy();
         mCoordinator =
                 new TabStripTransitionCoordinator(
                         mControlContainer,
@@ -1292,6 +1287,10 @@ public class TabStripTransitionCoordinatorUnitTest {
         Resources res = mActivity.getResources();
         DisplayMetrics displayMetrics = res.getDisplayMetrics();
         displayMetrics.widthPixels = (int) (displayMetrics.density * widthDp);
+        // A measured control container spans the window width.
+        if (mControlContainerView.getWidth() != 0) {
+            setControlContainerSize(displayMetrics.widthPixels, mControlContainerView.getHeight());
+        }
 
         Configuration configuration = res.getConfiguration();
         configuration.screenWidthDp = widthDp;
@@ -1329,18 +1328,25 @@ public class TabStripTransitionCoordinatorUnitTest {
         mDelegate.reset();
     }
 
+    private void setControlContainerSize(int width, int height) {
+        mControlContainerView.setLeft(0);
+        mControlContainerView.setTop(0);
+        mControlContainerView.setRight(width);
+        mControlContainerView.setBottom(height);
+    }
+
     private void simulateLayoutChange(int width) {
-        assertNotNull(mSpyControlContainer.onLayoutChangeListener);
-        mSpyControlContainer.onLayoutChangeListener.onLayoutChange(
-                mSpyControlContainer,
-                /* left= */ 0,
-                /* top= */ 0,
-                /* right= */ width,
-                /* bottom= */ 0,
-                0,
-                0,
-                0,
-                0);
+        // Force a layout pass so that OnLayoutChangeListeners are notified even when the bounds
+        // do not change. Restore the previous bounds afterwards so that the "measured" size of the
+        // control container is controlled only via setControlContainerSize().
+        int oldWidth = mControlContainerView.getWidth();
+        int height = mControlContainerView.getHeight();
+        mControlContainerView.forceLayout();
+        mControlContainerView.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        mControlContainerView.layout(0, 0, width, height);
+        setControlContainerSize(oldWidth, height);
     }
 
     private void simulateConfigurationChanged(Configuration newConfig) {
@@ -1376,46 +1382,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         // mReservedTopPadding
         // and NOT 0 (which would happen if showTabStrip=false caused tabStripHeight=0).
         int expectedMinHeight = TEST_TAB_STRIP_HEIGHT + mReservedTopPadding;
-        verify(mSpyControlContainer, org.mockito.Mockito.atLeastOnce())
-                .setMinimumHeight(expectedMinHeight);
-    }
-
-    // Due to the complexity to use the real views for top toolbar in robolectric tests, use view
-    // mocks for the sake of unit tests.
-    static class TestControlContainerView extends FrameLayout {
-        public View toolbarLayout;
-        @Nullable public View.OnLayoutChangeListener onLayoutChangeListener;
-
-        static TestControlContainerView createSpy(Context context) {
-            TestControlContainerView controlContainer =
-                    spy(new TestControlContainerView(context, null));
-            doReturn(controlContainer.toolbarLayout)
-                    .when(controlContainer)
-                    .findViewById(R.id.toolbar);
-            doAnswer(args -> context.getResources().getDisplayMetrics().widthPixels)
-                    .when(controlContainer)
-                    .getWidth();
-            // Set a test height for the control container as if it's already being measured.
-            doReturn(TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT)
-                    .when(controlContainer)
-                    .getHeight();
-            doAnswer(
-                            args -> {
-                                controlContainer.onLayoutChangeListener = args.getArgument(0);
-                                return null;
-                            })
-                    .when(controlContainer)
-                    .addOnLayoutChangeListener(any());
-
-            return controlContainer;
-        }
-
-        public TestControlContainerView(Context context, @Nullable AttributeSet attrs) {
-            super(context, attrs);
-
-            toolbarLayout = spy(new View(context, attrs));
-            when(toolbarLayout.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
-        }
+        assertEquals(expectedMinHeight, mControlContainerView.getMinimumHeight());
     }
 
     class TestHandler implements TabStripTransitionHandler {

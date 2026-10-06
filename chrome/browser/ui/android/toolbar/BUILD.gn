@@ -551,6 +551,7 @@ robolectric_library("junit") {
     "//chrome/browser/tabwindow:java",
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/edge_to_edge/internal:java",

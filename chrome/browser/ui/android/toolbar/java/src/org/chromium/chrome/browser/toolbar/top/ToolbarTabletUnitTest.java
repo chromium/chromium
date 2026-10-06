@@ -19,7 +19,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,7 +125,6 @@ import java.util.Set;
 
 /** Unit tests for @{@link ToolbarTablet} */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ToolbarTabletUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private LocationBarCoordinator mLocationBar;
@@ -221,7 +219,7 @@ public final class ToolbarTabletUnitTest {
         rootView.addView(realView);
         realView.onAttachedToWindow();
         realView.setIsBottomMostTopControlsLayer(false);
-        mToolbarTablet = spy(realView);
+        mToolbarTablet = realView;
         when(mLocationBar.getTabletCoordinator()).thenReturn(mLocationBarTablet);
         when(mLocationBar.getBookmarkButtonToolbarWidthConsumer())
                 .thenReturn(mLocationBarBookmarkButtonWidthConsumer);
@@ -248,12 +246,7 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setIncognitoIndicatorCoordinatorForTesting(mIncognitoIndicatorCoordinator);
         mToolbarTablet.ensureOptionalButtonWidthConsumerForTesting();
         mToolbarTablet.ensureLocationBarMidWidthConsumer();
-        mToolbarTabletLayout =
-                spy((LinearLayout) mToolbarTablet.findViewById(R.id.toolbar_tablet_layout));
-        doReturn(mToolbarTabletLayout)
-                .when(mToolbarTablet)
-                .findViewById(R.id.toolbar_tablet_layout);
-        mToolbarTablet.setToolbarTabletLayoutForTesting(mToolbarTabletLayout);
+        mToolbarTabletLayout = mToolbarTablet.findViewById(R.id.toolbar_tablet_layout);
         mToolbarTablet.ensurePaddingWidthConsumer();
 
         mHomeButton = mToolbarTablet.findViewById(R.id.home_button);
@@ -700,6 +693,9 @@ public final class ToolbarTabletUnitTest {
         }
 
         mToolbarTablet.updateBookmarkButton(/* isBookmarked= */ true, /* editingAllowed= */ true);
+        // Updating the bookmark icon requests a layout; complete it so capture is not blocked.
+        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.layout(0, 0, 0, 0);
 
         {
             CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
@@ -1101,7 +1097,7 @@ public final class ToolbarTabletUnitTest {
                 /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
                 R.string.adaptive_toolbar_button_preference_share);
 
-        doReturn(toolbarWidth).when(mToolbarTablet).getWidth();
+        setToolbarWidth(toolbarWidth);
 
         // The optional / adaptive button should be showing.
         mToolbarTablet.onMeasure(MeasureSpec.makeMeasureSpec(toolbarWidth, EXACTLY), UNSPECIFIED);
@@ -1192,7 +1188,7 @@ public final class ToolbarTabletUnitTest {
                 R.string.adaptive_toolbar_button_preference_share);
         MarginLayoutParams params = new MarginLayoutParams(100, 100);
         mToolbarTablet.setLayoutParams(params);
-        MarginLayoutParams params2 = new MarginLayoutParams(100, 100);
+        FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(100, 100);
         params2.leftMargin = 200;
         mToolbarTabletLayout.setLayoutParams(params2);
 
@@ -1210,7 +1206,7 @@ public final class ToolbarTabletUnitTest {
         ToolbarWidthConsumer consumer = mToolbarTablet.getGlicIconWidthConsumerForTesting();
         assertNotNull(consumer);
 
-        doReturn(1200).when(mToolbarTablet).getWidth();
+        setToolbarWidth(1200);
         mToolbarTablet.setGlicActionChipVisibility(
                 true, ViewUtils.emptyClickListener(), ViewUtils.emptyLongClickListener());
         View glicChip = mToolbarTablet.getGlicActionChipForTesting();
@@ -1237,7 +1233,7 @@ public final class ToolbarTabletUnitTest {
         assertEquals(View.GONE, glicChip.getVisibility());
 
         // Re-triggering visibility update while no space is available must keep chip GONE.
-        doReturn(300).when(mToolbarTablet).getWidth();
+        setToolbarWidth(300);
         mToolbarTablet.setGlicActionChipVisibility(
                 true, ViewUtils.emptyClickListener(), ViewUtils.emptyLongClickListener());
         assertEquals(View.GONE, glicChip.getVisibility());
@@ -1251,7 +1247,7 @@ public final class ToolbarTabletUnitTest {
         assertNotNull(iconConsumer);
         assertNotNull(textConsumer);
 
-        doReturn(1200).when(mToolbarTablet).getWidth();
+        setToolbarWidth(1200);
         mToolbarTablet.setGlicActionChipVisibility(
                 true, ViewUtils.emptyClickListener(), ViewUtils.emptyLongClickListener());
         View glicChip = mToolbarTablet.getGlicActionChipForTesting();
@@ -1441,13 +1437,17 @@ public final class ToolbarTabletUnitTest {
         View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
         View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
 
+        // onWidthConsumerVisibilityChanged() re-allocates width to all width consumers.
+        setToolbarWidth(1200);
+        clearInvocations(mHomeButtonCoordinator);
         mToolbarTablet.setGlicActionChipVisibility(
                 /* visible= */ true, mockClickListener, mockLongClickListener);
-        verify(mToolbarTablet).onWidthConsumerVisibilityChanged();
+        verify(mHomeButtonCoordinator).updateVisibility(anyInt(), anyInt(), anyInt());
 
         mToolbarTablet.setGlicActionChipVisibility(
                 /* visible= */ false, mockClickListener, mockLongClickListener);
-        verify(mToolbarTablet, Mockito.times(2)).onWidthConsumerVisibilityChanged();
+        verify(mHomeButtonCoordinator, Mockito.times(2))
+                .updateVisibility(anyInt(), anyInt(), anyInt());
     }
 
     @Test
@@ -1657,13 +1657,13 @@ public final class ToolbarTabletUnitTest {
         Runnable onVisibilityChanged = mToolbarTablet::onWidthConsumerVisibilityChanged;
 
         // When space is constrained, DOWNLOAD_BUTTON is not allocated width.
-        doReturn(padding + 8 * buttonWidth + locationBarMidWidth).when(mToolbarTablet).getWidth();
+        setToolbarWidth(padding + 8 * buttonWidth + locationBarMidWidth);
         onVisibilityChanged.run();
         verify(mDownloadButtonCoordinator, never())
                 .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
 
         // When space is available, width re-allocation allocates width to DOWNLOAD_BUTTON.
-        doReturn(padding + 9 * buttonWidth + locationBarMidWidth).when(mToolbarTablet).getWidth();
+        setToolbarWidth(padding + 9 * buttonWidth + locationBarMidWidth);
         onVisibilityChanged.run();
         verify(mDownloadButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
     }
@@ -1706,5 +1706,10 @@ public final class ToolbarTabletUnitTest {
                         padding + 9 * buttonWidth + locationBarMidWidth, EXACTLY),
                 UNSPECIFIED);
         verify(mDownloadButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+    }
+
+    private void setToolbarWidth(int width) {
+        mToolbarTablet.setLeft(0);
+        mToolbarTablet.setRight(width);
     }
 }

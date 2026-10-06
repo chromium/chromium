@@ -13,11 +13,11 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
@@ -35,6 +35,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -59,22 +60,18 @@ import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
-import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Tests for {@link ExtensionsMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ExtensionsMenuMediatorTest {
     // Constants identifying elements used in the test environment.
     private static final int TAB_ID = 111;
@@ -106,7 +103,6 @@ public class ExtensionsMenuMediatorTest {
     @Mock private Runnable mOnReadyRunnable;
 
     @Captor private ArgumentCaptor<ExtensionsMenuBridge> mBridgeCaptor;
-    @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     @Captor
@@ -617,8 +613,8 @@ public class ExtensionsMenuMediatorTest {
         ListItem item = mActionModels.get(0);
         View.OnClickListener contextMenuButtonListener =
                 item.model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK);
-        ListMenuButton mockContextMenuButton = createMockMenuButton();
-        contextMenuButtonListener.onClick(mockContextMenuButton);
+        ListMenuButton contextMenuButton = createMenuButton();
+        contextMenuButtonListener.onClick(contextMenuButton);
 
         // Verify the context menu is shown.
         verify(mActionContextMenuBridgeJniMock)
@@ -627,13 +623,18 @@ public class ExtensionsMenuMediatorTest {
                         eq("id_a"),
                         eq(mWebContents),
                         eq(ContextMenuSource.MENU_ITEM));
-        verify(mockContextMenuButton).showMenu();
+        assertTrue(contextMenuButton.getHost().isMenuShowing());
 
         // Verify dismissal logic (required for cleanup).
-        // Manually capture and fire the dismiss listener. This is required to
-        // trigger bridge.destroy() and pass the test framework's leak check.
-        verify(mockContextMenuButton).addPopupListener(mPopupListenerCaptor.capture());
-        mPopupListenerCaptor.getValue().onPopupMenuDismissed();
+        // Dismissing the popup triggers bridge.destroy(), which is required to pass the test
+        // framework's leak check. The popup never actually shows in Robolectric (the anchor has no
+        // size), so trigger the dismiss listeners directly.
+        contextMenuButton
+                .getHost()
+                .getHierarchicalMenuController()
+                .getFlyoutController()
+                .getMainPopup()
+                .onDismissForTesting(/* byInsideTouch= */ false);
 
         // Verify context menu button is no longer selected after dismissal.
         verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
@@ -689,17 +690,13 @@ public class ExtensionsMenuMediatorTest {
                 model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME));
     }
 
-    /** Helper to create a mock {@link ListMenuButton} with a mock {@link ListMenuHost}. */
-    private ListMenuButton createMockMenuButton() {
-        ListMenuHost mockListMenuHost = mock(ListMenuHost.class);
-        @SuppressWarnings("unchecked")
-        HierarchicalMenuController<AnchoredPopupWindow> mockController =
-                mock(HierarchicalMenuController.class);
-        when(mockListMenuHost.getHierarchicalMenuController()).thenReturn(mockController);
-
-        ListMenuButton mockButton = mock(ListMenuButton.class);
-        when(mockButton.getHost()).thenReturn(mockListMenuHost);
-        return mockButton;
+    /** Helper to create a real {@link ListMenuButton} attached to a themed Activity. */
+    private ListMenuButton createMenuButton() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ListMenuButton button = new ListMenuButton(activity, null);
+        activity.setContentView(button);
+        return button;
     }
 
     /**

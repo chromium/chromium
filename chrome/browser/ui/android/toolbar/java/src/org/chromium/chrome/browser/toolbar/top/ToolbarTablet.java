@@ -1243,10 +1243,6 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = coordinator;
     }
 
-    void setToolbarTabletLayoutForTesting(View view) {
-        mToolbarTabletLayout = view;
-    }
-
     void ensurePaddingWidthConsumer() {
         mToolbarWidthConsumers[ToolbarComponentId.PADDING] =
                 new ToolbarPaddingWidthConsumer(mToolbarTabletLayout, mStartPaddingWithButtons);

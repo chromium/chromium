@@ -78,7 +78,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ExtensionActionListMediatorTest {
 
     /** An representation of an extension action. */
@@ -729,7 +728,7 @@ public class ExtensionActionListMediatorTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
 
-        ListMenuButton buttonView = mock(ListMenuButton.class);
+        ListMenuButton buttonView = new ListMenuButton(activity, null);
         doReturn(buttonView).when(mRecyclerViewDelegate).getButtonViewForId(ACTION1_ID);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);

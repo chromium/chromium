@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,7 @@ import android.graphics.Canvas;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -40,6 +42,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -51,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -63,7 +67,6 @@ import java.util.Set;
 
 /** Unit tests for {@link ToggleTabStackButtonCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToggleTabStackButtonCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -73,7 +76,6 @@ public class ToggleTabStackButtonCoordinatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private ToggleTabStackButton mToggleTabStackButton;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private OnClickListener mOnClickListener;
     @Mock private OnLongClickListener mOnLongClickListener;
@@ -87,6 +89,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private Activity mActivity;
+    private FrameLayout mContentView;
+    private ToggleTabStackButton mToggleTabStackButton;
     private final SettableNonNullObservableSupplier<TabModelDotInfo> mNotificationDotSupplier =
             ObservableSuppliers.createNonNull(TabModelDotInfo.HIDE);
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
@@ -105,6 +109,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContentView = new FrameLayout(mActivity);
+        mActivity.setContentView(mContentView);
 
         doAnswer(invocation -> mOverviewOpen)
                 .when(mLayoutStateProvider)
@@ -134,11 +140,20 @@ public class ToggleTabStackButtonCoordinatorTest {
         when(mIncognitoTabModel.getCount()).thenReturn(0);
 
         // Defaults most test cases expect, can be overridden by each test though.
-        when(mToggleTabStackButton.isShown()).thenReturn(true);
+        mToggleTabStackButton = createButton();
         when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(false);
         mCoordinator = newToggleTabStackButtonCoordinator(mToggleTabStackButton);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+    }
+
+    private ToggleTabStackButton createButton() {
+        ToggleTabStackButton button = new ToggleTabStackButton(mActivity, null);
+        // Normally called when inflated from XML, but the button only exists within the full
+        // toolbar layouts, so it is constructed directly here.
+        button.onFinishInflate();
+        mContentView.addView(button);
+        return button;
     }
 
     private ToggleTabStackButtonCoordinator newToggleTabStackButtonCoordinator(
@@ -348,8 +363,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testSwitchToIncognitoIphIsShown() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(
-                        /* toggleTabStackButton= */ mToggleTabStackButton);
+                // mToggleTabStackButton is already bound to mCoordinator, so use a fresh button.
+                newToggleTabStackButtonCoordinator(/* toggleTabStackButton= */ createButton());
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -396,11 +411,11 @@ public class ToggleTabStackButtonCoordinatorTest {
         mPromoShownOneshotSupplier.set(false);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        when(mToggleTabStackButton.isShown()).thenReturn(false);
+        mToggleTabStackButton.setVisibility(View.GONE);
         mCoordinator.handlePageLoadFinished();
         verifyIphNotShown();
 
-        when(mToggleTabStackButton.isShown()).thenReturn(true);
+        mToggleTabStackButton.setVisibility(View.VISIBLE);
         mCoordinator.handlePageLoadFinished();
         verifyIphShown();
     }
@@ -432,11 +447,20 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testDraw() {
         Canvas canvas = new Canvas();
+        int saveCount = canvas.getSaveCount();
+        TabSwitcherDrawable drawable = mToggleTabStackButton.getTabSwitcherDrawableForTesting();
+        drawable.setAlpha(100);
+        assertNull(drawable.getTextRenderedForTesting());
         mCoordinator.draw(mToggleTabStackButton, canvas);
-        verify(mToggleTabStackButton).drawTabSwitcherAnimationOverlay(canvas);
+        assertNotNull("Overlay should be drawn", drawable.getTextRenderedForTesting());
+        // The overlay is drawn at full opacity, then the previous alpha is restored.
+        assertEquals(100, drawable.getAlpha());
+        assertEquals("Canvas state should be restored", saveCount, canvas.getSaveCount());
     }
 
     @Test
+    // The real ToggleTabStackButton reads these flags when the notification dot changes.
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
     public void testTabModelDotInfoIph() {
         String groupTitle = "Vacation";
         mNotificationDotSupplier.set(new TabModelDotInfo(true, groupTitle));
@@ -454,10 +478,9 @@ public class ToggleTabStackButtonCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void testSetHasSpaceToShow_disabledOnDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
-        reset(mToggleTabStackButton);
         mCoordinator.setHasSpaceToShow(true);
         assertFalse(mCoordinator.hasSpaceToShow());
-        verify(mToggleTabStackButton).setVisibility(View.GONE);
+        assertEquals(View.GONE, mToggleTabStackButton.getVisibility());
     }
 
     @Test
@@ -467,20 +490,19 @@ public class ToggleTabStackButtonCoordinatorTest {
     })
     public void testUpdateVisibility_disabledOnDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
-        reset(mToggleTabStackButton);
         int width = mCoordinator.updateVisibility(500);
         assertEquals(0, width);
         assertFalse(mCoordinator.hasSpaceToShow());
-        verify(mToggleTabStackButton).setVisibility(View.GONE);
+        assertEquals(View.GONE, mToggleTabStackButton.getVisibility());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void testConstructor_disabledOnDesktop_setsVisibilityGone() {
         DeviceInfo.setIsDesktopForTesting(true);
-        ToggleTabStackButton button = mock(ToggleTabStackButton.class);
+        ToggleTabStackButton button = createButton();
         ToggleTabStackButtonCoordinator coordinator = newToggleTabStackButtonCoordinator(button);
         assertFalse(coordinator.hasSpaceToShow());
-        verify(button).setVisibility(View.GONE);
+        assertEquals(View.GONE, button.getVisibility());
     }
 }

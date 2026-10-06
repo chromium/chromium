@@ -12,7 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Resources;
+import android.view.LayoutInflater;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import org.junit.Before;
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -43,26 +45,23 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for ToolbarAppMenuManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MenuButtonCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Activity mActivity;
     @Mock private Runnable mClearOmniboxFocus;
     @Mock private AppMenuCoordinator mAppMenuCoordinator;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private AppMenuButtonHelper mAppMenuButtonHelper;
-    @Mock MenuButton mMenuButton;
-    @Mock ImageButton mImageButton;
     @Mock private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     @Mock private Runnable mRequestRenderRunnable;
     @Mock ThemeColorProvider mThemeColorProvider;
     @Mock IncognitoStateProvider mIncognitoStateProvider;
-    @Mock Resources mResources;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private MenuButtonCoordinator.VisibilityDelegate mVisibilityDelegate;
 
+    private Activity mActivity;
+    private ImageButton mImageButton;
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -80,12 +79,13 @@ public class MenuButtonCoordinatorTest {
                 .getAppMenuPropertiesDelegate();
         mAppMenuSupplier = new OneshotSupplierImpl<>();
         mMenuUiState = new MenuUiState();
-        doReturn(mMenuButton).when(mActivity).findViewById(R.id.menu_button_wrapper);
-        doReturn(mImageButton).when(mMenuButton).getImageButton();
-        doReturn(mResources).when(mActivity).getResources();
-        doReturn(10)
-                .when(mResources)
-                .getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        FrameLayout contentView = new FrameLayout(mActivity);
+        mActivity.setContentView(contentView);
+        LayoutInflater.from(mActivity).inflate(R.layout.menu_button, contentView, true);
+        MenuButton menuButton = mActivity.findViewById(R.id.menu_button_wrapper);
+        mImageButton = menuButton.getImageButton();
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
