@@ -234,8 +234,9 @@ void EmbeddedWorkerInstance::Start(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(context_, base::NotFatalUntil::M159);
   restart_count_++;
-  CHECK_EQ(blink::EmbeddedWorkerStatus::kStopped, status_,
-           base::NotFatalUntil::M159);
+  // TODO(crbug.com/568963745): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(blink::EmbeddedWorkerStatus::kStopped, status_);
 
   CHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
            params->service_worker_version_id, base::NotFatalUntil::M159);
