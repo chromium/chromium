@@ -8614,6 +8614,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Preconnect.PrewarmDictionary.Count"
+    units="entries" expires_after="2027-08-01">
+  <owner>suzukikeita@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of handles to shared dictionaries that are pinned by
+    AwPreconnector after initiating a prewarm for a new preconnect target URL.
+    Note that the presence of a handle does not imply that a dictionary has
+    completed prewarming, nor does it imply that a dictionary actually exists
+    for the URL.
+
+    This histogram is not emitted if the dictionary is already pinned by
+    AwPreconnector. Prewarming is only triggered if the
+    kWebViewPrewarmDictionaryOnPreconnect feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Preconnect.PrewarmDictionary.Event"
+    enum="AndroidWebViewPreconnectPrewarmDictionaryEvent"
+    expires_after="2027-08-01">
+  <owner>suzukikeita@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records events during the Prewarm Shared Brotli Dictionary lifecycle on
+    WebView Preconnect, including initial prewarming, timer refreshes, capacity
+    evictions, 30-second expirations, socket-driven closures, and Mojo
+    disconnections.
+
+    Note that when prewarming is initiated, AwPreconnector speculatively
+    requests and pins a dictionary handle in NetworkContext before knowing
+    whether a matching dictionary actually exists on disk. Therefore, kPrewarmed
+    is recorded regardless of whether a dictionary is found.
+
+    Prewarming and its associated metrics are only emitted when the
+    kWebViewPrewarmDictionaryOnPreconnect feature is enabled. The emitted
+    closure event types depend on the CleanupMode feature parameter
+    (events_only, timer_only, or hybrid).
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Preconnect.SessionCreationTime{Protocol}"
     units="ms" expires_after="2027-01-01">
   <owner>peconn@chromium.org</owner>

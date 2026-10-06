@@ -10,6 +10,8 @@
 #include <optional>
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/common/aw_features.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -21,6 +23,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/socket/next_proto.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -49,6 +52,14 @@ enum class AwPreconnectEvent {
   kMaxValue = kConnectionClosedWasNotUsedOther,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:AndroidWebViewPreconnectEvent)
+
+constexpr base::TimeDelta kPrewarmedDictionaryTimeout = base::Seconds(30);
+
+void RecordPrewarmDictionaryEvent(
+    android_webview::AwPrewarmDictionaryEvent event) {
+  base::UmaHistogramEnumeration(
+      "Android.WebView.Preconnect.PrewarmDictionary.Event", event);
+}
 
 inline constexpr net::NetworkTrafficAnnotationTag
     kWebViewPreconnectTrafficAnnotation =
@@ -91,7 +102,9 @@ inline constexpr net::NetworkTrafficAnnotationTag
 namespace android_webview {
 
 AwPreconnector::AwPreconnector(content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+    : browser_context_(browser_context),
+      prewarmed_shared_dictionaries_(
+          features::kWebViewPrewarmDictionaryOnPreconnectMaxEntries.Get()) {}
 
 AwPreconnector::~AwPreconnector() {
   if (java_obj_) {
@@ -144,6 +157,11 @@ bool AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
 
   base::UmaHistogramEnumeration("Android.WebView.Preconnect.Event",
                                 AwPreconnectEvent::kPreconnectCalled);
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrewarmDictionaryOnPreconnect)) {
+    PrewarmDictionary(url);
+  }
 
   return true;
 }
@@ -257,11 +275,123 @@ void AwPreconnector::OnSessionClosed(bool was_ever_used_to_create_streams) {
 
   TRACE_EVENT2("android_webview", "Preconnect::OnSessionClosed", "url",
                context.url, "duration", duration);
+
+  MaybeCleanupPrewarmedDictionary(context.url, /*is_session_closed=*/true);
 }
 
 void AwPreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {}
 
-void AwPreconnector::OnConnectionFailed() {}
+void AwPreconnector::OnConnectionFailed() {
+  const PreconnectContext& context = receivers_.current_context();
+  MaybeCleanupPrewarmedDictionary(context.url, /*is_session_closed=*/false);
+}
+
+AwPreconnector::PrewarmedDictionaryEntry::PrewarmedDictionaryEntry() = default;
+AwPreconnector::PrewarmedDictionaryEntry::~PrewarmedDictionaryEntry() = default;
+
+void AwPreconnector::PrewarmDictionary(const GURL& url) {
+  TRACE_EVENT1("android_webview", "Preconnect::PrewarmDictionary", "url", url);
+
+  const features::AwPrewarmDictionaryCleanupMode cleanup_mode =
+      features::kWebViewPrewarmDictionaryCleanupMode.Get();
+
+  // 1. If URL is already prewarmed, increment active session count, optionally
+  // refresh its 30-second expiry timer and move to MRU.
+  if (auto it = prewarmed_shared_dictionaries_.Get(url);
+      it != prewarmed_shared_dictionaries_.end()) {
+    RecordPrewarmDictionaryEvent(AwPrewarmDictionaryEvent::kRefreshed);
+    it->second->active_session_count++;
+    if (cleanup_mode == features::AwPrewarmDictionaryCleanupMode::kTimerOnly ||
+        cleanup_mode == features::AwPrewarmDictionaryCleanupMode::kHybrid) {
+      it->second->timer.Start(
+          FROM_HERE, kPrewarmedDictionaryTimeout,
+          base::BindOnce(&AwPreconnector::OnDictionaryExpired,
+                         base::Unretained(this), url));
+    }
+    return;
+  }
+
+  // 2. Create new entry and issue Mojo IPC
+  auto entry = std::make_unique<PrewarmedDictionaryEntry>();
+  entry->active_session_count = 1;
+  browser_context_->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->PreloadSharedDictionaryInfoForDocument(
+          {url}, entry->remote.BindNewPipeAndPassReceiver());
+  entry->remote.set_disconnect_handler(base::BindOnce(
+      &AwPreconnector::OnDictionaryDisconnected, base::Unretained(this), url));
+
+  // 3. Start independent 30s timer for this entry if timer mode is enabled
+  if (cleanup_mode == features::AwPrewarmDictionaryCleanupMode::kTimerOnly ||
+      cleanup_mode == features::AwPrewarmDictionaryCleanupMode::kHybrid) {
+    entry->timer.Start(FROM_HERE, kPrewarmedDictionaryTimeout,
+                       base::BindOnce(&AwPreconnector::OnDictionaryExpired,
+                                      base::Unretained(this), url));
+  }
+
+  // 4. Put into LRUCache (auto-evicts the least recently used item)
+  if (prewarmed_shared_dictionaries_.size() ==
+      prewarmed_shared_dictionaries_.max_size()) {
+    RecordPrewarmDictionaryEvent(AwPrewarmDictionaryEvent::kEvicted);
+  }
+  RecordPrewarmDictionaryEvent(AwPrewarmDictionaryEvent::kPrewarmed);
+  prewarmed_shared_dictionaries_.Put(url, std::move(entry));
+
+  base::UmaHistogramCounts100(
+      "Android.WebView.Preconnect.PrewarmDictionary.Count",
+      prewarmed_shared_dictionaries_.size());
+}
+
+void AwPreconnector::CleanupPrewarmedDictionary(
+    PrewarmedDictionaryMap::iterator it,
+    AwPrewarmDictionaryEvent event) {
+  RecordPrewarmDictionaryEvent(event);
+  prewarmed_shared_dictionaries_.Erase(it);
+}
+
+void AwPreconnector::OnDictionaryExpired(const GURL& url) {
+  if (auto it = prewarmed_shared_dictionaries_.Peek(url);
+      it != prewarmed_shared_dictionaries_.end()) {
+    CleanupPrewarmedDictionary(it, AwPrewarmDictionaryEvent::kExpired);
+  }
+}
+
+void AwPreconnector::OnDictionaryDisconnected(const GURL& url) {
+  if (auto it = prewarmed_shared_dictionaries_.Peek(url);
+      it != prewarmed_shared_dictionaries_.end()) {
+    CleanupPrewarmedDictionary(it, AwPrewarmDictionaryEvent::kDisconnected);
+  }
+}
+
+void AwPreconnector::MaybeCleanupPrewarmedDictionary(const GURL& url,
+                                                     bool is_session_closed) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewPrewarmDictionaryOnPreconnect)) {
+    return;
+  }
+
+  const features::AwPrewarmDictionaryCleanupMode cleanup_mode =
+      features::kWebViewPrewarmDictionaryCleanupMode.Get();
+  if (cleanup_mode == features::AwPrewarmDictionaryCleanupMode::kTimerOnly) {
+    return;
+  }
+
+  auto it = prewarmed_shared_dictionaries_.Peek(url);
+  if (it == prewarmed_shared_dictionaries_.end()) {
+    return;
+  }
+
+  if (it->second->active_session_count > 0) {
+    it->second->active_session_count--;
+  }
+
+  if (it->second->active_session_count == 0) {
+    CleanupPrewarmedDictionary(
+        it, is_session_closed
+                ? AwPrewarmDictionaryEvent::kClosedSessionClosed
+                : AwPrewarmDictionaryEvent::kClosedConnectionFailed);
+  }
+}
 
 }  // namespace android_webview
 

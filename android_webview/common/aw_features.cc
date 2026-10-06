@@ -352,6 +352,24 @@ BASE_FEATURE(kWebViewPrefetchPruneStaleWrappers,
 // Kill switch for reporting `PreloadServingMetrics` for WebView.
 BASE_FEATURE(kWebViewPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, preconnect requests trigger compression dictionary prewarming.
+BASE_FEATURE(kWebViewPrewarmDictionaryOnPreconnect,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<AwPrewarmDictionaryCleanupMode>::Option
+    kAwPrewarmDictionaryCleanupModeOptions[] = {
+        {AwPrewarmDictionaryCleanupMode::kEventsOnly, "events_only"},
+        {AwPrewarmDictionaryCleanupMode::kTimerOnly, "timer_only"},
+        {AwPrewarmDictionaryCleanupMode::kHybrid, "hybrid"},
+};
+const base::FeatureParam<AwPrewarmDictionaryCleanupMode>
+    kWebViewPrewarmDictionaryCleanupMode{
+        &kWebViewPrewarmDictionaryOnPreconnect, "CleanupMode",
+        AwPrewarmDictionaryCleanupMode::kHybrid,
+        &kAwPrewarmDictionaryCleanupModeOptions};
+// Maximum number of prewarmed dictionaries retained concurrently.
+const base::FeatureParam<int> kWebViewPrewarmDictionaryOnPreconnectMaxEntries{
+    &kWebViewPrewarmDictionaryOnPreconnect, "MaxEntries", 4};
+
 // Enables lazy profile creation in WebView.
 BASE_FEATURE(kWebViewProfileStoreNotTriggerStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);

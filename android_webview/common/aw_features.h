@@ -89,6 +89,19 @@ BASE_DECLARE_FEATURE(kWebViewPrefetchOffTheMainThread);
 BASE_DECLARE_FEATURE(kWebViewPrefetchOnRendererReuse);
 BASE_DECLARE_FEATURE(kWebViewPrefetchPruneStaleWrappers);
 BASE_DECLARE_FEATURE(kWebViewPreloadServingMetrics);
+enum class AwPrewarmDictionaryCleanupMode {
+  kEventsOnly = 0,
+  kTimerOnly = 1,
+  kHybrid = 2,
+};
+
+BASE_DECLARE_FEATURE(kWebViewPrewarmDictionaryOnPreconnect);
+// Strategy used to release prewarmed shared dictionary handles.
+extern const base::FeatureParam<AwPrewarmDictionaryCleanupMode>
+    kWebViewPrewarmDictionaryCleanupMode;
+// Maximum number of prewarmed dictionaries retained concurrently.
+extern const base::FeatureParam<int>
+    kWebViewPrewarmDictionaryOnPreconnectMaxEntries;
 BASE_DECLARE_FEATURE(kWebViewProfileStoreNotTriggerStartup);
 BASE_DECLARE_FEATURE(kWebViewPropagateNetworkChangeSignals);
 BASE_DECLARE_FEATURE(kWebViewRecordAppCacheHistograms);
