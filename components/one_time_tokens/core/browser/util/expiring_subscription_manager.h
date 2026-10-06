@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_UTIL_EXPIRING_SUBSCRIPTION_MANAGER_H_
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_UTIL_EXPIRING_SUBSCRIPTION_MANAGER_H_
 
+#include <compare>
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
@@ -70,6 +74,14 @@ class ExpiringSubscriptionManagerBase {
   size_t GetNumberSubscribers() const;
 
  protected:
+  struct ExpirationEntry {
+    base::Time expiration;
+    ExpiringSubscriptionHandle handle;
+
+    friend auto operator<=>(const ExpirationEntry&,
+                            const ExpirationEntry&) = default;
+  };
+
   // Determines the list of subscriptions that are expired and cancels those
   // subscriptions.
   //
@@ -83,14 +95,19 @@ class ExpiringSubscriptionManagerBase {
   // subscription remains.
   void UpdateNextExpirationTimer();
 
-  // Returns the time when the next subscription expires.
-  std::optional<base::Time> GetNextExpirationTime();
-
   base::flat_map<ExpiringSubscriptionHandle,
                  std::unique_ptr<internal::ExpiringSubscriptionDataBase>>
       subscriptions_;
 
+  // Maintains active subscriptions ordered by `(expiration, handle)` so the
+  // earliest upcoming expiration can be queried in O(1) without scanning
+  // `subscriptions_`.
+  base::flat_set<ExpirationEntry> expiration_queue_;
+
   base::OneShotTimer next_expiration_timer_;
+  // Tracks the expiration timestamp for which `next_expiration_timer_` is
+  // currently scheduled across calls to `UpdateNextExpirationTimer()`, avoiding
+  // redundant timer restarts when the earliest expiration does not change.
   std::optional<base::Time> next_expected_expiration_;
 
   base::WeakPtrFactory<ExpiringSubscriptionManagerBase> weak_ptr_factory_{this};
@@ -140,6 +157,7 @@ class ExpiringSubscriptionManager : public ExpiringSubscriptionManagerBase {
     subscription_data->notification_callback = std::move(callback);
     subscription_data->expiration_callback = std::move(expiration_callback);
     subscriptions_[handle] = std::move(subscription_data);
+    expiration_queue_.insert({expiration_time, handle});
     UpdateNextExpirationTimer();
     return ExpiringSubscription(std::move(handle),
                                 weak_ptr_factory_.GetWeakPtr());

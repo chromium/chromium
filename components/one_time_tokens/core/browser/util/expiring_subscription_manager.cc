@@ -4,6 +4,10 @@
 
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 
+#include <optional>
+#include <utility>
+#include <vector>
+
 namespace one_time_tokens {
 
 namespace internal {
@@ -31,7 +35,12 @@ void ExpiringSubscriptionManagerBase::SetExpirationTime(
     const ExpiringSubscriptionHandle& handle,
     base::Time new_expiration) {
   if (auto iter = subscriptions_.find(handle); iter != subscriptions_.end()) {
+    if (iter->second->expiration == new_expiration) {
+      return;
+    }
+    expiration_queue_.erase({iter->second->expiration, handle});
     iter->second->expiration = new_expiration;
+    expiration_queue_.insert({new_expiration, handle});
     UpdateNextExpirationTimer();
   }
 }
@@ -39,6 +48,7 @@ void ExpiringSubscriptionManagerBase::SetExpirationTime(
 void ExpiringSubscriptionManagerBase::Cancel(
     const ExpiringSubscriptionHandle& handle) {
   if (auto iter = subscriptions_.find(handle); iter != subscriptions_.end()) {
+    expiration_queue_.erase({iter->second->expiration, handle});
     subscriptions_.erase(iter);
     UpdateNextExpirationTimer();
   }
@@ -51,24 +61,22 @@ size_t ExpiringSubscriptionManagerBase::GetNumberSubscribers() const {
 void ExpiringSubscriptionManagerBase::ProcessExpirations() {
   const base::Time now = base::Time::Now();
 
-  // Identify all handles of expired subscriptions.
-  std::vector<ExpiringSubscriptionHandle> expired_handles;
   std::vector<base::OnceClosure> expiration_callbacks;
-  expired_handles.reserve(subscriptions_.size());
-  for (auto& [handle, subscription] : subscriptions_) {
-    if (subscription->expiration <= now) {
-      expired_handles.push_back(handle);
-      if (subscription->expiration_callback) {
+  expiration_callbacks.reserve(expiration_queue_.size());
+  auto expired_end = expiration_queue_.begin();
+  while (expired_end != expiration_queue_.end() &&
+         expired_end->expiration <= now) {
+    if (auto iter = subscriptions_.find(expired_end->handle);
+        iter != subscriptions_.end()) {
+      if (iter->second->expiration_callback) {
         expiration_callbacks.push_back(
-            std::move(subscription->expiration_callback));
+            std::move(iter->second->expiration_callback));
       }
+      subscriptions_.erase(iter);
     }
+    ++expired_end;
   }
-
-  // Remove the expired subscriptions.
-  for (const ExpiringSubscriptionHandle& handle : expired_handles) {
-    subscriptions_.erase(handle);
-  }
+  expiration_queue_.erase(expiration_queue_.begin(), expired_end);
 
   // Update internal state before invoking external callbacks. An invoked
   // callback could potentially destroy the `ExpiringSubscriptionManager`
@@ -81,17 +89,17 @@ void ExpiringSubscriptionManagerBase::ProcessExpirations() {
 }
 
 void ExpiringSubscriptionManagerBase::UpdateNextExpirationTimer() {
-  const std::optional<base::Time> next_expiration = GetNextExpirationTime();
-  if (!next_expiration.has_value()) {
+  if (expiration_queue_.empty()) {
     next_expected_expiration_ = std::nullopt;
     next_expiration_timer_.Stop();
     return;
   }
-  if (!next_expected_expiration_.has_value() ||
-      next_expiration.value() != next_expected_expiration_.value()) {
-    base::TimeDelta time_until_next_expiration =
-        next_expiration.value() - base::Time::Now();
+  const base::Time next_expiration = expiration_queue_.begin()->expiration;
+  if (next_expiration != next_expected_expiration_ ||
+      !next_expiration_timer_.IsRunning()) {
     next_expected_expiration_ = next_expiration;
+    base::TimeDelta time_until_next_expiration =
+        next_expiration - base::Time::Now();
     if (time_until_next_expiration.is_negative()) {
       time_until_next_expiration = base::TimeDelta();
     }
@@ -102,16 +110,6 @@ void ExpiringSubscriptionManagerBase::UpdateNextExpirationTimer() {
         base::BindOnce(&ExpiringSubscriptionManagerBase::ProcessExpirations,
                        base::Unretained(this)));
   }
-}
-
-std::optional<base::Time>
-ExpiringSubscriptionManagerBase::GetNextExpirationTime() {
-  auto iter = std::ranges::min_element(
-      subscriptions_, {},
-      [](const auto& pair) { return pair.second->expiration; });
-  return iter != subscriptions_.end()
-             ? std::make_optional(iter->second->expiration)
-             : std::nullopt;
 }
 
 }  // namespace one_time_tokens

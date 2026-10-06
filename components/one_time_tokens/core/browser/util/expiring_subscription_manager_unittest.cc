@@ -538,4 +538,85 @@ TEST_F(ExpiringSubscriptionTest, SetExpirationTimeNonExistent) {
   EXPECT_FALSE(subscription_manager.Exists(handle));
 }
 
+// Verifies that canceling a subscription whose expiration is later than the
+// earliest active subscription preserves the earliest expiration timer.
+TEST_F(ExpiringSubscriptionTest,
+       CancelLaterSubscriptionPreservesEarliestTimer) {
+  ExpiringSubscriptionManagerType subscription_manager;
+  base::Time now = base::Time::Now();
+
+  base::test::TestFuture<void> earliest_expired;
+  ExpiringSubscription earliest =
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     earliest_expired.GetCallback());
+  ExpiringSubscription later =
+      subscription_manager.Subscribe(now + base::Minutes(10), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
+  ExpiringSubscription max_exp =
+      subscription_manager.Subscribe(base::Time::Max(), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
+
+  // Canceling the later and max-expiration subscriptions should not disturb the
+  // 5-minute expiration timer for `earliest`.
+  later.Cancel();
+  max_exp.Cancel();
+  EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 1u);
+  EXPECT_TRUE(earliest.IsAlive());
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+  EXPECT_TRUE(earliest_expired.IsReady());
+  EXPECT_FALSE(earliest.IsAlive());
+  EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 0u);
+}
+
+// Verifies that canceling multiple `base::Time::Max()` subscriptions leaves
+// remaining subscriptions intact and stops the timer when empty.
+TEST_F(ExpiringSubscriptionTest, CancelMaxExpirationSubscriptions) {
+  ExpiringSubscriptionManagerType subscription_manager;
+
+  ExpiringSubscription sub1 =
+      subscription_manager.Subscribe(base::Time::Max(), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
+  ExpiringSubscription sub2 =
+      subscription_manager.Subscribe(base::Time::Max(), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
+
+  EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 2u);
+  sub1.Cancel();
+  EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 1u);
+  EXPECT_TRUE(sub2.IsAlive());
+
+  sub2.Cancel();
+  EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 0u);
+  EXPECT_FALSE(sub2.IsAlive());
+}
+
+// Verifies that canceling the earliest subscription updates the expiration
+// timer to fire at the next earliest subscription's expiration time.
+TEST_F(ExpiringSubscriptionTest,
+       CancelEarliestSubscriptionUpdatesTimerToNextEarliest) {
+  ExpiringSubscriptionManagerType subscription_manager;
+  base::Time now = base::Time::Now();
+
+  ExpiringSubscription earliest =
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
+  base::test::TestFuture<void> second_expired;
+  ExpiringSubscription second = subscription_manager.Subscribe(
+      now + base::Minutes(10), base::DoNothing(), second_expired.GetCallback());
+
+  earliest.Cancel();
+  EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 1u);
+  EXPECT_TRUE(second.IsAlive());
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+  EXPECT_FALSE(second_expired.IsReady());
+  EXPECT_TRUE(second.IsAlive());
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+  EXPECT_TRUE(second_expired.IsReady());
+  EXPECT_FALSE(second.IsAlive());
+  EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 0u);
+}
+
 }  // namespace one_time_tokens
