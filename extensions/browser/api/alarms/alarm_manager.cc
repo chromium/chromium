@@ -219,8 +219,14 @@ void AlarmManager::RemoveAlarmWhenReady(const std::string& name,
     return;
   }
 
+  // Store persistent flag before RemoveAlarmIterator() destroys data.
+  bool persistent = it.second->js_alarm->persist_across_sessions;
   RemoveAlarmIterator(it);
-  WriteToStorage(extension_id);
+  // Write alarms to storage only if the removed alarm was persistent, since
+  // PersistentAlarmsToValue() will skip any non-persistent alarm anyway.
+  if (persistent) {
+    WriteToStorage(extension_id);
+  }
   std::move(callback).Run(true);
 }
 

@@ -111,6 +111,15 @@ class ExtensionAlarmsTest : public ApiUnitTest {
     RunFunction(base::MakeRefCounted<AlarmsCreateFunction>(&test_clock_), args);
   }
 
+  // Calls alarms.clear() and forwards the original boolean result.
+  bool ClearAlarm(const std::string& name) {
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearFunction>(), "[\"" + name + "\"]");
+    CHECK(result);
+    CHECK(result->is_bool());
+    return result->GetBool();
+  }
+
   std::string FailToCreateAlarm(const std::string& args) {
     return RunFunctionAndReturnError(
         base::MakeRefCounted<AlarmsCreateFunction>(&test_clock_), args);
@@ -555,10 +564,8 @@ void ExtensionAlarmsTestClearGetAllAlarms1Callback(
 TEST_F(ExtensionAlarmsTest, Clear) {
   // Clear a non-existent one.
   {
-    std::optional<base::Value> result = RunFunctionAndReturnValue(
-        base::MakeRefCounted<AlarmsClearFunction>(), "[\"nobody\"]");
-    ASSERT_TRUE(result->is_bool());
-    EXPECT_FALSE(result->GetBool());
+    const bool found = ClearAlarm("nobody");
+    EXPECT_FALSE(found);
   }
 
   // Create 3 alarms.
@@ -566,16 +573,12 @@ TEST_F(ExtensionAlarmsTest, Clear) {
 
   // Clear all but the 0.001-minute alarm.
   {
-    std::optional<base::Value> result = RunFunctionAndReturnValue(
-        base::MakeRefCounted<AlarmsClearFunction>(), "[\"7\"]");
-    ASSERT_TRUE(result->is_bool());
-    EXPECT_TRUE(result->GetBool());
+    const bool found = ClearAlarm("7");
+    EXPECT_TRUE(found);
   }
   {
-    std::optional<base::Value> result = RunFunctionAndReturnValue(
-        base::MakeRefCounted<AlarmsClearFunction>(), "[\"0\"]");
-    ASSERT_TRUE(result->is_bool());
-    EXPECT_TRUE(result->GetBool());
+    const bool found = ClearAlarm("0");
+    EXPECT_TRUE(found);
   }
 
   alarm_manager_->GetAllAlarms(
@@ -1112,6 +1115,52 @@ TEST_F(ExtensionAlarmsSchedulingTest, ClearAll) {
   EXPECT_EQ(0, write_counter.write_counts[extension2->id()]);
   EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
   EXPECT_EQ(base::Time(), alarm_manager_->next_poll_time_);
+}
+
+TEST_F(ExtensionAlarmsSchedulingTest, RemoveAlarmStorageWrite) {
+  // Start observing StateStore writes.
+  extension_system()->SetStateStore(std::make_unique<StateStore>(
+      browser_context(),
+      base::MakeRefCounted<value_store::TestValueStoreFactory>(),
+      StateStore::BackendType::STATE, /*deferred_load=*/false));
+  AlarmsStorageWriteCounter write_counter;
+  base::ScopedObservation<StateStore, StateStore::TestObserver>
+      write_observation(&write_counter);
+  write_observation.Observe(extension_system()->state_store());
+
+  // Deletion of a non-existent alarm has no effect.
+  {
+    const bool found = ClearAlarm("nobody");
+    EXPECT_FALSE(found);
+    EXPECT_EQ(0, write_counter.write_counts[extension()->id()]);
+  }
+
+  // Deletion of a non-persistent alarm skips storage.
+  {
+    CreateAlarm(
+        "[null, {\"name\": \"session\", \"periodInMinutes\": 10, "
+        "\"persistAcrossSessions\": false}]");
+    // TODO(crbug.com/560730188): Edit this test after alarms.create() learns to
+    // skip non-persistent alarms.
+    int after_create = write_counter.write_counts[extension()->id()];
+    const bool found = ClearAlarm("session");
+    EXPECT_TRUE(found);
+    EXPECT_EQ(after_create, write_counter.write_counts[extension()->id()]);
+  }
+
+  // Deleting of a persistent alarm causes storage write.
+  {
+    // TODO(crbug.com/560730188): Edit this test after alarms.create() learns to
+    // skip non-persistent alarms.
+    int before_create = write_counter.write_counts[extension()->id()];
+    CreateAlarm(
+        "[null, {\"name\": \"persistent\", \"periodInMinutes\": 10, "
+        "\"persistAcrossSessions\": true}]");
+    EXPECT_EQ(before_create + 1, write_counter.write_counts[extension()->id()]);
+    const bool found = ClearAlarm("persistent");
+    EXPECT_TRUE(found);
+    EXPECT_EQ(before_create + 2, write_counter.write_counts[extension()->id()]);
+  }
 }
 
 }  // namespace extensions
