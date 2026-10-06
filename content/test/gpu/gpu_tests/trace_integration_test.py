@@ -9,7 +9,7 @@ import collections
 from collections.abc import Generator
 import dataclasses
 import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 import gzip
 import io
 import logging
@@ -147,6 +147,13 @@ _WEBGPU_CACHE_HANDLE_TYPE = 1
 _MIN_CACHE_HIT_KEY = 'min_cache_hits'
 _PROFILE_DIR_KEY = 'profile_dir'
 _PROFILE_TYPE_KEY = 'profile_type'
+
+
+class _SwapChainKey(StrEnum):
+  """Arg keys for DXGISwapChainImageBacking::Present trace events."""
+
+  HAS_ALPHA = 'debug.has_alpha'
+  DIRTY_RECT = 'debug.dirty_rect'
 
 
 class _TraceTestOrigin(Enum):
@@ -1114,6 +1121,16 @@ WHERE
         f'{_BEGIN_OVERLAY_ACCESS_EVENT_NAME} events were found'
       )
 
+  @staticmethod
+  def _IsSmallUiSwapChain(dirty_rect: str) -> bool:
+    """Returns True if dirty_rect (e.g. '0,0 64x64') is <= 64x64."""
+    if ' ' not in dirty_rect:
+      return False
+    width, height = (
+      int(dim) for dim in dirty_rect.split(' ', 1)[1].split('x', 1)
+    )
+    return width <= 64 and height <= 64
+
   def _EvaluateSuccess_CheckSwapChainHasAlpha(
     self, category: str, trace_processor: tp.TraceProcessor, other_args: dict
   ) -> None:
@@ -1130,9 +1147,12 @@ WHERE
 
     # Find all swap chain events with has_alpha and verify they have the
     # expected value.
-    has_present_swap_chain_event_with_has_alpha = False
+    swap_events = collections.defaultdict(dict)
     swap_chain_query = f"""\
 SELECT
+  slices.id,
+  key,
+  string_value,
   int_value
 FROM
   slices
@@ -1141,12 +1161,30 @@ JOIN
 WHERE
   category = '{category}'
   AND name = '{_PRESENT_SWAP_CHAIN_EVENT_NAME}'
-  AND key = 'debug.has_alpha'
   AND args.arg_set_id = slices.arg_set_id
+ORDER BY slices.id
 """
     for row in trace_processor.query(swap_chain_query):
+      match row.key:
+        case _SwapChainKey.HAS_ALPHA:
+          swap_events[row.id][row.key] = bool(row.int_value)
+        case _SwapChainKey.DIRTY_RECT:
+          swap_events[row.id][row.key] = row.string_value
+
+    has_present_swap_chain_event_with_has_alpha = False
+    for event_args in swap_events.values():
+      if _SwapChainKey.HAS_ALPHA not in event_args:
+        continue
+      # Under DelegatedCompositing, small transparent browser UI surfaces
+      # (such as the 34x34 WebUIReloadButton in the toolbar, backed by a
+      # 64x64 swap chain) can present alongside the main WebContents swap
+      # chain. Ignore small UI swap chains when checking the main/root swap
+      # chain.
+      if self._IsSmallUiSwapChain(event_args.get(_SwapChainKey.DIRTY_RECT, '')):
+        continue
+
       has_present_swap_chain_event_with_has_alpha = True
-      got_has_alpha = bool(row.int_value)
+      got_has_alpha = event_args[_SwapChainKey.HAS_ALPHA]
       if expect_has_alpha != got_has_alpha:
         self.fail(
           f'Expected events with name {_PRESENT_SWAP_CHAIN_EVENT_NAME} '

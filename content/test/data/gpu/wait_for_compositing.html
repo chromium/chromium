@@ -9,21 +9,32 @@
 }
 </style>
 <script>
-var g_swaps_before_success = 7
+var g_swaps_before_success = 7;
+
+function scheduleNextFrame() {
+  document.body.style.backgroundColor =
+      (g_swaps_before_success % 2 === 0) ? 'blue' : 'green';
+  if (window.chrome && chrome.gpuBenchmarking &&
+      chrome.gpuBenchmarking.addSwapCompletionEventListener) {
+    chrome.gpuBenchmarking.addSwapCompletionEventListener(
+        waitForSwapsToComplete);
+  } else {
+    window.requestAnimationFrame(waitForSwapsToComplete);
+  }
+}
 
 function waitForSwapsToComplete() {
   g_swaps_before_success--;
   if (g_swaps_before_success > 0) {
-    window.requestAnimationFrame(waitForSwapsToComplete);
+    window.requestAnimationFrame(scheduleNextFrame);
   } else {
     domAutomationController.send("SUCCESS");
   }
 }
 
 function main() {
-  window.requestAnimationFrame(waitForSwapsToComplete);
+  window.requestAnimationFrame(scheduleNextFrame);
 }
-
 </script>
 </head>
 <body onload="main()">
