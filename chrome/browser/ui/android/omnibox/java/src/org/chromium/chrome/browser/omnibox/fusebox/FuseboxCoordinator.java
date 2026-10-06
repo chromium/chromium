@@ -320,14 +320,13 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mActivity,
                         mWindowAndroid,
                         assumeNonNull(mModel),
-                        assumeNonNull(mViewHolder),
                         mResourceProvider,
                         mTabModelSelectorSupplier,
                         mFuseboxStateSupplier,
                         mPopupStateSupplier,
                         mSnackbarManager,
                         mScrimManager,
-                        mScrimAnchorViewSupplier,
+                        this::getScrimAnchorView,
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
                         mHasAttachmentsSupplier,
@@ -335,6 +334,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
+    }
+
+    private View getScrimAnchorView() {
+        View anchor = mScrimAnchorViewSupplier.get();
+        return anchor != null ? anchor : mParent;
     }
 
     public void destroy() {
