@@ -277,6 +277,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/indexeddb/indexeddb.mojom:IDBTransactionMode) -->
 
+<!-- LINT.IfChange(IndexedDbBackingStoreResetReason) -->
+
+<enum name="IndexedDbBackingStoreResetReason">
+  <int value="0" label="Profile shutdown"/>
+  <int value="1" label="Bucket deletion"/>
+  <int value="2" label="Forced closed by internals UI"/>
+  <int value="3" label="No open connections for 2+ seconds"/>
+  <int value="4" label="Backing store error: catastrophic/corruption"/>
+  <int value="5" label="Backing store error: transient/non-corruption"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/bucket_context.h:BackingStoreResetReason) -->
+
 <!-- LINT.IfChange(IndexedDBBadMessageReason) -->
 
 <enum name="IndexedDBBadMessageReason">

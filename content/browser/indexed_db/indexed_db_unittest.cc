@@ -1192,6 +1192,9 @@ TEST_P(IndexedDBTestWithBucketType, ForceCloseOpenDatabasesOnDelete) {
       "IndexedDB.BackendDuration.CloseBackingStore.OnDisk", 1);
   histograms.ExpectUniqueSample("IndexedDB.DeleteBucketDataSuccess.OnDisk",
                                 true, 1);
+  histograms.ExpectUniqueSample(
+      "IndexedDB.BackingStore.ResetReason.OnDisk",
+      BucketContext::BackingStoreResetReason::kBucketDeletion, 1);
 }
 
 // Verifies that the IDB connection is force closed when the backing store has
@@ -1204,10 +1207,26 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDatabaseError) {
             BucketContext* bucket = test->GetBucketContext(bucket_info->id);
             const auto& dbs = bucket->GetDatabasesForTesting();
             ASSERT_EQ(1U, dbs.size());
+            base::HistogramTester histograms;
+            test->NudgeBackingStoreCloseLogic(bucket);
+            histograms.ExpectUniqueSample(
+                "IndexedDB.BackingStore.DatabaseError.OnDisk",
+                /*Status::Type::kOk=*/0, 1);
             for (auto& [name, db] : dbs) {
               bucket->OnDatabaseError(
                   db.get(), Status::InvalidArgument("operation not supported"),
                   std::string());
+            }
+            histograms.ExpectBucketCount(
+                "IndexedDB.BackingStore.DatabaseError.OnDisk",
+                /*Status::Type::kInvalidArgument=*/3, 1);
+            if (test->IsSqliteBackingStoreEnabled()) {
+              histograms.ExpectTotalCount(
+                  "IndexedDB.BackingStore.ResetReason.OnDisk", 0);
+            } else {
+              histograms.ExpectUniqueSample(
+                  "IndexedDB.BackingStore.ResetReason.OnDisk",
+                  BucketContext::BackingStoreResetReason::kDatabaseError, 1);
             }
           },
           this, &bucket_info),
@@ -1603,10 +1622,14 @@ TEST_P(IndexedDBTest, TooLongOrigin) {
 }
 
 TEST_P(IndexedDBTest, FactoryForceClose) {
+  base::HistogramTester histograms;
   base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
   BucketLocator bucket_locator = bucket_context->bucket_locator();
 
   bucket_context->ForceClose(/*doom=*/false);
+  histograms.ExpectUniqueSample(
+      "IndexedDB.BackingStore.ResetReason.OnDisk",
+      BucketContext::BackingStoreResetReason::kInternalsPage, 1);
   // Weak pointer is immediately invalidated.
   EXPECT_FALSE(bucket_context);
 

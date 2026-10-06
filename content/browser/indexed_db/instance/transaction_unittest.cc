@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -378,6 +379,7 @@ TEST_P(TransactionTestMode, ScheduleNormalTask) {
 }
 
 TEST_P(TransactionTestMode, TaskFails) {
+  base::HistogramTester histograms;
   std::unique_ptr<Connection> connection = CreateConnection();
   Transaction* transaction =
       CreateTransaction(connection.get(), /*id=*/0, /*object_store_ids=*/{},
@@ -415,16 +417,22 @@ TEST_P(TransactionTestMode, TaskFails) {
   transaction->SetCommitFlag();
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
+  histograms.ExpectUniqueSample("IndexedDB.BackingStore.DatabaseError.OnDisk",
+                                /*Status::Type::kIoError=*/4, 1);
 
   // An error was reported which ...
   if (!IsSqliteBackingStoreEnabled()) {
     // ... deletes the bucket context.
     EXPECT_FALSE(bucket_context_);
+    histograms.ExpectUniqueSample(
+        "IndexedDB.BackingStore.ResetReason.OnDisk",
+        BucketContext::BackingStoreResetReason::kDatabaseError, 1);
   } else {
     // ... closes the database.
     EXPECT_TRUE(bucket_context_);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return bucket_context_->GetDatabasesForTesting().empty(); }));
+    histograms.ExpectTotalCount("IndexedDB.BackingStore.ResetReason.OnDisk", 0);
   }
 }
 

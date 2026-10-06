@@ -292,6 +292,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="IndexedDB.BackingStore.DatabaseError.{IndexedDBBackingStoreType}"
+    enum="IndexedDbStatusType" expires_after="2027-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the status of database operations. OK is logged after a database
+    task is successfully run, and an error status is logged when a database task
+    encounters failure, or failure is reported while doing work not contained
+    within an &quot;operation&quot;.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.BackingStore.ReadBlob.{IndexedDBBackingStoreType}"
     enum="NetErrorCodes" expires_after="2027-09-18">
   <owner>leimy@chromium.org</owner>
@@ -306,6 +320,18 @@ chromium-metrics-reviews@google.com.
     successfully or otherwise. The source of the bytes may be a file as in the
     case of LevelDB, or a blob streaming handle as in the case of SQLite. This
     histogram gates rollout of the SQLite backing store.
+  </summary>
+</histogram>
+
+<histogram
+    name="IndexedDB.BackingStore.ResetReason.{IndexedDBBackingStoreType}"
+    enum="IndexedDbBackingStoreResetReason" expires_after="2027-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records why an initialized IndexedDB backing store is reset. Logged once
+    immediately before the backing store is destroyed.
   </summary>
 </histogram>
 
