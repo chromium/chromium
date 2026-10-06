@@ -226,7 +226,7 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
         client_session_control);
 
     // Create the disconnect window.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     disconnect_window_ = HostWindow::CreateAutoHidingDisconnectWindow(
         interaction_strategy().CreateLocalInputMonitor());
 #else

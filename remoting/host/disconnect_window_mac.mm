@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <cmath>
+#include <cstdlib>
 #include <memory>
 #include <utility>
 
@@ -21,6 +22,7 @@
 #include "remoting/base/string_resources.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
+#include "remoting/host/input_monitor/local_input_monitor.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -31,6 +33,12 @@ constexpr int kMaximumConnectedNameWidthInPixels = 600;
 // bar at the top or an auto-hiding Dock at the bottom.
 constexpr CGFloat kTopMargin = 40.0;
 constexpr CGFloat kBottomMargin = 80.0;
+
+// The amount of time to wait before hiding the disconnect window.
+constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
+
+// The duration of the hide and show animations.
+constexpr NSTimeInterval kAnimationDuration = 0.2;
 
 bool IsDarkMode() {
   NSAppearanceName appearance =
@@ -51,6 +59,7 @@ bool IsDarkMode() {
 - (void)onWindowDidMove:(NSNotification*)notification;
 - (void)onCooldownExpired;
 - (IBAction)toggleAlignment:(id)sender;
+@property(nonatomic, assign) BOOL isHidden;
 @property(nonatomic, strong) NSButton* toggleButton;
 @property(nonatomic, strong) NSTextField* connectedToField;
 @property(nonatomic, strong) NSButton* disconnectButton;
@@ -64,6 +73,11 @@ DisconnectWindowMac::~DisconnectWindowMac() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [window_controller_ hide];
   window_controller_ = nil;
+}
+
+void DisconnectWindowMac::EnableAutoHide(
+    std::unique_ptr<LocalInputMonitor> local_input_monitor) {
+  local_input_monitor_ = std::move(local_input_monitor);
 }
 
 void DisconnectWindowMac::Start(
@@ -86,6 +100,20 @@ void DisconnectWindowMac::Start(
                         window:window];
   [window_controller_ initializeWindow];
   [window_controller_ showWindow:nil];
+
+  if (local_input_monitor_) {
+    local_input_monitor_->StartMonitoring(
+        base::BindRepeating(&DisconnectWindowMac::OnLocalMouseEvent,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&DisconnectWindowMac::OnLocalKeyPressed,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&DisconnectWindowMac::StopAutoHideBehavior,
+                            weak_factory_.GetWeakPtr()));
+
+    auto_hide_timer_.Start(FROM_HERE, kAutoHideTimeout,
+                           base::BindOnce(&DisconnectWindowMac::HideDialog,
+                                          base::Unretained(this)));
+  }
 }
 
 void DisconnectWindowMac::OnCooldownExpired() {
@@ -93,9 +121,65 @@ void DisconnectWindowMac::OnCooldownExpired() {
   [window_controller_ onCooldownExpired];
 }
 
+void DisconnectWindowMac::ShowDialog() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Always reset the hide timer when this method is called.
+  if (local_input_monitor_) {
+    auto_hide_timer_.Start(FROM_HERE, kAutoHideTimeout,
+                           base::BindOnce(&DisconnectWindowMac::HideDialog,
+                                          base::Unretained(this)));
+  }
+
+  if (!was_auto_hidden_) {
+    return;
+  }
+  was_auto_hidden_ = false;
+  [window_controller_ showDialog];
+}
+
+void DisconnectWindowMac::HideDialog() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (was_auto_hidden_ || !local_input_monitor_ || !window_controller_) {
+    return;
+  }
+  was_auto_hidden_ = true;
+  [window_controller_ hideDialog];
+}
+
+void DisconnectWindowMac::StopAutoHideBehavior() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto_hide_timer_.Stop();
+  local_input_monitor_.reset();
+  ShowDialog();
+}
+
+void DisconnectWindowMac::OnLocalMouseEvent(
+    const webrtc::DesktopVector& position,
+    ui::EventType /*type*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (std::abs(position.x() - mouse_position_.x()) > 1 ||
+      std::abs(position.y() - mouse_position_.y()) > 1) {
+    mouse_position_ = position;
+    ShowDialog();
+  }
+}
+
+void DisconnectWindowMac::OnLocalKeyPressed(uint32_t /*usb_keycode*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ShowDialog();
+}
+
 // static
 std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   return std::make_unique<DisconnectWindowMac>();
+}
+
+// static
+std::unique_ptr<HostWindow> HostWindow::CreateAutoHidingDisconnectWindow(
+    std::unique_ptr<LocalInputMonitor> local_input_monitor) {
+  auto disconnect_window = std::make_unique<DisconnectWindowMac>();
+  disconnect_window->EnableAutoHide(std::move(local_input_monitor));
+  return disconnect_window;
 }
 
 }  // namespace remoting
@@ -104,6 +188,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   base::WeakPtr<remoting::DisconnectWindowMac> _disconnect_window;
 }
 
+@synthesize isHidden = _isHidden;
 @synthesize toggleButton = _toggleButton;
 @synthesize connectedToField = _connectedToField;
 @synthesize disconnectButton = _disconnectButton;
@@ -178,6 +263,31 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   [NSNotificationCenter.defaultCenter removeObserver:self];
   _disconnect_window.reset();
   [self close];
+}
+
+- (void)hideDialog {
+  self.isHidden = YES;
+  __weak __typeof(self) weakSelf = self;
+  [NSAnimationContext
+      runAnimationGroup:^(NSAnimationContext* context) {
+        context.duration = kAnimationDuration;
+        self.window.animator.alphaValue = 0.0;
+      }
+      completionHandler:^{
+        if (weakSelf.isHidden) {
+          [weakSelf.window orderOut:nil];
+        }
+      }];
+}
+
+- (void)showDialog {
+  self.isHidden = NO;
+  [self setDialogPosition];
+  [self.window orderFrontRegardless];
+  [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
+    context.duration = kAnimationDuration;
+    self.window.animator.alphaValue = 1.0;
+  }];
 }
 
 - (void)initializeWindow {
