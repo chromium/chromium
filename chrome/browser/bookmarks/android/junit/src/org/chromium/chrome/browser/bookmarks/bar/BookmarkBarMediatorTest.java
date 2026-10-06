@@ -23,11 +23,14 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -40,13 +43,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -91,8 +94,25 @@ import java.util.List;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkBarMediatorTest {
+    /** Adapter with a single bookmark bar item, so that the items RecyclerView has a child. */
+    private static class SingleItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = new View(parent.getContext());
+            view.setLayoutParams(new RecyclerView.LayoutParams(100, 100));
+            return new RecyclerView.ViewHolder(view) {};
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+        @Override
+        public int getItemCount() {
+            return 1;
+        }
+    }
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -104,8 +124,6 @@ public class BookmarkBarMediatorTest {
     @Mock private PropertyModel mAllBookmarksButtonModel;
     @Mock private Profile mProfile;
     @Mock private BookmarkOpener mBookmarkOpener;
-    @Mock private RecyclerView mItemsRecyclerView;
-    @Mock private BookmarkBar mBookmarkBarView;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -120,6 +138,8 @@ public class BookmarkBarMediatorTest {
     private final SettableNonNullObservableSupplier<Boolean> mItemsOverflowSupplier =
             ObservableSuppliers.createNonNull(false);
     private Activity mActivity;
+    private BookmarkBar mBookmarkBarView;
+    private RecyclerView mItemsRecyclerView;
     private BookmarkBarMediator mMediator;
     private FakeBookmarkModel mBookmarkModel;
     private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
@@ -131,6 +151,15 @@ public class BookmarkBarMediatorTest {
         ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        mBookmarkBarView =
+                (BookmarkBar) LayoutInflater.from(mActivity).inflate(R.layout.bookmark_bar, null);
+        mItemsRecyclerView = mBookmarkBarView.findViewById(R.id.bookmark_bar_items_container);
+        mItemsRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        mActivity, LinearLayoutManager.HORIZONTAL, /* reverseLayout= */ false));
+        mItemsRecyclerView.setAdapter(new SingleItemAdapter());
+        mActivity.setContentView(mBookmarkBarView);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mBookmarkModel = FakeBookmarkModel.createModel();
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
@@ -548,10 +577,8 @@ public class BookmarkBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceRightClick_ContextMenuEnabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mBookmarkBarView.getEmptySpaceContextMenuCallbackForTesting();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -572,10 +599,8 @@ public class BookmarkBarMediatorTest {
     @Test
     @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceRightClick_ContextMenuDisabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mBookmarkBarView.getEmptySpaceContextMenuCallbackForTesting();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -593,10 +618,8 @@ public class BookmarkBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceLongClick_ContextMenuEnabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mBookmarkBarView.getEmptySpaceContextMenuCallbackForTesting();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -617,10 +640,8 @@ public class BookmarkBarMediatorTest {
     @Test
     @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceLongClick_ContextMenuDisabled() {
-        ArgumentCaptor<BookmarkBar.EmptySpaceContextMenuCallback> captor =
-                ArgumentCaptor.forClass(BookmarkBar.EmptySpaceContextMenuCallback.class);
-        verify(mBookmarkBarView).setEmptySpaceContextMenuCallback(captor.capture());
-        BookmarkBar.EmptySpaceContextMenuCallback callback = captor.getValue();
+        BookmarkBar.EmptySpaceContextMenuCallback callback =
+                mBookmarkBarView.getEmptySpaceContextMenuCallbackForTesting();
         assertNotNull(callback);
 
         var histogramWatcher =
@@ -653,9 +674,7 @@ public class BookmarkBarMediatorTest {
                 itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
         assertNotNull(clickCallback);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
-        when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
+        View itemView = mItemsRecyclerView.findViewHolderForAdapterPosition(0).itemView;
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -667,7 +686,7 @@ public class BookmarkBarMediatorTest {
 
         clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
 
-        verify(mPopupCoordinator).showContextMenuPopup(any(), eq(mockView), any(), eq(false));
+        verify(mPopupCoordinator).showContextMenuPopup(any(), eq(itemView), any(), eq(false));
         histogramWatcher.assertExpected();
     }
 
@@ -689,9 +708,7 @@ public class BookmarkBarMediatorTest {
                 itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
         assertNotNull(clickCallback);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
-        when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
+        View itemView = mItemsRecyclerView.findViewHolderForAdapterPosition(0).itemView;
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -724,9 +741,7 @@ public class BookmarkBarMediatorTest {
                 itemModel.get(BookmarkBarButtonProperties.LONG_CLICK_LISTENER);
         assertNotNull(longClickListener);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
-        when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
+        View itemView = mItemsRecyclerView.findViewHolderForAdapterPosition(0).itemView;
 
         Callback<Point> pointCallback = itemModel.get(BookmarkBarButtonProperties.POINT_CALLBACK);
         assertNotNull(pointCallback);
@@ -740,10 +755,10 @@ public class BookmarkBarMediatorTest {
                                 true)
                         .build();
 
-        assertTrue(longClickListener.onLongClick(mockView));
+        assertTrue(longClickListener.onLongClick(itemView));
 
         verify(mPopupCoordinator)
-                .showContextMenuPopup(any(), eq(mockView), eq(new Point(10, 20)), eq(false));
+                .showContextMenuPopup(any(), eq(itemView), eq(new Point(10, 20)), eq(false));
         histogramWatcher.assertExpected();
     }
 
@@ -765,9 +780,7 @@ public class BookmarkBarMediatorTest {
                 itemModel.get(BookmarkBarButtonProperties.LONG_CLICK_LISTENER);
         assertNotNull(longClickListener);
 
-        View mockView = mock(View.class);
-        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
-        when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
+        View itemView = mItemsRecyclerView.findViewHolderForAdapterPosition(0).itemView;
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -776,7 +789,7 @@ public class BookmarkBarMediatorTest {
                                         + ".LongPress.Opened")
                         .build();
 
-        assertFalse(longClickListener.onLongClick(mockView));
+        assertFalse(longClickListener.onLongClick(itemView));
 
         verify(mPopupCoordinator, never()).showContextMenuPopup(any(), any(), any(), anyBoolean());
         histogramWatcher.assertExpected();
@@ -1071,7 +1084,7 @@ public class BookmarkBarMediatorTest {
                         "Bookmark to Delete",
                         JUnitTestGURLs.URL_1);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mMediator.deleteBookmark(bookmarkId);
 
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
@@ -1190,11 +1203,6 @@ public class BookmarkBarMediatorTest {
         ClickWithMetaStateCallback clickCallback = clickCallbackCaptor.getValue();
         assertNotNull(clickCallback);
 
-        View allBookmarksButton = new View(mActivity);
-        allBookmarksButton.setId(R.id.bookmark_bar_all_bookmarks_button);
-        when(mBookmarkBarView.findViewById(R.id.bookmark_bar_all_bookmarks_button))
-                .thenReturn(allBookmarksButton);
-
         // Simulate right click or long press (BUTTON_SECONDARY).
         clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
 
@@ -1214,8 +1222,7 @@ public class BookmarkBarMediatorTest {
         Runnable callback = callbackCaptor.getValue();
         assertNotNull(callback);
 
-        FrameLayout overflowButtonView = mock(FrameLayout.class);
-        when(mBookmarkBarView.getOverflowButton()).thenReturn(overflowButtonView);
+        FrameLayout overflowButtonView = mBookmarkBarView.getOverflowButton();
 
         callback.run();
 
@@ -1239,7 +1246,7 @@ public class BookmarkBarMediatorTest {
         when(mUserPrefsJni.get(newProfile)).thenReturn(mPrefService);
 
         mProfileSupplier.set(newProfile);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertNull(mBookmarkModel.getBookmarkById(bookmarkId));
     }

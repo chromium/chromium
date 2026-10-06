@@ -185,6 +185,10 @@ class BookmarkBar extends LinearLayout {
         mEmptySpaceContextMenuCallback = callback;
     }
 
+    @Nullable EmptySpaceContextMenuCallback getEmptySpaceContextMenuCallbackForTesting() {
+        return mEmptySpaceContextMenuCallback;
+    }
+
     /**
      * Sets the callback to notify of bookmark bar overflow button click events.
      *
