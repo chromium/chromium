@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/ech_mode.h"
@@ -25,6 +26,23 @@
 #include "url/url_constants.h"
 
 namespace net {
+
+// static
+const char* QuicSessionPool::AsyncDnsJob::SuccessSourceToCompletionReason(
+    SuccessSource source) {
+  switch (source) {
+    case SuccessSource::kNone:
+      NOTREACHED();
+    case SuccessSource::kInitialConnectorFirstAttempt:
+    case SuccessSource::kInitialConnectorLaterAttempt:
+    case SuccessSource::kSlowTimerConnector:
+      return "attempt_succeeded";
+    case SuccessSource::kActiveSession:
+      return "active_session";
+    case SuccessSource::kIpPooling:
+      return "ip_pooling";
+  }
+}
 
 QuicSessionPool::AsyncDnsJob::ConnectionState::ConnectionState() = default;
 QuicSessionPool::AsyncDnsJob::ConnectionState::~ConnectionState() = default;
@@ -265,10 +283,14 @@ void QuicSessionPool::AsyncDnsJob::MaybeNotifyHostResolutionAndComplete(
 }
 
 void QuicSessionPool::AsyncDnsJob::CompleteJob(int rv) {
+  fresh_state_.slow_timer.Stop();
+  fresh_state_.primary_connector.reset();
+  fresh_state_.secondary_connector.reset();
+  stale_state_.slow_timer.Stop();
+  stale_state_.primary_connector.reset();
+  stale_state_.secondary_connector.reset();
   RecordMetrics(rv);
   LogJobComplete(rv);
-  fresh_state_.slow_timer.Stop();
-  stale_state_.slow_timer.Stop();
   if (!session_creation_notified_) {
     if (rv == OK) {
       auto weak_this = weak_factory_.GetWeakPtr();
@@ -369,19 +391,24 @@ QuicSessionPool::AsyncDnsJob::GetAttemptParams() const {
 }
 
 bool QuicSessionPool::AsyncDnsJob::MaybePoolToExistingSession() {
-  if (service_endpoint_request_) {
-    if (service_endpoint_request_->IsStaleWhileRefreshing()) {
-      stale_endpoints_evaluated_for_pooling_ = true;
-    } else if (stale_endpoints_evaluated_for_pooling_) {
-      stale_endpoints_evaluated_for_pooling_ = false;
-      num_endpoints_evaluated_for_pooling_ = 0;
-    }
+  // If another request pooled to an existing session and activated the key
+  // while we were waiting for async DNS resolution or an attempt, this job will
+  // be redundant. The active session is already in the pool.
+  if (pool_->HasActiveSession(key_.session_key())) {
+    success_source_ = SuccessSource::kActiveSession;
+    net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_JOB_RESULT, [&] {
+      QuicChromiumClientSession* session =
+          pool_->FindExistingSession(key_.session_key(), key_.destination());
+      CHECK(session);
+      base::DictValue dict;
+      session->net_log().source().AddToEventParameters(dict);
+      return dict;
+    });
+    return true;
   }
 
   const std::vector<UsableEndpoint>& usable_endpoints = GetUsableEndpoints();
-  for (size_t i = num_endpoints_evaluated_for_pooling_;
-       i < usable_endpoints.size(); ++i) {
-    const UsableEndpoint& usable = usable_endpoints[i];
+  for (const UsableEndpoint& usable : usable_endpoints) {
     if (QuicChromiumClientSession* session =
             pool_->HasMatchingIpSessionForServiceEndpoint(
                 key_, usable.endpoint,
@@ -395,7 +422,6 @@ bool QuicSessionPool::AsyncDnsJob::MaybePoolToExistingSession() {
       return true;
     }
   }
-  num_endpoints_evaluated_for_pooling_ = usable_endpoints.size();
 
   // Record misses only for the first endpoints checked. Re-checks on later
   // results would inflate the recorded misses.
@@ -586,25 +612,9 @@ int QuicSessionPool::AsyncDnsJob::OnAttemptStarted(
 void QuicSessionPool::AsyncDnsJob::LogJobComplete(int rv) const {
   net_log_.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_COMPLETE, [&] {
-        const char* completion_reason = "failed";
-        if (rv == OK) {
-          CHECK(success_source_ != SuccessSource::kNone);
-          switch (success_source_) {
-            case SuccessSource::kNone:
-              break;
-            case SuccessSource::kInitialConnectorFirstAttempt:
-            case SuccessSource::kInitialConnectorLaterAttempt:
-            case SuccessSource::kSlowTimerConnector:
-              completion_reason = "attempt_succeeded";
-              break;
-            case SuccessSource::kActiveSession:
-              completion_reason = "active_session";
-              break;
-            case SuccessSource::kIpPooling:
-              completion_reason = "ip_pooling";
-              break;
-          }
-        }
+        const char* completion_reason =
+            rv == OK ? SuccessSourceToCompletionReason(success_source_)
+                     : "failed";
         return base::DictValue()
             .Set("net_error", rv)
             .Set("attempt_count", static_cast<int>(attempt_count_))
@@ -672,8 +682,10 @@ void QuicSessionPool::AsyncDnsJob::RecordMetrics(int rv) const {
 void QuicSessionPool::AsyncDnsJob::DestroyOtherConnector(
     const EndpointConnector& connector) {
   if (!connector.has_attempt()) {
-    // The connector succeeded by pooling, without an attempt.
-    success_source_ = SuccessSource::kIpPooling;
+    // The connector succeeded by pooling, without an attempt. `success_source_`
+    // was already set by `MaybePoolToExistingSession()`.
+    CHECK(success_source_ == SuccessSource::kActiveSession ||
+          success_source_ == SuccessSource::kIpPooling);
   } else if (connector.created_by_slow_timer()) {
     success_source_ = SuccessSource::kSlowTimerConnector;
   } else if (connector.attempts_started() > 1) {
@@ -698,7 +710,7 @@ void QuicSessionPool::AsyncDnsJob::DestroyOtherConnector(
           dict.Set("ip_endpoint", ip_endpoint->ToString());
         }
         dict.Set("completion_reason",
-                 connector.has_attempt() ? "attempt_succeeded" : "ip_pooling");
+                 SuccessSourceToCompletionReason(success_source_));
         base::ListValue canceled_attempts;
         for (const EndpointConnector* other :
              {fresh_state_.primary_connector.get(),
@@ -796,6 +808,11 @@ void QuicSessionPool::AsyncDnsJob::OnSlowTimer(ConnectionState* state) {
 
   net_log_.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_FIRED);
+
+  if (MaybePoolToExistingSession()) {
+    CompleteJob(OK);
+    return;
+  }
 
   state->secondary_connector = std::make_unique<EndpointConnector>(
       this, "second", /*created_by_slow_timer=*/true);
@@ -972,23 +989,6 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
   ConnectionState& state = service_endpoint_request_->IsStaleWhileRefreshing()
                                ? stale_state_
                                : fresh_state_;
-
-  // If another request pooled to an existing session and activated the key
-  // while we were waiting for async DNS resolution, this job will be
-  // redundant. The active session is already in the pool.
-  if (pool_->HasActiveSession(key_.session_key())) {
-    success_source_ = SuccessSource::kActiveSession;
-    net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_JOB_RESULT, [&] {
-      QuicChromiumClientSession* session =
-          pool_->FindExistingSession(key_.session_key(), key_.destination());
-      CHECK(session);
-      base::DictValue dict;
-      session->net_log().source().AddToEventParameters(dict);
-      return dict;
-    });
-    MaybeSetDnsResolutionEndTime();
-    return OK;
-  }
 
   if (MaybePoolToExistingSession()) {
     MaybeSetDnsResolutionEndTime();

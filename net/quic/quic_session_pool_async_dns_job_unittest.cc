@@ -137,6 +137,14 @@ class QuicSessionPoolAsyncDnsJobTest : public QuicSessionPoolTestBase,
         .endpoint();
   }
 
+  ServiceEndpoint MakeUsableDualEndpoint(std::string_view v6_addr,
+                                         std::string_view v4_addr) {
+    return ServiceEndpointBuilder()
+        .add_v6(v6_addr, kDefaultServerPort)
+        .add_v4(v4_addr, kDefaultServerPort)
+        .endpoint();
+  }
+
   IPEndPoint MakeIPEndPoint(std::string_view addr) {
     IPAddress ip_address;
     CHECK(ip_address.AssignFromIPLiteral(addr));
@@ -1273,7 +1281,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingMissRecordedOnce) {
         creation_callback2.callback()));
   }
 
-  endpoint_request2->add_endpoint(MakeUsableEndpoint("10.0.0.1"));
+  endpoint_request2->set_endpoints({MakeUsableV6Endpoint("2001:db8::1")});
   endpoint_request2->set_crypto_ready(true);
   endpoint_request2->CallOnServiceEndpointsUpdated();
 
@@ -1283,7 +1291,8 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingMissRecordedOnce) {
   histograms.ExpectBucketCount(kHistogram, /*sample=*/1, 2);
 
   // Further updates and the final result do not add miss entries.
-  endpoint_request2->add_endpoint(MakeUsableEndpoint("10.0.0.2"));
+  endpoint_request2->set_endpoints(
+      {MakeUsableDualEndpoint("2001:db8::1", "10.0.0.1")});
   endpoint_request2->CallOnServiceEndpointsUpdated();
   histograms.ExpectTotalCount(kHistogram, 2);
   endpoint_request2->CallOnServiceEndpointRequestFinished(OK);
@@ -1985,7 +1994,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingCheckedBeforeNextAttempt) {
   builder2.callback = callback2.callback();
   EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
 
-  endpoint_request2->add_endpoint(MakeUsableEndpoint("10.0.0.1"));
+  endpoint_request2->set_endpoints({MakeUsableV6Endpoint("2001:db8::1")});
   endpoint_request2->set_crypto_ready(true);
   endpoint_request2->CallOnServiceEndpointsUpdated();
 
@@ -1994,8 +2003,9 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingCheckedBeforeNextAttempt) {
   histograms.ExpectTotalCount(kHistogram, 2);
   histograms.ExpectBucketCount(kHistogram, /*sample=*/1, 2);
 
-  // The matching endpoint arrives after the attempt to 10.0.0.1 started.
-  endpoint_request2->add_endpoint(MakeUsableEndpoint("192.168.0.1"));
+  // The matching address arrives after the attempt to 2001:db8::1 started.
+  endpoint_request2->set_endpoints(
+      {MakeUsableDualEndpoint("2001:db8::1", "192.168.0.1")});
   endpoint_request2->CallOnServiceEndpointsUpdated();
 
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
@@ -2014,6 +2024,456 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingCheckedBeforeNextAttempt) {
   socket_data.ExpectAllWriteDataConsumed();
   failing_socket_data.ExpectAllReadDataConsumed();
   failing_socket_data.ExpectAllWriteDataConsumed();
+}
+
+// While an attempt to the first endpoint is in flight, another job activates a
+// session matching the second (already-resolved) endpoint. When the first
+// attempt fails, EndpointConnector::TryAdvance() re-evaluates the resolved
+// endpoints and pools to the newly activated session instead of starting a
+// second attempt.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       IpPoolingOnTryAdvanceAfterAttemptFailure) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request1 =
+      fake_resolver_.AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request2 =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // Socket data for `server2`'s first attempt to 10.0.0.1, which will fail mid
+  // handshake.
+  MockQuicData failing_socket_data(version_);
+  failing_socket_data.AddReadPauseForever();
+  failing_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket data for `kDefaultDestination`'s attempt to 192.168.0.1, which will
+  // succeed while `server2`'s first attempt is still in flight.
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Start request 1 (kDefaultDestination) and request 2 (server2).
+  RequestBuilder builder1(this);
+  EXPECT_THAT(builder1.CallRequest(), IsError(ERR_IO_PENDING));
+
+  const url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                                    kDefaultServerPort);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = GURL(kServer2Url);
+  TestCompletionCallback callback2;
+  builder2.callback = callback2.callback();
+  EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback2;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder2.request.WaitForQuicSessionCreation(
+        creation_callback2.callback()));
+  }
+
+  // Request 2 resolves both 10.0.0.1 and 192.168.0.1 before Request 1 has an
+  // active session. Neither endpoint matches yet, so Request 2 starts an
+  // attempt to 10.0.0.1.
+  endpoint_request2->add_endpoint(MakeUsableEndpoint("10.0.0.1"));
+  endpoint_request2->add_endpoint(MakeUsableEndpoint("192.168.0.1"));
+  endpoint_request2->set_crypto_ready(true);
+  endpoint_request2->CallOnServiceEndpointRequestFinished(OK);
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback2.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  QuicChromiumClientSession* server2_pending_session =
+      GetPendingSession(server2);
+  ASSERT_TRUE(server2_pending_session);
+
+  // Now Request 1 resolves 192.168.0.1 and completes its handshake, activating
+  // a session on 192.168.0.1 whose certificate covers `server2`.
+  TestCompletionCallback creation_callback1;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder1.request.WaitForQuicSessionCreation(
+        creation_callback1.callback()));
+  }
+  endpoint_request1->add_endpoint(MakeUsableEndpoint("192.168.0.1"));
+  endpoint_request1->set_crypto_ready(true);
+  endpoint_request1->CallOnServiceEndpointRequestFinished(OK);
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback1.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  crypto_client_stream_factory_.last_stream()->NotifySessionZeroRttComplete();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(HasActiveSession(kDefaultDestination));
+
+  base::HistogramTester histograms;
+
+  // Fail Request 2's in-flight attempt to 10.0.0.1. TryAdvance() should pool to
+  // the newly active session on 192.168.0.1 without starting a second socket.
+  server2_pending_session->CloseSessionOnError(
+      ERR_CONNECTION_REFUSED, quic::QUIC_INTERNAL_ERROR,
+      quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_TRUE(HasActiveSession(server2));
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle1 =
+      builder1.request.ReleaseSessionHandle();
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle2 =
+      builder2.request.ReleaseSessionHandle();
+  ASSERT_TRUE(handle1);
+  ASSERT_TRUE(handle2);
+  EXPECT_TRUE(handle2->SharesSameSession(*handle1));
+  histograms.ExpectUniqueSample("Net.QuicSession.AsyncDnsJob.SuccessSource",
+                                static_cast<int>(SuccessSource::kIpPooling), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 1, 1);
+  histograms.ExpectUniqueSample("Net.QuicSession.FindMatchingIpSessionResult",
+                                /*sample=*/0, 1);
+
+  failing_socket_data.ExpectAllReadDataConsumed();
+  failing_socket_data.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+// While an attempt to the first endpoint is in flight, an existing session is
+// activated for `key_.session_key()` (without matching any resolved IP). When
+// the first attempt fails, EndpointConnector::TryAdvance() pools to the active
+// session and records `SuccessSource::kActiveSession` and `"completion_reason":
+// "active_session"`.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       ActiveSessionPooledOnTryAdvanceAfterAttemptFailure) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request1 =
+      fake_resolver_.AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request2 =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // Socket data for `server2`'s first attempt to 10.0.0.1, which will fail mid
+  // handshake.
+  MockQuicData failing_socket_data(version_);
+  failing_socket_data.AddReadPauseForever();
+  failing_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket data for `kDefaultDestination`'s attempt to 192.168.0.1, which will
+  // succeed while `server2`'s first attempt is still in flight.
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Start request 1 (kDefaultDestination) and request 2 (server2).
+  RequestBuilder builder1(this);
+  EXPECT_THAT(builder1.CallRequest(), IsError(ERR_IO_PENDING));
+
+  const url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                                    kDefaultServerPort);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = GURL(kServer2Url);
+  TestCompletionCallback callback2;
+  builder2.callback = callback2.callback();
+  EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback2;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder2.request.WaitForQuicSessionCreation(
+        creation_callback2.callback()));
+  }
+
+  // Request 2 resolves 10.0.0.1 and 10.0.0.2 (neither matches 192.168.0.1 by
+  // IP), and starts an attempt to 10.0.0.1.
+  endpoint_request2->add_endpoint(MakeUsableEndpoint("10.0.0.1", "10.0.0.2"));
+  endpoint_request2->set_crypto_ready(true);
+  endpoint_request2->CallOnServiceEndpointRequestFinished(OK);
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback2.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  QuicChromiumClientSession* server2_pending_session =
+      GetPendingSession(server2);
+  ASSERT_TRUE(server2_pending_session);
+
+  // Request 1 resolves 192.168.0.1 and completes its handshake, activating a
+  // session on 192.168.0.1.
+  TestCompletionCallback creation_callback1;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder1.request.WaitForQuicSessionCreation(
+        creation_callback1.callback()));
+  }
+  endpoint_request1->add_endpoint(MakeUsableEndpoint("192.168.0.1"));
+  endpoint_request1->set_crypto_ready(true);
+  endpoint_request1->CallOnServiceEndpointRequestFinished(OK);
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback1.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  crypto_client_stream_factory_.last_stream()->NotifySessionZeroRttComplete();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(HasActiveSession(kDefaultDestination));
+
+  // Activate the existing session for `server2`'s session key while the first
+  // attempt is in flight.
+  quic::OriginFrame frame;
+  frame.origins.push_back(base::StrCat({"https://", kServer2HostName}));
+  GetActiveSession(kDefaultDestination)->OnOriginFrame(frame);
+  QuicSessionPoolPeer::ActivateAndMapSessionToAliasKey(
+      pool_.get(), QuicSessionAliasKey(server2, builder2.request.session_key()),
+      GetActiveSession(kDefaultDestination));
+
+  base::HistogramTester histograms;
+
+  // Fail Request 2's in-flight attempt to 10.0.0.1. TryAdvance() should pool to
+  // the active session without starting a second socket.
+  server2_pending_session->CloseSessionOnError(
+      ERR_CONNECTION_REFUSED, quic::QUIC_INTERNAL_ERROR,
+      quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle1 =
+      builder1.request.ReleaseSessionHandle();
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle2 =
+      builder2.request.ReleaseSessionHandle();
+  ASSERT_TRUE(handle1);
+  ASSERT_TRUE(handle2);
+  EXPECT_TRUE(handle2->SharesSameSession(*handle1));
+  histograms.ExpectUniqueSample("Net.QuicSession.AsyncDnsJob.SuccessSource",
+                                static_cast<int>(SuccessSource::kActiveSession),
+                                1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 1, 1);
+
+  auto settled_entries = net_log_observer_.GetEntriesWithType(
+      NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_CONNECTOR_SETTLED_JOB);
+  ASSERT_FALSE(settled_entries.empty());
+  const std::string* completion_reason =
+      settled_entries.back().params.FindString("completion_reason");
+  ASSERT_TRUE(completion_reason);
+  EXPECT_EQ(*completion_reason, "active_session");
+
+  failing_socket_data.ExpectAllReadDataConsumed();
+  failing_socket_data.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+// While the primary connector's IPv6 attempt is in flight, another job
+// activates a session matching the resolved IPv4 endpoint. When the slow timer
+// fires, OnSlowTimer() pools to the existing session and cancels the in-flight
+// IPv6 attempt instead of starting a secondary attempt.
+TEST_P(QuicSessionPoolAsyncDnsJobTest, IpPoolingOnSlowTimer) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request1 =
+      fake_resolver_.AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request2 =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // Socket data for `server2`'s initial IPv6 attempt, which hangs in handshake.
+  MockQuicData hanging_ipv6_data(version_);
+  hanging_ipv6_data.AddReadPauseForever();
+  hanging_ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket data for `kDefaultDestination`'s attempt to 192.168.0.1, which
+  // succeeds before `server2`'s slow timer fires.
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Start request 1 (kDefaultDestination) and request 2 (server2).
+  RequestBuilder builder1(this);
+  EXPECT_THAT(builder1.CallRequest(), IsError(ERR_IO_PENDING));
+
+  const url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                                    kDefaultServerPort);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = GURL(kServer2Url);
+  TestCompletionCallback callback2;
+  builder2.callback = callback2.callback();
+  EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback2;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder2.request.WaitForQuicSessionCreation(
+        creation_callback2.callback()));
+  }
+
+  // Request 2 resolves a dual-stack endpoint before Request 1 has an active
+  // session. Request 2 starts an IPv6 attempt and arms the slow timer.
+  endpoint_request2->set_endpoints(
+      {MakeUsableDualEndpoint("2001:db8::1", "192.168.0.1")});
+  endpoint_request2->set_crypto_ready(true);
+  endpoint_request2->CallOnServiceEndpointRequestFinished(OK);
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback2.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  QuicChromiumClientSession* server2_pending_session =
+      GetPendingSession(server2);
+  ASSERT_TRUE(server2_pending_session);
+
+  // Request 1 resolves 192.168.0.1 and completes its handshake, activating a
+  // session on 192.168.0.1 whose certificate covers `server2`.
+  TestCompletionCallback creation_callback1;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder1.request.WaitForQuicSessionCreation(
+        creation_callback1.callback()));
+  }
+  endpoint_request1->add_endpoint(MakeUsableEndpoint("192.168.0.1"));
+  endpoint_request1->set_crypto_ready(true);
+  endpoint_request1->CallOnServiceEndpointRequestFinished(OK);
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback1.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  crypto_client_stream_factory_.last_stream()->NotifySessionZeroRttComplete();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(HasActiveSession(kDefaultDestination));
+
+  base::HistogramTester histograms;
+
+  // Firing the slow timer for Request 2 should pool to the active session on
+  // 192.168.0.1 and cancel the in-flight IPv6 attempt without starting a
+  // secondary attempt.
+  FastForwardBy(SlowTimerDelay());
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_TRUE(HasActiveSession(server2));
+  EXPECT_FALSE(
+      QuicSessionPoolPeer::IsLiveSession(pool_.get(), server2_pending_session));
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle1 =
+      builder1.request.ReleaseSessionHandle();
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle2 =
+      builder2.request.ReleaseSessionHandle();
+  ASSERT_TRUE(handle1);
+  ASSERT_TRUE(handle2);
+  EXPECT_TRUE(handle2->SharesSameSession(*handle1));
+  histograms.ExpectUniqueSample("Net.QuicSession.AsyncDnsJob.SuccessSource",
+                                static_cast<int>(SuccessSource::kIpPooling), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 1, 1);
+
+  hanging_ipv6_data.ExpectAllReadDataConsumed();
+  hanging_ipv6_data.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+// When an incremental DNS update mutates an existing ServiceEndpoint in-place
+// (e.g. AAAA + HTTPS arrived first, and A arrived later adding ipv4_endpoints
+// to the same ServiceEndpoint without increasing GetUsableEndpoints().size()),
+// MaybePoolToExistingSession() re-evaluates the endpoint and pools to a
+// matching session.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       IpPoolingWhenAddressAddedToExistingServiceEndpoint) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request1 =
+      fake_resolver_.AddFakeRequest();
+  endpoint_request1->add_endpoint(MakeUsableEndpoint("192.168.0.1"));
+  endpoint_request1->CompleteStartAsynchronously(OK);
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+
+  MockQuicData existing_data(version_);
+  existing_data.AddReadPauseForever();
+  existing_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  existing_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Establish an active session on 192.168.0.1.
+  RequestBuilder builder1(this);
+  EXPECT_THAT(builder1.CallRequest(), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  client_maker_.Reset();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // Request 2's initial IPv6 attempt will hang in handshake.
+  MockQuicData hanging_ipv6_data(version_);
+  hanging_ipv6_data.AddReadPauseForever();
+  hanging_ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  base::HistogramTester histograms;
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request2 =
+      fake_resolver_.AddFakeRequest();
+  const url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                                    kDefaultServerPort);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = GURL(kServer2Url);
+  TestCompletionCallback callback2;
+  builder2.callback = callback2.callback();
+  EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback2;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder2.request.WaitForQuicSessionCreation(
+        creation_callback2.callback()));
+  }
+
+  // First update has 1 ServiceEndpoint with only IPv6.
+  endpoint_request2->set_endpoints({MakeUsableV6Endpoint("2001:db8::1")});
+  endpoint_request2->set_crypto_ready(true);
+  endpoint_request2->CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback2.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  EXPECT_EQ(QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()), 2u);
+  EXPECT_FALSE(callback2.have_result());
+
+  // Second update adds the IPv4 address (192.168.0.1) to the same
+  // ServiceEndpoint (still 1 ServiceEndpoint total).
+  endpoint_request2->set_endpoints(
+      {MakeUsableDualEndpoint("2001:db8::1", "192.168.0.1")});
+  endpoint_request2->CallOnServiceEndpointsUpdated();
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_TRUE(HasActiveSession(server2));
+  EXPECT_EQ(QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()), 1u);
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle1 =
+      builder1.request.ReleaseSessionHandle();
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle2 =
+      builder2.request.ReleaseSessionHandle();
+  ASSERT_TRUE(handle1);
+  ASSERT_TRUE(handle2);
+  EXPECT_TRUE(handle2->SharesSameSession(*handle1));
+  histograms.ExpectUniqueSample("Net.QuicSession.AsyncDnsJob.SuccessSource",
+                                static_cast<int>(SuccessSource::kIpPooling), 1);
+  histograms.ExpectTotalCount("Net.QuicSession.FindMatchingIpSessionResult", 3);
+  histograms.ExpectBucketCount("Net.QuicSession.FindMatchingIpSessionResult",
+                               /*sample=*/0, 1);
+  histograms.ExpectBucketCount("Net.QuicSession.FindMatchingIpSessionResult",
+                               /*sample=*/1, 2);
+
+  existing_data.ExpectAllReadDataConsumed();
+  existing_data.ExpectAllWriteDataConsumed();
+  hanging_ipv6_data.ExpectAllReadDataConsumed();
+  hanging_ipv6_data.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for reentrant request addition while the connector walks
@@ -4749,7 +5209,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
   builder2.callback = callback2.callback();
   EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
 
-  endpoint_request2->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
+  endpoint_request2->set_endpoints({MakeUsableV6Endpoint(kIpv6Addr1)});
   endpoint_request2->set_crypto_ready(true);
   endpoint_request2->CallOnServiceEndpointsUpdated();
 
@@ -4765,7 +5225,8 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
   // Now, incrementally add IP B (which has the active session).
   // The job should eagerly pool to the existing session and complete,
   // without waiting for IP A to fail or finish.
-  endpoint_request2->add_endpoint(MakeUsableEndpoint(kIpv4Addr2));
+  endpoint_request2->set_endpoints(
+      {MakeUsableDualEndpoint(kIpv6Addr1, kIpv4Addr2)});
   endpoint_request2->CallOnServiceEndpointsUpdated();
 
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
@@ -4831,7 +5292,6 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
   EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
 
   // Stale resolution delivers 2 endpoints: IP 1 and IP 3 (neither is IP 2).
-  // This causes num_endpoints_evaluated_for_pooling_ to become 2.
   endpoint_request2->set_is_stale_while_refreshing(true);
   endpoint_request2->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
   endpoint_request2->add_endpoint(MakeUsableEndpoint("192.168.0.3"));
@@ -4846,8 +5306,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
   }
 
   // Fresh DNS arrives delivering 2 endpoints: IP 1 and IP 2 (IP 2 matches
-  // existing session). Because num_endpoints_evaluated_for_pooling_ was reset
-  // to 0, IP 2 at index 1 is evaluated and pooled to.
+  // existing session). IP 2 at index 1 is evaluated and pooled to.
   endpoint_request2->set_is_stale_while_refreshing(false);
   endpoint_request2->set_endpoints(
       {MakeUsableEndpoint(kIpv4Addr1), MakeUsableEndpoint(kIpv4Addr2)});

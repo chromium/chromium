@@ -186,8 +186,9 @@ class QuicSessionPool::AsyncDnsJob
   // the job's current state. Call at attempt start.
   AttemptParams GetAttemptParams() const;
 
-  // Tries to pool to an existing session whose peer IP matches one of the
-  // usable endpoints. Returns true when pooled.
+  // Tries to use an active session for `key_.session_key()` or pool to an
+  // existing session whose peer IP matches one of the usable endpoints.
+  // Returns true when an existing session can be used.
   bool MaybePoolToExistingSession();
 
   // Claims and returns the next candidate `connector` may attempt, or nothing
@@ -232,6 +233,8 @@ class QuicSessionPool::AsyncDnsJob
                        base::TimeTicks start_time);
 
  private:
+  static const char* SuccessSourceToCompletionReason(SuccessSource source);
+
   struct ConnectionState {
     ConnectionState();
     ~ConnectionState();
@@ -370,11 +373,6 @@ class QuicSessionPool::AsyncDnsJob
   // The number of attempts the connectors of this job started. Reported when
   // the job settles.
   size_t attempt_count_ = 0;
-  // Tracks how many endpoints have already been checked for pooling to avoid
-  // wasteful active_sessions_ scans.
-  size_t num_endpoints_evaluated_for_pooling_ = 0;
-  // True if stale endpoints were evaluated for pooling.
-  bool stale_endpoints_evaluated_for_pooling_ = false;
 
   // Set before every successful completion.
   SuccessSource success_source_ = SuccessSource::kNone;
