@@ -9159,17 +9159,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDrDcDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableDrDc)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"traffic-counters", flag_descriptions::kTrafficCountersEnabledName,
-     flag_descriptions::kTrafficCountersEnabledDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersEnabled)},
-
-    {"traffic-counters-for-wifi-testing",
-     flag_descriptions::kTrafficCountersForWiFiTestingName,
-     flag_descriptions::kTrafficCountersForWiFiTestingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersForWiFiTesting)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"api-contextual-tasks-private",
      flag_descriptions::kApiContextualTasksPrivateName,

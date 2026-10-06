@@ -1711,13 +1711,6 @@ BASE_FEATURE(kTerminalDev, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables experimental feature for resizing tiling windows.
 BASE_FEATURE(kTilingWindowResize, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the TrafficCountersHandler class to auto-reset traffic counters
-// and shows Data Usage in the Celluar Settings UI.
-BASE_FEATURE(kTrafficCountersEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables traffic counters for WiFi networks.
-BASE_FEATURE(kTrafficCountersForWiFiTesting, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables trilinear filtering.
 BASE_FEATURE(kTrilinearFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2998,15 +2991,6 @@ bool IsTouchpadInDiagnosticsAppEnabled() {
 
 bool IsTouchscreenCalibrationEnabled() {
   return base::FeatureList::IsEnabled(kEnableTouchscreenCalibration);
-}
-
-bool IsTrafficCountersEnabled() {
-  return base::FeatureList::IsEnabled(kTrafficCountersEnabled);
-}
-
-bool IsTrafficCountersForWiFiTestingEnabled() {
-  return IsTrafficCountersEnabled() &&
-         base::FeatureList::IsEnabled(kTrafficCountersForWiFiTesting);
 }
 
 bool IsTrilinearFilteringEnabled() {

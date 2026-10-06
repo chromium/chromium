@@ -8193,18 +8193,6 @@ inline constexpr char kTouchscreenMappingDescription[] =
     "If enabled, the user can map the touch screen display to the correct "
     "input device in chrome://settings/display.";
 
-inline constexpr char kTrafficCountersEnabledName[] =
-    "Traffic counters enabled";
-inline constexpr char kTrafficCountersEnabledDescription[] =
-    "If enabled, data usage will be visible in the Cellular Settings UI and "
-    "traffic counters will be automatically reset if that setting is enabled.";
-
-inline constexpr char kTrafficCountersForWiFiTestingName[] =
-    "Traffic counters enabled for WiFi networks";
-inline constexpr char kTrafficCountersForWiFiTestingDescription[] =
-    "If enabled, data usage will be visible in the Settings UI for WiFi "
-    "networks";
-
 inline constexpr char kUserMediaElementName[] = "UserMediaElement";
 inline constexpr char kUserMediaElementDescription[] =
     "Enables the <usermedia> element, allowing sites to embed a "
