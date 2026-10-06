@@ -212,9 +212,9 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     @CalledByNative
-    private void endAnimations(@JniType("Profile*") Profile profile) {
-        log(TAG, "endAnimations", profile);
-        mNativeBridgeSelector.endAnimations(profile);
+    private void endAnimations() {
+        log(TAG, "endAnimations");
+        mNativeBridgeSelector.endAnimations();
     }
 
     @CalledByNative

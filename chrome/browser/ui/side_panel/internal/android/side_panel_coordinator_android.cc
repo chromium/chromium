@@ -850,8 +850,8 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
 }
 
 void SidePanelCoordinatorAndroid::CompletePendingUiChanges() {
-  Java_SidePanelCoordinatorAndroidBridge_endAnimations(
-      AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
+  Java_SidePanelCoordinatorAndroidBridge_endAnimations(AttachCurrentThread(),
+                                                       java_coordinator());
   CHECK(state_ == SidePanelState::kClosed || state_ == SidePanelState::kShown)
       << "Side panel should be in a stable state after ending all animations.";
 
