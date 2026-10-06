@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar_with_custom_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_normal_label.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_styled_label.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,6 +26,7 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kOkButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kCancelButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kExtraButtonElementId);
 
 // static
 std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
@@ -36,9 +38,21 @@ std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
   return std::make_unique<ConfirmInfoBarWithNormalLabel>(std::move(delegate));
 }
 
+// static
+std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate,
+    std::unique_ptr<views::View> custom_message_view) {
+  if (custom_message_view) {
+    return std::make_unique<ConfirmInfoBarWithCustomView>(
+        std::move(delegate), std::move(custom_message_view));
+  }
+  return Create(std::move(delegate));
+}
+
 template <typename T>
 T* ConfirmInfoBar::AssignMessageLabel(std::unique_ptr<T> view) {
   auto* message_label = content_container()->AddChildViewAt(std::move(view), 0);
+  message_view_ = message_label;
   int kHorizontalDistanceLabel = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   if (GetDelegate()->ShouldShowLinkBeforeButton()) {
@@ -56,6 +70,8 @@ T* ConfirmInfoBar::AssignMessageLabel(std::unique_ptr<T> view) {
   return message_label;
 }
 
+template views::View* ConfirmInfoBar::AssignMessageLabel(
+    std::unique_ptr<views::View>);
 template views::Label* ConfirmInfoBar::AssignMessageLabel(
     std::unique_ptr<views::Label>);
 template views::StyledLabel* ConfirmInfoBar::AssignMessageLabel(
@@ -77,13 +93,14 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred);
 
-  // Create both the ok and cancel buttons.
   const int buttons = delegate_ptr->GetButtons();
   const auto create_button = [&](ConfirmInfoBarDelegate::InfoBarButton type,
                                  void (ConfirmInfoBar::*click_function)()) {
+    // Safe: `this` owns the button.
     auto button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(click_function, base::Unretained(this)),
-        GetDelegate()->GetButtonLabel(type));
+        GetDelegate()->GetButtonLabel(type), views::style::CONTEXT_BUTTON_MD,
+        delegate_ptr->ShouldUseTextColorForButtonIcon(type));
     auto* button_ptr = button.get();
     // Set custom padding on the buttons.
     button_ptr->SetCustomPadding(
@@ -141,6 +158,23 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
                                     views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
                                 0, 0)));
   }
+
+  if (buttons & ConfirmInfoBarDelegate::BUTTON_EXTRA) {
+    extra_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_EXTRA,
+                                  &ConfirmInfoBar::ExtraButtonPressed);
+    extra_button_->SetProperty(views::kElementIdentifierKey,
+                               kExtraButtonElementId);
+
+    extra_button_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
+    const int left_margin =
+        (ok_button_ || cancel_button_)
+            ? ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_BUTTON_HORIZONTAL)
+            : 0;
+    extra_button_->SetProperty(
+        views::kMarginsKey,
+        std::make_unique<gfx::Insets>(gfx::Insets::TLBR(0, left_margin, 0, 0)));
+  }
   auto link_unique_ptr = CreateLink(delegate_ptr->GetLinkText(),
                                     delegate_ptr->GetLinkAccessibleText());
 
@@ -181,6 +215,15 @@ void ConfirmInfoBar::CancelButtonPressed() {
     return;  // We're closing; don't call anything, it might access the owner.
   }
   if (GetDelegate()->Cancel()) {
+    RemoveSelf();
+  }
+}
+
+void ConfirmInfoBar::ExtraButtonPressed() {
+  if (!owner()) {
+    return;
+  }
+  if (GetDelegate()->ExtraButtonPressed()) {
     RemoveSelf();
   }
 }

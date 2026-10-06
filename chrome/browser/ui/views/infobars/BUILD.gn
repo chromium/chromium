@@ -16,6 +16,7 @@ source_set("infobars") {
   ]
 
   sources = [
+    "confirm_infobar_with_custom_view.h",
     "confirm_infobar_with_normal_label.h",
     "confirm_infobar_with_styled_label.h",
   ]
@@ -31,6 +32,7 @@ source_set("impl") {
   sources = [
     "alternate_nav_infobar_view.cc",
     "confirm_infobar.cc",
+    "confirm_infobar_with_custom_view.cc",
     "confirm_infobar_with_normal_label.cc",
     "confirm_infobar_with_styled_label.cc",
     "infobar_container_view.cc",

@@ -27,11 +27,16 @@ class ConfirmInfoBar : public InfoBarView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtraButtonElementId);
 
   // Creates the appropriate ConfirmInfoBar subclass depending on whether the
   // delegate uses inline links.
   static std::unique_ptr<ConfirmInfoBar> Create(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+
+  static std::unique_ptr<ConfirmInfoBar> Create(
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate,
+      std::unique_ptr<views::View> custom_message_view);
 
   ConfirmInfoBar(const ConfirmInfoBar&) = delete;
   ConfirmInfoBar& operator=(const ConfirmInfoBar&) = delete;
@@ -46,8 +51,11 @@ class ConfirmInfoBar : public InfoBarView {
 
   // label_for_testing() is implemented in the subclasses that use it.
   virtual views::Label* label_for_testing();
+  views::View* message_view_for_testing() { return message_view_; }
+  const views::View* message_view_for_testing() const { return message_view_; }
   views::MdTextButton* ok_button_for_testing() { return ok_button_; }
   views::MdTextButton* cancel_button_for_testing() { return cancel_button_; }
+  views::MdTextButton* extra_button_for_testing() { return extra_button_; }
 
   int target_height_for_testing() const { return target_height(); }
 
@@ -69,9 +77,12 @@ class ConfirmInfoBar : public InfoBarView {
 
   void OkButtonPressed();
   void CancelButtonPressed();
+  void ExtraButtonPressed();
 
+  raw_ptr<views::View> message_view_ = nullptr;
   raw_ptr<views::MdTextButton> ok_button_ = nullptr;
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
+  raw_ptr<views::MdTextButton> extra_button_ = nullptr;
   raw_ptr<views::Link> link_ = nullptr;
 };
 
