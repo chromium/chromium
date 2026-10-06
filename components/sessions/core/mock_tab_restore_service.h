@@ -47,7 +47,7 @@ class MockTabRestoreService : public sessions::TabRestoreService {
               (sessions::LiveTab * live_tab, int index),
               (override));
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::optional<SessionID>,
               CreateHistoricalGroup,
               (sessions::LiveTabContext * context,
                const tab_groups::TabGroupId& id),
@@ -79,7 +79,7 @@ class MockTabRestoreService : public sessions::TabRestoreService {
               (const split_tabs::SplitTabId& id),
               (override));
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::optional<SessionID>,
               BrowserClosing,
               (sessions::LiveTabContext * context),
               (override));

@@ -61,15 +61,27 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   virtual void RemoveObserver(TabRestoreServiceObserver* observer) = 0;
 
   // Creates a Tab to represent |live_tab| and notifies observers the list of
-  // entries has changed. If successful, returns the unique SessionID associated
-  // with the Tab.
+  // entries has changed.
+  //
+  // When |context| is an app window, this records the whole window and
+  // returns the Window entry's id. Returns the SessionID of the top-level
+  // entry stored by this call, or std::nullopt if nothing was stored (e.g.
+  // while restoring, no restorable navigations, or the entry was filtered
+  // out). The id identifies the entry at return time; the entry may later be
+  // removed (pruning, restore, clear).
   virtual std::optional<SessionID> CreateHistoricalTab(LiveTab* live_tab,
                                                        int index) = 0;
 
   // Creates a Group to represent a tab group with ID |id|, containing group
   // metadata and all tabs within the group.
-  virtual void CreateHistoricalGroup(LiveTabContext* context,
-                                     const tab_groups::TabGroupId& id) = 0;
+  //
+  // Returns the SessionID of the top-level entry stored by this call, or
+  // std::nullopt if nothing was stored (e.g. while restoring, no restorable
+  // navigations, or the entry was filtered out). The id identifies the entry
+  // at return time; the entry may later be removed (pruning, restore, clear).
+  virtual std::optional<SessionID> CreateHistoricalGroup(
+      LiveTabContext* context,
+      const tab_groups::TabGroupId& id) = 0;
 
   // Creates a Split to represent a split view with ID |id|, containing
   // the two tabs within the split.
@@ -93,7 +105,12 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   // Invoked when a browser is closing. If |context| is a tabbed browser with
   // at least one tab, a Window is created, added to entries and observers are
   // notified.
-  virtual void BrowserClosing(LiveTabContext* context) = 0;
+  //
+  // Returns the SessionID of the top-level entry stored by this call, or
+  // std::nullopt if nothing was stored (e.g. while restoring, no restorable
+  // navigations, or the entry was filtered out). The id identifies the entry
+  // at return time; the entry may later be removed (pruning, restore, clear).
+  virtual std::optional<SessionID> BrowserClosing(LiveTabContext* context) = 0;
 
   // TODO(blundell): Rename and fix comment.
   // Invoked when the browser is done closing.

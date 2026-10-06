@@ -593,10 +593,102 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
   validate();
 }
 
+TEST_F(TabRestoreServiceImplWithMockClientTest, BrowserClosingReturnsWindowId) {
+  SerializedNavigationEntry navigation_entry =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  testing::NiceMock<MockLiveTab> mock_live_tab;
+  ON_CALL(mock_live_tab, GetSessionID)
+      .WillByDefault(Return(SessionID::NewUnique()));
+  ON_CALL(mock_live_tab, GetEntryCount).WillByDefault(Return(1));
+  ON_CALL(mock_live_tab, GetEntryAtIndex)
+      .WillByDefault(Return(navigation_entry));
+
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  ON_CALL(mock_live_tab_context, GetSessionID)
+      .WillByDefault(Return(SessionID::NewUnique()));
+  ON_CALL(mock_live_tab_context, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_live_tab_context, GetLiveTabAt)
+      .WillByDefault(Return(&mock_live_tab));
+
+  std::optional<SessionID> id =
+      service_->BrowserClosing(&mock_live_tab_context);
+  ASSERT_TRUE(id.has_value());
+  ASSERT_EQ(1u, service_->entries().size());
+  EXPECT_EQ(*id, service_->entries().front()->id);
+}
+
+TEST_F(TabRestoreServiceImplWithMockClientTest,
+       BrowserClosingReturnsNulloptWithNoNavigations) {
+  testing::NiceMock<MockLiveTab> mock_live_tab;
+  ON_CALL(mock_live_tab, GetSessionID)
+      .WillByDefault(Return(SessionID::NewUnique()));
+  ON_CALL(mock_live_tab, GetEntryCount).WillByDefault(Return(0));
+
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  ON_CALL(mock_live_tab_context, GetSessionID)
+      .WillByDefault(Return(SessionID::NewUnique()));
+  ON_CALL(mock_live_tab_context, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_live_tab_context, GetLiveTabAt)
+      .WillByDefault(Return(&mock_live_tab));
+
+  std::optional<SessionID> id =
+      service_->BrowserClosing(&mock_live_tab_context);
+  EXPECT_EQ(std::nullopt, id);
+  EXPECT_TRUE(service_->entries().empty());
+}
+
+TEST_F(TabRestoreServiceImplWithMockClientTest,
+       CreateHistoricalGroupReturnsGroupId) {
+  SerializedNavigationEntry navigation_entry =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  testing::NiceMock<MockLiveTab> mock_live_tab;
+  ON_CALL(mock_live_tab, GetSessionID)
+      .WillByDefault(Return(SessionID::NewUnique()));
+  ON_CALL(mock_live_tab, GetEntryCount).WillByDefault(Return(1));
+  ON_CALL(mock_live_tab, GetEntryAtIndex)
+      .WillByDefault(Return(navigation_entry));
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  ON_CALL(mock_live_tab_context, GetSessionID)
+      .WillByDefault(Return(SessionID::NewUnique()));
+  ON_CALL(mock_live_tab_context, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_live_tab_context, GetLiveTabAt)
+      .WillByDefault(Return(&mock_live_tab));
+  ON_CALL(mock_live_tab_context, GetTabGroupForTab(0))
+      .WillByDefault(Return(group_id));
+
+  tab_groups::TabGroupVisualData visual_data;
+  ON_CALL(mock_live_tab_context, GetVisualDataForGroup(testing::_))
+      .WillByDefault(Return(&visual_data));
+
+  std::optional<SessionID> id =
+      service_->CreateHistoricalGroup(&mock_live_tab_context, group_id);
+  EXPECT_NE(std::nullopt, id);
+  ASSERT_EQ(1u, service_->entries().size());
+  EXPECT_EQ(*id, service_->entries().front()->id);
+}
+
 // Make sure TabRestoreService doesn't create an entry for a tab with no
 // navigations.
 TEST_F(TabRestoreServiceImplTest, DontCreateEmptyTab) {
   service_->CreateHistoricalTab(live_tab(), -1);
+  EXPECT_TRUE(service_->entries().empty());
+}
+
+TEST_F(TabRestoreServiceImplTest, CreateHistoricalTabReturnsStoredEntryId) {
+  AddThreeNavigations();
+  std::optional<SessionID> id = service_->CreateHistoricalTab(live_tab(), -1);
+  ASSERT_TRUE(id.has_value());
+  ASSERT_EQ(1U, service_->entries().size());
+  EXPECT_EQ(*id, service_->entries().front()->id);
+}
+
+TEST_F(TabRestoreServiceImplTest,
+       CreateHistoricalTabReturnsNulloptWhenFiltered) {
+  NavigateAndCommit(GURL(chrome::kChromeUINewTabURL));
+  std::optional<SessionID> id = service_->CreateHistoricalTab(live_tab(), -1);
+  EXPECT_EQ(std::nullopt, id);
   EXPECT_TRUE(service_->entries().empty());
 }
 
@@ -1738,7 +1830,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
                          sessions::tab_restore::Type) -> sessions::LiveTab* {
         ++restored_tab_count;
         EXPECT_TRUE(service_->IsRestoring());
-        service_->CreateHistoricalGroup(&closing_context, closing_group_id);
+        EXPECT_EQ(std::nullopt, service_->CreateHistoricalGroup(&closing_context, closing_group_id));
         EXPECT_EQ(group_entry_id, service_->entries().back()->id);
         return nullptr;
       });

@@ -288,8 +288,7 @@ std::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
   // browser to ensure the tab will reopen in the correct app window.
   if (context && context->GetTabCount() == 1 &&
       !context->GetAppName().empty()) {
-    BrowserClosing(context);
-    return std::nullopt;
+    return BrowserClosing(context);
   }
 
   auto local_tab = std::make_unique<Tab>();
@@ -298,14 +297,17 @@ std::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
     return std::nullopt;
   }
 
-  SessionID id = local_tab->id;
-  AddEntry(std::move(local_tab), true, true);
+  const SessionID id = local_tab->id;
+  if (!AddEntry(std::move(local_tab), /*notify=*/true, /*to_front=*/true)) {
+    return std::nullopt;
+  }
   return id;
 }
 
-void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
+std::optional<SessionID> TabRestoreServiceHelper::BrowserClosing(
+    LiveTabContext* context) {
   if (restoring_) {
-    return;
+    return std::nullopt;
   }
 
   closing_contexts_.insert(context);
@@ -348,12 +350,16 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
 
   if (window->tabs.empty()) {
     // This can happen in tests.
-    return;
+    return std::nullopt;
   }
 
   window->selected_tab_index = std::min(
       static_cast<int>(window->tabs.size() - 1), window->selected_tab_index);
-  AddEntry(std::move(window), true, true);
+  const SessionID id = window->id;
+  if (!AddEntry(std::move(window), /*notify=*/true, /*to_front=*/true)) {
+    return std::nullopt;
+  }
+  return id;
 }
 
 void TabRestoreServiceHelper::BrowserClosed(LiveTabContext* context) {
@@ -387,19 +393,24 @@ TabRestoreServiceHelper::CreateHistoricalGroupImpl(
   return group;
 }
 
-void TabRestoreServiceHelper::CreateHistoricalGroup(
+std::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalGroup(
     LiveTabContext* context,
     const tab_groups::TabGroupId& id) {
   if (restoring_) {
-    return;
+    return std::nullopt;
   }
 
   closing_groups_.insert(id);
 
   auto group = CreateHistoricalGroupImpl(context, id);
-  if (!group->tabs.empty()) {
-    AddEntry(std::move(group), true, true);
+  if (group->tabs.empty()) {
+    return std::nullopt;
   }
+  const SessionID group_id = group->id;
+  if (!AddEntry(std::move(group), /*notify=*/true, /*to_front=*/true)) {
+    return std::nullopt;
+  }
+  return group_id;
 }
 
 void TabRestoreServiceHelper::CreateHistoricalSplit(
@@ -1254,11 +1265,11 @@ void TabRestoreServiceHelper::NotifyLoaded() {
   }
 }
 
-void TabRestoreServiceHelper::AddEntry(std::unique_ptr<Entry> entry,
+bool TabRestoreServiceHelper::AddEntry(std::unique_ptr<Entry> entry,
                                        bool notify,
                                        bool to_front) {
   if (!FilterEntry(*entry) || (entries_.size() >= kMaxEntries && !to_front)) {
-    return;
+    return false;
   }
 
   if (entry->type == sessions::tab_restore::GROUP) {
@@ -1311,6 +1322,8 @@ void TabRestoreServiceHelper::AddEntry(std::unique_ptr<Entry> entry,
   if (observer_) {
     observer_->OnAddEntry();
   }
+
+  return true;
 }
 
 void TabRestoreServiceHelper::PruneEntries() {

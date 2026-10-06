@@ -100,10 +100,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   void AddObserver(TabRestoreServiceObserver* observer);
   void RemoveObserver(TabRestoreServiceObserver* observer);
   std::optional<SessionID> CreateHistoricalTab(LiveTab* live_tab, int index);
-  void BrowserClosing(LiveTabContext* context);
+  std::optional<SessionID> BrowserClosing(LiveTabContext* context);
   void BrowserClosed(LiveTabContext* context);
-  void CreateHistoricalGroup(LiveTabContext* context,
-                             const tab_groups::TabGroupId& id);
+  std::optional<SessionID> CreateHistoricalGroup(
+      LiveTabContext* context,
+      const tab_groups::TabGroupId& id);
   void CreateHistoricalSplit(LiveTabContext* context,
                              const split_tabs::SplitTabId& id);
   void GroupClosed(const tab_groups::TabGroupId& group);
@@ -129,11 +130,12 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Notifies observers the service has loaded.
   void NotifyLoaded();
 
-  // Adds |entry| to the list of entries. If |prune| is true |PruneAndNotify| is
-  // invoked. If |to_front| is true the entry is added to the front, otherwise
+  // Adds |entry| to the list of entries. If |notify| is true, observers are
+  // notified. If |to_front| is true the entry is added to the front, otherwise
   // the back. Normal closes go to the front, but tab/window closes from the
-  // previous session are added to the back.
-  void AddEntry(std::unique_ptr<Entry> entry, bool prune, bool to_front);
+  // previous session are added to the back. Returns true if the entry was stored,
+  // false if it failed FilterEntry or if the service is full and |to_front| is false.
+  bool AddEntry(std::unique_ptr<Entry> entry, bool notify, bool to_front);
 
   // Prunes |entries_| to contain only kMaxEntries, and removes uninteresting
   // entries.

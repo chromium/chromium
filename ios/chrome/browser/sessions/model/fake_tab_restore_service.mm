@@ -44,7 +44,8 @@ std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
   return std::nullopt;
 }
 
-void FakeTabRestoreService::BrowserClosing(sessions::LiveTabContext* context) {
+std::optional<SessionID> FakeTabRestoreService::BrowserClosing(
+    sessions::LiveTabContext* context) {
   NOTREACHED();
 }
 
@@ -52,7 +53,7 @@ void FakeTabRestoreService::BrowserClosed(sessions::LiveTabContext* context) {
   NOTREACHED();
 }
 
-void FakeTabRestoreService::CreateHistoricalGroup(
+std::optional<SessionID> FakeTabRestoreService::CreateHistoricalGroup(
     sessions::LiveTabContext* context,
     const tab_groups::TabGroupId& group) {
   NOTREACHED();

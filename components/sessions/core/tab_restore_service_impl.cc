@@ -1838,18 +1838,19 @@ std::optional<SessionID> TabRestoreServiceImpl::CreateHistoricalTab(
   return helper_.CreateHistoricalTab(live_tab, index);
 }
 
-void TabRestoreServiceImpl::BrowserClosing(LiveTabContext* context) {
-  helper_.BrowserClosing(context);
+std::optional<SessionID> TabRestoreServiceImpl::BrowserClosing(
+    LiveTabContext* context) {
+  return helper_.BrowserClosing(context);
 }
 
 void TabRestoreServiceImpl::BrowserClosed(LiveTabContext* context) {
   helper_.BrowserClosed(context);
 }
 
-void TabRestoreServiceImpl::CreateHistoricalGroup(
+std::optional<SessionID> TabRestoreServiceImpl::CreateHistoricalGroup(
     LiveTabContext* context,
     const tab_groups::TabGroupId& id) {
-  helper_.CreateHistoricalGroup(context, id);
+  return helper_.CreateHistoricalGroup(context, id);
 }
 
 void TabRestoreServiceImpl::CreateHistoricalSplit(
