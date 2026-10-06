@@ -84,10 +84,16 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
   proto::TtcServerFrame sync_frame;
   proto::JournalEvent* journal_event = sync_frame.mutable_journal_event();
   journal_event->set_type(proto::JournalEvent::JOURNAL_EVENT_TYPE_CLOCK_SYNC);
-  journal_event->set_sync_timestamp_us(
-      (client_send_time - base::Time::UnixEpoch()).InMicroseconds());
-  journal_event->set_timestamp_us(
-      (server_time - base::Time::UnixEpoch()).InMicroseconds());
+  auto set_proto_timestamp = [](proto::Timestamp* proto_timestamp,
+                                base::Time time) {
+    const base::TimeDelta since_epoch = time - base::Time::UnixEpoch();
+    proto_timestamp->set_seconds(since_epoch.InSeconds());
+    proto_timestamp->set_nanos(
+        (since_epoch - base::Seconds(since_epoch.InSeconds())).InNanoseconds());
+  };
+  set_proto_timestamp(journal_event->mutable_sync_timestamp(),
+                      client_send_time);
+  set_proto_timestamp(journal_event->mutable_timestamp(), server_time);
 
   const base::Time before_sync = base::Time::Now();
   SimulateResponse(sync_frame);

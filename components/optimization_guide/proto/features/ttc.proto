@@ -6,6 +6,7 @@ edition = "2023";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/common_types.proto";
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -235,8 +236,8 @@ message JournalEvent {
     string value = 2;
   }
 
-  // Timestamp in microseconds since the Unix epoch (Jan 1, 1970 UTC).
-  int64 timestamp_us = 1;
+  // Timestamp of the event (UTC, since the Unix epoch).
+  Timestamp timestamp = 1;
 
   // Type of the journal event.
   JournalEventType type = 2;
@@ -252,10 +253,10 @@ message JournalEvent {
   // `JOURNAL_EVENT_TYPE_ASYNC_BEGIN` or `JOURNAL_EVENT_TYPE_ASYNC_END`.
   int32 async_event_id = 5;
 
-  // Timestamp in microseconds since the Unix epoch (Jan 1, 1970 UTC) when the
-  // message was sent from the client *as recorded by the client's clock*. This
-  // value is sent back to the client along with the server clock received
-  // timestamp and is used to estimate the delta between clocks on client and
-  // server. Set only for `JOURNAL_EVENT_TYPE_CLOCK_SYNC`.
-  int64 sync_timestamp_us = 6;
+  // Timestamp (UTC, since the Unix epoch) when the message was sent from the
+  // client *as recorded by the client's clock*. This value is sent back to the
+  // client along with the server clock received timestamp and is used to
+  // estimate the delta between clocks on client and server. Set only for
+  // `JOURNAL_EVENT_TYPE_CLOCK_SYNC`.
+  Timestamp sync_timestamp = 6;
 }

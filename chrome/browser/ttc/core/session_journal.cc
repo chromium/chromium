@@ -56,9 +56,7 @@ void SessionJournal::HandleServerJournalEvent(const ServerJournalEvent& event) {
   for (const ServerJournalEvent::Details& detail : event.details) {
     details_builder.Add(detail.key, detail.value);
   }
-  const base::Time server_time =
-      base::Time::UnixEpoch() + base::Microseconds(event.timestamp_us);
-  const base::Time timestamp = server_time + server_clock_delta_;
+  const base::Time timestamp = event.timestamp + server_clock_delta_;
 
   if (event.type != ServerJournalEvent::Type::kClockSync &&
       !received_clock_sync_) {
@@ -97,22 +95,21 @@ void SessionJournal::HandleServerJournalEvent(const ServerJournalEvent& event) {
     }
     case ServerJournalEvent::Type::kClockSync: {
       received_clock_sync_ = true;
-      if (event.sync_timestamp_us <= 0) {
-        // Avoid adjusting if the server doesn't provide a timestamp of sends
+      if (event.sync_timestamp <= base::Time::UnixEpoch()) {
+        // Avoid adjusting if the server doesn't provide a timestamp or sends
         // an obviously bogus one.
         journal_->Log(GURL(), task_id_, actor::MakeFrontEndTrackUUID(task_id_),
                       "Bad ClockSync Message",
                       actor::JournalDetailsBuilder()
-                          .Add("sync_timestamp_us", event.sync_timestamp_us)
+                          .Add("sync_timestamp", event.sync_timestamp)
                           .Build());
         break;
       }
-      const base::Time client_send_time =
-          base::Time::UnixEpoch() + base::Microseconds(event.sync_timestamp_us);
       const base::Time client_receive_time = base::Time::Now();
       const base::Time client_midpoint =
-          client_send_time + (client_receive_time - client_send_time) / 2;
-      server_clock_delta_ = client_midpoint - server_time;
+          event.sync_timestamp +
+          (client_receive_time - event.sync_timestamp) / 2;
+      server_clock_delta_ = client_midpoint - event.timestamp;
       details_builder.Add("clock_delta", server_clock_delta_);
       journal_->Log(GURL(), task_id_, actor::MakeTtcBackendTrackUUID(task_id_),
                     client_midpoint,

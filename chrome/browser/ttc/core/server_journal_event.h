@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
+
 namespace ttc {
 
 // Event recorded in the session journal from the server.
@@ -34,12 +36,12 @@ struct ServerJournalEvent {
   ServerJournalEvent& operator=(ServerJournalEvent&&);
   ~ServerJournalEvent();
 
-  int64_t timestamp_us = 0;
+  base::Time timestamp;
   Type type = Type::kUnspecified;
   std::string name;
   std::vector<Details> details;
   int32_t async_event_id = 0;
-  int64_t sync_timestamp_us = 0;
+  base::Time sync_timestamp;
 };
 
 }  // namespace ttc

@@ -92,10 +92,17 @@ ServerJournalEvent::Type ToServerJournalEventType(
   }
 }
 
+base::Time ToTime(const optimization_guide::proto::Timestamp& proto_timestamp) {
+  return base::Time::UnixEpoch() + base::Seconds(proto_timestamp.seconds()) +
+         base::Nanoseconds(proto_timestamp.nanos());
+}
+
 ServerJournalEvent ToServerJournalEvent(
     const optimization_guide::proto::JournalEvent& proto_event) {
   ServerJournalEvent event;
-  event.timestamp_us = proto_event.timestamp_us();
+  if (proto_event.has_timestamp()) {
+    event.timestamp = ToTime(proto_event.timestamp());
+  }
   event.type = ToServerJournalEventType(proto_event.type());
   event.name = proto_event.name();
   event.details.reserve(proto_event.details_size());
@@ -103,7 +110,9 @@ ServerJournalEvent ToServerJournalEvent(
     event.details.push_back({detail.key(), detail.value()});
   }
   event.async_event_id = proto_event.async_event_id();
-  event.sync_timestamp_us = proto_event.sync_timestamp_us();
+  if (proto_event.has_sync_timestamp()) {
+    event.sync_timestamp = ToTime(proto_event.sync_timestamp());
+  }
   return event;
 }
 
