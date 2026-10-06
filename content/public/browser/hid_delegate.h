@@ -56,6 +56,9 @@ class CONTENT_EXPORT HidDelegate {
       std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
       HidChooser::Callback callback) = 0;
 
+  // Returns whether the frame is allowed to use HID.
+  virtual bool IsHidAllowedForFrame(RenderFrameHost* render_frame_host) = 0;
+
   // Returns whether `origin` has permission to request access to a device.
   virtual bool CanRequestDevicePermission(BrowserContext* browser_context,
                                           const url::Origin& origin) = 0;

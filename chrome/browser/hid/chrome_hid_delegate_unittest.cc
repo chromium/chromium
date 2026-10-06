@@ -22,9 +22,14 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/embedded_worker_instance_test_harness.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -1303,4 +1308,185 @@ TEST(ChromeHidDelegateBrowserContextTest, BrowserContextIsNull) {
                          base::Uuid::GenerateRandomV4().AsLowercaseString()));
   EXPECT_FALSE(chrome_hid_delegate.IsFidoAllowedForOrigin(
       /*browser_context=*/nullptr, origin));
+}
+
+class ChromeHidDelegateStoragePartitionTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  std::unique_ptr<content::WebContents> CreateGuestPartitionWebContents(
+      const GURL& url) {
+    const content::StoragePartitionConfig guest_config =
+        content::StoragePartitionConfig::Create(
+            profile(), "test_partition", "guest_partition", /*in_memory=*/true);
+    scoped_refptr<content::SiteInstance> guest_instance =
+        content::SiteInstance::CreateForGuest(profile(), guest_config);
+    std::unique_ptr<content::WebContents> guest_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(),
+                                                          guest_instance);
+    content::WebContentsTester::For(guest_contents.get())
+        ->NavigateAndCommit(url);
+    return guest_contents;
+  }
+
+  std::unique_ptr<content::WebContents> CreateCustomPartitionWebContents(
+      const GURL& url) {
+    const content::StoragePartitionConfig custom_config =
+        content::StoragePartitionConfig::Create(profile(), "test_partition",
+                                                "custom_partition",
+                                                /*in_memory=*/true);
+    scoped_refptr<content::SiteInstance> custom_instance =
+        content::SiteInstance::CreateForFixedStoragePartition(profile(), url,
+                                                              custom_config);
+    std::unique_ptr<content::WebContents> custom_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(),
+                                                          custom_instance);
+    content::WebContentsTester::For(custom_contents.get())
+        ->NavigateAndCommit(url);
+    return custom_contents;
+  }
+};
+
+TEST_F(ChromeHidDelegateStoragePartitionTest,
+       IsHidAllowedForFrame_BlocksGuestViews) {
+  ChromeHidDelegate chrome_hid_delegate;
+
+  // 1. Test HTTPS Guest (should be blocked)
+  {
+    const GURL guest_url("https://example.com/");
+
+    std::unique_ptr<content::WebContents> guest =
+        CreateGuestPartitionWebContents(guest_url);
+    content::RenderFrameHost* rfh = guest->GetPrimaryMainFrame();
+
+    ASSERT_TRUE(rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
+    ASSERT_NE(rfh->GetStoragePartition(),
+              rfh->GetBrowserContext()->GetDefaultStoragePartition());
+
+    EXPECT_FALSE(chrome_hid_delegate.IsHidAllowedForFrame(rfh));
+  }
+
+  // 2. Test about:blank Guest (should be blocked)
+  {
+    const GURL guest_url("about:blank");
+
+    std::unique_ptr<content::WebContents> guest =
+        CreateGuestPartitionWebContents(guest_url);
+    content::RenderFrameHost* rfh = guest->GetPrimaryMainFrame();
+
+    EXPECT_FALSE(chrome_hid_delegate.IsHidAllowedForFrame(rfh));
+  }
+}
+
+TEST_F(ChromeHidDelegateStoragePartitionTest,
+       IsHidAllowedForFrame_CustomStoragePartition) {
+  ChromeHidDelegate chrome_hid_delegate;
+
+  // 1. Test HTTPS in custom StoragePartition (should be blocked)
+  {
+    const GURL url("https://example.com/");
+
+    std::unique_ptr<content::WebContents> custom_contents =
+        CreateCustomPartitionWebContents(url);
+    content::RenderFrameHost* rfh = custom_contents->GetPrimaryMainFrame();
+
+    ASSERT_FALSE(rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
+    ASSERT_NE(rfh->GetStoragePartition(),
+              rfh->GetBrowserContext()->GetDefaultStoragePartition());
+
+    EXPECT_FALSE(chrome_hid_delegate.IsHidAllowedForFrame(rfh));
+  }
+
+  // 2. Test non-HTTP/HTTPS in custom StoragePartition (should be allowed)
+  {
+    const GURL url("chrome://version/");
+
+    std::unique_ptr<content::WebContents> custom_contents =
+        CreateCustomPartitionWebContents(url);
+    content::RenderFrameHost* rfh = custom_contents->GetPrimaryMainFrame();
+
+    ASSERT_FALSE(rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
+    ASSERT_NE(rfh->GetStoragePartition(),
+              rfh->GetBrowserContext()->GetDefaultStoragePartition());
+
+    EXPECT_TRUE(chrome_hid_delegate.IsHidAllowedForFrame(rfh));
+  }
+
+  // 3. Test HTTPS subframe inside non-HTTP/HTTPS custom StoragePartition
+  // (should be allowed; HID grants are keyed by the main frame origin)
+  {
+    const GURL url("chrome://version/");
+    const GURL child_url("https://example.com/");
+
+    std::unique_ptr<content::WebContents> custom_contents =
+        CreateCustomPartitionWebContents(url);
+    content::RenderFrameHost* main_rfh = custom_contents->GetPrimaryMainFrame();
+    content::RenderFrameHost* child_rfh =
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            child_url,
+            content::RenderFrameHostTester::For(main_rfh)->AppendChild(
+                "child"));
+
+    ASSERT_FALSE(
+        child_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
+    ASSERT_NE(child_rfh->GetStoragePartition(),
+              child_rfh->GetBrowserContext()->GetDefaultStoragePartition());
+    ASSERT_EQ(child_rfh->GetLastCommittedOrigin(),
+              url::Origin::Create(child_url));
+
+    EXPECT_TRUE(chrome_hid_delegate.IsHidAllowedForFrame(child_rfh));
+  }
+
+  // 4. Test about:blank subframe with inherited HTTPS origin in custom
+  // StoragePartition (should be blocked)
+  {
+    const GURL url("https://example.com/");
+    const url::Origin origin = url::Origin::Create(url);
+
+    std::unique_ptr<content::WebContents> custom_contents =
+        CreateCustomPartitionWebContents(url);
+    content::RenderFrameHost* main_rfh = custom_contents->GetPrimaryMainFrame();
+    content::RenderFrameHost* child_rfh =
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL("about:blank"),
+            content::RenderFrameHostTester::For(main_rfh)->AppendChild(
+                "child"));
+
+    ASSERT_FALSE(
+        child_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
+    ASSERT_NE(main_rfh->GetStoragePartition(),
+              child_rfh->GetBrowserContext()->GetDefaultStoragePartition());
+    ASSERT_EQ(child_rfh->GetLastCommittedOrigin(), origin);
+
+    EXPECT_FALSE(chrome_hid_delegate.IsHidAllowedForFrame(child_rfh));
+  }
+
+  // 5. Test opaque origin in custom StoragePartition (should be blocked)
+  {
+    const GURL url("data:text/html,<html></html>");
+
+    std::unique_ptr<content::WebContents> custom_contents =
+        CreateCustomPartitionWebContents(url);
+    content::RenderFrameHost* rfh = custom_contents->GetPrimaryMainFrame();
+
+    ASSERT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+    ASSERT_NE(rfh->GetStoragePartition(),
+              rfh->GetBrowserContext()->GetDefaultStoragePartition());
+
+    EXPECT_FALSE(chrome_hid_delegate.IsHidAllowedForFrame(rfh));
+  }
+}
+
+TEST_F(ChromeHidDelegateStoragePartitionTest,
+       IsHidAllowedForFrame_AllowsDefaultPartition) {
+  const GURL url("https://example.com/");
+
+  NavigateAndCommit(url);
+  content::RenderFrameHost* rfh = main_rfh();
+
+  ASSERT_FALSE(rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
+  ASSERT_EQ(rfh->GetStoragePartition(),
+            rfh->GetBrowserContext()->GetDefaultStoragePartition());
+
+  ChromeHidDelegate chrome_hid_delegate;
+  EXPECT_TRUE(chrome_hid_delegate.IsHidAllowedForFrame(rfh));
 }

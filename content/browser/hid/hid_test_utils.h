@@ -54,6 +54,7 @@ class MockHidDelegate : public HidDelegate {
   MOCK_METHOD(std::vector<device::mojom::HidDeviceInfoPtr>,
               RunChooserInternal,
               ());
+  MOCK_METHOD(bool, IsHidAllowedForFrame, (RenderFrameHost*), (override));
   MOCK_METHOD(bool,
               CanRequestDevicePermission,
               (BrowserContext*, const url::Origin&));

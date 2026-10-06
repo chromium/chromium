@@ -11,7 +11,9 @@
 
 namespace content {
 
-MockHidDelegate::MockHidDelegate() = default;
+MockHidDelegate::MockHidDelegate() {
+  ON_CALL(*this, IsHidAllowedForFrame).WillByDefault(testing::Return(true));
+}
 
 MockHidDelegate::~MockHidDelegate() = default;
 

@@ -1842,6 +1842,20 @@ TEST_F(HidServiceServiceWorkerBrowserContextDestroyedTest, RejectOpaqueOrigin) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(HidServiceBaseTest, CreateBlockedWhenHidNotAllowedForFrame) {
+  EXPECT_CALL(hid_delegate(), IsHidAllowedForFrame(_)).WillOnce(Return(false));
+  mojo::Remote<blink::mojom::HidService> service;
+  auto* web_contents = static_cast<TestWebContents*>(
+      web_contents_factory_.CreateWebContents(&browser_context_));
+  web_contents->NavigateAndCommit(GURL("https://example.com/"));
+  TestFuture<void> disconnect_future;
+  web_contents->GetPrimaryMainFrame()->GetHidService(
+      service.BindNewPipeAndPassReceiver());
+  service.set_disconnect_handler(disconnect_future.GetCallback());
+  ASSERT_TRUE(disconnect_future.Wait());
+  EXPECT_FALSE(service.is_connected());
+}
+
 TEST_P(HidServiceTest, ConnectionFailedWithoutPermission) {
   auto service_creation_type = GetParam();
   const auto& service = GetService(service_creation_type);

@@ -345,4 +345,40 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameNewWindowHidBrowserTest,
   EXPECT_TRUE(chooser_context->HasDevicePermission(guest_origin, *device));
 }
 
+IN_PROC_BROWSER_TEST_F(ControlledFrameNewWindowHidBrowserTest,
+                       RequestDeviceFromUnattachedGuestReturnsEmpty) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/std::nullopt,
+          "/controlled_frame.html");
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  // Open a new window from the guest and leave it unattached.
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
+    const frame = document.getElementsByTagName('controlledframe')[0];
+    frame.addEventListener('newwindow', (e) => {
+      e.preventDefault();
+      window.pendingNewWindow = e.window;
+    });
+    frame.executeScript({code: 'window.open();'});
+  )"));
+  guest_view_manager()->WaitForNumGuestsCreated(2u);
+
+  guest_view::GuestViewBase* new_guest =
+      guest_view_manager()->GetLastGuestViewCreated();
+  ASSERT_TRUE(new_guest);
+  ASSERT_FALSE(new_guest->attached());
+  content::RenderFrameHost* new_guest_rfh = new_guest->GetGuestMainFrame();
+  ASSERT_TRUE(new_guest_rfh);
+  ASSERT_TRUE(extensions::WebViewGuest::FromRenderFrameHost(new_guest_rfh));
+
+  // The unattached guest has no embedder RenderFrameHost to route the
+  // permission request through, so the request resolves with no devices.
+  EXPECT_EQ(0, content::EvalJs(new_guest_rfh, R"(
+    navigator.hid.requestDevice({filters: []})
+        .then(devices => devices.length);
+  )"));
+}
+
 }  // namespace controlled_frame

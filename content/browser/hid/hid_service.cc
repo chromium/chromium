@@ -167,8 +167,10 @@ void HidService::Create(
 
   // Avoid creating the HidService if there is no HID delegate to provide the
   // implementation.
-  if (!GetContentClient()->browser()->GetHidDelegate())
+  HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
+  if (!delegate) {
     return;
+  }
 
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     // The renderer is supposed to disallow the use of hid services when inside
@@ -182,6 +184,10 @@ void HidService::Create(
           ->GetLastCommittedOrigin()
           .opaque()) {
     mojo::ReportBadMessage("WebHID is not allowed from an opaque origin.");
+    return;
+  }
+
+  if (!delegate->IsHidAllowedForFrame(render_frame_host)) {
     return;
   }
 
