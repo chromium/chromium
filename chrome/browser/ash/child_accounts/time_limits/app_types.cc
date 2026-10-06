@@ -63,7 +63,9 @@ bool CanMerge(const AppActivity::ActiveTime& t1,
 
 AppId::AppId(apps::AppType app_type, const std::string& app_id)
     : app_type_(app_type), app_id_(app_id) {
-  CHECK(!app_id.empty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568736263): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!app_id.empty());
 }
 
 AppId::AppId(const AppId&) = default;
