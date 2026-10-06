@@ -766,10 +766,6 @@ void LogSyncOptInOffered(AccessPoint access_point);
 // histogram) and its associated access point.
 void LogHistorySyncOptInOffered(AccessPoint access_point);
 
-// Logs that the sync settings were opened at the end of the sync opt-in flow,
-// and the associated access points.
-void LogSyncSettingsOpened(AccessPoint access_point);
-
 // Logs to UMA histograms how many accounts are in the browser for this
 // profile.
 void RecordAccountsPerProfile(int total_number_accounts);

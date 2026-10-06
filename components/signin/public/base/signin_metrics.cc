@@ -304,11 +304,6 @@ void LogHistorySyncOptInOffered(AccessPoint access_point) {
                                 access_point);
 }
 
-void LogSyncSettingsOpened(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SyncOptIn.OpenedSyncSettings",
-                                access_point);
-}
-
 void RecordAccountsPerProfile(int total_number_accounts) {
   UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfAccountsPerProfile",
                            total_number_accounts);

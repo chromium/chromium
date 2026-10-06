@@ -567,7 +567,6 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       if (consent_service) {
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       }
-      signin_metrics::LogSyncSettingsOpened(signin_access_point_);
       delegate_->ShowSyncSettings();
       break;
     case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:

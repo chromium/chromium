@@ -106,7 +106,6 @@ struct ExpectedMetricsState {
 
   bool sync_opt_in_started = false;
   bool sync_opt_in_completed = false;
-  bool sync_settings_opened = false;
   std::optional<signin_metrics::ProfileSignout> profile_signout;
   bool sync_turn_off = false;
 };
@@ -594,11 +593,6 @@ class TurnSyncOnHelperTest : public testing::Test {
     EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SyncOptIn.Completed"),
                 BucketsAre(Bucket(kAccessPoint,
                                   expected.sync_opt_in_completed ? 1 : 0)));
-
-    EXPECT_THAT(
-        histogram_tester_->GetAllSamples("Signin.SyncOptIn.OpenedSyncSettings"),
-        BucketsAre(
-            Bucket(kAccessPoint, expected.sync_settings_opened ? 1 : 0)));
 
     if (expected.profile_signout) {
       EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SignOut.Completed"),
@@ -1658,8 +1652,7 @@ TEST_F(TurnSyncOnHelperTest, ConfigureSync) {
   CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
                       .sign_in_recorded = true,
                       .sync_opt_in_started = true,
-                      .sync_opt_in_completed = true,
-                      .sync_settings_opened = true});
+                      .sync_opt_in_completed = true});
 }
 
 // Tests that the user is signed in and Sync configuration is complete.

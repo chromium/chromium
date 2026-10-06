@@ -4586,18 +4586,6 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SyncOptIn.OpenedSyncSettings" enum="SigninAccessPoint"
-    expires_after="2026-10-18">
-  <owner>rsult@google.com</owner>
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-signin-desktop-team@google.com</owner>
-  <summary>
-    Records that the user chose to navigate to the sync settings page from the
-    sync confirmation screen. Logs this in the context of the access point
-    associated with this event.
-  </summary>
-</histogram>
-
 <histogram name="Signin.SyncOptIn.Started" enum="SigninAccessPoint"
     expires_after="2027-02-14">
   <owner>bsazonov@chromium.org</owner>
