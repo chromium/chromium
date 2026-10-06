@@ -23,7 +23,6 @@ struct ImportProcessingResult;
 // incoming passkeys and required interaction with `PasskeyModel`.
 //
 // The caller should initiate the process by calling `StartImport`.
-// TODO(crbug.com/458337350): Add more unit tests.
 class PasskeyImporter {
  public:
   using ProcessingCallback =
