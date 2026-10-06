@@ -1027,9 +1027,12 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED: {
       return l10n_util::GetStringUTF16(IDS_PROMPT_DOWNLOAD_BLOCKED_SCAN_FAILED);
     }
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS: {
+      return l10n_util::GetStringUTF16(
+          IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS);
+    }
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
-    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
@@ -1086,13 +1089,6 @@ std::u16string DownloadItemNotification::GetInProgressSubStatusString() const {
 std::u16string DownloadItemNotification::GetSubStatusString() const {
   if (item_->IsInsecure() || item_->IsDangerous())
     return GetWarningStatusString();
-
-  if (item_->GetDangerType() ==
-      download::DownloadDangerType::
-          DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS) {
-    return l10n_util::GetStringUTF16(
-        IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS);
-  }
 
   switch (item_->GetState()) {
     case download::DownloadItem::IN_PROGRESS:

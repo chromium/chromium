@@ -30,6 +30,7 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -41,6 +42,7 @@
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -409,6 +411,19 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
       .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
   EXPECT_CALL(*download_item_, OpenDownload()).Times(1);
   download_item_notification_->Click(std::nullopt, std::nullopt);
+}
+
+TEST_F(DownloadItemNotificationTest, DeepScannedOpenedDangerous) {
+  EXPECT_CALL(*download_item_, GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS));
+  EXPECT_CALL(*download_item_, IsDangerous()).WillRepeatedly(Return(true));
+
+  CreateDownloadItemNotification();
+  EXPECT_EQ(1u, NotificationCount());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS),
+            LookUpNotification()->message());
 }
 
 // Test that EDIT_WITH_MEDIA_APP is added for pdf file on CHROMEOS.
