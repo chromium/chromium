@@ -29,6 +29,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/switches.h"
 #include "cc/input/input_handler.h"
@@ -233,13 +234,14 @@ CompositorImpl::~CompositorImpl() {
     observer.OnBeginFrameSourceShuttingDown();
   }
 
-  DetachRootWindow();
-  // Clean-up any surface references.
+  // Clean-up any surface references before detaching the root window so that
+  // resetting occlusion on detach does not wake the display during teardown.
   if (!is_offscreen_rendering_) {
     SetSurface(nullptr, false, nullptr);
   } else {
     SetVisible(false);
   }
+  DetachRootWindow();
 
   BrowserGpuChannelHostFactory::instance()->MaybeCloseChannel();
 }
@@ -350,6 +352,14 @@ void CompositorImpl::CreateLayerTreeHost() {
   }
 }
 
+viz::mojom::DisplayVisibility CompositorImpl::GetDisplayVisibility() const {
+  if (!host_ || !host_->IsVisible() || window_occluded_) {
+    return viz::mojom::DisplayVisibility::kInvisible;
+  }
+  return draw_paused_ ? viz::mojom::DisplayVisibility::kPaused
+                      : viz::mojom::DisplayVisibility::kVisible;
+}
+
 void CompositorImpl::SetVisible(bool visible) {
   TRACE_EVENT1("cc", "CompositorImpl::SetVisible", "visible", visible);
 
@@ -453,13 +463,51 @@ void CompositorImpl::SetNeedsComposite() {
 }
 
 void CompositorImpl::SetDrawPaused(bool paused) {
-  if (draw_paused_ == paused) {
+  const auto previous_visibility = GetDisplayVisibility();
+  draw_paused_ = paused;
+  if (GetDisplayVisibility() != previous_visibility) {
+    UpdateDisplayVisibility();
+  }
+}
+
+void CompositorImpl::SetWindowOccluded(bool occluded) {
+  TRACE_EVENT("compositor", "CompositorImpl::SetWindowOccluded", "occluded",
+              occluded);
+  if (is_offscreen_rendering_ || window_occluded_ == occluded ||
+      !base::FeatureList::IsEnabled(
+          features::kPropagateOcclusionToVizAndroid)) {
     return;
   }
-  draw_paused_ = paused;
-  if (display_private_) {
-    display_private_->SetDisplayVisible(!draw_paused_);
+  // TODO(crbug.com/505314004): Handle the case of casting (e.g. presentation
+  // mode or screen capture), which should be handled similarly to Aura by
+  // keeping the display visible even when the window is occluded.
+  const auto previous_visibility = GetDisplayVisibility();
+  window_occluded_ = occluded;
+  if (window_occluded_) {
+    // Setting the display visibility to kPaused or kInvisible only stops Viz
+    // from drawing, not from issuing BeginFrames. Defer BeginFrames here to
+    // stop generating frames on the browser side, though ideally this would be
+    // handled in Viz.
+    defer_begin_frame_ = base::ScopedClosureRunner(host_->DeferBeginFrame());
+  } else {
+    defer_begin_frame_.RunAndReset();
   }
+  if (GetDisplayVisibility() != previous_visibility) {
+    UpdateDisplayVisibility();
+  }
+}
+
+void CompositorImpl::UpdateDisplayVisibility() {
+  if (!display_private_) {
+    return;
+  }
+
+  const viz::mojom::DisplayVisibility visibility = GetDisplayVisibility();
+  if (visibility != viz::mojom::DisplayVisibility::kVisible &&
+      !pending_surface_copies_.empty()) {
+    display_private_->ForceImmediateDrawAndSwapIfPossible();
+  }
+  display_private_->SetDisplayVisible(visibility);
 }
 
 void CompositorImpl::MaybeCompositeNow() {
@@ -817,7 +865,7 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
 
   display_private_->SetSwapCompletionCallbackEnabled(
       enable_swap_completion_callbacks_);
-  display_private_->SetDisplayVisible(!draw_paused_);
+  display_private_->SetDisplayVisible(GetDisplayVisibility());
   display_private_->Resize(size_);
   display_private_->SetDisplayColorSpaces(display_color_spaces_);
   display_private_->SetSupportedRefreshRates(

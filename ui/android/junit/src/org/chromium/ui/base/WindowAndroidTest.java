@@ -14,6 +14,7 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyFloat;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -195,6 +196,7 @@ public class WindowAndroidTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Window.OcclusionExperimental.Duration", 5000);
 
+        mWindowAndroid.setIsOcclusionTracked(true);
         mWindowAndroid.setOccluded(true, null, null);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(5));
         mWindowAndroid.setOccluded(false, null, null);
@@ -222,6 +224,7 @@ public class WindowAndroidTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Window.OcclusionExperimental.Duration", 5000);
 
+        mWindowAndroid.setIsOcclusionTracked(true);
         mWindowAndroid.setOccluded(true, null, null);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(5));
         mWindowAndroid.destroy();
@@ -262,23 +265,53 @@ public class WindowAndroidTest {
     @Test
     public void testOcclusionOptimizationsEnabled() {
         UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.setForTesting(true);
+        assertFalse(mWindowAndroid.isOccluded());
+        mWindowAndroid.setIsOcclusionTracked(true);
+        assertFalse(mWindowAndroid.isOccluded());
+        verify(mWindowAndroidNativeInterface, never()).onOcclusionChanged(anyLong(), anyBoolean());
 
         mWindowAndroid.setOccluded(true, null, null);
         assertTrue(mWindowAndroid.getOcclusionSupplier().get());
+        assertTrue(mWindowAndroid.isOccluded());
+        verify(mWindowAndroidNativeInterface).onOcclusionChanged(MOCK_NATIVE_POINTER, true);
 
         mWindowAndroid.setOccluded(false, null, null);
         assertFalse(mWindowAndroid.getOcclusionSupplier().get());
+        assertFalse(mWindowAndroid.isOccluded());
+        verify(mWindowAndroidNativeInterface).onOcclusionChanged(MOCK_NATIVE_POINTER, false);
+
+        // Disabling occlusion tracking while occluded resets occlusion state and ignores
+        // subsequent setOccluded calls until tracking is re-enabled.
+        clearInvocations(mWindowAndroidNativeInterface);
+        mWindowAndroid.setOccluded(true, null, null);
+        assertTrue(mWindowAndroid.isOccluded());
+        verify(mWindowAndroidNativeInterface).onOcclusionChanged(MOCK_NATIVE_POINTER, true);
+        mWindowAndroid.setIsOcclusionTracked(false);
+        assertFalse(mWindowAndroid.getOcclusionSupplier().get());
+        assertFalse(mWindowAndroid.isOccluded());
+        verify(mWindowAndroidNativeInterface).onOcclusionChanged(MOCK_NATIVE_POINTER, false);
+        clearInvocations(mWindowAndroidNativeInterface);
+        mWindowAndroid.setIsOcclusionTracked(false);
+        verify(mWindowAndroidNativeInterface, never()).onOcclusionChanged(anyLong(), anyBoolean());
+        mWindowAndroid.setOccluded(true, null, null);
+        assertFalse(mWindowAndroid.getOcclusionSupplier().get());
+        assertFalse(mWindowAndroid.isOccluded());
+        verify(mWindowAndroidNativeInterface, never()).onOcclusionChanged(anyLong(), anyBoolean());
     }
 
     @Test
     public void testOcclusionOptimizationsDisabled() {
         UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.setForTesting(false);
+        mWindowAndroid.setIsOcclusionTracked(true);
 
         mWindowAndroid.setOccluded(true, null, null);
         assertFalse(mWindowAndroid.getOcclusionSupplier().get());
+        assertFalse(mWindowAndroid.isOccluded());
 
         mWindowAndroid.setOccluded(false, null, null);
         assertFalse(mWindowAndroid.getOcclusionSupplier().get());
+        assertFalse(mWindowAndroid.isOccluded());
+        verify(mWindowAndroidNativeInterface, never()).onOcclusionChanged(anyLong(), anyBoolean());
     }
 
     @Test

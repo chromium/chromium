@@ -196,7 +196,7 @@ void ArCompositorFrameSink::OnRootCompositorFrameSinkReady(
   }
 
   display_private_->Resize(frame_size_);
-  display_private_->SetDisplayVisible(true);
+  display_private_->SetDisplayVisible(viz::mojom::DisplayVisibility::kVisible);
   sink_remote_->SetNeedsBeginFrame(true);
 
   is_initialized_ = true;

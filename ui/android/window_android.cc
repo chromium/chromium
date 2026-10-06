@@ -145,14 +145,22 @@ void WindowAndroid::RemoveObserver(WindowAndroidObserver* observer) {
 }
 
 void WindowAndroid::AttachCompositor(WindowAndroidCompositor* compositor) {
-  if (compositor_ && compositor != compositor_)
+  if (compositor_ && compositor != compositor_) {
     DetachCompositor();
+  }
 
   compositor_ = compositor;
-  observer_list_.Notify(&WindowAndroidObserver::OnAttachCompositor);
+  if (compositor_) {
+    JNIEnv* env = AttachCurrentThread();
+    compositor_->SetWindowOccluded(java_window_->isOccluded(env));
+    observer_list_.Notify(&WindowAndroidObserver::OnAttachCompositor);
+  }
 }
 
 void WindowAndroid::DetachCompositor() {
+  if (compositor_) {
+    compositor_->SetWindowOccluded(false);
+  }
   observer_list_.Notify(&WindowAndroidObserver::OnDetachCompositor);
   observer_list_.Clear();
   compositor_ = nullptr;
@@ -206,6 +214,13 @@ void WindowAndroid::Animate(base::TimeTicks begin_frame_time) {
 void WindowAndroid::OnVisibilityChanged(JNIEnv* env, bool visible) {
   observer_list_.Notify(&WindowAndroidObserver::OnRootWindowVisibilityChanged,
                         visible);
+}
+
+void WindowAndroid::OnOcclusionChanged(JNIEnv* env, bool occluded) {
+  TRACE_EVENT("ui", "WindowAndroid::OnOcclusionChanged", "occluded", occluded);
+  if (compositor_) {
+    compositor_->SetWindowOccluded(occluded);
+  }
 }
 
 void WindowAndroid::OnActivityStopped(JNIEnv* env) {

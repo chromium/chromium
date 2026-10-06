@@ -152,7 +152,7 @@ void DemoHost::Initialize(
       std::move(root_params));
 
   display_private_->Resize(size_);
-  display_private_->SetDisplayVisible(true);
+  display_private_->SetDisplayVisible(viz::mojom::DisplayVisibility::kVisible);
 
   // Initialize as a client now, since the host has to submit compositor frames
   // like any other clients.

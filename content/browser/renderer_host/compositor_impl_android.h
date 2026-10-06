@@ -83,6 +83,10 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   static bool IsInitialized();
 
+  // Returns the display visibility state for Viz, combining client visibility,
+  // draw paused state, and window occlusion state.
+  viz::mojom::DisplayVisibility GetDisplayVisibility() const;
+
   void MaybeCompositeNow();
 
   // ui::ResourceProvider implementation.
@@ -167,6 +171,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
       base::TimeDelta timeout) override;
   void PostRequestSuccessfulPresentationTimeForNextFrame(
       SuccessfulPresentationTimeCallback callback) override;
+  void SetWindowOccluded(bool occluded) override;
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
@@ -219,6 +224,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
       base::StrongAlias<struct PendingSurfaceCopyIdTag, uint32_t>;
   void RemoveScopedKeepSurfaceAlive(
       const PendingSurfaceCopyId& scoped_keep_surface_alive_id);
+  void UpdateDisplayVisibility();
 
   viz::FrameSinkId frame_sink_id_;
   const bool is_offscreen_rendering_;
@@ -249,6 +255,8 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   bool needs_animate_;
 
   bool draw_paused_ = false;
+  bool window_occluded_ = false;
+  base::ScopedClosureRunner defer_begin_frame_;
 
   // The number of SubmitFrame calls that have not returned and ACK'd from
   // the GPU thread.

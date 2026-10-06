@@ -10,7 +10,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/slim/layer.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -265,6 +267,99 @@ IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTestRefreshRate, VideoPreference) {
   run_loop_->Run();
   run_loop_.reset();
   window()->SetTestHooks(nullptr);
+}
+
+class CompositorImplOcclusionBrowserTest
+    : public CompositorImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CompositorImplOcclusionBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        features::kPropagateOcclusionToVizAndroid,
+        IsOcclusionPropagationEnabled());
+  }
+
+  bool IsOcclusionPropagationEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CompositorImplOcclusionBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CompositorImplOcclusionBrowserTest,
+                       WindowOcclusionAffectsVisibility) {
+  CompositorSwapRunLoop(compositor_impl()).RunUntilSwap();
+
+  auto* compositor = compositor_impl();
+  // Initially, the display should be visible.
+  EXPECT_EQ(viz::mojom::DisplayVisibility::kVisible,
+            compositor->GetDisplayVisibility());
+
+  // Pausing drawing while visible should retain buffers.
+  static_cast<Compositor*>(compositor)->SetDrawPaused(true);
+  EXPECT_EQ(viz::mojom::DisplayVisibility::kPaused,
+            compositor->GetDisplayVisibility());
+  static_cast<Compositor*>(compositor)->SetDrawPaused(false);
+  EXPECT_EQ(viz::mojom::DisplayVisibility::kVisible,
+            compositor->GetDisplayVisibility());
+
+  // Occlude the window via WindowAndroid to verify end-to-end propagation.
+  window()->OnOcclusionChanged(/*env=*/nullptr, /*occluded=*/true);
+
+  if (IsOcclusionPropagationEnabled()) {
+    // The display should now be set to invisible.
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kInvisible,
+              compositor->GetDisplayVisibility());
+
+    // Pausing and unpausing drawing while occluded should keep the display
+    // in kInvisible and BeginFrames deferred.
+    static_cast<Compositor*>(compositor)->SetDrawPaused(true);
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kInvisible,
+              compositor->GetDisplayVisibility());
+    static_cast<Compositor*>(compositor)->SetDrawPaused(false);
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kInvisible,
+              compositor->GetDisplayVisibility());
+
+    // Damage the compositor and request a composite while occluded (which is
+    // deferred by defer_begin_frame_), then unocclude the window and verify it
+    // swaps.
+    static_cast<Compositor*>(compositor)->SetBackgroundColor(SK_ColorRED);
+    static_cast<Compositor*>(compositor)->SetNeedsComposite();
+    window()->OnOcclusionChanged(/*env=*/nullptr, /*occluded=*/false);
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kVisible,
+              compositor->GetDisplayVisibility());
+    CompositorSwapRunLoop(compositor).RunUntilSwap();
+
+    // Detaching from an occluded window resets the compositor's occlusion state
+    // so it does not retain stale occlusion from its previous window.
+    window()->OnOcclusionChanged(/*env=*/nullptr, /*occluded=*/true);
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kInvisible,
+              compositor->GetDisplayVisibility());
+    window()->DetachCompositor();
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kVisible,
+              compositor->GetDisplayVisibility());
+
+    window()->AttachCompositor(compositor);
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kVisible,
+              compositor->GetDisplayVisibility());
+  } else {
+    // Occluding the window should not affect display visibility when feature is
+    // disabled.
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kVisible,
+              compositor->GetDisplayVisibility());
+
+    // Frames should continue swapping even while occluded.
+    static_cast<Compositor*>(compositor)->SetBackgroundColor(SK_ColorRED);
+    static_cast<Compositor*>(compositor)->SetNeedsComposite();
+    CompositorSwapRunLoop(compositor).RunUntilSwap();
+
+    window()->OnOcclusionChanged(/*env=*/nullptr, /*occluded=*/false);
+    EXPECT_EQ(viz::mojom::DisplayVisibility::kVisible,
+              compositor->GetDisplayVisibility());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTest, CompositorImplOffscreen) {

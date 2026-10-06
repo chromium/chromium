@@ -2313,13 +2313,17 @@ TEST_F(DisplayVisibilityTest, DiscardBuffersOnVisibilityChangeGated) {
   // Verify we allocated some buffers (they are not destroyed yet)
   EXPECT_TRUE(skia_output_surface_->destroyed_mailboxes().empty());
 
-  // Enabled, buffers are discarded.
+  // Enabled, buffers are retained for kPaused and discarded for kInvisible.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         features::kVizBufferQueueDiscardOnVisibilityChange);
 
-    display_->SetVisible(false);
+    display_->SetVisible(mojom::DisplayVisibility::kPaused);
+    EXPECT_FALSE(display_->visible());
+    EXPECT_TRUE(skia_output_surface_->destroyed_mailboxes().empty());
+
+    display_->SetVisible(mojom::DisplayVisibility::kInvisible);
     EXPECT_FALSE(skia_output_surface_->destroyed_mailboxes().empty());
   }
 
@@ -2345,6 +2349,61 @@ TEST_F(DisplayVisibilityTest, DiscardBuffersOnVisibilityChangeGated) {
     display_->SetVisible(false);
     EXPECT_TRUE(skia_output_surface_->destroyed_mailboxes().empty());
   }
+}
+
+TEST_F(DisplayVisibilityTest, SetVisibleMarksRootSurfaceDamagedAndFullDamage) {
+  RendererSettings settings;
+  settings.partial_swap_enabled = true;
+  SetUpSoftwareDisplay(settings);
+  display_->Initialize(client_.get(), manager_.surface_manager());
+
+  const gfx::Size size(100, 100);
+  display_->Resize(size);
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+
+  auto submit_frame_with_damage = [&](const gfx::Rect& damage_rect) {
+    CompositorRenderPassList pass_list;
+    auto pass = CompositorRenderPass::Create();
+    pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(size), damage_rect,
+                 gfx::Transform());
+    pass_list.push_back(std::move(pass));
+    SubmitCompositorFrame(&pass_list, local_surface_id);
+  };
+
+  submit_frame_with_damage(gfx::Rect(size));
+  display_->SetLocalSurfaceId(local_surface_id, 1.f);
+
+  DrawAndSwapParams params;
+  params.expected_display_time = base::TimeTicks::Now();
+  EXPECT_TRUE(display_->DrawAndSwap(params));
+  EXPECT_EQ(gfx::Rect(size), software_output_device_->damage_rect());
+
+  // Draw a second frame with partial damage so the last aggregated damage rect
+  // is 10x10 rather than full-frame.
+  submit_frame_with_damage(gfx::Rect(10, 10));
+  EXPECT_TRUE(display_->DrawAndSwap(params));
+  EXPECT_EQ(gfx::Rect(10, 10), software_output_device_->damage_rect());
+
+  // Pausing drawing with buffers retained (kPaused) and then resuming
+  // (kVisible) should not mark the root surface damaged.
+  scheduler_->ResetDamageForTest();
+  display_->SetVisible(mojom::DisplayVisibility::kPaused);
+  EXPECT_FALSE(scheduler_->damaged());
+  display_->SetVisible(mojom::DisplayVisibility::kVisible);
+  EXPECT_FALSE(scheduler_->damaged());
+
+  // Hiding without buffers and re-showing the display without submitting a new
+  // frame should mark the root surface damaged for DisplayScheduler and force
+  // full-frame damage in SurfaceAggregator.
+  display_->SetVisible(false);
+  EXPECT_TRUE(scheduler_->damaged());
+
+  display_->SetVisible(true);
+  EXPECT_TRUE(display_->DrawAndSwap(params));
+  EXPECT_EQ(gfx::Rect(size), software_output_device_->damage_rect());
 }
 
 }  // namespace viz

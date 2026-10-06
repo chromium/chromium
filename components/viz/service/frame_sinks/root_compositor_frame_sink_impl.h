@@ -74,7 +74,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   const SurfaceId& CurrentSurfaceId() const;
 
   // mojom::DisplayPrivate:
-  void SetDisplayVisible(bool visible) override;
+  void SetDisplayVisible(mojom::DisplayVisibility visibility) override;
   void Resize(const gfx::Size& size) override;
   void SetDisplayColorMatrix(const gfx::Transform& color_matrix) override;
   void SetDisplayColorSpaces(

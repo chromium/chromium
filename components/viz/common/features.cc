@@ -45,6 +45,11 @@ BASE_FEATURE(kAndroidDumpForBadCompositedUiState,
 BASE_FEATURE(kAndroidSurfaceControlHdrOverlays,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When a window is occluded, whether it should become invisible, and the
+// visibility update should be propagated to viz. This is required to reclaim
+// buffers service-side.
+BASE_FEATURE(kPropagateOcclusionToVizAndroid,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If enabled, each render pass eligible for scanout gets its own BufferQueue.

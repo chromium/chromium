@@ -141,7 +141,7 @@ bool AndroidSurfaceControlCompositor::CreateDisplayAndFrameSink(
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params), /*maybe_wait_on_destruction=*/false);
 
-  display_private_->SetDisplayVisible(true);
+  display_private_->SetDisplayVisible(viz::mojom::DisplayVisibility::kVisible);
   display_private_->Resize(size_pixels);
   display_private_->SetDisplayColorSpaces(display_color_spaces);
   display_private_->SetSupportedRefreshRates(

@@ -31,9 +31,21 @@ struct AdaptiveRefreshRateInfo {
   float device_scale_factor;
 };
 
+// Controls the visibility and buffer retention state of a Display.
+enum DisplayVisibility {
+  // The display is visible and draws frames normally.
+  kVisible,
+  // Drawing is paused (e.g. during window resize transactions), but
+  // compositing buffers are retained.
+  kPaused,
+  // The display is invisible (e.g. occluded or hidden) and compositing
+  // buffers may be discarded.
+  kInvisible,
+};
+
 // The DisplayPrivate is used by privileged clients to talk to Display.
 interface DisplayPrivate {
-  SetDisplayVisible(bool visible);
+  SetDisplayVisible(DisplayVisibility visibility);
 
   // Resizes the display.
   Resize(gfx.mojom.Size size);

@@ -492,6 +492,7 @@ public class WindowAndroid
                 new Consumer<>() {
                     @Override
                     public void accept(Boolean visible) {
+                        if (mTrustedPresentationOcclusionObserver != this) return;
                         updateOcclusionState(!visible, null);
                     }
                 };
@@ -517,11 +518,19 @@ public class WindowAndroid
         wm.unregisterTrustedPresentationListener(mTrustedPresentationOcclusionObserver);
 
         mTrustedPresentationOcclusionObserver = null;
+        updateOcclusionState(false, null);
     }
 
     /** A supplier that returns whether the window is occluded or not. */
     public NonNullObservableSupplier<Boolean> getOcclusionSupplier() {
         return mOcclusionSupplier;
+    }
+
+    @CalledByNative
+    /* package */ boolean isOccluded() {
+        return mIsOcclusionTracked
+                && mIsOccluded
+                && UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.getValue();
     }
 
     /** Returns whether occlusion tracking is allowed for this window. */
@@ -537,6 +546,9 @@ public class WindowAndroid
     public void setIsOcclusionTracked(boolean isOcclusionTracked) {
         ThreadUtils.assertOnUiThread();
         assert !shouldTrackOcclusionWithTrustedPresentationApi();
+        if (!isOcclusionTracked && mIsOccluded) {
+            setOccluded(false, null, null);
+        }
         mIsOcclusionTracked = isOcclusionTracked;
     }
 
@@ -556,7 +568,9 @@ public class WindowAndroid
             boolean isOccluded, @Nullable Rect windowBounds, @Nullable Region visibleRegion) {
         ThreadUtils.assertOnUiThread();
         // If the Trusted Presentation API is already tracking occlusion, it takes precedence.
-        if (!mOcclusionTrackingAllowed || shouldTrackOcclusionWithTrustedPresentationApi()) {
+        if (!mOcclusionTrackingAllowed
+                || !mIsOcclusionTracked
+                || shouldTrackOcclusionWithTrustedPresentationApi()) {
             return;
         }
 
@@ -568,7 +582,7 @@ public class WindowAndroid
         updateOcclusionState(isOccluded, windowBounds);
     }
 
-    private void onOccluded(@Nullable Rect windowBounds) {
+    private void updateMetricsOnOccluded(@Nullable Rect windowBounds) {
         updateAccumulatedPixelMilliseconds();
 
         mOccludedPixels =
@@ -578,7 +592,7 @@ public class WindowAndroid
         sOccludedCount++;
     }
 
-    private void onUnoccluded() {
+    private void updateMetricsOnUnoccluded() {
         // The window wasn't occluded to begin with. Nothing to do.
         if (mOcclusionStartTimeMs == 0) return;
 
@@ -605,12 +619,15 @@ public class WindowAndroid
         // optimizations to the window. Only set the supplier if the optimizations are enabled.
         if (UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.getValue()) {
             mOcclusionSupplier.set(isOccluded);
+            if (mNativeWindowAndroid != 0) {
+                WindowAndroidJni.get().onOcclusionChanged(mNativeWindowAndroid, isOccluded);
+            }
         }
 
         if (isOccluded) {
-            onOccluded(windowBounds);
+            updateMetricsOnOccluded(windowBounds);
         } else {
-            onUnoccluded();
+            updateMetricsOnUnoccluded();
         }
     }
 
@@ -1184,7 +1201,7 @@ public class WindowAndroid
     public void destroy() {
         long now = SystemClock.uptimeMillis();
         // This is safe to call even if the window was not occluded before destruction.
-        onUnoccluded();
+        updateMetricsOnUnoccluded();
         if (mWindowAndroidOcclusionMetrics != null) {
             mWindowAndroidOcclusionMetrics.onDestroy();
         }
@@ -1887,6 +1904,8 @@ public class WindowAndroid
                 boolean windowIsWideColorGamut);
 
         void onVisibilityChanged(long nativeWindowAndroid, boolean visible);
+
+        void onOcclusionChanged(long nativeWindowAndroid, boolean occluded);
 
         void onActivityStopped(long nativeWindowAndroid);
 

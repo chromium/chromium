@@ -415,25 +415,45 @@ void Display::SetLocalSurfaceId(const LocalSurfaceId& id,
 }
 
 void Display::SetVisible(bool visible) {
-  TRACE_EVENT1("viz", "Display::SetVisible", "visible", visible);
-  // This may schedule tasks to e.g. destroy buffers when not visible, as in
-  // SkiaRenderer::SetVisible()
-  std::unique_ptr<gpu::ScopedAllowScheduleGpuTask> allow_schedule_gpu_task;
-  if (features::ShouldDiscardVizBufferQueueOnVisibilityChange()) {
-    allow_schedule_gpu_task.reset(new gpu::ScopedAllowScheduleGpuTask());
+  SetVisible(visible ? mojom::DisplayVisibility::kVisible
+                     : mojom::DisplayVisibility::kInvisible);
+}
+
+void Display::SetVisible(mojom::DisplayVisibility visibility) {
+  TRACE_EVENT1("viz", "Display::SetVisible", "visibility", visibility);
+  if (visibility_ == visibility) {
+    return;
+  }
+  const bool had_buffers = visibility_ != mojom::DisplayVisibility::kInvisible;
+  const bool has_buffers = visibility != mojom::DisplayVisibility::kInvisible;
+  visibility_ = visibility;
+
+  if (scheduler_) {
+    scheduler_->SetVisible(visibility_ == mojom::DisplayVisibility::kVisible);
   }
 
-  if (renderer_)
-    renderer_->SetVisible(visible);
-  if (scheduler_)
-    scheduler_->SetVisible(visible);
-  visible_ = visible;
+  if (had_buffers != has_buffers) {
+    // This may schedule tasks to e.g. destroy buffers when not visible, as in
+    // SkiaRenderer::SetVisible()
+    std::unique_ptr<gpu::ScopedAllowScheduleGpuTask> allow_schedule_gpu_task;
+    if (!has_buffers) {
+      allow_schedule_gpu_task.reset(new gpu::ScopedAllowScheduleGpuTask());
+    }
 
-  if (!visible) {
-    // Damage tracker needs a full reset as renderer resources are dropped when
-    // not visible.
-    if (aggregator_ && current_surface_id_.is_valid())
-      aggregator_->SetFullDamageForSurface(current_surface_id_);
+    if (renderer_) {
+      renderer_->SetVisible(has_buffers);
+    }
+
+    if (!has_buffers && current_surface_id_.is_valid()) {
+      // Damage tracker needs a full reset as renderer resources are dropped
+      // when not visible. Mark the root surface damaged as well so
+      // DisplayScheduler knows to redraw the existing surface when becoming
+      // visible again even if the client does not submit a new CompositorFrame.
+      if (aggregator_) {
+        aggregator_->SetFullDamageForSurface(current_surface_id_);
+      }
+      damage_tracker_->SetRootSurfaceDamaged();
+    }
   }
 }
 
@@ -539,7 +559,7 @@ void Display::InitializeRenderer() {
   }
 
   renderer_->Initialize();
-  renderer_->SetVisible(visible_);
+  renderer_->SetVisible(visibility_ != mojom::DisplayVisibility::kInvisible);
 
   SurfaceAggregator::ExtraPassForReadbackOption extra_pass_option =
       SurfaceAggregator::ExtraPassForReadbackOption::kNone;

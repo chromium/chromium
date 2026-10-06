@@ -123,8 +123,8 @@ class InProcessContextFactory::PerCompositorData
     : public viz::mojom::DisplayPrivate {
  public:
   // viz::mojom::DisplayPrivate implementation.
-  void SetDisplayVisible(bool visible) override {
-    display_->SetVisible(visible);
+  void SetDisplayVisible(viz::mojom::DisplayVisibility visibility) override {
+    display_->SetVisible(visibility);
   }
   void Resize(const gfx::Size& size) override { display_->Resize(size); }
   void SetDisplayColorMatrix(const gfx::Transform& matrix) override {

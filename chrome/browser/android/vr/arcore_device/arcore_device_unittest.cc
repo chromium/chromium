@@ -210,7 +210,7 @@ class StubCompositorFrameSink
   }
 
   // mojom::DisplayPrivate:
-  void SetDisplayVisible(bool visible) override {}
+  void SetDisplayVisible(viz::mojom::DisplayVisibility visibility) override {}
   void Resize(const gfx::Size& size) override {}
   void SetDisplayColorMatrix(const gfx::Transform& color_matrix) override {}
   void SetDisplayColorSpaces(

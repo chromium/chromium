@@ -37,6 +37,7 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/viz_service_export.h"
+#include "services/viz/privileged/mojom/compositing/display_private.mojom-shared.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/swap_result.h"
@@ -126,6 +127,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // what scale this was rendered at.
   void SetLocalSurfaceId(const LocalSurfaceId& id, float device_scale_factor);
   void SetVisible(bool visible);
+  void SetVisible(mojom::DisplayVisibility visibility);
   void Resize(const gfx::Size& new_size);
 
   // Sets additional clip rect for the OutputSurface. DirectRenderer will not
@@ -177,7 +179,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       gfx::CALayerParams ca_layer_params) override;
 
   bool has_scheduler() const { return !!scheduler_; }
-  bool visible() const { return visible_; }
+  bool visible() const {
+    return visibility_ == mojom::DisplayVisibility::kVisible;
+  }
   const RendererSettings& settings() const { return settings_; }
   DirectRenderer* renderer_for_testing() const { return renderer_.get(); }
 
@@ -303,7 +307,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   gfx::Size current_surface_size_;
   float device_scale_factor_ = 1.f;
   gfx::DisplayColorSpaces display_color_spaces_;
-  bool visible_ = false;
+  mojom::DisplayVisibility visibility_ = mojom::DisplayVisibility::kInvisible;
   bool output_is_secure_ = false;
 
 #if DCHECK_IS_ON()

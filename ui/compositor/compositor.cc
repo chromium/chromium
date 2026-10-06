@@ -367,7 +367,9 @@ void Compositor::SetLayerTreeFrameSink(
   // to match the Compositor's.
   if (display_private_) {
     display_private_->Resize(size());
-    display_private_->SetDisplayVisible(host_->IsVisible());
+    display_private_->SetDisplayVisible(
+        host_->IsVisible() ? viz::mojom::DisplayVisibility::kVisible
+                           : viz::mojom::DisplayVisibility::kInvisible);
     display_private_->SetDisplayColorSpaces(display_color_spaces_);
     display_private_->SetDisplayColorMatrix(
         gfx::SkM44ToTransform(display_color_matrix_));
@@ -606,8 +608,11 @@ void Compositor::SetVisible(bool visible) {
   // Visibility is reset when the output surface is lost, so this must also be
   // updated then. We need to call this even if the visibility hasn't changed,
   // for the same reason.
-  if (display_private_)
-    display_private_->SetDisplayVisible(visible);
+  if (display_private_) {
+    display_private_->SetDisplayVisible(
+        visible ? viz::mojom::DisplayVisibility::kVisible
+                : viz::mojom::DisplayVisibility::kInvisible);
+  }
 
   if (changed) {
     observer_list_.Notify(&CompositorObserver::OnCompositorVisibilityChanged,

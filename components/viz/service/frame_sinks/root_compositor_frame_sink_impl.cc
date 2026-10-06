@@ -354,8 +354,9 @@ const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
   return display_->CurrentSurfaceId();
 }
 
-void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
-  display_->SetVisible(visible);
+void RootCompositorFrameSinkImpl::SetDisplayVisible(
+    mojom::DisplayVisibility visibility) {
+  display_->SetVisible(visibility);
 }
 
 void RootCompositorFrameSinkImpl::Resize(const gfx::Size& size) {

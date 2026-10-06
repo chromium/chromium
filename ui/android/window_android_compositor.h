@@ -45,6 +45,7 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
   virtual void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest> request) = 0;
   virtual void SetNeedsAnimate() = 0;
+  virtual void SetWindowOccluded(bool occluded) {}
   virtual ResourceManager& GetResourceManager() = 0;
   virtual viz::FrameSinkId GetFrameSinkId() = 0;
   virtual gpu::SurfaceHandle GetSurfaceHandle() = 0;
