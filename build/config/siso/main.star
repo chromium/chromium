@@ -99,6 +99,7 @@ def init(ctx):
             "./obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
             "./obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
             "./obj/chrome/browser/ash/guest_os/public/public/guest_os_mount_provider.o": "crbug.com/565544340",
+            "./obj/chrome/browser/ash/policy/tools/device_policy_remover_generated/device_policy_remover.o": "crbug.com/570313021",
             "./obj/chrome/browser/ui/views/upgrade_notification_controller/upgrade_notification_controller.o": "crbug.com/555387059",
         },
         # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
