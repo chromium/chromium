@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
@@ -456,6 +457,11 @@ void ExtensionUrlOverrides::RegisterProfilePrefs(
 bool ExtensionUrlOverrides::HandleChromeURLOverride(
     GURL* url,
     content::BrowserContext* browser_context) {
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(browser_context)) {
+    return false;
+  }
+
   if (!url->SchemeIs(content::kChromeUIScheme)) {
     return false;
   }
@@ -474,6 +480,11 @@ bool ExtensionUrlOverrides::HandleChromeURLOverride(
 bool ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
     GURL* url,
     content::BrowserContext* browser_context) {
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(browser_context)) {
+    return false;
+  }
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   const base::DictValue& overrides =
       profile->GetPrefs()->GetDict(kExtensionURLOverrides);

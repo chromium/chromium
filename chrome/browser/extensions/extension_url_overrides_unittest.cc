@@ -18,7 +18,9 @@
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/test/browser_task_environment.h"
@@ -399,6 +401,54 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
   EXPECT_EQ(2u, ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
 }
+
+// ChromeOS and Android don't have the System Profile.
+// TODO(crbug.com/531575122): Run this test with TopChromeWebUIProfile so that
+// it also covers ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+// Overrides are ignored for profiles with extensions disabled (e.g., System
+// Profile).
+TEST_F(ExtensionWebUITest, OverridesIgnoredWhenExtensionsDisabled) {
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+  TestingProfile* system_profile = profile_manager.CreateSystemProfile();
+
+  const char kOverrideResource[] = "1.html";
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ext")
+          .SetManifestKey(
+              api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
+              base::DictValue().Set("bookmarks", kOverrideResource))
+          .Build();
+  const GURL kBookmarksUrl(chrome::kChromeUIBookmarksURL);
+  const GURL kOverrideUrl = extension->GetResourceURL(kOverrideResource);
+
+  // The regular profile applies the override in both directions.
+  registrar()->AddExtension(extension.get());
+  GURL url = kBookmarksUrl;
+  EXPECT_TRUE(
+      ExtensionUrlOverrides::HandleChromeURLOverride(&url, profile_.get()));
+  EXPECT_EQ(kOverrideUrl, url);
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+      &url, profile_.get()));
+  EXPECT_EQ(kBookmarksUrl, url);
+
+  // Extensions are disabled for the System Profile, so it can't have overrides
+  // in practice. Add the override directly to check that the handlers would
+  // ignore it even if it did. With no override, they would return false even
+  // without the extensions-disabled check.
+  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
+      system_profile, URLOverrides::GetChromeURLOverrides(extension.get()));
+  url = kBookmarksUrl;
+  EXPECT_FALSE(
+      ExtensionUrlOverrides::HandleChromeURLOverride(&url, system_profile));
+  EXPECT_EQ(kBookmarksUrl, url);
+  url = kOverrideUrl;
+  EXPECT_FALSE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+      &url, system_profile));
+  EXPECT_EQ(kOverrideUrl, url);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class ExtensionWebUIOverrideURLTest : public ExtensionServiceTestWithInstall {
  public:
