@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/test/widget_test.h"
@@ -243,6 +245,12 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   EXPECT_FALSE(MediaDialogView::IsShowing());
 
   // Now we should be able to enter tab fullscreen again.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSuppressFullscreenFromUnfocusedView)) {
+    browser()->GetWindow()->Activate();
+    ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+    initiator_->Focus();
+  }
   ui_test_utils::FullscreenWaiter reenter_waiter(browser(),
                                                  {.tab_fullscreen = true});
   EXPECT_TRUE(content::ExecJs(initiator_,

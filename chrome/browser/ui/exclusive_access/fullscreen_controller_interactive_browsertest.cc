@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -176,6 +177,9 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
  private:
   void ToggleTabFullscreen_Internal(bool enter_fullscreen,
                                     bool retry_until_success);
+
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kSuppressFullscreenFromUnfocusedView};
 };
 
 void FullscreenControllerInteractiveTest::ToggleTabFullscreen(
@@ -797,6 +801,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // Entering tab fullscreen removes the bubble.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  web_contents->Focus();
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "document.documentElement.requestFullscreen()"));
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
@@ -828,6 +835,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(observer.request_shown());
 
   // Entering tab fullscreen removes the permission prompt bubble.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  web_contents->Focus();
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "document.documentElement.requestFullscreen()"));
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
@@ -998,6 +1008,124 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
   EXPECT_TRUE(ui_test_utils::IsBrowserActive(popup));
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
+}
+
+#if BUILDFLAG(IS_MAC)
+// On Mac, the opener window retains focus below even after opening the popup,
+// and then allows fullscreen from the opener instead of the popup. We found
+// the behavior inconsistent in practice. https://crbug.com/564799166
+#define MAYBE_DisallowFullscreenFromUnfocusedWindow \
+  DISABLED_DisallowFullscreenFromUnfocusedWindow
+#else
+#define MAYBE_DisallowFullscreenFromUnfocusedWindow \
+  DisallowFullscreenFromUnfocusedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       MAYBE_DisallowFullscreenFromUnfocusedWindow) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* opener =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Open a popup, passing the windowFeatures parameter so that it opens in a
+  // separate window.
+  ui_test_utils::BrowserCreatedObserver popup_browser_observer;
+  ASSERT_TRUE(content::ExecJs(
+      opener, "w = open('about:blank', 'popup', 'width=90,height=90');"));
+  BrowserWindowInterface* popup_browser = popup_browser_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+  EXPECT_NE(opener, popup_contents);
+
+  // The popup window should have focus, and the opener should not have focus.
+  ui_test_utils::WaitUntilBrowserBecomeActive(popup_browser);
+  EXPECT_FALSE(opener->GetRenderWidgetHostView()->HasFocus());
+  EXPECT_TRUE(popup_contents->GetRenderWidgetHostView()->HasFocus());
+
+  // Attempt to enter fullscreen from the unfocused opener window. This should
+  // fail because the view is not focused.
+  auto opener_result =
+      content::EvalJs(opener, "document.body.requestFullscreen();");
+  EXPECT_FALSE(opener_result.is_ok());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+
+  // Attempt to enter fullscreen from the focused popup window. This should
+  // succeed.
+  {
+    ui_test_utils::FullscreenWaiter waiter(popup_browser,
+                                           {.tab_fullscreen = true});
+    EXPECT_TRUE(
+        content::ExecJs(popup_contents, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(popup_browser->GetWindow()->IsFullscreen());
+  }
+
+  // Exit fullscreen on the popup window.
+  {
+    ui_test_utils::FullscreenWaiter waiter(popup_browser,
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(content::ExecJs(popup_contents, "document.exitFullscreen();"));
+    waiter.Wait();
+    EXPECT_FALSE(popup_browser->GetWindow()->IsFullscreen());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       DisallowFullscreenFromUnfocusedTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* opener =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Open a new tab.
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added;
+  ASSERT_TRUE(content::ExecJs(opener, "w = open('about:blank');"));
+  content::WebContents* new_tab = tab_added.Wait();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(opener, new_tab);
+
+  // The new tab should have focus, and the opener should not have focus.
+  EXPECT_FALSE(opener->GetRenderWidgetHostView()->HasFocus());
+  EXPECT_TRUE(new_tab->GetRenderWidgetHostView()->HasFocus());
+
+  // Attempt to enter fullscreen from the unfocused opener tab. This should fail
+  // because the tab is not focused.
+  auto opener_result =
+      content::EvalJs(opener, "document.body.requestFullscreen();");
+  EXPECT_FALSE(opener_result.is_ok());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+
+  // Attempt to enter fullscreen from the focused new tab. This should succeed.
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(content::ExecJs(new_tab, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  // Exit fullscreen.
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(content::ExecJs(new_tab, "document.exitFullscreen();"));
+    waiter.Wait();
+    EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  // Switch back to the opener tab. Now it has focus and can enter fullscreen.
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  EXPECT_TRUE(opener->GetRenderWidgetHostView()->HasFocus());
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(content::ExecJs(opener, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
