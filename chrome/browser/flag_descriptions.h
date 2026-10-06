@@ -2635,6 +2635,12 @@ inline constexpr char kFedCmAutofillName[] = "FedCmAutofill";
 inline constexpr char kFedCmAutofillDescription[] =
     "Allows RPs to enhance autofill with FedCM.";
 
+inline constexpr char kFedCmAmbientBubbleName[] = "FedCM Ambient Bubble";
+inline constexpr char kFedCmAmbientBubbleDescription[] =
+    "Shows FedCM accounts for passive mode requests in an ambient bubble, "
+    "instead of the regular FedCM dialog. This is separate from the FedCM "
+    "ambient UI in the omnibox (#fedcm-ambient-ui).";
+
 inline constexpr char kFedCmAmbientUIName[] = "FedCm Ambient UI";
 inline constexpr char kFedCmAmbientUIDescription[] =
     "Enables FedCM ambient UI in the omnibox.";

@@ -14986,6 +14986,7 @@ from previous Chrome versions.
   <int value="6332888" label="PrivateNetworkAccessSendPreflights:enabled"/>
   <int value="6429231" label="SysUiShouldHoldbackDriveIntegration:disabled"/>
   <int value="6523501" label="lacros-availability-ignore"/>
+  <int value="6655570" label="FedCmAmbientBubble:disabled"/>
   <int value="6735757" label="EnableExtensionInstallPolicyFetching:disabled"/>
   <int value="7310536" label="WebFeedSort:enabled"/>
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
@@ -19011,6 +19012,7 @@ from previous Chrome versions.
   <int value="1237659269"
       label="OmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTerms:enabled"/>
   <int value="1238190462" label="PerDeskShelf:disabled"/>
+  <int value="1238647404" label="FedCmAmbientBubble:enabled"/>
   <int value="1239720601" label="OmniboxZeroSuggestionsOnNTPRealbox:enabled"/>
   <int value="1240073971" label="ash-disable-smooth-screen-rotation"/>
   <int value="1240335491"

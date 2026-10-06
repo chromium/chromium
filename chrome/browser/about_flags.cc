@@ -8834,6 +8834,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAutofillDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutofill)},
 
+    {"fedcm-ambient-bubble", flag_descriptions::kFedCmAmbientBubbleName,
+     flag_descriptions::kFedCmAmbientBubbleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFedCmAmbientBubble)},
+
     {"fedcm-ambient-ui", flag_descriptions::kFedCmAmbientUIName,
      flag_descriptions::kFedCmAmbientUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAmbientUI)},
@@ -11109,8 +11113,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-caa-guest-error", flag_descriptions::kGlicCaaGuestErrorName,
      flag_descriptions::kGlicCaaGuestErrorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicCaaGuestError)},
-
-
 
     {"glic-disable-actor-safety-checks",
      flag_descriptions::kGlicDisableActorSafetyChecksName,

@@ -5102,6 +5102,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "fedcm-ambient-bubble",
+    "owners": [ "yigu@chromium.org", "web-identity-eng@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "fedcm-ambient-ui",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 165
