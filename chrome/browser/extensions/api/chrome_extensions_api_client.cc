@@ -143,14 +143,18 @@ void ChromeExtensionsAPIClient::AttachWebContentsHelpers(
 bool ChromeExtensionsAPIClient::ShouldHideResponseHeader(
     const GURL& url,
     const std::string& header_name) const {
-  // Gaia may send a OAUth2 authorization code in the Dice response header,
+  // Gaia may send a OAuth2 authorization code in the Dice response header,
   // which could allow an extension to generate a refresh token for the account.
+  // Also hide the Mirror response header, which triggers browser account
+  // management UI and actions.
   // Trailing dots are ignored on both hosts, as in URLPattern::MatchesHost().
   return base::TrimString(url.host(), ".", base::TRIM_TRAILING) ==
              base::TrimString(GaiaUrls::GetInstance()->gaia_url().host(), ".",
                               base::TRIM_TRAILING) &&
-         base::CompareCaseInsensitiveASCII(header_name,
-                                           signin::kDiceResponseHeader) == 0;
+         (base::EqualsCaseInsensitiveASCII(header_name,
+                                           signin::kDiceResponseHeader) ||
+          base::EqualsCaseInsensitiveASCII(
+              header_name, signin::kChromeManageAccountsHeader));
 }
 
 bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(

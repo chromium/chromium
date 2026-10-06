@@ -35,8 +35,14 @@ TEST_F(ChromeExtensionsAPIClientTest, ShouldHideResponseHeader) {
       GaiaUrls::GetInstance()->gaia_url(), "X-Chrome-ID-Consistency-Response"));
   EXPECT_TRUE(client.ShouldHideResponseHeader(
       GaiaUrls::GetInstance()->gaia_url(), "x-cHroMe-iD-CoNsiStenCY-RESPoNSE"));
+  EXPECT_TRUE(client.ShouldHideResponseHeader(
+      GaiaUrls::GetInstance()->gaia_url(), "X-Chrome-Manage-Accounts"));
+  EXPECT_TRUE(client.ShouldHideResponseHeader(
+      GaiaUrls::GetInstance()->gaia_url(), "x-cHroMe-mAnAgE-aCcOuNtS"));
   EXPECT_FALSE(client.ShouldHideResponseHeader(
       GURL("http://www.example.com"), "X-Chrome-ID-Consistency-Response"));
+  EXPECT_FALSE(client.ShouldHideResponseHeader(GURL("http://www.example.com"),
+                                               "X-Chrome-Manage-Accounts"));
   EXPECT_FALSE(client.ShouldHideResponseHeader(
       GaiaUrls::GetInstance()->gaia_url(), "Google-Accounts-SignOut"));
 
@@ -48,9 +54,16 @@ TEST_F(ChromeExtensionsAPIClientTest, ShouldHideResponseHeader) {
   EXPECT_TRUE(
       client.ShouldHideResponseHeader(GURL("https://accounts.google.com../"),
                                       "X-Chrome-ID-Consistency-Response"));
+  EXPECT_TRUE(client.ShouldHideResponseHeader(
+      GURL("https://accounts.google.com./"), "X-Chrome-Manage-Accounts"));
+  EXPECT_TRUE(client.ShouldHideResponseHeader(
+      GURL("https://accounts.google.com../"), "X-Chrome-Manage-Accounts"));
   EXPECT_FALSE(client.ShouldHideResponseHeader(
       GURL("https://accounts.google.com.evil.com/"),
       "X-Chrome-ID-Consistency-Response"));
+  EXPECT_FALSE(client.ShouldHideResponseHeader(
+      GURL("https://accounts.google.com.evil.com/"),
+      "X-Chrome-Manage-Accounts"));
 }
 
 TEST_F(ChromeExtensionsAPIClientTest, ShouldHideBrowserNetworkRequest) {

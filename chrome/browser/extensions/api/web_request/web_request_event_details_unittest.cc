@@ -40,6 +40,7 @@ TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
       "HTTP/1.0 200 OK\r\n"
       "Key1: Value1\r\n"
       "X-Chrome-ID-Consistency-Response: Value2\r\n"
+      "X-Chrome-Manage-Accounts: Value3\r\n"
       "\r\n";
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers_string));
@@ -55,16 +56,21 @@ TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
         details.GetFilteredDict(kFilter, nullptr, std::string(), false);
     const base::ListValue* filtered_headers = dict.FindList("responseHeaders");
     ASSERT_TRUE(filtered_headers);
-    ASSERT_EQ(2u, filtered_headers->size());
+    ASSERT_EQ(3u, filtered_headers->size());
     const base::DictValue& first_header =
         CHECK_DEREF(filtered_headers)[0].GetDict();
     const base::DictValue& second_header =
         CHECK_DEREF(filtered_headers)[1].GetDict();
+    const base::DictValue& third_header =
+        CHECK_DEREF(filtered_headers)[2].GetDict();
     EXPECT_EQ("Key1", CHECK_DEREF(first_header.FindString("name")));
     EXPECT_EQ("Value1", CHECK_DEREF(first_header.FindString("value")));
     EXPECT_EQ("X-Chrome-ID-Consistency-Response",
               CHECK_DEREF(second_header.FindString("name")));
     EXPECT_EQ("Value2", CHECK_DEREF(second_header.FindString("value")));
+    EXPECT_EQ("X-Chrome-Manage-Accounts",
+              CHECK_DEREF(third_header.FindString("name")));
+    EXPECT_EQ("Value3", CHECK_DEREF(third_header.FindString("value")));
   }
 
   {
