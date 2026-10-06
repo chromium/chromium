@@ -13,7 +13,7 @@
 
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gpu_switching_observer.h"
+#include "ui/gl/gpu_preference.h"
 
 #if BUILDFLAG(IS_APPLE)
 #if __OBJC__

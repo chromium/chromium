@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_info.h"
-#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_preference.h"
@@ -91,7 +90,6 @@ bool SwitchableGPUsSupported(const GPUInfo& gpu_info,
 
 void InitializeSwitchableGPUs(
     const std::vector<int32_t>& driver_bug_workarounds) {
-  gl::GLContext::SetSwitchableGPUsSupported();
   if (std::ranges::contains(driver_bug_workarounds,
                             FORCE_HIGH_PERFORMANCE_GPU)) {
     gl::GLSurface::SetForcedGpuPreference(gl::GpuPreference::kHighPerformance);

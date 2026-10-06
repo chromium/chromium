@@ -6,7 +6,6 @@
 #define UI_GL_GPU_SWITCHING_OBSERVER_H_
 
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gpu_preference.h"
 
 namespace ui {
 

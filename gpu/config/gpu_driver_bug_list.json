@@ -171,26 +171,6 @@
       ]
     },
     {
-      "id": 48,
-      "description": "Force to use discrete GPU on older MacBookPro models",
-      "cr_bugs": [113703],
-      "os": {
-        "type": "macosx"
-      },
-      "machine_model_name": ["MacBookPro"],
-      "machine_model_version": {
-        "op": "<",
-        "value": "8"
-      },
-      "gpu_count": {
-        "op": "=",
-        "value": "2"
-      },
-      "features": [
-        "force_high_performance_gpu"
-      ]
-    },
-    {
       "id": 49,
       "cr_bugs": [309734],
       "description": "The first draw operation from an idle state is slow",
@@ -1170,20 +1150,6 @@
       ]
     },
     {
-      "id": 228,
-      "description": "Intel HD 3000 driver crashes frequently on Mac",
-      "cr_bugs": [720152],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "device_id": ["0x0116", "0x0126"],
-      "multi_gpu_style": "amd_switchable",
-      "features": [
-        "force_high_performance_gpu"
-      ]
-    },
-    {
       "id": 231,
       "description": "Multisampled color renderbuffers can't be resized on Qualcomm 4xx/5xx",
       "cr_bugs": [696126],
@@ -1890,19 +1856,6 @@
       "vendor_id": "0x1002",
       "features": [
         "disable_nv12_dynamic_textures"
-      ]
-    },
-    {
-      "id": 326,
-      "description": "Migrating OpenGL contexts between low- and high-power GPUs is unreliable on Mac NVIDIA laptops",
-      "cr_bugs": [681341],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "multi_gpu_category": "any",
-      "features": [
-        "force_low_power_gpu"
       ]
     },
     {

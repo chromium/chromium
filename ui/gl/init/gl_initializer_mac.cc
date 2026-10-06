@@ -23,7 +23,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gpu_switching_manager.h"
+#include "ui/gl/gpu_preference.h"
 #include "ui/gl/init/gl_display_initializer.h"
 
 namespace gl {

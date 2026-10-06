@@ -9,7 +9,6 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_switching_observer.h"
 
 namespace ui {

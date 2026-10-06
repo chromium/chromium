@@ -56,7 +56,6 @@
 #include "ui/display/util/gpu_info_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/gpu_extra_info.h"
-#include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -624,10 +623,8 @@ base::Value GetDawnInfo() {
 // This class receives javascript messages from the renderer.
 // Note that the WebUI infrastructure runs on the UI thread, therefore all of
 // this class's methods are expected to run on the UI thread.
-class GpuMessageHandler
-    : public WebUIMessageHandler,
-      public GpuDataManagerObserver,
-      public ui::GpuSwitchingObserver {
+class GpuMessageHandler : public WebUIMessageHandler,
+                          public GpuDataManagerObserver {
  public:
   GpuMessageHandler();
 

@@ -156,11 +156,6 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext> {
 
   static int32_t TotalGLContexts();
 
-  static bool SwitchableGPUsSupported();
-  // This should be called at most once at GPU process startup time.
-  // By default, GPU switching is not supported unless this is called.
-  static void SetSwitchableGPUsSupported();
-
   // Initializes the GL context to be compatible with the given surface. The GL
   // context can be made with other surface's of the same type. The compatible
   // surface is only needed for certain platforms. It should be
@@ -350,8 +345,6 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext> {
   void MarkContextLost();
 
   static std::atomic<int32_t> total_gl_contexts_;
-
-  static bool switchable_gpus_supported_;
 
   std::string disabled_gl_extensions_;
 

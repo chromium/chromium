@@ -29,7 +29,6 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/display/display_observer.h"
-#include "ui/gl/gpu_preference.h"
 
 namespace base {
 class CommandLine;
