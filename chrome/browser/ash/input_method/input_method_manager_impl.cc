@@ -1039,7 +1039,9 @@ void InputMethodManagerImpl::ReconfigureIMFramework(
 
 void InputMethodManagerImpl::SetState(
     scoped_refptr<InputMethodManager::State> state) {
-  CHECK(state.get(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568716634): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(state.get());
   auto* new_impl_state =
       static_cast<InputMethodManagerImpl::StateImpl*>(state.get());
 
