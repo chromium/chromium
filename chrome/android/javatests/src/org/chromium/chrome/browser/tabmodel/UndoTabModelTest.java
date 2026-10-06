@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import android.os.Build.VERSION_CODES;
@@ -43,9 +42,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -130,18 +126,6 @@ public class UndoTabModelTest {
                         selector.selectModel(false);
                         selector.getModel(false).setIndex(0, TabSelectionType.FROM_USER);
                     });
-        }
-        LayoutManager layoutManager = cta.getLayoutManager();
-        boolean shouldLeaveTabSwitcher =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return layoutManager.isLayoutVisible(LayoutType.HUB)
-                                    && !layoutManager.isLayoutStartingToHide(LayoutType.HUB);
-                        });
-        if (shouldLeaveTabSwitcher) {
-            leaveTabSwitcher(cta);
-        } else {
-            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         }
     }
 

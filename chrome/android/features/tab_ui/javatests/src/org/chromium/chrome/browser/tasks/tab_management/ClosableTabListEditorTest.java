@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -124,13 +123,6 @@ public class ClosableTabListEditorTest {
                         }
                         mTabListEditorCoordinator.destroy();
                     });
-
-            if (mActivityTestRule
-                    .getActivity()
-                    .getLayoutManager()
-                    .isLayoutVisible(LayoutType.HUB)) {
-                TabUiTestHelper.leaveTabSwitcher(mActivityTestRule.getActivity());
-            }
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
