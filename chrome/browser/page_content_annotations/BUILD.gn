@@ -112,6 +112,17 @@ source_set("fetcher") {
     "//chrome/browser/profiles:profile",
     "//pdf:buildflags",
   ]
+  if (is_android) {
+    sources += [
+      "android/pdf_content_fetcher_android.cc",
+      "android/pdf_content_fetcher_android.h",
+    ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//net",
+      "//url",
+    ]
+  }
 }
 
 source_set("screenshot_service") {

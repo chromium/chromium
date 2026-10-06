@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -768,7 +769,8 @@ public class NativePageFactory {
         }
     }
 
-    public static void setPdfPageForTesting(NativePage pdfPage) {
+    public static void setPdfPageForTesting(@Nullable NativePage pdfPage) {
         sTestPage = pdfPage;
+        ResettersForTesting.register(() -> sTestPage = null);
     }
 }

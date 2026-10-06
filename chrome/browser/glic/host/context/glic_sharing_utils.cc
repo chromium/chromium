@@ -21,9 +21,30 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#endif
+
 namespace glic {
 
 namespace {
+
+// Returns true if `web_contents` belongs to an Android tab displaying a PDF.
+// On Android, PDFs are displayed by a native `PdfPage` whose URL is a
+// `chrome-native://pdf` URL, which is not an allowed URL.
+bool IsAndroidPdfTab(content::WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  // Note: Look up `TabAndroid` from the `WebContents` rather than from the
+  // `TabInterface`, since `TabAndroid::FromTabInterface()` is an unchecked
+  // cast which is invalid for e.g. `tabs::MockTabInterface`.
+  if (web_contents) {
+    if (TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents)) {
+      return tab_android->IsPdf();
+    }
+  }
+#endif
+  return false;
+}
 
 const std::vector<GURL>& GetUrlAllowList() {
   static const base::NoDestructor<std::vector<GURL>> kUrlAllowList{
@@ -75,6 +96,9 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
   if (!web_contents) {
     return false;
   }
+  if (IsAndroidPdfTab(web_contents)) {
+    return true;
+  }
   const GURL& url = web_contents->GetLastCommittedURL();
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
          IsContextHubTopicUrl(url) ||
@@ -84,6 +108,9 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
 bool IsTabValidForSharing(tabs::TabInterface* tab) {
   if (!tab) {
     return false;
+  }
+  if (IsAndroidPdfTab(tab->GetContents())) {
+    return true;
   }
   const GURL url = tab->GetURL();
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||

@@ -34,6 +34,10 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/skia_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#endif
+
 namespace glic {
 
 namespace {
@@ -44,6 +48,23 @@ constexpr size_t kMaxTabUpdatesBeforeRateLimiting = 4;
 
 bool IsForeground(content::Visibility visibility) {
   return visibility != content::Visibility::HIDDEN;
+}
+
+std::string GetTabMimeType(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::string();
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, PDFs are rendered via a native Java `PdfPage`, while the
+  // `WebContents` commits an empty `chrome-native://` document whose mime type
+  // is not "application/pdf".
+  if (auto* tab_android = TabAndroid::FromWebContents(web_contents)) {
+    if (tab_android->IsPdf()) {
+      return "application/pdf";
+    }
+  }
+#endif
+  return web_contents->GetContentsMimeType();
 }
 
 }  // namespace
@@ -317,8 +338,7 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
   }
 #endif
 
-  std::string mime_type =
-      web_contents ? web_contents->GetContentsMimeType() : "";
+  std::string mime_type = GetTabMimeType(web_contents);
 
   bool is_observable = false;
   bool is_audible = false;

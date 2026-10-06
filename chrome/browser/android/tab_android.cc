@@ -277,6 +277,22 @@ bool TabAndroid::IsNativePage() const {
   return Java_TabImpl_isNativePage(env, GetJavaObject(env));
 }
 
+bool TabAndroid::IsPdf() const {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_isPdf(env, GetJavaObject(env));
+}
+
+std::string TabAndroid::GetCanonicalFilepath() const {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_getCanonicalFilepath(env, GetJavaObject(env));
+}
+
+void TabAndroid::SetPdfNativePageForTesting(const std::string& url,
+                                            const std::string& filepath) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_TabImpl_setPdfNativePageForTesting(  // IN-TEST
+      env, GetJavaObject(env), url, filepath);
+}
 
 bool TabAndroid::IsUserInteractable() const {
   JNIEnv* env = AttachCurrentThread();

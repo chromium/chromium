@@ -144,6 +144,17 @@ class TabAndroid : public tabs::TabInterface,
   Profile* profile() const { return profile_.get(); }
 
   bool IsNativePage() const;
+
+  // See TabImpl#isPdf().
+  bool IsPdf() const;
+
+  // See TabImpl#getCanonicalFilepath(). Returns an empty string if null.
+  std::string GetCanonicalFilepath() const;
+
+  // See TabImpl#setPdfNativePageForTesting().
+  void SetPdfNativePageForTesting(const std::string& url,
+                                  const std::string& filepath);
+
   int GetLaunchType() const;
   int GetUserAgent() const;
   content::NavigationController::UserAgentOverrideOption

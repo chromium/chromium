@@ -32,6 +32,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
+import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -698,6 +700,102 @@ class TabImpl implements Tab, TabInternal {
     @EnsuresNonNullIf("mNativePage")
     public boolean isNativePage() {
         return mNativePage != null;
+    }
+
+    /**
+     * @returns Whether the tab is displaying a PDF native page, either a local file (file://,
+     *     content://) or a transiently downloaded one (http://, https://, blob:, data:).
+     */
+    @CalledByNative
+    public boolean isPdf() {
+        return mNativePage != null && mNativePage.isPdf();
+    }
+
+    /**
+     * @returns The local file path or `content://` URI of the displayed PDF (for web PDFs,
+     *     the transiently downloaded file), or null if unavailable or unsafe to share.
+     */
+    @CalledByNative
+    public @Nullable @JniType("std::string") String getCanonicalFilepath() {
+        if (mNativePage == null || !mNativePage.isPdf()) {
+            return null;
+        }
+        String filepath = mNativePage.getCanonicalFilepath();
+        if (filepath == null) {
+            return null;
+        }
+        // The file is read in Chrome's process with Chrome's permissions, so do not expose
+        // `content://` URIs from Chrome's own content providers that are not safe to share.
+        if (!PdfUtils.isUriSafeForSharing(
+                Uri.parse(filepath), ContextUtils.getApplicationContext())) {
+            return null;
+        }
+        return filepath;
+    }
+
+    /**
+     * Makes {@link NativePageFactory} create a fake PDF native page instead of a real `PdfPage` for
+     * testing. Passing an empty `url` clears the override.
+     *
+     * @param url The URL of the fake PDF page.
+     * @param filepath The file path returned by the fake PDF page's `getCanonicalFilepath()`.
+     */
+    @CalledByNativeForTesting
+    private void setPdfNativePageForTesting(
+            @JniType("std::string") String url, @JniType("std::string") String filepath) {
+        if (url.isEmpty()) {
+            NativePageFactory.setPdfPageForTesting(null); // IN-TEST
+            return;
+        }
+        View view = new View(ContextUtils.getApplicationContext());
+        NativePageFactory.setPdfPageForTesting( // IN-TEST
+                new NativePage() {
+                    @Override
+                    public View getView() {
+                        return view;
+                    }
+
+                    @Override
+                    public String getTitle() {
+                        return "test.pdf";
+                    }
+
+                    @Override
+                    public String getUrl() {
+                        return url;
+                    }
+
+                    @Override
+                    public String getHost() {
+                        return UrlConstants.PDF_HOST;
+                    }
+
+                    @Override
+                    public int getBackgroundColor() {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean needsToolbarShadow() {
+                        return false;
+                    }
+
+                    @Override
+                    public void updateForUrl(String url) {}
+
+                    @Override
+                    public boolean isPdf() {
+                        return true;
+                    }
+
+                    @Override
+                    public String getCanonicalFilepath() {
+                        return filepath;
+                    }
+
+                    @Override
+                    public void destroy() {}
+                });
     }
 
     private boolean isOrWillBeNativePage() {

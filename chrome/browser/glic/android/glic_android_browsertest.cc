@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/android_info.h"
 #include "base/android/device_info.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/strings/escape.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/values.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -12,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,6 +51,50 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest, testPageContextFetching) {
 
   // 3. Trigger TypeScript test method via GlicApiBrowserTest helper
   ExecuteJsTest();
+}
+
+// Tests that page context fetching includes PDF document data when the focused
+// tab is viewing a PDF document.
+IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,
+                       testPageContextFetchingWithPdf) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_V) {
+    GTEST_SKIP() << "Android inline PDF requires Android V+.";
+  }
+
+  // 1. Setup a temporary PDF file and navigate to its native PDF page URL.
+  static constexpr char kPdfContent[] =
+      "%PDF-1.4\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n";
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath pdf_path = temp_dir.GetPath().AppendASCII("test.pdf");
+  ASSERT_TRUE(base::WriteFile(pdf_path, kPdfContent));
+
+  GURL file_url = net::FilePathToFileURL(pdf_path);
+  GURL pdf_url(
+      "chrome-native://pdf/link?url=" +
+      base::EscapeQueryParamValue(file_url.spec(), /*use_plus=*/false));
+  TabAndroid* tab_android =
+      TabAndroid::FromTabInterface(GetTabListInterface()->GetActiveTab());
+  ASSERT_TRUE(tab_android);
+  tab_android->SetPdfNativePageForTesting(pdf_url.spec(), pdf_path.value());
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(), pdf_url));
+  ASSERT_TRUE(tab_android->IsPdf());
+
+  // 2. Open Glic and wait for client to bind
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(WaitForGlicClient(instance).has_value());
+
+  // Enable default tab context sharing
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
+                                       true);
+
+  // 3. Trigger TypeScript test method via GlicApiBrowserTest helper. The test
+  // verifies that the fetched PDF bytes match the content of the PDF file.
+  ExecuteJsTest({.params = base::Value(kPdfContent)});
+  tab_android->SetPdfNativePageForTesting("", "");
 }
 
 // Tests that Mojo pipe stays resilient when device screen orientation changes.
