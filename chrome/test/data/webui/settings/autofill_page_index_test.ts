@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import {AiEnterpriseFeaturePrefName} from 'chrome://settings/lazy_load.js';
-import type {SettingsAutofillPageIndexElement} from 'chrome://settings/settings.js';
+import type {Route, SettingsAutofillPageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -129,6 +129,29 @@ suite('AutofillPageIndex', function() {
     Router.getInstance().navigateTo(routes.SUGGESTIONS_FROM_GEMINI);
     await microtasksFinished();
     assertActiveView('suggestionsFromGemini');
+  });
+
+  // Test that the tab title is updated when navigating to child views.
+  test('UpdatesTitle', async function() {
+    async function assertTitle(route: Route, titleId: string) {
+      Router.getInstance().navigateTo(route);
+      await microtasksFinished();
+      assertEquals(
+          loadTimeData.getStringF(
+              'settingsAltPageTitle', loadTimeData.getString(titleId)),
+          document.title, `Failed for route '${route.path}'`);
+    }
+
+    await assertTitle(routes.PAYMENTS, 'paymentsTitle');
+    await assertTitle(routes.CONTACT_INFO, 'contactInfoTitle');
+    await assertTitle(routes.IDENTITY_DOCS, 'identityDocsCardTitle');
+    // <if expr="is_win or is_macosx">
+    await assertTitle(routes.PASSKEYS, 'managePasskeysTitle');
+    // </if>
+    await assertTitle(routes.TRAVEL, 'travelCardTitle');
+    await assertTitle(routes.SHOPPING, 'shoppingCardTitle');
+    await assertTitle(
+        routes.SUGGESTIONS_FROM_GEMINI, 'autofillPersonalContextSettingsTitle');
   });
 
   test('GeminiRouteDisabled', async function() {

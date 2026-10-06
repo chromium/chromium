@@ -9,6 +9,7 @@ import type {SettingsContactInfoPageElement} from './contact_info_page.js';
 export function getHtml(this: SettingsContactInfoPageElement) {
   return html`<!--_html_template_start_-->
   <settings-subpage page-title="$i18n{contactInfoTitle}"
+      route-path="${this.routePath}"
       learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
       class="multi-card">
     <div class="card">
@@ -17,7 +18,7 @@ export function getHtml(this: SettingsContactInfoPageElement) {
           sub-label="$i18n{enableProfilesSublabel}"
           .pref="${this.profileEnabledSyntheticPref_}"
           @settings-boolean-control-change="${
-              this.onAutofillProfileToggleSettingsBooleanControlChange_}">
+      this.onAutofillProfileToggleSettingsBooleanControlChange_}">
       </settings-toggle-button>
       <div id="otpFillingLoadingRow" class="cr-row hr cr-padded-text"
           aria-live="polite" aria-busy="true"
@@ -39,25 +40,28 @@ export function getHtml(this: SettingsContactInfoPageElement) {
           label="$i18n{enableGmailOtpFillingTitle}"
           sub-label-with-link="$i18n{enableGmailOtpFillingDescription}"
           @sub-label-link-clicked="${
-              this.onGmailOtpFillingSubLabelLinkClicked_}"
+      this.onGmailOtpFillingSubLabelLinkClicked_}"
           @settings-boolean-control-change="${
-              this.onAutofillOtpFillingToggleSettingsBooleanControlChange_}"
+      this.onAutofillOtpFillingToggleSettingsBooleanControlChange_}"
           .pref="${this.otpFillingTogglePref_}"
           no-set-pref>
       </settings-toggle-button>
-      ${this.profileEnabledSyntheticPref_?.extensionId ? html`
+      ${
+      this.profileEnabledSyntheticPref_?.extensionId ?
+          html`
         <div class="cr-row continuation">
           <extension-controlled-indicator class="flex"
               id="autofillExtensionIndicator"
               .extensionId="${this.profileEnabledSyntheticPref_.extensionId}"
               .extensionName="${
-                  this.profileEnabledSyntheticPref_.controlledByName || ''}"
+              this.profileEnabledSyntheticPref_.controlledByName || ''}"
               .extensionCanBeDisabled="${
-                  this.profileEnabledSyntheticPref_.extensionCanBeDisabled ||
-                  false}">
+              this.profileEnabledSyntheticPref_.extensionCanBeDisabled ||
+              false}">
           </extension-controlled-indicator>
         </div>
-      ` : ''}
+      ` :
+          ''}
     </div>
     <div class="card">
       <div class="cr-row continuation">
@@ -105,7 +109,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
         </div>
       </div>
       <cr-action-menu id="addressSharedMenu" role-description="$i18n{menu}">
-        ${this.isGoogleProfileAddress_() ? html`
+        ${
+      this.isGoogleProfileAddress_() ? html`
           <button
               id="menuEditAddress"
               class="dropdown-item external-link-style"
@@ -120,7 +125,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
               @click="${this.onMenuRemoveAddressClick_}">
             ${this.getMenuRemoveAddressLabel_()}
           </button>
-        ` : html`
+        ` :
+                                       html`
           <button id="menuEditAddress" class="dropdown-item"
               @click="${this.onMenuEditAddressClick_}">$i18n{edit}</button>
 
@@ -130,38 +136,47 @@ export function getHtml(this: SettingsContactInfoPageElement) {
           </button>
         `}
       </cr-action-menu>
-      ${this.showAddressDialog_ ? html`
+      ${
+      this.showAddressDialog_ ? html`
         <settings-address-edit-dialog .address="${this.activeAddress!}"
             .accountInfo="${this.accountInfo_}"
             @close="${this.onAddressDialogClose_}">
         </settings-address-edit-dialog>
-      ` : ''}
-      ${this.showAddressRemoveConfirmationDialog_ ? html`
+      ` :
+                                ''}
+      ${
+      this.showAddressRemoveConfirmationDialog_ ? html`
         <settings-address-remove-confirmation-dialog
             .address="${this.activeAddress!}"
             .accountInfo="${this.accountInfo_}"
             @close="${this.onAddressRemoveConfirmationDialogClose_}">
         </settings-address-remove-confirmation-dialog>
-      ` : ''}
-      ${this.showGmailOtpDisclaimerDialog_ ? html`
+      ` :
+                                                  ''}
+      ${
+      this.showGmailOtpDisclaimerDialog_ ? html`
         <settings-gmail-otp-disclaimer-dialog
             @close="${this.onGmailOtpDisclaimerDialogClose_}">
         </settings-gmail-otp-disclaimer-dialog>
-      ` : ''}
-      ${this.showEmailRemoveConfirmationDialog_ ? html`
+      ` :
+                                           ''}
+      ${
+      this.showEmailRemoveConfirmationDialog_ ? html`
         <settings-simple-confirmation-dialog id="emailRemoveConfirmationDialog"
             title-text="$i18n{removeVerifiedEmailPermissionTitle}"
             body-text="${this.getEmailRemoveConfirmationDescription_()}"
             confirm-text="$i18n{remove}"
             @close="${this.onEmailRemoveConfirmationDialogClose_}">
         </settings-simple-confirmation-dialog>
-      ` : ''}
+      ` :
+                                                ''}
     </div>
     <div class="card">
       <div class="cr-row continuation">
         <h2 class="flex">$i18n{emailVerificationSectionTitle}</h2>
       </div>
-      ${this.isEmailVerificationProtocolEnabled_ ? html`
+      ${
+      this.isEmailVerificationProtocolEnabled_ ? html`
         <settings-toggle-button id="autofillEmailVerificationToggle"
             no-extension-indicator label="$i18n{emailVerificationLabel}"
             pref-key="autofill.email_verification_enabled">
@@ -184,7 +199,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
             ?hidden="${this.emailVerificationAddresses_.length > 0}">
           $i18n{emailVerificationEmptyLabel}
         </div>
-      ` : ''}
+      ` :
+                                                 ''}
       <cr-action-menu id="emailSharedMenu" role-description="$i18n{menu}">
         <button id="menuRemoveEmail" class="dropdown-item"
             @click="${this.onMenuRemoveEmailClick_}">

@@ -383,6 +383,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsPagePaymentsList) {
   RunTest("settings/payments_page_payments_list_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, PdfDocumentsPage) {
+  RunTest("settings/pdf_documents_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, PerformancePageIndex) {
   RunTest("settings/performance_page_index_test.js", "mocha.run()");
 }

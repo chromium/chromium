@@ -45,6 +45,21 @@ suite('GlicLoginPermissionsPage', function() {
     await microtasksFinished();
   });
 
+  // Test that the tab title is updated when the subpage becomes active.
+  test('UpdatesTitle', async () => {
+    page.routePath = routes.GEMINI_LOGIN.path;
+    Router.getInstance().navigateTo(routes.GEMINI);
+    await microtasksFinished();
+    Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
+    await microtasksFinished();
+
+    assertEquals(
+        loadTimeData.getStringF(
+            'settingsAltPageTitle',
+            loadTimeData.getString('glicActorLoginPermissionsSectionTitle')),
+        document.title);
+  });
+
   test('login permissions list is visible', () => {
     const loginPermissionsList =
         page.shadowRoot.querySelector('#actorLoginPermissionsList');

@@ -8,15 +8,18 @@ import type {SettingsGlicLoginPermissionsPageElement} from './glic_login_permiss
 
 export function getHtml(this: SettingsGlicLoginPermissionsPageElement) {
   return html`<!--_html_template_start_-->
-${this.selectedPermissionToRemove_ ? html`
+${
+      this.selectedPermissionToRemove_ ? html`
   <settings-simple-confirmation-dialog
       title-text="$i18n{glicRemoveActorLoginDialogTitle}"
       body-text="${this.getRemoveDialogDescription_()}"
       confirm-text="$i18n{remove}"
       @close="${this.onRemoveDialogClose_}">
   </settings-simple-confirmation-dialog>
-` : ''}
-<settings-subpage page-title="$i18n{glicActorLoginPermissionsSectionTitle}">
+` :
+                                         ''}
+<settings-subpage page-title="$i18n{glicActorLoginPermissionsSectionTitle}"
+    route-path="${this.routePath}">
   <div class="header-container section">
     <div id="actorLoginPermissionsTitle">
       $i18n{glicLoginPermissionsPageTitle}
@@ -26,16 +29,21 @@ ${this.selectedPermissionToRemove_ ? html`
     </div>
   </div>
   <div id="actorLoginPermissionsList" class="section">
-    ${!this.isOnline_ ? html`
+    ${
+      !this.isOnline_ ?
+          html`
       <div id="offlineWarning" class="no-sites cr-secondary-text">
         $i18n{glicLoginPermissionsOfflineWarning}
       </div>
-    ` : html`
+    ` :
+          html`
       <div class="no-sites cr-secondary-text"
           ?hidden="${!!this.actorLoginPermissions_.length}">
         $i18n{glicLoginPermissionsNoSites}
       </div>
-      ${this.actorLoginPermissions_.map((item, index) => html`
+      ${
+              this.actorLoginPermissions_.map(
+                  (item, index) => html`
         <div class="flex-centered">
           <site-favicon class="favicon" url="${item.signonRealm}">
           </site-favicon>
@@ -47,9 +55,10 @@ ${this.selectedPermissionToRemove_ ? html`
                 data-index="${index}"
                 @click="${this.onRemoveActorLoginPermissionClick_}"
                 title="$i18n{remove}"
-                aria-label="${this.i18n(
-                        'glicRevokeActorLoginPermissionAriaLabel',
-                        item.displayName)}">
+                aria-label="${
+                      this.i18n(
+                          'glicRevokeActorLoginPermissionAriaLabel',
+                          item.displayName)}">
             </cr-icon-button>
           </div>
         </div>
