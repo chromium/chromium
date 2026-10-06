@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -49,10 +50,16 @@
 }
 
 - (void)openImmersiveLearningCardURLInWebModal:(NSURL*)URL {
+  if (ShouldOpenGeminiQuizzesInNewTab()) {
+    [self openURLInNewTab:URL.absoluteString];
+    return;
+  }
+
   GURL gurl = net::GURLWithNSURL(URL);
   if (!gurl.is_valid()) {
     return;
   }
+
   RecordURLOpened();
   id<GeminiCommands> geminiHandler =
       HandlerForProtocol(_dispatcher, GeminiCommands);

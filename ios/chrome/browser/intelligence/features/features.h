@@ -419,6 +419,15 @@ BASE_DECLARE_FEATURE(kGeminiQuizzes);
 // Returns true if the GeminiQuizzes feature is enabled.
 bool IsGeminiQuizzesEnabled();
 
+// Parameter on GeminiQuizzes to open quizzes in a new tab instead of the Gemini
+// web modal.
+inline constexpr char kGeminiQuizzesOpenInNewTabParam[] =
+    "gemini_quizzes_open_in_new_tab";
+
+// Returns true if quizzes should open in a new tab instead of the Gemini web
+// modal.
+bool ShouldOpenGeminiQuizzesInNewTab();
+
 // Feature flag to enable the Gemini FRE UI refactoring.
 BASE_DECLARE_FEATURE(kGeminiFRERefactor);
 

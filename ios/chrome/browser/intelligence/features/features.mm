@@ -833,6 +833,12 @@ bool IsGeminiQuizzesEnabled() {
   return base::FeatureList::IsEnabled(kGeminiQuizzes);
 }
 
+bool ShouldOpenGeminiQuizzesInNewTab() {
+  return IsGeminiQuizzesEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kGeminiQuizzes, kGeminiQuizzesOpenInNewTabParam, false);
+}
+
 BASE_FEATURE(kGeminiFRERefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiFRERefactorEnabled() {
