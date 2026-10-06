@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "components/lookalikes/core/flat_safety_tips_allowlist.h"
 #include "components/lookalikes/core/safety_tips.pb.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 
@@ -48,6 +49,30 @@ std::unique_ptr<reputation::SafetyTipsConfig> LoadSafetyTipsProtoFromDisk(
     return nullptr;
   }
   return proto;
+}
+
+struct SafetyTipsConfigAndAllowlist {
+  std::unique_ptr<reputation::SafetyTipsConfig> config;
+  // Null if and only if `config` is.
+  std::unique_ptr<lookalikes::FlatSafetyTipsAllowlist> allowlist;
+};
+
+SafetyTipsConfigAndAllowlist LoadSafetyTipsConfigFromDisk(
+    const base::FilePath& pb_path) {
+  SafetyTipsConfigAndAllowlist loaded;
+  loaded.config = LoadSafetyTipsProtoFromDisk(pb_path);
+  if (loaded.config) {
+    // Most of the parsed config is its URL allowlist, which takes much less
+    // memory in flat form.
+    loaded.allowlist =
+        lookalikes::FlatSafetyTipsAllowlist::ExtractFrom(*loaded.config);
+  }
+  return loaded;
+}
+
+void InstallSafetyTipsConfig(SafetyTipsConfigAndAllowlist loaded) {
+  lookalikes::SetSafetyTipsRemoteConfig(std::move(loaded.config),
+                                        std::move(loaded.allowlist));
 }
 
 }  // namespace
@@ -100,8 +125,8 @@ void SafetyTipsComponentInstallerPolicy::ComponentReady(
   // gave us without checking the default proto from the resource bundle.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadSafetyTipsProtoFromDisk, pb_path),
-      base::BindOnce(&lookalikes::SetSafetyTipsRemoteConfigProto));
+      base::BindOnce(&LoadSafetyTipsConfigFromDisk, pb_path),
+      base::BindOnce(&InstallSafetyTipsConfig));
 }
 
 // Called during startup and installation before ComponentReady().

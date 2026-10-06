@@ -4,6 +4,7 @@
 
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 
+#include "components/lookalikes/core/flat_safety_tips_allowlist.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 
 namespace lookalikes {
@@ -11,7 +12,10 @@ namespace lookalikes {
 std::unique_ptr<reputation::SafetyTipsConfig> GetOrCreateSafetyTipsConfig() {
   auto* old = GetSafetyTipsRemoteConfigProto();
   if (old) {
-    return std::make_unique<reputation::SafetyTipsConfig>(*old);
+    auto copy = std::make_unique<reputation::SafetyTipsConfig>(*old);
+    // The URL allowlist was moved out of the installed config.
+    GetSafetyTipsRemoteAllowlistForTesting()->CopyToForTesting(*copy);
+    return copy;
   }
 
   auto conf = std::make_unique<reputation::SafetyTipsConfig>();

@@ -9,7 +9,9 @@
 #include <optional>
 #include <vector>
 
+#include "base/check.h"
 #include "base/no_destructor.h"
+#include "components/lookalikes/core/flat_safety_tips_allowlist.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -51,12 +53,20 @@ bool MatchesAnyRegex(const AllowedTargetRegexes& regexes,
 
 class SafetyTipsConfigSingleton {
  public:
-  void SetProto(std::unique_ptr<reputation::SafetyTipsConfig> proto) {
+  void SetConfig(std::unique_ptr<reputation::SafetyTipsConfig> proto,
+                 std::unique_ptr<FlatSafetyTipsAllowlist> allowlist) {
     allowed_target_regexes_.reset();
+    allowlist_ = std::move(allowlist);
     proto_ = std::move(proto);
   }
 
   reputation::SafetyTipsConfig* GetProto() const { return proto_.get(); }
+
+  // Returns the URL allowlist moved out of the installed config, or nullptr if
+  // no config is installed.
+  const FlatSafetyTipsAllowlist* GetAllowlist() const {
+    return allowlist_.get();
+  }
 
   // Returns the allowed target regexes of the installed config, compiling them
   // on first use. Must only be called while a config is installed.
@@ -75,6 +85,8 @@ class SafetyTipsConfigSingleton {
 
  private:
   std::unique_ptr<reputation::SafetyTipsConfig> proto_;
+  // The URL allowlist moved out of |proto_|. Null if and only if |proto_| is.
+  std::unique_ptr<FlatSafetyTipsAllowlist> allowlist_;
   // Compiled from |proto_| once, rather than on every lookup.
   std::optional<AllowedTargetRegexes> allowed_target_regexes_;
 };
@@ -162,11 +174,30 @@ bool IsUrlAllowedByCohort(const reputation::SafetyTipsConfig* proto,
 
 void SetSafetyTipsRemoteConfigProto(
     std::unique_ptr<reputation::SafetyTipsConfig> proto) {
-  SafetyTipsConfigSingleton::GetInstance().SetProto(std::move(proto));
+  std::unique_ptr<FlatSafetyTipsAllowlist> allowlist;
+  if (proto) {
+    allowlist = FlatSafetyTipsAllowlist::ExtractFrom(*proto);
+  }
+  SetSafetyTipsRemoteConfig(std::move(proto), std::move(allowlist));
+}
+
+void SetSafetyTipsRemoteConfig(
+    std::unique_ptr<reputation::SafetyTipsConfig> proto,
+    std::unique_ptr<FlatSafetyTipsAllowlist> allowlist) {
+  CHECK_EQ(!proto, !allowlist);
+  CHECK(!proto ||
+        (proto->allowed_pattern().empty() &&
+         proto->canonical_pattern().empty() && proto->cohort().empty()));
+  SafetyTipsConfigSingleton::GetInstance().SetConfig(std::move(proto),
+                                                     std::move(allowlist));
 }
 
 const reputation::SafetyTipsConfig* GetSafetyTipsRemoteConfigProto() {
   return SafetyTipsConfigSingleton::GetInstance().GetProto();
+}
+
+const FlatSafetyTipsAllowlist* GetSafetyTipsRemoteAllowlistForTesting() {
+  return SafetyTipsConfigSingleton::GetInstance().GetAllowlist();
 }
 
 bool IsUrlAllowlistedBySafetyTipsComponent(
@@ -177,6 +208,21 @@ bool IsUrlAllowlistedBySafetyTipsComponent(
   DCHECK(visited_url.is_valid());
   std::vector<std::string> patterns;
   UrlToSafetyTipPatterns(visited_url, &patterns);
+
+  // The allowlist of the installed config was moved out of it. Other configs
+  // (e.g. in tests) still hold theirs.
+  const SafetyTipsConfigSingleton& singleton =
+      SafetyTipsConfigSingleton::GetInstance();
+  if (proto == singleton.GetProto()) {
+    return singleton.GetAllowlist()->IsUrlAllowlisted(
+        patterns, [&canonical_url] {
+          DCHECK(canonical_url.is_valid());
+          std::vector<std::string> canonical_patterns;
+          UrlToSafetyTipPatterns(canonical_url, &canonical_patterns);
+          return canonical_patterns;
+        });
+  }
+
   const auto& allowed_patterns = proto->allowed_pattern();
   for (const auto& pattern : patterns) {
     auto maybe_before = std::lower_bound(

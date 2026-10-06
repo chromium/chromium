@@ -39,6 +39,8 @@ static_library("core") {
 
 static_library("safety_tips") {
   sources = [
+    "flat_safety_tips_allowlist.cc",
+    "flat_safety_tips_allowlist.h",
     "safety_tip_test_utils.cc",
     "safety_tip_test_utils.h",
     "safety_tips_config.cc",
@@ -50,6 +52,7 @@ static_library("safety_tips") {
   ]
   deps = [
     ":proto",
+    "//base",
     "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/security_state/core",
     "//third_party/re2",
@@ -60,6 +63,7 @@ static_library("safety_tips") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "flat_safety_tips_allowlist_unittest.cc",
     "lookalike_url_util_unittest.cc",
     "safety_tips_config_unittest.cc",
   ]

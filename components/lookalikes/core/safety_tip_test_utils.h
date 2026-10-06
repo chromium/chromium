@@ -13,8 +13,8 @@
 
 namespace lookalikes {
 
-// Retrieve any existing Safety Tips config proto if set, or create a new one
-// otherwise.
+// Retrieve a copy of any existing Safety Tips config proto if set, including
+// its URL allowlist, or create a new one otherwise.
 std::unique_ptr<reputation::SafetyTipsConfig> GetOrCreateSafetyTipsConfig();
 
 // Initialize component configuration. Necessary to enable Safety Tips for

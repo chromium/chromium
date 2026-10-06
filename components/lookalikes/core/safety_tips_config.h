@@ -15,16 +15,32 @@ class GURL;
 
 namespace lookalikes {
 
+class FlatSafetyTipsAllowlist;
+
 // Sets the global configuration for Safety Tips retrieved from the component
 // updater. The configuration proto contains the list of URLs that can trigger
-// a safety tip.
+// a safety tip. Its URL allowlist is moved out of it, as described below.
 void SetSafetyTipsRemoteConfigProto(
     std::unique_ptr<reputation::SafetyTipsConfig> proto);
 
+// Like SetSafetyTipsRemoteConfigProto(), but takes the URL allowlist that
+// FlatSafetyTipsAllowlist::ExtractFrom() already moved out of |proto|, so that
+// the caller can do that work on another thread. |allowlist| must be null if
+// and only if |proto| is.
+void SetSafetyTipsRemoteConfig(
+    std::unique_ptr<reputation::SafetyTipsConfig> proto,
+    std::unique_ptr<FlatSafetyTipsAllowlist> allowlist);
+
 // Gets the global configuration for Safety Tips as retrieved from the component
 // updater. The configuration proto contains the list of URLs that can trigger
-// a safety tip.
+// a safety tip. Its allowed_pattern, canonical_pattern and cohort fields are
+// always empty, since the URL allowlist is kept apart from it; use
+// IsUrlAllowlistedBySafetyTipsComponent() to query them.
 const reputation::SafetyTipsConfig* GetSafetyTipsRemoteConfigProto();
+
+// Returns the URL allowlist moved out of the installed configuration, or
+// nullptr if none is installed.
+const FlatSafetyTipsAllowlist* GetSafetyTipsRemoteAllowlistForTesting();
 
 // Checks permutations of |visited_url| against the component updater allowlist
 // and returns whether the URL is explicitly allowed to spoof |canonical_url|.
