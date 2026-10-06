@@ -2068,10 +2068,9 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
       }
       if (file_info->is_chunked_upload) {
         chunk_uploads_to_start.push_back(file_token);
-      } else {
-        for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
-          upload_requests_to_send.emplace_back(file_token, i);
-        }
+      }
+      for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
+        upload_requests_to_send.emplace_back(file_token, i);
       }
     }
   }
@@ -2368,7 +2367,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
       contextual_input_data->context_input->front().bytes_.size() >
           lens::features::GetLensOverlayChunkSizeBytes()) {
     file_info->is_chunked_upload = true;
-    PrepareChunkedUpload(file_token, std::move(contextual_input_data));
+    PrepareChunkedUpload(file_token);
     return;
   }
 
@@ -2546,6 +2545,9 @@ void ComposeboxQueryController::OnUploadRequestHeadersReady(
   for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
     MaybeSendUploadNetworkRequest(file_token, i);
   }
+  if (file_info->is_chunked_upload) {
+    MaybeStartUploadChunker(file_token);
+  }
 }
 
 void ComposeboxQueryController::MaybeSendUploadNetworkRequest(
@@ -2707,10 +2709,10 @@ void ComposeboxQueryController::HandleUploadResponse(
   }
 
   if (file_info->upload_chunker &&
+      request_index == file_info->chunked_upload_request_index &&
       file_info->upload_chunker->HandlePageContentResponse(response_string)) {
     // The chunker is handling missing chunk errors. Exit early. This handler
     // will be called again after the retry has finished.
-    file_info->num_outstanding_network_requests_--;
     if (request_index < file_info->upload_requests_.size() &&
         file_info->upload_requests_[request_index]) {
       file_info->upload_requests_[request_index]->terminal_status =
@@ -3023,32 +3025,21 @@ ComposeboxQueryController::ConstructVisualSearchInteractionData(
 }
 
 void ComposeboxQueryController::PrepareChunkedUpload(
-    const base::UnguessableToken& file_token,
-    std::unique_ptr<lens::ContextualInputData> contextual_input_data) {
+    const base::UnguessableToken& file_token) {
   auto* file_info = GetMutableFileInfo(file_token);
   if (!file_info) {
     return;
   }
 
-  // Fetch OAuth headers first.
-  file_info->context_upload_access_token_fetcher_ =
-      CreateAuthHeadersAndContinue(
-          auth_user_index_,
-          base::BindOnce(
-              &ComposeboxQueryController::OnChunkedUploadHeadersReady,
-              weak_ptr_factory_.GetWeakPtr(), file_token));
-}
-
-void ComposeboxQueryController::OnChunkedUploadHeadersReady(
-    const base::UnguessableToken& file_token,
-    std::vector<std::string> headers) {
-  auto* file_info = GetMutableFileInfo(file_token);
-  if (!file_info) {
-    return;
-  }
-  file_info->context_upload_access_token_fetcher_.reset();
-  file_info->request_headers_ =
-      std::make_unique<std::vector<std::string>>(headers);
+  // Increment `num_outstanding_network_requests_` upfront to account for the
+  // final page content payload (`ObjectsRequest`) that will be sent to the
+  // server in `OnPageContentPayloadForChunkUploadReady()` after the chunk
+  // uploads complete. This reserves the request index in `upload_requests_` and
+  // prevents a concurrent viewport upload from decrementing
+  // `num_outstanding_network_requests_` to 0 and prematurely marking the file
+  // upload as complete while chunks are still uploading.
+  file_info->chunked_upload_request_index =
+      file_info->num_outstanding_network_requests_++;
 
   MaybeStartUploadChunker(file_token);
 }
@@ -3150,7 +3141,8 @@ void ComposeboxQueryController::OnPageContentPayloadForChunkUploadReady(
   objects_request->mutable_payload()->CopyFrom(payload);
 
   bool has_lens_usage_intent = file_info->input_data->has_lens_usage_intent;
-  size_t request_index = file_info->num_outstanding_network_requests_++;
+  CHECK(file_info->chunked_upload_request_index.has_value());
+  size_t request_index = *file_info->chunked_upload_request_index;
 
   AddLensUsageIntentToUploadRequestAndContinue(
       has_lens_usage_intent,

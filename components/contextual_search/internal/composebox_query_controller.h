@@ -322,6 +322,10 @@ class ComposeboxQueryController
     // True if the file should be chunked for upload.
     bool is_chunked_upload = false;
 
+    // The request index in `upload_requests_` reserved for the final objects
+    // request of a chunked upload.
+    std::optional<size_t> chunked_upload_request_index;
+
     // The upload chunker delegate for the file.
     std::unique_ptr<lens::LensUploadChunker::Delegate> upload_chunker_delegate;
 
@@ -658,16 +662,9 @@ class ComposeboxQueryController
       std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
       bool force_include_latest_interaction_request_data);
 
-  // Initiates the chunked upload flow. Fetches the required authentication
-  // headers before starting the chunker.
-  void PrepareChunkedUpload(
-      const base::UnguessableToken& file_token,
-      std::unique_ptr<lens::ContextualInputData> contextual_input_data);
-
-  // Callback executed when the OAuth access token headers are successfully
-  // fetched. Triggers MaybeStartUploadChunker to start the chunker.
-  void OnChunkedUploadHeadersReady(const base::UnguessableToken& file_token,
-                                   std::vector<std::string> headers);
+  // Prepares a chunked upload by reserving the final payload request slot and
+  // starting the upload chunker once headers and cluster info are ready.
+  void PrepareChunkedUpload(const base::UnguessableToken& file_token);
 
   // Checks if the OAuth headers and cluster info are both ready. If they are,
   // initializes and starts the LensUploadChunker.
