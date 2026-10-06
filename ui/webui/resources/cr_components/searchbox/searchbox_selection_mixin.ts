@@ -30,7 +30,8 @@ export function selectionIsNativelySupported(s: OmniboxPopupSelection):
     boolean {
   return s.state !== SelectionLineState.kFocusedButtonContextEntrypoint &&
       s.state !== SelectionLineState.kFocusedButtonVoiceSearch &&
-      s.state !== SelectionLineState.kFocusedButtonLensSearch;
+      s.state !== SelectionLineState.kFocusedButtonLensSearch &&
+      s.state !== SelectionLineState.kFocusedButtonContextualChip;
 }
 
 function findSelectionIndex(

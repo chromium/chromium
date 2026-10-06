@@ -8,6 +8,7 @@ import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import './omnibox_popup_contextual_entrypoint.js';
 
 import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
+import type {CurrentTabChipElement} from '//resources/cr_components/composebox/current_tab_chip.js';
 import {KeywordModeEntryMethod} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {ComposeClickEventDetail, SearchboxComposeButtonElement} from '//resources/cr_components/searchbox/searchbox_compose_button.js';
@@ -295,6 +296,11 @@ export class OmniboxPopupSearchboxElement extends
     return entrypoint ? entrypoint.showContextEntrypoint : false;
   }
 
+  get showContextualChip(): boolean {
+    const entrypoint = this.getContextualEntrypoint_();
+    return entrypoint ? entrypoint.showContextualChip : false;
+  }
+
   get showLensSearchIcon(): boolean {
     const entrypoint = this.getContextualEntrypoint_();
     return entrypoint ? entrypoint.showLensSearchIcon : false;
@@ -490,6 +496,18 @@ export class OmniboxPopupSearchboxElement extends
     return entrypoint ? entrypoint.getContextEntrypointElement() : null;
   }
 
+  getContextualChipElement():
+      (CurrentTabChipElement|ComposeboxLensSearchElement)|null {
+    const entrypoint = this.getContextualEntrypoint_();
+    return entrypoint ? entrypoint.getContextualChipElement() : null;
+  }
+
+  isContextualChipVirtualFocused(): boolean {
+    return this.showContextualChip &&
+        this.selection.state ===
+            SelectionLineState.kFocusedButtonContextualChip;
+  }
+
   getLensSearchIconElement(): ComposeboxLensSearchElement|null {
     const entrypoint = this.getContextualEntrypoint_();
     return entrypoint ? entrypoint.getLensSearchIconElement() : null;
@@ -521,6 +539,12 @@ export class OmniboxPopupSearchboxElement extends
         const entrypoint = this.getContextualEntrypointButton();
         if (entrypoint) {
           entrypoint.hasVirtualFocus = this.isContextEntrypointVirtualFocused();
+        }
+
+        const contextualChip = this.getContextualChipElement();
+        if (contextualChip) {
+          contextualChip.hasVirtualFocus =
+              this.isContextualChipVirtualFocused();
         }
 
         const lensIcon = this.getLensSearchIconElement();
@@ -599,6 +623,14 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override handleVirtualFocusEnter(e: KeyboardEvent): boolean {
+    if (this.isContextualChipVirtualFocused()) {
+      e.preventDefault();
+      const entrypoint = this.getContextualEntrypoint_();
+      if (entrypoint) {
+        entrypoint.onContextualChipClick();
+      }
+      return true;
+    }
     if (this.isLensSearchVirtualFocused()) {
       e.preventDefault();
       this.pageHandler().openLensSearch();
@@ -612,6 +644,13 @@ export class OmniboxPopupSearchboxElement extends
     const available = super.getAvailableSelections(result);
     if (!result || available.length === 0) {
       return available;
+    }
+    if (this.showContextualChip) {
+      available.push({
+        line: -1,
+        state: SelectionLineState.kFocusedButtonContextualChip,
+        actionIndex: 0,
+      });
     }
     if (this.showLensSearchIcon) {
       available.push({

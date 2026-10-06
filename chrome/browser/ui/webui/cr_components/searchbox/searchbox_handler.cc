@@ -1615,7 +1615,8 @@ OmniboxPopupSelection ConvertSelection(
     }
     case searchbox::mojom::SelectionLineState::kFocusedButtonContextEntrypoint:
     case searchbox::mojom::SelectionLineState::kFocusedButtonVoiceSearch:
-    case searchbox::mojom::SelectionLineState::kFocusedButtonLensSearch: {
+    case searchbox::mojom::SelectionLineState::kFocusedButtonLensSearch:
+    case searchbox::mojom::SelectionLineState::kFocusedButtonContextualChip: {
       // Handled directly by webui omnibox popup.
       NOTREACHED();
     }
