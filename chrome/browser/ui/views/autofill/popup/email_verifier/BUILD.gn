@@ -31,3 +31,14 @@ source_set("email_verifier") {
     "//ui/gfx",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "email_verification_popup_view_unittest.cc" ]
+
+  deps = [
+    ":email_verifier",
+    "//chrome/test:test_support",
+  ]
+}

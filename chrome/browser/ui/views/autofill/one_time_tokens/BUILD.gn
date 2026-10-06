@@ -26,3 +26,29 @@ source_set("one_time_tokens") {
     "//ui/gfx",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "gmail_otp_opt_in_bubble_view_browsertest.cc" ]
+
+  deps = [
+    ":one_time_tokens",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support_ui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "gmail_otp_opt_in_bubble_view_unittest.cc" ]
+
+  deps = [
+    ":one_time_tokens",
+    "//chrome/test:test_support",
+    "//ui/events:test_support",
+  ]
+}

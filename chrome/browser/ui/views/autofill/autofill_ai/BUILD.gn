@@ -46,3 +46,37 @@ source_set("impl") {
     "//ui/views",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "autofill_ai_import_data_bubble_view_browsertest.cc",
+    "autofill_ai_local_save_notification_view_browsertest.cc",
+    "entity_suppression_dialog_view_browsertest.cc",
+  ]
+
+  deps = [
+    ":autofill_ai",
+    "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui/autofill:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "autofill_ai_import_data_bubble_view_unittest.cc",
+    "autofill_ai_local_save_notification_view_unittest.cc",
+  ]
+
+  deps = [
+    ":autofill_ai",
+    "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
+    "//chrome/test:test_support",
+  ]
+}

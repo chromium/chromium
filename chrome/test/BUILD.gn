@@ -3221,9 +3221,9 @@ if (!is_android) {
         "//chrome/browser/ui/views:javascript_tab_modal_dialog_view_views",
         "//chrome/browser/ui/views:media_picker_utils",
         "//chrome/browser/ui/views:upgrade_notification_controller",
-        "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl",
-        "//chrome/browser/ui/views/autofill/autofill_ai",
-        "//chrome/browser/ui/views/autofill/one_time_tokens",
+        "//chrome/browser/ui/views/autofill:browser_tests",
+        "//chrome/browser/ui/views/autofill/autofill_ai:browser_tests",
+        "//chrome/browser/ui/views/autofill/one_time_tokens:browser_tests",
         "//chrome/browser/ui/views/autofill/payments:autofill_error_dialog_view_native_views",
         "//chrome/browser/ui/views/autofill/payments:bnpl_tos_view_desktop",
         "//chrome/browser/ui/views/autofill/payments:card_unmask_authentication_selection_dialog_view",
@@ -3263,11 +3263,6 @@ if (!is_android) {
         deps += [ "//ui/aura:test_support" ]
       }
       sources += [
-        "../browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view_browsertest.cc",
-        "../browser/ui/views/autofill/autofill_ai/autofill_ai_local_save_notification_view_browsertest.cc",
-        "../browser/ui/views/autofill/autofill_ai/entity_suppression_dialog_view_browsertest.cc",
-        "../browser/ui/views/autofill/autofill_field_promo_view_impl_browsertest.cc",
-        "../browser/ui/views/autofill/one_time_tokens/gmail_otp_opt_in_bubble_view_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
       ]
@@ -5688,14 +5683,6 @@ test("unit_tests") {
   } else {
     # !is_android
     sources += [
-      "../browser/ui/views/autofill/address_editor_view_unittest.cc",
-      "../browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view_unittest.cc",
-      "../browser/ui/views/autofill/autofill_ai/autofill_ai_local_save_notification_view_unittest.cc",
-      "../browser/ui/views/autofill/edit_address_profile_view_unittest.cc",
-      "../browser/ui/views/autofill/one_time_tokens/gmail_otp_opt_in_bubble_view_unittest.cc",
-      "../browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view_unittest.cc",
-      "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
-      "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
       "../browser/ui/views/context_hub/save_to_memory_bank_bubble_view_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
     ]
@@ -5786,15 +5773,12 @@ test("unit_tests") {
       "//chrome/browser/ui/user_education:unit_tests",
       "//chrome/browser/ui/views/accessibility:unit_tests",
       "//chrome/browser/ui/views/app_menu:unit_tests",
-      "//chrome/browser/ui/views/autofill:address_editor_view",
-      "//chrome/browser/ui/views/autofill:edit_address_profile_view",
-      "//chrome/browser/ui/views/autofill:save_address_profile_view",
-      "//chrome/browser/ui/views/autofill:update_address_profile_view",
-      "//chrome/browser/ui/views/autofill/autofill_ai",
-      "//chrome/browser/ui/views/autofill/one_time_tokens",
+      "//chrome/browser/ui/views/autofill:unit_tests",
+      "//chrome/browser/ui/views/autofill/autofill_ai:unit_tests",
+      "//chrome/browser/ui/views/autofill/one_time_tokens:unit_tests",
       "//chrome/browser/ui/views/autofill/payments:unit_tests",
       "//chrome/browser/ui/views/autofill/popup:unit_tests",
-      "//chrome/browser/ui/views/autofill/popup/email_verifier",
+      "//chrome/browser/ui/views/autofill/popup/email_verifier:unit_tests",
       "//chrome/browser/ui/views/data_sharing:unit_tests",
       "//chrome/browser/ui/views/dictation:unit_tests",
       "//chrome/browser/ui/views/drive_picker_host",
@@ -8385,10 +8369,6 @@ if (!is_android && !is_chromeos_device) {
         "//ui/display/win/test/virtual_display_util_win_interactive_uitest.cc",
       ]
 
-      if (use_aura) {
-        sources += [ "../browser/ui/views/autofill/autofill_accessibility_win_browsertest.cc" ]
-      }
-
       deps += [
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
@@ -8396,6 +8376,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/os_crypt:browser_tests",
         "//chrome/browser/os_crypt:test_support",
         "//chrome/browser/ui/views/accessibility:uia_test_support",
+        "//chrome/browser/ui/views/autofill:interactive_ui_tests",
         "//chrome/browser/win/isolated_browser:isolated_browser_support",
         "//chrome/elevation_service:public_headers",
         "//chrome/install_static:install_static_util",
