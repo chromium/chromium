@@ -269,9 +269,6 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
                         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
-                        ModuleType.SIGN_IN_PROMO,
-                        ModuleType.SAVE_PASSWORDS_PROMO,
-                        ModuleType.PASSWORD_CHECKUP_PROMO,
                         ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
                         ModuleType.NTP_THEME_PROMO);
         when(mModuleRegistry.getEnabledModuleSet())

@@ -41,9 +41,9 @@ public interface ModuleDelegate {
         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
-        ModuleType.SIGN_IN_PROMO,
-        ModuleType.SAVE_PASSWORDS_PROMO,
-        ModuleType.PASSWORD_CHECKUP_PROMO,
+        ModuleType.DEPRECATED_SIGN_IN_PROMO,
+        ModuleType.DEPRECATED_SAVE_PASSWORDS_PROMO,
+        ModuleType.DEPRECATED_PASSWORD_CHECKUP_PROMO,
         ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
         ModuleType.NTP_THEME_PROMO,
         ModuleType.NUM_ENTRIES
@@ -65,9 +65,9 @@ public interface ModuleDelegate {
         int ENHANCED_SAFE_BROWSING_PROMO = 12;
         int ADDRESS_BAR_PLACEMENT_PROMO = 13;
         int SETUP_LIST_TWO_CELL_CONTAINER = 14;
-        int SIGN_IN_PROMO = 15;
-        int SAVE_PASSWORDS_PROMO = 16;
-        int PASSWORD_CHECKUP_PROMO = 17;
+        int DEPRECATED_SIGN_IN_PROMO = 15;
+        int DEPRECATED_SAVE_PASSWORDS_PROMO = 16;
+        int DEPRECATED_PASSWORD_CHECKUP_PROMO = 17;
         int SETUP_LIST_CELEBRATORY_PROMO = 18;
         int NTP_THEME_PROMO = 19;
         int NUM_ENTRIES = 20;

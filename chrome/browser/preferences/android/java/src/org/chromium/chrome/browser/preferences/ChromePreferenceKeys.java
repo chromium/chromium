@@ -901,8 +901,8 @@ public final class ChromePreferenceKeys {
     /**
      * Key prefix for boolean preferences indicating whether a specific Setup List item has been
      * completed by the user. The ModuleType integer is appended to this prefix to form the unique
-     * key for each item. For example, "Chrome.SetupList.Completed.15" would be the key for the
-     * SIGN_IN_PROMO.
+     * key for each item. For example, "Chrome.SetupList.Completed.10" would be the key for the
+     * HISTORY_SYNC_PROMO.
      */
     public static final KeyPrefix SETUP_LIST_COMPLETED_KEY_PREFIX =
             new KeyPrefix("Chrome.SetupList.Completed.*");

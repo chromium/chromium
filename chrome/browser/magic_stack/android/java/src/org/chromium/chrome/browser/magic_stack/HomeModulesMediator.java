@@ -762,7 +762,10 @@ public class HomeModulesMediator {
         Set<Integer> set = new HashSet<>(mEnabledModuleSet);
         assert !set.contains(ModuleType.DEPRECATED_EDUCATIONAL_TIP)
                 && !set.contains(ModuleType.DEPRECATED_TAB_RESUMPTION)
-                && !set.contains(ModuleType.DEPRECATED_TIPS_NOTIFICATIONS_PROMO);
+                && !set.contains(ModuleType.DEPRECATED_TIPS_NOTIFICATIONS_PROMO)
+                && !set.contains(ModuleType.DEPRECATED_SIGN_IN_PROMO)
+                && !set.contains(ModuleType.DEPRECATED_SAVE_PASSWORDS_PROMO)
+                && !set.contains(ModuleType.DEPRECATED_PASSWORD_CHECKUP_PROMO);
 
         boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
 
