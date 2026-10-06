@@ -6786,6 +6786,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6026" label="CSSValuePositionVisibilityAnchorVisible"/>
   <int value="6027" label="CSSValuePositionVisibilityAnchorsVisible"/>
   <int value="6028" label="CSSValuePositionVisibilityAnchorValid"/>
+  <int value="6032" label="CSPModuleMapMismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
