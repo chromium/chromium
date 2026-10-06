@@ -69,7 +69,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/subscription_eligibility/model",
     "//ios/chrome/browser/sync/model",
-    "//ios/public/provider/chrome/browser/intelligence/signin",
     "//ui/base",
   ]
 }

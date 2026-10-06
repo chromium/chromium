@@ -328,49 +328,8 @@ TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
   EXPECT_NE([mediator_ primaryAccountAvatar], nil);
 }
 
-// Tests the result of primaryAccountAvatarNeedsRing.
-TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAvatarNeedsRing) {
-  OCMStub([consumer_mock_ updatePrimaryAccount]);
-
-  // Feature disabled, even if tier is not-negative.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(kAiSubscriptionAvatarRingIOS);
-    profile_->GetPrefs()->SetInteger(
-        subscription_eligibility::prefs::kAiSubscriptionTier, 0);
-    EXPECT_FALSE([mediator_ primaryAccountAvatarNeedsRing]);
-  }
-
-  // Feature enabled, but tier is negative.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
-    profile_->GetPrefs()->SetInteger(
-        subscription_eligibility::prefs::kAiSubscriptionTier, -1);
-    EXPECT_FALSE([mediator_ primaryAccountAvatarNeedsRing]);
-  }
-
-  // Feature enabled, and tier is 0 (not positive).
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
-    profile_->GetPrefs()->SetInteger(
-        subscription_eligibility::prefs::kAiSubscriptionTier, 0);
-    EXPECT_FALSE([mediator_ primaryAccountAvatarNeedsRing]);
-  }
-
-  // Feature enabled, and tier is positive (1).
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
-    profile_->GetPrefs()->SetInteger(
-        subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-    EXPECT_TRUE([mediator_ primaryAccountAvatarNeedsRing]);
-  }
-}
-
-// Tests the result of primaryAccountAITierFullName.
-TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAITierFullName) {
+// Tests the result of primaryAccountAITier.
+TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAITier) {
   OCMStub([consumer_mock_ updatePrimaryAccount]);
 
   // Feature disabled, even if tier is positive.
@@ -379,16 +338,25 @@ TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAITierFullName) {
     scoped_feature_list.InitAndDisableFeature(kAiSubscriptionAvatarRingIOS);
     profile_->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-    EXPECT_NSEQ([mediator_ primaryAccountAITierFullName], nil);
+    EXPECT_EQ([mediator_ primaryAccountAITier], 0);
   }
 
-  // Feature enabled, but tier is non-positive (0).
+  // Feature enabled, but tier is negative.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
+    profile_->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, -1);
+    EXPECT_EQ([mediator_ primaryAccountAITier], 0);
+  }
+
+  // Feature enabled, and tier is 0 (not positive).
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
     profile_->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 0);
-    EXPECT_NSEQ([mediator_ primaryAccountAITierFullName], nil);
+    EXPECT_EQ([mediator_ primaryAccountAITier], 0);
   }
 
   // Feature enabled, and tier is positive (1).
@@ -397,8 +365,7 @@ TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAITierFullName) {
     scoped_feature_list.InitAndEnableFeature(kAiSubscriptionAvatarRingIOS);
     profile_->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-    // Under test, GetAITierFullName for tier 1 returns "AI 1".
-    EXPECT_NSEQ([mediator_ primaryAccountAITierFullName], @"AI 1");
+    EXPECT_EQ([mediator_ primaryAccountAITier], 1);
   }
 }
 

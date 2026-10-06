@@ -131,7 +131,7 @@ public class AISubscriptionChipWrapperView: UIView {
   @objc
   public init(text: String) {
     super.init(frame: .zero)
-    self.accessibilityIdentifier = kAccountMenuAISubscriptionChipId
+    self.accessibilityIdentifier = kAISubscriptionChipId
     let chipView = AISubscriptionChipView(text: text)
     let hostingController = UIHostingController(rootView: chipView)
     self.hostingController = hostingController

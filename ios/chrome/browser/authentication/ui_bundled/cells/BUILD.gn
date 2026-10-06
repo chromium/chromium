@@ -2,7 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
 import("//build/config/chrome_build.gni")
+
+swift_source_set("cells_swift") {
+  bridge_header = "cells_swift_bridge.h"
+  sources = [
+    "ai_subscription_chip_view.swift",
+    "subscription_bottom_wave.swift",
+  ]
+  deps = [ ":constants" ]
+  frameworks = [
+    "UIKit.framework",
+    "SwiftUI.framework",
+  ]
+}
 
 source_set("cells") {
   sources = [
@@ -24,6 +38,7 @@ source_set("cells") {
     "table_view_signin_promo_item.mm",
   ]
   deps = [
+    ":cells_swift",
     "//base",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
@@ -92,6 +107,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/intelligence/signin",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/web/public/test",
     "//testing/gtest",
@@ -102,6 +118,8 @@ source_set("unit_tests") {
 
 source_set("constants") {
   sources = [
+    "ai_subscription_chip_constants.h",
+    "ai_subscription_chip_constants.mm",
     "signin_promo_view_constants.h",
     "signin_promo_view_constants.mm",
   ]

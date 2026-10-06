@@ -9,10 +9,10 @@
 #import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/account_menu/public/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/authentication/test/separate_profiles_util.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -675,8 +675,8 @@ id<GREYMatcher> identityDiscMatcher() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kPremiumAvatarRingAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuAISubscriptionChipId)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kAISubscriptionChipId)]
       assertWithMatcher:grey_nil()];
 
   // Tap on the error button to open the passphrase dialog.
@@ -707,7 +707,7 @@ id<GREYMatcher> identityDiscMatcher() {
 
   // Match the subscription chip view and tap it.
   id<GREYMatcher> chipMatcher =
-      grey_allOf(grey_accessibilityID(kAccountMenuAISubscriptionChipId),
+      grey_allOf(grey_accessibilityID(kAISubscriptionChipId),
                  grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:chipMatcher] performAction:grey_tap()];
 
@@ -730,8 +730,9 @@ id<GREYMatcher> identityDiscMatcher() {
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kPremiumAvatarRingAccessibilityIdentifier)];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_accessibilityID(kAccountMenuAISubscriptionChipId)];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kAISubscriptionChipId)];
 }
 
 @end

@@ -2,21 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/apple/swift_source_set.gni")
 import("//build/config/chrome_build.gni")
-
-swift_source_set("ui_swift") {
-  bridge_header = "account_menu_ui_swift_bridge.h"
-  sources = [
-    "ai_subscription_chip_view.swift",
-    "subscription_bottom_wave.swift",
-  ]
-  deps = [ "//ios/chrome/browser/authentication/account_menu/public" ]
-  frameworks = [
-    "UIKit.framework",
-    "SwiftUI.framework",
-  ]
-}
 
 source_set("ui") {
   sources = [
@@ -27,7 +13,6 @@ source_set("ui") {
     "account_menu_view_controller.mm",
   ]
   deps = [
-    ":ui_swift",
     "//base",
     "//components/strings",
     "//google_apis",

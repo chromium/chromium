@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/ai_subscription_chip_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -15,12 +17,32 @@
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Returns true if `view` or any of its recursive subviews has the given
+// `accessibility_id`.
+bool HasSubviewWithAccessibilityIdentifier(UIView* view,
+                                           NSString* accessibility_id) {
+  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
+    return true;
+  }
+  for (UIView* subview in view.subviews) {
+    if (HasSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 using CentralAccountViewTest = PlatformTest;
 
@@ -36,9 +58,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
   CentralAccountView* accountView =
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
-                                showsAITierRing:NO
-                                 aiTierFullName:nil
-                           subscriptionChipView:nil
+                                displayedAiTier:0
                                            name:mainText
                                           email:detailText
                           managementDescription:nil
@@ -63,9 +83,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
   CentralAccountView* accountView =
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
-                                showsAITierRing:NO
-                                 aiTierFullName:nil
-                           subscriptionChipView:nil
+                                displayedAiTier:0
                                            name:nil
                                           email:mainText
                           managementDescription:nil
@@ -93,9 +111,7 @@ TEST_F(CentralAccountViewTest,
   CentralAccountView* accountView =
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
-                                showsAITierRing:NO
-                                 aiTierFullName:nil
-                           subscriptionChipView:nil
+                                displayedAiTier:0
                                            name:mainText
                                           email:detailText
                           managementDescription:managementDescription
@@ -122,9 +138,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingGivenName) {
   CentralAccountView* accountView =
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
-                                showsAITierRing:NO
-                                 aiTierFullName:nil
-                           subscriptionChipView:nil
+                                displayedAiTier:0
                                            name:identity.userFullName
                                           email:identity.userEmail
                           managementDescription:nil
@@ -150,9 +164,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingNames) {
   CentralAccountView* accountView =
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
-                                showsAITierRing:NO
-                                 aiTierFullName:nil
-                           subscriptionChipView:nil
+                                displayedAiTier:0
                                            name:identity.userFullName
                                           email:identity.userEmail
                           managementDescription:nil
@@ -177,9 +189,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAITierRing) {
   CentralAccountView* accountView =
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:image
-                                showsAITierRing:YES
-                                 aiTierFullName:nil
-                           subscriptionChipView:nil
+                                displayedAiTier:1
                                            name:mainText
                                           email:detailText
                           managementDescription:nil
@@ -212,22 +222,43 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAITierRing) {
   EXPECT_EQ(accountView.managed, false);
 }
 
+// Test that the AI subscription chip view is created and added when
+// `aiTier` is positive.
+TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAISubscriptionChip) {
+  UIImage* image = ios::provider::GetSigninDefaultAvatar();
+  image = ResizeImage(image,
+                      GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),
+                      ProjectionMode::kAspectFit);
+  NSString* mainText = @"Main text";
+  NSString* detailText = @"Detail text";
+
+  CentralAccountView* accountView =
+      [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+                                    avatarImage:image
+                                displayedAiTier:1
+                                           name:mainText
+                                          email:detailText
+                          managementDescription:nil
+                                useLargeMargins:YES];
+
+  EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(accountView,
+                                                    kAISubscriptionChipId));
+}
+
 // Tests accessibility labels when AI tier is present.
 TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
   UIImage* image = ios::provider::GetSigninDefaultAvatar();
   NSString* name = @"Jessica";
   NSString* email = @"jessica@gmail.com";
   NSString* managementDescription = @"Managed by Google";
-  NSString* aiTierFullName = @"Premium";
+  NSString* aiTierFullName = ios::provider::GetAITierFullName(1);
 
   // Case 1: name, email, managed, AI tier.
   {
     CentralAccountView* accountView =
         [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                       avatarImage:image
-                                  showsAITierRing:YES
-                                   aiTierFullName:aiTierFullName
-                             subscriptionChipView:nil
+                                  displayedAiTier:1
                                              name:name
                                             email:email
                             managementDescription:managementDescription
@@ -247,9 +278,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
     CentralAccountView* accountView =
         [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                       avatarImage:image
-                                  showsAITierRing:YES
-                                   aiTierFullName:aiTierFullName
-                             subscriptionChipView:nil
+                                  displayedAiTier:1
                                              name:name
                                             email:email
                             managementDescription:nil
@@ -268,9 +297,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
     CentralAccountView* accountView =
         [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                       avatarImage:image
-                                  showsAITierRing:YES
-                                   aiTierFullName:aiTierFullName
-                             subscriptionChipView:nil
+                                  displayedAiTier:1
                                              name:nil
                                             email:email
                             managementDescription:managementDescription
@@ -290,9 +317,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
     CentralAccountView* accountView =
         [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                       avatarImage:image
-                                  showsAITierRing:YES
-                                   aiTierFullName:aiTierFullName
-                             subscriptionChipView:nil
+                                  displayedAiTier:1
                                              name:nil
                                             email:email
                             managementDescription:nil

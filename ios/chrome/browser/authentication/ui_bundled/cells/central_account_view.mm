@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/cells_swift.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -28,6 +30,8 @@ namespace {
 const CGFloat kEnterpriseIconSpacing = 4.0;
 // The vertical space between labels.
 const CGFloat kLabelVerticalSpacing = 2.0;
+// The vertical space between the avatar and the subscription chip.
+const CGFloat kSubscriptionChipTopSpacing = 4.0;
 
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
@@ -66,9 +70,7 @@ UIImage* GetEnterpriseIcon() {
 
 - (instancetype)initWithFrame:(CGRect)frame
                   avatarImage:(UIImage*)avatarImage
-              showsAITierRing:(BOOL)showsAITierRing
-               aiTierFullName:(NSString*)aiTierFullName
-         subscriptionChipView:(UIView*)subscriptionChipView
+              displayedAiTier:(NSInteger)displayedAiTier
                          name:(NSString*)name
                         email:(NSString*)email
         managementDescription:(NSString*)managementDescription
@@ -78,7 +80,11 @@ UIImage* GetEnterpriseIcon() {
     CHECK(avatarImage);
     CHECK(email);
     _avatarImage = avatarImage;
-    _aiTierFullName = [aiTierFullName copy];
+    BOOL showAITierViews = displayedAiTier > 0;
+    _aiTierFullName =
+        showAITierViews
+            ? [ios::provider::GetAITierFullName(displayedAiTier) copy]
+            : nil;
     _name = name;
     _email = email;
     _useLargeMargins = useLargeMargins;
@@ -92,7 +98,7 @@ UIImage* GetEnterpriseIcon() {
     _avatarView =
         [[AITierAvatarView alloc] initWithAvatarImage:_avatarImage
                                        avatarDiameter:avatarDiameter
-                                      showsAITierRing:showsAITierRing];
+                                      showsAITierRing:showAITierViews];
     [self addSubview:_avatarView];
 
     UILabel* titleLabel = [[UILabel alloc] init];
@@ -206,7 +212,11 @@ UIImage* GetEnterpriseIcon() {
                                               constant:kLabelVerticalSpacing],
     ]];
 
-    if (subscriptionChipView) {
+    NSString* aiTierName =
+        showAITierViews ? ios::provider::GetAITierName(displayedAiTier) : nil;
+    if (aiTierName.length > 0) {
+      UIView* subscriptionChipView =
+          [[AISubscriptionChipWrapperView alloc] initWithText:aiTierName];
       // We track whether user interacts with this chip as if it were a button.
       // So we disable any accessibility features it may have on its own.
       UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
@@ -223,7 +233,7 @@ UIImage* GetEnterpriseIcon() {
       [NSLayoutConstraint activateConstraints:@[
         [subscriptionChipView.topAnchor
             constraintEqualToAnchor:_avatarView.bottomAnchor
-                           constant:4.0],
+                           constant:kSubscriptionChipTopSpacing],
         [subscriptionChipView.centerXAnchor
             constraintEqualToAnchor:self.centerXAnchor],
         [titleLabel.topAnchor

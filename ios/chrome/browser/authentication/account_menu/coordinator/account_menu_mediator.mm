@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
-#import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 
 @interface AccountMenuMediator () <AuthenticationFlowDelegate,
                                    AuthenticationServiceObserving,
@@ -102,7 +101,7 @@
   NSString* _primaryAccountDisplayedUserFullName;
   // The version of the avatar currently displayed. Not nil.
   UIImage* _primaryAccountDisplayedAvatar;
-  NSString* _primaryAccountDisplayedAITierFullName;
+  NSInteger _primaryAccountDisplayedAITier;
   // The URL which the the account menu was viewed from when
   // AccountMenuAccessPoint::kWeb.
   GURL _url;
@@ -243,24 +242,15 @@
                                             IdentityAvatarSize::Large);
 }
 
-- (BOOL)primaryAccountAvatarNeedsRing {
-  return self.AITier > 0;
-}
-
-- (NSString*)primaryAccountAITierFullName {
-  NSInteger AITier = self.AITier;
-  if (AITier <= 0) {
-    return nil;
+- (NSInteger)primaryAccountAITier {
+  if (_error || !IsAiSubscriptionAvatarRingIOSEnabled()) {
+    // In case of error, we do not want to display any AI Tier information. Even
+    // in the case where the error does not impact the tier feature access. That
+    // ensures the Account Menu and the NTP displays are consistent.
+    return 0;
   }
-  return ios::provider::GetAITierFullName(AITier);
-}
-
-- (NSString*)primaryAccountAITierName {
-  NSInteger AITier = self.AITier;
-  if (AITier <= 0) {
-    return nil;
-  }
-  return ios::provider::GetAITierName(AITier);
+  return std::max<NSInteger>(
+      _subscriptionEligibilityService->GetAiSubscriptionTier(), 0);
 }
 
 - (NSString*)managementDescription {
@@ -621,16 +611,6 @@
 
 #pragma mark - Private
 
-- (NSInteger)AITier {
-  if (_error || !IsAiSubscriptionAvatarRingIOSEnabled()) {
-    // In case of error, we do not want to display any AI Tier information. Even
-    // in the case where the error does not impact the tier feature access. That
-    // ensures the Account Menu and the NTP displays are consistent.
-    return 0;
-  }
-  return _subscriptionEligibilityService->GetAiSubscriptionTier();
-}
-
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.
 - (void)updateIdentitiesIfAllowed {
@@ -740,10 +720,7 @@
   if (_primaryAccountDisplayedAvatar != self.primaryAccountAvatar ||
       _primaryAccountDisplayedUserFullName != self.primaryAccountUserFullName ||
       _primaryAccountDisplayedEmail != self.primaryAccountEmail ||
-      !([_primaryAccountDisplayedAITierFullName
-            isEqualToString:self.primaryAccountAITierFullName] ||
-        (_primaryAccountDisplayedAITierFullName == nil &&
-         self.primaryAccountAITierFullName == nil))) {
+      _primaryAccountDisplayedAITier != self.primaryAccountAITier) {
     [self recordPrimaryAccountDisplayedInfo];
     return YES;
   }
@@ -755,7 +732,7 @@
   _primaryAccountDisplayedEmail = self.primaryAccountEmail;
   _primaryAccountDisplayedUserFullName = self.primaryAccountUserFullName;
   _primaryAccountDisplayedAvatar = self.primaryAccountAvatar;
-  _primaryAccountDisplayedAITierFullName = self.primaryAccountAITierFullName;
+  _primaryAccountDisplayedAITier = self.primaryAccountAITier;
 }
 
 // Returns whether this mediator is disconnected
