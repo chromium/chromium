@@ -283,7 +283,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->extensions_container();
+        ->extensions_container_for_testing();
   }
 
   void WaitForSidePanelToolbarCloseButtonVisibility(bool visible) {

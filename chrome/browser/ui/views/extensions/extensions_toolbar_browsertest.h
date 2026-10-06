@@ -65,7 +65,7 @@ class ExtensionsToolbarBrowserTest : public InProcessBrowserTest {
   // create one (e.g. when features::IsWebUIExtensionsContainerEnabled()).
   // Accessors below that return container children require it to be non-null.
   ExtensionsToolbarDesktop* extensions_container() {
-    return browser_view()->toolbar()->extensions_container();
+    return browser_view()->toolbar()->extensions_container_for_testing();
   }
 
   ExtensionsToolbarButton* extensions_button() {

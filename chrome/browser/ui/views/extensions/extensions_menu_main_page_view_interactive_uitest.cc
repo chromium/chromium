@@ -556,7 +556,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
   ExtensionsToolbarDesktop* extensions_container() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->extensions_container();
+        ->extensions_container_for_testing();
   }
 
   content::WebContents* active_web_contents() {
@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                           BrowserView::GetBrowserViewForBrowser(
                               incognito_browser)
                               ->toolbar()
-                              ->extensions_container()
+                              ->extensions_container_for_testing()
                               ->GetToolbarViewModel()
                               ->GetActionForId(extension->id())
                               ->GetContextMenu(

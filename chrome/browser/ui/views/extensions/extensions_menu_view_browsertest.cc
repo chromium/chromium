@@ -100,7 +100,7 @@ class ExtensionsMenuViewBrowserTest : public InProcessBrowserTest {
   ExtensionsToolbarDesktop* extensions_container() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->extensions_container();
+        ->extensions_container_for_testing();
   }
 
   scoped_refptr<const extensions::Extension> InstallExtension(
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
       [&extension_id](BrowserWindowInterface* browser) {
         return BrowserView::GetBrowserViewForBrowser(browser)
             ->toolbar()
-            ->extensions_container()
+            ->extensions_container_for_testing()
             ->IsActionVisibleOnToolbar(extension_id);
       };
 
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   views::test::ReduceAnimationDuration(
       BrowserView::GetBrowserViewForBrowser(browser2)
           ->toolbar()
-          ->extensions_container());
+          ->extensions_container_for_testing());
 
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   views::test::WaitForAnimatingLayoutManager(
       BrowserView::GetBrowserViewForBrowser(browser2)
           ->toolbar()
-          ->extensions_container());
+          ->extensions_container_for_testing());
 #endif
 
   // Window that was already open gets the pinned extension.
@@ -330,12 +330,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   views::test::ReduceAnimationDuration(
       BrowserView::GetBrowserViewForBrowser(browser3)
           ->toolbar()
-          ->extensions_container());
+          ->extensions_container_for_testing());
 #if !BUILDFLAG(IS_MAC)
   views::test::WaitForAnimatingLayoutManager(
       BrowserView::GetBrowserViewForBrowser(browser3)
           ->toolbar()
-          ->extensions_container());
+          ->extensions_container_for_testing());
 #endif
 
   // Brand-new window also gets the pinned extension.

@@ -177,7 +177,7 @@ class ToolbarView : public views::AccessiblePaneView,
   // Accessors.
   BrowserWindowInterface* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
-  ExtensionsToolbarDesktop* extensions_container() const {
+  ExtensionsToolbarDesktop* extensions_container_for_testing() const {
     return extensions_container_;
   }
   ToolbarButton* contextual_tasks_button() const {

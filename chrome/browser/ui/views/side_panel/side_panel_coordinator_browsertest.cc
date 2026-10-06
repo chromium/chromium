@@ -229,7 +229,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
   ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->extensions_container();
+        ->extensions_container_for_testing();
   }
 
   SidePanelRegistry* GetActiveTabRegistry() {

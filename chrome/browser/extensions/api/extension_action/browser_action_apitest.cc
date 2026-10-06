@@ -135,7 +135,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
   ExtensionsToolbarDesktop* extensions_container() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->extensions_container();
+        ->extensions_container_for_testing();
   }
 };
 
@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   ExtensionsToolbarDesktop* extensions_container_incognito =
       BrowserView::GetBrowserViewForBrowser(incognito_browser)
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   ExtensionsToolbarDesktop* extensions_container_incognito =
       BrowserView::GetBrowserViewForBrowser(incognito_browser)
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 
   // Set up a listener so we can reply for the extension to do the update.

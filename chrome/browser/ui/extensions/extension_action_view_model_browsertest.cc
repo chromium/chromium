@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   ExtensionsToolbarDesktop* toolbar =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   toolbar_model()->SetActionVisibility(id, false);
   EXPECT_FALSE(toolbar->IsActionVisibleOnToolbar(id));
   base::RunLoop run_loop;

@@ -375,20 +375,8 @@ void ExtensionsToolbarDesktop::ShowPinnedByDefaultIPH(
   }
 
   auto show_iph_closure = base::BindOnce(
-      [](base::WeakPtr<BrowserWindowInterface> browser,
+      [](base::WeakPtr<ExtensionsToolbarDesktop> extensions_toolbar,
          const extensions::ExtensionId& extension_id) {
-        if (!browser) {
-          return;
-        }
-
-        BrowserView* browser_view =
-            BrowserView::GetBrowserViewForBrowser(browser.get());
-        if (!browser_view->toolbar()) {
-          return;
-        }
-
-        ExtensionsToolbarDesktop* extensions_toolbar =
-            browser_view->toolbar()->extensions_container();
         if (!extensions_toolbar) {
           return;
         }
@@ -425,13 +413,14 @@ void ExtensionsToolbarDesktop::ShowPinnedByDefaultIPH(
                       std::move(tracker)));
             },
             std::make_unique<views::ViewTracker>(extension_view));
-        bool promo_shown = BrowserUserEducationInterface::From(browser.get())
-                               ->MaybeShowFeaturePromo(std::move(params));
+        bool promo_shown =
+            BrowserUserEducationInterface::From(extensions_toolbar->browser_)
+                ->MaybeShowFeaturePromo(std::move(params));
         if (!promo_shown) {
           extension_view->ClearProperty(views::kElementIdentifierKey);
         }
       },
-      browser_->GetWeakPtr(), extension_id);
+      weak_ptr_factory_.GetWeakPtr(), extension_id);
 
   auto run_or_wait_for_active_widget = base::BindOnce(
       [](views::Widget* browser_widget, base::OnceClosure show_iph_closure) {

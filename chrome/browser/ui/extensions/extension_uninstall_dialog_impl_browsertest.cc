@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   ExtensionsToolbarDesktop* const container =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   ASSERT_TRUE(container->GetVisible());
   ASSERT_TRUE(container->GetViewForId(extensionA->id()));
 

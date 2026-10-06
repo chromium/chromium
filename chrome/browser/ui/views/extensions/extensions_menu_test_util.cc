@@ -46,7 +46,7 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(BrowserWindowInterface* browser)
       browser_(browser) {
   extensions_toolbar_ = BrowserView::GetBrowserViewForBrowser(browser_)
                             ->toolbar()
-                            ->extensions_container();
+                            ->extensions_container_for_testing();
 }
 
 ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {

@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
   ExtensionsToolbarDesktop* extensions_container =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   EXPECT_NE(nullptr, extensions_container);
 }
 
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
   ExtensionsToolbarDesktop* extensions_container =
       BrowserView::GetBrowserViewForBrowser(target_browser)
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   EXPECT_EQ(nullptr, extensions_container);
 }
 

@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
       [&extension_id](BrowserWindowInterface* browser) {
         return BrowserView::GetBrowserViewForBrowser(browser)
             ->toolbar()
-            ->extensions_container()
+            ->extensions_container_for_testing()
             ->IsActionVisibleOnToolbar(extension_id);
       };
 

@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ExtensionsContainerViews* const extensions_container =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   std::optional<extensions::ExtensionId> action_id =
       extensions_container->GetPoppedOutActionId();
   ASSERT_NE(std::nullopt, action_id);
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ExtensionsContainerViews* const extensions_container =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
   ASSERT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
 
   auto* extension_registrar =
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ExtensionsContainerViews* const extensions_container =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->extensions_container();
+          ->extensions_container_for_testing();
 
   // This test should not use a popped-out action, as we want to make sure that
   // the menu closes on its own and not because a popup dialog replaces it.
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
   auto* const action_bubble =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->extensions_container()
+          ->extensions_container_for_testing()
           ->GetAnchoredWidgetForExtensionForTesting(extensions()[0]->id())
           ->widget_delegate()
           ->AsDialogDelegate();

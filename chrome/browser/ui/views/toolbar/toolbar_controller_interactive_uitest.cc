@@ -169,7 +169,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
   // defined in ToolbarView should have minimum size
   int GetOverflowThresholdWidthInPinnedSidePanelContainer() {
     auto* extensions_container =
-        browser_view_->toolbar()->extensions_container();
+        browser_view_->toolbar()->extensions_container_for_testing();
     int diff = extensions_container->GetPreferredSize().width() -
                extensions_container->GetMinimumSize().width();
     return toolbar_container_view_->GetPreferredSize().width() - diff;
@@ -1178,7 +1178,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->toolbar()
-                   ->extensions_container()
+                   ->extensions_container_for_testing()
                    ->GetAnimatingLayoutManager()
                    ->is_animating());
 }

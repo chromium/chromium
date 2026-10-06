@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ExtensionsToolbarDesktop* extensions_container =
-      browser_view->toolbar()->extensions_container();
+      browser_view->toolbar()->extensions_container_for_testing();
   extensions_container->GetToolbarViewModel()->ShowToolbarActionPopupForAPICall(
       extension->id(), ShowPopupCallback());
 
