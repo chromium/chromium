@@ -83,6 +83,10 @@ class PdfAccessibilityTreeBuilder {
       const {
     return *highlights_;
   }
+  const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>& graphics()
+      const {
+    return *graphics_;
+  }
   uint32_t page_index() const { return page_index_; }
 
   // Node creation methods used by tree builders.
@@ -132,6 +136,8 @@ class PdfAccessibilityTreeBuilder {
   const raw_ref<const std::vector<chrome_pdf::AccessibilityImageInfo>> images_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityHighlightInfo>>
       highlights_;
+  const raw_ref<const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>>
+      graphics_;
   const raw_ptr<const chrome_pdf::AccessibilityStructureElement>
       page_structure_tree_;
 

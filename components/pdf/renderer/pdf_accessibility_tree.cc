@@ -401,6 +401,27 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
     }
   }
 
+  // Graphics span text runs like links and highlights, but each graphic must
+  // contain at least one text run to be considered a form graphic.
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>& graphics =
+        page_objects.graphics;
+    if (!std::ranges::is_sorted(
+            graphics, CompareTextRunsWithRange<
+                          chrome_pdf::AccessibilityFormGraphicInfo>)) {
+      return false;
+    }
+
+    for (const auto& graphic : graphics) {
+      base::CheckedNumeric<size_t> index = graphic.text_range.index;
+      index += graphic.text_range.count;
+      if (graphic.text_range.count == 0 || !index.IsValid() ||
+          index.ValueOrDie() > text_runs.size()) {
+        return false;
+      }
+    }
+  }
+
   return true;
 }
 

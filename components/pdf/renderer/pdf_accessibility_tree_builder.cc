@@ -186,6 +186,7 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
       links_(page_objects.links),
       images_(page_objects.images),
       highlights_(page_objects.highlights),
+      graphics_(page_objects.graphics),
       page_structure_tree_(page_structure_tree),
       page_index_(page_index),
       root_node_(root_node),

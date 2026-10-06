@@ -127,6 +127,11 @@ constexpr float kSideMarginRatio = 0.085f;
 // margins to be considered a page number.
 constexpr float kMaxPageNumberWidthRatio = 0.30f;
 
+// Maximum page area and height ratios for a form graphic to be treated as an
+// embedded figure rather than a full-page background or sidebar template.
+constexpr float kMaxGraphicPageAreaRatio = 0.8f;
+constexpr float kMaxGraphicPageHeightRatio = 0.85f;
+
 // Font size ratio below which a run counts as substantially smaller than the
 // text beside it on the same line, such as a superscript.
 constexpr float kSmallTextFontSizeRatio = 0.85f;
@@ -576,8 +581,27 @@ std::optional<uint32_t> ComputeColors(
   return it->first;
 }
 
+std::vector<chrome_pdf::AccessibilityFormGraphicInfo> FilterGraphics(
+    const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>& graphics,
+    const gfx::RectF& page_bounds) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  const float max_area =
+      page_bounds.size().GetArea() * kMaxGraphicPageAreaRatio;
+  const float max_height = page_bounds.height() * kMaxGraphicPageHeightRatio;
+  std::vector<chrome_pdf::AccessibilityFormGraphicInfo> filtered_graphics;
+  for (const auto& graphic : graphics) {
+    // Skip full-page background templates and tall header/footer forms.
+    if (graphic.bounds.height() < max_height &&
+        graphic.bounds.size().GetArea() < max_area) {
+      filtered_graphics.push_back(graphic);
+    }
+  }
+  return filtered_graphics;
+}
+
 HeuristicPageProperties ComputeHeuristicPageProperties(
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
+    const std::vector<chrome_pdf::AccessibilityFormGraphicInfo>& graphics,
     const gfx::RectF& page_bounds) {
   const float max_page_number_width =
       page_bounds.width() * kMaxPageNumberWidthRatio;
@@ -592,7 +616,17 @@ HeuristicPageProperties ComputeHeuristicPageProperties(
   std::vector<float> line_spacings;
   std::map<uint32_t, uint32_t> all_color_char_counts;
 
+  uint32_t current_graphic_index = 0;
   for (size_t i = 0; i < text_runs.size(); ++i) {
+    // Skip text runs inside graphics so diagram labels do not skew page-level
+    // body text metrics.
+    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+        IsObjectWithRangeInTextRun(graphics, current_graphic_index, i)) {
+      const auto& range = graphics[current_graphic_index++].text_range;
+      i = NormalizeTextRunIndex(range.index + range.count - 1, i);
+      continue;
+    }
+
     const auto& run = text_runs[i];
     font_sizes.push_back(run.style.font_size);
     font_size_char_counts[run.style.font_size] += run.len;
@@ -1320,8 +1354,12 @@ bool BreakParagraph(uint32_t text_run_index,
   bool is_large_line_spacing_break = BreakParagraphByLineSpacing(
       current_run, next_run, page_properties.paragraph_spacing_threshold);
 
-  // Header and footer boundaries take precedence over the rules below.
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    if (block_node->role == ax::mojom::Role::kFigure) {
+      return false;
+    }
+
+    // Header and footer boundaries take precedence over the rules below.
     std::optional<bool> header_footer_break = BreakAtHeaderFooterBoundary(
         current_run_context, next_run_context, page_properties,
         is_large_line_spacing_break, block_node);
@@ -1441,9 +1479,15 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     }
   };
 
+  const gfx::RectF& page_bounds = builder_->page_node()->relative_bounds.bounds;
+  std::vector<chrome_pdf::AccessibilityFormGraphicInfo> graphics;
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    graphics = FilterGraphics(builder_->graphics(), page_bounds);
+  }
+
   const HeuristicPageProperties page_properties =
-      ComputeHeuristicPageProperties(
-          builder_->text_runs(), builder_->page_node()->relative_bounds.bounds);
+      ComputeHeuristicPageProperties(builder_->text_runs(), graphics,
+                                     page_bounds);
   const PageLayoutData page_layout = {
       .text_runs = builder_->text_runs(),
       .chars = builder_->chars(),
@@ -1458,6 +1502,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   // Whether the current block opened with a superscript footnote marker. Set
   // when the block is created, so it is never stale.
   bool block_starts_with_superscript_marker = false;
+  uint32_t current_graphic_index = 0;
   LineHelper line_helper(builder_->text_runs());
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   bool ocr_block = false;
@@ -1493,10 +1538,28 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       has_ocr_text = true;
     }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+    // Close any open non-figure block when entering a graphic so the graphic
+    // starts its own `kFigure` block even if `BreakParagraph()` didn't split
+    // before this run.
+    chrome_pdf::AccessibilityFormGraphicInfo* current_graphic = nullptr;
+    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+        IsObjectWithRangeInTextRun(graphics, current_graphic_index,
+                                   text_run_index)) {
+      current_graphic = &graphics[current_graphic_index];
+      if (block_node && block_node->role != ax::mojom::Role::kFigure) {
+        BuildStaticNode(&static_text_state);
+        block_node = nullptr;
+        current_heading_classifier = HeadingClassifier::kNone;
+        previous_on_line_node = nullptr;
+      }
+    }
+
     // If we don't have a block level node, create one.
     if (!block_node) {
-      block_node = CreateBlockLevelNode(run_context, page_properties,
-                                        &current_heading_classifier);
+      block_node =
+          CreateBlockLevelNode(run_context, page_properties, current_graphic,
+                               &current_heading_classifier);
       block_starts_with_superscript_marker =
           GetTextPosition(builder_->text_runs(), text_run_index,
                           run_context.chars) ==
@@ -1594,6 +1657,19 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       }
     }
 
+    // A figure block stays open across its entire graphic text range and closes
+    // once the last run in the graphic is reached.
+    if (block_node->role == ax::mojom::Role::kFigure) {
+      const auto& range = graphics[current_graphic_index].text_range;
+      if (text_run_index + 1 >= range.index + range.count) {
+        BuildStaticNode(&static_text_state);
+        block_node = nullptr;
+        previous_on_line_node = nullptr;
+        ++current_graphic_index;
+        continue;
+      }
+    }
+
     if (text_run_index == builder_->text_runs().size() - 1) {
       BuildStaticNode(&static_text_state);
       break;
@@ -1633,6 +1709,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     const TextRunContext& run_context,
     const HeuristicPageProperties& page_properties,
+    const chrome_pdf::AccessibilityFormGraphicInfo* graphic,
     HeadingClassifier* out_heading_classifier) {
   ui::AXNodeData* block_node = builder_->CreateAndAppendNode(
       ax::mojom::Role::kParagraph, ax::mojom::Restriction::kReadOnly);
@@ -1646,6 +1723,12 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
                                    run_context.run->language);
   }
   *out_heading_classifier = HeadingClassifier::kNone;
+
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() && graphic) {
+    block_node->role = ax::mojom::Role::kFigure;
+    block_node->relative_bounds.bounds = graphic->bounds;
+    return block_node;
+  }
 
   if (!builder_->mark_headings_using_heuristic()) {
     return block_node;

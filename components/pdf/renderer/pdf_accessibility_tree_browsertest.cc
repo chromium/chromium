@@ -4597,6 +4597,112 @@ TEST_F(PdfAccessibilityTreeTest,
   EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicGraphicsFigure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0 is inside a tall template form (>= 85% of page height) and run 3 is
+  // inside a large background form (>= 80% of page area); both should be
+  // ignored as templates rather than grouped into kFigure nodes.
+  // Runs 1 and 2 are inside an embedded graphic and have a tiny font size (6pt)
+  // with many characters, while body text runs (0, 3, 4) are 10pt. Because
+  // graphic text runs are excluded from page property calculations, the median
+  // font size remains 10pt and the body text is not misclassified as headings.
+  chrome_pdf::AccessibilityFormGraphicInfo tall_template;
+  tall_template.bounds = gfx::RectF(0.0f, 0.0f, 100.0f, 850.0f);
+  tall_template.text_range.index = 0;
+  tall_template.text_range.count = 1;
+  page_objects_.graphics.push_back(tall_template);
+
+  chrome_pdf::AccessibilityFormGraphicInfo graphic;
+  graphic.bounds = gfx::RectF(40.0f, 190.0f, 300.0f, 120.0f);
+  graphic.text_range.index = 1;
+  graphic.text_range.count = 2;
+  page_objects_.graphics.push_back(graphic);
+
+  chrome_pdf::AccessibilityFormGraphicInfo large_area_template;
+  large_area_template.bounds = gfx::RectF(0.0f, 0.0f, 800.0f, 800.0f);
+  large_area_template.text_range.index = 3;
+  large_area_template.text_range.count = 1;
+  page_objects_.graphics.push_back(large_area_template);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 6.0f, 6.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"Body before", kLongBodyText, kLongBodyText,
+                      "Body after 1", "Body after 2"}),
+      {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
+       gfx::RectF(60.0f, 200.0f, 100.0f, 10.0f),
+       gfx::RectF(60.0f, 250.0f, 100.0f, 10.0f),
+       gfx::RectF(50.0f, 400.0f, 200.0f, 15.0f),
+       gfx::RectF(50.0f, 415.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  const ui::AXNode* para_before = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, para_before);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para_before->GetRole());
+
+  const ui::AXNode* figure_node = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, figure_node);
+  EXPECT_EQ(ax::mojom::Role::kFigure, figure_node->GetRole());
+  EXPECT_TRUE(figure_node->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject));
+  ASSERT_EQ(1u, figure_node->GetChildCount());
+
+  const ui::AXNode* static_text = figure_node->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  EXPECT_EQ(2u, static_text->GetChildCount());
+
+  const ui::AXNode* para_after = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, para_after);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para_after->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicGraphicsIgnoredWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {::features::kPdfAccessibilityHeuristicEnhancements,
+           chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  chrome_pdf::AccessibilityFormGraphicInfo graphic;
+  graphic.bounds = gfx::RectF(40.0f, 190.0f, 300.0f, 120.0f);
+  graphic.text_range.index = 1;
+  graphic.text_range.count = 1;
+  page_objects_.graphics.push_back(graphic);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style},
+      MakeCharVector({"Body before", "Graphic text", "Body after"}),
+      {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
+       gfx::RectF(60.0f, 200.0f, 100.0f, 15.0f),
+       gfx::RectF(50.0f, 300.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_EQ(ax::mojom::Role::kParagraph, page->GetChildAtIndex(i)->GetRole());
+  }
+}
+
 class PdfAccessibilityTreeHeaderFooterRepetitionTest
     : public PdfAccessibilityTreeTest {
  protected:
@@ -6659,6 +6765,82 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
   WaitForThreadDelayedTasks();
 
   // In case of invalid data, only the initialized data should be in the tree.
+  ASSERT_FALSE(pdf_accessibility_tree_->GetRoot());
+}
+
+TEST_F(PdfAccessibilityTreeTest, UnsortedGraphicVector) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
+  chars_.insert(chars_.end(), std::begin(kDummyCharsData),
+                std::end(kDummyCharsData));
+
+  {
+    chrome_pdf::AccessibilityFormGraphicInfo graphic;
+    graphic.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
+    graphic.text_range.index = 1;
+    graphic.text_range.count = 1;
+    page_objects_.graphics.push_back(std::move(graphic));
+  }
+
+  {
+    chrome_pdf::AccessibilityFormGraphicInfo graphic;
+    graphic.bounds = gfx::RectF(2.0f, 2.0f, 1.0f, 1.0f);
+    graphic.text_range.index = 0;
+    graphic.text_range.count = 1;
+    page_objects_.graphics.push_back(std::move(graphic));
+  }
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  CreatePdfAccessibilityTree();
+
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  ASSERT_FALSE(pdf_accessibility_tree_->GetRoot());
+}
+
+TEST_F(PdfAccessibilityTreeTest, OutOfBoundGraphic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
+  chars_.insert(chars_.end(), std::begin(kDummyCharsData),
+                std::end(kDummyCharsData));
+
+  {
+    chrome_pdf::AccessibilityFormGraphicInfo graphic;
+    graphic.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
+    graphic.text_range.index = 2;
+    graphic.text_range.count = 1;
+    page_objects_.graphics.push_back(std::move(graphic));
+  }
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  CreatePdfAccessibilityTree();
+
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
   ASSERT_FALSE(pdf_accessibility_tree_->GetRoot());
 }
 

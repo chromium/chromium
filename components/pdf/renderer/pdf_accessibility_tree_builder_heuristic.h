@@ -175,6 +175,7 @@ class PdfAccessibilityTreeBuilderHeuristic {
   ui::AXNodeData* CreateBlockLevelNode(
       const TextRunContext& run_context,
       const HeuristicPageProperties& page_properties,
+      const chrome_pdf::AccessibilityFormGraphicInfo* graphic,
       HeadingClassifier* out_heading_classifier);
 
   ui::AXNodeData* AddTextRunToNode(size_t text_run_index,
