@@ -32,9 +32,6 @@ public interface OmniboxStub {
      */
     void endInput();
 
-    /** Suspends the current Omnibox input session. */
-    void suspendInput();
-
     /** Handler for scrim clicks. */
     void onScrimClicked();
 

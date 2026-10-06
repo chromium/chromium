@@ -56,6 +56,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link UrlBarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -899,6 +900,48 @@ public class UrlBarMediatorUnitTest {
 
         mMediator.endInput();
         assertFalse(mMediator.isInInputSession());
+    }
+
+    @Test
+    public void endInput_ntpUrlResetsToEmpty() {
+        FuseboxSessionState session = new FuseboxSessionState();
+        AutocompleteInput input =
+                new AutocompleteInput(OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
+        input.setPageUrl(JUnitTestGURLs.NTP_NATIVE_URL);
+        input.setUserText("typed text", TextSelection.SELECT_END);
+        session.applyAutocompleteInput(input);
+
+        doReturn(UrlBarData.forNonUrlText("typed text"))
+                .when(mDelegate)
+                .getUrlBarDataForCurrentInput();
+
+        mMediator.beginInput(session);
+        assertEquals("typed text", mMediator.getUrlBarData().displayText.toString());
+
+        mMediator.endInput();
+        assertEquals("", mMediator.getUrlBarData().displayText.toString());
+        assertEquals("", mModel.get(UrlBarProperties.TEXT_STATE).text.toString());
+    }
+
+    @Test
+    public void endInput_webUrlRestoresPageUrl() {
+        FuseboxSessionState session = new FuseboxSessionState();
+        AutocompleteInput input =
+                new AutocompleteInput(OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
+        input.setPageUrl(JUnitTestGURLs.BLUE_1);
+        input.setUserText("typed text", TextSelection.SELECT_END);
+        session.applyAutocompleteInput(input);
+
+        doReturn(UrlBarData.forNonUrlText("typed text"))
+                .when(mDelegate)
+                .getUrlBarDataForCurrentInput();
+
+        mMediator.beginInput(session);
+        assertEquals("typed text", mMediator.getUrlBarData().displayText.toString());
+
+        mMediator.endInput();
+        assertEquals(
+                JUnitTestGURLs.BLUE_1.getSpec(), mMediator.getUrlBarData().displayText.toString());
     }
 
     @Test

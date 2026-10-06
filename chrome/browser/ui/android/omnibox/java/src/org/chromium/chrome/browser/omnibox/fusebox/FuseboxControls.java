@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.omnibox.AutocompleteInput;
 
-/** Interface controlling Fusebox input sessions (e.g. begin, suspend, end). */
+/** Interface controlling Fusebox input sessions (e.g. begin, end). */
 @NullMarked
 public interface FuseboxControls {
     /**
@@ -19,7 +19,4 @@ public interface FuseboxControls {
 
     /** End the current fusebox input session. */
     void endFuseboxInput();
-
-    /** Suspend the current fusebox input session. */
-    void suspendFuseboxInput();
 }

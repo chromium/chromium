@@ -3523,13 +3523,6 @@ public class ToolbarManager
         assumeNonNull(mLocationBar.getOmniboxStub()).endInput();
     }
 
-    /** Suspend the current fusebox input session. */
-    @Override
-    public void suspendFuseboxInput() {
-        if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
-        assumeNonNull(mLocationBar.getOmniboxStub()).suspendInput();
-    }
-
     private void onScrimClicked() {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
         assumeNonNull(mLocationBar.getOmniboxStub()).onScrimClicked();

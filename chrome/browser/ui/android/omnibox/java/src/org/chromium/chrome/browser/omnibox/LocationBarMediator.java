@@ -3114,8 +3114,8 @@ public class LocationBarMediator
         }
     }
 
-    @Override
-    public void suspendInput() {
+    @VisibleForTesting
+    /* package */ void suspendInput() {
         if (mAutocompleteCoordinator == null || mCurrentInput == null || mIsReparenting) return;
 
         AutocompleteInput input = mCurrentInput;

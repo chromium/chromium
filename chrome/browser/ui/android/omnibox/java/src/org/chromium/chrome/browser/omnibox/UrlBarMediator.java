@@ -124,7 +124,10 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
         var pageUrl = mCurrentInput.getPageUrl();
         mCurrentInput = null;
-        var data = UrlBarData.forUrl(pageUrl);
+        // NTPs display a search hint rather than their internal chrome-native://newtab/ URL, so
+        // reset to EMPTY instead of populating the raw page URL via UrlBarData.forUrl.
+        UrlBarData data =
+                OmniboxUrlUtils.isNtpUrl(pageUrl) ? UrlBarData.EMPTY : UrlBarData.forUrl(pageUrl);
         setUrlBarData(data, ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END);
     }
 
