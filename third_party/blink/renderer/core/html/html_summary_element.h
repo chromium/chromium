@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_SUMMARY_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_SUMMARY_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
@@ -28,7 +29,7 @@ namespace blink {
 class HTMLDetailsElement;
 class SummaryDescendantsObserver;
 
-class HTMLSummaryElement final : public HTMLElement {
+class CORE_EXPORT HTMLSummaryElement final : public HTMLElement {
  public:
   explicit HTMLSummaryElement(Document&);
 
@@ -40,6 +41,7 @@ class HTMLSummaryElement final : public HTMLElement {
 
   bool IsMainSummary() const;
   bool WillRespondToMouseClickEvents() override;
+  HTMLDetailsElement* DetailsElement() const;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
   void RemovedFrom(ContainerNode&) final;
@@ -48,7 +50,6 @@ class HTMLSummaryElement final : public HTMLElement {
   void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
-  HTMLDetailsElement* DetailsElement() const;
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   int DefaultTabIndex() const override;

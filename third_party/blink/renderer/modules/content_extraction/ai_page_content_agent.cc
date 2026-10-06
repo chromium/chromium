@@ -54,10 +54,12 @@
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -880,7 +882,9 @@ void AddClickabilityReasons(
     mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) {
   using Reason = mojom::blink::AIPageContentClickabilityReason;
 
-  if (element.IsClickableFormControlNode()) {
+  const auto* summary = DynamicTo<HTMLSummaryElement>(element);
+  const bool is_main_summary = summary && summary->IsMainSummary();
+  if (element.IsClickableFormControlNode() || is_main_summary) {
     interaction_info.clickability_reasons.push_back(Reason::kClickableControl);
   }
 
@@ -949,6 +953,12 @@ void AddClickabilityReasons(
       interaction_info.clickability_reasons.push_back(
           Reason::kAriaExpandedFalse);
     }
+  } else if (is_main_summary) {
+    const HTMLDetailsElement* details = summary->DetailsElement();
+    CHECK(details);
+    const bool is_open = details->FastHasAttribute(html_names::kOpenAttr);
+    interaction_info.clickability_reasons.push_back(
+        is_open ? Reason::kAriaExpandedTrue : Reason::kAriaExpandedFalse);
   }
 
   const auto& autocomplete =
@@ -2968,6 +2978,17 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   } else if (const auto* form_control =
                  DynamicTo<HTMLFormControlElement>(object.GetNode())) {
     ProcessFormControlNode(*form_control, attributes);
+  } else if (const auto* summary =
+                 DynamicTo<HTMLSummaryElement>(object.GetNode());
+             summary && summary->IsMainSummary()) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kFormControl;
+    if (IsVisible(object)) {
+      attributes.form_control_data =
+          mojom::blink::AIPageContentFormControlData::New();
+      attributes.form_control_data->form_control_type =
+          mojom::blink::FormControlType::kButtonButton;
+    }
   } else if (auto dialog_attribute_type = GetDialogAttributeType(element)) {
     attributes.attribute_type = *dialog_attribute_type;
   } else if (element &&

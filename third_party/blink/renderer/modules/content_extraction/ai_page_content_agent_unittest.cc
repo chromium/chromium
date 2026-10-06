@@ -9,6 +9,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -10769,6 +10770,121 @@ TEST_F(AIPageContentAgentTestElementCSSRedactionDisabled,
   EXPECT_EQ(
       field2.content_attributes->redaction_decision,
       mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS);
+}
+
+TEST_F(AIPageContentAgentTest, DetailsSummaryElementAriaExpandedOverride) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <details open>
+        <summary id="open-summary" aria-expanded="false">Open Summary</summary>
+      </details>
+      <details>
+        <summary id="closed-summary" aria-expanded="true">Closed Summary</summary>
+      </details>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  for (const auto& [id, reason] :
+       {std::pair{"open-summary", ClickabilityReason::kAriaExpandedFalse},
+        std::pair{"closed-summary", ClickabilityReason::kAriaExpandedTrue}}) {
+    Element* summary = document->getElementById(AtomicString(id));
+    ASSERT_TRUE(summary);
+    const auto* summary_node =
+        FindNodeByDomNodeId(DOMNodeIds::IdForNode(summary));
+    ASSERT_TRUE(summary_node);
+    CheckFormControlNode(*summary_node,
+                         mojom::blink::FormControlType::kButtonButton);
+    CheckHitTestableAndInteractive(
+        *summary_node, {ClickabilityReason::kClickableControl, reason});
+  }
+}
+
+TEST_F(AIPageContentAgentTest, DetailsSummaryElement) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <details id="closed-details">
+        <summary id="main-summary">Main Summary</summary>
+        Closed content
+      </details>
+      <details open id="open-details">
+        <summary id="open-summary">Open Summary</summary>
+        <summary id="extra-summary">Extra Summary</summary>
+        Open content
+      </details>
+      <summary id="standalone-summary">Standalone Summary</summary>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+
+  // 1. Closed <details><summary>
+  Element* main_summary =
+      document->getElementById(AtomicString("main-summary"));
+  ASSERT_TRUE(main_summary);
+  const auto* main_summary_node =
+      FindNodeByDomNodeId(DOMNodeIds::IdForNode(main_summary));
+  ASSERT_TRUE(main_summary_node);
+  CheckFormControlNode(*main_summary_node,
+                       mojom::blink::FormControlType::kButtonButton);
+  CheckHitTestableAndInteractive(*main_summary_node,
+                                 {ClickabilityReason::kClickableControl,
+                                  ClickabilityReason::kAriaExpandedFalse});
+  EXPECT_TRUE(main_summary_node->content_attributes->node_interaction_info
+                  ->is_focusable);
+
+  // 2. Open <details open><summary>
+  Element* open_summary =
+      document->getElementById(AtomicString("open-summary"));
+  ASSERT_TRUE(open_summary);
+  const auto* open_summary_node =
+      FindNodeByDomNodeId(DOMNodeIds::IdForNode(open_summary));
+  ASSERT_TRUE(open_summary_node);
+  CheckFormControlNode(*open_summary_node,
+                       mojom::blink::FormControlType::kButtonButton);
+  CheckHitTestableAndInteractive(*open_summary_node,
+                                 {ClickabilityReason::kClickableControl,
+                                  ClickabilityReason::kAriaExpandedTrue});
+  EXPECT_TRUE(open_summary_node->content_attributes->node_interaction_info
+                  ->is_focusable);
+
+  // 3. Non-main <summary> elements (a second <summary> inside <details> or a
+  // standalone <summary> outside <details>) remain generic containers without
+  // button form control data or clickability reasons.
+  Element* extra_summary =
+      document->getElementById(AtomicString("extra-summary"));
+  ASSERT_TRUE(extra_summary);
+  const auto* extra_summary_node =
+      FindNodeByDomNodeId(DOMNodeIds::IdForNode(extra_summary));
+  ASSERT_TRUE(extra_summary_node);
+  CheckContainerNode(*extra_summary_node);
+  ASSERT_TRUE(extra_summary_node->content_attributes->node_interaction_info);
+  EXPECT_TRUE(extra_summary_node->content_attributes->node_interaction_info
+                  ->clickability_reasons.empty());
+  EXPECT_FALSE(extra_summary_node->content_attributes->node_interaction_info
+                   ->is_focusable);
+
+  Element* standalone_summary =
+      document->getElementById(AtomicString("standalone-summary"));
+  ASSERT_TRUE(standalone_summary);
+  const auto* standalone_summary_node =
+      FindNodeByDomNodeId(DOMNodeIds::IdForNode(standalone_summary));
+  ASSERT_TRUE(standalone_summary_node);
+  CheckContainerNode(*standalone_summary_node);
+  ASSERT_TRUE(
+      standalone_summary_node->content_attributes->node_interaction_info);
+  EXPECT_TRUE(standalone_summary_node->content_attributes->node_interaction_info
+                  ->clickability_reasons.empty());
+  EXPECT_FALSE(standalone_summary_node->content_attributes
+                   ->node_interaction_info->is_focusable);
 }
 
 }  // namespace
