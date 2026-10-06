@@ -311,6 +311,55 @@ public class BottomBarContainerCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnConfigurationChanged_synchronousUpdateBeforeDestroy() {
+        mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
+        verify(mOnModelTokenChange, times(1)).onResult(any());
+
+        Configuration newConfig = new Configuration();
+        newConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(newConfig);
+
+        // Synchronous update before the posted Runnable executes.
+        mCoordinator.onModelTokenChange();
+        verify(mOnModelTokenChange, times(2)).onResult(any());
+
+        mCoordinator.destroy();
+
+        // Run posted tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify the posted runnable did not execute after destroy().
+        verify(mOnModelTokenChange, times(2)).onResult(any());
+    }
+
+    @Test
+    public void testOnConfigurationChanged_debounceWithSynchronousUpdate() {
+        mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
+        verify(mOnModelTokenChange, times(1)).onResult(any());
+
+        Configuration newConfig1 = new Configuration();
+        newConfig1.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(newConfig1);
+
+        // Synchronous update before the posted Runnable executes.
+        mCoordinator.onModelTokenChange();
+        verify(mOnModelTokenChange, times(2)).onResult(any());
+
+        Configuration newConfig2 = new Configuration();
+        newConfig2.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(newConfig2);
+
+        // Run posted tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify debouncing worked and the first runnable was removed: total calls to
+        // mOnModelTokenChange must be 3 (1 initial + 1 synchronous + 1 debounced orientation
+        // change), NOT 4.
+        verify(mOnModelTokenChange, times(3)).onResult(any());
+    }
+
+    @Test
     public void testOnBackgroundColorChanged() {
         mCoordinator.onBackgroundColorChanged();
         verify(mRequestLayerUpdateCallback).onResult(false);

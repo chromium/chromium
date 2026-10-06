@@ -49,7 +49,11 @@ public class BottomBarContainerCoordinator
     private final Callback<Boolean> mRequestLayerUpdateCallback;
     private final BottomBarCoordinator mBottomBarCoordinator;
     private final Handler mHandler;
-    private final Runnable mModelTokenChangeRunnable = this::onModelTokenChange;
+    private final Runnable mModelTokenChangeRunnable =
+            () -> {
+                mPendingVisibilityUpdate = false;
+                onModelTokenChange();
+            };
     private final ComponentCallbacks mComponentCallbacks =
             new ComponentCallbacks() {
                 @Override
@@ -157,10 +161,8 @@ public class BottomBarContainerCoordinator
         if (mAppMenuUpdateBadgeController != null) {
             mAppMenuUpdateBadgeController.destroy();
         }
-        if (mPendingVisibilityUpdate) {
-            mHandler.removeCallbacks(mModelTokenChangeRunnable);
-            mPendingVisibilityUpdate = false;
-        }
+        mHandler.removeCallbacks(mModelTokenChangeRunnable);
+        mPendingVisibilityUpdate = false;
         mContext.unregisterComponentCallbacks(mComponentCallbacks);
         mBottomBarCoordinator.destroy();
     }
@@ -176,7 +178,6 @@ public class BottomBarContainerCoordinator
         if (mOnModelTokenChange != null) {
             mOnModelTokenChange.onResult(new Object());
         }
-        mPendingVisibilityUpdate = false;
     }
 
     @Override
