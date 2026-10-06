@@ -23073,6 +23073,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePrivacySafeBrowsingSettingsCloseWithProtection">
+  <owner>pabouchard@google.com</owner>
+  <owner>zijingl@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Reported when Privacy Safe Browsing Settings UI was dismissed while Enhanced
+    or Standard Protection is enabled. iOS only.
+  </description>
+</action>
+
 <action name="MobilePrivacySafeBrowsingSettingsCloseWithStandardProtection">
   <owner>pabouchard@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>

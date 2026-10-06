@@ -427,6 +427,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!self.userPrefService) {
     return;
   }
+  if (safe_browsing::GetSafeBrowsingState(*self.userPrefService) !=
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobilePrivacySafeBrowsingSettingsCloseWithProtection"));
+  }
   switch (safe_browsing::GetSafeBrowsingState(*self.userPrefService)) {
     case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
       base::RecordAction(base::UserMetricsAction(
