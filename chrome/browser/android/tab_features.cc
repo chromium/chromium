@@ -82,6 +82,7 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
@@ -539,6 +540,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   vr_tab_helper_ =
       GetUserDataFactory().CreateInstance<vr::VrTabHelper>(*tab, *tab);
+
+  // Configure find bar state for the tab.
+  FindBarState::ConfigureWebContents(web_contents);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

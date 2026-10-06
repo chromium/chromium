@@ -98,6 +98,7 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
+#include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -1177,6 +1178,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   core_tab_helper_ = GetUserDataFactory().CreateInstance<CoreTabHelper>(
       tab, tab, tab.GetContents());
+
+  FindBarState::ConfigureWebContents(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1688,6 +1691,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   recently_audible_helper_ =
       GetUserDataFactory().CreateInstance<RecentlyAudibleHelper>(*tab, *tab,
                                                                  new_contents);
+
+  FindBarState::ConfigureWebContents(new_contents);
 }
 
 customize_chrome::SidePanelController*

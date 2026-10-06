@@ -203,6 +203,7 @@ source_set("tabs_impl") {
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui/contextual_search",
+    "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/side_panel",
