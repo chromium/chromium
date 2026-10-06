@@ -838,7 +838,8 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    // Desktop can't rotate to portrait; it letterboxes the window instead.
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     @Feature({"RenderTest"})
     public void testMessageResizedOnTablet() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
