@@ -99,10 +99,10 @@ using TabContextSnapshotCallback = base::OnceCallback<void(
 
 // Captures page context for the given `tab_id` and uploads it to
 // `session_handle` (or snapshots it via `on_snapshot` when `delay_upload` is
-// true). Creates a context token on `session_handle`, invokes
-// `on_token_created`, initiates async page context extraction via
-// TabContextualizationController, underlines the tab strip if enabled, and on
-// completion checks `is_token_valid` before starting upload or snapshotting.
+// true). Creates a context token on `session_handle`, initiates async page
+// context extraction via TabContextualizationController, underlines the tab
+// strip if enabled, and on completion checks that the token is still an
+// uploaded context token before starting upload or snapshotting.
 // If `on_context_uploaded` is provided, it is invoked after upload/snapshot.
 // Returns the created context token on success, or an error.
 base::expected<base::UnguessableToken,
@@ -113,11 +113,7 @@ CaptureAndUploadTabContext(
     bool delay_upload = false,
     base::RepeatingClosure on_context_uploaded = base::DoNothing(),
     BrowserWindowInterface* browser_window_interface = nullptr,
-    base::RepeatingCallback<bool(const base::UnguessableToken&)>
-        is_token_valid = base::NullCallback(),
-    TabContextSnapshotCallback on_snapshot = base::NullCallback(),
-    base::OnceCallback<void(const base::UnguessableToken&)> on_token_created =
-        base::NullCallback());
+    TabContextSnapshotCallback on_snapshot = base::NullCallback());
 
 // Removes the local tab underline for `tab_id` if context management is
 // enabled.

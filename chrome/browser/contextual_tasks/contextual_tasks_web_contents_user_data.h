@@ -52,6 +52,12 @@ class ContextualTasksWebContentsUserData
   void UnregisterExtensionFrame(const void* handler_id);
   bool IsPrimarySearchMessageSender(const void* handler_id) const;
 
+  void RecordTabIdMapping(int32_t tab_handle_id, int32_t session_tab_id);
+  std::optional<int32_t> GetSessionTabIdForTabHandle(
+      int32_t tab_handle_id) const;
+  std::optional<int32_t> GetTabHandleForSessionTabId(
+      int32_t session_tab_id) const;
+
  private:
   explicit ContextualTasksWebContentsUserData(content::WebContents* contents);
   friend class content::WebContentsUserData<ContextualTasksWebContentsUserData>;
@@ -65,6 +71,10 @@ class ContextualTasksWebContentsUserData
   std::optional<base::Uuid> pending_task_id_;
 
   std::vector<ExtensionFrameInfo> extension_frames_;
+
+  // Maps TabHandle raw values to SessionID values so closed tabs can still be
+  // resolved when deleting tab context or removing underlines.
+  base::flat_map<int32_t, int32_t> tab_handle_to_session_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
