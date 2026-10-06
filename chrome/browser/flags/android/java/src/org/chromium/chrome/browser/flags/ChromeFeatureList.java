@@ -744,7 +744,6 @@ public abstract class ChromeFeatureList {
     public static final String READALOUD_AUDIO_OVERVIEWS = "ReadAloudAudioOverviews";
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
-    public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_WEBSITE_SETS_UI = "RelatedWebsiteSetsUi";
     public static final String REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT =
@@ -1794,8 +1793,6 @@ public abstract class ChromeFeatureList {
                             ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION, false);
     public static final MutableFlagWithSafeDefault sPdfLauncherActivity =
             newMutableFlagWithSafeDefault(PDF_LAUNCHER_ACTIVITY, false);
-    public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
-            newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sRemoveExtraHeadersOnCrossOriginRedirect =
             newMutableFlagWithSafeDefault(REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT, true);
     public static final MutableFlagWithSafeDefault sSafetyFrePromo =

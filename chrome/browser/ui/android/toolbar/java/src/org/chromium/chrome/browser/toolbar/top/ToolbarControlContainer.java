@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider.Observer;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
@@ -1202,12 +1201,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 return;
             }
 
-            if (ToolbarFeatures.shouldRecordSuppressionMetrics()) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Android.TopToolbar.InMotionStage",
-                        ToolbarInMotionStage.SUPPRESSION_ENABLED,
-                        ToolbarInMotionStage.NUM_ENTRIES);
-            }
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TopToolbar.InMotionStage",
+                    ToolbarInMotionStage.SUPPRESSION_ENABLED,
+                    ToolbarInMotionStage.NUM_ENTRIES);
 
             if (Boolean.FALSE.equals(compositorInMotion)) {
                 if (mControlsToken == TokenHolder.INVALID_TOKEN) {
@@ -1234,12 +1231,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     CaptureReadinessResult captureReadinessResult =
                             mToolbar.isReadyForTextureCapture();
                     CaptureReadinessResult.logCaptureReasonFromResult(captureReadinessResult);
-                    if (ToolbarFeatures.shouldRecordSuppressionMetrics()) {
-                        RecordHistogram.recordEnumeratedHistogram(
-                                "Android.TopToolbar.InMotionStage",
-                                ToolbarInMotionStage.READINESS_CHECKED,
-                                ToolbarInMotionStage.NUM_ENTRIES);
-                    }
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Android.TopToolbar.InMotionStage",
+                            ToolbarInMotionStage.READINESS_CHECKED,
+                            ToolbarInMotionStage.NUM_ENTRIES);
                     if (captureReadinessResult.blockReason
                             == TopToolbarBlockCaptureReason.SNAPSHOT_SAME) {
                         setDirtyRectEmpty();

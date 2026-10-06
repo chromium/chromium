@@ -10,7 +10,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -141,10 +140,6 @@ public class CaptureReadinessResult {
     }
 
     public static void logCaptureReasonFromResult(@Nullable CaptureReadinessResult result) {
-        if (!ToolbarFeatures.shouldRecordSuppressionMetrics()) {
-            return;
-        }
-
         // The Java -> C++ layer makes passing enums tricky so we store the integer value and then
         // convert it to a proto enum on the C++ side. If we pass a -1 we will not set that
         // corresponding field.

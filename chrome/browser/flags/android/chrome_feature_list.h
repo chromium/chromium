@@ -280,7 +280,6 @@ BASE_DECLARE_FEATURE(kQueuedCompositorWebContentsUpdates);
 BASE_DECLARE_FEATURE(kReadAloudAudioOverviews);
 BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
 BASE_DECLARE_FEATURE(kReadAloudServerExperiments);
-BASE_DECLARE_FEATURE(kRecordSuppressionMetrics);
 BASE_DECLARE_FEATURE(kReengagementNotification);
 BASE_DECLARE_FEATURE(kRemoveExtraHeadersOnCrossOriginRedirect);
 BASE_DECLARE_FEATURE(kRobustWindowManagementExperimental);

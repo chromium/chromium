@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
@@ -514,28 +513,6 @@ public class ToolbarControlContainerTest {
                     /* inMotion= */ false, /* expectResourceRequested= */ true);
         }
         assertFalse(didAdapterLockControls());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.RECORD_SUPPRESSION_METRICS)
-    public void testIsDirty_InMotion2_NoMetrics() {
-        assertFalse(ToolbarFeatures.shouldRecordSuppressionMetrics());
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.TopToolbar.InMotion")
-                        .expectNoRecords("Android.TopToolbar.InMotionStage")
-                        .build();
-        makeAndInitAdapter();
-        mockIsReadyDifference(ToolbarSnapshotDifference.URL_TEXT);
-        when(mTab.isNativePage()).thenReturn(false);
-        mIsVisible = true;
-
-        verifyRequestsOnInMotionChange(/* inMotion= */ true, /* expectResourceRequested= */ false);
-        assertTrue(didAdapterLockControls());
-        verifyRequestsOnInMotionChange(/* inMotion= */ false, /* expectResourceRequested= */ true);
-        assertFalse(didAdapterLockControls());
-        histogramWatcher.assertExpected();
     }
 
     @Test
