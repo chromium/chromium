@@ -48,7 +48,7 @@ RUST_REVISION = '1edd55dcfcd573872c727fa3e086369a71661ee0'
 CRUBIT_REVISION = '20dc640430bd60ff2f7f8dbf69c311c5f807adde'
 BINDGEN_REVISION = '73c69d681eec90b84ffba4f993b5fb2f19580781'
 # If you change the above without changing RUST_REVISION, increment this.
-RUST_SUB_REVISION = 1120
+RUST_SUB_REVISION = 1125
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with

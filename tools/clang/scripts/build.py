@@ -110,7 +110,7 @@ ZSTD_VERSION = 'zstd-1.5.5'
 # This must be less than or equal to the lowest target used in Chromium. See
 # e.g. mac_deployment_target in //build/config/mac/mac_sdk.gni and min_version
 # in //chrome/installer/gcapi_mac/BUILD.gn.
-DEFAULT_MACOSX_DEPLOYMENT_TARGET = '10.12'
+DEFAULT_MACOSX_DEPLOYMENT_TARGET = '11.0'
 
 win_sdk_dir = None
 
