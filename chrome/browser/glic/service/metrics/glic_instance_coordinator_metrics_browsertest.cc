@@ -345,6 +345,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsHibernationTest,
   // Verify instance 1 is hibernated.
   EXPECT_TRUE(instance1->IsHibernated());
 
+  // Instance 1 was hibernated, so AwakeDuration should be recorded once.
+  histogram_tester.ExpectTotalCount("Glic.Host.AwakeDuration", 1);
+
   // 4. Now, activate the tab of instance 1 and open Glic to awaken it.
   GetTabListInterface()->ActivateTab(tab1->GetHandle());
   ASSERT_OK(OpenGlicForActiveTab());
@@ -357,6 +360,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsHibernationTest,
   // count at 2.
   histogram_tester.ExpectBucketCount(
       "Glic.Instances.CountAwake.OnContentsCreated", 2, 3);
+
+  // Instance 2 was hibernated, so AwakeDuration should be recorded twice in
+  // total.
+  histogram_tester.ExpectTotalCount("Glic.Host.AwakeDuration", 2);
 }
 
 }  // namespace
