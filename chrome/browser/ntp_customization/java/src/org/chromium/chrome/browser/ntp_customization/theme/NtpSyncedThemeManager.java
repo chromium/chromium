@@ -264,18 +264,13 @@ public class NtpSyncedThemeManager
         } else {
             // Case 2: Synced static theme collection image from another device.
             String fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
-            @ColorInt
-            Integer primaryColor =
-                    syncedPrimaryColor != null
-                            ? syncedPrimaryColor
-                            : NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
             themeCollectionData =
                     new NtpBackgroundDataThemeCollection(
                             PlatformType.ANDROID,
                             info,
                             backgroundImageInfo,
                             bitmap,
-                            primaryColor,
+                            syncedPrimaryColor,
                             /* fileIdHash= */ fileId);
             mNtpCustomizationConfigManager.onSyncedThemeCollectionImageChanged(
                     mContext, themeCollectionData);

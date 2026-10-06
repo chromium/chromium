@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -728,10 +729,13 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 (NtpBackgroundDataThemeCollection)
                         coordinator.getDataShowingListForTesting().get(position);
         assertNull(themeData.getBitmap());
+        assertNotNull(themeData.getPreviewBitmap());
+        themeData.getPreviewBitmap().eraseColor(Color.RED);
 
-        // Setup image fetcher for the full image click.
+        // Setup image fetcher for the full image click with a distinct color from previewBitmap.
         Bitmap fullBitmap =
                 Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
+        fullBitmap.eraseColor(Color.GREEN);
         doAnswer(
                         invocation -> {
                             Callback<Bitmap> callback = invocation.getArgument(1);
@@ -751,8 +755,14 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         // Verify the bitmap is set.
         assertEquals(fullBitmap, themeData.getBitmap());
-        // Verify primary color and other fields are set.
+        // Verify primary color is extracted from the full bitmap rather than the preview bitmap.
         assertNotNull(themeData.getPrimaryColor());
+        assertNotEquals(
+                NtpCustomizationUtils.getContentBasedSeedColor(themeData.getPreviewBitmap()),
+                themeData.getPrimaryColor());
+        assertEquals(
+                NtpCustomizationUtils.getContentBasedSeedColor(fullBitmap),
+                themeData.getPrimaryColor());
         assertNotNull(themeData.getFileIdHash());
         assertNotNull(themeData.getBackgroundImageInfo());
 
@@ -1187,7 +1197,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         info,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
-                        /* primaryColor= */ null,
+                        /* primaryColor= */ isBitmapSaved ? Color.BLUE : null,
                         "remote_theme_hash");
         remoteTheme.setIsBitmapSaved(isBitmapSaved);
         return remoteTheme;

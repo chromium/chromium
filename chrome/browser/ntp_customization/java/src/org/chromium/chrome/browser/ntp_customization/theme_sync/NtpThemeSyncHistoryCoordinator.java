@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -460,7 +459,7 @@ public class NtpThemeSyncHistoryCoordinator {
 
     /**
      * Called when the full-size image bitmap for a theme collection is fetched. Updates the
-     * background data with the bitmap, primary color, and file path, and applies the new theme.
+     * background data with the bitmap and file path, and applies the new theme.
      *
      * @param themeCollectionData The {@link NtpBackgroundDataThemeCollection} being updated.
      * @param bitmap The full-size image bitmap.
@@ -470,17 +469,6 @@ public class NtpThemeSyncHistoryCoordinator {
         if (bitmap == null || mIsDestroyed) return;
 
         themeCollectionData.setBitmap(bitmap);
-        if (themeCollectionData.getPrimaryColor() == null) {
-            // Calculates and sets the primary color if not already present before applying.
-            @Nullable Bitmap smallBitmap = themeCollectionData.getPreviewBitmap();
-            if (smallBitmap == null) {
-                smallBitmap = bitmap;
-            }
-            @ColorInt
-            Integer primaryColor =
-                    NtpCustomizationUtils.pickAndSavePrimaryColor(assumeNonNull(smallBitmap));
-            themeCollectionData.setPrimaryColor(primaryColor);
-        }
         buildDefaultForThemeCollectionData(themeCollectionData);
 
         NtpCustomizationConfigManager.getInstance()
