@@ -44,6 +44,7 @@ class SuggestionTool {
   // Turns the `server_suggestion` into a `Suggestion`. That is, it acts as a
   // factory function for suggestions that used this tool.
   virtual std::unique_ptr<Suggestion> CreateSuggestion(
+      const AreaOfInterest& processed_area,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion);
 };

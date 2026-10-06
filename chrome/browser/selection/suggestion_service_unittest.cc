@@ -90,6 +90,7 @@ class CustomTestTool : public SuggestionTool {
   }
 
   std::unique_ptr<Suggestion> CreateSuggestion(
+      const AreaOfInterest& processed_area,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     if (server_suggestion.label().empty()) {

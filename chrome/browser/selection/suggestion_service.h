@@ -74,9 +74,8 @@ class SuggestionService {
  private:
   struct ActiveRequest;
 
-  // Requests suggestions for `aoi` from MES.
-  void RequestServerSuggestions(const AreaOfInterest& aoi,
-                                scoped_refptr<ActiveRequest> active_request);
+  // Requests suggestions for `active_request` from MES.
+  void RequestServerSuggestions(scoped_refptr<ActiveRequest> active_request);
 
   // Attaches `png_bytes` (if any) to `request` and sends it to MES.
   void SendServerSuggestionsRequest(

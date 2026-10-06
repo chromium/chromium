@@ -92,6 +92,7 @@ BuildServerSuggestionsRequest(
 // Parses `result` and invokes the corresponding `tools` to create
 // `Suggestion`s.
 std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
+    const AreaOfInterest& aoi,
     const optimization_guide::OptimizationGuideModelExecutionResult& result,
     const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
         tools) {
@@ -114,7 +115,7 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
             base::FindOrNull(tools, server_suggestion.tool());
         tool && (*tool)->SupportsServerSuggestions()) {
       if (std::unique_ptr<Suggestion> suggestion =
-              (*tool)->CreateSuggestion(server_suggestion)) {
+              (*tool)->CreateSuggestion(aoi, server_suggestion)) {
         suggestions.emplace_back(std::move(suggestion));
       }
     }
@@ -128,13 +129,16 @@ DEFINE_USER_DATA(SuggestionService);
 
 struct SuggestionService::ActiveRequest
     : public base::RefCounted<ActiveRequest> {
-  ActiveRequest(size_t num_tools, SuggestionsCallback cb)
-      : remaining_tools(num_tools), callback(std::move(cb)) {}
+  ActiveRequest(const AreaOfInterest& aoi,
+                size_t num_tools,
+                SuggestionsCallback cb)
+      : aoi(aoi), remaining_tools(num_tools), callback(std::move(cb)) {}
 
   bool complete() const {
     return remaining_tools == 0 && !is_awaiting_server_suggestions;
   }
 
+  const AreaOfInterest aoi;
   size_t remaining_tools;
   SuggestionsCallback callback;
   bool in_synchronous_dispatch = true;
@@ -206,19 +210,19 @@ void SuggestionService::RequestSuggestions(const AreaOfInterest& processed_area,
   }
 
   auto active_request = base::MakeRefCounted<ActiveRequest>(
-      tools_.size(), std::move(callback));
+      processed_area, tools_.size(), std::move(callback));
   const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>
       tools_snapshot = tools_;
   for (const auto& [tool_id, tool] : tools_snapshot) {
     tool->RequestSuggestions(
-        processed_area,
+        active_request->aoi,
         base::BindRepeating(&SuggestionService::OnToolSuggestions,
                             weak_factory_.GetWeakPtr(), active_request,
                             base::OwnedRef(false)));
   }
 
   active_request->in_synchronous_dispatch = false;
-  RequestServerSuggestions(processed_area, active_request);
+  RequestServerSuggestions(active_request);
 
   if (active_request->has_synchronous_response) {
     active_request->callback.Run(
@@ -228,7 +232,6 @@ void SuggestionService::RequestSuggestions(const AreaOfInterest& processed_area,
 }
 
 void SuggestionService::RequestServerSuggestions(
-    const AreaOfInterest& aoi,
     scoped_refptr<ActiveRequest> active_request) {
   if (!remote_model_executor_ ||
       !base::FeatureList::IsEnabled(kSmartSelectionServerSuggestions)) {
@@ -236,19 +239,20 @@ void SuggestionService::RequestServerSuggestions(
   }
 
   std::optional<proto::SmartSelectionSuggestionsRequest> request =
-      BuildServerSuggestionsRequest(aoi, tools_);
+      BuildServerSuggestionsRequest(active_request->aoi, tools_);
   if (!request.has_value()) {
     return;
   }
 
   active_request->is_awaiting_server_suggestions = true;
+  const SkBitmap& screenshot = active_request->aoi.screenshot;
   // TODO(crbug.com/561489586): Investigate alternative image encoding and
   // compression mechanisms.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&gfx::PNGCodec::EncodeBGRASkBitmap, aoi.screenshot,
+      base::BindOnce(&gfx::PNGCodec::EncodeBGRASkBitmap, screenshot,
                      /*discard_transparency=*/false),
       base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
                      weak_factory_.GetWeakPtr(), std::move(active_request),
@@ -283,8 +287,9 @@ void SuggestionService::OnServerSuggestions(
   }
   active_request->is_awaiting_server_suggestions = false;
 
-  active_request->callback.Run(ExtractSuggestionsFromResponse(result, tools_),
-                               active_request->complete());
+  active_request->callback.Run(
+      ExtractSuggestionsFromResponse(active_request->aoi, result, tools_),
+      active_request->complete());
 }
 
 void SuggestionService::OnToolSuggestions(

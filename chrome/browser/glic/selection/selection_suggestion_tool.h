@@ -25,6 +25,7 @@ class SelectionSuggestionTool : public ::selection::SuggestionTool {
                           ::selection::SuggestionsCallback callback) override;
   bool SupportsServerSuggestions() const override;
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const ::selection::AreaOfInterest& processed_area,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override;
 

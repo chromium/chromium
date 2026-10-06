@@ -46,6 +46,7 @@ bool SelectionSuggestionTool::SupportsServerSuggestions() const {
 
 std::unique_ptr<::selection::Suggestion>
 SelectionSuggestionTool::CreateSuggestion(
+    const ::selection::AreaOfInterest& processed_area,
     const optimization_guide::proto::SmartSelectionSuggestion&
         server_suggestion) {
   if (server_suggestion.label().empty()) {

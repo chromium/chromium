@@ -15,6 +15,7 @@ bool SuggestionTool::SupportsServerSuggestions() const {
 }
 
 std::unique_ptr<Suggestion> SuggestionTool::CreateSuggestion(
+    const AreaOfInterest&,
     const optimization_guide::proto::SmartSelectionSuggestion&) {
   return nullptr;
 }
