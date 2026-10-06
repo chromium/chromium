@@ -58,6 +58,10 @@ feature kWebNNOnnxRuntime {
 [EnableIf=is_win|is_apple]
 feature kWebNNCompilerProcess {
   const string name = "WebNNCompilerProcess";
+  [EnableIf=is_apple]
+  const bool default_state = true;
+
+  [EnableIf=is_win]
   const bool default_state = false;
 };
 

@@ -102,20 +102,67 @@ base::expected<base::flat_map<std::string, OperandDescriptor>, mojom::ErrorPtr>
 BuildDescriptorsFromMLModel(
     const ContextProperties& context_properties,
     MLModel* ml_model,
-    const base::flat_map<std::string, std::string>& coreml_name_to_operand_name,
+    const base::flat_map<std::string, std::string>& operand_name_to_coreml_name,
     bool is_input) {
   NSDictionary<NSString*, MLFeatureDescription*>* descriptions_by_name =
       is_input ? ml_model.modelDescription.inputDescriptionsByName
                : ml_model.modelDescription.outputDescriptionsByName;
+  if (descriptions_by_name.count == 0) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "MLModel feature descriptions cannot be empty."));
+  }
+
+  if (is_input) {
+    NSString* placeholder_name = base::SysUTF8ToNSString(kPlaceholderInputName);
+    if (MLFeatureDescription* placeholder_desc =
+            descriptions_by_name[placeholder_name]) {
+      if (descriptions_by_name.count != 1 ||
+          !operand_name_to_coreml_name.empty()) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError,
+            "Placeholder input must be the only input in the MLModel."));
+      }
+      MLMultiArrayConstraint* constraint =
+          placeholder_desc.multiArrayConstraint;
+      if (placeholder_desc.type != MLFeatureType::MLFeatureTypeMultiArray ||
+          !constraint || constraint.dataType != MLMultiArrayDataTypeFloat16 ||
+          constraint.shape.count != 1 ||
+          constraint.shape[0].longLongValue != 1) {
+        return base::unexpected(
+            mojom::Error::New(mojom::Error::Code::kUnknownError,
+                              "Invalid MLModel placeholder input constraint."));
+      }
+      return base::flat_map<std::string, OperandDescriptor>();
+    }
+  }
+
+  if (descriptions_by_name.count != operand_name_to_coreml_name.size()) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Mismatched CoreML binding name count."));
+  }
+
+  // Build a reverse map: coreml_name -> operand_name.
+  std::vector<std::pair<std::string, std::string>> reverse_pairs;
+  reverse_pairs.reserve(operand_name_to_coreml_name.size());
+  for (const auto& [operand_name, coreml_name] : operand_name_to_coreml_name) {
+    reverse_pairs.emplace_back(coreml_name, operand_name);
+  }
+  base::flat_map<std::string, std::string> coreml_name_to_operand_name(
+      std::move(reverse_pairs));
+  if (coreml_name_to_operand_name.size() !=
+      operand_name_to_coreml_name.size()) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Duplicate CoreML binding names in compiled graph."));
+  }
 
   std::vector<std::pair<std::string, OperandDescriptor>> descriptors;
   descriptors.reserve(descriptions_by_name.count);
 
   for (NSString* ns_coreml_name in descriptions_by_name) {
     std::string coreml_name = base::SysNSStringToUTF8(ns_coreml_name);
-    if (is_input && coreml_name == kPlaceholderInputName) {
-      continue;
-    }
     auto it = coreml_name_to_operand_name.find(coreml_name);
     if (it == coreml_name_to_operand_name.end()) {
       return base::unexpected(mojom::Error::New(
@@ -159,7 +206,25 @@ BuildDescriptorsFromMLModel(
     std::vector<uint32_t> shape;
     shape.reserve(constraint.shape.count);
     for (NSNumber* dim in constraint.shape) {
-      shape.push_back(dim.unsignedIntValue);
+      int64_t raw_dim = dim.longLongValue;
+      uint32_t checked_dim = 0;
+      if (raw_dim <= 0 ||
+          !base::CheckedNumeric<uint32_t>(raw_dim).AssignIfValid(
+              &checked_dim)) {
+        return base::unexpected(
+            mojom::Error::New(mojom::Error::Code::kUnknownError,
+                              "Invalid MLModel shape dimension."));
+      }
+      shape.push_back(checked_dim);
+    }
+
+    if (IsScalarCoreMLName(coreml_name)) {
+      if (shape.size() != 1 || shape[0] != 1) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError,
+            "Invalid MLModel shape constraint for scalar operand."));
+      }
+      shape.clear();
     }
 
     auto descriptor = OperandDescriptor::Create(context_properties, data_type,
@@ -170,7 +235,14 @@ BuildDescriptorsFromMLModel(
     }
     descriptors.emplace_back(operand_name, descriptor.value());
   }
-  return base::flat_map<std::string, OperandDescriptor>(std::move(descriptors));
+
+  base::flat_map<std::string, OperandDescriptor> result(std::move(descriptors));
+  if (result.size() != descriptions_by_name.count) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Duplicate operand names in MLModel feature mapping."));
+  }
+  return result;
 }
 
 }  // namespace
@@ -416,7 +488,8 @@ void GraphImplCoreml::CreateAndBuild(
 void GraphImplCoreml::CreateAndLoadCompiledModel(
     ContextImplCoreml& context,
     base::ScopedTempDir compiled_model_dir,
-    base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+    base::flat_map<std::string, std::string> input_binding_names,
+    base::flat_map<std::string, std::string> output_binding_names,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   auto wrapped_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       [](base::WeakPtr<WebNNContextImpl> context,
@@ -433,8 +506,8 @@ void GraphImplCoreml::CreateAndLoadCompiledModel(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplCoreml::LoadCompiledModelOnBackgroundThread,
                      std::move(compiled_model_dir), context.options().Clone(),
-                     context.properties(),
-                     std::move(coreml_name_to_operand_name),
+                     context.properties(), std::move(input_binding_names),
+                     std::move(output_binding_names),
                      std::move(wrapped_callback)));
 }
 
@@ -443,17 +516,38 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
     base::ScopedTempDir compiled_model_dir,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
-    base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+    base::flat_map<std::string, std::string> input_binding_names,
+    base::flat_map<std::string, std::string> output_binding_names,
     base::OnceCallback<void(
         base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback) {
   NSURL* compiled_model_url = base::apple::FilePathToNSURL(
       compiled_model_dir.GetPath().AppendASCII("model.mlmodelc"));
 
+  // Reconstruct coreml_name_to_operand_name mapping.
+  std::vector<std::pair<std::string, std::string>> pairs;
+  pairs.reserve(input_binding_names.size() + output_binding_names.size());
+  for (const auto& [name, coreml_name] : input_binding_names) {
+    pairs.emplace_back(coreml_name, name);
+  }
+  for (const auto& [name, coreml_name] : output_binding_names) {
+    pairs.emplace_back(coreml_name, name);
+  }
+  base::flat_map<std::string, std::string> coreml_name_to_operand_name(
+      std::move(pairs));
+  if (coreml_name_to_operand_name.size() !=
+      input_binding_names.size() + output_binding_names.size()) {
+    std::move(callback).Run(base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Duplicate CoreML binding names in compiled graph.")));
+    return;
+  }
+
   LoadModelAndReadComputePlan(
       compiled_model_url, ScopedModelPath(std::move(compiled_model_dir)),
       std::move(context_options), std::move(coreml_name_to_operand_name),
       std::move(callback), /*compute_resource_info=*/std::nullopt,
-      context_properties);
+      context_properties, std::move(input_binding_names),
+      std::move(output_binding_names));
 }
 
 // static
@@ -493,16 +587,20 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   std::vector<std::pair<std::string, std::string>> coreml_name_to_operand_name(
       graph_info->input_operands.size() + graph_info->output_operands.size());
   for (auto const& input_id : graph_info->input_operands) {
-    auto& name = graph_info->operands.at(input_id.value())->name;
-    CHECK(name.has_value());
+    const mojom::Operand& operand = *graph_info->operands.at(input_id.value());
+    CHECK(operand.name.has_value());
     coreml_name_to_operand_name.emplace_back(
-        GetCoreMLNameFromInput(name.value(), input_id), name.value());
+        GetCoreMLNameFromInput(operand.name.value(), input_id,
+                               operand.descriptor.Rank() == 0),
+        operand.name.value());
   }
   for (auto const& output_id : graph_info->output_operands) {
-    auto& name = graph_info->operands.at(output_id.value())->name;
-    CHECK(name.has_value());
+    const mojom::Operand& operand = *graph_info->operands.at(output_id.value());
+    CHECK(operand.name.has_value());
     coreml_name_to_operand_name.emplace_back(
-        GetCoreMLNameFromOutput(name.value(), output_id), name.value());
+        GetCoreMLNameFromOutput(operand.name.value(), output_id,
+                                operand.descriptor.Rank() == 0),
+        operand.name.value());
   }
 
   [MLModel
@@ -560,7 +658,9 @@ void GraphImplCoreml::LoadModelAndReadComputePlan(
     base::OnceCallback<void(
         base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
     std::optional<ComputeResourceInfo> compute_resource_info,
-    std::optional<ContextProperties> context_properties) {
+    std::optional<ContextProperties> context_properties,
+    base::flat_map<std::string, std::string> input_binding_names,
+    base::flat_map<std::string, std::string> output_binding_names) {
   MLModelConfiguration* configuration = [[MLModelConfiguration alloc] init];
   switch (context_options->device) {
     case mojom::Device::kCpu:
@@ -600,10 +700,10 @@ void GraphImplCoreml::LoadModelAndReadComputePlan(
   if (!compute_resource_info.has_value()) {
     CHECK(context_properties.has_value());
     auto input_descriptors = BuildDescriptorsFromMLModel(
-        *context_properties, ml_model, coreml_name_to_operand_name,
+        *context_properties, ml_model, input_binding_names,
         /*is_input=*/true);
     auto output_descriptors = BuildDescriptorsFromMLModel(
-        *context_properties, ml_model, coreml_name_to_operand_name,
+        *context_properties, ml_model, output_binding_names,
         /*is_input=*/false);
     if (!input_descriptors.has_value() || !output_descriptors.has_value()) {
       LOG(ERROR)
@@ -646,13 +746,22 @@ void GraphImplCoreml::ReadComputePlan(
                           "Failed to get compiled graph devices.")));
     return;
   }
-  CHECK(compute_plan);
+  if (!compute_plan) {
+    std::move(callback).Run(base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to get compiled graph compute plan.")));
+    return;
+  }
 
   MLModelStructureProgram* program = compute_plan.modelStructure.program;
-  CHECK(program);
-
-  MLModelStructureProgramFunction* main_function = program.functions[@"main"];
-  CHECK(main_function);
+  MLModelStructureProgramFunction* main_function =
+      program ? program.functions[@"main"] : nil;
+  if (!main_function || !main_function.block) {
+    std::move(callback).Run(base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Invalid compiled model program structure.")));
+    return;
+  }
 
   double total_weight = 0;
   NSArray<MLModelStructureProgramOperation*>* operations =

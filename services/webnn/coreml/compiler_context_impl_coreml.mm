@@ -119,25 +119,29 @@ void CompilerContextImplCoreml::CompileOnBackgroundThread(
   base::ScopedTempDir model_file_dir;
   if (!model_file_dir.CreateUniqueTempDir()) {
     std::move(callback).Run(base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create temp dir.")));
+        mojom::Error::Code::kUnknownError, "Model allocation error.")));
     return;
   }
 
   // Pre-calculate inputs and outputs name mappings
   base::flat_map<std::string, std::string> input_name_to_coreml_name;
   for (auto const& input_id : graph_info->input_operands) {
-    auto& name = graph_info->operands.at(input_id.value())->name;
-    CHECK(name.has_value());
+    const mojom::Operand& operand = *graph_info->operands.at(input_id.value());
+    CHECK(operand.name.has_value());
     input_name_to_coreml_name.emplace(
-        name.value(), GetCoreMLNameFromInput(name.value(), input_id));
+        operand.name.value(),
+        GetCoreMLNameFromInput(operand.name.value(), input_id,
+                               operand.descriptor.Rank() == 0));
   }
 
   base::flat_map<std::string, std::string> output_name_to_coreml_name;
   for (auto const& output_id : graph_info->output_operands) {
-    auto& name = graph_info->operands.at(output_id.value())->name;
-    CHECK(name.has_value());
+    const mojom::Operand& operand = *graph_info->operands.at(output_id.value());
+    CHECK(operand.name.has_value());
     output_name_to_coreml_name.emplace(
-        name.value(), GetCoreMLNameFromOutput(name.value(), output_id));
+        operand.name.value(),
+        GetCoreMLNameFromOutput(operand.name.value(), output_id,
+                                operand.descriptor.Rank() == 0));
   }
 
   base::ElapsedTimer ml_model_write_timer;
@@ -171,11 +175,11 @@ void CompilerContextImplCoreml::CompileOnBackgroundThread(
                     "WebNN.CoreML.TimingMs.MLModelCompile",
                     compilation_timer.Elapsed());
                 if (error) {
-                  LOG(ERROR) << "CoreML model compilation failed: " << error;
+                  LOG(ERROR) << "Model compilation error: " << error;
                   std::move(compile_callback)
-                      .Run(base::unexpected(mojom::Error::New(
-                          mojom::Error::Code::kUnknownError,
-                          "CoreML model compilation failed.")));
+                      .Run(base::unexpected(
+                          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                            "Model compilation error.")));
                   return;
                 }
 

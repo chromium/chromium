@@ -56,7 +56,8 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
   static void CreateAndLoadCompiledModel(
       ContextImplCoreml& context,
       base::ScopedTempDir compiled_model_dir,
-      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+      base::flat_map<std::string, std::string> input_binding_names,
+      base::flat_map<std::string, std::string> output_binding_names,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
   struct Params;
@@ -113,7 +114,8 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       base::ScopedTempDir compiled_model_dir,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
-      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+      base::flat_map<std::string, std::string> input_binding_names,
+      base::flat_map<std::string, std::string> output_binding_names,
       base::OnceCallback<void(
           base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback);
 
@@ -130,7 +132,11 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       NSError* error);
 
   // Common helper to load MLModel from a compiled model URL and read compute
-  // plan.
+  // plan. If `compute_resource_info` is `std::nullopt` (when loading a model
+  // compiled out-of-process), `context_properties` must be provided along with
+  // `input_binding_names` and `output_binding_names` so that
+  // `ComputeResourceInfo` can be reconstructed from the loaded `MLModel`
+  // metadata.
   static void LoadModelAndReadComputePlan(
       NSURL* compiled_model_url,
       ScopedModelPath scoped_compiled_model_dir,
@@ -138,8 +144,10 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
       base::flat_map<std::string, std::string> coreml_name_to_operand_name,
       base::OnceCallback<void(
           base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
-      std::optional<ComputeResourceInfo> compute_resource_info = std::nullopt,
-      std::optional<ContextProperties> context_properties = std::nullopt);
+      std::optional<ComputeResourceInfo> compute_resource_info,
+      std::optional<ContextProperties> context_properties = std::nullopt,
+      base::flat_map<std::string, std::string> input_binding_names = {},
+      base::flat_map<std::string, std::string> output_binding_names = {});
 
   static void ReadComputePlan(
       std::unique_ptr<Params> params,

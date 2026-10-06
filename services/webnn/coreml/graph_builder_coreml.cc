@@ -1078,23 +1078,32 @@ size_t GraphBuilderCoreml::WeightsFileHandle::GetByteSize(
 }
 
 std::string GetCoreMLNameFromInput(std::string_view input_name,
-                                   OperandId operand_id) {
+                                   OperandId operand_id,
+                                   bool is_scalar) {
   // Prefix is added to user provided names to avoid collision with intermediate
   // operands' names. `operand_id` is added to avoid collision with other
   // inputs' sanitized values.
-  return base::JoinString({kInputNamePrefix, SanitizeName(input_name),
-                           base::NumberToString(operand_id.value())},
-                          kStringSeparator);
+  return base::JoinString(
+      {is_scalar ? "scalar_input" : kInputNamePrefix, SanitizeName(input_name),
+       base::NumberToString(operand_id.value())},
+      kStringSeparator);
 }
 
 std::string GetCoreMLNameFromOutput(std::string_view output_name,
-                                    OperandId operand_id) {
+                                    OperandId operand_id,
+                                    bool is_scalar) {
   // Prefix is added to user provided names to avoid collision with intermediate
   // operands' names. `operand_id` is added to avoid collision with other
   // outputs' sanitized values.
-  return base::JoinString({kOutputNamePrefix, SanitizeName(output_name),
-                           base::NumberToString(operand_id.value())},
-                          kStringSeparator);
+  return base::JoinString(
+      {is_scalar ? "scalar_output" : kOutputNamePrefix,
+       SanitizeName(output_name), base::NumberToString(operand_id.value())},
+      kStringSeparator);
+}
+
+bool IsScalarCoreMLName(std::string_view coreml_name) {
+  return coreml_name.starts_with("scalar_input_") ||
+         coreml_name.starts_with("scalar_output_");
 }
 
 // static
@@ -6013,14 +6022,16 @@ std::string GraphBuilderCoreml::GetCoreMLNameFromOperand(OperandId operand_id) {
   switch (operand.kind) {
     case mojom::Operand::Kind::kInput:
       CHECK(operand.name.has_value());
-      return GetCoreMLNameFromInput(operand.name.value(), operand_id);
+      return GetCoreMLNameFromInput(operand.name.value(), operand_id,
+                                    operand.descriptor.Rank() == 0);
     case mojom::Operand::Kind::kConstant:
       return base::JoinString({kIntermediateOperandPrefix,
                                base::NumberToString(operand_id.value())},
                               kStringSeparator);
     case mojom::Operand::Kind::kOutput:
       if (operand.name.has_value()) {
-        return GetCoreMLNameFromOutput(operand.name.value(), operand_id);
+        return GetCoreMLNameFromOutput(operand.name.value(), operand_id,
+                                       operand.descriptor.Rank() == 0);
       } else {
         // Intermediate outputs don't have names so use operand_id instead.
         return base::JoinString({kIntermediateOperandPrefix,

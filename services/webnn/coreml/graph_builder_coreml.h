@@ -50,9 +50,12 @@ inline constexpr char kPlaceholderInputName[] = "placeholder";
 
 // Get name identifiers used in CoreML model files for input or output operands.
 std::string GetCoreMLNameFromInput(std::string_view input_name,
-                                   OperandId operand_id);
+                                   OperandId operand_id,
+                                   bool is_scalar);
 std::string GetCoreMLNameFromOutput(std::string_view output_name,
-                                    OperandId operand_id);
+                                    OperandId operand_id,
+                                    bool is_scalar);
+bool IsScalarCoreMLName(std::string_view coreml_name);
 
 // Reads the WebNN graph from the mojom::GraphInfo to
 // produce CoreML model and serializes to provided `working_directory`.
