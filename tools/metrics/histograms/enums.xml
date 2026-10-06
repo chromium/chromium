@@ -11615,6 +11615,7 @@ from previous Chrome versions.
   <int value="-1017686690" label="CrosMall:enabled"/>
   <int value="-1017396114" label="FastEnumeratePrinters:enabled"/>
   <int value="-1016669222" label="CloudPrinterHandler:enabled"/>
+  <int value="-1016298646" label="EnableSandboxLogging:enabled"/>
   <int value="-1016236134" label="CleanupLegacyTabState:disabled"/>
   <int value="-1016202433" label="disable-add-to-shelf"/>
   <int value="-1016196171"
@@ -19555,6 +19556,7 @@ from previous Chrome versions.
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>
   <int value="1395166212" label="PdfGlicSummarize:enabled"/>
   <int value="1395175083" label="PrivacyGuide:enabled"/>
+  <int value="1395345678" label="EnableSandboxLogging:disabled"/>
   <int value="1396445782" label="enable-webgpu-testing:disabled"/>
   <int value="1397053154" label="ContextualSearchLiteralSearchTap:enabled"/>
   <int value="1397069250" label="NetworkService:disabled"/>

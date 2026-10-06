@@ -5996,7 +5996,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"mac-sandbox-logging", flag_descriptions::kMacSandboxLoggingName,
      flag_descriptions::kMacSandboxLoggingDescription, kOsMac,
-     STRING_VALUE_TYPE(sandbox::policy::switches::kEnableSandboxLogging, "")},
+     FEATURE_VALUE_TYPE(sandbox::policy::features::kEnableSandboxLogging)},
 
     {"use-sc-content-sharing-picker",
      flag_descriptions::kUseSCContentSharingPickerName,
