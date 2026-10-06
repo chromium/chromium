@@ -510,13 +510,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(ash::prefs::kHatsPeripheralsIsSelected, false);
 
-  // MediaApp HaTS prefs for Pdf and Photos experiences.
-  registry->RegisterInt64Pref(ash::prefs::kHatsMediaAppPdfCycleEndTs, 0);
-  registry->RegisterBooleanPref(ash::prefs::kHatsMediaAppPdfIsSelected, false);
-  registry->RegisterInt64Pref(ash::prefs::kHatsPhotosExperienceCycleEndTs, 0);
-  registry->RegisterBooleanPref(ash::prefs::kHatsPhotosExperienceIsSelected,
-                                false);
-
   // Slow and Laggy Deep Dive HaTS prefs.
   registry->RegisterInt64Pref(
       ash::prefs::kHatsSlowAndLaggyDeepDiveSurveyCycleEndTs, 0);
