@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -17,6 +18,10 @@ namespace content {
 class BrowserContext;
 class StoragePartition;
 }  // namespace content
+
+namespace device {
+class BluetoothAdapter;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -97,10 +102,17 @@ struct ChromeSyncUrlArgs {
 // See `ChromeSyncUrlArgs` docs for details on the arguments.
 GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args);
 
+// Called with whether hybrid transport is supported, and with the Bluetooth
+// adapter used for the check, which is null if Bluetooth LE is not supported.
+using HybridTransportSupportedCallback =
+    base::OnceCallback<void(bool, scoped_refptr<device::BluetoothAdapter>)>;
+
 // Checks asynchronously whether bluetooth is supported and enabled on the
-// device.
+// device. Callers may hold the adapter passed to `callback` to keep it alive,
+// so that later `device::BluetoothAdapterFactory::GetAdapter()` calls reuse it
+// instead of creating a new one.
 void IsHybridTransportSupportedForQrCodeSignin(
-    base::OnceCallback<void(bool)> callback);
+    HybridTransportSupportedCallback callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Returns the URL to be used to reauth.

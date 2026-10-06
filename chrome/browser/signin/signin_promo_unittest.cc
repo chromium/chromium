@@ -52,6 +52,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "extensions/common/extension_builder.h"
@@ -236,6 +237,9 @@ TEST_F(SigninPromoUrlTest, SigninURLForDicePasskeyFeatureDisabledAddsNoParam) {
       GetChromeSyncURLForDice({}));
 }
 
+using HybridTransportFuture =
+    base::test::TestFuture<bool, scoped_refptr<device::BluetoothAdapter>>;
+
 TEST(SigninPromoTest,
      IsHybridTransportSupportedForQrCodeSignin_LeNotSupported) {
   base::test::SingleThreadTaskEnvironment task_environment;
@@ -243,9 +247,10 @@ TEST(SigninPromoTest,
       device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
   bluetooth_override_values->SetLESupported(false);
 
-  base::test::TestFuture<bool> future;
+  HybridTransportFuture future;
   IsHybridTransportSupportedForQrCodeSignin(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_FALSE(future.Get<1>());
   task_environment.RunUntilIdle();
 }
 
@@ -260,9 +265,10 @@ TEST(SigninPromoTest,
   ON_CALL(*mock_adapter, IsPresent()).WillByDefault(testing::Return(false));
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
 
-  base::test::TestFuture<bool> future;
+  HybridTransportFuture future;
   IsHybridTransportSupportedForQrCodeSignin(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(future.Get<1>().get(), mock_adapter.get());
   task_environment.RunUntilIdle();
 }
 
@@ -281,9 +287,10 @@ TEST(SigninPromoTest,
   ON_CALL(*mock_adapter, IsPowered()).WillByDefault(testing::Return(true));
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
 
-  base::test::TestFuture<bool> future;
+  HybridTransportFuture future;
   IsHybridTransportSupportedForQrCodeSignin(future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_EQ(future.Get<1>().get(), mock_adapter.get());
   task_environment.RunUntilIdle();
 }
 
@@ -302,9 +309,10 @@ TEST(SigninPromoTest,
   ON_CALL(*mock_adapter, IsPowered()).WillByDefault(testing::Return(false));
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
 
-  base::test::TestFuture<bool> future;
+  HybridTransportFuture future;
   IsHybridTransportSupportedForQrCodeSignin(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(future.Get<1>().get(), mock_adapter.get());
   task_environment.RunUntilIdle();
 }
 
@@ -322,9 +330,10 @@ TEST(SigninPromoTest,
           testing::Return(device::BluetoothAdapter::PermissionStatus::kDenied));
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
 
-  base::test::TestFuture<bool> future;
+  HybridTransportFuture future;
   IsHybridTransportSupportedForQrCodeSignin(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(future.Get<1>().get(), mock_adapter.get());
   task_environment.RunUntilIdle();
 }
 
@@ -342,9 +351,10 @@ TEST(SigninPromoTest,
           device::BluetoothAdapter::PermissionStatus::kUndetermined));
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
 
-  base::test::TestFuture<bool> future;
+  HybridTransportFuture future;
   IsHybridTransportSupportedForQrCodeSignin(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(future.Get<1>().get(), mock_adapter.get());
   task_environment.RunUntilIdle();
 }
 

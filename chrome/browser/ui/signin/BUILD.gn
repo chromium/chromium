@@ -140,6 +140,7 @@ source_set("impl") {
       "//components/pref_registry",
       "//components/send_tab_to_self:features",
       "//components/user_education/common",
+      "//device/bluetooth",
       "//ui/views",
     ]
   }
