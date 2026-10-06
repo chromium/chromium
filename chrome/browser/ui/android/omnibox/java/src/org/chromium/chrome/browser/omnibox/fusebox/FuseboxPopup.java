@@ -154,6 +154,15 @@ class FuseboxPopup {
 
         if (isBottomSheet) {
             mScrollView.setOnSwipeDownListener(this::dismiss);
+            int topPadding =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_top_padding);
+            mViewGroup.setPaddingRelative(
+                    mViewGroup.getPaddingStart(),
+                    topPadding,
+                    mViewGroup.getPaddingEnd(),
+                    mViewGroup.getPaddingBottom());
         } else {
             // Row highlights span the full width, so keep them inside the rounded corners.
             ListMenuUtils.clipContentViewOutline(mScrollView, R.attr.popupBgCornerRadius);
@@ -288,10 +297,6 @@ class FuseboxPopup {
                                 mToolsDivider,
                                 mModelsDivider);
         mHeaders = List.of(mRecentTabsHeader, mToolsHeader, mModelsHeader);
-
-        if (useScrollableCarousel) {
-            applyScrollableCarouselTileSize();
-        }
     }
 
     void destroy() {
@@ -404,20 +409,6 @@ class FuseboxPopup {
         if (!isShowing() || mCurrentState == PopupState.HIDDEN) return;
         updateInsets();
         updateDesiredWidth();
-    }
-
-    /**
-     * Sizes the attachment icon tiles for the scrollable carousel. The item layout is shared with
-     * the weighted carousel, which keeps its default tile height.
-     */
-    private void applyScrollableCarouselTileSize() {
-        int tileSize =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.fusebox_scrollable_carousel_tile_size);
-        for (View tile : mCarouselTiles) {
-            tile.findViewById(R.id.start_icon_background).getLayoutParams().height = tileSize;
-        }
     }
 
     private void initializeItem(View item, int textRes, int iconRes, int a11yRes) {

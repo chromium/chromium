@@ -16,7 +16,7 @@ found in the LICENSE file.
     <FrameLayout
         android:id="@+id/start_icon_background"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/fusebox_bottom_sheet_attachment_button_height"
+        android:layout_height="@dimen/fusebox_carousel_tile_height"
         android:background="@drawable/fusebox_horizontal_attachment_background"
         android:foreground="?attr/selectableItemBackground"
         android:duplicateParentState="true"

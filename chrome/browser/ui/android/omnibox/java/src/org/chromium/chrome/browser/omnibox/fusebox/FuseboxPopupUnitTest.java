@@ -487,27 +487,39 @@ public class FuseboxPopupUnitTest {
     }
 
     @Test
-    public void carouselTile_scrollable_usesScrollableTileSize() {
+    public void carouselTile_scrollable_usesCorrectTileSize() {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ true,
                 /* useCarousel= */ true,
                 /* useScrollableCarousel= */ true,
                 CurrentTabPlacement.WITH_ATTACHMENTS);
         assertEquals(
-                getDimenPx(R.dimen.fusebox_scrollable_carousel_tile_size),
+                getDimenPx(R.dimen.fusebox_carousel_tile_height),
                 getTileHeight(mFuseboxPopup.mCameraButton));
     }
 
     @Test
-    public void carouselTile_weighted_keepsDefaultTileSize() {
+    public void carouselTile_weighted_usesCorrectTileSize() {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ true,
                 /* useCarousel= */ true,
                 /* useScrollableCarousel= */ false,
                 CurrentTabPlacement.WITH_ATTACHMENTS);
         assertEquals(
-                getDimenPx(R.dimen.fusebox_bottom_sheet_attachment_button_height),
+                getDimenPx(R.dimen.fusebox_carousel_tile_height),
                 getTileHeight(mFuseboxPopup.mCameraButton));
+    }
+
+    @Test
+    public void bottomSheet_setsTopPadding() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(
+                getDimenPx(R.dimen.fusebox_bottom_sheet_top_padding),
+                mFuseboxPopup.mViewGroup.getPaddingTop());
     }
 
     private int getTileHeight(View button) {

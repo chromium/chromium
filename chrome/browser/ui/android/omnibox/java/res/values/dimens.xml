@@ -50,9 +50,9 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_visible_height">40dp</dimen>
     <dimen name="fusebox_attachments_large_header_vertical_padding">14dp</dimen>
     <dimen name="fusebox_attachments_small_header_vertical_padding">8dp</dimen>
-    <dimen name="fusebox_bottom_sheet_attachment_button_height">64dp</dimen>
     <dimen name="fusebox_bottom_sheet_attachment_icon_size">24dp</dimen>
     <dimen name="fusebox_bottom_sheet_max_width">600dp</dimen>
+    <dimen name="fusebox_bottom_sheet_top_padding">8dp</dimen>
     <dimen name="fusebox_button_corner_radius">12dp</dimen>
     <dimen name="fusebox_button_icon_size">18dp</dimen>
     <dimen name="fusebox_button_padding">10dp</dimen>
@@ -64,6 +64,7 @@ found in the LICENSE file.
     <dimen name="fusebox_carousel_padding_bottom">16dp</dimen>
     <dimen name="fusebox_carousel_padding_horizontal">4dp</dimen>
     <dimen name="fusebox_carousel_padding_top">24dp</dimen>
+    <dimen name="fusebox_carousel_tile_height">80dp</dimen>
     <dimen name="fusebox_compact_activation_chip_min_width_required">412dp</dimen>
     <dimen name="fusebox_compact_status_view_top_margin">8dp</dimen>
     <dimen name="fusebox_glif_blur_stroke_width">3dp</dimen>
@@ -77,7 +78,7 @@ found in the LICENSE file.
     <dimen name="fusebox_popup_item_large_icon_size">24dp</dimen>
     <dimen name="fusebox_popup_item_spacing">16dp</dimen>
     <dimen name="fusebox_popup_width">250dp</dimen>
-    <dimen name="fusebox_scrollable_carousel_tile_size">80dp</dimen>
+    <dimen name="fusebox_scrollable_carousel_tile_width">80dp</dimen>
     <dimen name="fusebox_url_bar_translation_y">4dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
     <dimen name="incognito_badge_lateral_padding_end">4dp</dimen>
