@@ -9,6 +9,9 @@
 
 extension CommonMojoStrings {
     static let mojoBaseMojomBigBuffer = "mojoBase.mojom.BigBuffer"
+    static let mojoBaseMojomBigBufferBytes = "mojoBase.mojom.BigBuffer.bytes"
+    static let mojoBaseMojomBigBufferSharedMemory = "mojoBase.mojom.BigBuffer.sharedMemory"
+    static let mojoBaseMojomBigBufferInvalidBuffer = "mojoBase.mojom.BigBuffer.invalidBuffer"
     static let mojoBaseMojomBigBufferSharedMemoryRegion =
         "mojoBase.mojom.BigBufferSharedMemoryRegion"
     static let mojoBaseMojomBigString16 = "mojoBase.mojom.BigString16"
@@ -19,6 +22,11 @@ extension CommonMojoStrings {
 
 public let mojoBaseMojomBuiltins: [String: ILType] = [
     CommonMojoStrings.mojoBaseMojomString16: .jsMojoBaseMojomString16Constructor,
+    CommonMojoStrings.mojoBaseMojomBigBufferBytes: .jsMojoBaseMojomBigBufferBytesConstructor,
+    CommonMojoStrings.mojoBaseMojomBigBufferSharedMemory:
+        .jsMojoBaseMojomBigBufferSharedMemoryConstructor,
+    CommonMojoStrings.mojoBaseMojomBigBufferInvalidBuffer:
+        .jsMojoBaseMojomBigBufferInvalidBufferConstructor,
     CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion:
         .jsMojoBaseMojomBigBufferSharedMemoryRegionConstructor,
     CommonMojoStrings.mojoBaseMojomBigString16: .jsMojoBaseMojomBigString16Constructor,
@@ -32,19 +40,22 @@ public let mojoBaseMojomCodeGenerators: [(CodeGenerator, Int)] = [
 ]
 
 public let mojoBaseMojomObjectGroups: [ObjectGroup] = [
+    .mojoBaseMojomBigBuffer,
     .mojoBaseMojomBigBufferSharedMemoryRegion,
     .mojoBaseMojomBigString16,
     .mojoBaseMojomString16,
     .mojoBaseMojomUint128,
 ]
 
-public let mojoBaseMojomOptionsBags: [OptionsBag] = [
-    .mojoBaseMojomBigBuffer
-]
-
 extension ILType {
-    public static let jsMojoBaseMojomBigBuffer: ILType = OptionsBag.mojoBaseMojomBigBuffer.group
-        .instanceType
+    public static let jsMojoBaseMojomBigBuffer: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoBaseMojomBigBuffer)
+    public static let jsMojoBaseMojomBigBufferBytesConstructor: ILType = .constructor(
+        [.plain(.createJsArrayType(ofElementType: .jsUint8))] => .jsMojoBaseMojomBigBuffer)
+    public static let jsMojoBaseMojomBigBufferSharedMemoryConstructor: ILType = .constructor(
+        [.plain(.jsMojoBaseMojomBigBufferSharedMemoryRegion)] => .jsMojoBaseMojomBigBuffer)
+    public static let jsMojoBaseMojomBigBufferInvalidBufferConstructor: ILType = .constructor(
+        [.plain(.boolean)] => .jsMojoBaseMojomBigBuffer)
 
     public static let jsMojoBaseMojomBigBufferSharedMemoryRegion: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion,
@@ -71,6 +82,12 @@ extension ILType {
 }
 
 extension ObjectGroup {
+    public static let mojoBaseMojomBigBuffer = ObjectGroup(
+        name: CommonMojoStrings.mojoBaseMojomBigBuffer,
+        instanceType: .jsMojoBaseMojomBigBuffer,
+        properties: [:],
+        methods: [:]
+    )
     public static let mojoBaseMojomBigBufferSharedMemoryRegion = ObjectGroup(
         name: CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion,
         instanceType: .jsMojoBaseMojomBigBufferSharedMemoryRegion,
@@ -112,18 +129,6 @@ extension ObjectGroup {
             "low": .integer,
         ],
         methods: [:]
-    )
-}
-
-extension OptionsBag {
-    public static let mojoBaseMojomBigBuffer = OptionsBag(
-        name: CommonMojoStrings.mojoBaseMojomBigBuffer,
-        properties: [
-            "bytes": .createJsArrayType(ofElementType: .jsUint8),
-            "sharedMemory": ILType.jsMojoBaseMojomBigBufferSharedMemoryRegion,
-            "invalidBuffer": .boolean,
-        ],
-        selectionMode: .exactlyOne
     )
 }
 
