@@ -1279,7 +1279,9 @@ void NearbySharingServiceImpl::OnIncomingConnectionAccepted(
     NearbyConnection* connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(connection, base::NotFatalUntil::M160);
-  CHECK(process_reference_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/568672878): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(process_reference_);
 
   sharing::mojom::NearbySharingDecoder* decoder = GetNearbySharingDecoder();
   if (!decoder) {
