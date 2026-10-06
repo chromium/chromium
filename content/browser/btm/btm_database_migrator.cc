@@ -328,8 +328,9 @@ bool BtmDatabaseMigrator::MigrateSchemaVersionFrom8To9() {
   static constexpr char kRenameFirstUserInteractionTimeSql[] =
       "ALTER TABLE bounces RENAME COLUMN first_user_interaction_time TO "
       "first_user_activation_time";
-  CHECK(db_->IsSQLValid(kRenameFirstUserInteractionTimeSql),
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/567900949): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_->IsSQLValid(kRenameFirstUserInteractionTimeSql));
   if (!db_->Execute(kRenameFirstUserInteractionTimeSql)) {
     return false;
   }
