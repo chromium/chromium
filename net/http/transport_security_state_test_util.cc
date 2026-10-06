@@ -15,7 +15,6 @@ namespace test_default {
 }  // namespace test_default
 
 ScopedTransportSecurityStateSource::ScopedTransportSecurityStateSource() {
-  // TODO(mattm): allow using other source?
   SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
   // TODO(crbug.com/497882860): Remove/split out the setting of the pins
   // source from this scoper.

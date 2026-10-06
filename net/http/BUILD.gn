@@ -66,57 +66,6 @@ compiled_action("transport_security_state_pins_unittest_data_default") {
          rebase_path(outputs, root_build_dir)
 }
 
-# Generates a number of header files that are used by integration tests for the
-# generation process and preload format.
-compiled_action_foreach("transport_security_state_unittest_data") {
-  tool = "//net/tools/transport_security_state_generator"
-  sources = [
-    "transport_security_state_static_unittest1.json",
-    "transport_security_state_static_unittest2.json",
-    "transport_security_state_static_unittest3.json",
-  ]
-
-  # Inputs in order expected by the command line of the tool.
-  source_independent_inputs = [ "transport_security_state_static.template" ]
-
-  # All possible inputs to ensure correctness when files change.
-  inputs = source_independent_inputs
-
-  outputs = [ "$target_gen_dir/{{source_name_part}}.h" ]
-  args = [
-           "--hsts",
-           rebase_path("{{source_name_part}}.json", root_build_dir),
-         ] + rebase_path(source_independent_inputs, root_build_dir) +
-         rebase_path(outputs, root_build_dir)
-}
-
-# Generates a number of header files that are used by integration tests for the
-# generation process and preload format.
-compiled_action_foreach("transport_security_state_pins_unittest_data") {
-  tool = "//net/tools/transport_security_state_generator"
-  sources = [
-    "transport_security_state_static_unittest1_pins.json",
-    "transport_security_state_static_unittest2_pins.json",
-    "transport_security_state_static_unittest3_pins.json",
-  ]
-
-  # Inputs in order expected by the command line of the tool.
-  source_independent_inputs = [
-    "transport_security_state_static_unittest.pins",
-    "transport_security_state_static_pins.template",
-  ]
-
-  # All possible inputs to ensure correctness when files change.
-  inputs = source_independent_inputs
-
-  outputs = [ "$target_gen_dir/{{source_name_part}}.h" ]
-  args = [
-           "--pkp",
-           rebase_path("{{source_name_part}}.json", root_build_dir),
-         ] + rebase_path(source_independent_inputs, root_build_dir) +
-         rebase_path(outputs, root_build_dir)
-}
-
 # This has separated source_set not to let other compiles wait for the
 # generate_transport_security_state task to complete.
 source_set("transport_security_state_generated_files") {
