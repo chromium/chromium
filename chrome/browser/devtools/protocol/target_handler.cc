@@ -72,6 +72,10 @@ TargetHandler::~TargetHandler() {
 protocol::Response TargetHandler::SetRemoteLocations(
     std::unique_ptr<protocol::Array<protocol::Target::RemoteLocation>>
         locations) {
+  if (!is_trusted_) {
+    return protocol::Response::ServerError(
+        "Cannot set remote locations from untrusted client");
+  }
   remote_locations_.clear();
   if (!locations)
     return protocol::Response::Success();

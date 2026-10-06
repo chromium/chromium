@@ -1712,7 +1712,51 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
   EXPECT_FALSE(SendCommandSync(
       "Memory.prepareForLeakDetection"));        // Implemented in content
   EXPECT_FALSE(SendCommandSync("Cast.enable"));  // Implemented in content
+  EXPECT_FALSE(SendCommandSync(
+      "Target.setRemoteLocations",
+      base::DictValue().Set("locations",
+                            base::ListValue())));  // Implemented in chrome
   EXPECT_TRUE(SendCommandSync("Accessibility.enable"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetRemoteLocations) {
+  base::test::TestFuture<void> version_request_received;
+  base::RepeatingClosure on_version_request =
+      version_request_received.GetSequenceBoundRepeatingCallback();
+  embedded_test_server()->RegisterRequestMonitor(base::BindLambdaForTesting(
+      [on_version_request](const net::test_server::HttpRequest& request) {
+        if (request.relative_url == "/json/version") {
+          on_version_request.Run();
+        }
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::DictValue params;
+  params.Set("locations",
+             base::ListValue().Append(
+                 base::DictValue()
+                     .Set("host", "127.0.0.1")
+                     .Set("port", embedded_test_server()->port())));
+
+  SetIsTrusted(false);
+  Attach();
+  EXPECT_FALSE(SendCommandSync("Target.setRemoteLocations", params.Clone()));
+  ASSERT_TRUE(error());
+  EXPECT_THAT(error()->FindString("message"),
+              testing::Pointee(testing::Eq(
+                  "Cannot set remote locations from untrusted client")));
+  EXPECT_FALSE(version_request_received.IsReady());
+
+  DetachProtocolClient();
+  SetIsTrusted(true);
+  Attach();
+  EXPECT_TRUE(SendCommandSync("Target.setRemoteLocations", std::move(params)));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(version_request_received.Wait());
+#endif  // !BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(
+      SendCommandSync("Target.setRemoteLocations",
+                      base::DictValue().Set("locations", base::ListValue())));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
