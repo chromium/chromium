@@ -70,6 +70,8 @@ class AggregatedJournal {
     // once and will be automatically called from the destructor if it hasn't
     // been called.
     void EndEntry(std::vector<mojom::JournalDetailsPtr> details);
+    void EndEntry(base::Time timestamp,
+                  std::vector<mojom::JournalDetailsPtr> details);
 
     AggregatedJournal& GetJournal();
     TaskId GetTaskId();
@@ -111,6 +113,13 @@ class AggregatedJournal {
       uint64_t track_uuid,
       std::string_view event_name,
       std::vector<mojom::JournalDetailsPtr> details);
+  std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
+      const GURL& url,
+      TaskId task_id,
+      uint64_t track_uuid,
+      base::Time timestamp,
+      std::string_view event_name,
+      std::vector<mojom::JournalDetailsPtr> details);
 
   // Log an instant event on the browser track.
   void Log(const GURL& url,
@@ -122,6 +131,12 @@ class AggregatedJournal {
   void Log(const GURL& url,
            TaskId task_id,
            uint64_t track_uuid,
+           std::string_view event_name,
+           std::vector<mojom::JournalDetailsPtr> details);
+  void Log(const GURL& url,
+           TaskId task_id,
+           uint64_t track_uuid,
+           base::Time timestamp,
            std::string_view event_name,
            std::vector<mojom::JournalDetailsPtr> details);
 
@@ -165,6 +180,7 @@ class AggregatedJournal {
                    TaskId task_id,
                    const std::string& event_name,
                    uint64_t track_uuid,
+                   base::Time timestamp,
                    std::vector<mojom::JournalDetailsPtr> details);
 
  private:

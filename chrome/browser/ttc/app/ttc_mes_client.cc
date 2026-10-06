@@ -83,6 +83,8 @@ ServerJournalEvent::Type ToServerJournalEventType(
       return ServerJournalEvent::Type::kAsyncBegin;
     case optimization_guide::proto::JournalEvent::JOURNAL_EVENT_TYPE_ASYNC_END:
       return ServerJournalEvent::Type::kAsyncEnd;
+    case optimization_guide::proto::JournalEvent::JOURNAL_EVENT_TYPE_CLOCK_SYNC:
+      return ServerJournalEvent::Type::kClockSync;
     case optimization_guide::proto::JournalEvent::
         JOURNAL_EVENT_TYPE_UNSPECIFIED:
     default:
@@ -101,6 +103,7 @@ ServerJournalEvent ToServerJournalEvent(
     event.details.push_back({detail.key(), detail.value()});
   }
   event.async_event_id = proto_event.async_event_id();
+  event.sync_timestamp_us = proto_event.sync_timestamp_us();
   return event;
 }
 

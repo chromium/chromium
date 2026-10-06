@@ -19,6 +19,7 @@ struct ServerJournalEvent {
     kInstant,
     kAsyncBegin,
     kAsyncEnd,
+    kClockSync,
   };
 
   struct Details {
@@ -38,6 +39,7 @@ struct ServerJournalEvent {
   std::string name;
   std::vector<Details> details;
   int32_t async_event_id = 0;
+  int64_t sync_timestamp_us = 0;
 };
 
 }  // namespace ttc

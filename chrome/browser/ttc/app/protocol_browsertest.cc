@@ -4,10 +4,12 @@
 
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/optimization_guide/mock_remote_model_executor.h"
 #include "chrome/browser/ttc/app/app_browser_test_base.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "components/optimization_guide/proto/features/ttc.pb.h"
@@ -54,6 +56,52 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, StartSessionSendsSetupRequest) {
 
   EXPECT_EQ(session_controller()->GetSessionLifecycle(),
             SessionLifecycle::kLive);
+}
+
+IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
+                       ClockSyncComputesServerClockDelta) {
+  const base::Time before_send = base::Time::Now();
+
+  TestFuture<proto::TtcClientFrame> sent_frame;
+  EXPECT_CLIENT_FRAME(Send, sent_frame);
+
+  StartSessionAndConnectBackend();
+
+  // The client timestamp of the setup request is used to compute the clock
+  // delta for server journal events so ensure we're sending it.
+  ASSERT_TRUE(sent_frame.IsReady());
+  ASSERT_TRUE(sent_frame.Get().has_setup_request());
+  const int64_t client_timestamp_ms = sent_frame.Get().client_timestamp_ms();
+  EXPECT_GE(client_timestamp_ms, before_send.InMillisecondsSinceUnixEpoch());
+  EXPECT_LE(client_timestamp_ms,
+            base::Time::Now().InMillisecondsSinceUnixEpoch());
+
+  const base::Time client_send_time =
+      base::Time::UnixEpoch() + base::Milliseconds(client_timestamp_ms);
+  constexpr base::TimeDelta kServerOffset = base::Seconds(-10);
+  const base::Time server_time = client_send_time + kServerOffset;
+
+  proto::TtcServerFrame sync_frame;
+  proto::JournalEvent* journal_event = sync_frame.mutable_journal_event();
+  journal_event->set_type(proto::JournalEvent::JOURNAL_EVENT_TYPE_CLOCK_SYNC);
+  journal_event->set_sync_timestamp_us(
+      (client_send_time - base::Time::UnixEpoch()).InMicroseconds());
+  journal_event->set_timestamp_us(
+      (server_time - base::Time::UnixEpoch()).InMicroseconds());
+
+  const base::Time before_sync = base::Time::Now();
+  SimulateResponse(sync_frame);
+  const base::Time after_sync = base::Time::Now();
+
+  const base::Time min_midpoint =
+      client_send_time + (before_sync - client_send_time) / 2;
+  const base::Time max_midpoint =
+      client_send_time + (after_sync - client_send_time) / 2;
+
+  const base::TimeDelta delta =
+      session_controller()->GetJournal().server_clock_delta();
+  EXPECT_GE(delta, min_midpoint - server_time);
+  EXPECT_LE(delta, max_midpoint - server_time);
 }
 
 IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, SetupResponseSendsToolSet) {

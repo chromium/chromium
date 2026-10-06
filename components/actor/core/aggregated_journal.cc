@@ -77,11 +77,17 @@ AggregatedJournal::PendingAsyncEntry::~PendingAsyncEntry() {
 
 void AggregatedJournal::PendingAsyncEntry::EndEntry(
     std::vector<mojom::JournalDetailsPtr> details) {
+  EndEntry(base::Time::Now(), std::move(details));
+}
+
+void AggregatedJournal::PendingAsyncEntry::EndEntry(
+    base::Time timestamp,
+    std::vector<mojom::JournalDetailsPtr> details) {
   CHECK(!terminated_);
   terminated_ = true;
   ACTOR_LOG() << "End " << event_name_ << ": " << details;
   journal_->AddEndEvent(pass_key_, task_id_, event_name_, track_uuid_,
-                        std::move(details));
+                        timestamp, std::move(details));
 }
 
 AggregatedJournal& AggregatedJournal::PendingAsyncEntry::GetJournal() {
@@ -115,14 +121,26 @@ AggregatedJournal::CreatePendingAsyncEntry(
     uint64_t track_uuid,
     std::string_view event_name,
     std::vector<mojom::JournalDetailsPtr> details) {
+  return CreatePendingAsyncEntry(url, task_id, track_uuid, base::Time::Now(),
+                                 event_name, std::move(details));
+}
+
+std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
+AggregatedJournal::CreatePendingAsyncEntry(
+    const GURL& url,
+    TaskId task_id,
+    uint64_t track_uuid,
+    base::Time timestamp,
+    std::string_view event_name,
+    std::vector<mojom::JournalDetailsPtr> details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ACTOR_LOG() << "Begin " << event_name << ": " << details;
 
   AddEntry(std::make_unique<Entry>(
       url.possibly_invalid_spec(),
       mojom::JournalEntry::New(mojom::JournalEntryType::kBegin, task_id,
-                               base::Time::Now(), std::string(event_name),
-                               track_uuid, std::move(details))));
+                               timestamp, std::string(event_name), track_uuid,
+                               std::move(details))));
   return std::make_unique<PendingAsyncEntry>(base::PassKey<AggregatedJournal>(),
                                              weak_ptr_factory_.GetSafeRef(),
                                              task_id, event_name, track_uuid);
@@ -141,13 +159,23 @@ void AggregatedJournal::Log(const GURL& url,
                             uint64_t track_uuid,
                             std::string_view event_name,
                             std::vector<mojom::JournalDetailsPtr> details) {
+  Log(url, task_id, track_uuid, base::Time::Now(), event_name,
+      std::move(details));
+}
+
+void AggregatedJournal::Log(const GURL& url,
+                            TaskId task_id,
+                            uint64_t track_uuid,
+                            base::Time timestamp,
+                            std::string_view event_name,
+                            std::vector<mojom::JournalDetailsPtr> details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ACTOR_LOG() << event_name << ": " << details;
   AddEntry(std::make_unique<Entry>(
       url.possibly_invalid_spec(),
       mojom::JournalEntry::New(mojom::JournalEntryType::kInstant, task_id,
-                               base::Time::Now(), std::string(event_name),
-                               track_uuid, std::move(details))));
+                               timestamp, std::string(event_name), track_uuid,
+                               std::move(details))));
 }
 
 void AggregatedJournal::LogProto(const GURL& url,
@@ -206,13 +234,13 @@ void AggregatedJournal::AddEndEvent(
     TaskId task_id,
     const std::string& event_name,
     uint64_t track_uuid,
+    base::Time timestamp,
     std::vector<mojom::JournalDetailsPtr> details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddEntry(std::make_unique<Entry>(
-      std::string(),
-      mojom::JournalEntry::New(mojom::JournalEntryType::kEnd, task_id,
-                               base::Time::Now(), event_name, track_uuid,
-                               std::move(details))));
+      std::string(), mojom::JournalEntry::New(mojom::JournalEntryType::kEnd,
+                                              task_id, timestamp, event_name,
+                                              track_uuid, std::move(details))));
 }
 
 void AggregatedJournal::LogScreenshot(

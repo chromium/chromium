@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -64,10 +65,13 @@ class SessionJournal {
   void HandleServerJournalEvent(const ServerJournalEvent& event);
 
   actor::TaskId task_id() const { return task_id_; }
+  base::TimeDelta server_clock_delta() const { return server_clock_delta_; }
 
  private:
   const raw_ref<actor::AggregatedJournal> journal_;
   actor::TaskId task_id_;
+  bool received_clock_sync_ = false;
+  base::TimeDelta server_clock_delta_;
   absl::flat_hash_map<int32_t, std::unique_ptr<PendingAsyncEvent>>
       pending_server_async_events_;
 };
