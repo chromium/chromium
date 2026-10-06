@@ -1539,25 +1539,52 @@ TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
   histogram_tester_.ExpectTotalCount(kSigninOutcome, 0);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// The surface on which the hybrid QR code is shown.
+enum class HybridQrSurface {
+  // Inline in the Autofill dropdown on the Chrome sign-in page. Recorded as
+  // `Signin.HybridPasskey.InlineQrEngagement`.
+  kInlineAutofill,
+  // In the WebAuthn modal dialog. Recorded as
+  // `WebAuthentication.Hybrid.QrEngagement`.
+  kModal,
+};
+
 class ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest
-    : public ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase {
+    : public ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase,
+      public testing::WithParamInterface<HybridQrSurface> {
  public:
   void SetUp() override {
     ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase::SetUp();
-    SetUpChromeSigninPage();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (GetParam() == HybridQrSurface::kInlineAutofill) {
+      SetUpChromeSigninPage();
+    }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 
  protected:
-  static constexpr char kEngagement[] =
-      "Signin.HybridPasskey.InlineQrEngagement";
-
   using Engagement =
       ChromeAuthenticatorRequestDelegate::HybridPasskeyEngagement;
 
-  // The only signal that arms the engagement metric.
-  void ShowInlineQrCode(ChromeAuthenticatorRequestDelegate* delegate) {
-    delegate->OnHybridPasskeyQrCodeShownInAutofill();
+  // The histogram recorded for the surface under test.
+  const char* engagement_histogram() const {
+    return GetParam() == HybridQrSurface::kInlineAutofill
+               ? "Signin.HybridPasskey.InlineQrEngagement"
+               : "WebAuthentication.Hybrid.QrEngagement";
+  }
+
+  // The only signal that arms the engagement metric for the surface under
+  // test.
+  void ShowQrCode(ChromeAuthenticatorRequestDelegate* delegate) {
+    switch (GetParam()) {
+      case HybridQrSurface::kInlineAutofill:
+        delegate->OnHybridPasskeyQrCodeShownInAutofill();
+        break;
+      case HybridQrSurface::kModal:
+        delegate->dialog_model()->SetStep(
+            AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
+        break;
+    }
   }
 
   void ScanQrCode(ChromeAuthenticatorRequestDelegate* delegate) {
@@ -1566,44 +1593,57 @@ class ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest
   }
 };
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
-       ScanWithoutInlineQrEmitsNoSample) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+    testing::Values(
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+        HybridQrSurface::kInlineAutofill,
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+        HybridQrSurface::kModal),
+    [](const testing::TestParamInfo<HybridQrSurface>& info) {
+      return info.param == HybridQrSurface::kModal ? "Modal" : "InlineAutofill";
+    });
+
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       ScanWithoutQrEmitsNoSample) {
   MockCableDiscoveryFactory discovery_factory;
   std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
       CreateDelegate(&discovery_factory);
 
-  // A scan can occur in an attempt that never showed the inline QR code, for
-  // example one that reached a QR code only through the WebAuthn modal.
+  // A scan can occur in an attempt that never showed the QR code on the
+  // surface under test, e.g. one where the QR code was only shown on the
+  // other surface.
   ScanQrCode(delegate.get());
   delegate.reset();
 
-  histogram_tester_.ExpectTotalCount(kEngagement, 0);
+  histogram_tester_.ExpectTotalCount(engagement_histogram(), 0);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
-       RepeatedInlineSignalsEmitOneSample) {
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       RepeatedQrSignalsEmitOneSample) {
   MockCableDiscoveryFactory discovery_factory;
   std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
       CreateDelegate(&discovery_factory);
 
-  // The dropdown may be re-shown several times within a single attempt.
-  ShowInlineQrCode(delegate.get());
-  ShowInlineQrCode(delegate.get());
-  ShowInlineQrCode(delegate.get());
+  // The QR code may be re-shown several times within a single attempt.
+  ShowQrCode(delegate.get());
+  ShowQrCode(delegate.get());
+  ShowQrCode(delegate.get());
 
   delegate.reset();
 
-  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kNoScanDetected,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(engagement_histogram(),
+                                       Engagement::kNoScanDetected, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
        ScanDetectedBucket) {
   MockCableDiscoveryFactory discovery_factory;
   std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
       CreateDelegate(&discovery_factory);
 
-  ShowInlineQrCode(delegate.get());
+  ShowQrCode(delegate.get());
   ScanQrCode(delegate.get());
   delegate->OnCableEventForTesting(device::cablev2::Event::kPhoneConnected);
   delegate->OnCableEventForTesting(device::cablev2::Event::kReady);
@@ -1614,11 +1654,11 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
       device::AuthenticatorType::kPhone);
   delegate.reset();
 
-  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kScanDetected,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(engagement_histogram(),
+                                       Engagement::kScanDetected, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
        NoScanDetectedBucket) {
   MockCableDiscoveryFactory discovery_factory;
   std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
@@ -1626,14 +1666,14 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
 
   // No cable event ever arrives, whether because the user ignored the QR code
   // or because they scanned it and the advert never reached us.
-  ShowInlineQrCode(delegate.get());
+  ShowQrCode(delegate.get());
   delegate.reset();
 
-  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kNoScanDetected,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(engagement_histogram(),
+                                       Engagement::kNoScanDetected, 1);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
        StartOverEmitsOneSamplePerAttempt) {
   MockCableDiscoveryFactory discovery_factory;
   std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
@@ -1651,28 +1691,27 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
       /*bluetooth_adapter_power_on_callback=*/base::DoNothing(),
       /*request_ble_permission_callback=*/base::DoNothing());
 
-  // First attempt: the QR code is shown in the Autofill dropdown and never
-  // scanned.
-  ShowInlineQrCode(delegate.get());
+  // First attempt: the QR code is shown and never scanned.
+  ShowQrCode(delegate.get());
 
   EXPECT_CALL(start_over_callback, Run());
   delegate->OnStartOver();
 
-  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kNoScanDetected,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(engagement_histogram(),
+                                       Engagement::kNoScanDetected, 1);
 
   // Second attempt: the QR code is shown again and scanned.
-  ShowInlineQrCode(delegate.get());
+  ShowQrCode(delegate.get());
   ScanQrCode(delegate.get());
   delegate.reset();
 
-  histogram_tester_.ExpectBucketCount(kEngagement, Engagement::kScanDetected,
-                                      1);
-  histogram_tester_.ExpectTotalCount(kEngagement, 2);
+  histogram_tester_.ExpectBucketCount(engagement_histogram(),
+                                      Engagement::kScanDetected, 1);
+  histogram_tester_.ExpectTotalCount(engagement_histogram(), 2);
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
-       NotChromeSigninRequestDoesNotRecordEngagement) {
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       NotChromeSigninRequestRecordsOnlyModalEngagement) {
   std::unique_ptr<content::WebContents> non_signin_web_contents =
       CreateTestWebContents();
   MockCableDiscoveryFactory discovery_factory;
@@ -1690,12 +1729,18 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
       /*user_name=*/std::nullopt,
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
-  ShowInlineQrCode(delegate.get());
+  ShowQrCode(delegate.get());
   delegate.reset();
 
-  histogram_tester_.ExpectTotalCount(kEngagement, 0);
+  // The inline QR code is only recorded on the Chrome sign-in page, but the
+  // modal QR code is recorded for every website.
+  if (GetParam() == HybridQrSurface::kModal) {
+    histogram_tester_.ExpectUniqueSample(engagement_histogram(),
+                                         Engagement::kNoScanDetected, 1);
+  } else {
+    histogram_tester_.ExpectTotalCount(engagement_histogram(), 0);
+  }
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 

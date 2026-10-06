@@ -570,6 +570,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:WebAuthenticationGPMRecoveryEvent) -->
 
+<!-- LINT.IfChange(WebAuthenticationHybridPasskeyEngagement) -->
+
+<enum name="WebAuthenticationHybridPasskeyEngagement">
+  <int value="0" label="Scan detected"/>
+  <int value="1" label="No scan detected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_authenticator_request_delegate.h:HybridPasskeyEngagement) -->
+
 <!-- LINT.IfChange(WebAuthenticationHybridPasskeyOutcome) -->
 
 <enum name="WebAuthenticationHybridPasskeyOutcome">

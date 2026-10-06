@@ -228,11 +228,13 @@ bool IsChromeSigninPage(content::RenderFrameHost* rfh) {
 }
 #endif
 
-constexpr char kHybridPasskeyEngagementHistogram[] =
+constexpr char kSigninHybridPasskeyEngagementHistogram[] =
     "Signin.HybridPasskey.InlineQrEngagement";
 constexpr char kSigninHybridPasskeyOutcomeHistogram[] =
     "Signin.HybridPasskey.Outcome";
 constexpr char kHybridOutcomeHistogram[] = "WebAuthentication.Hybrid.Outcome";
+constexpr char kHybridQrEngagementHistogram[] =
+    "WebAuthentication.Hybrid.QrEngagement";
 
 }  // namespace
 
@@ -882,6 +884,13 @@ void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
   DCHECK_EQ(model, dialog_model_.get());
 }
 
+void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
+  if (dialog_model_->step() ==
+      AuthenticatorRequestDialogModel::Step::kCableV2QRCode) {
+    hybrid_passkey_modal_qr_shown_ = true;
+  }
+}
+
 void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kUserCancelled);
@@ -1401,13 +1410,18 @@ void ChromeAuthenticatorRequestDelegate::MaybeRecordHybridPasskeyEngagement() {
   // Consume the state so that the sample cannot be emitted twice for the same
   // attempt, e.g. by `OnStartOver()` and then by the destructor, and so that a
   // scan never carries over into the next attempt.
-  const bool qr_shown = std::exchange(hybrid_passkey_qr_shown_, false);
+  const bool inline_qr_shown = std::exchange(hybrid_passkey_qr_shown_, false);
+  const bool modal_qr_shown =
+      std::exchange(hybrid_passkey_modal_qr_shown_, false);
   const bool scanned = std::exchange(hybrid_passkey_scanned_, false);
-  if (!qr_shown || !is_chrome_signin_request_) {
-    return;
+  const HybridPasskeyEngagement engagement =
+      scanned ? HybridPasskeyEngagement::kScanDetected
+              : HybridPasskeyEngagement::kNoScanDetected;
+  if (inline_qr_shown && is_chrome_signin_request_) {
+    base::UmaHistogramEnumeration(kSigninHybridPasskeyEngagementHistogram,
+                                  engagement);
   }
-  base::UmaHistogramEnumeration(kHybridPasskeyEngagementHistogram,
-                                scanned
-                                    ? HybridPasskeyEngagement::kScanDetected
-                                    : HybridPasskeyEngagement::kNoScanDetected);
+  if (modal_qr_shown && request_source_ == RequestSource::kWebAuthentication) {
+    base::UmaHistogramEnumeration(kHybridQrEngagementHistogram, engagement);
+  }
 }

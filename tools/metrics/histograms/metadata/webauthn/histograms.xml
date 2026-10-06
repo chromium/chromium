@@ -737,6 +737,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Hybrid.QrEngagement"
+    enum="WebAuthenticationHybridPasskeyEngagement" expires_after="2027-04-01">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Recorded once per navigator.credentials request attempt in which the
+    WebAuthn modal dialog showed the hybrid (caBLEv2) QR code, including
+    requests made on the Chrome sign-in page. The sample is emitted when the
+    request ends or when the user restarts it; a restarted request emits one
+    sample per attempt. Not recorded for Secure Payment Confirmation.
+
+    &quot;Scan detected&quot; means the browser received a BLE advert from the
+    user's phone during the attempt. &quot;No scan detected&quot; means it did
+    not; usually the user ignored the QR code, but this also covers a code that
+    was scanned whose advert never reached the browser.
+
+    On the Chrome sign-in page, the same QR code may also be shown inline in the
+    Autofill dropdown (see Signin.HybridPasskey.InlineQrEngagement), so a scan
+    cannot be attributed to one surface or the other.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.IOS.ContentAreaEvent"
     enum="WebAuthenticationIOSContentAreaEvent" expires_after="2027-03-21">
   <owner>rgod@google.com</owner>

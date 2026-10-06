@@ -125,20 +125,20 @@ class ChromeAuthenticatorRequestDelegate
   };
 
   // Whether a hybrid passkey QR code scan was detected during an attempt in
-  // which the inline QR code was shown in the Autofill dropdown. Chrome cannot
-  // attribute a scan to a particular surface, because the dropdown and the
-  // WebAuthn modal render the same QR code, and a scan is only observed
-  // indirectly, through the phone's BLE advert.
+  // which a QR code was shown, either inline in the Autofill dropdown or in the
+  // WebAuthn modal. Chrome cannot attribute a scan to a particular surface,
+  // because the dropdown and the WebAuthn modal render the same QR code, and a
+  // scan is only observed indirectly, through the phone's BLE advert.
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  // LINT.IfChange(SigninHybridPasskeyEngagement)
+  // LINT.IfChange(HybridPasskeyEngagement)
   enum class HybridPasskeyEngagement {
     kScanDetected = 0,
     kNoScanDetected = 1,
     kMaxValue = kNoScanDetected,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninHybridPasskeyEngagement)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationHybridPasskeyEngagement)
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   // The |render_frame_host| must outlive this instance.
@@ -238,6 +238,7 @@ class ChromeAuthenticatorRequestDelegate
   // AuthenticatorRequestDialogModel::Observer:
   void OnStartOver() override;
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+  void OnStepTransition() override;
   void OnCancelRequest() override;
 
   // UiReadinessBarrier::Delegate:
@@ -423,12 +424,17 @@ class ChromeAuthenticatorRequestDelegate
   std::optional<HybridPasskeySessionStage> hybrid_passkey_stage_;
 
   // Records `Signin.HybridPasskey.InlineQrEngagement` if this is a Chrome
-  // sign-in request and the inline QR code was shown, then clears the
-  // per-attempt state so that at most one sample is emitted per attempt.
+  // sign-in request and the inline QR code was shown, and
+  // `WebAuthentication.Hybrid.QrEngagement` if this is a WebAuthn request and
+  // the modal QR code was shown. Then clears the per-attempt state so that at
+  // most one sample of each is emitted per attempt.
   void MaybeRecordHybridPasskeyEngagement();
 
   bool is_chrome_signin_request_ = false;
+  // Whether the inline QR code was shown in the Autofill dropdown.
   bool hybrid_passkey_qr_shown_ = false;
+  // Whether the QR code was shown in the WebAuthn modal.
+  bool hybrid_passkey_modal_qr_shown_ = false;
 
   // Tracked separately from `hybrid_passkey_stage_` because that field is reset
   // when an outcome is recorded, which may happen before the engagement sample
