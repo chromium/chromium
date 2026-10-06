@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -24,7 +25,7 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
-class Profile;
+class PrefService;
 
 namespace ash {
 namespace power {
@@ -147,7 +148,9 @@ class Adapter : public AlsReader::Observer,
     std::optional<AlsAvgStdDev> log_als_avg_stddev;
   };
 
-  Adapter(Profile* profile,
+  // `profile_prefs` holds the screen-brightness policy prefs that gate the
+  // adapter. It must be non-null and must outlive `this`.
+  Adapter(PrefService* profile_prefs,
           AlsReader* als_reader,
           BrightnessMonitor* brightness_monitor,
           Modeller* modeller,
@@ -202,7 +205,7 @@ class Adapter : public AlsReader::Observer,
   std::optional<double> GetCurrentAvgLogAlsForTesting() const;
 
   static std::unique_ptr<Adapter> CreateForTesting(
-      Profile* profile,
+      PrefService* profile_prefs,
       AlsReader* als_reader,
       BrightnessMonitor* brightness_monitor,
       Modeller* modeller,
@@ -210,7 +213,7 @@ class Adapter : public AlsReader::Observer,
       const base::TickClock* tick_clock);
 
  private:
-  Adapter(Profile* profile,
+  Adapter(PrefService* profile_prefs,
           AlsReader* als_reader,
           BrightnessMonitor* brightness_monitor,
           Modeller* modeller,
@@ -278,7 +281,7 @@ class Adapter : public AlsReader::Observer,
       double old_brightness_percent,
       double new_brightness_percent) const;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ref<PrefService> profile_prefs_;
 
   base::ScopedObservation<AlsReader, AlsReader::Observer>
       als_reader_observation_{this};

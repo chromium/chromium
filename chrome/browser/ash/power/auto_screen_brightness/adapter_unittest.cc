@@ -199,7 +199,7 @@ class AdapterTest : public testing::Test {
     }
 
     adapter_ = Adapter::CreateForTesting(
-        profile_.get(), als_reader_.get(), &fake_brightness_monitor_,
+        profile_->GetPrefs(), als_reader_.get(), &fake_brightness_monitor_,
         &fake_modeller_, &fake_model_config_loader_,
         task_environment_.GetMockTickClock());
     adapter_->Init();

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -15,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
@@ -54,12 +54,12 @@ const char* BrightnessChangeCauseToString(
 
 Adapter::Params::Params() = default;
 
-Adapter::Adapter(Profile* profile,
+Adapter::Adapter(PrefService* profile_prefs,
                  AlsReader* als_reader,
                  BrightnessMonitor* brightness_monitor,
                  Modeller* modeller,
                  ModelConfigLoader* model_config_loader)
-    : Adapter(profile,
+    : Adapter(profile_prefs,
               als_reader,
               brightness_monitor,
               modeller,
@@ -307,26 +307,24 @@ std::optional<double> Adapter::GetCurrentAvgLogAlsForTesting() const {
 }
 
 std::unique_ptr<Adapter> Adapter::CreateForTesting(
-    Profile* profile,
+    PrefService* profile_prefs,
     AlsReader* als_reader,
     BrightnessMonitor* brightness_monitor,
     Modeller* modeller,
     ModelConfigLoader* model_config_loader,
     const base::TickClock* tick_clock) {
-  return base::WrapUnique(new Adapter(profile, als_reader, brightness_monitor,
-                                      modeller, model_config_loader,
-                                      tick_clock));
+  return base::WrapUnique(new Adapter(profile_prefs, als_reader,
+                                      brightness_monitor, modeller,
+                                      model_config_loader, tick_clock));
 }
 
-Adapter::Adapter(Profile* profile,
+Adapter::Adapter(PrefService* profile_prefs,
                  AlsReader* als_reader,
                  BrightnessMonitor* brightness_monitor,
                  Modeller* modeller,
                  ModelConfigLoader* model_config_loader,
                  const base::TickClock* tick_clock)
-    : profile_(profile),
-      tick_clock_(tick_clock) {
-  CHECK(profile, base::NotFatalUntil::M160);
+    : profile_prefs_(CHECK_DEREF(profile_prefs)), tick_clock_(tick_clock) {
   CHECK(als_reader, base::NotFatalUntil::M160);
   CHECK(brightness_monitor, base::NotFatalUntil::M160);
   CHECK(modeller, base::NotFatalUntil::M160);
@@ -452,15 +450,13 @@ Adapter::AdapterDecision Adapter::CanAdjustBrightness(base::TimeTicks now) {
 
   // Do not change brightness if it's set by the policy, but do not completely
   // disable the model as the policy could change.
-  auto* prefs = profile_->GetPrefs();
-  if (prefs) {
-    if (prefs->GetInteger(ash::prefs::kPowerAcScreenBrightnessPercent) >= 0 ||
-        prefs->GetInteger(ash::prefs::kPowerBatteryScreenBrightnessPercent) >=
-            0) {
-      decision.no_brightness_change_cause =
-          NoBrightnessChangeCause::kBrightnessSetByPolicy;
-      return decision;
-    }
+  if (profile_prefs_->GetInteger(ash::prefs::kPowerAcScreenBrightnessPercent) >=
+          0 ||
+      profile_prefs_->GetInteger(
+          ash::prefs::kPowerBatteryScreenBrightnessPercent) >= 0) {
+    decision.no_brightness_change_cause =
+        NoBrightnessChangeCause::kBrightnessSetByPolicy;
+    return decision;
   }
 
   if (!new_model_arrived_) {

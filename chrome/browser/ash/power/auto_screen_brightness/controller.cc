@@ -83,8 +83,8 @@ void Controller::InitializeComponents() {
       std::make_unique<GaussianTrainer>());
 
   adapter_ = std::make_unique<Adapter>(
-      profile, als_reader_.get(), brightness_monitor_.get(), modeller_.get(),
-      model_config_loader_.get());
+      profile->GetPrefs(), als_reader_.get(), brightness_monitor_.get(),
+      modeller_.get(), model_config_loader_.get());
   adapter_->Init();
 }
 
