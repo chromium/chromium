@@ -144,7 +144,6 @@ std::unique_ptr<ui::Layer> Decoration::DecorationLayerOwner::RecreateLayer() {
 void Decoration::RecreateDecorationLayer() {
   decoration_layer_owner_.Reset(std::make_unique<ui::LayerNinePatch>());
   decoration_layer()->SetName(name_);
-  decoration_layer()->SetVisible(true);
   decoration_layer()->SetFillsBoundsOpaquely(false);
   layer()->Add(decoration_layer());
 
@@ -204,24 +203,24 @@ void Decoration::UpdateAppearanceImmediately() {
       details.has_value() ? std::make_optional(details->appearance)
                           : std::nullopt;
 
-  if (active_appearance_ != appearance) {
-    if (appearance.has_value()) {
-      decoration_layer()->UpdateNinePatchLayerImage(
-          appearance->nine_patch_image);
-      // The ninebox grid is defined in terms of the image size.
-      gfx::Rect aperture(appearance->nine_patch_image.size());
-      aperture.Inset(appearance->aperture_insets);
-      decoration_layer()->UpdateNinePatchLayerAperture(aperture);
+  // With no appearance there is nothing to draw, yet the nine-patch layer still
+  // holds the image it was last given and would keep drawing it. Hiding the
+  // layer keeps that image and ninebox geometry in place, so an appearance that
+  // comes back unchanged only needs the layer shown again.
+  decoration_layer()->SetVisible(appearance.has_value());
 
-      // The border is the same inset as the aperture.
-      decoration_layer()->UpdateNinePatchLayerBorder(gfx::Rect(
-          appearance->aperture_insets.left(), appearance->aperture_insets.top(),
-          appearance->aperture_insets.width(),
-          appearance->aperture_insets.height()));
-    } else {
-      decoration_layer()->UpdateNinePatchLayerAperture(gfx::Rect());
-      decoration_layer()->UpdateNinePatchLayerBorder(gfx::Rect());
-    }
+  if (appearance.has_value() && active_appearance_ != appearance) {
+    decoration_layer()->UpdateNinePatchLayerImage(appearance->nine_patch_image);
+    // The ninebox grid is defined in terms of the image size.
+    gfx::Rect aperture(appearance->nine_patch_image.size());
+    aperture.Inset(appearance->aperture_insets);
+    decoration_layer()->UpdateNinePatchLayerAperture(aperture);
+
+    // The border is the same inset as the aperture.
+    decoration_layer()->UpdateNinePatchLayerBorder(gfx::Rect(
+        appearance->aperture_insets.left(), appearance->aperture_insets.top(),
+        appearance->aperture_insets.width(),
+        appearance->aperture_insets.height()));
 
     active_appearance_ = appearance;
   }
