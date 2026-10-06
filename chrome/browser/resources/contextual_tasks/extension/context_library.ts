@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 
+import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CSSResultGroup} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -43,6 +44,7 @@ export class ContextLibraryElement extends CrLitElement {
 
   private resizeObserver_: ResizeObserver|null = null;
   private messageListener_: ((event: MessageEvent) => void)|null = null;
+  private listenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -57,6 +59,14 @@ export class ContextLibraryElement extends CrLitElement {
       }
     };
     window.addEventListener('message', this.messageListener_);
+
+    const callbackRouter =
+        ExtensionBrowserProxyImpl.getInstance().callbackRouter;
+    this.listenerIds_.push(callbackRouter.onTabContextUpdated.addListener(
+        (tabs: TabInfo[], submittedTabIds: number[]) => {
+          this.tabs = tabs;
+          this.submittedTabIds = new Set(submittedTabIds);
+        }));
   }
 
   override disconnectedCallback() {
@@ -67,6 +77,12 @@ export class ContextLibraryElement extends CrLitElement {
       window.removeEventListener('message', this.messageListener_);
       this.messageListener_ = null;
     }
+    const callbackRouter =
+        ExtensionBrowserProxyImpl.getInstance().callbackRouter;
+    for (const id of this.listenerIds_) {
+      callbackRouter.removeListener(id);
+    }
+    this.listenerIds_ = [];
   }
 
   // <composebox-favicon-group> fires this to request a live favicon for a tab

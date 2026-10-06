@@ -4,10 +4,13 @@
 
 import 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
 
+import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextLibraryElement} from 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestExtensionBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 function createTab(tabId: number, url: string): TabInfo {
   return {
@@ -23,6 +26,7 @@ function createTab(tabId: number, url: string): TabInfo {
 
 suite('ContextLibraryTest', () => {
   let app: ContextLibraryElement;
+  let browserProxy: TestExtensionBrowserProxy;
 
   // Resolves the next time the element asks the embedder to re-measure it.
   let nextRequestResize: Promise<void>;
@@ -36,6 +40,9 @@ suite('ContextLibraryTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    browserProxy = new TestExtensionBrowserProxy();
+    ExtensionBrowserProxyImpl.setInstance(browserProxy);
 
     iframeRequestResize();
     window.requestResize = () => {
@@ -148,5 +155,40 @@ suite('ContextLibraryTest', () => {
     const items =
         app.$.faviconGroup.shadowRoot.querySelectorAll('.favicon-item');
     assertEquals(2, items.length);
+  });
+
+  test(
+      'Updates tabs and submittedTabIds when onTabContextUpdated is dispatched',
+      async () => {
+        const tabs = [
+          createTab(10, 'https://www.google.com'),
+          createTab(20, 'https://www.youtube.com'),
+        ];
+        browserProxy.callbackRouterRemote.onTabContextUpdated(tabs, [20]);
+        await browserProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertEquals(2, app.tabs.length);
+        assertEquals(10, app.tabs[0]!.tabId);
+        assertEquals(20, app.tabs[1]!.tabId);
+        assertTrue(app.submittedTabIds.has(20));
+        assertFalse(app.submittedTabIds.has(10));
+        assertTrue(app.$.faviconGroup.submittedTabIds.has(20));
+
+        const items =
+            app.$.faviconGroup.shadowRoot.querySelectorAll('.favicon-item');
+        assertEquals(2, items.length);
+      });
+
+  test('Stops updating after element is disconnected', async () => {
+    app.remove();
+
+    browserProxy.callbackRouterRemote.onTabContextUpdated(
+        [createTab(10, 'https://www.google.com')], [10]);
+    await browserProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(0, app.tabs.length);
+    assertEquals(0, app.submittedTabIds.size);
   });
 });
