@@ -9,6 +9,10 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "third_party/omnibox_proto/input_type.pb.h"
+#import "third_party/omnibox_proto/input_type_config.pb.h"
+#import "third_party/omnibox_proto/rule_set.pb.h"
+#import "third_party/omnibox_proto/searchbox_config.pb.h"
 
 namespace {
 // Default maximum number of total inputs allowed in the mock searchbox config.
@@ -32,6 +36,12 @@ MockIOSChromeAimEligibilityService::MockIOSChromeAimEligibilityService(
   ON_CALL(*this, IsServerEligibilityEnabled)
       .WillByDefault(testing::Return(false));
   config().mutable_rule_set()->set_max_total_inputs(kDefaultMaxTotalInputs);
+  config().add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  config().add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  config().add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
 }
 
 MockIOSChromeAimEligibilityService::~MockIOSChromeAimEligibilityService() =

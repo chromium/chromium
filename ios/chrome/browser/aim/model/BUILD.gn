@@ -96,6 +96,7 @@ source_set("test_support") {
     "//ios/chrome/browser/signin/model",
     "//services/network/public/cpp",
     "//testing/gmock",
+    "//third_party/omnibox_proto",
   ]
 }
 
