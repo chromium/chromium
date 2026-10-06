@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_AUTOFILL_DELEGATE_ANDROID_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_AUTOFILL_DELEGATE_ANDROID_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_autofill_delegate.h"
@@ -65,12 +67,33 @@ class TouchToFillAutofillDelegateAndroidImpl
     kSuppressing,
   };
 
+  // The notices that can be shown in the TouchToFill bottom sheet.
+  enum class NoticeType {
+    // Informs the user that data from their Google Account can be filled.
+    kPersonalContext,
+  };
+
+  // Returns the notice that should be shown for the given form field, or
+  // `std::nullopt` if no notice should be shown.
+  std::optional<NoticeType> GetNoticeToShow(FormGlobalId form_id,
+                                            FieldGlobalId field_id);
+
+  // Shows `notice` via the client. Returns whether it was shown.
+  bool ShowNotice(NoticeType notice);
+
+  void OnPersonalContextNoticeAcknowledged();
+
   void TriggerAskForValuesToFill();
 
   const raw_ref<BrowserAutofillManager> manager_;
 
   TouchToFillAutofillState ttf_autofill_state_ =
       TouchToFillAutofillState::kInactive;
+
+  // The notice that is currently shown, or was shown last. It determines which
+  // notice-specific logic (e.g. prefs or settings page) runs on user
+  // interactions. Unset until a notice has been shown.
+  std::optional<NoticeType> shown_notice_;
 
   FieldGlobalId query_field_id_;
   base::WeakPtrFactory<TouchToFillAutofillDelegateAndroidImpl>

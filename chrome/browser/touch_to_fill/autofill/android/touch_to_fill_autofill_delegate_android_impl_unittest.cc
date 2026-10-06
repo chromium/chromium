@@ -133,10 +133,33 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
 // acknowledged.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        OnNoticeAcknowledgedNotifiesClient) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(true);
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
+      .WillOnce(Return(true));
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+
   delegate().OnNoticeAcknowledged();
   EXPECT_TRUE(autofill_client()
                   .GetPersonalContextFirstRunService()
                   ->is_ambient_autofill_notice_acknowledged());
+}
+
+// Verifies that acknowledging does nothing if no notice has been shown.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       OnNoticeAcknowledgedWithoutShownNoticeDoesNothing) {
+  delegate().OnNoticeAcknowledged();
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalContextFirstRunService()
+                   ->is_ambient_autofill_notice_acknowledged());
 }
 
 // Verifies that trying to show TouchToFill successfully triggers the notice on
@@ -349,21 +372,6 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   // It should NOT be suppressed, so TryToShow should return true.
   EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[1]));
   EXPECT_TRUE(delegate().IsShowingTouchToFill());
-}
-
-// Verifies that acknowledging the notice notifies the client, even if forms
-// have been seen.
-TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
-       OnNoticeLinkClickedOrAcknowledgedOnDismissedMatches) {
-  FormData form = test::CreateTestPersonalInformationFormData();
-  autofill_manager().AddSeenForm(
-      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
-
-  // Verify that onsettingslink or notice acknowledge triggers OnDismissed
-  delegate().OnNoticeAcknowledged();
-  EXPECT_TRUE(autofill_client()
-                  .GetPersonalContextFirstRunService()
-                  ->is_ambient_autofill_notice_acknowledged());
 }
 
 // Verifies that clicking the settings link transitions the state to navigating
