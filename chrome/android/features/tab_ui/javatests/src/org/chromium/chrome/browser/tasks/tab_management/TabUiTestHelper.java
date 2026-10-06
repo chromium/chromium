@@ -61,12 +61,14 @@ import org.hamcrest.Matcher;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.hub.HubLayout;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -76,14 +78,10 @@ import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
-import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
-import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
@@ -93,6 +91,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /** Utilities helper class for tab grid/group tests. */
 public class TabUiTestHelper {
@@ -175,29 +174,38 @@ public class TabUiTestHelper {
     /**
      * Leave tab switcher by tapping "back".
      *
-     * <p>Hops on Public Transit at the tab switcher and presses back to return to the previous tab.
-     * Unlike {@link TabSwitcherStation#leaveHubToPreviousTabViaBack(BasePageStation.Builder)}, the
-     * back press is not retried: a retried press that lands on the page finishes the Activity.
-     *
      * @param cta The current running activity.
-     * @return the {@link CtaPageStation} returned to.
      */
-    public static CtaPageStation leaveTabSwitcher(ChromeTabbedActivity cta) {
-        TabModelSelector selector = cta.getTabModelSelector();
-        boolean incognito =
-                ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().isIncognito());
-        TabSwitcherStation tabSwitcher =
-                TrafficControl.hopOnAt(
-                        cta,
-                        incognito
-                                ? IncognitoTabSwitcherStation.from(selector)
-                                : RegularTabSwitcherStation.from(selector));
-        CtaPageStation destination =
-                CtaPageStation.newGenericBuilder()
-                        .initSelectingExistingTab()
-                        .withIncognito(incognito)
-                        .build();
-        return tabSwitcher.pressBackTo().arriveAt(destination);
+    public static void leaveTabSwitcher(ChromeTabbedActivity cta) {
+        LayoutManagerChrome layoutManager = cta.getLayoutManager();
+        LayoutTestUtils.waitForLayout(layoutManager, LayoutType.HUB);
+        // Back press may resolve differently during the show/hide animations. Don't call this until
+        // we are certain the layout is visible.
+        CallbackHelper finishedHidingCallbackHelper = new CallbackHelper();
+        LayoutStateObserver observer =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onFinishedHiding(int layoutType) {
+                        if (layoutType != LayoutType.HUB) return;
+
+                        finishedHidingCallbackHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    layoutManager.addObserver(observer);
+                    cta.onBackPressed();
+                });
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        try {
+            finishedHidingCallbackHelper.waitForOnly();
+        } catch (TimeoutException e) {
+            throw new AssertionError("LayoutType.HUB never finished hiding.", e);
+        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    layoutManager.removeObserver(observer);
+                });
     }
 
     /**
