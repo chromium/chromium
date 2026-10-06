@@ -1534,7 +1534,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_PROFILE_ROW_VERIFY_MESSAGE" desc="A label to indicate that the profile needs credential verification (reauthentication). This is a shorter version of 'Verify it's you' that is used in other places.">
           Verify
         </message>
-        <if expr="not use_titlecase">
         <if expr="is_win or is_macosx or is_linux">
           <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item">
             Relaunch to update
@@ -1543,6 +1542,7 @@ are declared in tools/grit/grit_args.gni.
             Your tabs will reopen
           </message>
         </if>
+        <if expr="not use_titlecase">
           <message name="IDS_SHOW_AS_TAB" desc="The text label for the Show As tab menu item">
             &amp;Show as tab
           </message>
@@ -1629,17 +1629,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
         </if>
         <if expr="use_titlecase">
-
-
-
-          <if expr="is_win or is_macosx or is_linux">
-              <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="In Title Case: Alternate text label of the relaunch to update Chrome menu item">
-                Relaunch to Update
-              </message>
-            <message name="IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT" desc="In Title Case: Minor text for the alternate text label of the relaunch to update Chrome menu item">
-              Your tabs will reopen
-            </message>
-          </if>
           <message name="IDS_SHOW_AS_TAB" desc="In Title Case: The text label for the Show As tab menu item">
             &amp;Show As Tab
           </message>
