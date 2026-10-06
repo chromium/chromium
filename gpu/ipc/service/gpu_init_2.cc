@@ -457,7 +457,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gpu_sandbox_start_early) {
     // The sandbox will be started earlier than usual (i.e. before GL) so
     // execute the pre-sandbox steps now.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds,
+    sandbox_helper_->PreSandboxStartup(gpu_preferences_, workarounds,
                                        &gpu_info_);
   }
 
@@ -532,7 +532,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   // restarting the GPU process will not help.
   if (!attempted_startsandbox) {
     // The sandbox is not started yet.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds,
+    sandbox_helper_->PreSandboxStartup(gpu_preferences_, workarounds,
                                        &gpu_info_);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -787,7 +787,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   // Collect GPU process info
   if (!gl_disabled) {
-    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences)) {
+    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
       VLOG(1) << "gpu::CollectGpuExtraInfo failed";
       return false;
     }
@@ -1170,7 +1170,7 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
   if (!gl_disabled) {
-    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences)) {
+    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
       VLOG(1) << "gpu::CollectGpuExtraInfo failed";
     }
   }
