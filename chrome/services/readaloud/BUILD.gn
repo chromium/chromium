@@ -7,6 +7,7 @@ import("//media/media_options.gni")
 source_set("readaloud") {
   public = [
     "audio_renderer/read_aloud_audio_renderer.h",
+    "audio_renderer/word_boundary_queue.h",
     "audio_segment_queue.h",
     "chunking/text_chunker.h",
     "decoded_audio_segment.h",
@@ -23,6 +24,7 @@ source_set("readaloud") {
   ]
   sources = [
     "audio_renderer/read_aloud_audio_renderer.cc",
+    "audio_renderer/word_boundary_queue.cc",
     "audio_segment_queue.cc",
     "chunking/text_chunker.cc",
     "decoded_audio_segment.cc",
@@ -63,6 +65,7 @@ source_set("unit_tests") {
 
   sources = [
     "audio_renderer/read_aloud_audio_renderer_unittest.cc",
+    "audio_renderer/word_boundary_queue_unittest.cc",
     "audio_segment_queue_unittest.cc",
     "chunking/text_chunker_unittest.cc",
     "decoded_audio_segment_unittest.cc",
