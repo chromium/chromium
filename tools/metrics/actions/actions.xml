@@ -16913,7 +16913,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSPrivacySafeBrowsingSettingsCloseWithSwipe">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when Privacy Safe Browsing Settings UI was dismissed using swipe
@@ -16954,7 +16954,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSSafeBrowsingEnhancedProtectionSettingsCloseWithSwipe">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when Safe Browsing Enhanced Protection Settings UI was dismissed
@@ -16963,7 +16963,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSSafeBrowsingStandardProtectionSettingsCloseWithSwipe">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when Safe Browsing Standard Protection Settings UI was dismissed
@@ -21371,7 +21371,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileLockdownModeSettingsBack">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when user goes back from Safe Browsing Standard Protection Settings
@@ -21380,7 +21380,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileLockdownModeSettingsClose">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when Safe Browsing Standard Protection Settings UI was dismissed.
@@ -23039,7 +23039,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePrivacySafeBrowsingSettingsBack">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when user goes back from Privacy Safe Browsing Settings UI to root
@@ -23048,7 +23048,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePrivacySafeBrowsingSettingsClose">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when Privacy Safe Browsing Settings UI was dismissed. iOS only.
@@ -23380,7 +23380,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSafeBrowsingEnhancedProtectionSettingsBack">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when user goes back from Safe Browsing Enhanced Protection Settings
@@ -23389,7 +23389,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSafeBrowsingEnhancedProtectionSettingsClose">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when Safe Browsing Enhanced Protection Settings UI was dismissed.
@@ -23398,7 +23398,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSafeBrowsingStandardProtectionSettingsBack">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when user goes back from Safe Browsing Standard Protection Settings
@@ -23407,7 +23407,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileSafeBrowsingStandardProtectionSettingsClose">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>ajuma@chromium.org</owner>
   <description>
     Reported when Safe Browsing Standard Protection Settings UI was dismissed.

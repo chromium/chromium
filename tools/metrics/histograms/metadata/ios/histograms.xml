@@ -2730,7 +2730,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Fullscreen.State" enum="CrFullscreenState"
     expires_after="2027-10-11">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     Logs when a user triggers a fullscreen state change for Chrome on iOS. The
@@ -3526,7 +3526,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Gemini.SignInRequiredSnackbarShown"
     enum="IOSGeminiEntryPoint" expires_after="2026-11-01">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     Records the entry point source from which Gemini was triggered on a page
@@ -4614,7 +4614,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.MainFrameNavigationIsInBrowserLockdownMode" enum="Boolean"
     expires_after="2027-01-04">
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records whether Browser Lockdown Mode is enabled for a main-frame navigation

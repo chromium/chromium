@@ -2244,7 +2244,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.IOS.IsCheckCompletedOnShouldAllowResponse"
     enum="BooleanCompleted" expires_after="2027-05-10">
   <owner>danieltwhite@google.com</owner>
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether the Safe Browsing check is completed when a navigation response
@@ -2256,7 +2256,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.IOS.RepeatedResponseCalled"
     enum="BooleanSubsequentResponse" expires_after="2027-03-08">
   <owner>danieltwhite@google.com</owner>
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether a subsequent Safe Browsing navigation response without a
@@ -2268,7 +2268,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.IOS.TotalDelay" units="ms"
     expires_after="2027-05-11">
   <owner>danieltwhite@google.com</owner>
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the latency between when a navigation response policy decision was
@@ -2281,7 +2281,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.IOS.TotalDelay2{UserCategory}" units="ms"
     expires_after="2027-05-31">
   <owner>danieltwhite@google.com</owner>
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the latency between when a navigation response policy decision was
@@ -4910,7 +4910,7 @@ failing to fetch the updates which puts users' security at risk. -->
     name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}LocalDatabaseManager.TimeSinceLastUpdateResponse"
     units="ms" expires_after="2027-04-05">
   <owner>danieltwhite@google.com</owner>
-  <owner>joemerramos@chromium.org</owner>
+  <owner>joemerramos@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time since the last network response was received for a request
