@@ -32,6 +32,16 @@ bool IsFileWofCompressed(const base::FilePath& path);
 // storage layer needs to know. That is what makes it safe to apply to files
 // that are memory mapped, as these are.
 //
+// Nothing is added until Windows setup, OOBE included, has finished on the
+// machine, which Windows also waits for before it compresses its own binaries.
+// Until then the machine may be an image under construction: OEM and
+// enterprise imaging pipelines boot images into audit mode, run installers
+// there, and then service, copy or capture the result. A WOF compressed file
+// stays readable only if every tool involved preserves both its reparse point
+// and the hidden stream that holds its data. Each update installs to a new
+// version directory, so such a machine picks up compression with its first
+// update after Windows setup finishes.
+//
 // The item is best effort and is not rolled back: leaving a file uncompressed
 // is not a failure worth failing an install over.
 void AddWofCompressionWorkItems(const base::FilePath& version_dir,
