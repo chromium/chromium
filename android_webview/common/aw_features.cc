@@ -308,7 +308,7 @@ BASE_FEATURE(kWebViewNavigateDrainPrefetch, base::FEATURE_ENABLED_BY_DEFAULT);
 // cookie loss and CHECK failures when cookies are set before WebView is fully
 // initialized.
 BASE_FEATURE(kWebViewNonBlockingCookieStoreHandoff,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, opts in WebView to GMSCore's bindService optimizations.
 BASE_FEATURE(kWebViewOptInToGmsBindServiceOptimization,
