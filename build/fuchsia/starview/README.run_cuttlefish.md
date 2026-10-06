@@ -72,7 +72,7 @@ The launch pipeline performs the following steps:
 
 2. **Disk Generation**:
    * The ZIP is extracted to a temporary directory.
-   * It creates VM metadata partitions (`misc.img`, `metadata.img`, `uboot_env.img`) and resizes the `userdata.img` filesystem.
+   * It creates VM metadata partitions (`misc.img`, `metadata.img`, `uboot_env.img`) and generates a 16GB blank `userdata.img` partition.
    * It invokes `partition_creator.py` to construct a custom GUID Partition Table header file (`disk.gpt`) and VMDK descriptor (`disk.vmdk`) mapping the AOSP partitions to their corresponding Logical Block Addresses (LBAs). Crosvm/QEMU boots directly from this virtual disk.
 
 3. **Mock HVC Console Responder**:

@@ -119,12 +119,14 @@ def boot_cuttlefish(args, cuttlefish_zip, bootloader, temp_dir):
         f.truncate(f.seek(0, os.SEEK_END) + 8 * 1024 * 1024 * 1024)
 
     userdata_img = os.path.join(temp_dir, 'userdata.img')
-    assert os.path.exists(userdata_img), f"userdata.img not found in {temp_dir}"
-    simg2img.unsparse_in_place(userdata_img)
-    # Ensure sufficient capacity on /data for installing large APKs (such as
-    # Chrome) and writing runtime dex caches.
-    with open(userdata_img, 'r+b') as f:
-        f.truncate(f.seek(0, os.SEEK_END) + 16 * 1024 * 1024 * 1024)
+    # Generate a fresh, blank userdata partition with 16GB capacity for
+    # installing large test APKs (such as components_unittests) and writing
+    # runtime dex caches. Because userdata is flagged with formattable in
+    # Android's fstab, Android fs_mgr will format the partition to fill the full
+    # disk size on first boot. Overwriting the prebuilt userdata.img avoids
+    # inheriting a fixed-size ext4 filesystem that truncate cannot expand without
+    # resize2fs.
+    partition_creator.create_zero_image(userdata_img, 16384)
 
     partition_creator.create_zero_image(
         os.path.join(temp_dir, 'metadata.img'), 16
