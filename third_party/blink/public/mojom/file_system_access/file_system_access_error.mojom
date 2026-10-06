@@ -31,6 +31,10 @@ enum FileSystemAccessStatus {
   // The operation failed with a mojom_base.mojom.FileError describing the
   // underlying cause.
   kFileError,
+  // Data provided to an operation does not meet constraints (e.g. hash mismatch).
+  kDataError,
+  // Storage quota was exceeded during the operation.
+  kQuotaExceededError,
 };
 
 // Errors reported by File System Access API methods.

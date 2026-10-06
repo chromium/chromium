@@ -98,6 +98,7 @@ mojom("mojom_platform") {
     "cookie_store/cookie_store.mojom",
     "cpu_performance.mojom",
     "crash/crash_memory_metrics_reporter.mojom",
+    "cross_origin_storage/cross_origin_storage.mojom",
     "css/preferred_color_scheme.mojom",
     "css/preferred_contrast.mojom",
     "data_transfer/data_transfer.mojom",

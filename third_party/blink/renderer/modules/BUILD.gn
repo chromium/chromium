@@ -82,6 +82,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/content_index",
     "//third_party/blink/renderer/modules/cookie_store",
     "//third_party/blink/renderer/modules/credentialmanagement",
+    "//third_party/blink/renderer/modules/cross_origin_storage",
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/csspaint",
     "//third_party/blink/renderer/modules/compression",

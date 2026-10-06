@@ -64,6 +64,13 @@ void Reject(ScriptPromiseResolverBase* resolver,
       // TODO(mek): We might want to support custom messages for these cases.
       resolver->Reject(file_error::CreateDOMException(error.file_error));
       break;
+    case mojom::blink::FileSystemAccessStatus::kDataError:
+      resolver->RejectWithDOMException(DOMExceptionCode::kDataError, message);
+      break;
+    case mojom::blink::FileSystemAccessStatus::kQuotaExceededError:
+      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
+                                       message);
+      break;
   }
 }
 
