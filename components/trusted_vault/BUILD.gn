@@ -34,6 +34,8 @@ static_library("trusted_vault") {
       "legacy_standalone_trusted_vault_storage.h",
       "legacy_standalone_trusted_vault_storage_adapter.cc",
       "legacy_standalone_trusted_vault_storage_adapter.h",
+      "local_domains_storage.cc",
+      "local_domains_storage.h",
       "physical_device_recovery_factor.cc",
       "physical_device_recovery_factor.h",
       "proto_string_bytes_conversion.cc",
@@ -105,6 +107,7 @@ if (!is_android && !is_ios) {
       "download_keys_response_handler_unittest.cc",
       "legacy_standalone_trusted_vault_storage_adapter_unittest.cc",
       "legacy_standalone_trusted_vault_storage_unittest.cc",
+      "local_domains_storage_unittest.cc",
       "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
       "proto_time_conversion_unittest.cc",
@@ -180,6 +183,8 @@ static_library("test_support") {
 
   if (!is_android && !is_ios) {
     sources += [
+      "test/fake_local_domains_storage_file_access.cc",
+      "test/fake_local_domains_storage_file_access.h",
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
       "test/fake_security_domains_url_loader_factory.cc",
