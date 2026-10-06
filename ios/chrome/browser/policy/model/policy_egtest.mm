@@ -818,6 +818,32 @@ const char kTestPageText[] = "pony";
 }
 
 // Tests that the UI notifying the user of their sign out is displayed when the
+// policy changes while the app is launched.
+- (void)testBrowserSignInDisabledWhileAppVisibleFromManagedAccount {
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+
+  // Force sign out.
+  SetPolicy(0, policy::key::kBrowserSignin);
+
+  // Check that the sign out pop up is presented.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                     IDS_IOS_ENTERPRISE_SIGNED_OUT))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  bool promptPresented = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(promptPresented, @"'Signed Out' prompt not shown");
+}
+
+// Tests that the UI notifying the user of their sign out is displayed when the
 // primary account is restricted.
 - (void)testBrowserAccountRestrictedAlert {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

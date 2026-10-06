@@ -1290,7 +1290,12 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(
           self.sceneState.profileState.profile);
-  if (authenticationService->SigninEnabled()) {
+  if (authenticationService->GetServiceStatus() !=
+      AuthenticationService::ServiceStatus::SigninDisabledByUser) {
+    // If sign-in becomes disabled because of a policy change, the
+    // PolicyWatcherBrowserAgent does the sign-out. Sign-in can’t become
+    // disabled due to Internal, so this method only needs to consider
+    // SigninDisabledByUser
     return;
   }
   // If sign-in is disabled, switch to personal profile and sign-out.
@@ -1306,7 +1311,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
                                     std::move(continuation));
     return;
   }
-  if (![self isSignedIn]) {
+  if ([self isSignedIn]) {
     authenticationService->SignOut(
         signin_metrics::ProfileSignout::kPrefChanged);
   }
