@@ -40,9 +40,22 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
       /**
        * True if confirmation dialog backdrop should be hidden.
        */
-      shouldHideBackdrop_: {
+      shouldHideBackdrop: {
         type: Boolean,
         value: true,
+      },
+
+      /**
+       * Shows the confirmation popup when true.
+       */
+      showPopup: {
+        type: Boolean,
+        value: false,
+      },
+
+      apps: {
+        type: Array,
+        value: () => [],
       },
     };
   }
@@ -74,18 +87,14 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
     });
   }
 
-  private shouldHideBackdrop_: boolean;
-  // Shows the confirmation popup when true.
-  private showPopup_: boolean;
-
-  private apps: App[];
-
+  declare protected shouldHideBackdrop: boolean;
+  declare protected showPopup: boolean;
+  declare protected apps: App[];
   private browserProxy_: ExtendedUpdatesBrowserProxy;
 
   constructor() {
     super();
 
-    this.apps = [];
     this.browserProxy_ = ExtendedUpdatesBrowserProxy.getInstance();
   }
 
@@ -104,7 +113,7 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
   }
 
   private onEnableButtonClick_(): void {
-    this.showPopup_ = true;
+    this.showPopup = true;
   }
 
   private onCancelButtonClick_(): void {
@@ -117,7 +126,7 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
   }
 
   private onPopupCancelButtonClick_(): void {
-    this.showPopup_ = false;
+    this.showPopup = false;
   }
 }
 

@@ -41,6 +41,10 @@ export class TestExtendedUpdatesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('closeDialog');
   }
 
+  setInstalledAndroidApps(apps: App[]): void {
+    this.apps = apps;
+  }
+
   getInstalledAndroidApps(): Promise<App[]> {
     this.methodCalled('getInstalledAndroidApps');
     return Promise.resolve(this.apps);

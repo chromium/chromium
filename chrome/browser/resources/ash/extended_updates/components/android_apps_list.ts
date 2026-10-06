@@ -25,13 +25,13 @@ export class AndroidAppsListElement extends AndroidAppsListElementBase {
   static get properties(): PolymerElementProperties {
     return {
       apps: {
-        type: Array<App>,
-        value: [],
+        type: Array,
+        value: () => [],
       },
     };
   }
 
-  private apps: App[];
+  declare apps: App[];
 
   private iconUrlFromId(app: App): string {
     return `chrome://app-icon/${app.id}/64`;

@@ -5,6 +5,7 @@
 import 'chrome://extended-updates-dialog/app.js';
 
 import {ExtendedUpdatesAppElement} from 'chrome://extended-updates-dialog/app.js';
+import type {App} from 'chrome://extended-updates-dialog/extended_updates.mojom-webui.js';
 import {ExtendedUpdatesBrowserProxy} from 'chrome://extended-updates-dialog/extended_updates_browser_proxy.js';
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -108,6 +109,34 @@ suite('<extended-updates>', () => {
       assertTrue(isVisible(cancelButton));
       cancelButton.click();
       await browserProxy.whenCalled('closeDialog');
+    });
+
+    test('apps property reactive binding', async () => {
+      const mockApps: App[] = [
+        {id: '1', title: 'App 1'},
+        {id: '2', title: 'App 2'},
+      ];
+      browserProxy.setInstalledAndroidApps(mockApps);
+
+      await setupAppElement();
+
+      const androidAppsList =
+          app.shadowRoot!.querySelector('android-apps-list');
+      assertTrue(!!androidAppsList);
+      assertEquals(mockApps, (androidAppsList as any).apps);
+    });
+
+    test('showPopup property reactive binding', async () => {
+      assertEquals(false, (app as any).showPopup);
+      assertPopupVisibility(false);
+
+      const enableButton = getEnableButton();
+      assertTrue(!!enableButton);
+      enableButton.click();
+      await flushTasks();
+
+      assertEquals(true, (app as any).showPopup);
+      assertPopupVisibility(true);
     });
   });
 

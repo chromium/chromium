@@ -145,10 +145,10 @@ found in the LICENSE file.
   </div>
 </oobe-adaptive-dialog>
 
-<template is="dom-if" if="[[showPopup_]]" restamp>
+<template is="dom-if" if="[[showPopup]]" restamp>
   <!-- TODO(b/332618847): Convert to <cros-dialog> once available. -->
   <cr-dialog
-    id="popupDialog" show-on-attach hide-backdrop$="[[shouldHideBackdrop_]]"
+    id="popupDialog" show-on-attach hide-backdrop$="[[shouldHideBackdrop]]"
   >
     <div id="popupTitle" slot="title">$i18n{popupTitle}</div>
     <div id="popupDescription" slot="body">
