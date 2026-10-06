@@ -705,6 +705,34 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
+    public void testCollapseButtonRightClick_ExpandOnHoverFeatureDisabled_NoMenu() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+        createCoordinator();
+        View collapseButton = mCoordinator.getView().findViewById(R.id.collapse_button);
+
+        assertTrue(collapseButton.performContextClick());
+
+        assertNull(mCoordinator.getCollapseButtonContextMenuCoordinatorForTesting());
+    }
+
+    @Test
+    public void testCollapseButtonRightClick_ExpandOnHoverFeatureEnabled_ShowsMenu() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        createCoordinator();
+        View collapseButton = mCoordinator.getView().findViewById(R.id.collapse_button);
+
+        assertTrue(collapseButton.performContextClick());
+
+        VerticalTabCollapseButtonContextMenuCoordinator menuCoordinator =
+                mCoordinator.getCollapseButtonContextMenuCoordinatorForTesting();
+        assertNotNull(menuCoordinator);
+        assertTrue(menuCoordinator.isMenuShowing());
+        assertNull(mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
+    @Test
     public void testTabItemInteraction_WithTouchPointLaunchesMenuAtPreciseLocation() {
         TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
 

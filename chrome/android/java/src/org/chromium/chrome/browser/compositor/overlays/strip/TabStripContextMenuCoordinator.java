@@ -56,6 +56,7 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 /**
  * Coordinator for the context menu on the tab strip. It is responsible for creating a list of menu
@@ -140,57 +141,10 @@ public class TabStripContextMenuCoordinator {
         View contentView = buildMenuView(isIncognito);
         if (contentView == null) return;
 
-        Drawable background = TabOverflowMenuCoordinator.getMenuBackground(mContext, isIncognito);
-        TabOverflowMenuCoordinator.offsetPopupRect(
-                mContext, isIncognito, anchorViewRectProvider.getRect());
         View decorView = activity.getWindow().getDecorView();
-
-        TouchTrackingListView touchTrackingListView =
-                contentView.findViewById(R.id.tab_group_action_menu_list);
-        ListMenuItemAdapter adapter = (ListMenuItemAdapter) touchTrackingListView.getAdapter();
-
-        // Similar to Chrome Desktop (W/M/L), compute the translated strings' width
-        // dynamically, clamp the value between a preselected
-        // tab_strip_context_menu_(min_width/max_width), and apply the result as the
-        // DesiredContentWidth. This ensures that each context menu item is always one line long,
-        // and does not wrap to 2 or more lines for long strings.
-        int[] contentDimensions =
-                UiUtils.computeListAdapterContentDimensions(adapter, touchTrackingListView);
-        int minWidthPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width);
-        int maxWidthPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width);
-        int marginPx =
-                mContext.getResources().getDimensionPixelSize(R.dimen.menu_horizontal_margin);
-        int windowWidthPx = mContext.getResources().getDisplayMetrics().widthPixels;
-        int popupWidthPx =
-                UiUtils.computeMenuWidth(
-                        contentDimensions[0], minWidthPx, maxWidthPx, marginPx, windowWidthPx);
-
-        AnchoredPopupWindow.Builder builder =
-                new AnchoredPopupWindow.Builder(
-                                mContext,
-                                decorView,
-                                background,
-                                () -> contentView,
-                                anchorViewRectProvider)
-                        .setFocusable(true)
-                        .setOutsideTouchable(true)
-                        .setHorizontalOverlapAnchor(true)
-                        .setVerticalOverlapAnchor(true)
-                        .setAllowOverlapCaptionBar(true)
-                        .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
-                        .setMaxWidth(maxWidthPx)
-                        .setDesiredContentWidth(popupWidthPx)
-                        .setAllowNonTouchableSize(true)
-                        .setElevation(
-                                contentView
-                                        .getResources()
-                                        .getDimension(R.dimen.tab_overflow_menu_elevation))
-                        .setAnimateFromAnchor(true);
-        mMenuWindow = builder.build();
+        mMenuWindow =
+                buildMenuWindow(
+                        mContext, decorView, contentView, anchorViewRectProvider, isIncognito);
         mMenuWindow.addOnDismissListener(
                 () -> {
                     if (mOnMenuDismissedCallback != null) {
@@ -335,21 +289,7 @@ public class TabStripContextMenuCoordinator {
         configureMenuItems(modelList, isIncognito);
         if (modelList.isEmpty()) return null;
 
-        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
-        View contentView =
-                LayoutInflater.from(mContext)
-                        .inflate(R.layout.tab_switcher_action_menu_layout, null);
-        ListMenuUtils.clipContentViewOutline(contentView, R.attr.popupBgCornerRadius);
-
-        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
-        TouchTrackingListView touchTrackingListView =
-                contentView.findViewById(R.id.tab_group_action_menu_list);
-        ListMenuItemAdapter adapter =
-                createAdapter(modelList, Set.of(), getListMenuDelegate(contentView));
-        touchTrackingListView.setItemsCanFocus(true);
-        touchTrackingListView.setAdapter(adapter);
-
-        return contentView;
+        return inflateMenuContentView(mContext, modelList, this::getListMenuDelegate);
     }
 
     @VisibleForTesting
@@ -434,5 +374,95 @@ public class TabStripContextMenuCoordinator {
     /** Returns whether the context menu is currently showing. */
     public boolean isMenuShowing() {
         return mMenuWindow != null && mMenuWindow.isShowing();
+    }
+
+    /**
+     * Inflates the content view of a menu styled like the tab strip context menu, and populates it
+     * with the given items.
+     *
+     * @param context The {@link Context} used to inflate the view.
+     * @param modelList The menu items to show.
+     * @param delegateForContentView Returns the {@link Delegate} handling item clicks for the given
+     *     content view.
+     * @return The inflated content view.
+     */
+    public static View inflateMenuContentView(
+            Context context, ModelList modelList, Function<View, Delegate> delegateForContentView) {
+        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
+        View contentView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.tab_switcher_action_menu_layout, /* root= */ null);
+        ListMenuUtils.clipContentViewOutline(contentView, R.attr.popupBgCornerRadius);
+
+        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
+        TouchTrackingListView touchTrackingListView =
+                contentView.findViewById(R.id.tab_group_action_menu_list);
+        ListMenuItemAdapter adapter =
+                createAdapter(modelList, Set.of(), delegateForContentView.apply(contentView));
+        touchTrackingListView.setItemsCanFocus(true);
+        touchTrackingListView.setAdapter(adapter);
+        return contentView;
+    }
+
+    /**
+     * Builds, but does not show, a popup window styled and sized like the tab strip context menu.
+     *
+     * @param context The {@link Context} used to build the popup.
+     * @param decorView The decor view of the window in which the popup is shown.
+     * @param contentView The content view, inflated by {@link #inflateMenuContentView}.
+     * @param anchorViewRectProvider The {@link RectProvider} to anchor the popup to.
+     * @param isIncognito Whether the popup is shown in incognito mode.
+     * @return The popup window.
+     */
+    public static AnchoredPopupWindow buildMenuWindow(
+            Context context,
+            View decorView,
+            View contentView,
+            RectProvider anchorViewRectProvider,
+            boolean isIncognito) {
+        Drawable background = TabOverflowMenuCoordinator.getMenuBackground(context, isIncognito);
+        TabOverflowMenuCoordinator.offsetPopupRect(
+                context, isIncognito, anchorViewRectProvider.getRect());
+
+        TouchTrackingListView touchTrackingListView =
+                contentView.findViewById(R.id.tab_group_action_menu_list);
+        ListMenuItemAdapter adapter = (ListMenuItemAdapter) touchTrackingListView.getAdapter();
+
+        // Similar to Chrome Desktop (W/M/L), compute the translated strings' width
+        // dynamically, clamp the value between a preselected
+        // tab_strip_context_menu_(min_width/max_width), and apply the result as the
+        // DesiredContentWidth. This ensures that each context menu item is always one line long,
+        // and does not wrap to 2 or more lines for long strings.
+        int[] contentDimensions =
+                UiUtils.computeListAdapterContentDimensions(adapter, touchTrackingListView);
+        int minWidthPx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width);
+        int maxWidthPx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width);
+        int marginPx = context.getResources().getDimensionPixelSize(R.dimen.menu_horizontal_margin);
+        int windowWidthPx = context.getResources().getDisplayMetrics().widthPixels;
+        int popupWidthPx =
+                UiUtils.computeMenuWidth(
+                        contentDimensions[0], minWidthPx, maxWidthPx, marginPx, windowWidthPx);
+
+        return new AnchoredPopupWindow.Builder(
+                        context, decorView, background, () -> contentView, anchorViewRectProvider)
+                .setFocusable(true)
+                .setOutsideTouchable(true)
+                .setHorizontalOverlapAnchor(true)
+                .setVerticalOverlapAnchor(true)
+                .setAllowOverlapCaptionBar(true)
+                .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
+                .setMaxWidth(maxWidthPx)
+                .setDesiredContentWidth(popupWidthPx)
+                .setAllowNonTouchableSize(true)
+                .setElevation(
+                        contentView
+                                .getResources()
+                                .getDimension(R.dimen.tab_overflow_menu_elevation))
+                .setAnimateFromAnchor(true)
+                .build();
     }
 }

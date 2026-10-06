@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalEx
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -193,6 +194,8 @@ public class VerticalTabListCoordinator {
     private final List<VerticalTabListItemTouchHelperCallback> mTouchHelperCallbacks =
             new ArrayList<>();
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
+    private @Nullable VerticalTabCollapseButtonContextMenuCoordinator
+            mCollapseButtonContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private @Nullable VerticalTabListItemTouchHelperCallback mMainTouchHelperCallback;
@@ -831,10 +834,20 @@ public class VerticalTabListCoordinator {
                     });
         }
 
-        // Context menus should not appear upon right-clicking the collapse button.
+        // Right-clicking the collapse button shows a menu to turn expand-on-hover on or off. The
+        // empty space context menu should not appear there.
         View collapseButton = mContainerView.findViewById(R.id.collapse_button);
         if (collapseButton != null) {
-            collapseButton.setOnContextClickListener(v -> true);
+            collapseButton.setOnTouchListener(createLocalCoordinateTrackingTouchListener());
+            collapseButton.setOnContextClickListener(
+                    v -> {
+                        if (VerticalTabUtils.isExpandOnHoverFeatureEnabled()) {
+                            showCollapseButtonContextMenu(
+                                    calculateTouchAnchor(v, mLastTouchPoint.x, mLastTouchPoint.y),
+                                    activity);
+                        }
+                        return true;
+                    });
         }
     }
 
@@ -886,6 +899,11 @@ public class VerticalTabListCoordinator {
         if (mTabStripContextMenuCoordinator != null) {
             mTabStripContextMenuCoordinator.destroy();
             mTabStripContextMenuCoordinator = null;
+        }
+
+        if (mCollapseButtonContextMenuCoordinator != null) {
+            mCollapseButtonContextMenuCoordinator.destroy();
+            mCollapseButtonContextMenuCoordinator = null;
         }
 
         if (mDesktopWindowStateManager != null && mAppHeaderObserver != null) {
@@ -2175,6 +2193,18 @@ public class VerticalTabListCoordinator {
         mTabStripContextMenuCoordinator.showMenu(rectProvider, isIncognito, activity);
     }
 
+    private void showCollapseButtonContextMenu(RectProvider rectProvider, Activity activity) {
+        if (mCollapseButtonContextMenuCoordinator == null) {
+            mCollapseButtonContextMenuCoordinator =
+                    new VerticalTabCollapseButtonContextMenuCoordinator(
+                            activity, this::onContextMenuDismissed);
+        }
+
+        boolean isIncognito = mTabModelSelector.getCurrentModel().isIncognitoBranded();
+        mTabItemHoverController.hideHoverCard();
+        mCollapseButtonContextMenuCoordinator.showMenu(rectProvider, isIncognito);
+    }
+
     /** Called when any of the rail's context menus is dismissed. */
     private void onContextMenuDismissed() {
         mTabItemHoverController.resetHoverState();
@@ -2347,6 +2377,9 @@ public class VerticalTabListCoordinator {
         if (mTabStripContextMenuCoordinator != null) mTabStripContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
+        if (mCollapseButtonContextMenuCoordinator != null) {
+            mCollapseButtonContextMenuCoordinator.dismiss();
+        }
     }
 
     private boolean isAnyContextMenuShowing() {
@@ -2355,7 +2388,9 @@ public class VerticalTabListCoordinator {
                 || (mTabContextMenuCoordinator != null
                         && mTabContextMenuCoordinator.isMenuShowing())
                 || (mTabGroupContextMenuCoordinator != null
-                        && mTabGroupContextMenuCoordinator.isMenuShowing());
+                        && mTabGroupContextMenuCoordinator.isMenuShowing())
+                || (mCollapseButtonContextMenuCoordinator != null
+                        && mCollapseButtonContextMenuCoordinator.isMenuShowing());
     }
 
     private void updateSpacerVisibility(@Nullable AppHeaderState appHeaderState) {
@@ -2383,6 +2418,11 @@ public class VerticalTabListCoordinator {
 
     @Nullable TabStripContextMenuCoordinator getTabStripContextMenuCoordinatorForTesting() {
         return mTabStripContextMenuCoordinator;
+    }
+
+    @Nullable VerticalTabCollapseButtonContextMenuCoordinator
+            getCollapseButtonContextMenuCoordinatorForTesting() {
+        return mCollapseButtonContextMenuCoordinator;
     }
 
     PropertyModel getContainerModelForTesting() {
