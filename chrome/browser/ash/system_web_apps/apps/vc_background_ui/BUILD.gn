@@ -42,6 +42,7 @@ static_library("vc_background_ui") {
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//chromeos/strings",
     "//components/manta",
+    "//components/session_manager/core",
     "//media/capture:capture_lib",
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:mojom_platform_shared_cpp_sources",

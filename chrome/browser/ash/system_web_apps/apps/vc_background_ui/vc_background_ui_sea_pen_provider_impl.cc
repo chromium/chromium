@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -177,11 +177,11 @@ void VcBackgroundUISeaPenProviderImpl::DeleteRecentSeaPenImage(
 
 void VcBackgroundUISeaPenProviderImpl::OnCameraEffectChanged(
     const cros::mojom::EffectsConfigPtr& new_effects) {
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user, base::NotFatalUntil::M160);
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session, base::NotFatalUntil::M160);
 
-  if (active_user->GetAccountId() !=
+  if (active_session->account_id() !=
       personalization_app::GetAccountId(profile_)) {
     DVLOG(1) << __func__ << " ignore camera effect update for other user";
     return;

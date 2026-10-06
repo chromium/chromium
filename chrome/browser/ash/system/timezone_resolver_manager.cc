@@ -18,17 +18,19 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/preferences/preferences.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/timezone/timezone_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
@@ -290,20 +292,18 @@ int TimeZoneResolverManager::GetEffectiveAutomaticTimezoneManagementSetting(
 }
 
 void TimeZoneResolverManager::OnUserProfileLoaded(const AccountId& account_id) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
   system::UpdateSystemTimezone(local_state_.get(), profile);
 
-  auto* user_manager = user_manager::UserManager::Get();
-  const auto* user = user_manager->FindUser(account_id);
-  if (!user) {
-    return;
-  }
-
   // In Multi-Profile mode only primary user settings are in effect.
-  if (user != user_manager->GetPrimaryUser()) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session || primary_session->account_id() != account_id) {
     return;
   }
 
+  auto* user_manager = user_manager::UserManager::Get();
   if (!user_manager->IsUserLoggedIn()) {
     return;
   }
