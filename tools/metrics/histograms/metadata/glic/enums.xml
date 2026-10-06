@@ -1261,9 +1261,9 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(GlicSelectionAction) -->
 
 <enum name="GlicSelectionAction">
-  <int value="0" label="Nudge Shown"/>
+  <int value="0" label="(Obsolete) Nudge Shown"/>
   <int value="1" label="Widget Shown"/>
-  <int value="2" label="Nudge Clicked"/>
+  <int value="2" label="(Obsolete) Nudge Clicked"/>
   <int value="3" label="Widget Clicked"/>
   <int value="4" label="Widget Dismissed By Button"/>
   <int value="5" label="Widget Dismissed By Click Outside"/>

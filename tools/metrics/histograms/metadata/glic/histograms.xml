@@ -3079,20 +3079,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Selection.NudgeClicked.SelectionLength.{FreState}"
-    units="characters" expires_after="2026-12-31">
-  <owner>gklassen@chromium.org</owner>
-  <owner>vollick@chromium.org</owner>
-  <summary>
-    Records the length of the selected text (in characters) when the Glic
-    selection nudge is clicked.
-  </summary>
-  <token key="FreState">
-    <variant name="PostFre" summary="User has accepted the FRE"/>
-    <variant name="PreFre" summary="User has not accepted the FRE"/>
-  </token>
-</histogram>
-
 <histogram name="Glic.Selection.RemovedDefaultBlockedSitesCount" units="sites"
     expires_after="2026-12-31">
   <owner>wusirui@google.com</owner>

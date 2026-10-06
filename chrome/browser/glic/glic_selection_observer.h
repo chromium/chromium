@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -101,7 +100,7 @@ class GlicSelectionObserver
   virtual void DismissUI(DismissReason reason);
 
  protected:
-  // Updates the Glic UI (nudge or panel) with the selected text.
+  // Updates the Glic UI (widget or panel) with the selected text.
   // Virtual for testing.
   virtual void UpdateSelectionState(const std::u16string& text,
                                     bool is_pending_selection,
@@ -126,10 +125,9 @@ class GlicSelectionObserver
       tabs::TabInterface* tab_interface,
       const std::u16string& selected_text);
 
-  // Shows the selection affordance UI (widget or nudge).
+  // Shows the selection widget.
   // Virtual for testing.
-  virtual void ShowSelectionAffordance(const std::u16string& selected_text,
-                                       BrowserWindowInterface* bwi);
+  virtual void ShowSelectionAffordance(const std::u16string& selected_text);
 
   // Returns true if the selection widget should be shown for the current page.
   bool ShouldShowSelectionWidget();
@@ -184,11 +182,6 @@ class GlicSelectionObserver
   void ProcessInputEvent(std::unique_ptr<blink::WebInputEvent> event);
 
   void OnGlobalPanelShowHide();
-
-  static void InvokeGlicFromSelectionAffordance(
-      std::u16string selected_text,
-      bool is_widget,
-      base::WeakPtr<content::WebContents> web_contents);
 
   void OnAskGemini();
   void OnCopy();
@@ -260,8 +253,6 @@ class GlicSelectionObserver
   std::optional<GURL> generated_link_;
 
   friend class GlicSelectionObserverTest;
-  FRIEND_TEST_ALL_PREFIXES(GlicSelectionObserverTest,
-                           SelectionWordCountMetrics);
 
  protected:
   // True if the user temporarily blocked the selection widget for the current

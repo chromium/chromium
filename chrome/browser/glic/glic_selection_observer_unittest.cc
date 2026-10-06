@@ -172,8 +172,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     send_context_called_ = true;
   }
 
-  void ShowSelectionAffordance(const std::u16string& selected_text,
-                               BrowserWindowInterface* bwi) override {
+  void ShowSelectionAffordance(const std::u16string& selected_text) override {
     show_selection_affordance_called_ = true;
     last_affordance_text_ = selected_text;
   }
@@ -305,6 +304,11 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
 
   void CallOnHide() { observer_->OnHide(); }
   void CallOnAskGemini() { observer_->OnAskGemini(); }
+  // Sets the selected text, then clicks Ask Gemini.
+  void CallOnAskGemini(const std::u16string& selected_text) {
+    observer_->last_selected_text_ = selected_text;
+    observer_->OnAskGemini();
+  }
 
   void CallOnLinkGenerated(
       const GURL& fallback_url,
@@ -316,14 +320,6 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
 
   void CallCopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr) {
     observer_->CopyLinkToHighlight(weak_document_ptr);
-  }
-
-  void InvokeGlicFromSelectionAffordance(
-      std::u16string selected_text,
-      bool is_widget,
-      base::WeakPtr<content::WebContents> web_contents) {
-    GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
-        selected_text, is_widget, web_contents);
   }
 
   std::optional<GURL> GetGeneratedLink() const {
@@ -1006,6 +1002,35 @@ TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowing) {
   EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
 }
 
+// Only normal browser windows show the widget. The panel still gets the
+// selection.
+TEST_F(GlicSelectionObserverTest, UpdateSelectionStateNoWidgetInPopup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+  EXPECT_CALL(mock_bwi, GetType())
+      .WillRepeatedly(testing::Return(BrowserWindowInterface::TYPE_POPUP));
+
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
+}
+
 // Sharing the text selection with the panel does not depend on the inline cue
 // feature, which only controls the selection affordance.
 TEST_F(GlicSelectionObserverTest,
@@ -1422,8 +1447,7 @@ TEST_F(GlicSelectionObserverTest, SelectionWordCountMetrics) {
   base::HistogramTester histogram_tester;
 
   std::u16string text = u"   one   two\nthree\t ";
-  InvokeGlicFromSelectionAffordance(text, /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr());
+  CallOnAskGemini(text);
 
   histogram_tester.ExpectUniqueSample(
       "Glic.Selection.WidgetClicked.SelectionLength.PreFre", text.length(), 1);
@@ -1500,8 +1524,7 @@ TEST_F(GlicSelectionObserverPromptTest,
                              IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_EXPLAIN)))))
       .Times(1);
 
-  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr());
+  CallOnAskGemini(u"Sample selected text");
 }
 
 TEST_F(GlicSelectionObserverPromptTest,
@@ -1528,8 +1551,7 @@ TEST_F(GlicSelectionObserverPromptTest,
                              IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME)))))
       .Times(1);
 
-  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr());
+  CallOnAskGemini(u"Sample selected text");
 }
 
 TEST_F(GlicSelectionObserverPromptTest,
@@ -1550,8 +1572,7 @@ TEST_F(GlicSelectionObserverPromptTest,
       Invoke(testing::Field(&GlicInvokeOptions::prompts, testing::IsEmpty())))
       .Times(1);
 
-  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr());
+  CallOnAskGemini(u"Sample selected text");
 }
 
 // The selected text flow has no live mode UI, so its invocations opt out
@@ -1575,8 +1596,7 @@ TEST_F(GlicSelectionObserverPromptTest,
                                                    LiveModeBehavior::kFail))))
       .Times(1);
 
-  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr());
+  CallOnAskGemini(u"Sample selected text");
 }
 
 TEST_F(GlicSelectionObserverPromptTest,
