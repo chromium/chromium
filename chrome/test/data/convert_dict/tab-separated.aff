@@ -1,0 +1,8 @@
+# This file separates the fields of its SFX lines with tabs instead of spaces.
+# The continuation class must still be converted into an index.
+
+SFX	VERB	Y	1
+SFX	VERB	0	able/ADJECTIVE	.
+
+SFX ADJECTIVE Y 1
+SFX ADJECTIVE 0 s .

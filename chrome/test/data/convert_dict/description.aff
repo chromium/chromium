@@ -1,0 +1,13 @@
+# This file has rules followed by a morphological description, and an AM
+# description table, which Hunspell does not need for spellchecking.
+
+AM 1
+AM po:noun is:plural
+
+SFX ADJECTIVE Y 1
+SFX ADJECTIVE 0 s .
+
+SFX VERB Y 3
+SFX VERB 0 ed . is:past / participle
+SFX VERB 0 able/ADJECTIVE . po:adjective / passive
+SFX VERB 0 -ing . po:noun - gerund

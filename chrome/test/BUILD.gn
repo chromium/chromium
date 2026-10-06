@@ -6547,12 +6547,14 @@ test("unit_tests") {
 
     data += [
       "data/convert_dict/affix-flags.aff",
+      "data/convert_dict/description.aff",
       "data/convert_dict/empty.aff",
       "data/convert_dict/indexed-affix.aff",
       "data/convert_dict/leading-comment.aff",
       "data/convert_dict/other-commands.aff",
       "data/convert_dict/prefix-suffix.aff",
       "data/convert_dict/rep.aff",
+      "data/convert_dict/tab-separated.aff",
     ]
   }
 
