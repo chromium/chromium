@@ -2566,6 +2566,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InAppUpdate.Download.Result"
+    enum="InAppUpdateDownloadResult" expires_after="2027-03-10">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the outcome (success, various failure modes, or user cancellations)
+    of in-app update download operations via Google Play Core in Chrome for
+    Android. Recorded at terminal states and significant milestones during the
+    flexible update flow. FLOW_STARTED records the display of the Play consent
+    dialog; SUCCEEDED records completion of the background download (staged on
+    disk), not final binary swap.
+  </summary>
+</histogram>
+
 <histogram name="Android.InAppUpdate.RestartSnackbar.Event"
     enum="InAppUpdateSnackbarEvent" expires_after="2027-03-10">
   <owner>vakh@chromium.org</owner>

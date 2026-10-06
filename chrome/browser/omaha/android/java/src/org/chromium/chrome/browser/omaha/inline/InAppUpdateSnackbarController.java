@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
  * notify the user that an update is available or ready to install.
  */
 @NullMarked
-public final class InAppUpdateSnackbarController implements SnackbarController {
+final class InAppUpdateSnackbarController implements SnackbarController {
     private static final String TAG = "InAppUpdateFlow";
 
     @VisibleForTesting
@@ -66,25 +66,12 @@ public final class InAppUpdateSnackbarController implements SnackbarController {
      * @param activity The host activity for string resources and lifecycle checks.
      * @param snackbarManager The manager to display the snackbar on.
      * @param onAccept Callback invoked when the user taps the action button ("Update").
-     * @return The active controller instance, or {@code null} if the snackbar was not shown.
-     */
-    public static @Nullable InAppUpdateSnackbarController showDiscovery(
-            Activity activity, SnackbarManager snackbarManager, Runnable onAccept) {
-        return showDiscovery(activity, snackbarManager, onAccept, null);
-    }
-
-    /**
-     * Displays the discovery snackbar if the activity is active and the snackbar manager is ready.
-     *
-     * @param activity The host activity for string resources and lifecycle checks.
-     * @param snackbarManager The manager to display the snackbar on.
-     * @param onAccept Callback invoked when the user taps the action button ("Update").
      * @param onDismiss Optional callback invoked when the snackbar is dismissed without action
      *     (e.g. timeout, swipe, or activity stopped/finishing). Excludes explicit teardown via
      *     {@link #dismiss()}.
      * @return The active controller instance, or {@code null} if the snackbar was not shown.
      */
-    public static @Nullable InAppUpdateSnackbarController showDiscovery(
+    static @Nullable InAppUpdateSnackbarController showDiscovery(
             Activity activity,
             SnackbarManager snackbarManager,
             Runnable onAccept,
@@ -107,25 +94,12 @@ public final class InAppUpdateSnackbarController implements SnackbarController {
      * @param activity The host activity for string resources and lifecycle checks.
      * @param snackbarManager The manager to display the snackbar on.
      * @param onAccept Callback invoked when the user taps the action button ("Restart").
-     * @return The active controller instance, or {@code null} if the snackbar was not shown.
-     */
-    public static @Nullable InAppUpdateSnackbarController showRestart(
-            Activity activity, SnackbarManager snackbarManager, Runnable onAccept) {
-        return showRestart(activity, snackbarManager, onAccept, null);
-    }
-
-    /**
-     * Displays the restart snackbar if the activity is active and the snackbar manager is ready.
-     *
-     * @param activity The host activity for string resources and lifecycle checks.
-     * @param snackbarManager The manager to display the snackbar on.
-     * @param onAccept Callback invoked when the user taps the action button ("Restart").
      * @param onDismiss Optional callback invoked when the snackbar is dismissed without action
      *     (e.g. timeout, swipe, or activity stopped/finishing). Excludes explicit teardown via
      *     {@link #dismiss()}.
      * @return The active controller instance, or {@code null} if the snackbar was not shown.
      */
-    public static @Nullable InAppUpdateSnackbarController showRestart(
+    static @Nullable InAppUpdateSnackbarController showRestart(
             Activity activity,
             SnackbarManager snackbarManager,
             Runnable onAccept,
@@ -153,7 +127,9 @@ public final class InAppUpdateSnackbarController implements SnackbarController {
             Runnable onAccept,
             @Nullable Runnable onDismiss) {
         ThreadUtils.assertOnUiThread();
-        if (activity.isFinishing() || activity.isDestroyed()) {
+        if (activity.isFinishing()
+                || activity.isDestroyed()
+                || activity.isChangingConfigurations()) {
             return null;
         }
         if (!snackbarManager.canShowSnackbar()) {
@@ -251,7 +227,7 @@ public final class InAppUpdateSnackbarController implements SnackbarController {
      * method, so the caller must clear its own controller reference. Calling this method multiple
      * times or after the snackbar has already been dismissed is a safe no-op.
      */
-    public void dismiss() {
+    void dismiss() {
         ThreadUtils.assertOnUiThread();
         if (mIsDismissedOnTeardown) {
             return;

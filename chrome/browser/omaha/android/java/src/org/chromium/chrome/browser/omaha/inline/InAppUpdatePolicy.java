@@ -197,6 +197,12 @@ public final class InAppUpdatePolicy {
         ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_RESTART_BACKOFF);
     }
 
+    static void clearBackoffsForTesting() {
+        ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_DISCOVERY_BACKOFF);
+        ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_RESTART_BACKOFF);
+        ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_FAILURE_BACKOFF);
+    }
+
     private static boolean isBrandedOfficialBuild() {
         if (sIsOfficialBuildForTesting != null) {
             return sIsOfficialBuildForTesting;

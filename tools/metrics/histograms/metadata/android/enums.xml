@@ -1431,6 +1431,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->
 
+<!-- LINT.IfChange(InAppUpdateDownloadResult) -->
+
+<enum name="InAppUpdateDownloadResult">
+  <int value="0" label="Flow Started (Dialog Shown)"/>
+  <int value="1" label="Succeeded (Downloaded)"/>
+  <int value="2" label="Start Failed"/>
+  <int value="3" label="Play Core Failed"/>
+  <int value="4" label="Download Failed"/>
+  <int value="5" label="Prompt Canceled"/>
+  <int value="6" label="Download Canceled"/>
+  <int value="7" label="Send Intent Failed"/>
+  <int value="8" label="Start Exception"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateController.java:InAppUpdateDownloadResult) -->
+
 <!-- LINT.IfChange(InAppUpdateSnackbarEvent) -->
 
 <enum name="InAppUpdateSnackbarEvent">

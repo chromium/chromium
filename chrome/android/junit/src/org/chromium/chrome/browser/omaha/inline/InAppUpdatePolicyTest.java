@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +46,12 @@ public class InAppUpdatePolicyTest {
         InAppUpdatePolicy.setIsOfficialBuildForTesting(true);
     }
 
+    @After
+    public void tearDown() {
+        clearPrefs();
+        DeviceInfo.setIsAutomotiveForTesting(false);
+    }
+
     private static void clearPrefs() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(InAppUpdatePolicy.PREF_KEY_DISCOVERY_BACKOFF);
@@ -52,35 +59,43 @@ public class InAppUpdatePolicyTest {
         ChromeSharedPreferences.getInstance().removeKey(InAppUpdatePolicy.PREF_KEY_RESTART_BACKOFF);
     }
 
-    // Eligibility guards.
+    // Eligibility guards and short-circuiting.
 
     @Test
-    public void testIsEligible_allGuardsPass() {
+    public void testIsEligible_guardsAndPromptBlocking() {
+        // Base case: all guards pass.
         assertTrue(InAppUpdatePolicy.isEligible(mContext));
+        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
+        assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
+
+        // Play Services unavailable blocks eligibility and prompts.
+        ChromiumPlayServicesAvailability.setIsAvailableForTesting(false);
+        assertFalse(InAppUpdatePolicy.isEligible(mContext));
+        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
+        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
+        ChromiumPlayServicesAvailability.setIsAvailableForTesting(true);
+
+        // Unofficial build blocks eligibility and prompts.
+        InAppUpdatePolicy.setIsOfficialBuildForTesting(false);
+        assertFalse(InAppUpdatePolicy.isEligible(mContext));
+        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
+        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
+        InAppUpdatePolicy.setIsOfficialBuildForTesting(true);
+
+        // Automotive blocks eligibility and prompts.
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertFalse(InAppUpdatePolicy.isEligible(mContext));
+        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
+        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
+        DeviceInfo.setIsAutomotiveForTesting(false);
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testIsEligible_featureDisabled() {
+    public void testIsEligible_featureDisabled_blocksPrompts() {
         assertFalse(InAppUpdatePolicy.isEligible(mContext));
-    }
-
-    @Test
-    public void testIsEligible_playServicesUnavailable() {
-        ChromiumPlayServicesAvailability.setIsAvailableForTesting(false);
-        assertFalse(InAppUpdatePolicy.isEligible(mContext));
-    }
-
-    @Test
-    public void testIsEligible_unofficialBuild() {
-        InAppUpdatePolicy.setIsOfficialBuildForTesting(false);
-        assertFalse(InAppUpdatePolicy.isEligible(mContext));
-    }
-
-    @Test
-    public void testIsEligible_automotive() {
-        DeviceInfo.setIsAutomotiveForTesting(true);
-        assertFalse(InAppUpdatePolicy.isEligible(mContext));
+        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
+        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
     }
 
     @Test
@@ -95,57 +110,12 @@ public class InAppUpdatePolicyTest {
         assertTrue(InAppUpdatePolicy.isEligible(mContext));
     }
 
-    // Eligibility short-circuiting inside the prompt predicates.
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testDiscoveryPrompt_blockedWhenIneligible() {
-        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testRestartPrompt_blockedWhenIneligible() {
-        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-    }
-
-    /** Ineligibility must block both prompts regardless of which guard fails. */
-    @Test
-    public void testBothPrompts_blockedWhenPlayServicesUnavailable() {
-        ChromiumPlayServicesAvailability.setIsAvailableForTesting(false);
-
-        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-    }
-
-    // Discovery throttle.
-
-    @Test
-    public void testDiscoveryPrompt_allowedWhenNothingRecorded() {
-        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-    }
-
-    @Test
-    public void testDiscoveryPrompt_blockedAfterUpdateDeclined() {
-        InAppUpdatePolicy.recordUpdateDeclined();
-
-        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-    }
-
-    @Test
-    public void testDiscoveryPrompt_allowedOnceDeclineWindowElapses() {
-        InAppUpdatePolicy.recordUpdateDeclined();
-
-        mFakeTimeRule.advanceMillis(
-                TimeUnit.HOURS.toMillis(InAppUpdatePolicy.DEFAULT_DISCOVERY_BACKOFF_HOURS) + 1);
-
-        assertTrue(
-                "A throttle older than its window must not block",
-                InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-    }
+    // Exact millisecond boundary tests.
 
     @Test
     public void testDiscoveryPrompt_exactBoundary() {
+        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
+
         InAppUpdatePolicy.recordUpdateDeclined();
 
         // 1 ms before the window expires: prompt must remain blocked.
@@ -155,24 +125,6 @@ public class InAppUpdatePolicyTest {
 
         // Advancing 1 ms reaches exactly 24 hours: prompt is allowed (< vs <= boundary).
         mFakeTimeRule.advanceMillis(1);
-        assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-    }
-
-    /** Regression test for the retry storm after a failed download. */
-    @Test
-    public void testDiscoveryPrompt_blockedAfterDownloadFailed() {
-        InAppUpdatePolicy.recordDownloadFailed();
-
-        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-    }
-
-    @Test
-    public void testDiscoveryPrompt_allowedOnceFailureWindowElapses() {
-        InAppUpdatePolicy.recordDownloadFailed();
-
-        mFakeTimeRule.advanceMillis(
-                TimeUnit.HOURS.toMillis(InAppUpdatePolicy.DEFAULT_FAILURE_BACKOFF_HOURS) + 1);
-
         assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
     }
 
@@ -190,10 +142,24 @@ public class InAppUpdatePolicyTest {
         assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
     }
 
-    /**
-     * The failure window is deliberately shorter than the decline window, so an age that has
-     * cleared the former must still be inside the latter.
-     */
+    @Test
+    public void testRestartPrompt_exactBoundary() {
+        assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
+
+        InAppUpdatePolicy.recordRestartDeclined();
+
+        // 1 ms before the restart window expires: prompt must remain blocked.
+        mFakeTimeRule.advanceMillis(
+                TimeUnit.HOURS.toMillis(InAppUpdatePolicy.DEFAULT_RESTART_BACKOFF_HOURS) - 1);
+        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
+
+        // Advancing 1 ms reaches exactly 24 hours: prompt is allowed (< vs <= boundary).
+        mFakeTimeRule.advanceMillis(1);
+        assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
+    }
+
+    // Precedence and cross-throttle independence.
+
     @Test
     public void testFailureWindowIsShorterThanDeclineWindow() {
         long age = TimeUnit.HOURS.toMillis(InAppUpdatePolicy.DEFAULT_FAILURE_BACKOFF_HOURS) + 1;
@@ -210,74 +176,31 @@ public class InAppUpdatePolicyTest {
         assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
     }
 
-    // Restart throttle.
-
     @Test
-    public void testRestartPrompt_allowedWhenNothingRecorded() {
-        assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-    }
-
-    @Test
-    public void testRestartPrompt_blockedAfterRestartDeclined() {
-        InAppUpdatePolicy.recordRestartDeclined();
-
-        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-    }
-
-    @Test
-    public void testRestartPrompt_exactBoundary() {
-        InAppUpdatePolicy.recordRestartDeclined();
-
-        // 1 ms before the restart window expires: prompt must remain blocked.
-        mFakeTimeRule.advanceMillis(
-                TimeUnit.HOURS.toMillis(InAppUpdatePolicy.DEFAULT_RESTART_BACKOFF_HOURS) - 1);
-        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-
-        // Advancing 1 ms reaches exactly 24 hours: prompt is allowed (< vs <= boundary).
-        mFakeTimeRule.advanceMillis(1);
-        assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-    }
-
-    /**
-     * Declining a download must not suppress the offer to relaunch into an update that is already
-     * staged on the device. The payload is already there; the two decisions are unrelated.
-     */
-    @Test
-    public void testRestartPrompt_notBlockedByDeclinedDownload() {
+    public void testThrottles_independenceAndClear() {
+        // Declining download blocks discovery prompt, but not restart prompt.
         InAppUpdatePolicy.recordUpdateDeclined();
-
         assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-    }
+        clearPrefs();
 
-    /** A failed download likewise says nothing about an already staged payload. */
-    @Test
-    public void testRestartPrompt_notBlockedByFailedDownload() {
+        // Failing download blocks discovery prompt, but not restart prompt.
         InAppUpdatePolicy.recordDownloadFailed();
-
         assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-    }
+        clearPrefs();
 
-    @Test
-    public void testDiscoveryPrompt_notBlockedByDeclinedRestart() {
+        // Declining restart blocks restart prompt, but not discovery prompt.
         InAppUpdatePolicy.recordRestartDeclined();
-
         assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
         assertTrue(InAppUpdatePolicy.isDiscoveryPromptAllowed(mContext));
-    }
 
-    @Test
-    public void testClearRestartBackoff_reenablesRestartPrompt() {
-        InAppUpdatePolicy.recordRestartDeclined();
-        assertFalse(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
-
+        // Clearing restart backoff re-enables restart prompt.
         InAppUpdatePolicy.clearRestartBackoff();
-
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
     }
 
-    // Cross-cutting behaviour.
+    // Storage, overrides, and device edge cases.
 
     @Test
     @CommandLineFlags.Add({InAppUpdatePolicy.FORCE_IN_APP_UPDATE})
@@ -290,11 +213,6 @@ public class InAppUpdatePolicyTest {
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
     }
 
-    /**
-     * A timestamp in the future, which happens when the device clock moves backwards, fails open
-     * rather than indefinitely blocking the prompt. The future timestamp is preserved in storage to
-     * avoid query side effects and transient NTP desync wipeouts.
-     */
     @Test
     public void testFutureTimestamp_failsOpenWithoutClearingStorage() {
         long futureTime = TimeUtils.currentTimeMillis() + TimeUnit.HOURS.toMillis(1);

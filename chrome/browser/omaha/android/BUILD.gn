@@ -24,6 +24,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omaha/VersionNumber.java",
     "java/src/org/chromium/chrome/browser/omaha/VersionNumberGetter.java",
     "java/src/org/chromium/chrome/browser/omaha/XMLParser.java",
+    "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateController.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicy.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarController.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarEvent.java",
@@ -33,6 +34,7 @@ android_library("java") {
   deps = [
     ":update_proto_java",
     "$google_play_services_package:google_play_services_base_java",
+    "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:base_shared_preferences_java",
     "//base:service_loader_java",
@@ -53,6 +55,7 @@ android_library("java") {
     "//net/android:net_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:playcore_app_update_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
