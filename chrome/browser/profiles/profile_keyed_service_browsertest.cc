@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -60,6 +61,10 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "components/policy/core/common/features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1167,6 +1172,15 @@ class ProfileKeyedServiceIsolatedModeBrowserTest
         enterprise_isolated_mode::switches::
             kForceEnterpriseIsolatedModeReplacesIncognito);
   }
+
+ private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  // `kForceEnterpriseIsolatedModeReplacesIncognito` is ignored on Stable and
+  // Beta channels, and Chrome-branded builds default to Stable unless
+  // overridden.
+  chrome::ScopedChannelOverride channel_override_{
+      chrome::ScopedChannelOverride::Channel::kDev};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 };
 
 // This test forces the creation of all registered KeyedServices on an
