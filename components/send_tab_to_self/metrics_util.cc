@@ -191,7 +191,7 @@ void RecordScrollVolume(float volume, bool with_restoration) {
 }
 
 void RecordTimeSentToReceived(base::TimeDelta delay) {
-  base::UmaHistogramCustomTimes("Sharing.SendTabToSelf.TimeSentToReceived",
+  base::UmaHistogramCustomTimes("Sharing.SendTabToSelf.TimeSentToReceived2",
                                 delay, base::Milliseconds(100), base::Days(10),
                                 100);
 }

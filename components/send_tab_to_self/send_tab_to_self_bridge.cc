@@ -213,8 +213,9 @@ std::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(entries_.empty());
-  std::optional<syncer::ModelError> error = ApplyIncrementalSyncChanges(
-      std::move(metadata_change_list), std::move(entity_data));
+  std::optional<syncer::ModelError> error =
+      ApplySyncChangesImpl(std::move(metadata_change_list),
+                           std::move(entity_data), /*is_initial_sync=*/true);
   MaybeNotifyModelReady();
   return error;
 }
@@ -223,6 +224,15 @@ std::optional<syncer::ModelError>
 SendTabToSelfBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  return ApplySyncChangesImpl(std::move(metadata_change_list),
+                              std::move(entity_changes),
+                              /*is_initial_sync=*/false);
+}
+
+std::optional<syncer::ModelError> SendTabToSelfBridge::ApplySyncChangesImpl(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+    syncer::EntityChangeList entity_changes,
+    bool is_initial_sync) {
   std::vector<const SendTabToSelfEntry*> added;
 
   // The opened vector will accumulate both added entries that are already
@@ -258,17 +268,26 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
             GetMutableEntryByGUID(remote_entry->GetGUID());
         if (local_entry == nullptr) {
           bool needs_reupload = false;
+          const bool was_opened_before_sync =
+              unknown_opened_entries_.contains(remote_entry->GetGUID());
           // If this device is the target and the entry hasn't been received
           // yet, set the received timestamp.
           if (device_info_tracker_->IsRecentLocalCacheGuid(
                   remote_entry->GetTargetDeviceSyncCacheGuid()) &&
               !remote_entry->IsReceived()) {
             remote_entry->MarkReceived(clock_->Now());
-            RecordTimeSentToReceived(remote_entry->GetReceivedTime() -
-                                     remote_entry->GetSharedTime());
+            // Do not call `RecordTimeSentToReceived` during initial sync
+            // (which downloads historical entries) or when the entry was
+            // already opened via a push notification before Sync finished
+            // downloading it (which would make `received_time` exceed
+            // `opened_time`).
+            if (!is_initial_sync && !was_opened_before_sync) {
+              RecordTimeSentToReceived(remote_entry->GetReceivedTime() -
+                                       remote_entry->GetSharedTime());
+            }
             needs_reupload = true;
           }
-          if (unknown_opened_entries_.contains(remote_entry->GetGUID())) {
+          if (was_opened_before_sync) {
             base::Time opened_time =
                 unknown_opened_entries_[remote_entry->GetGUID()];
             unknown_opened_entries_.erase(remote_entry->GetGUID());

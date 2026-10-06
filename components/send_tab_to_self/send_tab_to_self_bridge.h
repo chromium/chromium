@@ -206,6 +206,12 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // Helper to commit a local mutation of an entry to the store and processor.
   void CommitLocalEntryMutation(const SendTabToSelfEntry& entry);
 
+  // Applies remote sync changes from either initial merge or incremental sync.
+  std::optional<syncer::ModelError> ApplySyncChangesImpl(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+      syncer::EntityChangeList entity_changes,
+      bool is_initial_sync);
+
   // |entries_| is keyed by GUIDs.
   SendTabToSelfEntries entries_;
 
