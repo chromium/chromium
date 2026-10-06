@@ -6,18 +6,20 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
@@ -50,7 +52,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Unit test for {@link CustomTabBottomBarDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabBottomBarDelegateUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -63,17 +64,16 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Mock private CustomTabNightModeStateController mNightModeStateController;
     @Mock private CustomTabActivityTabProvider mTabProvider;
     @Mock private CustomTabCompositorContentInitializer mCompositorContentInitializer;
-    @Mock private CustomTabBottomBarView mBottomBarView;
-    @Mock private View mShadowView;
     @Mock private RemoteViews mRemoteViews;
     @Mock private Intent mIntent;
     @Mock private PendingIntent mRemoteViewsPendingIntent;
     @Mock private PendingIntent mSwipeUpPendingIntent;
-    @Mock private ImageButton mButtonView;
 
     private final ApplicationViewportInsetTracker mViewportInsetSupplier =
             ApplicationViewportInsetTracker.createForTests();
     private Activity mActivity;
+    private CustomTabBottomBarView mBottomBarView;
+    private ImageButton mButtonView;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private CustomTabBottomBarDelegate mBottomBarDelegate;
 
@@ -104,7 +104,13 @@ public class CustomTabBottomBarDelegateUnitTest {
                         mNightModeStateController,
                         mTabProvider,
                         mCompositorContentInitializer);
-        when(mBottomBarView.findViewById(eq(R.id.bottombar_shadow))).thenReturn(mShadowView);
+        mBottomBarView = new CustomTabBottomBarView(mActivity, null);
+        View shadowView = new View(mActivity);
+        shadowView.setId(R.id.bottombar_shadow);
+        mBottomBarView.addView(shadowView);
+        mButtonView = new ImageButton(mActivity);
+        mButtonView.setId(1);
+        mBottomBarView.addView(mButtonView);
         mBottomBarDelegate.setBottomBarViewForTesting(mBottomBarView);
     }
 
@@ -113,11 +119,11 @@ public class CustomTabBottomBarDelegateUnitTest {
         MotionEvent ev = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0f, 0f, 0);
 
         // Swipe should only be enabled when the bottom bar is visible and the direction is up.
-        when(mBottomBarView.getVisibility()).thenReturn(View.VISIBLE);
+        mBottomBarView.setVisibility(View.VISIBLE);
         assertTrue(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.UP, ev));
         assertFalse(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.DOWN, ev));
 
-        when(mBottomBarView.getVisibility()).thenReturn(View.INVISIBLE);
+        mBottomBarView.setVisibility(View.INVISIBLE);
         assertFalse(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.UP, ev));
     }
 
@@ -159,8 +165,7 @@ public class CustomTabBottomBarDelegateUnitTest {
 
     @Test
     public void testUpdateBottomBarButtons() {
-        when(mBottomBarView.findViewById(1)).thenReturn(mButtonView);
-        Drawable icon = Mockito.mock(Drawable.class);
+        Drawable icon = new ColorDrawable(Color.RED);
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
@@ -169,14 +174,13 @@ public class CustomTabBottomBarDelegateUnitTest {
 
         mBottomBarDelegate.updateBottomBarButtons(customButtonParams);
 
-        verify(mButtonView).setImageDrawable(any());
-        verify(mButtonView).setContentDescription(eq(description));
+        assertEquals(icon, mButtonView.getDrawable());
+        assertEquals(description, mButtonView.getContentDescription());
     }
 
     @Test
     public void testUpdateBottomBarButtons_updaterSet_noInteractionsWithButtonView() {
-        when(mBottomBarView.findViewById(1)).thenReturn(mButtonView);
-        Drawable icon = Mockito.mock(Drawable.class);
+        Drawable icon = new ColorDrawable(Color.RED);
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
@@ -190,7 +194,8 @@ public class CustomTabBottomBarDelegateUnitTest {
         mBottomBarDelegate.updateBottomBarButtons(customButtonParams);
 
         verify(updater).updateBottomBarButton(eq(customButtonParams));
-        verifyNoInteractions(mButtonView);
+        assertNull(mButtonView.getDrawable());
+        assertNull(mButtonView.getContentDescription());
     }
 
     @Test
@@ -206,7 +211,7 @@ public class CustomTabBottomBarDelegateUnitTest {
                 /* bottomControlsMinHeightChanged= */ false,
                 /* requestNewFrame= */ false,
                 /* isVisibilityForced= */ false);
-        verify(mBottomBarView).setTranslationY(-100);
+        assertEquals(-100f, mBottomBarView.getTranslationY(), 0f);
     }
 
     @Test
@@ -216,6 +221,6 @@ public class CustomTabBottomBarDelegateUnitTest {
         mBottomBarDelegate.onBottomControlsHeightChanged(
                 /* bottomControlsHeight= */ 50, /* bottomControlsMinHeight= */ 0);
 
-        verify(mBottomBarView).setTranslationY(-50); // 1.0 * 50 - 100
+        assertEquals(-50f, mBottomBarView.getTranslationY(), 0f); // 1.0 * 50 - 100
     }
 }
