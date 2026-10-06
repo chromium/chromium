@@ -863,6 +863,42 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
+    Close_AnimatedThenSuppressed_FinishesClosingSynchronously) {
+  // Arrange: Show a window-scoped entry.
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+  SidePanelRegistry::From(browser_)->Register(std::move(entry));
+
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Arrange: Start an animated close and leave it in progress.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  ASSERT_EQ(SidePanelState::kClosing, coordinator_->GetStateForTesting());
+  ASSERT_EQ(0, entry_observer.num_on_entry_hidden_received_);
+
+  // Act: Request a suppressed close while the animated close is in progress.
+  coordinator_->Close(SidePanelEntryHideReason::kBackgrounded,
+                      /*suppress_animations=*/true);
+
+  // Assert: The in-progress close is finished synchronously, and the entry is
+  // notified once with the hide reason from the original close request.
+  EXPECT_EQ(SidePanelState::kClosed, coordinator_->GetStateForTesting());
+  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_received_);
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_with_reason_received_);
+  EXPECT_EQ(SidePanelEntryHideReason::kSidePanelClosed,
+            entry_observer.reason_for_last_entry_hidden_with_reason_.value());
+  WaitUntilClosed(coordinator_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
     Close_ClearsCachedEntryViewForInactiveEntriesInContextualRegistries) {
   // Arrange: Register two tab-scoped entries.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();

@@ -188,18 +188,16 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
         << ToString(hide_reason) << ", suppress_animations: "
         << suppress_animations << ", state: " << ToString(state_));
 
-  // Stop any pending load.
+  // We are about to change `state_`, so stop any pending load and complete any
+  // pending UI changes to reach a stable `state_` first. This includes
+  // notifying SidePanelEntries of the stable state.
   waiter()->ResetLoadingEntryIfNecessary();
+  CompletePendingUiChanges();
 
-  // Nothing to do if the side panel is not showing or is already closing.
-  if (!IsSidePanelShowing() || state_ == SidePanelState::kClosing) {
+  // Now we are in a stable state:
+  if (state_ == SidePanelState::kClosed) {
     return;
   }
-
-  // We are about to change `state_`, so complete any pending UI changes to
-  // reach a stable `state_` first. This includes notifying SidePanelEntries of
-  // the stable state.
-  CompletePendingUiChanges();
 
   StartClosingPanel(hide_reason, suppress_animations);
 }
