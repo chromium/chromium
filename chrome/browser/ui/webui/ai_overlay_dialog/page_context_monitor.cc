@@ -169,6 +169,18 @@ void ConvertContentNodesToMojo(
         const auto& ii = attrs.interaction_info();
         if (ii.clickability_reasons_size() > 0 || ii.is_clickable()) {
           mojo_node->is_interactive = true;
+          if (mojo_node->role == ai_overlay_dialog::mojom::NodeRole::kNone) {
+            mojo_node->role = ai_overlay_dialog::mojom::NodeRole::kButton;
+          }
+          if (mojo_node->text.empty()) {
+            std::string label = attrs.has_text_data()
+                                    ? attrs.text_data().text_content()
+                                    : attrs.label();
+            if (label.empty()) {
+              label = FindFirstTextInSubtree(proto_node);
+            }
+            mojo_node->text = label;
+          }
         }
       }
     }
