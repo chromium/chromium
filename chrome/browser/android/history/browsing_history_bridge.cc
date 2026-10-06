@@ -17,6 +17,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/features.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
@@ -284,6 +286,23 @@ static int64_t JNI_BrowsingHistoryBridge_Init(JNIEnv* env,
                                               Profile* profile) {
   BrowsingHistoryBridge* bridge = new BrowsingHistoryBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);
+}
+
+static void JNI_BrowsingHistoryBridge_AddPageToHistoryForTesting(
+    JNIEnv* env,
+    Profile* profile,
+    const GURL& url,
+    const std::u16string& title,
+    int64_t visit_time_ms) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  CHECK(history_service);
+  history::HistoryAddPageArgs args;
+  args.url = url;
+  args.time = base::Time::FromMillisecondsSinceUnixEpoch(visit_time_ms);
+  args.title = title;
+  history_service->AddPage(std::move(args));
 }
 
 DEFINE_JNI(BrowsingHistoryBridge)

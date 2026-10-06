@@ -149,6 +149,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY,
         Component.UI_BROWSER_FIRST_RUN,
         Component.UI_BROWSER_GLIC,
+        Component.UI_BROWSER_HISTORY,
         Component.UI_BROWSER_INCOGNITO,
         Component.UI_BROWSER_INFOBARS,
         Component.UI_BROWSER_MEDIA_PICKER,
@@ -207,6 +208,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY = "UI>Browser>ContentSuggestions>History";
         String UI_BROWSER_FIRST_RUN = "UI>Browser>FirstRun";
         String UI_BROWSER_GLIC = "UI>Browser>Glic";
+        String UI_BROWSER_HISTORY = "UI>Browser>History";
         String UI_BROWSER_INCOGNITO = "UI>Browser>Incognito";
         String UI_BROWSER_INFOBARS = "UI>Browser>Infobars";
         String UI_BROWSER_MEDIA_PICKER = "UI>Browser>MediaPicker";

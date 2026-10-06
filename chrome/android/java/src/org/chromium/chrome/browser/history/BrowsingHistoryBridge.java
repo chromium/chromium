@@ -186,6 +186,17 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         }
     }
 
+    /**
+     * Writes a page visit with an explicit timestamp directly to the native {@code HistoryService}
+     * for tests (such as WebUI history render tests) that query C++ {@code HistoryService} and
+     * require deterministic timestamps.
+     */
+    public static void addPageToHistoryForTesting(
+            Profile profile, GURL url, String title, long visitTimeMs) {
+        BrowsingHistoryBridgeJni.get()
+                .addPageToHistoryForTesting(profile, url, title, visitTimeMs); // IN-TEST
+    }
+
     @NativeMethods
     interface Natives {
         long init(BrowsingHistoryBridge self, @JniType("Profile*") Profile profile);
@@ -229,5 +240,11 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
         @JniType("std::vector<const syncer::DeviceInfo*>")
         List<ClientInfo> getAllClients(long nativeBrowsingHistoryBridge);
+
+        void addPageToHistoryForTesting( // IN-TEST
+                @JniType("Profile*") Profile profile,
+                @JniType("GURL") GURL url,
+                @JniType("std::u16string") String title,
+                long visitTimeMs);
     }
 }
