@@ -35,8 +35,7 @@ class Screen2xDistiller : public ReadAnythingDistiller {
   Screen2xDistiller& operator=(const Screen2xDistiller&) = delete;
 
   // ReadAnythingDistiller:
-  using ReadAnythingDistiller::Distill;
-  void Distill(std::optional<DistillationRequest> request) override;
+  void Distill(const DistillationRequest& request) override;
   void Reset() override;
   bool IsDistillationInProgress() const override;
   ReadAnythingAppModel::DistillationMethod GetDistillationMethod()

@@ -73,6 +73,14 @@ enum ReadabilityDistillationResult {
   kCancelled = 3,  // Superseded by a newer request, or cancelled on navigation.
 };
 
+// The reason for a renderer-initiated Readability distillation request. Only
+// kTreeChanged is measured by
+// Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete.
+enum ReadabilityDistillationReason {
+  kTreeChanged = 0,  // Triggered by an active AXTree ID change.
+  kRedistill = 1,  // Triggered by a page event, e.g. load complete.
+};
+
 union VoicePackInstallationState {
   InstallationState installation_state;
   ErrorCode error_code;
@@ -371,9 +379,10 @@ interface UntrustedPageHandler {
   // the distillation result along with the distilled title and HTML content.
   // Returns empty strings on failure, cancellation, or if the page is
   // ineligible for distillation.
-  RequestReadabilityDistillation() => (ReadabilityDistillationResult result,
-                                       string title,
-                                       mojo_base.mojom.BigString content);
+  RequestReadabilityDistillation(ReadabilityDistillationReason reason)
+      => (ReadabilityDistillationResult result,
+          string title,
+          mojo_base.mojom.BigString content);
 };
 
 // Untrusted WebUI-side handler for requests from the browser.

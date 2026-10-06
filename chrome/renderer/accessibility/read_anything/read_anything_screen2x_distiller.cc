@@ -32,15 +32,14 @@ Screen2xDistiller::Screen2xDistiller(
 
 Screen2xDistiller::~Screen2xDistiller() = default;
 
-void Screen2xDistiller::Distill(std::optional<DistillationRequest> request) {
+void Screen2xDistiller::Distill(const DistillationRequest& request) {
   // Callers must ensure the tree is valid, has a root, and has a populated
   // tree ID before requesting distillation (e.g. ReadAnythingAppController
   // verifies this before invoking Distill). If any of these fail, something
   // is fundamentally wrong with the renderer state.
-  CHECK(request.has_value());
-  CHECK(request->tree);
-  CHECK_NE(request->tree->GetAXTreeID(), ui::AXTreeIDUnknown());
-  CHECK(request->tree->root());
+  CHECK(request.tree);
+  CHECK_NE(request.tree->GetAXTreeID(), ui::AXTreeIDUnknown());
+  CHECK(request.tree->root());
 
   if (is_screen_ai_ready_callback_ && is_screen_ai_ready_callback_.Run()) {
     distiller_->ScreenAIServiceReady();
@@ -48,14 +47,14 @@ void Screen2xDistiller::Distill(std::optional<DistillationRequest> request) {
 
   std::unique_ptr<
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
-      tree_source(request->tree->CreateTreeSource());
+      tree_source(request.tree->CreateTreeSource());
   ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>,
                        ui::AXTreeUpdate*, ui::AXTreeData*, ui::AXNodeData>
       serializer(tree_source.get());
   ui::AXTreeUpdate snapshot;
-  CHECK(serializer.SerializeChanges(request->tree->root(), &snapshot));
+  CHECK(serializer.SerializeChanges(request.tree->root(), &snapshot));
 
-  distiller_->Distill(*request->tree, snapshot, request->ukm_source_id);
+  distiller_->Distill(*request.tree, snapshot, request.ukm_source_id);
 }
 
 void Screen2xDistiller::Reset() {

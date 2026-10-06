@@ -67,8 +67,9 @@ class MockReadAnythingUntrustedPageHandler
     : public read_anything::mojom::UntrustedPageHandler {
  public:
   MockReadAnythingUntrustedPageHandler() {
-    ON_CALL(*this, RequestReadabilityDistillation(testing::_))
-        .WillByDefault([](RequestReadabilityDistillationCallback callback) {
+    ON_CALL(*this, RequestReadabilityDistillation(testing::_, testing::_))
+        .WillByDefault([](read_anything::mojom::ReadabilityDistillationReason,
+                          RequestReadabilityDistillationCallback callback) {
           std::move(callback).Run(
               read_anything::mojom::ReadabilityDistillationResult::kEmpty, "",
               "");
@@ -164,7 +165,8 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, OnSpeechEngineStalled, (), (override));
   MOCK_METHOD(void,
               RequestReadabilityDistillation,
-              (RequestReadabilityDistillationCallback),
+              (read_anything::mojom::ReadabilityDistillationReason,
+               RequestReadabilityDistillationCallback),
               (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
@@ -6576,7 +6578,11 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   // Sanity check: Ensure content is actually there before we start.
   ASSERT_EQ(controller().GetDomDistillerContentHtml(), stale_content);
 
-  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
+  EXPECT_CALL(
+      page_handler_,
+      RequestReadabilityDistillation(
+          read_anything::mojom::ReadabilityDistillationReason::kRedistill,
+          testing::_))
       .Times(1);
 
   ProcessModelUpdates();
@@ -6608,7 +6614,8 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
   // Since the URL of the active tree is still "https://example.com/page",
   // RequestReadabilityDistillation() should NOT be called.
-  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
+  EXPECT_CALL(page_handler_,
+              RequestReadabilityDistillation(testing::_, testing::_))
       .Times(0);
 
   ProcessModelUpdates();
@@ -6655,8 +6662,13 @@ TEST_F(
   model().set_requires_readability_distillation(true);
 
   // Since the URL changed to "https://example.com/page2",
-  // RequestReadabilityDistillation() SHOULD be called.
-  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
+  // RequestReadabilityDistillation() SHOULD be called, tagged as a
+  // re-distillation so it is excluded from tree-change latency metrics.
+  EXPECT_CALL(
+      page_handler_,
+      RequestReadabilityDistillation(
+          read_anything::mojom::ReadabilityDistillationReason::kRedistill,
+          testing::_))
       .Times(1);
 
   ProcessModelUpdates();
@@ -7364,8 +7376,13 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
   controller().set_forced_distillation_method_for_testing(
       ReadAnythingAppModel::DistillationMethod::kReadability);
 
-  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
-      .WillOnce([](MockReadAnythingUntrustedPageHandler::
+  EXPECT_CALL(
+      page_handler_,
+      RequestReadabilityDistillation(
+          read_anything::mojom::ReadabilityDistillationReason::kTreeChanged,
+          testing::_))
+      .WillOnce([](read_anything::mojom::ReadabilityDistillationReason,
+                   MockReadAnythingUntrustedPageHandler::
                        RequestReadabilityDistillationCallback callback) {
         std::move(callback).Run(
             read_anything::mojom::ReadabilityDistillationResult::kSuccess,

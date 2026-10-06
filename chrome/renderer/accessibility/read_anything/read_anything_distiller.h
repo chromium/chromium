@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -36,8 +37,12 @@ struct DistillationResult {
 
 // Encapsulates the input parameters needed for distillation.
 struct DistillationRequest {
+  // Used by tree-based engines (Screen2x).
   raw_ptr<ui::AXSerializableTree> tree = nullptr;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+
+  // Used by DOM-based engines (Readability).
+  std::optional<read_anything::mojom::ReadabilityDistillationReason> reason;
 };
 
 // Abstract interface decoupling distillation engines from presentation.
@@ -48,10 +53,9 @@ class ReadAnythingDistiller {
 
   virtual ~ReadAnythingDistiller() = default;
 
-  // Initiates distillation. `request` is required for tree-based engines
-  // (Screen2x) and unused for DOM-based engines (Readability).
-  virtual void Distill(std::optional<DistillationRequest> request) = 0;
-  void Distill() { Distill(std::nullopt); }
+  // Initiates distillation. Tree-based engines (Screen2x) require a populated
+  // `tree`; DOM-based engines (Readability) only read `reason`.
+  virtual void Distill(const DistillationRequest& request) = 0;
 
   // Resets internal state.
   virtual void Reset() = 0;

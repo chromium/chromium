@@ -22,17 +22,21 @@ ReadabilityDistiller::ReadabilityDistiller(
 
 ReadabilityDistiller::~ReadabilityDistiller() = default;
 
-// `request` is unused because Readability runs on the DOM in the browser
-// process and does not require an AXTree.
-void ReadabilityDistiller::Distill(std::optional<DistillationRequest> request) {
+// Only `request.reason` is used, because Readability runs on the DOM in the
+// browser process and does not require an AXTree.
+void ReadabilityDistiller::Distill(const DistillationRequest& request) {
+  // Readability requests must state why they were made so the browser can
+  // decide whether to record tree-change latency metrics.
+  CHECK(request.reason.has_value());
+
   // Invalidate any pending callback from a superseded request so its reply
   // cannot clear `is_distillation_in_progress_` or invoke `OnContentReceived()`
   // while the new request is in flight.
   weak_ptr_factory_.InvalidateWeakPtrs();
   is_distillation_in_progress_ = true;
   request_distillation_callback_.Run(
-      base::BindOnce(&ReadabilityDistiller::OnContentReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+      *request.reason, base::BindOnce(&ReadabilityDistiller::OnContentReceived,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ReadabilityDistiller::Reset() {

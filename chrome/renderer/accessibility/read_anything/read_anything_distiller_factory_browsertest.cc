@@ -28,7 +28,16 @@ namespace {
 ReadAnythingDistillerFactory::RequestReadabilityDistillationCallback
 NoOpDistillationRequester() {
   return base::BindRepeating(
-      [](ReadAnythingDistillerFactory::ReadabilityResultCallback callback) {});
+      [](read_anything::mojom::ReadabilityDistillationReason,
+         ReadAnythingDistillerFactory::ReadabilityResultCallback callback) {});
+}
+
+// Readability requires an explicit reason. Tests that don't care which reason
+// is forwarded use kRedistill.
+DistillationRequest RedistillRequest() {
+  return DistillationRequest{
+      .reason =
+          read_anything::mojom::ReadabilityDistillationReason::kRedistill};
 }
 
 }  // namespace
@@ -140,7 +149,8 @@ TEST_F(ReadAnythingDistillerFactoryTest,
   ReadAnythingDistillerFactory factory(
       GetRenderFrame(), base::BindRepeating([]() { return false; }),
       base::BindLambdaForTesting(
-          [&](ReadAnythingDistillerFactory::ReadabilityResultCallback
+          [&](read_anything::mojom::ReadabilityDistillationReason,
+              ReadAnythingDistillerFactory::ReadabilityResultCallback
                   callback) { request_callback_invoked = true; }));
 
   std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
@@ -150,7 +160,7 @@ TEST_F(ReadAnythingDistillerFactoryTest,
 
   // Readability distills in the browser process, so unlike Screen2x it needs
   // no AXTree on the request.
-  distiller->Distill();
+  distiller->Distill(RedistillRequest());
 
   EXPECT_TRUE(request_callback_invoked);
   EXPECT_TRUE(distiller->IsDistillationInProgress());
@@ -163,7 +173,8 @@ TEST_F(ReadAnythingDistillerFactoryTest,
   ReadAnythingDistillerFactory factory(
       GetRenderFrame(), base::BindRepeating([]() { return false; }),
       base::BindLambdaForTesting(
-          [&](ReadAnythingDistillerFactory::ReadabilityResultCallback
+          [&](read_anything::mojom::ReadabilityDistillationReason,
+              ReadAnythingDistillerFactory::ReadabilityResultCallback
                   callback) { captured_reply = std::move(callback); }));
 
   std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
@@ -172,7 +183,7 @@ TEST_F(ReadAnythingDistillerFactoryTest,
           [&](const DistillationResult& result) { captured_result = result; }));
   ASSERT_NE(distiller, nullptr);
 
-  distiller->Distill();
+  distiller->Distill(RedistillRequest());
   ASSERT_FALSE(captured_reply.is_null());
   EXPECT_TRUE(distiller->IsDistillationInProgress());
 

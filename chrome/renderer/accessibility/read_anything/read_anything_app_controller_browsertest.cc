@@ -63,8 +63,9 @@ class MockReadAnythingUntrustedPageHandler
     : public read_anything::mojom::UntrustedPageHandler {
  public:
   MockReadAnythingUntrustedPageHandler() {
-    ON_CALL(*this, RequestReadabilityDistillation(testing::_))
-        .WillByDefault([](RequestReadabilityDistillationCallback callback) {
+    ON_CALL(*this, RequestReadabilityDistillation(testing::_, testing::_))
+        .WillByDefault([](read_anything::mojom::ReadabilityDistillationReason,
+                          RequestReadabilityDistillationCallback callback) {
           std::move(callback).Run(
               read_anything::mojom::ReadabilityDistillationResult::kEmpty, "",
               "");
@@ -160,7 +161,8 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, OnSpeechEngineStalled, (), (override));
   MOCK_METHOD(void,
               RequestReadabilityDistillation,
-              (RequestReadabilityDistillationCallback),
+              (read_anything::mojom::ReadabilityDistillationReason,
+               RequestReadabilityDistillationCallback),
               (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>

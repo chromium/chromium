@@ -34,8 +34,9 @@ class ReadAnythingDistillerFactory {
       const std::string& title,
       const std::string& content)>;
 
-  using RequestReadabilityDistillationCallback =
-      base::RepeatingCallback<void(ReadabilityResultCallback)>;
+  using RequestReadabilityDistillationCallback = base::RepeatingCallback<void(
+      read_anything::mojom::ReadabilityDistillationReason reason,
+      ReadabilityResultCallback)>;
 
   ReadAnythingDistillerFactory(
       content::RenderFrame* render_frame,

@@ -27,10 +27,11 @@ class ReadabilityDistiller : public ReadAnythingDistiller {
       const std::string& title,
       const std::string& content)>;
 
-  // Forwards a distillation request to the browser process. Supplied by the
-  // controller, which owns the mojo remote.
-  using RequestDistillationCallback =
-      base::RepeatingCallback<void(ReadabilityResultCallback)>;
+  // Forwards a distillation request, and the reason for it, to the browser
+  // process. Supplied by the controller, which owns the mojo remote.
+  using RequestDistillationCallback = base::RepeatingCallback<void(
+      read_anything::mojom::ReadabilityDistillationReason reason,
+      ReadabilityResultCallback)>;
 
   ReadabilityDistiller(
       RequestDistillationCallback request_distillation_callback,
@@ -40,8 +41,7 @@ class ReadabilityDistiller : public ReadAnythingDistiller {
   ReadabilityDistiller& operator=(const ReadabilityDistiller&) = delete;
 
   // ReadAnythingDistiller:
-  using ReadAnythingDistiller::Distill;
-  void Distill(std::optional<DistillationRequest> request) override;
+  void Distill(const DistillationRequest& request) override;
   void Reset() override;
   bool IsDistillationInProgress() const override;
   ReadAnythingAppModel::DistillationMethod GetDistillationMethod()

@@ -75,6 +75,9 @@
 
 namespace {
 
+using ReadabilityDistillationReason =
+    read_anything::mojom::ReadabilityDistillationReason;
+
 // The amount of time after a new page has been opened in reading mode that
 // reading mode waits before logging whether the distillation was successful,
 // the distillation failed, or the distillation is still processing.
@@ -467,12 +470,15 @@ void ReadAnythingAppController::ProcessModelUpdates() {
     } else {
       PrepareForNewContentDistillation();
       if (features::IsReadAnythingDistillerRefactorEnabled()) {
-        ExecuteDistillation();
+        DistillationRequest request;
+        request.reason = ReadabilityDistillationReason::kRedistill;
+        ExecuteDistillation(request);
       } else {
         // In the legacy path, distillation results are sent via UpdateContent()
         // rather than this callback, so the callback does not need to be
         // handled.
-        page_handler_->RequestReadabilityDistillation(base::DoNothing());
+        page_handler_->RequestReadabilityDistillation(
+            ReadabilityDistillationReason::kRedistill, base::DoNothing());
       }
     }
   }
@@ -600,7 +606,9 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     if (features::IsReadAnythingDistillerRefactorEnabled()) {
       SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                                kDistillationInProgress);
-      ExecuteDistillation();
+      DistillationRequest request;
+      request.reason = ReadabilityDistillationReason::kTreeChanged;
+      ExecuteDistillation(request);
     }
     return;
   }
@@ -786,7 +794,7 @@ void ReadAnythingAppController::UpdateActiveDistiller() {
 }
 
 void ReadAnythingAppController::ExecuteDistillation(
-    std::optional<DistillationRequest> request) {
+    const DistillationRequest& request) {
   // Ensure the active distiller matches the model's next distillation method
   // before dispatching the request.
   UpdateActiveDistiller();
@@ -860,9 +868,10 @@ void ReadAnythingAppController::Distill() {
 }
 
 void ReadAnythingAppController::RequestReadabilityDistillation(
+    ReadabilityDistillationReason reason,
     read_anything::mojom::UntrustedPageHandler::
         RequestReadabilityDistillationCallback callback) {
-  page_handler_->RequestReadabilityDistillation(std::move(callback));
+  page_handler_->RequestReadabilityDistillation(reason, std::move(callback));
 }
 
 void ReadAnythingAppController::OnDistillationComplete(

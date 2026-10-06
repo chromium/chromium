@@ -261,6 +261,7 @@ class ReadAnythingUntrustedPageHandler :
       read_anything::mojom::ReadAnythingDistillationState new_state) override;
   void OnSpeechEngineStalled() override;
   void RequestReadabilityDistillation(
+      read_anything::mojom::ReadabilityDistillationReason reason,
       RequestReadabilityDistillationCallback callback) override;
 
   // PinnedToolbarModel::Observer
@@ -554,8 +555,9 @@ class ReadAnythingUntrustedPageHandler :
 
   // Tracks the start time of a readability distillation triggered by an active
   // accessibility tree ID change. This is used to measure readability
-  // distilation latency from a tree change event and is null for SPA or manual
-  // redistillations.
+  // distillation latency from a tree change event. It is preserved across a
+  // renderer request with reason kTreeChanged and cleared for kRedistill
+  // (e.g. SPA) requests.
   base::TimeTicks readability_distillation_tree_change_start_time_;
 
   mojo::Remote<reading_mode::mojom::DistillationEvaluator>

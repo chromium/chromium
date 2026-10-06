@@ -91,6 +91,7 @@ using ash::language_packs::PackResult;
 using read_anything::mojom::InstallationState;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+using read_anything::mojom::ReadabilityDistillationReason;
 using read_anything::mojom::ReadAnythingOpenTrigger;
 
 namespace {
@@ -3134,7 +3135,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
 
   base::HistogramTester histogram_tester;
 
-  handler_->RequestReadabilityDistillation(base::DoNothing());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, base::DoNothing());
   run_loop.Run();
 
   // After distillation by RequestReadabilityDistillation, ensure the
@@ -3172,7 +3174,8 @@ IN_PROC_BROWSER_TEST_F(
         run_loop.Quit();
       });
 
-  handler_->RequestReadabilityDistillation(base::DoNothing());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, base::DoNothing());
   run_loop.Run();
 
   EXPECT_FALSE(received_title.empty());
@@ -3227,7 +3230,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
       future;
-  handler_->RequestReadabilityDistillation(future.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   // Calling OnActiveAXTreeIDChanged immediately without yielding to the
@@ -3262,7 +3266,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
       future;
-  handler_->RequestReadabilityDistillation(future.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
 
   // Because we are waiting for a PDF frame, the request resolves immediately
   // with kIneligible and empty content, and no distillation is started, so the
@@ -3293,13 +3298,75 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
       future;
-  handler_->RequestReadabilityDistillation(future.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
 
   auto [result, title, content] = future.Get();
   EXPECT_EQ(result,
             read_anything::mojom::ReadabilityDistillationResult::kSuccess);
   EXPECT_FALSE(title.empty());
   EXPECT_FALSE(content.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+                       TreeChangedRequest_RecordsTreeChangedLatency) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  // Navigation triggers OnActiveAXTreeIDChanged(), which starts the timer and
+  // leaves starting distillation to the renderer.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_FALSE(
+      handler_->readability_distillation_tree_change_start_time().is_null());
+
+  // Simulate the renderer reacting to the tree change.
+  base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
+                         const std::string&, const std::string&>
+      future;
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kTreeChanged, future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(),
+            read_anything::mojom::ReadabilityDistillationResult::kSuccess);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete",
+      1);
+  // The timer is cleared once distillation completes.
+  EXPECT_TRUE(
+      handler_->readability_distillation_tree_change_start_time().is_null());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
+                       RedistillRequest_DoesNotRecordTreeChangedLatency) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // A tree change timer must be pending for this test to be meaningful.
+  ASSERT_FALSE(
+      handler_->readability_distillation_tree_change_start_time().is_null());
+
+  base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
+                         const std::string&, const std::string&>
+      future;
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(),
+            read_anything::mojom::ReadabilityDistillationResult::kSuccess);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete",
+      0);
+  EXPECT_TRUE(
+      handler_->readability_distillation_tree_change_start_time().is_null());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3316,7 +3383,8 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
       future;
-  handler_->RequestReadabilityDistillation(future.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
 
   auto [result, title, content] = future.Get();
   EXPECT_EQ(result,
@@ -3338,7 +3406,8 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
       future;
-  handler_->RequestReadabilityDistillation(future.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
 
   auto [result, title, content] = future.Get();
   EXPECT_EQ(result,
@@ -3365,9 +3434,11 @@ IN_PROC_BROWSER_TEST_F(
                          const std::string&, const std::string&>
       future2;
 
-  handler_->RequestReadabilityDistillation(future1.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future1.GetCallback());
   // Immediately issue a second request, superseding the first.
-  handler_->RequestReadabilityDistillation(future2.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future2.GetCallback());
 
   auto [result1, title1, content1] = future1.Get();
   EXPECT_EQ(result1,
@@ -3400,14 +3471,16 @@ IN_PROC_BROWSER_TEST_F(
                          const std::string&, const std::string&>
       future2;
 
-  handler_->RequestReadabilityDistillation(future1.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future1.GetCallback());
 
   // Issue a second request that can't start a distillation. The first request
   // is superseded even though the second one never runs.
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kEnableAutomation);
-  handler_->RequestReadabilityDistillation(future2.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future2.GetCallback());
 
   auto [result1, title1, content1] = future1.Get();
   EXPECT_EQ(result1,
@@ -3436,7 +3509,8 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
       future;
-  handler_->RequestReadabilityDistillation(future.GetCallback());
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
 
   // Simulate PrimaryPageChanged while distillation is in flight.
   handler_->PrimaryPageChanged();

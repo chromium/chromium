@@ -454,14 +454,15 @@ class ReadAnythingAppController
   // Initiates distillation by ensuring the active distiller matches the
   // model's next distillation method and dispatching the `request`.
   // DOM-based engines (Readability) that distill in the browser process do not
-  // need an AXTree and omit `request`; tree-based engines (Screen2x) must
-  // supply a populated `request`.
-  void ExecuteDistillation(
-      std::optional<DistillationRequest> request = std::nullopt);
+  // need an AXTree and only read `request.reason`; tree-based engines
+  // (Screen2x) require a populated `request.tree`.
+  void ExecuteDistillation(const DistillationRequest& request);
 
-  // Forwards a Readability distillation request to the browser process via
-  // `page_handler_`. Passed as a callback to ReadAnythingDistillerFactory.
+  // Forwards a Readability distillation request, and the reason for it, to the
+  // browser process via `page_handler_`. Passed as a callback to
+  // ReadAnythingDistillerFactory.
   void RequestReadabilityDistillation(
+      read_anything::mojom::ReadabilityDistillationReason reason,
       read_anything::mojom::UntrustedPageHandler::
           RequestReadabilityDistillationCallback callback);
 

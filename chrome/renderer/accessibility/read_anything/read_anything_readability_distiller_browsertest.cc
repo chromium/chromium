@@ -19,6 +19,19 @@
 
 using ReadabilityDistillationResult =
     read_anything::mojom::ReadabilityDistillationResult;
+using ReadabilityDistillationReason =
+    read_anything::mojom::ReadabilityDistillationReason;
+
+namespace {
+
+// Readability requires an explicit reason. Tests that don't care which reason
+// is forwarded use kRedistill.
+DistillationRequest RedistillRequest() {
+  return DistillationRequest{.reason =
+                                 ReadabilityDistillationReason::kRedistill};
+}
+
+}  // namespace
 
 class ReadabilityDistillerTest : public ChromeRenderViewTest {
  public:
@@ -32,7 +45,8 @@ TEST_F(ReadabilityDistillerTest, Distill_Success_RunsDistillationAndCompletes) {
 
   ReadabilityDistiller distiller(
       base::BindLambdaForTesting(
-          [&](ReadabilityDistiller::ReadabilityResultCallback callback) {
+          [&](ReadabilityDistillationReason,
+              ReadabilityDistiller::ReadabilityResultCallback callback) {
             captured_reply = std::move(callback);
           }),
       base::BindLambdaForTesting(
@@ -42,7 +56,7 @@ TEST_F(ReadabilityDistillerTest, Distill_Success_RunsDistillationAndCompletes) {
             ReadAnythingAppModel::DistillationMethod::kReadability);
   EXPECT_FALSE(distiller.IsDistillationInProgress());
 
-  distiller.Distill();
+  distiller.Distill(RedistillRequest());
   ASSERT_FALSE(captured_reply.is_null());
   EXPECT_TRUE(distiller.IsDistillationInProgress());
 
@@ -62,7 +76,8 @@ TEST_F(ReadabilityDistillerTest, Distill_EmptyContent_CompletesWithEmptyHtml) {
 
   ReadabilityDistiller distiller(
       base::BindLambdaForTesting(
-          [&](ReadabilityDistiller::ReadabilityResultCallback callback) {
+          [&](ReadabilityDistillationReason,
+              ReadabilityDistiller::ReadabilityResultCallback callback) {
             captured_reply = std::move(callback);
           }),
       base::BindLambdaForTesting([&](const DistillationResult& result) {
@@ -71,12 +86,12 @@ TEST_F(ReadabilityDistillerTest, Distill_EmptyContent_CompletesWithEmptyHtml) {
 
   // Both kEmpty and kIneligible should forward an empty HTML result so the
   // controller can trigger its fallback policy (e.g. switching to Screen2x).
-  distiller.Distill();
+  distiller.Distill(RedistillRequest());
   ASSERT_FALSE(captured_reply.is_null());
   std::move(captured_reply).Run(ReadabilityDistillationResult::kEmpty, "", "");
 
   captured_reply = base::NullCallback();
-  distiller.Distill();
+  distiller.Distill(RedistillRequest());
   ASSERT_FALSE(captured_reply.is_null());
   std::move(captured_reply)
       .Run(ReadabilityDistillationResult::kIneligible, "", "");
@@ -95,13 +110,14 @@ TEST_F(ReadabilityDistillerTest, Distill_CancelledResult_IsIgnored) {
 
   ReadabilityDistiller distiller(
       base::BindLambdaForTesting(
-          [&](ReadabilityDistiller::ReadabilityResultCallback callback) {
+          [&](ReadabilityDistillationReason,
+              ReadabilityDistiller::ReadabilityResultCallback callback) {
             captured_reply = std::move(callback);
           }),
       base::BindLambdaForTesting(
           [&](const DistillationResult& result) { captured_result = result; }));
 
-  distiller.Distill();
+  distiller.Distill(RedistillRequest());
   ASSERT_FALSE(captured_reply.is_null());
   EXPECT_TRUE(distiller.IsDistillationInProgress());
 
@@ -119,15 +135,16 @@ TEST_F(ReadabilityDistillerTest,
 
   ReadabilityDistiller distiller(
       base::BindLambdaForTesting(
-          [&](ReadabilityDistiller::ReadabilityResultCallback callback) {
+          [&](ReadabilityDistillationReason,
+              ReadabilityDistiller::ReadabilityResultCallback callback) {
             captured_replies.push_back(std::move(callback));
           }),
       base::BindLambdaForTesting(
           [&](const DistillationResult& result) { captured_result = result; }));
 
   // Issue two requests back-to-back, superseding the first.
-  distiller.Distill();
-  distiller.Distill();
+  distiller.Distill(RedistillRequest());
+  distiller.Distill(RedistillRequest());
   ASSERT_EQ(captured_replies.size(), 2u);
   EXPECT_TRUE(distiller.IsDistillationInProgress());
 
@@ -155,7 +172,8 @@ TEST_F(ReadabilityDistillerTest, Distill_DestroyingDistillerInCallback_IsSafe) {
 
   distiller = std::make_unique<ReadabilityDistiller>(
       base::BindLambdaForTesting(
-          [&](ReadabilityDistiller::ReadabilityResultCallback callback) {
+          [&](ReadabilityDistillationReason,
+              ReadabilityDistiller::ReadabilityResultCallback callback) {
             captured_reply = std::move(callback);
           }),
       base::BindLambdaForTesting([&](const DistillationResult& result) {
@@ -165,7 +183,7 @@ TEST_F(ReadabilityDistillerTest, Distill_DestroyingDistillerInCallback_IsSafe) {
         distiller.reset();
       }));
 
-  distiller->Distill();
+  distiller->Distill(RedistillRequest());
   ASSERT_FALSE(captured_reply.is_null());
 
   std::move(captured_reply).Run(ReadabilityDistillationResult::kEmpty, "", "");
@@ -173,4 +191,26 @@ TEST_F(ReadabilityDistillerTest, Distill_DestroyingDistillerInCallback_IsSafe) {
   EXPECT_EQ(distiller, nullptr);
   ASSERT_TRUE(captured_result.has_value());
   EXPECT_TRUE(captured_result->html_content.empty());
+}
+
+TEST_F(ReadabilityDistillerTest, Distill_ForwardsReadabilityReason) {
+  std::vector<ReadabilityDistillationReason> captured_reasons;
+
+  ReadabilityDistiller distiller(
+      base::BindLambdaForTesting(
+          [&](ReadabilityDistillationReason reason,
+              ReadabilityDistiller::ReadabilityResultCallback callback) {
+            captured_reasons.push_back(reason);
+          }),
+      base::DoNothing());
+
+  DistillationRequest tree_changed_request;
+  tree_changed_request.reason = ReadabilityDistillationReason::kTreeChanged;
+  distiller.Distill(tree_changed_request);
+
+  distiller.Distill(RedistillRequest());
+
+  EXPECT_EQ(captured_reasons, std::vector<ReadabilityDistillationReason>(
+                                  {ReadabilityDistillationReason::kTreeChanged,
+                                   ReadabilityDistillationReason::kRedistill}));
 }

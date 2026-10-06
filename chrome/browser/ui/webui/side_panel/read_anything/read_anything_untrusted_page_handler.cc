@@ -1328,6 +1328,7 @@ void ReadAnythingUntrustedPageHandler::OnSpeechEngineStalled() {
 }
 
 void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation(
+    read_anything::mojom::ReadabilityDistillationReason reason,
     RequestReadabilityDistillationCallback callback) {
   // Use a local wrapper so any early return or teardown runs the callback with
   // (kIneligible, "", "") on destruction, containing fallback handling to this
@@ -1339,9 +1340,17 @@ void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation(
     return;
   }
 
+  // Keep timing renderer-initiated tree-change distillations; exclude
+  // re-distillations from the metric.
+  const base::TimeTicks tree_change_start_time =
+      reason ==
+              read_anything::mojom::ReadabilityDistillationReason::kTreeChanged
+          ? readability_distillation_tree_change_start_time_
+          : base::TimeTicks();
   // Tree changes reset this state in OnActiveAXTreeIDChanged(), but
   // same-document (SPA) navigations reuse the AXTree ID, so reset here.
   ResetReadabilityState();
+  readability_distillation_tree_change_start_time_ = tree_change_start_time;
 
   // Registered before starting so a result can never arrive before the
   // callback. Resetting replies (kIneligible, "", "") if distillation never
