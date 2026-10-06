@@ -593,18 +593,17 @@ void HTMLDocumentParser::DeferredPumpTokenizerIfPossible(
               perfetto::Flow::FromPointer(this), "parser", (void*)this, "state",
               task_runner_state_->GetStateAsString());
 
-  if (metrics_reporter_ && from_finish_append && !did_pump_tokenizer_) {
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Blink.HTMLParsing.TimeToDeferredPumpTokenizer4",
-        base::TimeTicks::Now() - schedule_time, base::Microseconds(1),
-        base::Seconds(1), 100);
-  }
-
   // This method is called when the post task is executed, marking the end of
   // a yield. Report the yielded time.
   DCHECK(yield_timer_);
   if (metrics_reporter_) {
-    metrics_reporter_->AddYieldInterval(yield_timer_->Elapsed());
+    base::TimeTicks now;
+    metrics_reporter_->AddYieldInterval(yield_timer_->Elapsed(&now));
+    if (from_finish_append && !did_pump_tokenizer_) {
+      base::UmaHistogramCustomMicrosecondsTimes(
+          "Blink.HTMLParsing.TimeToDeferredPumpTokenizer4", now - schedule_time,
+          base::Microseconds(1), base::Seconds(1), 100);
+    }
   }
   yield_timer_.reset();
 
@@ -1482,10 +1481,11 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
       base::StrCat(
           {kHistogramScanAndPreloadTime, ".Scan", GetPreloadHistogramSuffix()}),
       scan_time);
-  base::ElapsedTimer timer_after_scan;
+  base::TimeTicks after_scan_time = base::TimeTicks::Now();
   ProcessPreloadData(std::move(preload_data));
-  const base::TimeDelta scan_and_preload_time = timer_before_scan.Elapsed();
-  const base::TimeDelta preload_time = timer_after_scan.Elapsed();
+  base::TimeTicks now;
+  const base::TimeDelta scan_and_preload_time = timer_before_scan.Elapsed(&now);
+  const base::TimeDelta preload_time = now - after_scan_time;
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat({kHistogramScanAndPreloadTime, GetPreloadHistogramSuffix()}),
       scan_and_preload_time);
