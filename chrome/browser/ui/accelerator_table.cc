@@ -15,6 +15,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/actions/command_id_to_action_id.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/lens/buildflags.h"
@@ -359,6 +360,10 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
                          std::begin(kTabGroupAcceleratorMap),
                          std::end(kTabGroupAcceleratorMap));
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+
+    for (AcceleratorMapping& mapping : *accelerators) {
+      mapping.action_id = chrome::GetActionIdForCommandId(mapping.command_id);
+    }
   }
 
   return *accelerators;

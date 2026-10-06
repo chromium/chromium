@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 
@@ -82,6 +83,28 @@ TEST(AcceleratorTableTest, OpenFeedbackWithSearchBasedAccelerator) {
   EXPECT_EQ(-1, command_id);
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
+
+// Every accelerator should trigger a declarative Action so that it can be
+// resolved through the Actions framework.
+TEST(AcceleratorTableTest, EveryAcceleratorMapsToAnAction) {
+  for (const auto& entry : GetAcceleratorList()) {
+    EXPECT_TRUE(entry.action_id.has_value())
+        << "Accelerator command " << entry.command_id
+        << " has no associated action. Add an E(kActionFoo, IDC_FOO) entry in "
+           "chrome/browser/ui/actions/chrome_action_id.h.";
+  }
+}
+
+#if !BUILDFLAG(IS_MAC)
+TEST(AcceleratorTableTest, NewWindowAcceleratorMapsToNewWindowAction) {
+  EXPECT_TRUE(std::ranges::any_of(
+      GetAcceleratorList(), [](const AcceleratorMapping& mapping) {
+        return mapping.keycode == ui::VKEY_N &&
+               mapping.modifiers == ui::EF_PLATFORM_ACCELERATOR &&
+               mapping.action_id == kActionNewWindow;
+      }));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {

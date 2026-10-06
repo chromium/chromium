@@ -1123,9 +1123,11 @@ if (!is_android) {
   source_set("accelerator_table") {
     public = [ "accelerator_table.h" ]
     sources = [ "accelerator_table.cc" ]
+    public_deps = [ "//ui/actions:actions_headers" ]
     deps = [
       "//chrome/app:command_ids",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:command_id_to_action_id",
       "//chrome/browser/ui/tabs",
       "//components/lens:buildflags",
       "//components/lens:features",
@@ -5062,6 +5064,7 @@ source_set("unit_tests") {
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/supervised_user",
+      "//chrome/browser/ui/actions:actions_headers",
       "//components/apps/link_capturing",
       "//components/supervised_user/core/browser:test_support",
     ]

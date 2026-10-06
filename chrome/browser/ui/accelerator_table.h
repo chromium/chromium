@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_ACCELERATOR_TABLE_H_
 #define CHROME_BROWSER_UI_ACCELERATOR_TABLE_H_
 
+#include <optional>
 #include <vector>
 
+#include "ui/actions/action_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -21,6 +23,11 @@ struct AcceleratorMapping {
   ui::KeyboardCode keycode;
   int modifiers;
   int command_id;
+  // The declarative Action (see chrome/browser/ui/actions/chrome_action_id.h)
+  // that `command_id` triggers, if any. Populated by GetAcceleratorList()
+  // using the same IDC_* -> Action ID mapping as BrowserCommandController (see
+  // chrome/browser/ui/actions/command_id_to_action_id.h).
+  std::optional<actions::ActionId> action_id;
 };
 
 // Returns a list of accelerator mapping information for accelerators
