@@ -8,7 +8,6 @@
 
 import argparse
 import collections
-import json
 import logging
 import os
 import posixpath
@@ -45,7 +44,6 @@ with devil_env.SysPath(
 ):
     import colorama
 
-from incremental_install import installer  # noqa: E402
 from pylib import constants  # noqa: E402
 from pylib.symbols import deobfuscator  # noqa: E402
 from pylib.utils import simpleperf  # noqa: E402
@@ -74,18 +72,13 @@ def _Colorize(text, style=''):
     return style + text + colorama.Style.RESET_ALL
 
 
-def _InstallApk(devices, apk, install_dict):
+def _InstallApk(devices, apk):
     def install(device):
-        if install_dict:
-            installer.Install(device, install_dict, apk=apk, permissions=[])
-        else:
-            device.Install(
-                apk, permissions=[], allow_downgrade=True, reinstall=True
-            )
+        device.Install(
+            apk, permissions=[], allow_downgrade=True, reinstall=True
+        )
 
-    logging.info(
-        'Installing %sincremental apk.', '' if install_dict else 'non-'
-    )
+    logging.info('Installing apk.')
     device_utils.DeviceUtils.parallel(devices).pMap(install)
 
 
@@ -174,12 +167,9 @@ def _InstallBundle(
     device_utils.DeviceUtils.parallel(devices).pMap(Install)
 
 
-def _UninstallApk(devices, install_dict, package_name):
+def _UninstallApk(devices, package_name):
     def uninstall(device):
-        if install_dict:
-            installer.Uninstall(device, package_name)
-        else:
-            device.Uninstall(package_name)
+        device.Uninstall(package_name)
 
     device_utils.DeviceUtils.parallel(devices).pMap(uninstall)
 
@@ -1515,7 +1505,6 @@ class _StackScriptContext:
                 ]
                 z.extractall(self._staging_dir, files_to_extract)
         elif self._apk_path:
-            # Otherwise an incremental APK and an empty apks directory is correct.
             output = os.path.join(
                 self._staging_dir, os.path.basename(self._apk_path)
             )
@@ -1611,7 +1600,6 @@ class _Command:
     needs_package_name = False
     needs_output_directory = False
     needs_apk_helper = False
-    supports_incremental = False
     accepts_command_line_flags = False
     accepts_args = False
     need_device_args = True
@@ -1623,17 +1611,12 @@ class _Command:
         self._parser = None
         self._from_wrapper_script = from_wrapper_script
         self.args = None
-        self.incremental_apk_path = None
         self.apk_helper = None
         self.additional_apk_helpers = None
-        self.install_dict = None
         self.devices = None
         self.is_bundle = is_bundle
         self.is_test_apk = is_test_apk
         self.bundle_generation_info = None
-        # Only support  incremental install from APK wrapper scripts.
-        if is_bundle or not from_wrapper_script:
-            self.supports_incremental = False
 
     def RegisterBundleGenerationInfo(self, bundle_generation_info):
         self.bundle_generation_info = bundle_generation_info
@@ -1745,20 +1728,6 @@ class _Command:
                     help='Path to aapt2 executable. If not specified, will try to find it.',
                 )
 
-        if self.supports_incremental:
-            group.add_argument(
-                '--incremental',
-                action='store_true',
-                default=False,
-                help='Always install an incremental apk.',
-            )
-            group.add_argument(
-                '--non-incremental',
-                action='store_true',
-                default=False,
-                help='Always install a non-incremental apk.',
-            )
-
         # accepts_command_line_flags and accepts_args are mutually exclusive.
         # argparse will throw if they are both set.
         if self.accepts_command_line_flags:
@@ -1780,7 +1749,7 @@ class _Command:
 
         self._RegisterExtraArgs(group)
 
-    def _CreateApkHelpers(self, args, incremental_apk_path, install_dict):
+    def _CreateApkHelpers(self, args):
         """Returns true iff self.apk_helper was created and assigned."""
         if self.apk_helper is None:
             if args.apk_path:
@@ -1801,9 +1770,6 @@ class _Command:
                 )
                 _GenerateBundleApks(self.bundle_generation_info)
                 self.apk_helper = apk_helper.ToHelper(bundle_apks_path)
-            elif incremental_apk_path:
-                self.install_dict = install_dict
-                self.apk_helper = apk_helper.ToHelper(incremental_apk_path)
             elif self.is_bundle:
                 _GenerateBundleApks(self.bundle_generation_info)
                 self.apk_helper = apk_helper.ToHelper(
@@ -1898,58 +1864,21 @@ class _Command:
         # Ensure these keys always exist. They are set by wrapper scripts, but not
         # always added when not using wrapper scripts.
         args.__dict__.setdefault('apk_path', None)
-        args.__dict__.setdefault('incremental_json', None)
         args.__dict__.setdefault('bundle_path', None)
         args.__dict__.setdefault('keystore_path', None)
         args.__dict__.setdefault('keystore_password', None)
         args.__dict__.setdefault('keystore_alias', None)
         args.__dict__.setdefault('aapt2_path', None)
 
-        self.incremental_apk_path = None
-        install_dict = None
-        if args.incremental_json and not (
-            self.supports_incremental and args.non_incremental
-        ):
-            with open(args.incremental_json) as f:
-                install_dict = json.load(f)
-                self.incremental_apk_path = os.path.join(
-                    args.output_directory, install_dict['apk_path']
-                )
-                if not os.path.exists(self.incremental_apk_path):
-                    self.incremental_apk_path = None
-
-        if self.supports_incremental:
-            if args.incremental and args.non_incremental:
-                self._parser.error(
-                    'Must use only one of --incremental and --non-incremental'
-                )
-            elif args.non_incremental:
-                if not args.apk_path:
-                    self._parser.error('Apk has not been built.')
-            elif args.incremental:
-                if not self.incremental_apk_path:
-                    self._parser.error('Incremental apk has not been built.')
-                args.apk_path = None
-
-            if args.apk_path and self.incremental_apk_path:
-                self._parser.error(
-                    'Both incremental and non-incremental apks exist. '
-                    'Select using --incremental or --non-incremental'
-                )
-
         # Gate apk_helper creation with _CreateApkHelpers since for bundles it takes
         # a while to unpack the apks file from the aab file, so avoid this slowdown
         # for simple commands that don't need apk_helper.
         if self.needs_apk_helper:
-            if not self._CreateApkHelpers(
-                args, self.incremental_apk_path, install_dict
-            ):
+            if not self._CreateApkHelpers(args):
                 self._parser.error('App is not built.')
 
         if self.needs_package_name and not args.package_name:
-            if self._CreateApkHelpers(
-                args, self.incremental_apk_path, install_dict
-            ):
+            if self._CreateApkHelpers(args):
                 args.package_name = self.apk_helper.GetPackageName()
             elif self._from_wrapper_script:
                 self._parser.error('App is not built.')
@@ -1972,9 +1901,7 @@ class _Command:
             if not available_devices:
                 raise Exception('Cannot find any available devices.')
 
-            if not self._CreateApkHelpers(
-                args, self.incremental_apk_path, install_dict
-            ):
+            if not self._CreateApkHelpers(args):
                 self.devices = available_devices
             else:
                 fully_supported, not_supported_reasons = (
@@ -2072,7 +1999,6 @@ class _InstallCommand(_Command):
     description = 'Installs the APK or bundle to one or more devices.'
     needs_package_name = True
     needs_apk_helper = True
-    supports_incremental = True
     default_modules = []
 
     def _RegisterExtraArgs(self, group):
@@ -2111,7 +2037,7 @@ class _InstallCommand(_Command):
     def Run(self):
         if self.additional_apk_helpers:
             for additional_apk_helper in self.additional_apk_helpers:
-                _InstallApk(self.devices, additional_apk_helper, None)
+                _InstallApk(self.devices, additional_apk_helper)
         if self.is_bundle:
             modules = list(
                 set(self.args.module)
@@ -2126,7 +2052,7 @@ class _InstallCommand(_Command):
                 self.args.locales,
             )
         else:
-            _InstallApk(self.devices, self.apk_helper, self.install_dict)
+            _InstallApk(self.devices, self.apk_helper)
         if self.args.is_official_build:
             _RunCompileDex(self.devices, self.args.package_name, 'speed')
 
@@ -2137,7 +2063,7 @@ class _UninstallCommand(_Command):
     needs_package_name = True
 
     def Run(self):
-        _UninstallApk(self.devices, self.install_dict, self.args.package_name)
+        _UninstallApk(self.devices, self.args.package_name)
 
 
 class _SetWebViewProviderCommand(_Command):
@@ -2421,7 +2347,7 @@ To disable filtering, (but keep coloring), use --verbose.
             deobfuscate = deobfuscator.Deobfuscator(
                 self.args.proguard_mapping_path
             )
-        apk_path = self.args.apk_path or self.incremental_apk_path
+        apk_path = self.args.apk_path
         if apk_path or self.bundle_generation_info:
             stack_script_context = _StackScriptContext(
                 self.args.output_directory,
@@ -2943,7 +2869,7 @@ class _StackCommand(_Command):
         )
 
     def Run(self):
-        apk_path = self.args.apk_path or self.incremental_apk_path
+        apk_path = self.args.apk_path
         context = _StackScriptContext(
             self.args.output_directory, apk_path, self.bundle_generation_info
         )
@@ -3032,17 +2958,11 @@ def _RunInternal(
     if bundle_generation_info:
         args.command.RegisterBundleGenerationInfo(bundle_generation_info)
     if args.additional_apk_paths:
-        for i, path in enumerate(args.additional_apk_paths):
-            if path and not os.path.exists(path):
-                inc_path = path.replace('.apk', '_incremental.apk')
-                if os.path.exists(inc_path):
-                    args.additional_apk_paths[i] = inc_path
-                    path = inc_path
+        for path in args.additional_apk_paths:
             if not path or not os.path.exists(path):
                 raise Exception('Invalid additional APK path "{}"'.format(path))
     args.command.ProcessArgs(args)
     args.command.Run()
-    # Incremental install depends on the cache being cleared when uninstalling.
     if args.command.name != 'uninstall':
         _SaveDeviceCaches(args.command.devices, output_directory)
 
@@ -3051,7 +2971,6 @@ def Run(
     output_directory,
     apk_path,
     additional_apk_paths,
-    incremental_json,
     command_line_flags_file,
     target_cpu,
     proguard_mapping_path,
@@ -3066,7 +2985,6 @@ def Run(
         command_line_flags_file=command_line_flags_file,
         target_cpu=target_cpu,
         apk_path=exists_or_none(apk_path),
-        incremental_json=exists_or_none(incremental_json),
         proguard_mapping_path=proguard_mapping_path,
     )
     _RunInternal(
@@ -3149,7 +3067,6 @@ def RunForTestApk(
     output_directory,
     package_name,
     test_apk_path,
-    test_apk_json,
     proguard_mapping_path,
     additional_apk_paths,
 ):
@@ -3162,7 +3079,6 @@ def RunForTestApk(
       output_dir: Chromium output directory path.
       package_name: The package name for the test apk.
       test_apk_path: The test apk to install.
-      test_apk_json: The incremental json dict for the test apk.
       proguard_mapping_path: Input path to the Proguard mapping file, used to
         deobfuscate Java stack traces.
       additional_apk_paths: Additional APKs to install.
@@ -3175,7 +3091,6 @@ def RunForTestApk(
 
     parser.set_defaults(
         apk_path=exists_or_none(test_apk_path),
-        incremental_json=exists_or_none(test_apk_json),
         package_name=package_name,
         proguard_mapping_path=proguard_mapping_path,
     )

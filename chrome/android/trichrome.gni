@@ -106,11 +106,6 @@ template("trichrome_library_apk_tmpl") {
     # https://crbug.com/357131361
     suffix_apk_assets_used_by = system_webview_apk_target
 
-    # No support for this has been added, also not supported by test runner
-    # since trichrome library is used in "additional_apks" in the trichrome
-    # bundle smoke tests.
-    never_incremental = true
-
     # TODO(torne): using icon_resources just to get a temporary icon
     deps = [
       "//android_webview/nonembedded:icon_resources",

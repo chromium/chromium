@@ -81,7 +81,6 @@ android_apk("inline_autofill_service_example_apk") {
     # implementation libs.navigation.ui
   ]
   chromium_code = false
-  never_incremental = true
 
   #min_sdk_version = 33
   #target_sdk_version = 34

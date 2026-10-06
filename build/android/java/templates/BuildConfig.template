@@ -52,12 +52,6 @@ public class BuildConfig {
     public static long ORIGINAL_VERSION_CODE = 1;
 #endif
 
-#if defined(_IS_INCREMENTAL_INSTALL)
-    public static boolean IS_INCREMENTAL_INSTALL = true;
-#else
-    public static boolean IS_INCREMENTAL_INSTALL;
-#endif
-
 #if defined(_IS_FOR_TEST)
     public static boolean IS_FOR_TEST = true;
 #else

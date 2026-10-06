@@ -1330,7 +1330,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.settings") {
 }
 
 # Requires non-obfuscated class names.
-if (is_java_debug && !incremental_install) {
+if (is_java_debug) {
   # A test that runs during compile that ensures all SettingsFragment subclasses
   # are listed in //tools/metrics/histograms/metadata/settings/enums.xml.
   action("check_settings_enums") {

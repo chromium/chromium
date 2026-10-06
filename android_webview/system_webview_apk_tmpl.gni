@@ -290,8 +290,6 @@ template("system_webview_apk_or_module_tmpl") {
     resource_exclusion_exceptions = common_resource_exclusion_exceptions
 
     if (!_is_bundle_module) {
-      # Used as an additional apk in test scripts.
-      never_incremental = true
       command_line_flags_file = "webview-command-line"
     }
 

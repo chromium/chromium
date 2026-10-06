@@ -114,9 +114,7 @@
 ../../third_party/markupsafe/__init__.py
 ../../third_party/markupsafe/_compat.py
 ../../third_party/markupsafe/_native.py
-../action_helpers.py
 ../gn_helpers.py
-../print_python_deps.py
 ../skia_gold_common/__init__.py
 ../skia_gold_common/output_managerless_skia_gold_session.py
 ../skia_gold_common/skia_gold_properties.py
@@ -141,14 +139,8 @@
 ../util/lib/results/__init__.py
 ../util/lib/results/result_sink.py
 ../util/lib/results/result_types.py
-../zip_helpers.py
 devil_chromium.py
-gyp/dex.py
-gyp/util/__init__.py
 gyp/util/build_utils.py
-gyp/util/md5_check.py
-incremental_install/__init__.py
-incremental_install/installer.py
 pylib/__init__.py
 pylib/base/__init__.py
 pylib/base/base_test_result.py
@@ -223,6 +215,5 @@ pylib/utils/logdog_helper.py
 pylib/utils/logging_utils.py
 pylib/utils/repo_utils.py
 pylib/utils/test_filter.py
-pylib/utils/time_profile.py
 test_runner.py
 tombstones.py

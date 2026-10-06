@@ -401,8 +401,6 @@ Args that affect build speed:
  * `android_static_analysis = "build_server"` *(default=`"on"`)*
    * Offloads static analysis steps to the build server. Explained below.
    * Set this to `"off"` if you want to turn off static analysis altogether.
- * `incremental_install = true` *(default=`false`)*
-   * Makes build and install quite a bit faster. Explained in a later section.
  * `enable_chrome_android_internal = false` *(Googlers only)*
    * Disables non-public code, which exists even when building public targets.
    * Use this is you do not need to test internal-only things.
@@ -447,23 +445,6 @@ on a shared cluster of workers.
 
 To use Remote Execution, follow the corresponding
 [Linux build instructions](linux/build_instructions.md#use-remote-execution).
-
-### Incremental Install
-[Incremental Install](/build/android/incremental_install/README.md) uses
-reflection and sideloading to speed up the edit & deploy cycle (normally < 10
-seconds). The initial launch of the apk will be a lot slower on older Android
-versions (pre-N) where the OS needs to pre-optimize the side-loaded files, but
-then be only marginally slower after the first launch.
-
-To enable Incremental Install, add the gn args:
-
-```gn
-incremental_install = true
-```
-
-Some APKs (e.g. WebView) do not work with `incremental install = true` and are
-always built as normal APKs. This behavior is controlled via
-`never_incremental = true`.
 
 ## Installing and Running Chromium on an Emulator
 

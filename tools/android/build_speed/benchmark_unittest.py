@@ -92,7 +92,6 @@ class TestBenchmarkScript(unittest.TestCase):
                 'target_os="android"',
                 'use_remoteexec=true',
                 'android_static_analysis="build_server"',
-                'incremental_install=true',
                 'target_cpu="x86"',
             ]
             self.assertEqual(args[1], expected_gn_args)
@@ -110,7 +109,6 @@ class TestBenchmarkScript(unittest.TestCase):
                 'target_os="android"',
                 'use_remoteexec=true',
                 'android_static_analysis="on"',
-                'incremental_install=true',
                 'target_cpu="x86"',
             ]
             self.assertEqual(args[1], expected_gn_args)
@@ -123,7 +121,7 @@ class TestBenchmarkScript(unittest.TestCase):
                 'emulator: None\n'
                 'gn args: target_os="android" use_remoteexec=true '
                 'android_static_analysis="on" '
-                'incremental_install=true target_cpu="x86"\n'
+                'target_cpu="x86"\n'
                 'target: chrome_public_apk\n'
                 'gn_gen: 1.2s\n'
                 'chrome_nosig_compile: 10.6s'
@@ -168,7 +166,6 @@ class TestBenchmarkScript(unittest.TestCase):
                     'target_os="android"',
                     'use_remoteexec=true',
                     'android_static_analysis="build_server"',
-                    'incremental_install=true',
                     'target_cpu="x64"',
                 ],
                 'target': 'chrome_public_apk',
@@ -181,7 +178,6 @@ class TestBenchmarkScript(unittest.TestCase):
                     'target_os="android"',
                     'use_remoteexec=true',
                     'android_static_analysis="build_server"',
-                    'incremental_install=true',
                     'target_cpu="x64"',
                 ],
                 'target': 'chrome_public_apk',

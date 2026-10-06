@@ -271,8 +271,6 @@ public class SplitCompatApplication extends Application {
         ModuleUtil.updateCrashKeys();
 
         // WebView installs its own PureJavaExceptionHandler.
-        // Incremental install disables process isolation, so things in this block will
-        // actually be run for incremental apks, but not normal apks.
         if (!isIsolatedProcess && !isWebViewProcess()) {
             JavaExceptionReporterFactory factory =
                     () -> {

@@ -287,21 +287,6 @@ class ChromeAndroidBase(Product):
             # Do nothing as install_chrome.py does not uninstall.
             pass
 
-    @contextlib.contextmanager
-    def _install_incremental_apk(self, device):
-        """Helper context manager for ensuring a device uninstalls incremental
-        APK."""
-        install_script = self._port.build_path('bin/chrome_public_apk')
-        self._host.executive.run_command(
-            [install_script, 'install', '--device', device]
-        )
-        try:
-            yield
-        finally:
-            self._host.executive.run_command(
-                [install_script, 'uninstall', '--device', device]
-            )
-
     def get_devices(self):
         # pylint: disable=undefined-variable
         serial = None
@@ -442,8 +427,6 @@ class ChromeAndroidBase(Product):
                 exit_stack.enter_context(self._install_apk(device, apk))
             if self._options.stable:
                 install_context_manager = self._install_chrome_stable(device)
-            elif self._port._build_is_incremental_install():
-                install_context_manager = self._install_incremental_apk(device)
             else:
                 install_context_manager = self._install_apk(
                     device, self.browser_apk
@@ -504,6 +487,4 @@ class ChromeAndroid(ChromeAndroidBase):
 
     @property
     def default_browser_apk(self):
-        if self._port._build_is_incremental_install():
-            return self._port.build_path('apks', 'ChromePublic_incremental.apk')
         return self._port.build_path('apks', 'ChromePublic.apk')

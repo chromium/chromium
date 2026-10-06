@@ -551,25 +551,14 @@ def main(args):
             # 3. DEX and META-INF/services/
             logging.debug('Adding classes.dex')
             if options.dex_files:
-                if options.dex_files[0].endswith('.dex'):
-                    # This is the case for incremental_install=true.
-                    if len(options.dex_files) != 1:
-                        raise Exception('Expected exactly 1 .dex file.')
-                    with open(options.dex_files[0], 'rb') as dex_file_obj:
-                        add_to_zip(
-                            apk_dex_dir + 'classes.dex',
-                            dex_file_obj.read(),
-                            compress=not options.uncompress_dex,
-                        )
-                else:
-                    dex.MergeDexAndServices(
-                        options.dex_files,
-                        out_apk,
-                        apk_root_dir=apk_root_dir,
-                        apk_dex_dir=apk_dex_dir,
-                        uncompress_dex=options.uncompress_dex,
-                        compress_level=compress_level,
-                    )
+                dex.MergeDexAndServices(
+                    options.dex_files,
+                    out_apk,
+                    apk_root_dir=apk_root_dir,
+                    apk_dex_dir=apk_dex_dir,
+                    uncompress_dex=options.uncompress_dex,
+                    compress_level=compress_level,
+                )
 
             # 4. Native libraries.
             logging.debug('Adding lib/')

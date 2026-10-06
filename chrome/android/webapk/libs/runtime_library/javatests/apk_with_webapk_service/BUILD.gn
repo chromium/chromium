@@ -8,9 +8,6 @@ import("//build/config/android/rules.gni")
 android_apk("apk_with_webapk_service") {
   testonly = true
 
-  # Used as an additional_apk in test scripts.
-  never_incremental = true
-
   android_manifest = "AndroidManifest.xml"
   apk_name = "ApkWithWebApkService"
   sources = [ "src/org/chromium/webapk/lib/runtime_library/test/TestWebApkServiceImplWrapper.java" ]

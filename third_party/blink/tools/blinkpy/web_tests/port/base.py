@@ -506,17 +506,6 @@ class Port(object):
             )
         )
 
-    @memoized
-    def _build_is_incremental_install(self):
-        contents = self._build_args_gn_content()
-        return bool(
-            re.search(
-                r'^\s*incremental_install\s*=\s*true\s*(#.*)?$',
-                contents,
-                re.MULTILINE,
-            )
-        )
-
     def driver_stop_timeout(self):
         """Returns the amount of time in seconds to wait before killing the process in driver.stop()."""
         # We want to wait for at least 3 seconds, but if we are really slow, we

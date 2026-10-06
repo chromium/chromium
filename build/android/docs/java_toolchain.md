@@ -120,13 +120,12 @@ This step happens only when targets have `supports_android = true`.
   containing `classes.dex` files.
 * Dexing is incremental - it will reuse dex'ed classes from a previous build if
   the corresponding `.class` file is unchanged.
-* These per-library `.dex.jar` files are used directly by [incremental install],
-  and are inputs to the Apk step when `enable_proguard = false`.
+* These per-library `.dex.jar` files are inputs to the Apk step when
+  `enable_proguard = false`.
   * Even when `is_java_debug = false`, many apk targets do not enable ProGuard
     (e.g. unit tests).
 
 [d8]: https://developer.android.com/studio/command-line/d8
-[incremental install]: /build/android/incremental_install/README.md
 
 ### Step 7: Apk / Bundle Module Compile
 
@@ -141,8 +140,6 @@ This step happens only when targets have `supports_android = true`.
 
 ### Step 8: Final Dexing
 
-This step is skipped when building using [Incremental Install].
-
 When `is_java_debug = true`:
 * [d8] merges all library `.dex.jar` files into a final `.mergeddex.jar`.
 
@@ -151,7 +148,6 @@ When `is_java_debug = false`:
   files and outputs a final `.r8dex.jar`.
   * For App Bundles, R8 creates a `.r8dex.jar` for each module.
 
-[Incremental Install]: /build/android/incremental_install/README.md
 [R8]: https://r8.googlesource.com/r8
 
 ## Test APKs with apk_under_test

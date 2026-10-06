@@ -18,7 +18,6 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BaseFeatureList;
 import org.chromium.base.ContextUtils;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -39,8 +38,7 @@ public final class BindService {
     }
 
     static boolean supportVariableConnections() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                && !BuildConfig.IS_INCREMENTAL_INSTALL;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
 
     // Note that handler is not guaranteed to be used, and client still need to correctly handle

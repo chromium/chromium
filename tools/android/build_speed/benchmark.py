@@ -9,7 +9,7 @@ Example Command:
 
 Example Output:
     Summary
-    gn args: target_os="android" use_remoteexec=true incremental_install=true
+    gn args: target_os="android" use_remoteexec=true
     gn_gen: 6.7s
     chrome_nosig: 36.1s avg (35.9s, 36.3s)
     chrome_sig: 38.9s avg (38.8s, 39.1s)
@@ -87,10 +87,6 @@ _NO_SERVER = [
 
 _SERVER = [
     'android_static_analysis="build_server"',
-]
-
-_INCREMENTAL_INSTALL = [
-    'incremental_install=true',
 ]
 
 _NO_COMPONENT_BUILD = [
@@ -627,11 +623,6 @@ def main():
         help='Do not start a faster local dev server before running the test.',
     )
     parser.add_argument(
-        '--no-incremental-install',
-        action='store_true',
-        help='Do not use incremental install.',
-    )
-    parser.add_argument(
         '--no-component-build',
         action='store_true',
         help='Turn off component build.',
@@ -704,8 +695,6 @@ def main():
         gn_args += _NO_SERVER
     else:
         gn_args += _SERVER
-    if not args.no_incremental_install:
-        gn_args += _INCREMENTAL_INSTALL
     if args.no_component_build:
         gn_args += _NO_COMPONENT_BUILD
 

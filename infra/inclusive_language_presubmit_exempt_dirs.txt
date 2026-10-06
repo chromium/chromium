@@ -21,7 +21,6 @@ base/test/data/pe_image_reader
 build/android
 build/android/docs
 build/android/gyp
-build/android/incremental_install/third_party/AndroidHiddenApiBypass/library/src/main/java/org/lsposed/hiddenapibypass
 build/android/pylib/results/flakiness_dashboard
 build/android/pylib/utils
 build/config

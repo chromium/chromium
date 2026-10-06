@@ -16,17 +16,12 @@ import android.os.Looper;
 import androidx.core.content.ContextCompat;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingPolicies;
-import androidx.test.internal.runner.ClassPathScanner;
 import androidx.test.internal.runner.RunnerArgs;
 import androidx.test.internal.runner.TestExecutor;
 import androidx.test.internal.runner.TestRequestBuilder;
 import androidx.test.runner.AndroidJUnitRunner;
 
-import dalvik.system.DexFile;
-
-import org.junit.Test;
 import org.junit.runner.Request;
-import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
@@ -41,27 +36,17 @@ import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.base.test.util.TestAnimations;
-import org.chromium.build.BuildConfig;
 import org.chromium.testing.TestListInstrumentationRunListener;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- *
- *
  * <pre>
  * An Instrumentation subclass that:
- *    * Supports incremental install.
  *    * Installs an InMemorySharedPreferences, and a few other try-to-make-things-less-flaky things.
  * </pre>
  */
@@ -264,23 +249,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     private Request createListTestRequest(Bundle arguments) {
-        TestRequestBuilder builder;
-        if (BuildConfig.IS_INCREMENTAL_INSTALL) {
-            try {
-                Class<?> bootstrapClass =
-                        Class.forName("org.chromium.incrementalinstall.BootstrapApplication");
-                DexFile[] incrementalInstallDexes =
-                        (DexFile[])
-                                bootstrapClass.getDeclaredField("sIncrementalDexFiles").get(null);
-                builder =
-                        new DexFileTestRequestBuilder(
-                                this, arguments, Arrays.asList(incrementalInstallDexes));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            builder = new TestRequestBuilder(this, arguments);
-        }
+        TestRequestBuilder builder = new TestRequestBuilder(this, arguments);
         RunnerArgs runnerArgs =
                 new RunnerArgs.Builder().fromManifest(this).fromBundle(this, arguments).build();
         builder.addFromRunnerArgs(runnerArgs);
@@ -294,114 +263,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
     static boolean shouldListTests() {
         return sTestListMode;
-    }
-
-    /**
-     * Wraps TestRequestBuilder to make it work with incremental install.
-     *
-     * <p>TestRequestBuilder does not know to look through the incremental install dex files, and
-     * has no api for telling it to do so. This class checks to see if the list of tests was given
-     * by the runner (mHasClassList), and if not overrides the auto-detection logic in build() to
-     * manually scan all .dex files.
-     */
-    private static class DexFileTestRequestBuilder extends TestRequestBuilder {
-        final List<String> mExcludedPrefixes = new ArrayList<String>();
-        final List<String> mIncludedPrefixes = new ArrayList<String>();
-        final List<DexFile> mDexFiles;
-        boolean mHasClassList;
-        private ClassLoader mClassLoader = DexFileTestRequestBuilder.class.getClassLoader();
-
-        DexFileTestRequestBuilder(Instrumentation instr, Bundle bundle, List<DexFile> dexFiles) {
-            super(instr, bundle);
-            mDexFiles = dexFiles;
-            mExcludedPrefixes.addAll(ClassPathScanner.getDefaultExcludedPackages());
-        }
-
-        @Override
-        public TestRequestBuilder removeTestPackage(String testPackage) {
-            mExcludedPrefixes.add(testPackage);
-            return this;
-        }
-
-        @Override
-        public TestRequestBuilder addFromRunnerArgs(RunnerArgs runnerArgs) {
-            mExcludedPrefixes.addAll(runnerArgs.notTestPackages);
-            mIncludedPrefixes.addAll(runnerArgs.testPackages);
-            // Without clearing, You get IllegalArgumentException:
-            // Ambiguous arguments: cannot provide both test package and test class(es) to run
-            runnerArgs.notTestPackages.clear();
-            runnerArgs.testPackages.clear();
-            return super.addFromRunnerArgs(runnerArgs);
-        }
-
-        @Override
-        public TestRequestBuilder addTestClass(String className) {
-            mHasClassList = true;
-            return super.addTestClass(className);
-        }
-
-        @Override
-        public TestRequestBuilder addTestMethod(String testClassName, String testMethodName) {
-            mHasClassList = true;
-            return super.addTestMethod(testClassName, testMethodName);
-        }
-
-        @Override
-        public TestRequestBuilder setClassLoader(ClassLoader loader) {
-            mClassLoader = loader;
-            return super.setClassLoader(loader);
-        }
-
-        @Override
-        public Request build() {
-            // If a test class was requested, then no need to iterate class loader.
-            if (!mHasClassList) {
-                // builder.addApkToScan uses new DexFile(path) under the hood, which on Dalvik OS's
-                // assumes that the optimized dex is in the default location (crashes).
-                // Perform our own dex file scanning instead as a workaround.
-                scanDexFilesForTestClasses();
-            }
-            return super.build();
-        }
-
-        private static boolean startsWithAny(String str, List<String> prefixes) {
-            for (String prefix : prefixes) {
-                if (str.startsWith(prefix)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void scanDexFilesForTestClasses() {
-            Log.i(TAG, "Scanning loaded dex files for test classes.");
-            // Mirror TestRequestBuilder.getClassNamesFromClassPath().
-            for (DexFile dexFile : mDexFiles) {
-                Enumeration<String> classNames = dexFile.entries();
-                while (classNames.hasMoreElements()) {
-                    String className = classNames.nextElement();
-                    if (!mIncludedPrefixes.isEmpty()
-                            && !startsWithAny(className, mIncludedPrefixes)) {
-                        continue;
-                    }
-                    if (startsWithAny(className, mExcludedPrefixes)) {
-                        continue;
-                    }
-                    if (!className.endsWith("Test")) {
-                        // Speeds up test listing to filter by name before
-                        // trying to load the class. We have an ErrorProne
-                        // check that enforces this convention:
-                        // //tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/TestClassNameCheck.java
-                        // As of Dec 2019, this speeds up test listing on
-                        // android-kitkat-arm-rel from 41s -> 23s.
-                        continue;
-                    }
-                    if (!className.contains("$") && checkIfTest(className, mClassLoader)) {
-                        addTestClass(className);
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -435,54 +296,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    private static boolean checkIfTest(String className, ClassLoader classLoader) {
-        Class<?> loadedClass = tryLoadClass(className, classLoader);
-        if (loadedClass != null && isTestClass(loadedClass)) {
-            return true;
-        }
-        return false;
-    }
-
-    private static Class<?> tryLoadClass(String className, ClassLoader classLoader) {
-        try {
-            return Class.forName(className, false, classLoader);
-        } catch (NoClassDefFoundError | ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    // Copied from android.support.test.runner code.
-    private static boolean isTestClass(Class<?> loadedClass) {
-        try {
-            if (Modifier.isAbstract(loadedClass.getModifiers())) {
-                Log.d(
-                        TAG,
-                        String.format(
-                                "Skipping abstract class %s: not a test", loadedClass.getName()));
-                return false;
-            }
-            if (loadedClass.isAnnotationPresent(RunWith.class)) {
-                return true;
-            }
-            for (Method testMethod : loadedClass.getMethods()) {
-                if (testMethod.isAnnotationPresent(Test.class)) {
-                    return true;
-                }
-            }
-            Log.d(TAG, String.format("Skipping class %s: not a test", loadedClass.getName()));
-            return false;
-        } catch (Exception e) {
-            // Defensively catch exceptions - Will throw runtime exception if it cannot load
-            // methods.
-            Log.w(TAG, String.format("%s in isTestClass for %s", e, loadedClass.getName()));
-            return false;
-        } catch (Error e) {
-            // defensively catch Errors too
-            Log.w(TAG, String.format("%s in isTestClass for %s", e, loadedClass.getName()));
-            return false;
-        }
-    }
-
     @Override
     public void finish(int resultCode, Bundle results) {
         if (sTestListMode) {
@@ -507,9 +320,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         for (File file : files) {
             // Symlink to app's native libraries.
             if (file.getName().equals("lib")) {
-                continue;
-            }
-            if (file.getName().equals("incremental-install-files")) {
                 continue;
             }
             if (file.getName().equals("code_cache")) {

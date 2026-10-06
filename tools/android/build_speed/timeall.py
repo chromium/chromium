@@ -65,7 +65,6 @@ def _run_command_with_repeat(
 class _Options:
     benchmark: str
     r: int  # times to repeat the benchmark.
-    i: bool = False  # incremental_install
     n: bool = False  # no_component_build
     s: bool = False  # server
     e: str = ""  # emulator
@@ -95,8 +94,6 @@ def _run_benchmark(options: _Options):
     else:
         # Default to 64-bit.
         cmd.append("--build-64bit")
-    if not options.i:
-        cmd.append("--no-incremental-install")
     if options.n:
         cmd.append("--no-component-build")
     if not options.s:
@@ -151,7 +148,6 @@ def run(debug: bool):
     else:
         repeat = 3
 
-    incremental_opts = [True, False]
     nocomponent_opts = [True, False]
     # Use False first for --debug to ensure static analysis pass.
     server_opts = [False, True]
@@ -163,21 +159,16 @@ def run(debug: bool):
             e = ''
         else:
             e = emulator
-        # i: incremental_install, n: no_component_build, s: server
-        build_options = [
-            (i, n, s)
-            for i, n, s in itertools.product(
-                incremental_opts, nocomponent_opts, server_opts
-            )
-        ]
+        # n: no_component_build, s: server
+        build_options = list(itertools.product(nocomponent_opts, server_opts))
         if debug:
             build_options = [build_options[0]]
         else:
             random.shuffle(build_options)
             build_options = build_options[:_MAX_BUILD_COMBINATIONS]
-        for i, n, s in build_options:
+        for n, s in build_options:
             benchmark_options.append(
-                _Options(benchmark=benchmark, r=repeat, e=e, i=i, n=n, s=s)
+                _Options(benchmark=benchmark, r=repeat, e=e, n=n, s=s)
             )
 
     # shuffle benchmark_options

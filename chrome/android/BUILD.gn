@@ -2622,7 +2622,6 @@ if (_is_default_toolchain) {
     android_test_apk = ":chrome_smoke_test_apk"
     extra_args = _common_smoke_test_args
     additional_apks = [ "//net/android:net_test_support_apk" ]
-    never_incremental = true
     if (!is_java_debug) {
       proguard_mapping_path = "$root_build_dir/apks/ChromePublic.aab.mapping"
     }

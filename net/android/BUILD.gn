@@ -184,9 +184,6 @@ shared_library_with_jni("net_java_test_native_support") {
 android_apk("net_test_support_apk") {
   testonly = true
 
-  # Used as an additional_apk in test scripts.
-  never_incremental = true
-
   deps = [
     ":net_java_test_support",
     ":net_test_support_provider_java",

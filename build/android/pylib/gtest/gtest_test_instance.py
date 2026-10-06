@@ -478,10 +478,6 @@ class GtestTestInstance(test_instance.TestInstance):
             if os.path.exists(exe_dist_dir):
                 self._exe_dist_dir = exe_dist_dir
 
-        incremental_part = ''
-        if args.test_apk_incremental_install_json:
-            incremental_part = '_incremental'
-
         self._test_launcher_batch_limit = MAX_BATCH_SIZE
         if (
             args.test_launcher_batch_limit
@@ -492,10 +488,7 @@ class GtestTestInstance(test_instance.TestInstance):
         apk_path = os.path.join(
             constants.GetOutDirectory(),
             '%s_apk' % self._suite,
-            '%s-debug%s.apk' % (self._suite, incremental_part),
-        )
-        self._test_apk_incremental_install_json = (
-            args.test_apk_incremental_install_json
+            '%s-debug.apk' % self._suite,
         )
         if not os.path.exists(apk_path):
             self._apk_helper = None
@@ -675,10 +668,6 @@ class GtestTestInstance(test_instance.TestInstance):
     @property
     def symbolizer(self):
         return self._symbolizer
-
-    @property
-    def test_apk_incremental_install_json(self):
-        return self._test_apk_incremental_install_json
 
     @property
     def test_launcher_batch_limit(self):

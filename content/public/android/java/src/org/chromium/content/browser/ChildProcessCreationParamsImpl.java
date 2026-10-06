@@ -12,7 +12,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.JavalessRenderersFeatureList;
@@ -122,9 +121,6 @@ public class ChildProcessCreationParamsImpl {
 
     private static boolean isNativeSandboxedServiceSupported() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
-                // Incremental install disables isolated processes, which are required for
-                // javaless renderers.
-                && !BuildConfig.IS_INCREMENTAL_INSTALL
                 // Native App Zygote (/system/bin/zygote_next) is built only for the device's
                 // primary ABI. If Chrome is running in a secondary ABI, disable native
                 // sandboxed services to avoid dlopen failures in zygote_next.

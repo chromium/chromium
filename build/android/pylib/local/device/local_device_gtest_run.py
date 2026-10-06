@@ -24,7 +24,6 @@ from devil.android.ndk import abis
 from devil.android.tools import system_app
 from devil.android.sdk import version_codes
 from devil.utils import reraiser_thread
-from incremental_install import installer
 from lib.common import google_storage_helper
 from lib.proto import exception_recorder
 from lib.proto import measures
@@ -227,9 +226,6 @@ class _ApkDelegate:
         self._activity = test_instance.activity
         self._additional_apks = test_instance.additional_apks
         self._apk_helper = test_instance.apk_helper
-        self._test_apk_incremental_install_json = (
-            test_instance.test_apk_incremental_install_json
-        )
         self._package = test_instance.package
         self._runner = test_instance.runner
         self._permissions = test_instance.permissions
@@ -263,21 +259,13 @@ class _ApkDelegate:
                 timeout=install_timeout,
             )
 
-        if self._test_apk_incremental_install_json:
-            installer.Install(
-                device,
-                self._test_apk_incremental_install_json,
-                apk=self._apk_helper,
-                permissions=self._permissions,
-            )
-        else:
-            device.Install(
-                self._apk_helper,
-                allow_downgrade=True,
-                reinstall=True,
-                permissions=self._permissions,
-                timeout=install_timeout,
-            )
+        device.Install(
+            self._apk_helper,
+            allow_downgrade=True,
+            reinstall=True,
+            permissions=self._permissions,
+            timeout=install_timeout,
+        )
 
     def ResultsDirectory(self, device):
         return device.GetExternalStoragePath()
@@ -653,9 +641,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                         device_openxr_runtime_path, as_root=True
                     ):
                         logging.exception(
-                            'Could not locate OpenXr runtime on device. '
-                            'Note that openxr deployment seems to fail with '
-                            'incremental_install=True'
+                            'Could not locate OpenXr runtime on device.'
                         )
                         sys.exit(1)
 

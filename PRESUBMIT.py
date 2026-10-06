@@ -2680,8 +2680,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/write_build_config.pydeps',
     'build/android/gyp/write_native_libraries_java.pydeps',
     'build/android/gyp/zip.pydeps',
-    'build/android/incremental_install/generate_android_manifest.pydeps',
-    'build/android/incremental_install/write_installer_json.pydeps',
     'build/android/pylib/results/presentation/test_results_presentation.pydeps',
     'build/android/resource_sizes.pydeps',
     'build/android/test_runner.pydeps',

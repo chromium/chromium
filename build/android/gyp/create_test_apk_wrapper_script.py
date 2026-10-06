@@ -31,7 +31,6 @@ def main():
       output_directory=resolve(${OUTPUT_DIR}),
       package_name=${PACKAGE_NAME},
       test_apk_path=resolve(${TEST_APK}),
-      test_apk_json=resolve(${TEST_APK_JSON}),
       proguard_mapping_path=resolve(${MAPPING_PATH}),
       additional_apk_paths=additional_apk_paths)
 
@@ -50,7 +49,6 @@ def main(args):
     )
     parser.add_argument('--package-name', required=True)
     parser.add_argument('--test-apk')
-    parser.add_argument('--test-apk-incremental-install-json')
     parser.add_argument('--proguard-mapping-path')
     parser.add_argument(
         '--additional-apk',
@@ -75,9 +73,6 @@ def main(args):
             'OUTPUT_DIR': repr(relativize('.')),
             'PACKAGE_NAME': repr(args.package_name),
             'TEST_APK': repr(relativize(args.test_apk)),
-            'TEST_APK_JSON': repr(
-                relativize(args.test_apk_incremental_install_json)
-            ),
             'MAPPING_PATH': repr(relativize(args.proguard_mapping_path)),
             'ADDITIONAL_APKS': [relativize(p) for p in args.additional_apks],
         }

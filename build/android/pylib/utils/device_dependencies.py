@@ -53,7 +53,6 @@ _EXCLUSIONS = [
     r'.*\.stamp',
     r'.*\.pak\.info',
     r'.*\.build_config.json',
-    r'.*\.incremental\.json',
 ]
 
 

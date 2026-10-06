@@ -34,10 +34,9 @@ Where `<your_avd_name>` can be a filename like:
 
 ```
 usage: benchmark.py [-h] [--bundle] [--test] [--no-server]
-                    [--no-incremental-install] [--no-component-build]
-                    [--build-64bit] [-r REPEAT] [-C OUTPUT_DIRECTORY]
-                    [--emulator EMULATOR] [--target TARGET] [-v] [-q] [--json]
-                    [-n]
+                    [--no-component-build] [--build-64bit] [-r REPEAT]
+                    [-C OUTPUT_DIRECTORY] [--emulator EMULATOR]
+                    [--target TARGET] [-v] [-q] [--json] [-n]
                     [BENCHMARK ...]
 
 Tool to run build benchmarks (e.g. incremental build time).
@@ -47,7 +46,7 @@ Example Command:
 
 Example Output:
     Summary
-    gn args: target_os="android" use_remoteexec=true incremental_install=true
+    gn args: target_os="android" use_remoteexec=true
     gn_gen: 6.7s
     chrome_nosig: 36.1s avg (35.9s, 36.3s)
     chrome_sig: 38.9s avg (38.8s, 39.1s)
@@ -84,8 +83,6 @@ options:
   --test                Switch the default target to a test apk.
   --no-server           Do not start a faster local dev server before running
                         the test.
-  --no-incremental-install
-                        Do not use incremental install.
   --no-component-build  Turn off component build.
   --build-64bit         Build 64-bit by default, even with no emulator.
   -r, --repeat REPEAT   Number of times to repeat the benchmark.
@@ -144,7 +141,6 @@ benchmark named `example_benchmark`, you might see:
 You can customize the build configuration with various flags:
 
 - `--no-server`: Do not use the faster local development server.
-- `--no-incremental-install`: Disable incremental install.
 - `--bundle` or `--test`: Change the build target to a bundle or test APK
   instead of the default APK.
 

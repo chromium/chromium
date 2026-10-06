@@ -6,9 +6,6 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_apk("media_router_test_support_apk") {
-  # Used as an additional_apk in test scripts.
-  never_incremental = true
-
   deps = [
     "//components/media_router/test/android/cast_emulator:cast_emulator_java",
   ]

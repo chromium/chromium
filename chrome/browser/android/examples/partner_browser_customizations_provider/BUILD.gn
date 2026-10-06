@@ -22,5 +22,4 @@ android_apk("partner_browser_customizations_example_apk") {
   apk_name = "PartnerCustomizationProviderExample"
   deps = [ ":partner_browser_customizations_example_apk_resources" ]
   chromium_code = false
-  never_incremental = true
 }

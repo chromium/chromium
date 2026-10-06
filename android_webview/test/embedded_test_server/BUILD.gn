@@ -63,9 +63,6 @@ shared_library_with_jni("aw_net_java_test_native_support") {
 android_apk("aw_net_test_support_apk") {
   testonly = true
 
-  # Used as an additional_apk in test scripts.
-  never_incremental = true
-
   deps = [ ":aw_net_java_test_support" ]
   android_manifest = "java/AndroidManifest.xml"
   apk_name = "ChromiumNetTestAwSupport"

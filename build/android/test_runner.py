@@ -608,11 +608,6 @@ def AddGTestOptions(parser):
         help='Executable name of the test suite to run.',
     )
     parser.add_argument(
-        '--test-apk-incremental-install-json',
-        type=os.path.realpath,
-        help='Path to install json for the test apk.',
-    )
-    parser.add_argument(
         '--test-launcher-batch-limit',
         dest='test_launcher_batch_limit',
         type=int,
@@ -922,17 +917,6 @@ def AddInstrumentationTestOptions(parser):
         help='Force enables Digital Asset Link verification for the provided '
         'package and domain, example usage: --approve-app-links '
         'com.android.package:www.example.com',
-    )
-
-    # These arguments are suppressed from the help text because they should
-    # only ever be specified by an intermediate script.
-    parser.add_argument(
-        '--apk-under-test-incremental-install-json', help=argparse.SUPPRESS
-    )
-    parser.add_argument(
-        '--test-apk-incremental-install-json',
-        type=os.path.realpath,
-        help=argparse.SUPPRESS,
     )
 
 

@@ -682,7 +682,6 @@ template("test") {
         data_deps = [ ":$_exec_target" ]
       } else {
         apk_target = ":$_apk_target_name"
-        incremental_apk = incremental_install
 
         # Dep needed for the test runner .runtime_deps file to pick up data
         # deps from the forward_variables_from(invoker, "*") on the library.

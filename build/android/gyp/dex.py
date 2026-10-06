@@ -709,22 +709,6 @@ def MergeDexAndServices(
                 dex_idx += 1
 
 
-def MergeDexForIncrementalInstall(
-    r8_jar_path, src_paths, dest_dex_jar, min_api
-):
-    dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX) + [
-        '-cp',
-        r8_jar_path,
-        'com.android.tools.r8.D8',
-        '--min-api',
-        min_api,
-    ]
-    with build_utils.TempDir() as tmp_dir:
-        _CreateFinalDex(
-            src_paths, dest_dex_jar, tmp_dir, dex_cmd, service_jars=src_paths
-        )
-
-
 def main(args):
     build_utils.InitLogging('DEX_DEBUG')
     options = _ParseArgs(args)

@@ -566,8 +566,6 @@ if (enable_openxr) {
 
     if (is_android) {
       android_apk("openxr_test_support_apk") {
-        # Used as an additional_apk in test scripts.
-        never_incremental = true
         testonly = true
 
         shared_libraries = [ ":openxr_mock" ]

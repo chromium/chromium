@@ -263,7 +263,6 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
         mock_ti.use_existing_test_data = False
         mock_ti.additional_apks = []
         mock_ti.apk_helper = None
-        mock_ti.test_apk_incremental_install_json = None
 
         delegate = local_device_gtest_run._ApkDelegate(mock_ti, mock_env)
 

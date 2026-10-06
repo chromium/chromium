@@ -30,7 +30,6 @@ def main():
       output_dir,
       resolve(${APK_PATH}),
       [resolve(p) for p in ${ADDITIONAL_APK_PATHS}],
-      resolve(${INC_JSON_PATH}),
       ${FLAGS_FILE},
       ${TARGET_CPU},
       resolve(${MAPPING_PATH}))
@@ -48,7 +47,6 @@ def main(args):
         '--script-output-path', help='Output path for executable script.'
     )
     parser.add_argument('--apk-path')
-    parser.add_argument('--incremental-install-json-path')
     parser.add_argument('--command-line-flags-file')
     parser.add_argument('--target-cpu')
     parser.add_argument(
@@ -78,9 +76,6 @@ def main(args):
             'ADDITIONAL_APK_PATHS': [
                 relativize(p) for p in args.additional_apk_paths
             ],
-            'INC_JSON_PATH': repr(
-                relativize(args.incremental_install_json_path)
-            ),
             'MAPPING_PATH': repr(relativize(args.proguard_mapping_path)),
             'FLAGS_FILE': repr(args.command_line_flags_file),
             'TARGET_CPU': repr(args.target_cpu),

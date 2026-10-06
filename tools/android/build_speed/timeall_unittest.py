@@ -28,7 +28,6 @@ class TimeallTest(unittest.TestCase):
             benchmark='chrome_nosig',
             r=1,
             e='emulator.avd',
-            i=True,
             n=False,
             s=True,
         )
@@ -58,7 +57,6 @@ class TimeallTest(unittest.TestCase):
             benchmark='cta_test_sig',
             r=1,
             e='emulator.avd',
-            i=True,
             n=False,
             s=True,
         )
@@ -85,7 +83,7 @@ class TimeallTest(unittest.TestCase):
             stdout='output', stderr='', check=True
         )
         options = timeall._Options(
-            benchmark='base_sig', r=1, e='', i=False, n=True, s=False
+            benchmark='base_sig', r=1, e='', n=True, s=False
         )
         timeall._run_benchmark(options)
 
@@ -98,7 +96,6 @@ class TimeallTest(unittest.TestCase):
             '--target',
             'chrome_apk',
             '--build-64bit',
-            '--no-incremental-install',
             '--no-component-build',
             '--no-server',
         ]
@@ -217,7 +214,6 @@ class TimeallTest(unittest.TestCase):
         self.assertEqual(options.benchmark, 'chrome_junit_sig')
         self.assertEqual(options.r, 1)
         self.assertEqual(options.e, '')
-        self.assertTrue(options.i)
         self.assertTrue(options.n)
         self.assertFalse(options.s)
 
@@ -238,7 +234,6 @@ class TimeallTest(unittest.TestCase):
         self.assertEqual(first_options.benchmark, 'chrome_junit_sig')
         self.assertEqual(first_options.r, 3)
         self.assertEqual(first_options.e, '')
-        self.assertTrue(first_options.i)
         self.assertTrue(first_options.n)
         self.assertFalse(first_options.s)
 
@@ -248,7 +243,6 @@ class TimeallTest(unittest.TestCase):
         self.assertEqual(
             last_options.e, 'android_31_google_apis_x64_local.textpb'
         )
-        self.assertTrue(last_options.i)
         self.assertFalse(last_options.n)
         self.assertTrue(last_options.s)
 
