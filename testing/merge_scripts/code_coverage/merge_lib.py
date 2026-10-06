@@ -30,7 +30,6 @@ def _call_profdata_tool(
   sparse=False,
   timeout=3600,
   show_profdata=True,
-  weights=None,
 ):
   """Calls the llvm-profdata tool.
 
@@ -45,7 +44,6 @@ def _call_profdata_tool(
       not take > 1 hr, and so defaults to 3600 seconds.
     show_profdata (bool): flag on whether the merged output information should
     be shown for debugging purposes.
-    weights (dict): maps from benchmark name to weight.
 
   Raises:
     CalledProcessError: An error occurred merging profiles.
@@ -57,25 +55,12 @@ def _call_profdata_tool(
   input_file = os.path.join(output_dir, 'input-profdata-files.txt').replace(
     '\\', '/'
   )
-  input_files_with_weights = []
-  for file_path in profile_input_file_paths:
-    weight = 1
-    if weights:
-      for benchmark, w in weights.items():
-        if file_path.endswith(benchmark):
-          weight = w
-          break
-    input_file_with_weight = file_path
-    if weight != 1:
-      input_file_with_weight = weight + ',' + file_path
-    input_files_with_weights.append(input_file_with_weight)
-
   with open(input_file, 'w') as fd:
-    for f in input_files_with_weights:
+    for f in profile_input_file_paths:
       fd.write('%s\n' % f)
 
   logging.info(
-    'Contents of input-profdata-files.txt %s', input_files_with_weights
+    'Contents of input-profdata-files.txt %s', profile_input_file_paths
   )
 
   try:
@@ -357,7 +342,6 @@ def merge_profiles(
   skip_validation=False,
   merge_timeout=3600,
   show_profdata=True,
-  weights=None,
 ):
   """Merges the profiles produced by the shards using llvm-profdata.
 
@@ -375,7 +359,6 @@ def merge_profiles(
         invocation. only applicable when input_extension is .profraw.
     merge_timeout (int): timeout (sec) for the call to merge profiles. This
       should not take > 1 hr, and so defaults to 3600 seconds.
-    weights (dict): maps from profdata file to weight.
 
   Returns:
     The list of profiles that had to be excluded to get the merge to
@@ -430,7 +413,6 @@ def merge_profiles(
     sparse=sparse,
     timeout=merge_timeout,
     show_profdata=show_profdata,
-    weights=weights,
   )
 
   # Remove inputs when merging profraws as they won't be needed and they can be
