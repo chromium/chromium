@@ -46,9 +46,6 @@ class PagePasswordsAnalyser {
   // Sets of renderer_ids which have already been analyzed.
   std::set<FormRendererId> skip_form_element_renderer_ids_;
   std::set<FieldRendererId> skip_control_element_renderer_ids_;
-  // This is true when new DOM content is available since the last time
-  // the page was analysed, meaning the page needs to be reanalysed.
-  bool page_dirty_;
 };
 
 }  // namespace autofill
