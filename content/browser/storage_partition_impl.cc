@@ -2804,16 +2804,20 @@ void StoragePartitionImpl::OnClearSiteData(
 
   URLLoaderNetworkContext& context =
       url_loader_network_observers_.current_context();
-  if (WebContents* web_contents = context.GetWebContents()) {
-    // TODO(crbug.com/399123018): This attributes the feature to the primary
-    // main frame's page, which is wrong for navigations that haven't committed
-    // yet (e.g. prerendering or navigating away) and for subframes. Since
-    // kClearSiteData is recorded in UKM, attribute it to the document from
-    // `context.navigation_or_document()` instead, deferring it until commit
-    // for navigations.
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        web_contents->GetPrimaryMainFrame(),
-        blink::mojom::WebFeature::kClearSiteData);
+  // Attribute the feature use to the document that received the header. For a
+  // navigation, that document doesn't exist yet, so defer recording until the
+  // navigation commits. The header may also have been sent by a redirect
+  // response, which must not be attributed to a cross-origin document.
+  if (NavigationOrDocumentHandle* navigation_or_document =
+          context.navigation_or_document()) {
+    if (NavigationRequest* navigation_request =
+            navigation_or_document->GetNavigationRequest()) {
+      navigation_request->AddWebFeatureToLog(
+          blink::mojom::WebFeature::kClearSiteData, url::Origin::Create(url));
+    } else if (RenderFrameHost* rfh = navigation_or_document->GetDocument()) {
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          rfh, blink::mojom::WebFeature::kClearSiteData);
+    }
   }
 
   // TODO(crbug.com/567972108): This function is quite fragile as the render

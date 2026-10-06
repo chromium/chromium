@@ -44,6 +44,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -844,6 +845,172 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   // console message sent to it would have been received by now.
   EXPECT_TRUE(ExecJs(shell(), "true"));
   EXPECT_TRUE(console_observer.messages().empty());
+}
+
+// A ContentBrowserClient that records the documents that
+// WebFeature::kClearSiteData is logged for.
+class ClearSiteDataUseCounterBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  void LogWebFeatureForCurrentPage(RenderFrameHost* render_frame_host,
+                                   blink::mojom::WebFeature feature) override {
+    if (feature == blink::mojom::WebFeature::kClearSiteData) {
+      logged_documents_.push_back(render_frame_host->GetGlobalId());
+    }
+  }
+
+  const std::vector<GlobalRenderFrameHostId>& logged_documents() const {
+    return logged_documents_;
+  }
+
+ private:
+  std::vector<GlobalRenderFrameHostId> logged_documents_;
+};
+
+class ClearSiteDataHandlerUseCounterBrowserTest
+    : public ClearSiteDataHandlerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ClearSiteDataHandlerBrowserTest::SetUpOnMainThread();
+    browser_client_ = std::make_unique<ClearSiteDataUseCounterBrowserClient>();
+  }
+
+  void TearDownOnMainThread() override {
+    browser_client_.reset();
+    ClearSiteDataHandlerBrowserTest::TearDownOnMainThread();
+  }
+
+  const std::vector<GlobalRenderFrameHostId>& logged_documents() const {
+    return browser_client_->logged_documents();
+  }
+
+ private:
+  std::unique_ptr<ClearSiteDataUseCounterBrowserClient> browser_client_;
+};
+
+// Tests that the use of Clear-Site-Data on a navigation response is attributed
+// to the document committed by the navigation, not the outgoing document.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerUseCounterBrowserTest,
+                       AttributedToNavigatedDocument) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("origin1.com", "/")));
+  GlobalRenderFrameHostId initial_rfh_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+
+  GURL url = https_server()->GetURL("origin2.com", "/");
+  AddQuery(&url, "header", kClearCookiesHeader);
+  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
+                                             url::Origin::Create(url));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  delegate()->VerifyAndClearExpectations();
+
+  GlobalRenderFrameHostId new_rfh_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+  ASSERT_NE(initial_rfh_id, new_rfh_id);
+  EXPECT_THAT(logged_documents(), testing::ElementsAre(new_rfh_id));
+}
+
+// Tests that the use of Clear-Site-Data on a subresource response inside a
+// subframe is attributed to the subframe's document, not the main frame's.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerUseCounterBrowserTest,
+                       AttributedToSubframeDocument) {
+  GURL image_url = https_server()->GetURL("origin2.com", "/image.png");
+  AddQuery(&image_url, "header", kClearCookiesHeader);
+
+  GURL subframe_url = https_server()->GetURL("origin2.com", "/");
+  AddQuery(&subframe_url, "html",
+           "<html><body><img src=\"" + image_url.spec() + "\"></body></html>");
+
+  GURL main_url = https_server()->GetURL("origin1.com", "/");
+  AddQuery(&main_url, "html",
+           "<html><body><iframe src=\"" + subframe_url.spec() +
+               "\"></iframe></body></html>");
+
+  delegate()->ExpectClearSiteDataCall(
+      storage_partition_config(), url::Origin::Create(image_url),
+      net::SchemefulSite(main_url), /*cookies=*/true, /*storage=*/false,
+      /*cache=*/false);
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  delegate()->VerifyAndClearExpectations();
+
+  RenderFrameHost* subframe_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe_rfh);
+  EXPECT_THAT(logged_documents(),
+              testing::ElementsAre(subframe_rfh->GetGlobalId()));
+}
+
+// Tests that the use of Clear-Site-Data on a navigation that is cancelled
+// before commit is not attributed to any document.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerUseCounterBrowserTest,
+                       NotAttributedOnCancelledNavigation) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("origin1.com", "/")));
+
+  GURL url = https_server()->GetURL("origin2.com", "/");
+  AddQuery(&url, "header", kClearCookiesHeader);
+  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
+                                             url::Origin::Create(url));
+
+  // Cancel the navigation after the Clear-Site-Data header has been handled.
+  TestNavigationThrottleInserter throttle_inserter(
+      shell()->web_contents(),
+      base::BindRepeating(
+          &AddWillProcessResponseThrottle,
+          NavigationThrottle::ThrottleCheckResult(NavigationThrottle::CANCEL)));
+
+  EXPECT_FALSE(NavigateToURL(shell(), url));
+  delegate()->VerifyAndClearExpectations();
+
+  EXPECT_THAT(logged_documents(), testing::IsEmpty());
+}
+
+// Tests that the use of Clear-Site-Data on a same-origin redirect response is
+// attributed to the document committed by the navigation.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerUseCounterBrowserTest,
+                       AttributedOnSameOriginRedirect) {
+  GURL destination_url = https_server()->GetURL("origin1.com", "/second");
+  AddQuery(&destination_url, "header", kClearCookiesHeader);
+  GURL redirect_url = https_server()->GetURL("origin1.com", "/first");
+  AddQuery(&redirect_url, "header", kClearCookiesHeader);
+  AddQuery(&redirect_url, "redirect", destination_url.spec());
+
+  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
+                                             url::Origin::Create(redirect_url));
+  delegate()->ExpectClearSiteDataCookiesCall(
+      storage_partition_config(), url::Origin::Create(destination_url));
+
+  ASSERT_TRUE(NavigateToURL(shell(), redirect_url, destination_url));
+  delegate()->VerifyAndClearExpectations();
+
+  GlobalRenderFrameHostId rfh_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+  EXPECT_THAT(logged_documents(), testing::ElementsAre(rfh_id, rfh_id));
+}
+
+// Tests that the use of Clear-Site-Data on a cross-origin redirect response is
+// not attributed to the document committed by the navigation.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerUseCounterBrowserTest,
+                       NotAttributedOnCrossOriginRedirect) {
+  GURL destination_url = https_server()->GetURL("origin2.com", "/");
+  AddQuery(&destination_url, "header", kClearCookiesHeader);
+  GURL redirect_url = https_server()->GetURL("origin1.com", "/");
+  AddQuery(&redirect_url, "header", kClearCookiesHeader);
+  AddQuery(&redirect_url, "redirect", destination_url.spec());
+
+  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
+                                             url::Origin::Create(redirect_url));
+  delegate()->ExpectClearSiteDataCookiesCall(
+      storage_partition_config(), url::Origin::Create(destination_url));
+
+  ASSERT_TRUE(NavigateToURL(shell(), redirect_url, destination_url));
+  delegate()->VerifyAndClearExpectations();
+
+  GlobalRenderFrameHostId rfh_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+  EXPECT_THAT(logged_documents(), testing::ElementsAre(rfh_id));
 }
 
 class ClearSiteDataHandlerBrowserTestWithAutoupgradesDisabled

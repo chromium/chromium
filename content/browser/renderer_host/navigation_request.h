@@ -1260,6 +1260,17 @@ class CONTENT_EXPORT NavigationRequest
 
   void RenderFallbackContentForObjectTag();
 
+  // Records that `feature` was used during the navigation. Recording is
+  // delayed until the new document commits, and the feature is attributed to
+  // that document. Nothing is recorded if the navigation doesn't commit.
+  //
+  // If `response_origin` is set to the origin of the response that used the
+  // feature, and the navigation is then redirected to a different origin, the
+  // feature is not attributed to the committed document and is dropped.
+  void AddWebFeatureToLog(
+      blink::mojom::WebFeature feature,
+      std::optional<url::Origin> response_origin = std::nullopt);
+
   // Returns the vector of web features used during the navigation, whose
   // recording was delayed until the new document that used them commits.
   //
@@ -1985,6 +1996,12 @@ class CONTENT_EXPORT NavigationRequest
     std::string message;
     // See AddDeferredConsoleMessage().
     std::optional<url::Origin> required_origin;
+  };
+
+  struct WebFeatureToLog {
+    blink::mojom::WebFeature feature;
+    // See AddWebFeatureToLog().
+    std::optional<url::Origin> response_origin;
   };
 
   NavigationRequest(
@@ -3490,7 +3507,7 @@ class CONTENT_EXPORT NavigationRequest
   // The list of web features that were used by the new document during
   // navigation. These can only be logged once the document commits, so they are
   // held in this vector until then.
-  std::vector<blink::mojom::WebFeature> web_features_to_log_;
+  std::vector<WebFeatureToLog> web_features_to_log_;
 
   // Messages to be printed on the console in the target RenderFrameHost of this
   // NavigationRequest.

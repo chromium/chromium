@@ -9690,7 +9690,7 @@ void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
   CHECK(!IsPageActivation());
   if (GetSocketAddress().address().IsValid() &&
       GetSocketAddress().address().IsZero()) {
-    web_features_to_log_.push_back(
+    AddWebFeatureToLog(
         blink::mojom::WebFeature::kPrivateNetworkAccessNullIpAddress);
   }
 
@@ -9733,10 +9733,26 @@ void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
   }
 }
 
+void NavigationRequest::AddWebFeatureToLog(
+    blink::mojom::WebFeature feature,
+    std::optional<url::Origin> response_origin) {
+  web_features_to_log_.push_back(
+      WebFeatureToLog{feature, std::move(response_origin)});
+}
+
 std::vector<blink::mojom::WebFeature>
 NavigationRequest::TakeWebFeaturesToLog() {
   std::vector<blink::mojom::WebFeature> result;
-  result.swap(web_features_to_log_);
+  for (const WebFeatureToLog& entry : web_features_to_log_) {
+    // Don't attribute a feature used by a redirect response that is
+    // cross-origin to the committed document to that document.
+    if (entry.response_origin &&
+        !entry.response_origin->IsSameOriginWith(GetURL())) {
+      continue;
+    }
+    result.push_back(entry.feature);
+  }
+  web_features_to_log_.clear();
   return result;
 }
 
