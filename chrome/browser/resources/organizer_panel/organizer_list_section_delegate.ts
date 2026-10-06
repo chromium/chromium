@@ -39,6 +39,12 @@ export interface OrganizerListSectionDelegate<T> {
       void;
 
   // Optional: Called to get the component rendered when no items are rendered
-  // in this section.
+  // in this section, or at the top of the section if
+  // `shouldAlwaysShowZeroState()` returns true.
   getZeroState?(): TemplateResult;
+
+  // Optional: Returns true if the zero state component should always be
+  // rendered at the top of this section when not searching, even when items
+  // exist.
+  shouldAlwaysShowZeroState?(): boolean;
 }

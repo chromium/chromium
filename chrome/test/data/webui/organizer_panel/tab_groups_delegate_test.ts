@@ -208,6 +208,7 @@ suite('TabGroupsDelegateTest', () => {
   });
 
   test('returns zero state and triggers createNewTabGroup on click', () => {
+    assertTrue(delegate.shouldAlwaysShowZeroState());
     const zeroState = delegate.getZeroState();
     assertTrue(!!zeroState);
 

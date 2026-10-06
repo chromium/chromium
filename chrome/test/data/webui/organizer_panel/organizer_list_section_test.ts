@@ -470,10 +470,16 @@ suite('OrganizerListSectionTest', () => {
     listSection.delegate = new TestSectionDelegate('Tab Groups', [], zeroState);
     await microtasksFinished();
 
-    const zeroStateElement = listSection.shadowRoot.querySelector('#zeroState');
+    const itemsContainer =
+        listSection.shadowRoot.querySelector<CrCollapseElement>('#items');
+    assertTrue(!!itemsContainer);
+    assertTrue(itemsContainer.opened);
+    const zeroStateElement = itemsContainer.querySelector('#zeroState');
     assertTrue(!!zeroStateElement);
     assertEquals('Create tab group', zeroStateElement.textContent.trim());
-    assertEquals(null, listSection.shadowRoot.querySelector('#items'));
+    assertEquals(
+        0,
+        itemsContainer.querySelectorAll('organizer-list-section-item').length);
     assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
   });
 
@@ -525,5 +531,57 @@ suite('OrganizerListSectionTest', () => {
             listSection.shadowRoot.querySelector('#zeroState');
         assertTrue(!!zeroStateElement);
         assertEquals('Create tab group', zeroStateElement.textContent.trim());
+      });
+
+  test(
+      'always renders zero state when shouldAlwaysShowZeroState is true',
+      async () => {
+        const zeroState = html`<div id="zeroState">Create tab group</div>`;
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab Group 1']},
+          {title: ['Tab Group 2']},
+          {title: ['Tab Group 3']},
+          {title: ['Tab Group 4']},
+        ];
+        listSection.delegate = new TestSectionDelegate(
+            'Tab Groups', items, zeroState, 'tab-groups', true);
+        await microtasksFinished();
+
+        const itemsContainer =
+            listSection.shadowRoot.querySelector<CrCollapseElement>('#items')!;
+        assertTrue(!!itemsContainer);
+        assertTrue(itemsContainer.opened);
+
+        const zeroStateElement = itemsContainer.querySelector('#zeroState');
+        assertTrue(!!zeroStateElement);
+        assertEquals('Create tab group', zeroStateElement.textContent.trim());
+        assertEquals(zeroStateElement, itemsContainer.firstElementChild);
+
+        const renderedItems =
+            itemsContainer.querySelectorAll('organizer-list-section-item');
+        assertEquals(INITIAL_ITEM_COUNT, renderedItems.length);
+
+        // Searching hides zero state even when shouldAlwaysShowZeroState is
+        // true.
+        listSection.searchQuery = 'Tab Group 1';
+        await microtasksFinished();
+
+        assertEquals(null, listSection.shadowRoot.querySelector('#zeroState'));
+        assertEquals(
+            1,
+            listSection.shadowRoot
+                .querySelectorAll('organizer-list-section-item')
+                .length);
+
+        // Clearing search restores zero state at the top.
+        listSection.searchQuery = '';
+        await microtasksFinished();
+
+        assertTrue(!!listSection.shadowRoot.querySelector('#zeroState'));
+        assertEquals(
+            INITIAL_ITEM_COUNT,
+            listSection.shadowRoot
+                .querySelectorAll('organizer-list-section-item')
+                .length);
       });
 });

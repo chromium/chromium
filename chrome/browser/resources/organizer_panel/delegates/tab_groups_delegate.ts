@@ -69,6 +69,10 @@ export class TabGroupsDelegate implements
     `;
   }
 
+  shouldAlwaysShowZeroState(): boolean {
+    return true;
+  }
+
   private onCreateTabGroupClick_() {
     this.browserProxy_.handler.createNewTabGroup();
   }

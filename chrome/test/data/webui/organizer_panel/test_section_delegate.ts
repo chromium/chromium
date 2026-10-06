@@ -11,6 +11,7 @@ export class TestSectionDelegate implements
   private header_: string;
   private items_: Array<OrganizerListSectionItem<unknown>>;
   getZeroState?: () => TemplateResult;
+  shouldAlwaysShowZeroState?: () => boolean;
 
   private lastClickedItem_?: OrganizerListSectionItem<unknown>;
   private clickCount_: number = 0;
@@ -25,12 +26,16 @@ export class TestSectionDelegate implements
 
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = [],
-      zeroState?: TemplateResult, id: string = 'test-section') {
+      zeroState?: TemplateResult, id: string = 'test-section',
+      alwaysShowZeroState: boolean = false) {
     this.id_ = id;
     this.header_ = header;
     this.items_ = items;
     if (zeroState) {
       this.getZeroState = () => zeroState;
+    }
+    if (alwaysShowZeroState) {
+      this.shouldAlwaysShowZeroState = () => alwaysShowZeroState;
     }
   }
 

@@ -18,20 +18,17 @@ export function getHtml(this: OrganizerListSectionElement) {
 ${this.hasNoSearchResults_() ? html`
   <div id="noResults">$i18n{noResults}</div>
 ` : html`
-  ${this.hasZeroState_() ? html`
-    ${this.getZeroState_()}
-  ` : html`
-    <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}"
-        ?no-animation="${this.noAnimation_}">
-      ${this.getFilteredItems_().map(item => html`
-        <organizer-list-section-item .item="${item}" role="listitem"
-            @click="${this.onItemClick_}"
-            @action-button-click="${this.onItemActionButtonClick_}"
-            @context-menu-click="${this.onItemContextMenuClick_}">
-        </organizer-list-section-item>
-      `)}
-    </cr-collapse>
-  `}
+  <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}"
+      ?no-animation="${this.noAnimation_}">
+    ${this.hasZeroState_() ? this.getZeroState_() : ''}
+    ${this.getFilteredItems_().map(item => html`
+      <organizer-list-section-item .item="${item}" role="listitem"
+          @click="${this.onItemClick_}"
+          @action-button-click="${this.onItemActionButtonClick_}"
+          @context-menu-click="${this.onItemContextMenuClick_}">
+      </organizer-list-section-item>
+    `)}
+  </cr-collapse>
 `}
 <!--_html_template_end_-->`;
   // clang-format on

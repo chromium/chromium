@@ -211,7 +211,9 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   protected hasZeroState_(): boolean {
-    return !this.isSearching_() && this.getFilteredItems_().length === 0 &&
+    return !this.isSearching_() &&
+        (this.getFilteredItems_().length === 0 ||
+         !!this.delegate?.shouldAlwaysShowZeroState?.()) &&
         !!this.getZeroState_();
   }
 
