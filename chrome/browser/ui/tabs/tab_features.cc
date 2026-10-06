@@ -181,6 +181,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
+#include "chrome/browser/contextual_tasks/copy_search_journey_tab_feature.h"
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
@@ -771,6 +772,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         GetUserDataFactory()
             .CreateInstance<contextual_tasks::ContextualTasksTabVisitTracker>(
                 tab, tab);
+  }
+
+  if (contextual_tasks::IsCopyTextJourneysEnabled()) {
+    copy_search_journey_tab_feature_ =
+        GetUserDataFactory()
+            .CreateInstance<contextual_tasks::CopySearchJourneyTabFeature>(tab,
+                                                                           tab);
   }
 #endif
 
