@@ -795,8 +795,8 @@ class SettingsGlicSubPageWebActuationTableTest
       disabled.emplace_back(features::kGlicActorPolicyControlExemption);
     }
     enabled.push_back(
-        {features::kGlicActorEligibleTiers,
-         {{features::kGlicActorEligibleTiersParam.name, p.eligible_tiers}}});
+        {features::kGlicActor,
+         {{features::kGlicActorEligibleTiers.name, p.eligible_tiers}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 

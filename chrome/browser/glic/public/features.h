@@ -95,24 +95,6 @@ BASE_DECLARE_FEATURE(kGlicTieredRolloutV2);
 extern const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers;
 const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers();
 
-// Configures which tiers of users are eligible for Actor. It should be a
-// comma-separated list of tier ints ("1,2,3").
-BASE_DECLARE_FEATURE(kGlicActorEligibleTiers);
-extern const base::FeatureParam<std::string> kGlicActorEligibleTiersParam;
-
-// Specifies the default pref value for `glic:prefs::kGlicActuationOnWeb` for
-// enterprise users. Does not affect non-enterprise users.
-enum class GlicActorEnterprisePrefDefault {
-  kEnabledByDefault = 0,
-  kDisabledByDefault,
-  // When this is set, the browser does not have the capability, regardless of
-  // the policy value (the pref value is ignored).
-  kForcedDisabled,
-};
-BASE_DECLARE_FEATURE(kGlicActorEnterprisePrefDefault);
-BASE_DECLARE_FEATURE_PARAM(GlicActorEnterprisePrefDefault,
-                           kGlicActorEnterprisePrefDefaultParam);
-
 // Exempts the user from ActorPolicyChecker.
 BASE_DECLARE_FEATURE(kGlicActorPolicyControlExemption);
 

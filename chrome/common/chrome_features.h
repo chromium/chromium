@@ -288,6 +288,19 @@ extern const base::FeatureParam<int>(
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading);
 
+// Specifies the default pref value for `glic:prefs::kGlicActuationOnWeb` for
+// enterprise users. Does not affect non-enterprise users.
+enum class GlicActorEnterprisePrefDefault {
+  kEnabledByDefault = 0,
+  kDisabledByDefault,
+  // When this is set, the browser does not have the capability, regardless of
+  // the policy value (the pref value is ignored).
+  kForcedDisabled,
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<GlicActorEnterprisePrefDefault>(
+    kGlicActorEnterprisePrefDefault);
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(
     kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch);
@@ -304,6 +317,10 @@ extern const base::FeatureParam<double>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<size_t>
     kGlicActorIncrementalTypingLongTextThreshold;
+// Configures which tiers of users are eligible for Actor. It should be a
+// comma-separated list of tier ints ("1,2,3").
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGlicActorEligibleTiers;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<size_t>
     kGlicActorIncrementalTypingLongTextPasteThreshold;

@@ -650,14 +650,11 @@ class GlicActuationOnWebPolicyTest : public GlicPolicyTest {
   GlicActuationOnWebPolicyTest() {
     // The default pref value kForcedDisabled does not allow the policy to
     // change the pref value.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActor, {}},
-         {features::kGlicActorEnterprisePrefDefault,
-          {{features::kGlicActorEnterprisePrefDefaultParam.name,
-            features::kGlicActorEnterprisePrefDefaultParam.GetName(
-                features::GlicActorEnterprisePrefDefault::
-                    kEnabledByDefault)}}}},
-        {});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorEnterprisePrefDefault.name,
+          features::kGlicActorEnterprisePrefDefault.GetName(
+              features::GlicActorEnterprisePrefDefault::kEnabledByDefault)}});
   }
   ~GlicActuationOnWebPolicyTest() override = default;
 

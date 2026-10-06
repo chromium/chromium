@@ -4641,9 +4641,9 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTest {
  public:
   GlicApiTestWithGeminiActOnWebPolicy() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActorEnterprisePrefDefault,
-          {{features::kGlicActorEnterprisePrefDefaultParam.name,
-            features::kGlicActorEnterprisePrefDefaultParam.GetName(
+        {{features::kGlicActor,
+          {{features::kGlicActorEnterprisePrefDefault.name,
+            features::kGlicActorEnterprisePrefDefault.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
         {features::kGlicActorPolicyControlExemption});

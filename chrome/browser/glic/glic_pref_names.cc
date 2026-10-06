@@ -11,8 +11,8 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_onboarding_status.h"
+#include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -57,8 +57,7 @@ glic::mojom::FileUploadPolicyState GetFileUploadAllowedCapability(
 }
 
 GlicActuationOnWebPolicyState GetGlicActuationOnWebPolicyState() {
-  auto default_pref_value =
-      features::kGlicActorEnterprisePrefDefaultParam.Get();
+  auto default_pref_value = features::kGlicActorEnterprisePrefDefault.Get();
   switch (default_pref_value) {
     case features::GlicActorEnterprisePrefDefault::kForcedDisabled:
     case features::GlicActorEnterprisePrefDefault::kDisabledByDefault:

@@ -259,9 +259,8 @@ class GlicActorPolicyCheckerBrowserTestNonManagedBrowser
   GlicActorPolicyCheckerBrowserTestNonManagedBrowser() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor, {}},
-         {features::kGlicActorEligibleTiers,
-          {{features::kGlicActorEligibleTiersParam.name,
+        {{features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name,
             base::ToString(kAllowedTier)}}}},
         /* disabled_features = */ {});
   }
@@ -359,10 +358,9 @@ class GlicActorPolicyCheckerBrowserTestManagedBrowser
     // by the policy value.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor, {}},
-         {features::kGlicActorEnterprisePrefDefault,
-          {{features::kGlicActorEnterprisePrefDefaultParam.name,
-            features::kGlicActorEnterprisePrefDefaultParam.GetName(
+        {{features::kGlicActor,
+          {{features::kGlicActorEnterprisePrefDefault.name,
+            features::kGlicActorEnterprisePrefDefault.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
         /* disabled_features = */ {});
@@ -840,10 +838,9 @@ class GlicActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref
   GlicActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor, {}},
-         {features::kGlicActorEnterprisePrefDefault,
-          {{features::kGlicActorEnterprisePrefDefaultParam.name,
-            features::kGlicActorEnterprisePrefDefaultParam.GetName(
+        {{features::kGlicActor,
+          {{features::kGlicActorEnterprisePrefDefault.name,
+            features::kGlicActorEnterprisePrefDefault.GetName(
                 features::GlicActorEnterprisePrefDefault::kForcedDisabled)}}}},
         /* disabled_features = */ {});
   }
@@ -874,10 +871,9 @@ class GlicActorPolicyCheckerBrowserTestManagedPolicyNotSet
   GlicActorPolicyCheckerBrowserTestManagedPolicyNotSet() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor, {}},
-         {features::kGlicActorEnterprisePrefDefault,
-          {{features::kGlicActorEnterprisePrefDefaultParam.name,
-            features::kGlicActorEnterprisePrefDefaultParam.GetName(
+        {{features::kGlicActor,
+          {{features::kGlicActorEnterprisePrefDefault.name,
+            features::kGlicActorEnterprisePrefDefault.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
         /* disabled_features = */ {});
@@ -914,10 +910,9 @@ class GlicActorPolicyCheckerBrowserTestManagedPolicyChangesCapability
   GlicActorPolicyCheckerBrowserTestManagedPolicyChangesCapability() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor, {}},
-         {features::kGlicActorEnterprisePrefDefault,
-          {{features::kGlicActorEnterprisePrefDefaultParam.name,
-            features::kGlicActorEnterprisePrefDefaultParam.GetName(
+        {{features::kGlicActor,
+          {{features::kGlicActorEnterprisePrefDefault.name,
+            features::kGlicActorEnterprisePrefDefault.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
         /* disabled_features = */ {});
@@ -954,17 +949,15 @@ class GlicActorPolicyCheckerBrowserTestWithManagedAccount
   GlicActorPolicyCheckerBrowserTestWithManagedAccount() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor, {}},
-         {features::kGlicActorEnterprisePrefDefault,
-          {{features::kGlicActorEnterprisePrefDefaultParam.name,
-            features::kGlicActorEnterprisePrefDefaultParam.GetName(
+        {{features::kGlicActor,
+          {{features::kGlicActorEnterprisePrefDefault.name,
+            features::kGlicActorEnterprisePrefDefault.GetName(
                 IsPolicyDefaultPrefEnabled()
                     ? features::GlicActorEnterprisePrefDefault::
                           kEnabledByDefault
                     : features::GlicActorEnterprisePrefDefault::
-                          kDisabledByDefault)}}},
-         {features::kGlicActorEligibleTiers,
-          {{features::kGlicActorEligibleTiersParam.name,
+                          kDisabledByDefault)},
+           {features::kGlicActorEligibleTiers.name,
             base::ToString(kAllowedTier)}}}},
         /* disabled_features = */ {});
   }
@@ -1123,8 +1116,8 @@ class GlicApiActorPolicyCheckerBrowserTest
   GlicApiActorPolicyCheckerBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActorEligibleTiers,
-          {{features::kGlicActorEligibleTiersParam.name, "1"}}}},
+        {{features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name, "1"}}}},
         /* disabled_features = */ {features::kGlicActorPolicyControlExemption});
   }
   ~GlicApiActorPolicyCheckerBrowserTest() override = default;
@@ -1373,8 +1366,8 @@ class GlicApiActorPolicyCheckerBrowserTestExemption
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {{features::kGlicActorPolicyControlExemption, {}},
-         {features::kGlicActorEligibleTiers,
-          {{features::kGlicActorEligibleTiersParam.name, "1"}}}},
+         {features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name, "1"}}}},
         /* disabled_features = */ {});
   }
   ~GlicApiActorPolicyCheckerBrowserTestExemption() override = default;

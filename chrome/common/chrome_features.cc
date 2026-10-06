@@ -443,6 +443,25 @@ const base::FeatureParam<bool> kGlicActorIncrementalTypingClearAutoSelection{
     &kGlicActorIncrementalTyping,
     "glic-actor-incremental-typing-clear-auto-selection", false};
 
+constexpr base::FeatureParam<std::string> kGlicActorEligibleTiers{
+    &kGlicActor, "glic-actor-eligible-tiers", "1,2"};
+
+constexpr base::FeatureParam<GlicActorEnterprisePrefDefault>::Option
+    kGlicActorEnterprisePrefDefaultOptions[] = {
+        {GlicActorEnterprisePrefDefault::kEnabledByDefault,
+         "enabled_by_default"},
+        {GlicActorEnterprisePrefDefault::kDisabledByDefault,
+         "disabled_by_default"},
+        {GlicActorEnterprisePrefDefault::kForcedDisabled, "forced_disabled"},
+};
+
+BASE_FEATURE_ENUM_PARAM(GlicActorEnterprisePrefDefault,
+                        kGlicActorEnterprisePrefDefault,
+                        &kGlicActor,
+                        "glic_actor_enterprise_pref_default",
+                        GlicActorEnterprisePrefDefault::kDisabledByDefault,
+                        &kGlicActorEnterprisePrefDefaultOptions);
+
 BASE_FEATURE(kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
