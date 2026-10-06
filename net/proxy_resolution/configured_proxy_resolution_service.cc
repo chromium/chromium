@@ -41,6 +41,7 @@
 #include "net/proxy_resolution/pac_file_decider.h"
 #include "net/proxy_resolution/pac_file_fetcher.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
+#include "net/proxy_resolution/proxy_resolution_url_sanitizer.h"
 #include "net/proxy_resolution/proxy_resolver_factory.h"
 #include "net/url_request/url_request_context.h"
 
@@ -356,38 +357,6 @@ base::DictValue NetLogBadProxyListParams(const ProxyRetryInfoMap* retry_info) {
     list.Append(retry_info_pair.first.ToDebugString());
   dict.Set("bad_proxy_list", std::move(list));
   return dict;
-}
-
-// Returns a sanitized copy of |url| which is safe to pass on to a PAC script.
-//
-// PAC scripts are modelled as being controllable by a network-present
-// attacker (since such an attacker can influence the outcome of proxy
-// auto-discovery, or modify the contents of insecurely delivered PAC scripts).
-//
-// As such, it is important that the full path/query of https:// URLs not be
-// sent to PAC scripts, since that would give an attacker access to data that
-// is ordinarily protected by TLS.
-//
-// Obscuring the path for http:// URLs isn't being done since it doesn't matter
-// for security (attacker can already route traffic through their HTTP proxy
-// and see the full URL for http:// requests).
-//
-// TODO(crbug.com/41412888): Use the same stripping for insecure URL
-// schemes.
-GURL SanitizeUrl(const GURL& url) {
-  DCHECK(url.is_valid());
-
-  GURL::Replacements replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  replacements.ClearRef();
-
-  if (url.SchemeIsCryptographic()) {
-    replacements.ClearPath();
-    replacements.ClearQuery();
-  }
-
-  return url.ReplaceComponents(replacements);
 }
 
 base::DictValue CreateDnsConditionNetLogParam(
@@ -994,7 +963,7 @@ int ConfiguredProxyResolutionService::ResolveProxy(
   // script). The goal is to remove sensitive data (like embedded user names
   // and password), and local data (i.e. reference fragment) which does not need
   // to be disclosed to the resolver.
-  GURL url = SanitizeUrl(raw_url);
+  GURL url = SanitizeUrlForProxyResolution(raw_url);
 
   if (config_ && !host_resolver_for_override_rules_) {
     // A host resolver should always be configured in services which may receive

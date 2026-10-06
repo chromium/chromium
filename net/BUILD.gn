@@ -883,6 +883,8 @@ component("net") {
     "proxy_resolution/proxy_resolution_request.h",
     "proxy_resolution/proxy_resolution_service.cc",
     "proxy_resolution/proxy_resolution_service.h",
+    "proxy_resolution/proxy_resolution_url_sanitizer.cc",
+    "proxy_resolution/proxy_resolution_url_sanitizer.h",
     "proxy_resolution/proxy_resolve_dns_operation.h",
     "proxy_resolution/proxy_resolver.h",
     "proxy_resolution/proxy_resolver_error_observer.h",
@@ -1447,6 +1449,12 @@ component("net") {
       "base/network_change_notifier_linux.cc",
       "base/network_change_notifier_linux.h",
       "base/network_change_notifier_linux_portal.h",
+      "proxy_resolution/linux/linux_proxy_resolution_status.h",
+      "proxy_resolution/linux/linux_system_proxy_resolution_request.cc",
+      "proxy_resolution/linux/linux_system_proxy_resolution_request.h",
+      "proxy_resolution/linux/linux_system_proxy_resolution_service.cc",
+      "proxy_resolution/linux/linux_system_proxy_resolution_service.h",
+      "proxy_resolution/linux/linux_system_proxy_resolver.h",
       "proxy_resolution/proxy_config_service_linux.cc",
       "proxy_resolution/proxy_config_service_linux.h",
     ]
@@ -3125,6 +3133,7 @@ target(_test_target_type, "net_unittests") {
     "proxy_resolution/proxy_host_matching_rules_unittest.cc",
     "proxy_resolution/proxy_info_unittest.cc",
     "proxy_resolution/proxy_list_unittest.cc",
+    "proxy_resolution/proxy_resolution_url_sanitizer_unittest.cc",
     "proxy_resolution/system_proxy_resolution_service_unittest-inl.h",
     "quic/bidirectional_stream_quic_impl_unittest.cc",
     "quic/crypto/proof_test_chromium.cc",
@@ -3300,6 +3309,7 @@ target(_test_target_type, "net_unittests") {
   if (is_linux) {
     sources += [
       "base/network_change_notifier_linux_unittest.cc",
+      "proxy_resolution/linux/linux_system_proxy_resolution_service_unittest.cc",
       "proxy_resolution/proxy_config_service_linux_unittest.cc",
     ]
   }

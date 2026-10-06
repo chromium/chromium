@@ -1128,6 +1128,19 @@ historical analysis. -->
   <int value="5" label="CryptoConnectFailedAsync"/>
 </enum>
 
+<!-- LINT.IfChange(LinuxProxyResolutionStatus) -->
+
+<enum name="LinuxProxyResolutionStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="PortalUnavailable"/>
+  <int value="2" label="DBusError"/>
+  <int value="3" label="EmptyProxyList"/>
+  <int value="4" label="InvalidResponse"/>
+  <int value="5" label="Aborted"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/proxy_resolution/linux/linux_proxy_resolution_status.h:LinuxProxyResolutionStatus) -->
+
 <!-- LINT.IfChange(LogicalInvalidationStoreLoadResult) -->
 
 <enum name="LogicalInvalidationStoreLoadResult">
