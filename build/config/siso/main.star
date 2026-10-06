@@ -89,8 +89,9 @@ def init(ctx):
             },
         },
         "rules": [],
-        # Allowlist for fail-on-bad-deps feature.
-        "bad_deps": {
+        # Outputs with known missing deps. They don't fail the build with
+        # -missing_deps=error/fatal.
+        "missing_deps": {
             "./gen/third_party/devtools-frontend/src/front_end/panels/application/application.js": "crbug.com/556413211",
             "./gen/third_party/devtools-frontend/src/front_end/panels/sources/sources.js": "crbug.com/556926446",
             "./gen/third_party/devtools-frontend/src/front_end/panels/timeline/timeline.js": "crbug.com/556600964",
