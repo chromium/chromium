@@ -10,11 +10,13 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
@@ -22,6 +24,8 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "contextual_search_context_controller.h"
 #include "contextual_search_types.h"
 #include "pref_names.h"
@@ -98,6 +102,41 @@ void AppendUniqueRequestId(std::vector<lens::LensOverlayRequestId>& request_ids,
     }
   }
   request_ids.push_back(request_id);
+}
+
+// Returns whether the web identity for this session matches the browser
+// profile's primary account.
+// - Pre-rearchitecture (and in the Omnibox/NTP), `auth_user_index` is 0 and
+//   `contextual_tasks::IsUrlForPrimaryAccount` checks the user index from
+//   `current_url` (defaulting to index 0 in the cookie jar when `current_url`
+//   has no user index, such as on `chrome://new-tab-page`).
+// - Post-rearchitecture (`kContextualTasksRearchitecture`), `current_url` is
+//   the URL of the page the Contextual Tasks extension is embedded into (i.e.
+//   `www.google.com/search`) and `auth_user_index` is populated from the
+//   handshake response (used when `current_url` does not specify a user index).
+bool IsSessionForPrimaryAccount(signin::IdentityManager* identity_manager,
+                                const GURL& current_url,
+                                size_t auth_user_index) {
+  if (!identity_manager) {
+    return false;
+  }
+  if (contextual_tasks::GetUserIndex(current_url).has_value() ||
+      auth_user_index == 0) {
+    return contextual_tasks::IsUrlForPrimaryAccount(identity_manager,
+                                                    current_url);
+  }
+  CoreAccountInfo primary_account =
+      contextual_tasks::GetPrimaryAccountInfoFromProfile(identity_manager);
+  if (primary_account.IsEmpty()) {
+    return false;
+  }
+  auto accounts_in_cookie_jar = identity_manager->GetAccountsInCookieJar();
+  const std::vector<gaia::ListedAccount>& accounts =
+      accounts_in_cookie_jar.GetAllAccounts();
+  if (auth_user_index >= accounts.size()) {
+    return false;
+  }
+  return primary_account.gaia == accounts[auth_user_index].gaia_id;
 }
 
 }  // namespace
@@ -288,6 +327,13 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
   if (!contextual_input_data) {
     uploaded_context_tokens_.erase(it);
     return;
+  }
+
+  if (service_) {
+    base::UmaHistogramBoolean(
+        "ContextualSearch.TabContextAdded.AccountMatches",
+        IsSessionForPrimaryAccount(service_->identity_manager_, current_url_,
+                                   auth_user_index_));
   }
 
   if (contextual_input_data->tab_session_id.has_value()) {

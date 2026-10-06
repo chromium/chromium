@@ -1865,4 +1865,29 @@ TEST_F(InputStateModelTest, SetIdentityStateUpdatesAllowedInputTypes) {
       testing::Not(testing::Contains(omnibox::InputType::INPUT_TYPE_DRIVE)));
 }
 
+TEST_F(InputStateModelTest, UpdatesSessionHandleCurrentUrl) {
+  omnibox::SearchboxConfig config;
+  GURL initial_url("https://www.google.com/search?q=initial&authuser=1");
+  auto model = std::make_unique<InputStateModel>(
+      session_handle_, config, initial_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
+      /*browser_identity_matches_aim_identity=*/true);
+  EXPECT_EQ(session_handle_.current_url(), initial_url);
+
+  GURL updated_url("https://www.google.com/search?q=updated&authuser=1");
+  model->UpdateStateFromUrl(updated_url);
+  EXPECT_EQ(session_handle_.current_url(), updated_url);
+
+  MockContextualSearchSessionHandle new_session_handle;
+  auto new_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  ON_CALL(new_session_handle, GetController())
+      .WillByDefault(testing::Return(new_controller.get()));
+  ON_CALL(*new_controller, GetFileInfoList())
+      .WillByDefault(testing::Return(empty_file_info_list_));
+
+  InputStateModel copy(*model, new_session_handle);
+  EXPECT_EQ(new_session_handle.current_url(), updated_url);
+}
+
 }  // namespace contextual_search

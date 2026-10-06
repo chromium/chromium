@@ -1055,6 +1055,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualSearch.TabContextAdded.AccountMatches"
+    enum="Boolean" expires_after="2027-03-21">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a tab context upload flow is started in contextual search.
+    Records whether the primary account of the browser profile matches the web
+    identity account associated with the session URL (or the session's auth user
+    index / default cookie jar account if no user index is specified in the
+    URL).
+  </summary>
+</histogram>
+
 <histogram name="ContextualSearch.TabContextAdded.V2.{ContextualSearchSource}"
     units="count" expires_after="2027-02-14">
   <owner>hujasonx@google.com</owner>

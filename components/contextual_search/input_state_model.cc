@@ -249,6 +249,9 @@ InputStateModel::InputStateModel(
       browser_identity_matches_aim_identity_(
           browser_identity_matches_aim_identity),
       current_url_(active_url) {
+  if (session_handle_) {
+    session_handle_->set_current_url(current_url_);
+  }
   PopulateConfig(config);
 
   state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
@@ -410,6 +413,9 @@ InputStateModel::InputStateModel(
       browser_identity_matches_aim_identity_(
           new_input_state_model.browser_identity_matches_aim_identity_),
       current_url_(new_input_state_model.current_url_) {
+  if (session_handle_) {
+    session_handle_->set_current_url(current_url_);
+  }
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   serialized_config_ = new_input_state_model.serialized_config_;
@@ -574,6 +580,9 @@ void InputStateModel::UpdateStateFromUrl(const GURL& url) {
   bool thread_changed = prev_thread_id != new_thread_id;
 
   current_url_ = url;
+  if (session_handle_) {
+    session_handle_->set_current_url(url);
+  }
   // If thread changes, be prepared to listen to any subsequent URL changes that
   // could include changes in the tool param (due to thread change).
   if (thread_changed) {

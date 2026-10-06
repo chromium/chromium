@@ -423,9 +423,19 @@ class ContextualSearchSessionHandle {
   bool has_submitted_context() const { return has_submitted_context_; }
 
   // The multi-login account index for this session, received from the
-  // AIM/Search handshake response.
+  // AIM/Search handshake response (only populated post-rearchitecture when
+  // `kContextualTasksRearchitecture` is enabled; 0 otherwise).
   size_t auth_user_index() const { return auth_user_index_; }
   void set_auth_user_index(size_t auth_user_index);
+
+  // The current URL of the WebContents associated with the `InputStateModel`
+  // for this session. For the NTP composebox, this is `chrome://new-tab-page`;
+  // for the Omnibox, this is the active tab's URL; for the Contextual Tasks
+  // side panel, this is the AIM page URL (`www.google.com/search`), either from
+  // the embedded `<webview>` frame (pre-rearchitecture) or the page the
+  // extension is embedded into (post-rearchitecture).
+  const GURL& current_url() const { return current_url_; }
+  void set_current_url(const GURL& url) { current_url_ = url; }
 
   // Clears the list of submitted context tokens for this particular instance of
   // the session. This is intended to be invoked when the server has responded
@@ -628,6 +638,9 @@ class ContextualSearchSessionHandle {
 
   // The multi-login account index for this session.
   size_t auth_user_index_ = 0;
+
+  // The current URL of the composebox/AIM WebContents for this session.
+  GURL current_url_;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

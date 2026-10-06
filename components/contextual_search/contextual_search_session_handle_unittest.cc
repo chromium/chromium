@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -21,6 +22,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +52,8 @@ class ContextualSearchSessionHandleTest : public testing::Test {
         ContextualSearchSource::kUnknown);
 
     service_ = std::make_unique<ContextualSearchService>(
-        nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
+        identity_test_env_.identity_manager(), nullptr, nullptr, nullptr,
+        version_info::Channel::UNKNOWN, "",
         /*tab_validator=*/nullptr, base::DoNothing());
 
     handle_ = service_->CreateSessionForTesting(std::move(mock_controller),
@@ -60,6 +63,8 @@ class ContextualSearchSessionHandleTest : public testing::Test {
     handle_->CheckSearchContentSharingSettings(&prefs_);
   }
 
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<ContextualSearchService> service_;
   std::unique_ptr<ContextualSearchSessionHandle> handle_;
@@ -235,6 +240,109 @@ TEST_F(ContextualSearchSessionHandleTest,
       unknown_token, std::move(contextual_input_data), std::nullopt);
   EXPECT_TRUE(std::ranges::contains(handle_->GetUploadedContextTokens(),
                                     existing_token));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartTabContextUploadFlow_RecordsAccountMatchesHistogram_Match) {
+  base::HistogramTester histogram_tester;
+
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {"secondary@example.com",
+        signin::GetTestGaiaIdForEmail("secondary@example.com")}});
+
+  handle_->set_current_url(GURL("https://www.google.com/search?authuser=0"));
+
+  base::UnguessableToken token = handle_->CreateContextToken();
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _)).Times(1);
+
+  auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
+  contextual_input_data->primary_content_type =
+      lens::MimeType::kAnnotatedPageContent;
+  handle_->StartTabContextUploadFlow(token, std::move(contextual_input_data),
+                                     std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.TabContextAdded.AccountMatches", true, 1);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartTabContextUploadFlow_RecordsAccountMatchesHistogram_Mismatch) {
+  base::HistogramTester histogram_tester;
+
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {"secondary@example.com",
+        signin::GetTestGaiaIdForEmail("secondary@example.com")}});
+
+  handle_->set_current_url(GURL("https://www.google.com/search?authuser=1"));
+
+  base::UnguessableToken token = handle_->CreateContextToken();
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _)).Times(1);
+
+  auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
+  contextual_input_data->primary_content_type =
+      lens::MimeType::kAnnotatedPageContent;
+  handle_->StartTabContextUploadFlow(token, std::move(contextual_input_data),
+                                     std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.TabContextAdded.AccountMatches", false, 1);
+}
+
+TEST_F(
+    ContextualSearchSessionHandleTest,
+    StartTabContextUploadFlow_RecordsAccountMatchesHistogram_NoUrlUsesAuthUserIndex) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {"secondary@example.com",
+        signin::GetTestGaiaIdForEmail("secondary@example.com")}});
+
+  // With a URL without a user index (e.g. `chrome://new-tab-page` on the NTP or
+  // `https://www.google.com/search` without `authuser`) and default
+  // `auth_user_index_ = 0`, checks the first account in the cookie jar (matches
+  // primary).
+  handle_->set_current_url(GURL("chrome://new-tab-page"));
+  {
+    base::HistogramTester histogram_tester;
+    base::UnguessableToken token = handle_->CreateContextToken();
+    EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+        .Times(1);
+
+    auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
+    contextual_input_data->primary_content_type =
+        lens::MimeType::kAnnotatedPageContent;
+    handle_->StartTabContextUploadFlow(token, std::move(contextual_input_data),
+                                       std::nullopt);
+
+    histogram_tester.ExpectUniqueSample(
+        "ContextualSearch.TabContextAdded.AccountMatches", true, 1);
+  }
+
+  // When auth_user_index_ is set to 1 via handshake and URL has no user index,
+  // checks the account at auth_user_index_ (mismatch).
+  handle_->set_auth_user_index(1);
+  {
+    base::HistogramTester histogram_tester;
+    base::UnguessableToken token = handle_->CreateContextToken();
+    EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+        .Times(1);
+
+    auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
+    contextual_input_data->primary_content_type =
+        lens::MimeType::kAnnotatedPageContent;
+    handle_->StartTabContextUploadFlow(token, std::move(contextual_input_data),
+                                       std::nullopt);
+
+    histogram_tester.ExpectUniqueSample(
+        "ContextualSearch.TabContextAdded.AccountMatches", false, 1);
+  }
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
