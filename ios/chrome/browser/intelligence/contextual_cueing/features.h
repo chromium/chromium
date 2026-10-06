@@ -143,6 +143,19 @@ BASE_DECLARE_FEATURE_PARAM(bool, kForceOmniboxChipUiOnly);
 // executing contextual cue model requests.
 BASE_DECLARE_FEATURE_PARAM(bool, kUsePrivateAi);
 
+// Audience tiers controlling who receives contextual cues. A user is eligible
+// when any tier they belong to is enabled. Signed-in users must additionally be
+// eligible for Gemini; signed-out users are only reachable through
+// `kShowCuesToAllUsers`.
+//
+// Whether cues are shown to signed-in users who accepted the Gemini consent.
+BASE_DECLARE_FEATURE_PARAM(bool, kShowCuesToConsentedUsers);
+// Whether cues are shown to every signed-in user eligible for Gemini,
+// regardless of consent.
+BASE_DECLARE_FEATURE_PARAM(bool, kShowCuesToSignedInUsers);
+// Whether cues are shown to every user, including signed-out users.
+BASE_DECLARE_FEATURE_PARAM(bool, kShowCuesToAllUsers);
+
 }  // namespace contextual_cueing
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_FEATURES_H_

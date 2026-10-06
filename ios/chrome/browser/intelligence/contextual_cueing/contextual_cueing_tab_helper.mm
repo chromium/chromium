@@ -21,6 +21,7 @@
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cue_infobar_delegate.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
@@ -74,12 +76,25 @@ ContextualCueingTabHelper::ContextualCueingTabHelper(web::WebState* web_state)
             base::BindRepeating(
                 &ContextualCueingTabHelper::OnSuggestionsPreferenceChanged,
                 base::Unretained(this)));
+        // The consented-users tier depends on this pref, which is cleared on
+        // sign-out and set when the user accepts the Gemini FRE.
+        pref_change_registrar_.Add(
+            prefs::kIOSBwgConsent,
+            base::BindRepeating(
+                &ContextualCueingTabHelper::OnSuggestionsPreferenceChanged,
+                base::Unretained(this)));
       }
 
       GeminiService* gemini_service =
           GeminiServiceFactory::GetForProfile(profile);
       if (gemini_service) {
         gemini_service_observation_.Observe(gemini_service);
+      }
+
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      if (identity_manager) {
+        identity_manager_observation_.Observe(identity_manager);
       }
     }
   }
@@ -369,6 +384,7 @@ void ContextualCueingTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CancelClassification();
   pref_change_registrar_.Reset();
   gemini_service_observation_.Reset();
+  identity_manager_observation_.Reset();
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }
@@ -419,12 +435,14 @@ void ContextualCueingTabHelper::StartClassification() {
   CHECK(IsGeminiSuggestionsSettingEnabled());
 
   if (!IsIgnoreContextualCueingThresholdsEnabled()) {
-    if (!IsUserEligibleForGemini(profile)) {
+    if (!IsUserEligibleForContextualCues(profile)) {
       RecordContextualCueingDecision(ContextualCueingDecision::kUserIneligible);
       return;
     }
 
-    if (!IsHistorySyncEnabled(profile)) {
+    // Signed-out users cannot enable history sync; they only reach this point
+    // through the "all users" tier, which exempts them from the requirement.
+    if (IsUserSignedIn(profile) && !IsHistorySyncEnabled(profile)) {
       RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
       return;
     }
@@ -552,7 +570,7 @@ void ContextualCueingTabHelper::ProcessClassificationResult(
     return;
   }
   if (!IsIgnoreContextualCueingThresholdsEnabled() &&
-      !IsUserEligibleForGemini(profile)) {
+      !IsUserEligibleForContextualCues(profile)) {
     RecordContextualCueingDecision(ContextualCueingDecision::kUserIneligible);
     return;
   }
@@ -773,9 +791,34 @@ bool ContextualCueingTabHelper::IsHistorySyncEnabled(ProfileIOS* profile) {
       syncer::UserSelectableType::kHistory);
 }
 
+bool ContextualCueingTabHelper::IsUserSignedIn(ProfileIOS* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
 bool ContextualCueingTabHelper::IsUserEligibleForGemini(ProfileIOS* profile) {
   GeminiService* gemini_service = GeminiServiceFactory::GetForProfile(profile);
   return gemini_service && gemini_service->IsProfileEligibleForGemini();
+}
+
+bool ContextualCueingTabHelper::IsUserEligibleForContextualCues(
+    ProfileIOS* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  if (!IsUserSignedIn(profile)) {
+    // Signed-out users can never be eligible for Gemini itself, so only the
+    // enterprise policies and the "all users" tier apply to them.
+    return gemini::GeminiAllowedByPolicy(prefs) && kShowCuesToAllUsers.Get();
+  }
+  if (!IsUserEligibleForGemini(profile)) {
+    return false;
+  }
+  if (kShowCuesToSignedInUsers.Get() || kShowCuesToAllUsers.Get()) {
+    return true;
+  }
+  return gemini::DidUserConsentToGemini(prefs) &&
+         kShowCuesToConsentedUsers.Get();
 }
 
 ContextualCueingCapTrackerService*
@@ -810,6 +853,18 @@ void ContextualCueingTabHelper::OnGeminiEligibilityChanged() {
   OnSuggestionsPreferenceChanged();
 }
 
+#pragma mark - signin::IdentityManager::Observer
+
+void ContextualCueingTabHelper::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  OnSuggestionsPreferenceChanged();
+}
+
+void ContextualCueingTabHelper::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+}
+
 #pragma mark - Private
 
 bool ContextualCueingTabHelper::IsGeminiSuggestionsSettingEnabled() const {
@@ -834,8 +889,8 @@ void ContextualCueingTabHelper::OnSuggestionsPreferenceChanged() {
     return;
   }
 
-  bool is_eligible =
-      IsGeminiSuggestionsSettingEnabled() && IsUserEligibleForGemini(profile);
+  bool is_eligible = IsGeminiSuggestionsSettingEnabled() &&
+                     IsUserEligibleForContextualCues(profile);
   if (!is_eligible) {
     CancelClassification();
     categories_.reset();

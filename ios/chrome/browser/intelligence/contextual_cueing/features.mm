@@ -222,4 +222,19 @@ BASE_FEATURE_PARAM(bool,
                    &kGeminiContextualSuggestionsCues,
                    true);
 
+BASE_FEATURE_PARAM(bool,
+                   kShowCuesToConsentedUsers,
+                   &kGeminiContextualSuggestionsCues,
+                   true);
+
+BASE_FEATURE_PARAM(bool,
+                   kShowCuesToSignedInUsers,
+                   &kGeminiContextualSuggestionsCues,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kShowCuesToAllUsers,
+                   &kGeminiContextualSuggestionsCues,
+                   false);
+
 }  // namespace contextual_cueing
