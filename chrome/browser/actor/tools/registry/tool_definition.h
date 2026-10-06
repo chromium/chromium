@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_REGISTRY_TOOL_DEFINITION_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_REGISTRY_TOOL_DEFINITION_H_
 
-#include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/values.h"
 
@@ -20,19 +18,12 @@ namespace actor {
 // entries.
 enum class ToolId {};
 
-// Converts `id` to its canonical model-facing tool name, or returns an empty
-// string_view if `id` is unrecognized.
-std::string_view ToolIdToName(ToolId id);
-
-// Resolves a model-facing tool `name` to its corresponding `ToolId`, or
-// returns `std::nullopt` if `name` is not a registered Actor tool.
-std::optional<ToolId> NameToToolId(std::string_view name);
-
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.
 struct ToolDefinition {
-  ToolDefinition(ToolId id, std::string description);
+  ToolDefinition(ToolId id, std::string name, std::string description);
   ToolDefinition(ToolId id,
+                 std::string name,
                  std::string description,
                  base::DictValue parameters_json_schema);
   ~ToolDefinition();
@@ -42,15 +33,15 @@ struct ToolDefinition {
   ToolDefinition(ToolDefinition&&);
   ToolDefinition& operator=(ToolDefinition&&);
 
-  // Derived directly from `id` via `ToolIdToName(id)`.
-  std::string_view name() const { return ToolIdToName(id); }
-
   // Needed to make a copy of `ToolDefinition`, because `base::DictValue` is
   // move-only.
   ToolDefinition Clone() const;
 
   // Chrome-internal identifier for this tool.
   ToolId id;
+
+  // Model-facing name of this tool (e.g. "navigate").
+  std::string name;
 
   // Client-side description of what this tool does and when to invoke it.
   std::string description;

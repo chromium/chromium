@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_REGISTRY_TOOL_REGISTRY_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_REGISTRY_TOOL_REGISTRY_H_
 
+#include <optional>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -21,6 +23,14 @@ class ToolRegistry {
 
   ToolRegistry(const ToolRegistry&) = delete;
   ToolRegistry& operator=(const ToolRegistry&) = delete;
+
+  // Resolves a model-facing tool `name` to its corresponding `ToolId`, or
+  // returns `std::nullopt` if `name` is not a registered Actor tool.
+  static std::optional<ToolId> NameToToolId(std::string_view name);
+
+  // Converts `id` to its canonical model-facing tool name, or returns an empty
+  // string_view if `id` is unrecognized.
+  static std::string_view ToolIdToName(ToolId id);
 
   // Returns all registered Actor browser tool definitions.
   base::span<const ToolDefinition> GetAllTools() const;

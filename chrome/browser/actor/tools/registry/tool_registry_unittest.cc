@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -36,6 +37,14 @@ TEST(ToolRegistryTest, GetAllToolsEmptyInitially) {
   EXPECT_TRUE(service->tool_registry().GetAllTools().empty());
 }
 
+TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
+  EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());
+}
+
+TEST(ToolRegistryTest, NameToToolIdReturnsNulloptForUnknownName) {
+  EXPECT_EQ(ToolRegistry::NameToToolId("unknown_tool"), std::nullopt);
+}
+
 TEST(ToolRegistryTest, GetToolsByIdsReturnsEmptyForUnknownId) {
   ToolRegistry registry;
   EXPECT_TRUE(registry.GetToolsByIds({kUnrecognizedToolId}).empty());
@@ -44,8 +53,26 @@ TEST(ToolRegistryTest, GetToolsByIdsReturnsEmptyForUnknownId) {
 TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveKnownToolIds) {
   ToolRegistry registry;
   for (const ToolDefinition& tool : registry.GetAllTools()) {
-    SCOPED_TRACE(tool.name());
-    EXPECT_EQ(NameToToolId(tool.name()), tool.id);
+    SCOPED_TRACE(tool.name);
+    EXPECT_EQ(ToolRegistry::NameToToolId(tool.name), tool.id);
+  }
+}
+
+TEST(ToolRegistryCompletenessTest, AllRegisteredToolsRoundTripByName) {
+  ToolRegistry registry;
+  for (const ToolDefinition& tool : registry.GetAllTools()) {
+    SCOPED_TRACE(tool.name);
+    EXPECT_EQ(ToolRegistry::NameToToolId(tool.name), tool.id);
+    EXPECT_EQ(ToolRegistry::ToolIdToName(tool.id), tool.name);
+  }
+}
+
+TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveUniqueNames) {
+  ToolRegistry registry;
+  std::set<std::string_view> seen_names;
+  for (const ToolDefinition& tool : registry.GetAllTools()) {
+    SCOPED_TRACE(tool.name);
+    EXPECT_TRUE(seen_names.insert(tool.name).second);
   }
 }
 
@@ -53,7 +80,7 @@ TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveUniqueIds) {
   ToolRegistry registry;
   std::set<ToolId> seen_ids;
   for (const ToolDefinition& tool : registry.GetAllTools()) {
-    SCOPED_TRACE(tool.name());
+    SCOPED_TRACE(tool.name);
     EXPECT_TRUE(seen_ids.insert(tool.id).second);
   }
 }
@@ -61,7 +88,7 @@ TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveUniqueIds) {
 TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveNonEmptyDescriptions) {
   ToolRegistry registry;
   for (const ToolDefinition& tool : registry.GetAllTools()) {
-    SCOPED_TRACE(tool.name());
+    SCOPED_TRACE(tool.name);
     EXPECT_FALSE(tool.description.empty());
   }
 }
@@ -69,7 +96,7 @@ TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveNonEmptyDescriptions) {
 TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveObjectSchemas) {
   ToolRegistry registry;
   for (const ToolDefinition& tool : registry.GetAllTools()) {
-    SCOPED_TRACE(tool.name());
+    SCOPED_TRACE(tool.name);
     const std::string* type = tool.parameters_json_schema.FindString("type");
     ASSERT_TRUE(type);
     EXPECT_EQ(*type, "object");
@@ -79,7 +106,7 @@ TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveObjectSchemas) {
 TEST(ToolRegistryCompletenessTest, AllRegisteredToolsRoundTripById) {
   ToolRegistry registry;
   for (const ToolDefinition& tool : registry.GetAllTools()) {
-    SCOPED_TRACE(tool.name());
+    SCOPED_TRACE(tool.name);
     EXPECT_EQ(registry.GetToolsByIds({tool.id}),
               std::vector<const ToolDefinition*>{&tool});
   }

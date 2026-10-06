@@ -18,7 +18,8 @@ using ::testing::Not;
 constexpr ToolId kTestToolId = static_cast<ToolId>(999);
 
 ToolDefinition BuildDefinitionWithQueryAndCount() {
-  return ToolDefinitionBuilder(kTestToolId, "Test tool description.")
+  return ToolDefinitionBuilder(kTestToolId, "test_tool",
+                               "Test tool description.")
       .SetToolParameterSchema(ToolSchemaBuilder()
                                   .AddStringProperty("query", "Search query.")
                                   .AddIntegerProperty("count", "Result count."))
@@ -26,7 +27,9 @@ ToolDefinition BuildDefinitionWithQueryAndCount() {
 }
 
 ToolDefinition BuildDefinitionWithoutParameters() {
-  return ToolDefinitionBuilder(kTestToolId, "Test tool description.").Build();
+  return ToolDefinitionBuilder(kTestToolId, "test_tool",
+                               "Test tool description.")
+      .Build();
 }
 
 TEST(ToolDefinitionTestUtilTest, HasParamOfTypeMatchesDeclaredStringParam) {

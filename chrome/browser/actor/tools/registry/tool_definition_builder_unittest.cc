@@ -20,28 +20,40 @@ constexpr ToolId kTestToolId = static_cast<ToolId>(999);
 
 TEST(ToolDefinitionBuilderTest, BuildSetsId) {
   EXPECT_EQ(
-      ToolDefinitionBuilder(kTestToolId, "Test tool description.").Build().id,
+      ToolDefinitionBuilder(kTestToolId, "test_tool", "Test tool description.")
+          .Build()
+          .id,
       kTestToolId);
 }
 
+TEST(ToolDefinitionBuilderTest, BuildSetsName) {
+  EXPECT_EQ(
+      ToolDefinitionBuilder(kTestToolId, "test_tool", "Test tool description.")
+          .Build()
+          .name,
+      "test_tool");
+}
+
 TEST(ToolDefinitionBuilderTest, BuildSetsDescription) {
-  EXPECT_EQ(ToolDefinitionBuilder(kTestToolId, "Test tool description.")
-                .Build()
-                .description,
-            "Test tool description.");
+  EXPECT_EQ(
+      ToolDefinitionBuilder(kTestToolId, "test_tool", "Test tool description.")
+          .Build()
+          .description,
+      "Test tool description.");
 }
 
 TEST(ToolDefinitionBuilderTest, BuildWithoutParametersProducesEmptySchema) {
-  EXPECT_EQ(ToolDefinitionBuilder(kTestToolId, "Test tool description.")
-                .Build()
-                .parameters_json_schema,
-            ToolSchemaBuilder().Build());
+  EXPECT_EQ(
+      ToolDefinitionBuilder(kTestToolId, "test_tool", "Test tool description.")
+          .Build()
+          .parameters_json_schema,
+      ToolSchemaBuilder().Build());
 }
 
 TEST(ToolDefinitionBuilderTest,
      SetToolParameterSchemaAcceptsToolSchemaBuilder) {
   EXPECT_EQ(
-      ToolDefinitionBuilder(kTestToolId, "Test tool description.")
+      ToolDefinitionBuilder(kTestToolId, "test_tool", "Test tool description.")
           .SetToolParameterSchema(
               ToolSchemaBuilder().AddStringProperty("query", "Search query."))
           .Build()
@@ -52,17 +64,18 @@ TEST(ToolDefinitionBuilderTest,
 TEST(ToolDefinitionBuilderTest, SetToolParameterSchemaAcceptsDictValue) {
   base::DictValue custom_schema;
   custom_schema.Set("type", "object");
-  EXPECT_EQ(ToolDefinitionBuilder(kTestToolId, "Test tool description.")
-                .SetToolParameterSchema(custom_schema.Clone())
-                .Build()
-                .parameters_json_schema,
-            custom_schema);
+  EXPECT_EQ(
+      ToolDefinitionBuilder(kTestToolId, "test_tool", "Test tool description.")
+          .SetToolParameterSchema(custom_schema.Clone())
+          .Build()
+          .parameters_json_schema,
+      custom_schema);
 }
 
 TEST(ToolDefinitionBuilderTest,
      SetToolParameterSchemaChainedParametersAreAllRequiredInOrder) {
   base::DictValue schema =
-      ToolDefinitionBuilder(kTestToolId, "Test tool description.")
+      ToolDefinitionBuilder(kTestToolId, "test_tool", "Test tool description.")
           .SetToolParameterSchema(
               ToolSchemaBuilder()
                   .AddStringProperty("query", "Search query.")
@@ -74,8 +87,14 @@ TEST(ToolDefinitionBuilderTest,
   EXPECT_THAT(*required, testing::ElementsAre("query", "limit"));
 }
 
+TEST(ToolDefinitionBuilderDeathTest, EmptyNameCrashes) {
+  EXPECT_CHECK_DEATH(std::ignore = ToolDefinitionBuilder(
+                         kTestToolId, "", "Test tool description."));
+}
+
 TEST(ToolDefinitionBuilderDeathTest, EmptyDescriptionCrashes) {
-  EXPECT_CHECK_DEATH(std::ignore = ToolDefinitionBuilder(kTestToolId, ""));
+  EXPECT_CHECK_DEATH(std::ignore =
+                         ToolDefinitionBuilder(kTestToolId, "test_tool", ""));
 }
 
 }  // namespace

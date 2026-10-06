@@ -18,17 +18,18 @@ namespace actor {
 // Fluent builder for a complete `ToolDefinition`. Each `ToolRequest` subclass
 // uses it to declare its tool locally, e.g.:
 //
-//   ToolDefinitionBuilder(ToolId::kFoo, "Does foo to the given URL.")
+//   ToolDefinitionBuilder(ToolId::kFoo, "foo", "Does foo to the given URL.")
 //       .SetToolParameterSchema(
 //           ToolSchemaBuilder().AddStringProperty(
 //               "url", "The URL to foo.", ToolSchemaBuilder::kFormatUri))
 //       .Build();
 //
-// The tool's model-facing name comes from `ToolIdToName(id)`. Every parameter
-// is required (see `ToolSchemaBuilder`).
+// Every parameter is required (see `ToolSchemaBuilder`).
 class ToolDefinitionBuilder {
  public:
-  explicit ToolDefinitionBuilder(ToolId id, std::string_view description);
+  ToolDefinitionBuilder(ToolId id,
+                        std::string_view name,
+                        std::string_view description);
   ~ToolDefinitionBuilder();
   ToolDefinitionBuilder(const ToolDefinitionBuilder&) = delete;
   ToolDefinitionBuilder& operator=(const ToolDefinitionBuilder&) = delete;
@@ -45,6 +46,7 @@ class ToolDefinitionBuilder {
 
  private:
   const ToolId id_;
+  std::string name_;
   std::string description_;
   std::optional<base::DictValue> parameters_json_schema_;
 };
