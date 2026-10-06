@@ -1301,6 +1301,8 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="Show sync passphrase dialog"/>
   <int value="115" label="Show management page"/>
   <int value="116" label="Report unsafe site"/>
+  <int value="117" label="Sharing hub screenshot"/>
+  <int value="118" label="Take screenshot"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

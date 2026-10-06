@@ -1596,6 +1596,7 @@ features through Chrome Labs. -->
     <variant name=".SendToDevices"/>
     <variant name=".SetBrowserAsDefault"/>
     <variant name=".Settings"/>
+    <variant name=".SharingHubScreenshot"/>
     <variant name=".ShowAddresses"/>
     <variant name=".ShowBookmarkBar"/>
     <variant name=".ShowBookmarkMgr"/>
@@ -1624,6 +1625,7 @@ features through Chrome Labs. -->
     <variant name=".ShowTurnOnSync"/>
     <variant name=".SiteSettings"/>
     <variant name=".SwitchToAnotherProfile"/>
+    <variant name=".TakeScreenshot"/>
     <variant name=".TaskManager"/>
     <variant name=".TtcAppMenu"/>
     <variant name=".UpgradeDialog"/>
