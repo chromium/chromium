@@ -303,6 +303,11 @@
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
 #endif
 
+#include "printing/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/printing_init.h"
+#endif
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
@@ -1193,6 +1198,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (MediaEngagementService::IsEnabled()) {
     MediaEngagementService::CreateWebContentsObserver(tab.GetContents());
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  printing::InitializePrintingForWebContents(tab.GetContents());
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1710,6 +1719,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (MediaEngagementService::IsEnabled()) {
     MediaEngagementService::CreateWebContentsObserver(new_contents);
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  printing::InitializePrintingForWebContents(new_contents);
+#endif
 }
 
 customize_chrome::SidePanelController*

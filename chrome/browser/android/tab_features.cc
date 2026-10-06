@@ -143,6 +143,11 @@
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #endif
 
+#include "printing/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/printing_init.h"
+#endif
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
@@ -549,6 +554,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   if (MediaEngagementService::IsEnabled()) {
     MediaEngagementService::CreateWebContentsObserver(web_contents);
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  // Initialize printing helpers for the tab.
+  printing::InitializePrintingForWebContents(web_contents);
+#endif
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

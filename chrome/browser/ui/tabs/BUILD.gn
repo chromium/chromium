@@ -11,6 +11,7 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 # This is the public interface for tabs in a desktop browser. Most features in
@@ -707,6 +708,7 @@ if (!is_android) {
       "//components/wallet/core/common:features",
       "//components/webapps/browser",
       "//net",
+      "//printing/buildflags",
       "//ui/base/unowned_user_data",
       "//ui/webui",
     ]
@@ -799,6 +801,9 @@ if (!is_android) {
     if (safe_browsing_mode != 0) {
       deps +=
           [ "//components/safe_browsing/content/browser:client_side_detection" ]
+    }
+    if (enable_printing) {
+      deps += [ "//chrome/browser/printing" ]
     }
   }
 

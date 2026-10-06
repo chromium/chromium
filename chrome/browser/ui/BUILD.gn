@@ -1462,7 +1462,6 @@ source_set("tab_helpers_impl") {
     "//extensions/buildflags",
     "//media",
     "//pdf:buildflags",
-    "//printing/buildflags",
     "//ui/accessibility:ax_base",
     "//ui/webui:buildflags",
   ]
@@ -1506,10 +1505,6 @@ source_set("tab_helpers_impl") {
 
   if (enable_offline_pages) {
     deps += [ "//chrome/browser/offline_pages" ]
-  }
-
-  if (enable_printing) {
-    deps += [ "//chrome/browser/printing" ]
   }
 
   if (safe_browsing_mode > 0) {

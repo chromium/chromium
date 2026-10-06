@@ -97,7 +97,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "pdf/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/buildflags.h"
@@ -127,10 +126,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "chrome/browser/printing/printing_init.h"
-#endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
@@ -373,10 +368,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
   extensions::TabHelper::CreateForWebContents(web_contents);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_PRINTING)
-  printing::InitializePrintingForWebContents(web_contents);
-#endif
 
   // --- Section 4: The warning ---
 
