@@ -334,7 +334,7 @@ struct AppShimManager::ProfileState {
   const std::unique_ptr<AppShimHost> single_profile_host;
 
   // All browser instances for this (app, Profile) pair.
-  std::set<BrowserWindowInterface*> browsers;
+  std::set<raw_ptr<BrowserWindowInterface, DanglingUntriaged>> browsers;
 
   // The current BadgeValue for this (app, Profile) pair.
   std::optional<badging::BadgeManager::BadgeValue> badge;
