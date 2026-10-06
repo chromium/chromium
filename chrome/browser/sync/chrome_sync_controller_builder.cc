@@ -236,7 +236,14 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (extension_sync_service_.value()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    const bool sync_apps = extension_sync_service_.value() != nullptr;
+#else
+    const bool sync_apps =
+        extension_sync_service_.value() &&
+        !base::FeatureList::IsEnabled(syncer::kSyncDoNotSyncAppsAndAppSettings);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    if (sync_apps) {
       controllers.push_back(
           std::make_unique<browser_sync::ExtensionDataTypeController>(
               syncer::APPS, data_type_store_factory,

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -25,13 +26,25 @@ namespace {
 // See also TwoClientExtensionSettingsAndAppSettingsSyncTest.
 class SingleClientAppSettingsSyncTest : public AppsSyncTestBase {
  public:
-  SingleClientAppSettingsSyncTest() : AppsSyncTestBase(SINGLE_CLIENT) {}
+  SingleClientAppSettingsSyncTest() : AppsSyncTestBase(SINGLE_CLIENT) {
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/40066949): clean up once syncer::APPS deprecation is
+    // complete.
+    feature_list_.InitAndDisableFeature(
+        syncer::kSyncDoNotSyncAppsAndAppSettings);
+#endif
+  }
   ~SingleClientAppSettingsSyncTest() override = default;
 
   // APP_SETTINGS is only supported with Sync-the-feature.
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return SetupSyncMode::kSyncTheFeature;
   }
+
+ private:
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppSettingsSyncTest, Basics) {

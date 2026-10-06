@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/extension_settings_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -24,7 +26,14 @@ using extension_settings_helper::SetExtensionSettings;
 
 class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
  public:
-  TwoClientAppSettingsSyncTest() : AppsSyncTestBase(TWO_CLIENT) {}
+  TwoClientAppSettingsSyncTest() : AppsSyncTestBase(TWO_CLIENT) {
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/40066949): clean up once syncer::APPS deprecation is
+    // complete.
+    feature_list_.InitAndDisableFeature(
+        syncer::kSyncDoNotSyncAppsAndAppSettings);
+#endif
+  }
   ~TwoClientAppSettingsSyncTest() override = default;
 
   // APP_SETTINGS is only supported with Sync-the-feature.
@@ -32,6 +41,12 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     return SetupSyncMode::kSyncTheFeature;
   }
 
+ private:
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_;
+#endif
+
+ public:
   struct ExpectedSettings {
     base::DictValue extension0;
     base::DictValue extension1;

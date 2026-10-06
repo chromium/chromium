@@ -248,6 +248,12 @@ BASE_DECLARE_FEATURE(kSyncMigrateFromImplicitPassphrase);
 // hash and deterministic server IDs for bookmarks.
 BASE_DECLARE_FEATURE(kSyncMigrateLoopbackServerBookmarksToClientTagHash);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// If enabled, prevents registration of controllers for APPS and APP_SETTINGS
+// data types. Used as a kill switch during deprecation.
+BASE_DECLARE_FEATURE(kSyncDoNotSyncAppsAndAppSettings);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

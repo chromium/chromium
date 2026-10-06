@@ -140,9 +140,17 @@ class SyncServiceFactoryTest : public testing::Test {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+    datatypes.Put(syncer::WEB_APPS);
+#if BUILDFLAG(IS_CHROMEOS)
     datatypes.Put(syncer::APPS);
     datatypes.Put(syncer::APP_SETTINGS);
-    datatypes.Put(syncer::WEB_APPS);
+#else
+    if (!base::FeatureList::IsEnabled(
+            syncer::kSyncDoNotSyncAppsAndAppSettings)) {
+      datatypes.Put(syncer::APPS);
+      datatypes.Put(syncer::APP_SETTINGS);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -448,3 +456,30 @@ TEST_F(SyncServiceFactoryWithBothThemeFeaturesTest,
   ASSERT_NE(nullptr, tracker);
   EXPECT_EQ(themes::ServiceStatus::kInitializing, tracker->GetServiceStatus());
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
+class SyncServiceFactoryTestWithoutAppsAndAppSettings
+    : public SyncServiceFactoryTest {
+ public:
+  SyncServiceFactoryTestWithoutAppsAndAppSettings() {
+    feature_list_.InitAndEnableFeature(
+        syncer::kSyncDoNotSyncAppsAndAppSettings);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SyncServiceFactoryTestWithoutAppsAndAppSettings,
+       AppsAndAppSettingsNotRegistered) {
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile());
+  syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
+
+  EXPECT_FALSE(types.Has(syncer::APPS));
+  EXPECT_FALSE(types.Has(syncer::APP_SETTINGS));
+
+  // WEB_APPS should still be registered.
+  EXPECT_TRUE(types.Has(syncer::WEB_APPS));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)

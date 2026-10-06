@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -85,7 +86,14 @@ class FakeServerAppChecker : public fake_server::FakeServerMatchStatusChecker {
 
 class SingleClientExtensionAppsSyncTest : public SyncTest {
  public:
-  SingleClientExtensionAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientExtensionAppsSyncTest() : SyncTest(SINGLE_CLIENT) {
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/40066949): clean up once syncer::APPS deprecation is
+    // complete.
+    feature_list_.InitAndDisableFeature(
+        syncer::kSyncDoNotSyncAppsAndAppSettings);
+#endif
+  }
   ~SingleClientExtensionAppsSyncTest() override = default;
 
   void TearDownOnMainThread() override {
@@ -103,6 +111,9 @@ class SingleClientExtensionAppsSyncTest : public SyncTest {
   }
 
  private:
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_;
+#endif
 #if BUILDFLAG(IS_WIN)
   // This stops extension installation from creating a shortcut in the real
   // desktop startup dir. This prevents Chrome launching with the extension
