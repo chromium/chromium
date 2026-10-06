@@ -4,8 +4,11 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -648,8 +651,8 @@ size_t GetLCPPMultipleKeyMaxPathLength() {
   return blink::features::kLCPPMultipleKeyMaxPathLength.Get();
 }
 
-bool IsKeyLengthValidForMultipleKey(const std::string& host,
-                                    const std::string& first_level_path) {
+bool IsKeyLengthValidForMultipleKey(std::string_view host,
+                                    std::string_view first_level_path) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey));
   // The key must not be longer than `kMaxStringLength`.
   // Note that we confirmed that url.host() is less than the limit in
@@ -669,14 +672,14 @@ std::string GetLCPPDatabaseKey(const GURL& url) {
 
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey) ||
       IsLcppMultipleKeyKeyStatEnabled()) {
-    return url.GetHost();
+    return std::string(url.host());
   }
 
   const std::string first_level_path = GetFirstLevelPath(url);
-  if (!IsKeyLengthValidForMultipleKey(url.GetHost(), first_level_path)) {
-    return url.GetHost();
+  if (!IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
+    return std::string(url.host());
   }
-  return url.GetHost() + first_level_path;
+  return base::StrCat({url.host(), first_level_path});
 }
 
 // Returns LcppStat from `data` for LcppMultipleKeyKeyStat.
@@ -691,7 +694,7 @@ LcppStat* TryToGetLcppStatForKeyStat(const LoadingPredictorConfig& config,
 
   const std::string first_level_path = GetFirstLevelPath(url);
   if (first_level_path.empty() ||
-      !IsKeyLengthValidForMultipleKey(url.GetHost(), first_level_path)) {
+      !IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
     return data.mutable_lcpp_stat();
   }
 
@@ -711,7 +714,7 @@ bool IsLCPPFontPrefetchExcludedHost(const GURL& url) {
       base::SplitString(
           blink::features::kLCPPFontURLPredictorExcludedHosts.Get(), ",",
           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-  return excluded_hosts->contains(url.GetHost());
+  return excluded_hosts->contains(url.host());
 }
 
 template <typename T>
@@ -1129,10 +1132,9 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat) {
 }
 
 bool IsURLValidForLcpp(const GURL& url) {
-  return url.is_valid() && !url.GetHost().empty() && !net::IsLocalhost(url) &&
+  return url.is_valid() && !url.host().empty() && !net::IsLocalhost(url) &&
          url.SchemeIs(url::kHttpsScheme) &&
-         url.GetHost().size() <=
-             ResourcePrefetchPredictorTables::kMaxStringLength;
+         url.host().size() <= ResourcePrefetchPredictorTables::kMaxStringLength;
 }
 
 bool IsValidInitiatorOrigin(const url::Origin& initiator_origin) {
@@ -1168,11 +1170,11 @@ std::string GetFirstLevelPath(const GURL& url) {
   } else {
     first_level_path_length = second_slash_pos;
   }
-  return url.GetPath().substr(0, first_level_path_length);
+  return std::string(url.path().substr(0, first_level_path_length));
 }
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
-  return url1.SchemeIs(url2.GetScheme()) &&
+  return url1.SchemeIs(url2.scheme()) &&
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -1380,7 +1382,7 @@ std::optional<LcppStat> LcppDataMap::GetLcppStat(
   if (IsLcppMultipleKeyKeyStatEnabled()) {
     const std::string first_level_path = GetFirstLevelPath(url);
     if (first_level_path.empty() ||
-        !IsKeyLengthValidForMultipleKey(url.GetHost(), first_level_path)) {
+        !IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
       return lcpp_data->lcpp_stat();
     }
     const auto& lcpp_stat_map = lcpp_data->lcpp_key_stat().lcpp_stat_map();
