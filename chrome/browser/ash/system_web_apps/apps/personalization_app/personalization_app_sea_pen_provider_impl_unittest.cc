@@ -17,6 +17,7 @@
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/wallpaper/mock_sea_pen_fetcher.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
@@ -46,7 +47,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_sea_pen_observer.h"
-#include "chrome/browser/ash/wallpaper_handlers/mock_sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -291,8 +291,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
         &web_ui_,
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>(),
         /*manta_service=*/nullptr,
-        std::make_unique<
-            testing::NiceMock<wallpaper_handlers::MockSeaPenFetcher>>());
+        std::make_unique<testing::NiceMock<MockSeaPenFetcher>>());
     sea_pen_provider_remote_.reset();
     sea_pen_provider_->BindInterface(
         sea_pen_provider_remote_.BindNewPipeAndPassReceiver());
@@ -350,9 +349,8 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
       images.emplace_back(CreateJpgBytes(), image_id);
     }
 
-    auto* fetcher =
-        static_cast<testing::NiceMock<wallpaper_handlers::MockSeaPenFetcher>*>(
-            sea_pen_provider_->GetOrCreateSeaPenFetcher());
+    auto* fetcher = static_cast<testing::NiceMock<MockSeaPenFetcher>*>(
+        sea_pen_provider_->GetOrCreateSeaPenFetcher());
     EXPECT_CALL(*fetcher, FetchThumbnails)
         .WillOnce(
             [inner_status_code = status_code,
@@ -360,8 +358,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
              inner_images = std::move(images)](
                 manta::proto::FeatureName feature_name,
                 const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-                wallpaper_handlers::SeaPenFetcher::OnFetchThumbnailsComplete
-                    callback) mutable {
+                SeaPenFetcher::OnFetchThumbnailsComplete callback) mutable {
               EXPECT_EQ(manta::proto::FeatureName::CHROMEOS_WALLPAPER,
                         feature_name);
               EXPECT_EQ(inner_expected_query, query);

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_FETCHER_H_
-#define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_FETCHER_H_
+#ifndef ASH_WALLPAPER_SEA_PEN_FETCHER_H_
+#define ASH_WALLPAPER_SEA_PEN_FETCHER_H_
 
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/functional/callback_forward.h"
@@ -17,17 +18,17 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 
-namespace wallpaper_handlers {
+namespace ash {
 
 // A class to fetch SeaPen images from a Google server. Used for both Wallpaper
 // and VC Background.
-class SeaPenFetcher {
+class ASH_EXPORT SeaPenFetcher {
  public:
-  using OnFetchThumbnailsComplete = base::OnceCallback<void(
-      std::optional<std::vector<ash::SeaPenImage>> images,
-      manta::MantaStatusCode status_code)>;
+  using OnFetchThumbnailsComplete =
+      base::OnceCallback<void(std::optional<std::vector<SeaPenImage>> images,
+                              manta::MantaStatusCode status_code)>;
   using OnFetchWallpaperComplete =
-      base::OnceCallback<void(std::optional<ash::SeaPenImage> image)>;
+      base::OnceCallback<void(std::optional<SeaPenImage> image)>;
 
   // The number of thumbnails requested per call for text queries.
   constexpr static size_t kNumTextThumbnailsRequested = 4;
@@ -52,7 +53,7 @@ class SeaPenFetcher {
   // sent to the caller in `callback`.
   virtual void FetchThumbnails(
       manta::proto::FeatureName feature_name,
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      const personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchThumbnailsComplete callback) = 0;
 
   // Calls the Manta API to fetch a higher resolution image of the thumbnail.
@@ -60,8 +61,8 @@ class SeaPenFetcher {
   // before being sent to the caller in `callback`.
   virtual void FetchWallpaper(
       manta::proto::FeatureName feature_name,
-      const ash::SeaPenImage& thumbnail,
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      const SeaPenImage& thumbnail,
+      const personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchWallpaperComplete callback) = 0;
 
   // Creates a SeaPenFetcher backed by `snapper_provider`, which may be null
@@ -71,6 +72,6 @@ class SeaPenFetcher {
       std::unique_ptr<manta::SnapperProvider> snapper_provider);
 };
 
-}  // namespace wallpaper_handlers
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_FETCHER_H_
+#endif  // ASH_WALLPAPER_SEA_PEN_FETCHER_H_

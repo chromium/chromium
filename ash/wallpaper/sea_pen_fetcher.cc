@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
+#include "ash/wallpaper/sea_pen_fetcher.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -42,7 +42,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace wallpaper_handlers {
+namespace ash {
 
 namespace {
 
@@ -141,25 +141,23 @@ net::NetworkTrafficAnnotationTag TrafficAnnotationForFeature(
   }
 }
 
-std::optional<ash::SeaPenImage> ToSeaPenImage(
-    const uint32_t generation_seed,
-    const SkBitmap& decoded_bitmap,
-    const std::string& generative_prompt) {
+std::optional<SeaPenImage> ToSeaPenImage(const uint32_t generation_seed,
+                                         const SkBitmap& decoded_bitmap,
+                                         const std::string& generative_prompt) {
   base::AssertLongCPUWorkAllowed();
   std::optional<std::vector<uint8_t>> data =
       gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100);
   if (!data) {
     return std::nullopt;
   }
-  return ash::SeaPenImage(std::string(base::as_string_view(data.value())),
-                          generation_seed, generative_prompt);
+  return SeaPenImage(std::string(base::as_string_view(data.value())),
+                     generation_seed, generative_prompt);
 }
 
-void EncodeBitmap(
-    base::OnceCallback<void(std::optional<ash::SeaPenImage>)> callback,
-    uint32_t generation_seed,
-    const std::string& generative_prompt,
-    const SkBitmap& decoded_bitmap) {
+void EncodeBitmap(base::OnceCallback<void(std::optional<SeaPenImage>)> callback,
+                  uint32_t generation_seed,
+                  const std::string& generative_prompt,
+                  const SkBitmap& decoded_bitmap) {
   if (decoded_bitmap.empty()) {
     LOG(WARNING) << "Failed to decode jpg bytes";
     std::move(callback).Run(std::nullopt);
@@ -175,8 +173,8 @@ void EncodeBitmap(
 void SanitizeJpgBytes(
     const manta::proto::OutputData& output_data,
     data_decoder::DataDecoder* data_decoder,
-    base::OnceCallback<void(std::optional<ash::SeaPenImage>)> callback) {
-  if (!ash::IsValidOutput(output_data, __func__)) {
+    base::OnceCallback<void(std::optional<SeaPenImage>)> callback) {
+  if (!IsValidOutput(output_data, __func__)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -190,12 +188,11 @@ void SanitizeJpgBytes(
 }
 
 manta::MantaStatusCode GetMantaStatusCodeForEmptyImageResponse(
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    personalization_app::mojom::SeaPenQuery::Tag query_tag,
     const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
         filtered_data) {
-  if (!ash::features::IsSeaPenTextInputEnabled() ||
-      query_tag !=
-          ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery) {
+  if (!features::IsSeaPenTextInputEnabled() ||
+      query_tag != personalization_app::mojom::SeaPenQuery::Tag::kTextQuery) {
     return manta::MantaStatusCode::kGenericError;
   }
   for (auto& filtered_datum : filtered_data) {
@@ -214,9 +211,9 @@ manta::MantaStatusCode GetMantaStatusCodeForEmptyImageResponse(
   return manta::MantaStatusCode::kBlockedOutputs;
 }
 
-std::vector<ash::SeaPenImage> TakeValidImages(
-    const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
-  std::vector<ash::SeaPenImage> filtered_images;
+std::vector<SeaPenImage> TakeValidImages(
+    const std::vector<std::optional<SeaPenImage>>& optional_images) {
+  std::vector<SeaPenImage> filtered_images;
   for (auto& image : optional_images) {
     if (image.has_value() && !image->jpg_bytes.empty()) {
       filtered_images.emplace_back(std::move(image->jpg_bytes), image->id,
@@ -237,12 +234,11 @@ enum class SeaPenApiType {
 // SeaPenApiType variants in
 // //tools/metrics/histograms/metadata/ash/histograms.xml.
 std::string ToHistogramString(
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    personalization_app::mojom::SeaPenQuery::Tag query_tag,
     SeaPenApiType sea_pen_api_type,
     std::string_view histogram_name) {
   const bool is_text_query =
-      query_tag ==
-      ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery;
+      query_tag == personalization_app::mojom::SeaPenQuery::Tag::kTextQuery;
   const std::string_view freeform = is_text_query ? "Freeform." : "";
   const bool for_thumbnails = sea_pen_api_type == SeaPenApiType::kThumbnails;
   const std::string api_type = for_thumbnails ? "Thumbnails." : "Wallpaper.";
@@ -252,10 +248,9 @@ std::string ToHistogramString(
 
 // Records the client side latency of an API request. Only record if the request
 // completed successfully and did not timeout.
-void RecordSeaPenLatency(
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
-    base::TimeDelta elapsed_time,
-    SeaPenApiType sea_pen_api_type) {
+void RecordSeaPenLatency(personalization_app::mojom::SeaPenQuery::Tag query_tag,
+                         base::TimeDelta elapsed_time,
+                         SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramCustomTimes(
       ToHistogramString(query_tag, sea_pen_api_type, "Latency"), elapsed_time,
       /*min=*/base::Seconds(1),
@@ -265,7 +260,7 @@ void RecordSeaPenLatency(
 
 // Records the status code of a SeaPen API request.
 void RecordSeaPenMantaStatusCode(
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    personalization_app::mojom::SeaPenQuery::Tag query_tag,
     manta::MantaStatusCode status_code,
     SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramEnumeration(
@@ -274,10 +269,9 @@ void RecordSeaPenMantaStatusCode(
 }
 
 // Records whether the request timed out.
-void RecordSeaPenTimeout(
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
-    bool hit_timeout,
-    SeaPenApiType sea_pen_api_type) {
+void RecordSeaPenTimeout(personalization_app::mojom::SeaPenQuery::Tag query_tag,
+                         bool hit_timeout,
+                         SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramBoolean(
       ToHistogramString(query_tag, sea_pen_api_type, "Timeout"), hit_timeout);
 }
@@ -286,9 +280,9 @@ void RecordSeaPenTimeout(
 // completed successfully. Expected to be in bounds [0,
 // kNumThumbnailsRequested].
 void RecordSeaPenThumbnailsCount(
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    personalization_app::mojom::SeaPenQuery::Tag query_tag,
     size_t thumbnails_count) {
-  if (!ash::features::IsSeaPenTextInputEnabled()) {
+  if (!features::IsSeaPenTextInputEnabled()) {
     const size_t limit = SeaPenFetcher::kNumTemplateThumbnailsRequested;
     base::UmaHistogramExactLinear(
         ToHistogramString(query_tag, SeaPenApiType::kThumbnails, "Count"),
@@ -303,8 +297,7 @@ void RecordSeaPenThumbnailsCount(
   // Ash.SeaPen.Api.Thumbnails.Count2: template thumbnails from 0-4.
   // Ash.SeaPen.Freeform.Api.Thumbnails.Count: text thumbnails from 0-4.
   const std::string_view histogram_name =
-      (query_tag ==
-       ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery)
+      (query_tag == personalization_app::mojom::SeaPenQuery::Tag::kTextQuery)
           ? "Count"
           : "Count2";
   base::UmaHistogramExactLinear(
@@ -315,7 +308,7 @@ void RecordSeaPenThumbnailsCount(
 // Records whether at least one image exists on the response for full size
 // wallpaper image. Only recorded if the request completed successfully.
 void RecordSeaPenWallpaperHasImage(
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    personalization_app::mojom::SeaPenQuery::Tag query_tag,
     bool has_image) {
   base::UmaHistogramBoolean(
       ToHistogramString(query_tag, SeaPenApiType::kWallpaper, "HasImage"),
@@ -328,8 +321,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
   explicit SeaPenFetcherImpl(
       std::unique_ptr<manta::SnapperProvider> snapper_provider)
       : snapper_provider_(std::move(snapper_provider)) {
-    CHECK(ash::features::IsSeaPenEnabled() ||
-          ash::features::IsVcBackgroundReplaceEnabled());
+    CHECK(features::IsSeaPenEnabled() ||
+          features::IsVcBackgroundReplaceEnabled());
   }
 
   SeaPenFetcherImpl(const SeaPenFetcherImpl&) = delete;
@@ -337,14 +330,13 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
   ~SeaPenFetcherImpl() override = default;
 
-  void FetchThumbnails(
-      manta::proto::FeatureName feature_name,
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-      OnFetchThumbnailsComplete callback) override {
+  void FetchThumbnails(manta::proto::FeatureName feature_name,
+                       const personalization_app::mojom::SeaPenQueryPtr& query,
+                       OnFetchThumbnailsComplete callback) override {
     callback = base::BindOnce(
-        [](ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+        [](personalization_app::mojom::SeaPenQuery::Tag query_tag,
            OnFetchThumbnailsComplete callback,
-           std::optional<std::vector<ash::SeaPenImage>> images,
+           std::optional<std::vector<SeaPenImage>> images,
            manta::MantaStatusCode status_code) {
           RecordSeaPenMantaStatusCode(query_tag, status_code,
                                       SeaPenApiType::kThumbnails);
@@ -361,8 +353,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     if (query->is_text_query() &&
         query->get_text_query().size() >
-            ash::personalization_app::mojom::
-                kMaximumGetSeaPenThumbnailsTextBytes) {
+            personalization_app::mojom::kMaximumGetSeaPenThumbnailsTextBytes) {
       LOG(WARNING) << "Query too long. Size received: "
                    << query->get_text_query().size();
       std::move(callback).Run(std::nullopt,
@@ -388,10 +379,10 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     // TODO: crbug.com/393600484 - Combine into one number when text input is
     // launched.
-    const int num_outputs = ash::features::IsSeaPenTextInputEnabled()
+    const int num_outputs = features::IsSeaPenTextInputEnabled()
                                 ? kNumTextThumbnailsRequested
                                 : kNumTemplateThumbnailsRequested;
-    manta::proto::Request request = ash::CreateMantaRequest(
+    manta::proto::Request request = CreateMantaRequest(
         query, std::nullopt, num_outputs, kDesiredThumbnailSize, feature_name);
     snapper_provider_->Call(
         request, TrafficAnnotationForFeature(feature_name),
@@ -400,11 +391,10 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                        base::TimeTicks::Now(), query.Clone()));
   }
 
-  void FetchWallpaper(
-      manta::proto::FeatureName feature_name,
-      const ash::SeaPenImage& thumbnail,
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-      OnFetchWallpaperComplete callback) override {
+  void FetchWallpaper(manta::proto::FeatureName feature_name,
+                      const SeaPenImage& thumbnail,
+                      const personalization_app::mojom::SeaPenQueryPtr& query,
+                      OnFetchWallpaperComplete callback) override {
     if (!snapper_provider_) {
       LOG(WARNING) << "SnapperProvider not available";
       std::move(callback).Run(std::nullopt);
@@ -413,13 +403,13 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     // Clone the query so that the generative prompt never overwrites the stored
     // value.
-    const ash::personalization_app::mojom::SeaPenQueryPtr& cloned_query =
+    const personalization_app::mojom::SeaPenQueryPtr& cloned_query =
         query->Clone();
-    if (ash::features::IsSeaPenQueryRewriteEnabled() &&
+    if (features::IsSeaPenQueryRewriteEnabled() &&
         cloned_query->is_text_query()) {
-      CHECK_LE(query->get_text_query().size(),
-               ash::personalization_app::mojom::
-                   kMaximumGetSeaPenThumbnailsTextBytes);
+      CHECK_LE(
+          query->get_text_query().size(),
+          personalization_app::mojom::kMaximumGetSeaPenThumbnailsTextBytes);
       if (!thumbnail.generative_prompt.empty()) {
         cloned_query->set_text_query(thumbnail.generative_prompt);
       }
@@ -440,9 +430,9 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
                        cloned_query->which()));
 
-    manta::proto::Request request = ash::CreateMantaRequest(
-        cloned_query, thumbnail.id, /*num_outputs=*/1,
-        ash::GetLargestDisplaySizeLandscape(), feature_name);
+    manta::proto::Request request =
+        CreateMantaRequest(cloned_query, thumbnail.id, /*num_outputs=*/1,
+                           GetLargestDisplaySizeLandscape(), feature_name);
     snapper_provider_->Call(
         request, TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
@@ -453,7 +443,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
  private:
   void OnFetchThumbnailsDone(
       const base::TimeTicks start_time,
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      const personalization_app::mojom::SeaPenQueryPtr& query,
       std::unique_ptr<manta::proto::Response> response,
       manta::MantaStatus status) {
     CHECK(pending_fetch_thumbnails_callback_, base::NotFatalUntil::M160);
@@ -469,8 +459,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       return;
     }
 
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag =
-        query->which();
+    personalization_app::mojom::SeaPenQuery::Tag query_tag = query->which();
     RecordSeaPenLatency(query_tag, base::TimeTicks::Now() - start_time,
                         SeaPenApiType::kThumbnails);
     RecordSeaPenTimeout(query_tag, /*hit_timeout=*/false,
@@ -481,7 +470,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     auto* data_decoder_pointer = data_decoder.get();
 
     const auto barrier_callback =
-        base::BarrierCallback<std::optional<ash::SeaPenImage>>(
+        base::BarrierCallback<std::optional<SeaPenImage>>(
             response->output_data_size(),
             base::BindOnce(&SeaPenFetcherImpl::OnThumbnailsSanitized,
                            fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
@@ -495,12 +484,11 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
   void OnThumbnailsSanitized(
       std::unique_ptr<data_decoder::DataDecoder> data_decoder,
-      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+      personalization_app::mojom::SeaPenQuery::Tag query_tag,
       const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
           filtered_data,
-      const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
-    std::vector<ash::SeaPenImage> filtered_images =
-        TakeValidImages(optional_images);
+      const std::vector<std::optional<SeaPenImage>>& optional_images) {
+    std::vector<SeaPenImage> filtered_images = TakeValidImages(optional_images);
 
     RecordSeaPenThumbnailsCount(query_tag, filtered_images.size());
 
@@ -518,7 +506,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
   }
 
   void OnFetchThumbnailsTimeout(
-      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag) {
+      personalization_app::mojom::SeaPenQuery::Tag query_tag) {
     CHECK(pending_fetch_thumbnails_callback_, base::NotFatalUntil::M160);
     fetch_thumbnails_weak_ptr_factory_.InvalidateWeakPtrs();
     std::move(pending_fetch_thumbnails_callback_)
@@ -529,7 +517,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
   void OnFetchWallpaperDone(
       const base::TimeTicks start_time,
-      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+      personalization_app::mojom::SeaPenQuery::Tag query_tag,
       std::unique_ptr<manta::proto::Response> response,
       manta::MantaStatus status) {
     CHECK(pending_fetch_wallpaper_callback_, base::NotFatalUntil::M160);
@@ -557,7 +545,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     auto* data_decoder_pointer = data_decoder.get();
 
     const auto barrier_callback =
-        base::BarrierCallback<std::optional<ash::SeaPenImage>>(
+        base::BarrierCallback<std::optional<SeaPenImage>>(
             response->output_data_size(),
             base::BindOnce(&SeaPenFetcherImpl::OnWallpaperSanitized,
                            fetch_wallpaper_weak_ptr_factory_.GetWeakPtr(),
@@ -570,9 +558,9 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
   void OnWallpaperSanitized(
       std::unique_ptr<data_decoder::DataDecoder> data_decoder,
-      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
-      const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
-    std::vector<ash::SeaPenImage> images = TakeValidImages(optional_images);
+      personalization_app::mojom::SeaPenQuery::Tag query_tag,
+      const std::vector<std::optional<SeaPenImage>>& optional_images) {
+    std::vector<SeaPenImage> images = TakeValidImages(optional_images);
 
     RecordSeaPenWallpaperHasImage(query_tag, !images.empty());
 
@@ -590,7 +578,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
   }
 
   void OnFetchWallpaperTimeout(
-      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag) {
+      personalization_app::mojom::SeaPenQuery::Tag query_tag) {
     CHECK(pending_fetch_wallpaper_callback_, base::NotFatalUntil::M160);
     fetch_wallpaper_weak_ptr_factory_.InvalidateWeakPtrs();
     RecordSeaPenTimeout(query_tag, /*hit_timeout=*/true,
@@ -620,4 +608,4 @@ std::unique_ptr<SeaPenFetcher> SeaPenFetcher::MakeSeaPenFetcher(
   return std::make_unique<SeaPenFetcherImpl>(std::move(snapper_provider));
 }
 
-}  // namespace wallpaper_handlers
+}  // namespace ash

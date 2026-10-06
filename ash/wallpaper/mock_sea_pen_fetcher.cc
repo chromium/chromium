@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/wallpaper_handlers/mock_sea_pen_fetcher.h"
+#include "ash/wallpaper/mock_sea_pen_fetcher.h"
 
 #include <optional>
 #include <string>
@@ -21,7 +21,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace wallpaper_handlers {
+namespace ash {
 
 namespace {
 
@@ -36,8 +36,8 @@ std::string CreateJpgBytes() {
   return std::string(base::as_string_view(data.value()));
 }
 
-std::vector<ash::SeaPenImage> MakeFakeImageResults() {
-  std::vector<ash::SeaPenImage> image_results;
+std::vector<SeaPenImage> MakeFakeImageResults() {
+  std::vector<SeaPenImage> image_results;
   for (uint32_t i = 1; i < 5; i++) {
     image_results.emplace_back(base::StringPrintf("fake_sea_pen_image_%d", i),
                                i);
@@ -49,27 +49,24 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
 
 MockSeaPenFetcher::MockSeaPenFetcher() {
   ON_CALL(*this, FetchThumbnails)
-      .WillByDefault(
-          [](manta::proto::FeatureName feature_name,
-             const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-             OnFetchThumbnailsComplete callback) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(callback), MakeFakeImageResults(),
-                               manta::MantaStatusCode::kOk));
-          });
+      .WillByDefault([](manta::proto::FeatureName feature_name,
+                        const personalization_app::mojom::SeaPenQueryPtr& query,
+                        OnFetchThumbnailsComplete callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), MakeFakeImageResults(),
+                           manta::MantaStatusCode::kOk));
+      });
 
   ON_CALL(*this, FetchWallpaper)
-      .WillByDefault(
-          [](manta::proto::FeatureName feature_name,
-             const ash::SeaPenImage& image,
-             const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-             OnFetchWallpaperComplete callback) {
-            std::move(callback).Run(
-                ash::SeaPenImage(CreateJpgBytes(), image.id));
-          });
+      .WillByDefault([](manta::proto::FeatureName feature_name,
+                        const SeaPenImage& image,
+                        const personalization_app::mojom::SeaPenQueryPtr& query,
+                        OnFetchWallpaperComplete callback) {
+        std::move(callback).Run(SeaPenImage(CreateJpgBytes(), image.id));
+      });
 }
 
 MockSeaPenFetcher::~MockSeaPenFetcher() = default;
 
-}  // namespace wallpaper_handlers
+}  // namespace ash

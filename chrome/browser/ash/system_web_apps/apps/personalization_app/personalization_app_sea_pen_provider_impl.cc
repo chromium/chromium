@@ -12,6 +12,7 @@
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/wallpaper/sea_pen_fetcher.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -19,7 +20,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
@@ -88,7 +88,7 @@ PersonalizationAppSeaPenProviderImpl::PersonalizationAppSeaPenProviderImpl(
     std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
         wallpaper_fetcher_delegate,
     manta::MantaService* manta_service,
-    std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher)
+    std::unique_ptr<SeaPenFetcher> sea_pen_fetcher)
     : PersonalizationAppSeaPenProviderBase(
           web_ui,
           std::move(wallpaper_fetcher_delegate),

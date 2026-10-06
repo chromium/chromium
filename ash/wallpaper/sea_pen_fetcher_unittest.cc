@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
+#include "ash/wallpaper/sea_pen_fetcher.h"
 
 #include <memory>
 #include <optional>
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/wallpaper/sea_pen_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -30,7 +31,6 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -39,8 +39,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace ash {}
-namespace wallpaper_handlers {
+namespace ash {
 
 namespace {
 
@@ -98,28 +97,24 @@ const std::string_view GetJpgBytes() {
   return *jpg_bytes;
 }
 
-ash::personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
-  return ash::personalization_app::mojom::SeaPenQuery::NewTemplateQuery(
-      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
-          ash::personalization_app::mojom::SeaPenTemplateId::kFlower,
-          ::base::flat_map<
-              ash::personalization_app::mojom::SeaPenTemplateChip,
-              ash::personalization_app::mojom::SeaPenTemplateOption>(
-              {{ash::personalization_app::mojom::SeaPenTemplateChip::
-                    kFlowerColor,
-                ash::personalization_app::mojom::SeaPenTemplateOption::
+personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
+  return personalization_app::mojom::SeaPenQuery::NewTemplateQuery(
+      personalization_app::mojom::SeaPenTemplateQuery::New(
+          personalization_app::mojom::SeaPenTemplateId::kFlower,
+          ::base::flat_map<personalization_app::mojom::SeaPenTemplateChip,
+                           personalization_app::mojom::SeaPenTemplateOption>(
+              {{personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+                personalization_app::mojom::SeaPenTemplateOption::
                     kFlowerColorBlue},
-               {ash::personalization_app::mojom::SeaPenTemplateChip::
-                    kFlowerType,
-                ash::personalization_app::mojom::SeaPenTemplateOption::
+               {personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+                personalization_app::mojom::SeaPenTemplateOption::
                     kFlowerTypeRose}}),
-          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+          personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title")));
 }
 
-ash::personalization_app::mojom::SeaPenQueryPtr MakeFreeformQuery() {
-  return ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery(
-      "test query");
+personalization_app::mojom::SeaPenQueryPtr MakeFreeformQuery() {
+  return personalization_app::mojom::SeaPenQuery::NewTextQuery("test query");
 }
 
 std::unique_ptr<manta::proto::Response> CreateMantaResponse(
@@ -164,15 +159,15 @@ MATCHER_P(AreJpgBytesClose, expected_bitmap, "") {
                                     /*max_deviation=*/1);
 }
 
-testing::Matcher<ash::SeaPenImage> MatchesSeaPenImage(
+testing::Matcher<SeaPenImage> MatchesSeaPenImage(
     const SkBitmap& expected_bitmap,
     const uint32_t expected_id,
     const std::string& expected_prompt = "") {
   return testing::AllOf(
-      testing::Field(&ash::SeaPenImage::id, expected_id),
-      testing::Field(&ash::SeaPenImage::jpg_bytes,
+      testing::Field(&SeaPenImage::id, expected_id),
+      testing::Field(&SeaPenImage::jpg_bytes,
                      AreJpgBytesClose(expected_bitmap)),
-      testing::Field(&ash::SeaPenImage::generative_prompt, expected_prompt));
+      testing::Field(&SeaPenImage::generative_prompt, expected_prompt));
 }
 
 class MockSnapperProvider : virtual public manta::SnapperProvider {
@@ -186,7 +181,7 @@ class MockSnapperProvider : virtual public manta::SnapperProvider {
 
   MOCK_METHOD(void,
               Call,
-              (manta::proto::Request& request,
+              (manta::proto::Request & request,
                net::NetworkTrafficAnnotationTag traffic_annotation,
                manta::MantaProtoResponseCallback done_callback),
               (override));
@@ -199,7 +194,7 @@ class SeaPenFetcherTest : public testing::Test {
   SeaPenFetcherTest() {
     scoped_feature_list_.InitWithFeatures(
         {
-            ash::features::kFeatureManagementSeaPen,
+            features::kFeatureManagementSeaPen,
         },
         {});
   }
@@ -244,7 +239,7 @@ class SeaPenFetcherTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
   display::test::TestScreen test_screen_;
   raw_ptr<testing::StrictMock<MockSnapperProvider>> mock_snapper_provider_;
@@ -256,7 +251,7 @@ TEST_F(SeaPenFetcherTest, TemplateRequestsFourImages) {
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(ash::CreateMantaRequest(
+      Call(base::test::EqualsProto(CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
                /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
@@ -277,7 +272,7 @@ TEST_F(SeaPenFetcherTest, TemplateRequestsFourImages) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
 
@@ -295,15 +290,15 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kFeatureManagementSeaPen,
-          ash::features::kSeaPenTextInput,
+          features::kFeatureManagementSeaPen,
+          features::kSeaPenTextInput,
       },
       {});
   auto query = MakeFreeformQuery();
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(ash::CreateMantaRequest(
+      Call(base::test::EqualsProto(CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
                /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
@@ -324,7 +319,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
 
@@ -335,15 +330,15 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
   EXPECT_EQ(manta::MantaStatusCode::kOk,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
 
-  std::vector<testing::Matcher<ash::SeaPenImage>> matchers;
+  std::vector<testing::Matcher<SeaPenImage>> matchers;
   for (size_t i = 0; i < SeaPenFetcher::kNumTextThumbnailsRequested; i++) {
     matchers.push_back(
         MatchesSeaPenImage(CreateTestBitmap(), kFakeGenerationSeed + i));
   }
-  EXPECT_THAT(fetch_thumbnails_future
-                  .Get<std::optional<std::vector<ash::SeaPenImage>>>()
-                  .value(),
-              testing::UnorderedElementsAreArray(matchers));
+  EXPECT_THAT(
+      fetch_thumbnails_future.Get<std::optional<std::vector<SeaPenImage>>>()
+          .value(),
+      testing::UnorderedElementsAreArray(matchers));
 
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
@@ -372,7 +367,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
   sea_pen_fetcher()->FetchThumbnails(
@@ -381,9 +376,9 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
 
   EXPECT_EQ(manta::MantaStatusCode::kGenericError,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_future
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+  EXPECT_EQ(
+      std::nullopt,
+      fetch_thumbnails_future.Get<std::optional<std::vector<SeaPenImage>>>());
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kThumbnailsCountMetric, 0, 1);
@@ -396,9 +391,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kFeatureManagementSeaPen,
-       ash::features::kSeaPenTextInput},
-      {});
+      {features::kFeatureManagementSeaPen, features::kSeaPenTextInput}, {});
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
                    net::NetworkTrafficAnnotationTag traffic_annotation,
@@ -415,7 +408,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
   sea_pen_fetcher()->FetchThumbnails(
@@ -424,9 +417,9 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
 
   EXPECT_EQ(manta::MantaStatusCode::kBlockedOutputs,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_future
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+  EXPECT_EQ(
+      std::nullopt,
+      fetch_thumbnails_future.Get<std::optional<std::vector<SeaPenImage>>>());
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
@@ -441,9 +434,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kFeatureManagementSeaPen,
-       ash::features::kSeaPenTextInput},
-      {});
+      {features::kFeatureManagementSeaPen, features::kSeaPenTextInput}, {});
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
                    net::NetworkTrafficAnnotationTag traffic_annotation,
@@ -460,7 +451,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
   sea_pen_fetcher()->FetchThumbnails(
@@ -469,9 +460,9 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
 
   EXPECT_EQ(manta::MantaStatusCode::kImageHasPerson,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_future
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+  EXPECT_EQ(
+      std::nullopt,
+      fetch_thumbnails_future.Get<std::optional<std::vector<SeaPenImage>>>());
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
@@ -503,7 +494,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsTimeoutHandled) {
             SeaPenFetcher::kRequestTimeout + base::Seconds(1));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
   sea_pen_fetcher()->FetchThumbnails(
@@ -515,9 +506,9 @@ TEST_F(SeaPenFetcherTest, ThumbnailsTimeoutHandled) {
 
   EXPECT_EQ(manta::MantaStatusCode::kGenericError,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_future
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+  EXPECT_EQ(
+      std::nullopt,
+      fetch_thumbnails_future.Get<std::optional<std::vector<SeaPenImage>>>());
 
   // Recorded 1 timeout and generic error status code.
   histogram_tester().ExpectUniqueSample(kThumbnailsTimeoutMetric, true, 1);
@@ -549,7 +540,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsTimeoutHandled) {
             SeaPenFetcher::kRequestTimeout + base::Seconds(1));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
   sea_pen_fetcher()->FetchThumbnails(
@@ -561,9 +552,9 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsTimeoutHandled) {
 
   EXPECT_EQ(manta::MantaStatusCode::kGenericError,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_future
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+  EXPECT_EQ(
+      std::nullopt,
+      fetch_thumbnails_future.Get<std::optional<std::vector<SeaPenImage>>>());
 
   // Recorded 1 timeout and generic error status code.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, true,
@@ -596,8 +587,8 @@ TEST_F(SeaPenFetcherTest, ThumbnailsHandlesDuplicateRequests) {
             SeaPenFetcher::kRequestTimeout / 2);
       });
 
-  std::vector<base::test::TestFuture<
-      std::optional<std::vector<ash::SeaPenImage>>, manta::MantaStatusCode>>
+  std::vector<base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
+                                     manta::MantaStatusCode>>
       fetch_thumbnails_futures(2);
 
   sea_pen_fetcher()->FetchThumbnails(
@@ -611,9 +602,8 @@ TEST_F(SeaPenFetcherTest, ThumbnailsHandlesDuplicateRequests) {
   // First call has already returned with null images.
   EXPECT_EQ(manta::MantaStatusCode::kOk,
             fetch_thumbnails_futures.at(0).Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_futures.at(0)
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+  EXPECT_EQ(std::nullopt, fetch_thumbnails_futures.at(0)
+                              .Get<std::optional<std::vector<SeaPenImage>>>());
 
   EXPECT_FALSE(fetch_thumbnails_futures.at(1).IsReady());
 
@@ -625,7 +615,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsHandlesDuplicateRequests) {
             fetch_thumbnails_futures.at(1).Get<manta::MantaStatusCode>());
   EXPECT_EQ(SeaPenFetcher::kNumTemplateThumbnailsRequested,
             fetch_thumbnails_futures.at(1)
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>()
+                .Get<std::optional<std::vector<SeaPenImage>>>()
                 ->size());
 }
 
@@ -660,7 +650,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsDropsInvalidJpgBytes) {
                 },
                 std::move(done_callback)));
       });
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
 
@@ -673,7 +663,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsDropsInvalidJpgBytes) {
   // Only 1 image made it. The other was dropped due to invalid jpg bytes that
   // failed decoding.
   EXPECT_EQ(1u, fetch_thumbnails_future
-                    .Get<std::optional<std::vector<ash::SeaPenImage>>>()
+                    .Get<std::optional<std::vector<SeaPenImage>>>()
                     ->size());
 }
 
@@ -681,9 +671,9 @@ TEST_F(SeaPenFetcherTest, WallpaperCallsSnapperProvider) {
   auto query = MakeTemplateQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(ash::CreateMantaRequest(
+              Call(base::test::EqualsProto(CreateMantaRequest(
                        query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -701,11 +691,10 @@ TEST_F(SeaPenFetcherTest, WallpaperCallsSnapperProvider) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed), query,
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed), query,
       fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
@@ -722,9 +711,9 @@ TEST_F(SeaPenFetcherTest, FreeformWallpaperCallsSnapperProvider) {
   auto query = MakeFreeformQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(ash::CreateMantaRequest(
+              Call(base::test::EqualsProto(CreateMantaRequest(
                        query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -742,11 +731,10 @@ TEST_F(SeaPenFetcherTest, FreeformWallpaperCallsSnapperProvider) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed), query,
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed), query,
       fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
@@ -778,11 +766,10 @@ TEST_F(SeaPenFetcherTest, WallpaperHandlesEmptyImage) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
       MakeTemplateQuery(), fetch_wallpaper_future.GetCallback());
 
   EXPECT_FALSE(fetch_wallpaper_future.Get().has_value());
@@ -811,11 +798,10 @@ TEST_F(SeaPenFetcherTest, FreeformWallpaperHandlesEmptyImage) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
       MakeFreeformQuery(), fetch_wallpaper_future.GetCallback());
 
   EXPECT_FALSE(fetch_wallpaper_future.Get().has_value());
@@ -847,11 +833,10 @@ TEST_F(SeaPenFetcherTest, WallpaperHandlesTimeout) {
             SeaPenFetcher::kRequestTimeout + base::Seconds(1));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
       MakeTemplateQuery(), fetch_wallpaper_future.GetCallback());
 
   FastForwardBy(SeaPenFetcher::kRequestTimeout + base::Milliseconds(1));
@@ -885,11 +870,10 @@ TEST_F(SeaPenFetcherTest, FreeformWallpaperHandlesTimeout) {
             SeaPenFetcher::kRequestTimeout + base::Seconds(1));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
       MakeFreeformQuery(), fetch_wallpaper_future.GetCallback());
 
   FastForwardBy(SeaPenFetcher::kRequestTimeout + base::Milliseconds(1));
@@ -930,33 +914,32 @@ TEST_F(SeaPenFetcherTest, WallpaperDropsInvalidJpgBytes) {
                 },
                 std::move(done_callback)));
       });
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
 
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed + 1),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed + 1),
       MakeFreeformQuery(), fetch_wallpaper_future.GetCallback());
 
   // The image was dropped due to invalid jpg bytes that
   // failed decoding.
   EXPECT_EQ(std::nullopt,
-            fetch_wallpaper_future.Get<std::optional<ash::SeaPenImage>>());
+            fetch_wallpaper_future.Get<std::optional<SeaPenImage>>());
 }
 
 TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kFeatureManagementSeaPen,
-          ash::features::kSeaPenTextInput,
+          features::kFeatureManagementSeaPen,
+          features::kSeaPenTextInput,
       },
       {});
   auto query = MakeFreeformQuery();
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(ash::CreateMantaRequest(
+      Call(base::test::EqualsProto(CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
                /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
@@ -978,7 +961,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+  base::test::TestFuture<std::optional<std::vector<SeaPenImage>>,
                          manta::MantaStatusCode>
       fetch_thumbnails_future;
 
@@ -989,36 +972,35 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
   EXPECT_EQ(manta::MantaStatusCode::kOk,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
 
-  std::vector<testing::Matcher<ash::SeaPenImage>> matchers;
+  std::vector<testing::Matcher<SeaPenImage>> matchers;
   for (size_t i = 0; i < SeaPenFetcher::kNumTextThumbnailsRequested; i++) {
     matchers.push_back(MatchesSeaPenImage(
         CreateTestBitmap(), kFakeGenerationSeed + i, kGenerativePrompt));
   }
-  EXPECT_THAT(fetch_thumbnails_future
-                  .Get<std::optional<std::vector<ash::SeaPenImage>>>()
-                  .value(),
-              testing::UnorderedElementsAreArray(matchers));
+  EXPECT_THAT(
+      fetch_thumbnails_future.Get<std::optional<std::vector<SeaPenImage>>>()
+          .value(),
+      testing::UnorderedElementsAreArray(matchers));
 }
 
 TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kFeatureManagementSeaPen,
-          ash::features::kSeaPenTextInput,
+          features::kFeatureManagementSeaPen,
+          features::kSeaPenTextInput,
       },
       {
-          ash::features::kSeaPenQueryRewrite,
+          features::kSeaPenQueryRewrite,
       });
   auto user_query = MakeFreeformQuery();
-  ash::personalization_app::mojom::SeaPenQueryPtr generative_prompt_query =
-      ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
-          kGenerativePrompt);
+  personalization_app::mojom::SeaPenQueryPtr generative_prompt_query =
+      personalization_app::mojom::SeaPenQuery::NewTextQuery(kGenerativePrompt);
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(ash::CreateMantaRequest(
+              Call(base::test::EqualsProto(CreateMantaRequest(
                        user_query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -1036,12 +1018,11 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
-                       kGenerativePrompt),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
+                  kGenerativePrompt),
       user_query, fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
@@ -1052,21 +1033,20 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kFeatureManagementSeaPen,
-          ash::features::kSeaPenTextInput,
-          ash::features::kSeaPenQueryRewrite,
+          features::kFeatureManagementSeaPen,
+          features::kSeaPenTextInput,
+          features::kSeaPenQueryRewrite,
       },
       {});
   auto user_query = MakeFreeformQuery();
-  ash::personalization_app::mojom::SeaPenQueryPtr generative_prompt_query =
-      ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
-          kGenerativePrompt);
+  personalization_app::mojom::SeaPenQueryPtr generative_prompt_query =
+      personalization_app::mojom::SeaPenQuery::NewTextQuery(kGenerativePrompt);
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(ash::CreateMantaRequest(
+      Call(base::test::EqualsProto(CreateMantaRequest(
                generative_prompt_query, /*generation_seed=*/kFakeGenerationSeed,
-               /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
+               /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
                manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
            testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -1084,12 +1064,11 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
-                       kGenerativePrompt),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
+                  kGenerativePrompt),
       user_query, fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
@@ -1101,17 +1080,17 @@ TEST_F(SeaPenFetcherTest,
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kFeatureManagementSeaPen,
-          ash::features::kSeaPenTextInput,
-          ash::features::kSeaPenQueryRewrite,
+          features::kFeatureManagementSeaPen,
+          features::kSeaPenTextInput,
+          features::kSeaPenQueryRewrite,
       },
       {});
   auto user_query = MakeFreeformQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(ash::CreateMantaRequest(
+              Call(base::test::EqualsProto(CreateMantaRequest(
                        user_query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -1129,12 +1108,11 @@ TEST_F(SeaPenFetcherTest,
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
-      user_query, fetch_wallpaper_future.GetCallback());
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed), user_query,
+      fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
               MatchesSeaPenImage(CreateTestBitmap(), kFakeGenerationSeed));
@@ -1144,17 +1122,17 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kFeatureManagementSeaPen,
-          ash::features::kSeaPenTextInput,
-          ash::features::kSeaPenQueryRewrite,
+          features::kFeatureManagementSeaPen,
+          features::kSeaPenTextInput,
+          features::kSeaPenQueryRewrite,
       },
       {});
   auto template_query = MakeTemplateQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(ash::CreateMantaRequest(
+              Call(base::test::EqualsProto(CreateMantaRequest(
                        template_query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -1172,16 +1150,15 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
                 std::move(done_callback)));
       });
 
-  base::test::TestFuture<std::optional<ash::SeaPenImage>>
-      fetch_wallpaper_future;
+  base::test::TestFuture<std::optional<SeaPenImage>> fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
-                       kGenerativePrompt),
+      SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed,
+                  kGenerativePrompt),
       template_query, fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
               MatchesSeaPenImage(CreateTestBitmap(), kFakeGenerationSeed));
 }
 
-}  // namespace wallpaper_handlers
+}  // namespace ash

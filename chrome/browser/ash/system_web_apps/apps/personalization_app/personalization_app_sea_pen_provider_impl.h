@@ -36,7 +36,7 @@ class PersonalizationAppSeaPenProviderImpl
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
           wallpaper_fetcher_delegate,
       manta::MantaService* manta_service,
-      std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher);
+      std::unique_ptr<SeaPenFetcher> sea_pen_fetcher);
 
   PersonalizationAppSeaPenProviderImpl(
       const PersonalizationAppSeaPenProviderImpl&) = delete;

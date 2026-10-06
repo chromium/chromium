@@ -28,7 +28,6 @@ class WebUI;
 
 namespace wallpaper_handlers {
 class WallpaperFetcherDelegate;
-class SeaPenFetcher;
 }  // namespace wallpaper_handlers
 
 namespace manta {
@@ -36,6 +35,10 @@ class MantaService;
 }  // namespace manta
 
 class Profile;
+
+namespace ash {
+class SeaPenFetcher;
+}  // namespace ash
 
 namespace ash::personalization_app {
 
@@ -114,7 +117,7 @@ class PersonalizationAppSeaPenProviderBase
 
   void MakeTransparent() override;
 
-  wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
+  SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
  protected:
   // Testing constructor that injects `sea_pen_fetcher` in place of the one
@@ -126,7 +129,7 @@ class PersonalizationAppSeaPenProviderBase
           wallpaper_fetcher_delegate,
       manta::MantaService* manta_service,
       manta::proto::FeatureName feature_name,
-      std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher);
+      std::unique_ptr<SeaPenFetcher> sea_pen_fetcher);
 
   virtual void SetSeaPenObserverInternal() = 0;
 
@@ -233,7 +236,7 @@ class PersonalizationAppSeaPenProviderBase
   // Constructed lazily at the time of the first request and then persists for
   // the rest of the delegate's lifetime, unless preemptively or subsequently
   // replaced by a mock in a test.
-  std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher_;
+  std::unique_ptr<SeaPenFetcher> sea_pen_fetcher_;
 
   const raw_ptr<content::WebUI> web_ui_ = nullptr;
 
