@@ -93,6 +93,9 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 
 void OpenExternal(const GURL& url) {
   DCHECK([NSThread isMainThread]);
+  if (!internal::AreShellOperationsAllowed()) {
+    return;
+  }
   NSURL* ns_url = net::NSURLWithGURL(url);
 
   if (!ns_url) {
