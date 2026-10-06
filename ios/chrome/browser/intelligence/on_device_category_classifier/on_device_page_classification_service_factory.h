@@ -18,7 +18,12 @@ class ProfileIOS;
 class OnDevicePageClassificationServiceFactory
     : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Returns the service for `profile`. Creates it if necessary.
   static OnDevicePageClassificationService* GetForProfile(ProfileIOS* profile);
+  // Returns the service for `profile` if it has already been created, or
+  // nullptr otherwise.
+  static OnDevicePageClassificationService* GetForProfileIfExists(
+      ProfileIOS* profile);
   static OnDevicePageClassificationServiceFactory* GetInstance();
   static TestingFactory GetDefaultFactory();
 

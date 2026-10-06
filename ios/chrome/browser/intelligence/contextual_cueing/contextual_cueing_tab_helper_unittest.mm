@@ -419,6 +419,10 @@ class ContextualCueingTabHelperTest : public PlatformTest {
     tab_helper->NotifyContextualCueReceived(cue);
   }
 
+  void CancelClassification(ContextualCueingTabHelper* tab_helper) {
+    tab_helper->CancelClassification();
+  }
+
   // Simulates the model execution request issued for `url` completing with
   // `response`, bypassing the fake service so the test can interleave state
   // changes between the request and its response.
@@ -493,6 +497,31 @@ TEST_F(ContextualCueingTabHelperTest, IgnoresNonHttpUrls) {
                          web::PageLoadCompletionStatus::SUCCESS);
 
   EXPECT_FALSE(tab_helper->GetCategories().has_value());
+}
+
+// Tests that cancelling classification does not instantiate the classification
+// services when they have not been created yet.
+TEST_F(ContextualCueingTabHelperTest,
+       CancelClassificationDoesNotCreateServices) {
+  // Use a separate profile because `SetUp()` eagerly creates the services.
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
+                            base::BindRepeating(&BuildFakeGeminiService));
+  builder.AddTestingFactory(
+      InProcessCategoryClassificationServiceFactory::GetInstance(),
+      base::BindRepeating(&BuildTestInProcessClassificationService));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile.get());
+  ContextualCueingTabHelper::CreateForWebState(&web_state);
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(&web_state);
+
+  CancelClassification(tab_helper);
+
+  EXPECT_FALSE(OnDevicePageClassificationServiceFactory::GetForProfileIfExists(
+      profile.get()));
+  EXPECT_FALSE(
+      PageClassificationServiceFactory::GetForProfileIfExists(profile.get()));
 }
 
 // Tests that navigation resets classification state.

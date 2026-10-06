@@ -385,17 +385,20 @@ void ContextualCueingTabHelper::CancelClassification() {
 
   InvalidateCue();
 
+  // By using `GetForProfileIfExists`, it avoids initializing services when
+  // cancelling: if they don't exist yet, there is no work to cancel, and
+  // creating them here would unnecessarily load heavy models/services.
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   CHECK(profile);
   OnDevicePageClassificationService* on_device_page_classification_service =
-      OnDevicePageClassificationServiceFactory::GetForProfile(profile);
+      OnDevicePageClassificationServiceFactory::GetForProfileIfExists(profile);
   if (on_device_page_classification_service) {
     on_device_page_classification_service->CancelClassification(web_state_);
   }
 
   PageClassificationService* page_classification_service =
-      PageClassificationServiceFactory::GetForProfile(profile);
+      PageClassificationServiceFactory::GetForProfileIfExists(profile);
   if (page_classification_service) {
     page_classification_service->CancelClassification(web_state_);
   }

@@ -36,6 +36,15 @@ OnDevicePageClassificationServiceFactory::GetForProfile(ProfileIOS* profile) {
 }
 
 // static
+OnDevicePageClassificationService*
+OnDevicePageClassificationServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<OnDevicePageClassificationService>(
+          profile, /*create=*/false);
+}
+
+// static
 OnDevicePageClassificationServiceFactory*
 OnDevicePageClassificationServiceFactory::GetInstance() {
   static base::NoDestructor<OnDevicePageClassificationServiceFactory> instance;

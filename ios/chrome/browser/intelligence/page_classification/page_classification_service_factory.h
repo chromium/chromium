@@ -17,7 +17,11 @@ class ProfileIOS;
 // them with Profiles.
 class PageClassificationServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Returns the service for `profile`. Creates it if necessary.
   static PageClassificationService* GetForProfile(ProfileIOS* profile);
+  // Returns the service for `profile` if it has already been created, or
+  // nullptr otherwise.
+  static PageClassificationService* GetForProfileIfExists(ProfileIOS* profile);
   static PageClassificationServiceFactory* GetInstance();
 
   static ProfileKeyedServiceFactoryIOS::TestingFactory GetDefaultFactory();

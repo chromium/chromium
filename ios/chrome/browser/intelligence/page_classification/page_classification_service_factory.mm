@@ -31,6 +31,13 @@ PageClassificationService* PageClassificationServiceFactory::GetForProfile(
 }
 
 // static
+PageClassificationService*
+PageClassificationServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<PageClassificationService>(
+      profile, /*create=*/false);
+}
+
+// static
 PageClassificationServiceFactory*
 PageClassificationServiceFactory::GetInstance() {
   static base::NoDestructor<PageClassificationServiceFactory> instance;
