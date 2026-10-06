@@ -30,6 +30,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.win:157-
+- chrome.win:156-
 tags: []
 type: main
