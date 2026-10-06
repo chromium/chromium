@@ -40,6 +40,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
@@ -248,6 +249,31 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
             Host()->Size()));
   }
   return base::ByteSize();
+}
+
+void BaseRenderingContext2D::CreateSharedImageProvider(
+    RasterMode raster_mode,
+    gpu::SharedImageUsageSet shared_image_usage_flags) {
+  shared_image_provider_ = Canvas2DResourceProvider::CreateWithClear(
+      Host()->Size(), color_params_.GetSharedImageFormat(),
+      color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
+      color_params_.GetGfxHdrMetadata(),
+      SharedGpuContext::ContextProviderWrapper(), raster_mode,
+      shared_image_usage_flags, Host());
+}
+
+void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
+  shared_image_provider_ =
+      Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
+          Host()->Size(), color_params_.GetSharedImageFormat(),
+          color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
+          color_params_.GetGfxHdrMetadata(),
+          SharedGpuContext::SharedImageInterfaceProvider(), Host());
+}
+
+void BaseRenderingContext2D::SetSharedImageProviderForTesting(
+    std::unique_ptr<Canvas2DResourceProvider> provider) {
+  shared_image_provider_ = std::move(provider);
 }
 
 void BaseRenderingContext2D::CreateBitmapProvider() {

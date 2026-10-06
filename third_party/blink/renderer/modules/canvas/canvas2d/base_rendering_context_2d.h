@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_record.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -79,6 +80,7 @@ class V8CanvasFontKerning;
 class V8CanvasFontVariantCaps;
 class V8UnionElementOrElementImage;
 enum class PredefinedColorSpace;
+enum class RasterMode;
 
 class MODULES_EXPORT BaseRenderingContext2D
     : public CanvasRenderingContext,
@@ -362,13 +364,17 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  FlushReason reason) {}
 
   Canvas2DResourceProvider* GetSharedImageProvider() const;
+  void CreateSharedImageProvider(
+      RasterMode raster_mode,
+      gpu::SharedImageUsageSet shared_image_usage_flags);
+  void CreateSharedImageProviderForSoftwareCompositor();
+  void SetSharedImageProviderForTesting(
+      std::unique_ptr<Canvas2DResourceProvider> provider);
   void CreateBitmapProvider();
   void RecordResourceProviderHistograms();
   scoped_refptr<StaticBitmapImage> Snapshot();
 
   bool context_restorable_{true};
-  Canvas2DColorParams color_params_;
-  std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
 
  private:
   void UpdateRecordingLimits(bool is_graphite);
@@ -404,6 +410,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
+  Canvas2DColorParams color_params_;
+  std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   // Even when using a software surface, it may be called upon to
