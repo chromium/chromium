@@ -13,9 +13,9 @@ This directory contains the C++ WebUI controller and Mojo page handler for the
 ## Key Components
 
 - `IwaDevUI` (`iwa_dev_ui.{h,cc}`): `ui::MojoWebUIController` and
-  `IwaDevUIConfig` registering the `chrome://iwa-dev` WebUI host (gated on
-  `features::kIsolatedWebAppDevMode` and `AreIsolatedWebAppsEnabled`) and
-  binding `iwa_dev::mojom::PageHandlerFactory`.
+  `IwaDevUIConfig` registering the `chrome://iwa-dev` WebUI host and binding
+  `iwa_dev::mojom::PageHandlerFactory` (with the page handler and UI gated on
+  `AreIsolatedWebAppsEnabled` and `features::kIsolatedWebAppDevMode`).
 - `IwaDevPageHandler` (`iwa_dev_page_handler.{h,cc}`): Implements
   `iwa_dev::mojom::PageHandler`, bridging WebUI actions to `WebAppProvider`:
   - Installing dev-mode IWAs from proxy URLs (`InstallAppFromDevProxy`), local

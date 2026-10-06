@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_page_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/iwa_dev_resources.h"
 #include "chrome/grit/iwa_dev_resources_map.h"
 #include "chrome/grit/theme_resources.h"
@@ -21,7 +22,11 @@
 #include "ui/webui/webui_util.h"
 
 bool IwaDevUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return content::AreIsolatedWebAppsEnabled(browser_context);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // Check profile eligibility for Isolated Web Apps without checking the IWA
+  // feature flag, so the page can still load and prompt the user to enable the
+  // required flags.
+  return web_app::AreWebAppsEnabled(profile) && !profile->IsGuestSession();
 }
 
 IwaDevUI::IwaDevUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
@@ -31,6 +36,8 @@ IwaDevUI::IwaDevUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       profile, chrome::kChromeUIIwaDevHost);
   webui::SetupWebUIDataSource(source, kIwaDevResources,
                               IDR_IWA_DEV_IWA_DEV_HTML);
+  source->AddBoolean("isIwaEnabled",
+                     content::AreIsolatedWebAppsEnabled(profile));
   source->AddBoolean("isIwaDevModeEnabled",
                      web_app::IsIwaDevModeEnabled(profile));
 

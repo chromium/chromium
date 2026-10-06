@@ -63,8 +63,9 @@ suite('<iwa-dev-app>', () => {
 
   function createApp(
       devModeEnabled: boolean = true,
-      devToolsRestrictedByAdmin: boolean = false) {
+      devToolsRestrictedByAdmin: boolean = false, iwaEnabled: boolean = true) {
     loadTimeData.overrideValues({
+      isIwaEnabled: iwaEnabled,
       isIwaDevModeEnabled: devModeEnabled,
       isDevToolsRestrictedByAdmin: devToolsRestrictedByAdmin,
     });
@@ -202,11 +203,35 @@ suite('<iwa-dev-app>', () => {
         await microtasksFinished();
 
         const message =
-            app.shadowRoot.querySelector('#dev-mode-disabled-message');
+            app.shadowRoot.querySelector('#feature-disabled-message');
         assertTrue(!!message);
         assertTrue(message.textContent.includes(
             'Isolated Web App Developer Mode is disabled by your administrator.'));
       });
+
+  test('display error message when IWAs are disabled', async () => {
+    createApp(
+        /*devModeEnabled=*/ false, /*devToolsRestrictedByAdmin=*/ false,
+        /*iwaEnabled=*/ false);
+    await microtasksFinished();
+
+    const heading = app.shadowRoot.querySelector('h1');
+    assertTrue(!!heading);
+    assertEquals('Isolated Web App Developer Tool', heading.textContent.trim());
+
+    const message = app.shadowRoot.querySelector('#feature-disabled-message');
+    assertTrue(!!message);
+    assertTrue(message.textContent.includes(
+        'To use this page, please enable the following flags:'));
+    const links = message.querySelectorAll('a');
+    assertEquals(2, links.length);
+    assertEquals('Isolated Web Apps', links[0]!.textContent.trim());
+    assertEquals('chrome://flags/#enable-isolated-web-apps', links[0]!.href);
+    assertEquals(
+        'Isolated Web App Developer Mode', links[1]!.textContent.trim());
+    assertEquals(
+        'chrome://flags/#enable-isolated-web-app-dev-mode', links[1]!.href);
+  });
 
   test('display error message when IWA dev mode is disabled', async () => {
     createApp(/*devModeEnabled=*/ false);
@@ -216,13 +241,16 @@ suite('<iwa-dev-app>', () => {
     assertTrue(!!heading);
     assertEquals('Isolated Web App Developer Tool', heading.textContent.trim());
 
-    const message = app.shadowRoot.querySelector('#dev-mode-disabled-message');
+    const message = app.shadowRoot.querySelector('#feature-disabled-message');
     assertTrue(!!message);
     assertTrue(message.textContent.includes(
-        'Isolated Web App Developer Mode is disabled.'));
-    const link = message.querySelector('a');
-    assertTrue(!!link);
-    assertEquals('chrome://flags/#enable-isolated-web-app-dev-mode', link.href);
+        'To use this page, please enable the following flags:'));
+    const links = message.querySelectorAll('a');
+    assertEquals(1, links.length);
+    assertEquals(
+        'Isolated Web App Developer Mode', links[0]!.textContent.trim());
+    assertEquals(
+        'chrome://flags/#enable-isolated-web-app-dev-mode', links[0]!.href);
   });
 
   test('display content when IWA dev mode is enabled', async () => {

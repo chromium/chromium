@@ -26,13 +26,13 @@ h1 {
 }
 
 .subtitle a,
-#dev-mode-disabled-message a {
+#feature-disabled-message a {
   color: var(--cr-link-color);
   text-decoration: none;
 }
 
 .subtitle a:hover,
-#dev-mode-disabled-message a:hover {
+#feature-disabled-message a:hover {
   text-decoration: underline;
 }
 
@@ -40,13 +40,17 @@ h1 {
   margin-bottom: 32px;
 }
 
-#dev-mode-disabled-message {
+#feature-disabled-message {
   font-size: 14px;
   margin-top: 32px;
 }
 
-#dev-mode-disabled-message p {
+#feature-disabled-message p {
   margin: 6px 0;
+}
+
+#feature-disabled-message li + li {
+  margin-top: 6px;
 }
 
 .header-row {

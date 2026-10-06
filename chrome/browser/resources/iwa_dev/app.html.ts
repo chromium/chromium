@@ -17,16 +17,26 @@ export function getHtml(this: IwaDevAppElement) {
       aria-label="Learn more about Isolated Web Apps">Learn more</a>
 </div>
 ${!this.devModeEnabled_ ? html`
-  <div id="dev-mode-disabled-message">
+  <div id="feature-disabled-message">
     ${this.devToolsRestrictedByAdmin_ ? html`
       <p>Isolated Web App Developer Mode is disabled by your administrator.</p>
     ` : html`
-      <p>Isolated Web App Developer Mode is disabled.</p>
-      <p>To use this page, please enable the
-        <a href="chrome://flags#enable-isolated-web-app-dev-mode" target="_blank">
-          Isolated Web App Developer Mode
-        </a> flag.
-      </p>
+      <p>To use this page, please enable the following flags:</p>
+      <ul>
+        ${!this.iwaEnabled_ ? html`
+          <li>
+            <a href="chrome://flags#enable-isolated-web-apps" target="_blank">
+              Isolated Web Apps
+            </a>
+          </li>
+        ` : ''}
+        <li>
+          <a href="chrome://flags#enable-isolated-web-app-dev-mode"
+              target="_blank">
+            Isolated Web App Developer Mode
+          </a>
+        </li>
+      </ul>
     `}
   </div>
 ` : html`
