@@ -769,6 +769,11 @@ void ActorTask::OnNavigationBlocked(mojom::ActionResultCode code) {
   if (engine_) {
     engine_->FailCurrentTool(code);
   }
+  if (pending_act_ && pending_act_->deferred_results &&
+      !pending_act_->deferred_results->empty()) {
+    pending_act_->deferred_results->back() =
+        ActionResult(ToolExecutionResult(code));
+  }
 }
 
 void ActorTask::UpdateBackgroundTaskSubtitle(const std::string& task_update) {

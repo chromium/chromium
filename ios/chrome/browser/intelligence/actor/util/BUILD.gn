@@ -20,6 +20,7 @@ source_set("test_support") {
   deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/web/public/navigation",
+    "//net",
     "//url",
   ]
 }

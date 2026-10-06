@@ -48,6 +48,11 @@ class ActorWebStatePolicyDecider : public web::WebStatePolicyDecider {
       web::WebStatePolicyDecider::RequestInfo request_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
+  void ShouldAllowResponse(
+      NSURLResponse* response,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+
  private:
   void OnGatingDecisionComputed(
       web::WebStatePolicyDecider::PolicyDecisionCallback callback,

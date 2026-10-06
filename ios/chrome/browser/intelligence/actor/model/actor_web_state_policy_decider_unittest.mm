@@ -61,6 +61,12 @@ class ActorWebStatePolicyDeciderTest : public PlatformTest {
         /*user_tapped_recently=*/false);
   }
 
+  web::WebStatePolicyDecider::ResponseInfo CreateResponseInfo(
+      bool for_main_frame = true) {
+    return web::WebStatePolicyDecider::ResponseInfo(
+        /*for_main_frame=*/for_main_frame);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<origin_gating::OriginGatingService> gating_service_ =
@@ -269,5 +275,89 @@ TEST_F(ActorWebStatePolicyDeciderTest,
   EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
   EXPECT_EQ(blocked_future.Get(),
             mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+// Test that a permissible navigation response is allowed and does not report
+// blocking.
+TEST_F(ActorWebStatePolicyDeciderTest, AllowsPermissibleResponse) {
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed*/ true);
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
+
+  base::test::TestFuture<mojom::ActionResultCode> blocked_future;
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
+                                     blocked_future.GetRepeatingCallback());
+
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://safe.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+
+  decider.ShouldAllowResponse(response,
+                              CreateResponseInfo(/*for_main_frame*/ true),
+                              decision_future.GetCallback());
+
+  EXPECT_TRUE(decision_future.Get().ShouldAllowNavigation());
+  EXPECT_FALSE(blocked_future.IsReady());
+}
+
+// Test that blocked responses are cancelled and report
+// kTriggeredNavigationBlocked.
+TEST_F(ActorWebStatePolicyDeciderTest, CancelsBlockedResponseAndReportsCode) {
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed*/ false);
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
+
+  base::test::TestFuture<mojom::ActionResultCode> blocked_future;
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
+                                     blocked_future.GetRepeatingCallback());
+
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://malicious.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+
+  decider.ShouldAllowResponse(response,
+                              CreateResponseInfo(/*for_main_frame=*/true),
+                              decision_future.GetCallback());
+
+  EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
+  EXPECT_EQ(blocked_future.Get(),
+            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+// Test that responses in subframes are allowed without gating check.
+TEST_F(ActorWebStatePolicyDeciderTest, ResponseNonMainFrameAllowed) {
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed*/ false);
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
+
+  base::test::TestFuture<mojom::ActionResultCode> blocked_future;
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
+                                     blocked_future.GetRepeatingCallback());
+
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://malicious.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+
+  decider.ShouldAllowResponse(response,
+                              CreateResponseInfo(/*for_main_frame*/ false),
+                              decision_future.GetCallback());
+
+  EXPECT_TRUE(decision_future.Get().ShouldAllowNavigation());
+  EXPECT_FALSE(blocked_future.IsReady());
 }
 }  // namespace actor

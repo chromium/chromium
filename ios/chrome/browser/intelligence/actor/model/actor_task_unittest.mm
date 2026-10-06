@@ -41,7 +41,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -321,7 +324,8 @@ class ActorTaskTest : public PlatformTest {
     // the repeating heartbeat timer. `ActorTaskBackgroundingTest` re-enables
     // it.
     scoped_feature_list_.InitWithFeatures(
-        {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor},
+        {kPageActionMenu, kActorTools, kActorOriginGating,
+         kGeminiClientMigration, kGeminiActor},
         {kEnableBackgroundContinuedProcessing});
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
@@ -1698,10 +1702,7 @@ TEST_F(ActorTaskBackgroundingTest, HeartbeatMultipleWebStates) {
 // Tests that AddControlledWebState attaches the policy decider to the WebState
 // and cancels navigation requests when the policy decider blocks the request.
 TEST_F(ActorTaskTest,
-       Test_AddControlledWebState_Attaches_PolicyDecider_And_Cancels) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorOriginGating);
-
+       AddControlledWebState_Attaches_PolicyDecider_And_Cancels) {
   const std::string mock_rules_json = R"json({
     "navigation_blocked": [
       {"from": "https://malicious.com", "to": "https://malicious.com"}
@@ -1718,6 +1719,7 @@ TEST_F(ActorTaskTest,
   auto web_state = std::make_unique<web::FakeWebState>();
   task->AddControlledWebState(web_state.get());
 
+  // 1. Verify request phase allows the navigation.
   NSURLRequest* request = [NSURLRequest
       requestWithURL:[NSURL URLWithString:@"https://malicious.com"]];
   const web::WebStatePolicyDecider::RequestInfo request_info(
@@ -1733,8 +1735,24 @@ TEST_F(ActorTaskTest,
   web_state->ShouldAllowRequest(request, request_info,
                                 decision_future.GetCallback());
 
-  EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
+  EXPECT_TRUE(decision_future.Get().ShouldAllowNavigation());
+  EXPECT_EQ(task->GetState(), ActorTaskState::kInit);
 
+  // 2. Verify response phase cancellation through the decider.
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://malicious.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      response_future;
+  web_state->ShouldAllowResponse(response, response_info,
+                                 response_future.GetCallback());
+
+  EXPECT_TRUE(response_future.Get().ShouldCancelNavigation());
   actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
                                   "{}");
 }
@@ -2197,6 +2215,123 @@ TEST_F(ActorTaskTest, StopFromObserverIsNotReentrant) {
 
   EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
   task_->RemoveObserver(observer);
+}
+
+// Test that blocking a navigation at ShouldAllowResponse while a tool is still
+// actively executing in ActorEngine fails the tool with
+// kTriggeredNavigationBlocked.
+TEST_F(ActorTaskTest,
+       ShouldAllowResponse_BlocksActiveTool_WithTriggeredNavigationBlocked) {
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://safe.com", "to": "https://malicious.com"}
+    ]
+  })json";
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  mock_rules_json);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(test_browser.get());
+  UrlLoadingBrowserAgent::CreateForBrowser(test_browser.get());
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  web_state->SetBrowserState(profile_.get());
+  auto navigation_manager =
+      std::make_unique<ResponseSimulatingNavigationManager>(web_state_ptr);
+  ResponseSimulatingNavigationManager* navigation_manager_ptr =
+      navigation_manager.get();
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  web_state->SetCurrentURL(GURL("https://safe.com"));
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  task_->AddControlledWebState(web_state_ptr);
+
+  optimization_guide::proto::Action navigate_action;
+  navigate_action.mutable_navigate()->set_url("https://malicious.com");
+  navigate_action.mutable_navigate()->set_tab_id(tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(navigate_action));
+
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task_->Act(std::move(actions), "Executing tool when response is blocked",
+             act_future.GetCallback());
+
+  const std::vector<ActionResult>& results = act_future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            results[0].tool_result.code());
+  ASSERT_TRUE(navigation_manager_ptr->last_response_decision().has_value());
+  EXPECT_TRUE(navigation_manager_ptr->last_response_decision()
+                  ->ShouldCancelNavigation());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  "{}");
+}
+
+// Test that blocking a navigation at ShouldAllowResponse while Act completion
+// is deferred waiting for page load overwrites the action result with
+// kTriggeredNavigationBlocked.
+TEST_F(ActorTaskTest,
+       ShouldAllowResponse_BlocksDeferredAct_WithTriggeredNavigationBlocked) {
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://malicious.com", "to": "https://malicious.com"}
+    ]
+  })json";
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  mock_rules_json);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  task_->AddControlledWebState(web_state.get());
+
+  // Untargeted request so the tool succeeds with kOk without requiring a
+  // BrowserList lookup; completion is still deferred because the controlled
+  // `web_state` is loading.
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task_->Act(std::move(actions), "Clicking link that triggers navigation",
+             act_future.GetCallback());
+
+  // Run pending tasks so the tool finishes with kOk and enters
+  // DeferActCompletion while `web_state` is still loading.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(act_future.IsReady());
+
+  // Simulate the navigation being blocked at the ShouldAllowResponse stage.
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://malicious.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      response_future;
+  web_state->ShouldAllowResponse(response, response_info,
+                                 response_future.GetCallback());
+  EXPECT_TRUE(response_future.Get().ShouldCancelNavigation());
+
+  // Simulate WKWebView stopping the load after the navigation is cancelled.
+  web_state->SetLoading(false);
+
+  const std::vector<ActionResult>& results = act_future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            results[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  "{}");
 }
 
 }  // namespace actor

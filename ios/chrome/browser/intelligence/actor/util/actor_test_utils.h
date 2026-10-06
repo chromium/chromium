@@ -16,6 +16,7 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -23,6 +24,7 @@ class GURL;
 
 @class NSError;
 namespace web {
+class FakeNavigationContext;
 class FakeWebState;
 }  // namespace web
 
@@ -55,6 +57,35 @@ class CompletingFakeNavigationManager : public web::FakeNavigationManager {
   bool auto_complete_ = true;
   bool has_committed_ = true;
   NSError* error_ = nil;
+};
+
+// A `FakeNavigationManager` that simulates the full navigation lifecycle
+// including `ShouldAllowResponse` policy evaluation before finishing the
+// navigation.
+class ResponseSimulatingNavigationManager : public web::FakeNavigationManager {
+ public:
+  explicit ResponseSimulatingNavigationManager(web::FakeWebState* web_state);
+  ~ResponseSimulatingNavigationManager() override;
+
+  // `web::FakeNavigationManager` overrides.
+  void LoadURLWithParams(
+      const NavigationManager::WebLoadParams& params) override;
+
+  // Returns the last `PolicyDecision` produced by `ShouldAllowResponse`.
+  const std::optional<web::WebStatePolicyDecider::PolicyDecision>&
+  last_response_decision() const {
+    return last_response_decision_;
+  }
+
+ private:
+  void OnResponseDecision(std::unique_ptr<web::FakeNavigationContext> context,
+                          web::WebStatePolicyDecider::PolicyDecision decision);
+
+  raw_ptr<web::FakeWebState> web_state_ = nullptr;
+  std::optional<web::WebStatePolicyDecider::PolicyDecision>
+      last_response_decision_;
+  base::WeakPtrFactory<ResponseSimulatingNavigationManager> weak_ptr_factory_{
+      this};
 };
 
 // Fake `OriginGatingChecker::Delegate` that returns a fixed decision

@@ -268,10 +268,7 @@ ActorEngine::CreateOriginGatingConfig() {
                   base::BindRepeating(&EvaluateSafetyListPredicate),
                   ActorCustomPredicate::kSafetyList),
               /*events=*/
-              {// Gate explicit navigation requests to prevent the actor from
-               // navigating to unapproved or dangerous destinations.
-               origin_gating::GateableEvent::kNavigationRequest,
-               // Gate navigations to prevent the actor from navigating to
+              {// Gate navigations to prevent the actor from navigating to
                // unapproved or dangerous destinations.
                origin_gating::GateableEvent::kNavigationResponse,
                // Gate user/actor page interactions (clicks, from inputs,

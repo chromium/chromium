@@ -6,11 +6,13 @@
 
 #import <utility>
 
+#import "base/functional/bind.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/types.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace actor {
@@ -51,6 +53,42 @@ void CompletingFakeNavigationManager::SimulateNavigation(const GURL& url) {
   }
   web_state_->OnNavigationStarted(&context);
   web_state_->OnNavigationFinished(&context);
+}
+
+ResponseSimulatingNavigationManager::ResponseSimulatingNavigationManager(
+    web::FakeWebState* web_state)
+    : web_state_(web_state) {}
+
+ResponseSimulatingNavigationManager::~ResponseSimulatingNavigationManager() =
+    default;
+
+void ResponseSimulatingNavigationManager::LoadURLWithParams(
+    const NavigationManager::WebLoadParams& params) {
+  web::FakeNavigationManager::LoadURLWithParams(params);
+  web_state_->SetLoading(true);
+  auto context = std::make_unique<web::FakeNavigationContext>();
+  context->SetUrl(params.url);
+  web_state_->OnNavigationStarted(context.get());
+  NSURLResponse* response =
+      [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(params.url)
+                                MIMEType:@"text/html"
+                   expectedContentLength:0
+                        textEncodingName:nil];
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  web_state_->ShouldAllowResponse(
+      response, response_info,
+      base::BindOnce(&ResponseSimulatingNavigationManager::OnResponseDecision,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(context)));
+}
+
+void ResponseSimulatingNavigationManager::OnResponseDecision(
+    std::unique_ptr<web::FakeNavigationContext> context,
+    web::WebStatePolicyDecider::PolicyDecision decision) {
+  last_response_decision_ = decision;
+  web_state_->SetLoading(false);
+  context->SetHasCommitted(decision.ShouldAllowNavigation());
+  web_state_->OnNavigationFinished(context.get());
 }
 
 FakeOriginGatingCheckerDelegate::FakeOriginGatingCheckerDelegate(

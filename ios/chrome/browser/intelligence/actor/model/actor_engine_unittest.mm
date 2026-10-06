@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 
+#import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -35,15 +36,16 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace actor {
 namespace {
-
 // Returns the provenance attributed to tasks created by these tests.
 TaskSourceInfo TestSource() {
   return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
@@ -70,6 +72,7 @@ class MockActorEngineExecutionUpdatesDelegate
   std::vector<DelegateCall> calls_;
   bool on_will_execute_called_ = false;
 };
+
 }  // namespace
 
 // Test fixture for ActorEngine.
@@ -622,8 +625,9 @@ TEST_F(ActorEngineOriginGatingTest, HandlesEmptySourceUrl) {
   EXPECT_EQ(decision.attribution, ActorCustomPredicate::kSafetyList);
 }
 
-// Test that a NavigateAction executed through ActorEngine is blocked when
-// disallowed by the OriginGatingChecker safety list.
+// Test that a NavigateAction executed through ActorEngine succeeds at request
+// time (since kNavigationRequest fails open) and is aborted with
+// kTriggeredNavigationBlocked when ShouldAllowResponse blocks the response.
 TEST_F(ActorEngineOriginGatingTest, Act_NavigationBlockedByOriginGating) {
   const std::string mock_rules_json = R"json({
     "navigation_blocked": [
@@ -640,14 +644,21 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationBlockedByOriginGating) {
   UrlLoadingBrowserAgent::CreateForBrowser(test_browser.get());
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = fake_web_state.get();
   fake_web_state->SetBrowserState(profile_.get());
-  fake_web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+  auto navigation_manager =
+      std::make_unique<ResponseSimulatingNavigationManager>(web_state_ptr);
+  ResponseSimulatingNavigationManager* navigation_manager_ptr =
+      navigation_manager.get();
+  fake_web_state->SetNavigationManager(std::move(navigation_manager));
   fake_web_state->SetCurrentURL(GURL("https://safe.com"));
   int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
   test_browser->GetWebStateList()->InsertWebState(
       std::move(fake_web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Attach ActorWebStatePolicyDecider to the WebState.
+  task_->AddControlledWebState(web_state_ptr);
 
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://malicious.com");
@@ -657,13 +668,16 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationBlockedByOriginGating) {
   actions.push_back(std::make_unique<ActorToolRequest>(action));
 
   base::test::TestFuture<std::vector<ActionResult>> future;
-  engine_->Act(std::move(actions), future.GetCallback());
+  task_->Act(std::move(actions), "Navigating", future.GetCallback());
   const std::vector<ActionResult>& results = future.Get();
 
   ASSERT_EQ(1u, results.size());
   EXPECT_FALSE(results[0].tool_result.IsOk());
   EXPECT_EQ(actor::mojom::ActionResultCode::kTriggeredNavigationBlocked,
             results[0].tool_result.code());
+  ASSERT_TRUE(navigation_manager_ptr->last_response_decision().has_value());
+  EXPECT_TRUE(navigation_manager_ptr->last_response_decision()
+                  ->ShouldCancelNavigation());
 }
 
 // Test that a NavigateAction executed through ActorEngine succeeds when
@@ -684,10 +698,11 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
   UrlLoadingBrowserAgent::CreateForBrowser(test_browser.get());
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = fake_web_state.get();
   fake_web_state->SetBrowserState(profile_.get());
   auto fake_navigation_manager =
-      std::make_unique<CompletingFakeNavigationManager>(fake_web_state.get());
-  CompletingFakeNavigationManager* fake_navigation_manager_ptr =
+      std::make_unique<ResponseSimulatingNavigationManager>(web_state_ptr);
+  ResponseSimulatingNavigationManager* fake_navigation_manager_ptr =
       fake_navigation_manager.get();
   fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
   fake_web_state->SetCurrentURL(GURL("https://safe.com"));
@@ -695,6 +710,9 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
   test_browser->GetWebStateList()->InsertWebState(
       std::move(fake_web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Attach ActorWebStatePolicyDecider to the WebState.
+  task_->AddControlledWebState(web_state_ptr);
 
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://trusted.com");
@@ -704,7 +722,7 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
   actions.push_back(std::make_unique<ActorToolRequest>(action));
 
   base::test::TestFuture<std::vector<ActionResult>> future;
-  engine_->Act(std::move(actions), future.GetCallback());
+  task_->Act(std::move(actions), "Navigating", future.GetCallback());
   const std::vector<ActionResult>& results = future.Get();
 
   ASSERT_EQ(1u, results.size());
@@ -712,6 +730,10 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
   EXPECT_TRUE(fake_navigation_manager_ptr->LoadURLWithParamsWasCalled());
   EXPECT_EQ(GURL("https://trusted.com"),
             fake_navigation_manager_ptr->GetLastLoadURLWithParams()->url);
+  ASSERT_TRUE(
+      fake_navigation_manager_ptr->last_response_decision().has_value());
+  EXPECT_TRUE(fake_navigation_manager_ptr->last_response_decision()
+                  ->ShouldAllowNavigation());
 }
 
 // Test that an implicit navigation (e.g. link click / redirect) on a controlled
@@ -763,9 +785,22 @@ TEST_F(
   web_state_ptr->ShouldAllowRequest(request, request_info,
                                     decision_future.GetCallback());
 
-  // Verify that the navigation was cancelled.
-  EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
+  // 1. Request phase fails open.
+  EXPECT_TRUE(decision_future.Get().ShouldAllowNavigation());
 
+  // 2. Response phase cancels the navigation.
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://malicious.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      response_future;
+  web_state_ptr->ShouldAllowResponse(response, response_info,
+                                     response_future.GetCallback());
+  EXPECT_TRUE(response_future.Get().ShouldCancelNavigation());
   // Verify that the task was not stopped; it remains alive so Gemini can handle
   // the block.
   EXPECT_EQ(task_->GetState(), ActorTaskState::kInit);
@@ -798,6 +833,7 @@ TEST_F(ActorEngineOriginGatingTest,
 
   task_->AddControlledWebState(web_state_ptr);
 
+  // 1. Request phase is allowed.
   NSURLRequest* request = [NSURLRequest
       requestWithURL:[NSURL URLWithString:@"https://trusted.com"]];
   const web::WebStatePolicyDecider::RequestInfo request_info(
@@ -816,8 +852,20 @@ TEST_F(ActorEngineOriginGatingTest,
   // Verify that the navigation was allowed.
   EXPECT_TRUE(decision_future.Get().ShouldAllowNavigation());
 
+  // 2. Response phase is also allowed.
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://trusted.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      response_future;
+  web_state_ptr->ShouldAllowResponse(response, response_info,
+                                     response_future.GetCallback());
+  EXPECT_TRUE(response_future.Get().ShouldAllowNavigation());
   // Verify that the task was not stopped.
   EXPECT_EQ(task_->GetState(), ActorTaskState::kInit);
 }
-
 }  // namespace actor
