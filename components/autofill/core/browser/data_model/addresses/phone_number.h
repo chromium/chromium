@@ -128,8 +128,7 @@ class PhoneNumber : public FormGroup {
   // FormGroup:
   FieldTypeSet GetSupportedTypes() const override;
 
-  // Updates the cached parsed number if the profile's region has changed
-  // since the last time the cache was updated.
+  // Updates the cached parsed number if the number has changed substantially.
   void UpdateCacheIfNeeded(std::string_view app_locale) const;
 
   // The phone number.

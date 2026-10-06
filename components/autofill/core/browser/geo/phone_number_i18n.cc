@@ -369,7 +369,9 @@ PhoneObject::PhoneObject() = default;
 
 PhoneObject::PhoneObject(std::u16string_view number,
                          const std::string& region,
-                         bool infer_country_code) {
+                         bool infer_country_code)
+    : creation_region_hint_(region),
+      infer_country_code_from_region_hint_(infer_country_code) {
   DCHECK_EQ(2u, region.size());
 
   auto i18n_number = std::make_unique<::i18n::phonenumbers::PhoneNumber>();
@@ -405,6 +407,9 @@ PhoneObject& PhoneObject::operator=(const PhoneObject& other) {
   }
 
   region_ = other.region_;
+  creation_region_hint_ = other.creation_region_hint_;
+  infer_country_code_from_region_hint_ =
+      other.infer_country_code_from_region_hint_;
 
   if (other.i18n_number_) {
     i18n_number_ = std::make_unique<::i18n::phonenumbers::PhoneNumber>(

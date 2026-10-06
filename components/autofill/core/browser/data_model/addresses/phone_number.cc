@@ -321,13 +321,19 @@ VerificationStatus PhoneNumber::GetVerificationStatus(FieldType type) const {
 
 void PhoneNumber::UpdateCacheIfNeeded(std::string_view app_locale) const {
   std::string region = GetRegion(*profile_, app_locale);
-  if (!number_.empty() && cached_parsed_phone_.region() != region) {
-    // To enable filling of country calling codes for nationally formatted
-    // numbers, infer it from the `profile_`'s country information while parsing
-    // the number.
-    cached_parsed_phone_ = i18n::PhoneObject(
-        number_, region,
-        /*infer_country_code=*/profile_->HasInfo(ADDRESS_HOME_COUNTRY));
+  // To enable filling of country calling codes for nationally formatted
+  // numbers, infer it from the `profile_`'s country information while parsing
+  // the number.
+  const bool infer_country_code = profile_->HasRawInfo(ADDRESS_HOME_COUNTRY);
+  // Since nearly all profiles have a country, `infer_country_code` rarely
+  // changes. It is still compared so that adding a country to `profile_`
+  // doesn't keep a stale `cached_parsed_phone_` if `region` stays the same.
+  if (!number_.empty() &&
+      (cached_parsed_phone_.creation_region_hint() != region ||
+       cached_parsed_phone_.infer_country_code_from_region_hint() !=
+           infer_country_code)) {
+    cached_parsed_phone_ =
+        i18n::PhoneObject(number_, region, infer_country_code);
   }
 }
 

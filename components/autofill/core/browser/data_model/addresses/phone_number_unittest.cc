@@ -275,6 +275,24 @@ TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
   EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, "US"), u"70");
 }
 
+// Tests that adding a country to the profile re-parses the cached number, even
+// though the region used for parsing stays the same.
+TEST(PhoneNumberTest, ReparsesWhenProfileCountryIsAdded) {
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  PhoneNumber phone(&profile);
+  phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"6502345678");
+
+  // Without a profile country, the region "US" comes from `kLocale` and no
+  // calling code is inferred.
+  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale).empty());
+  EXPECT_EQ(phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale), u"6502345678");
+
+  // Adding the country "US" keeps the region, but enables the inference.
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  EXPECT_EQ(phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale), u"1");
+  EXPECT_EQ(phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale), u"16502345678");
+}
+
 // Tests that `PhoneCombineHelper` can construct a valid phone number from its
 // collected phone components.
 TEST(PhoneCombineHelperTest, SetInfoAndParseNumber) {
