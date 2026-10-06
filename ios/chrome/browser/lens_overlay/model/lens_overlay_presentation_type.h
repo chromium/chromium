@@ -33,8 +33,7 @@ ContainerPresentationType ContainerPresentationFor(
 // Deducts the required result page presentation for the `UITraitEnvironment`
 // conforming entity.
 ResultPagePresentationType ResultPagePresentationFor(
-    id<UITraitEnvironment> environment,
-    bool is_lvf = false);
+    id<UITraitEnvironment> environment);
 
 }  // namespace lens
 

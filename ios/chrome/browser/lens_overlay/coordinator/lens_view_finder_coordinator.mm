@@ -184,12 +184,20 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   auto startPostCapture = ^{
     [weakSelf startPostCaptureWithMetadata:imageMetadata];
   };
-  if (_lensViewController.presentedViewController) {
-    [_lensViewController.presentedViewController
-        dismissViewControllerAnimated:YES
-                           completion:startPostCapture];
+
+  if ([self supportsRestoringLVF]) {
+    if (_lensViewController.presentedViewController) {
+      [_lensViewController.presentedViewController
+          dismissViewControllerAnimated:YES
+                             completion:startPostCapture];
+    } else {
+      startPostCapture();
+    }
   } else {
+    // When LVF restoration is not supported, start post capture at the same
+    // time, behind the capturing screen.
     startPostCapture();
+    [self exitLensViewFinderAnimated:YES completion:nil];
   }
 }
 
@@ -334,9 +342,12 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   __weak __typeof(self) weakSelf = self;
   id<LensOverlayCommands> lensOverlayCommands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LensOverlayCommands);
+  UIViewController* baseVC = [self supportsRestoringLVF]
+                                 ? _lensViewController
+                                 : self.baseViewController;
   [lensOverlayCommands searchWithLensImageMetadata:imageMetadata
                                         entrypoint:entrypoint
-                           initialPresentationBase:_lensViewController
+                           initialPresentationBase:baseVC
                                         completion:^(BOOL) {
                                           weakSelf.postCaptureShown = YES;
                                         }];
@@ -456,6 +467,13 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
   GetApplicationContext()->GetLocalState()->SetTime(prefs::kLensLastOpened,
                                                     base::Time::Now());
+}
+
+// Whether restoring the LVF session after post capture was shown is supported.
+// Restoration is not supported for devices that can show the side panel, as
+// they present post capture embedded in the viewport.
+- (BOOL)supportsRestoringLVF {
+  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 @end

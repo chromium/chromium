@@ -61,7 +61,7 @@ using LensOverlayPresentationTypeTest = PlatformTest;
 TEST_F(LensOverlayPresentationTypeTest,
        TestResultPagePresentationFor_NonLVF_RegularXRegular) {
   FakeTraitEnvironment* env = CreateRegularXRegularEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(env, /*is_lvf=*/false),
+  EXPECT_EQ(lens::ResultPagePresentationFor(env),
             lens::ResultPagePresentationType::kSidePanel);
 }
 
@@ -69,7 +69,7 @@ TEST_F(LensOverlayPresentationTypeTest,
 TEST_F(LensOverlayPresentationTypeTest,
        TestResultPagePresentationFor_NonLVF_Compact) {
   FakeTraitEnvironment* env = CreateCompactEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(env, /*is_lvf=*/false),
+  EXPECT_EQ(lens::ResultPagePresentationFor(env),
             lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
 }
 
@@ -78,12 +78,10 @@ TEST_F(LensOverlayPresentationTypeTest,
 TEST_F(LensOverlayPresentationTypeTest,
        TestResultPagePresentationFor_NonLVF_UnaffectedByFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kEnableLensOnIPad, {{kEnableLensOnIPadPresentationStyleParam,
-                           kEnableLensOnIPadPresentationStyleBottomSheet}});
+  feature_list.InitAndEnableFeature(kEnableLensOnIPad);
 
   FakeTraitEnvironment* env = CreateRegularXRegularEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(env, /*is_lvf=*/false),
+  EXPECT_EQ(lens::ResultPagePresentationFor(env),
             lens::ResultPagePresentationType::kSidePanel);
 }
 
@@ -95,12 +93,12 @@ TEST_F(LensOverlayPresentationTypeTest,
   }
 
   FakeTraitEnvironment* env = CreateCompactEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(env, /*is_lvf=*/true),
+  EXPECT_EQ(lens::ResultPagePresentationFor(env),
             lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableLensOnIPad);
-  EXPECT_EQ(lens::ResultPagePresentationFor(env, /*is_lvf=*/true),
+  EXPECT_EQ(lens::ResultPagePresentationFor(env),
             lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
 }
 
@@ -116,11 +114,11 @@ TEST_F(LensOverlayPresentationTypeTest,
   feature_list.InitAndDisableFeature(kEnableLensOnIPad);
 
   FakeTraitEnvironment* regularEnv = CreateRegularXRegularEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv, /*is_lvf=*/true),
+  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv),
             lens::ResultPagePresentationType::kSidePanel);
 
   FakeTraitEnvironment* compactEnv = CreateCompactEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(compactEnv, /*is_lvf=*/true),
+  EXPECT_EQ(lens::ResultPagePresentationFor(compactEnv),
             lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
 }
 
@@ -136,61 +134,11 @@ TEST_F(LensOverlayPresentationTypeTest,
   feature_list.InitAndEnableFeature(kEnableLensOnIPad);
 
   FakeTraitEnvironment* regularEnv = CreateRegularXRegularEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv, /*is_lvf=*/true),
-            lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
-}
-
-// Test that on tablet, LVF uses bottom sheet when kEnableLensOnIPad is
-// enabled with bottom sheet param.
-TEST_F(LensOverlayPresentationTypeTest,
-       TestResultPagePresentationFor_Tablet_LVF_FeatureEnabledBottomSheet) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP() << "Test requires tablet form factor.";
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kEnableLensOnIPad, {{kEnableLensOnIPadPresentationStyleParam,
-                           kEnableLensOnIPadPresentationStyleBottomSheet}});
-
-  FakeTraitEnvironment* regularEnv = CreateRegularXRegularEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv, /*is_lvf=*/true),
-            lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
-}
-
-// Test that on tablet, LVF uses side panel when kEnableLensOnIPad is enabled
-// with side panel param.
-TEST_F(LensOverlayPresentationTypeTest,
-       TestResultPagePresentationFor_Tablet_LVF_FeatureEnabledSidePanel) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP() << "Test requires tablet form factor.";
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kEnableLensOnIPad, {{kEnableLensOnIPadPresentationStyleParam,
-                           kEnableLensOnIPadPresentationStyleSidePanel}});
-
-  FakeTraitEnvironment* regularEnv = CreateRegularXRegularEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv, /*is_lvf=*/true),
+  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv),
             lens::ResultPagePresentationType::kSidePanel);
-}
 
-// Test that on tablet, LVF uses bottom sheet when kEnableLensOnIPad is
-// enabled with wide bottom sheet param.
-TEST_F(LensOverlayPresentationTypeTest,
-       TestResultPagePresentationFor_Tablet_LVF_FeatureEnabledWideBottomSheet) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    GTEST_SKIP() << "Test requires tablet form factor.";
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kEnableLensOnIPad, {{kEnableLensOnIPadPresentationStyleParam,
-                           kEnableLensOnIPadPresentationStyleWideBottomSheet}});
-
-  FakeTraitEnvironment* regularEnv = CreateRegularXRegularEnvironment();
-  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv, /*is_lvf=*/true),
+  FakeTraitEnvironment* compactEnv = CreateCompactEnvironment();
+  EXPECT_EQ(lens::ResultPagePresentationFor(compactEnv),
             lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
 }
 

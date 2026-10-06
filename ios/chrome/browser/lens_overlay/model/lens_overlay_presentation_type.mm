@@ -22,17 +22,7 @@ ContainerPresentationType ContainerPresentationFor(
 }
 
 ResultPagePresentationType ResultPagePresentationFor(
-    id<UITraitEnvironment> environment,
-    bool is_lvf) {
-  if (is_lvf && ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      base::FeatureList::IsEnabled(kEnableLensOnIPad)) {
-    std::string style = base::GetFieldTrialParamValueByFeature(
-        kEnableLensOnIPad, kEnableLensOnIPadPresentationStyleParam);
-    if (style == kEnableLensOnIPadPresentationStyleSidePanel) {
-      return ResultPagePresentationType::kSidePanel;
-    }
-    return ResultPagePresentationType::kEdgeAttachedBottomSheet;
-  }
+    id<UITraitEnvironment> environment) {
   return IsRegularXRegularSizeClass(environment)
              ? ResultPagePresentationType::kSidePanel
              : ResultPagePresentationType::kEdgeAttachedBottomSheet;
