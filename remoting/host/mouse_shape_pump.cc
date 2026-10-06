@@ -53,11 +53,6 @@ void MouseShapePump::SetSendCursorPositionToClient(
   }
 }
 
-void MouseShapePump::SetMouseCursorMonitorCallback(
-    protocol::MouseCursorMonitor::Callback* callback) {
-  callback_ = callback;
-}
-
 void MouseShapePump::OnMouseCursor(
     std::unique_ptr<webrtc::MouseCursor> cursor) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -108,17 +103,6 @@ void MouseShapePump::OnMouseCursor(
 
     cursor_shape_stub_->SetCursorShape(*cursor_proto);
   }
-
-  if (callback_) {
-    callback_->OnMouseCursor(std::move(cursor));
-  }
-}
-
-void MouseShapePump::OnMouseCursorPosition(
-    const webrtc::DesktopVector& position) {
-  if (callback_) {
-    callback_->OnMouseCursorPosition(position);
-  }
 }
 
 void MouseShapePump::OnMouseCursorFractionalPosition(
@@ -131,10 +115,6 @@ void MouseShapePump::OnMouseCursorFractionalPosition(
     protocol::HostCursorPosition position;
     *position.mutable_fractional_coordinate() = fractional_position;
     cursor_shape_stub_->SetHostCursorPosition(position);
-  }
-
-  if (callback_) {
-    callback_->OnMouseCursorFractionalPosition(fractional_position);
   }
 }
 

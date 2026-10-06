@@ -52,12 +52,10 @@
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/input_event_timestamps.h"
-#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/events/types/event_type.h"
 
 namespace remoting {
@@ -89,7 +87,6 @@ class PeerSessionImpl : public PeerSession,
                         public ClientSessionEvents,
                         public CursorVisibilityNotifier::EventHandler,
                         public AudioInjector::Delegate,
-                        public protocol::MouseCursorMonitor::Callback,
                         public mojom::ChromotingSessionServices {
  public:
   // Maximum allowed length in bytes for a client pairing name.
@@ -183,11 +180,6 @@ class PeerSessionImpl : public PeerSession,
   // CursorVisibilityNotifier::EventHandler interface
   void OnCursorVisibilityChanged(bool visible) override;
 
-  // MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(
-      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
-  void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
-
   // mojom::ChromotingSessionServices implementation.
   void BindWebAuthnProxy(
       mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
@@ -279,12 +271,6 @@ class PeerSessionImpl : public PeerSession,
   // Sends the new active display to the client. Called by ActiveDisplayMonitor
   // whenever the screen id associated with the active window changes.
   void OnActiveDisplayChanged(webrtc::ScreenId display);
-
-  // Calls SetComposeEnabled() on all video streams. This controls whether the
-  // host's cursor should be composed onto the desktop frame.
-  // TODO: crbug.com/455622961 - Remove this method once the
-  // clientRenderedHostCursor capability is fully rolled out.
-  void SetComposeEnabledOnVideoStreams(bool enabled);
 
   // Sends the response to a create-terminal request.
   void OnTerminalCreated(base::expected<int32_t, TerminalError> result);
@@ -418,7 +404,6 @@ class PeerSessionImpl : public PeerSession,
 
   SessionPolicies effective_policies_;
 
-  bool host_cursor_rendered_by_client_ = false;
   bool cursor_visible_ = false;
 
   std::unique_ptr<TerminalSessionManager> terminal_session_manager_;

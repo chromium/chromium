@@ -31,7 +31,6 @@
 #include "remoting/host/mojo_video_capturer_list.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
-#include "remoting/host/mouse_shape_pump.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/coordinates.pb.h"
@@ -117,7 +116,6 @@ class DesktopSessionAgent
 
   // MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor) override;
-  void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
   void OnMouseCursorFractionalPosition(
       const protocol::FractionalCoordinate& position) override;
 
@@ -151,7 +149,6 @@ class DesktopSessionAgent
   void BeginFileRead(BeginFileReadCallback callback) override;
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
-  void SetHostCursorRenderedByClient() override;
   void StartAudioInjector(
       std::unique_ptr<IpcFifoBufferReader> audio_reader) override;
   void SetAudioInjectorSampleInfo(
@@ -264,12 +261,11 @@ class DesktopSessionAgent
   // True if the desktop session agent has been started.
   bool started_ = false;
 
-  // Per-display capturers which capture the screen and composite with the mouse
-  // cursor if necessary.
+  // Per-display capturers which capture the screen.
   MojoVideoCapturerList video_capturers_;
 
-  // Captures mouse shapes.
-  std::unique_ptr<MouseShapePump> mouse_shape_pump_;
+  // Captures mouse cursor shape and position.
+  std::unique_ptr<protocol::MouseCursorMonitor> mouse_cursor_monitor_;
 
   // Watches for keyboard layout changes.
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;
@@ -301,11 +297,6 @@ class DesktopSessionAgent
   base::flat_map</*connection_id=*/int,
                  mojo::Remote<mojom::SecurityKeyForwarder>>
       security_key_remotes_;
-
-  // Whether the host cursor is rendered by the client.
-  // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
-  // experiment is fully rolled out, where this is always set to true.
-  bool host_cursor_rendered_by_client_ = false;
 
   // Used to disable callbacks to |this|.
   base::WeakPtrFactory<DesktopSessionAgent> weak_factory_{this};

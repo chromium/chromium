@@ -8,11 +8,6 @@
 #include "remoting/protocol/input_event_timestamps.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
-namespace webrtc {
-class DesktopVector;
-class MouseCursor;
-}  // namespace webrtc
-
 namespace remoting::protocol {
 
 class VideoStream {
@@ -27,13 +22,6 @@ class VideoStream {
   // Pauses or resumes scheduling of frame captures. Pausing/resuming captures
   // only affects capture scheduling and does not stop/start the capturer.
   virtual void Pause(bool pause) = 0;
-
-  // Control mouse cursor compositing in the video stream.
-  virtual void SetComposeEnabled(bool enabled) = 0;
-  virtual void SetMouseCursor(
-      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) = 0;
-  virtual void SetMouseCursorPosition(
-      const webrtc::DesktopVector& position) = 0;
 
   // Selects the current desktop display (if multiple displays).
   virtual void SelectSource(webrtc::ScreenId id) = 0;

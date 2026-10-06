@@ -24,7 +24,6 @@
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/curtain_mode.h"
 #include "remoting/host/delegating_desktop_display_info_monitor.h"
-#include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info_loader.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_interaction_strategy.h"
@@ -153,14 +152,7 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
     desktop_capturer = std::move(desktop_capturer_proxy);
   }
 
-#if BUILDFLAG(IS_APPLE)
-  // Mac includes the mouse cursor in the captured image in curtain mode.
-  if (options_.enable_curtaining()) {
-    return desktop_capturer;
-  }
-#endif
-  return std::make_unique<DesktopAndCursorConditionalComposer>(
-      std::move(desktop_capturer));
+  return desktop_capturer;
 }
 
 std::unique_ptr<DesktopDisplayInfoMonitor>

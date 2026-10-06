@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
 namespace remoting {
 
@@ -26,16 +25,6 @@ class DesktopCapturer : public webrtc::DesktopCapturer {
   // TODO: crbug.com/475611769 - Remove this method if DesktopCapturer no longer
   // inherits webrtc::DesktopCapturer.
   void CaptureFrame() override {}
-
-  // Indicates whether to compose the mouse cursor into the desktop frame.
-  virtual void SetComposeEnabled(bool enabled) {}
-
-  // Change the shape of the composed mouse cursor.
-  virtual void SetMouseCursor(
-      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {}
-
-  // Change the position of the composed mouse cursor.
-  virtual void SetMouseCursorPosition(const webrtc::DesktopVector& position) {}
 
   // Pauses or unpauses the capturer.
   virtual void Pause(bool pause) {}

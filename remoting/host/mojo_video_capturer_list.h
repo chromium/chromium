@@ -12,11 +12,6 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
-namespace webrtc {
-class DesktopVector;
-class MouseCursor;
-}  // namespace webrtc
-
 namespace remoting {
 
 class AutoThreadTaskRunner;
@@ -24,7 +19,6 @@ class DesktopEnvironment;
 class MojoVideoCapturer;
 
 // This manages a list of MojoVideoCapturer instances, up to one per screen. It
-// provides methods for setting properties of all managed capturers. It also
 // automatically deletes any capturers whose Mojo endpoints become
 // disconnected.
 class MojoVideoCapturerList {
@@ -47,16 +41,6 @@ class MojoVideoCapturerList {
 
   // Deletes and removes all capturers from the list.
   void Clear();
-
-  // Sets the mouse-cursor on all capturers. This creates internal copies and
-  // does not take ownership.
-  void SetMouseCursor(const webrtc::MouseCursor& cursor);
-
-  // Sets the mouse-cursor position on all capturers.
-  void SetMouseCursorPosition(const webrtc::DesktopVector& position);
-
-  // Sets compose-enabled on all capturers.
-  void SetComposeEnabled(bool enabled);
 
  private:
   std::map<webrtc::ScreenId, std::unique_ptr<MojoVideoCapturer>>

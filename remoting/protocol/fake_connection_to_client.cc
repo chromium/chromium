@@ -27,14 +27,6 @@ void FakeVideoStream::SelectSource(webrtc::ScreenId id) {
   selected_source_ = id;
 }
 
-void FakeVideoStream::SetComposeEnabled(bool enabled) {}
-
-void FakeVideoStream::SetMouseCursor(
-    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {}
-
-void FakeVideoStream::SetMouseCursorPosition(
-    const webrtc::DesktopVector& position) {}
-
 void FakeVideoStream::SetTargetFramerate(int framerate) {}
 
 webrtc::ScreenId FakeVideoStream::selected_source() const {

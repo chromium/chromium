@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
 namespace remoting {
 
@@ -43,14 +42,10 @@ class MojoVideoCapturer : public webrtc::DesktopCapturer::Callback,
 
   // mojom::VideoCapturer implementation.
   void Start() override;
-  void SetComposeEnabled(bool enabled) override;
   void SetMaxFrameRate(uint32_t max_frame_rate) override;
   void Pause(bool pause) override;
   void BoostCaptureRate(base::TimeDelta capture_interval,
                         base::TimeDelta duration) override;
-
-  void SetMouseCursor(std::unique_ptr<webrtc::MouseCursor> mouse_cursor);
-  void SetMouseCursorPosition(const webrtc::DesktopVector& position);
 
   // webrtc::DesktopCapturer::Callback implementation.
   void OnFrameCaptureStart() override;

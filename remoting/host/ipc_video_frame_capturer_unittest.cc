@@ -35,7 +35,6 @@ class MockVideoCapturer : public mojom::VideoCapturer {
   ~MockVideoCapturer() override = default;
 
   MOCK_METHOD(void, Start, (), (override));
-  MOCK_METHOD(void, SetComposeEnabled, (bool enabled), (override));
   MOCK_METHOD(void, SetMaxFrameRate, (uint32_t max_frame_rate), (override));
   MOCK_METHOD(void, Pause, (bool pause), (override));
   MOCK_METHOD(void,
@@ -95,7 +94,6 @@ class IpcVideoFrameCapturerTest : public testing::Test {
 TEST_F(IpcVideoFrameCapturerTest, SettingsSetBeforeStartAreSentAfterStart) {
   RemoteCapturer remote;
   capturer_.SetMaxFrameRate(30);
-  capturer_.SetComposeEnabled(true);
   capturer_.Pause(true);
   capturer_.OnCreateVideoCapturerResult(remote.CreateMojoEndpoints());
 
@@ -103,7 +101,6 @@ TEST_F(IpcVideoFrameCapturerTest, SettingsSetBeforeStartAreSentAfterStart) {
   {
     InSequence s;
     EXPECT_CALL(remote.mock(), Start());
-    EXPECT_CALL(remote.mock(), SetComposeEnabled(true));
     EXPECT_CALL(remote.mock(), SetMaxFrameRate(30));
     EXPECT_CALL(remote.mock(), Pause(true))
         .WillOnce(base::test::RunOnceClosure(settings_received.GetCallback()));
@@ -118,7 +115,6 @@ TEST_F(IpcVideoFrameCapturerTest, SettingsAreNotSentBeforeStart) {
 
   // `StrictMock` fails the test if any of these are sent.
   capturer_.SetMaxFrameRate(30);
-  capturer_.SetComposeEnabled(true);
   capturer_.Pause(false);
   remote.receiver().FlushForTesting();
 }
@@ -132,14 +128,12 @@ TEST_F(IpcVideoFrameCapturerTest, SettingsAreSentToNewCapturerAfterReattach) {
     InSequence s;
     EXPECT_CALL(old_remote.mock(), Start());
     EXPECT_CALL(old_remote.mock(), SetMaxFrameRate(30));
-    EXPECT_CALL(old_remote.mock(), SetComposeEnabled(true));
     EXPECT_CALL(old_remote.mock(), Pause(false))
         .WillOnce(
             base::test::RunOnceClosure(old_settings_received.GetCallback()));
   }
   capturer_.Start(&callback_);
   capturer_.SetMaxFrameRate(30);
-  capturer_.SetComposeEnabled(true);
   capturer_.Pause(false);
   EXPECT_TRUE(old_settings_received.Wait());
 
@@ -152,7 +146,6 @@ TEST_F(IpcVideoFrameCapturerTest, SettingsAreSentToNewCapturerAfterReattach) {
   {
     InSequence s;
     EXPECT_CALL(new_remote.mock(), Start());
-    EXPECT_CALL(new_remote.mock(), SetComposeEnabled(true));
     EXPECT_CALL(new_remote.mock(), SetMaxFrameRate(30));
     EXPECT_CALL(new_remote.mock(), Pause(false))
         .WillOnce(

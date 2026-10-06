@@ -154,7 +154,6 @@ class FakeDesktopSessionAgent : public mojom::DesktopSessionControl {
   void BeginFileRead(BeginFileReadCallback callback) override;
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
-  void SetHostCursorRenderedByClient() override;
   void StartAudioInjector(
       std::unique_ptr<IpcFifoBufferReader> audio_reader) override {}
   void SetAudioInjectorSampleInfo(
@@ -258,8 +257,6 @@ void FakeDesktopSessionAgent::BeginFileWrite(const base::FilePath& file_path,
   session_file_operations_handler_.BeginFileWrite(file_path,
                                                   std::move(callback));
 }
-
-void FakeDesktopSessionAgent::SetHostCursorRenderedByClient() {}
 
 void FakeDesktopSessionAgent::Bind(
     mojo::PendingAssociatedReceiver<mojom::DesktopSessionControl> receiver) {

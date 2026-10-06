@@ -184,7 +184,6 @@ void MouseCursorMonitorWin::OnMouseCursorPosition(
   if (!callback_) {
     return;
   }
-  callback_->OnMouseCursorPosition(position);
   const auto* display_info = display_monitor_->GetLatestDisplayInfo();
   if (!display_info) {
     return;

@@ -45,10 +45,6 @@ class MockMouseCursorMonitorCallback
               (std::unique_ptr<webrtc::MouseCursor> mouse_cursor),
               (override));
   MOCK_METHOD(void,
-              OnMouseCursorPosition,
-              (const webrtc::DesktopVector& position),
-              (override));
-  MOCK_METHOD(void,
               OnMouseCursorFractionalPosition,
               (const protocol::FractionalCoordinate& position),
               (override));
@@ -172,54 +168,39 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest, CaptureCursorShape) {
 }
 
 TEST_F(WebrtcMouseCursorMonitorAdaptorTest,
-       CaptureCursorPosition_NoDisplayInfo_OnlyReportsAbsolutePosition) {
+       CaptureCursorPosition_NoDisplayInfo_DoesNotReportFractionalPosition) {
   display_info_monitor_->info.reset();
   mouse_monitor_->set_position_to_send(
       webrtc::DesktopVector{kFakeDisplayWidth - 1, kFakeDisplayHeight - 1});
-  base::test::TestFuture<webrtc::DesktopVector> future;
-  EXPECT_CALL(callback_, OnMouseCursorPosition(_))
-      .WillOnce([&](const webrtc::DesktopVector& position) {
-        future.SetValue(position);
-      });
   EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_)).Times(0);
 
   adaptor_->Init(&callback_);
-  webrtc::DesktopVector captured_position = future.Take();
+  task_environment_.FastForwardBy(
+      WebrtcMouseCursorMonitorAdaptor::GetDefaultCaptureInterval());
 
   ASSERT_TRUE(display_info_monitor_->IsStarted());
-  ASSERT_TRUE(captured_position.equals(
-      {kFakeDisplayWidth - 1, kFakeDisplayHeight - 1}));
-}
-
-TEST_F(WebrtcMouseCursorMonitorAdaptorTest,
-       CaptureCursorPosition_CursorNotInDisplay_OnlyReportsAbsolutePosition) {
-  mouse_monitor_->set_position_to_send(
-      webrtc::DesktopVector{kFakeDisplayWidth + 1, kFakeDisplayHeight + 1});
-  base::test::TestFuture<webrtc::DesktopVector> future;
-  EXPECT_CALL(callback_, OnMouseCursorPosition(_))
-      .WillOnce([&](const webrtc::DesktopVector& position) {
-        future.SetValue(position);
-      });
-  EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_)).Times(0);
-
-  adaptor_->Init(&callback_);
-  webrtc::DesktopVector captured_position = future.Take();
-
-  ASSERT_TRUE(display_info_monitor_->IsStarted());
-  ASSERT_TRUE(captured_position.equals(
-      {kFakeDisplayWidth + 1, kFakeDisplayHeight + 1}));
+  ASSERT_EQ(mouse_monitor_->get_capture_call_count(), 1);
 }
 
 TEST_F(
     WebrtcMouseCursorMonitorAdaptorTest,
-    CaptureCursorPosition_CursorInDisplay_ReportsAbsoluteAndFractionalPositions) {
+    CaptureCursorPosition_CursorNotInDisplay_DoesNotReportFractionalPosition) {
+  mouse_monitor_->set_position_to_send(
+      webrtc::DesktopVector{kFakeDisplayWidth + 1, kFakeDisplayHeight + 1});
+  EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_)).Times(0);
+
+  adaptor_->Init(&callback_);
+  task_environment_.FastForwardBy(
+      WebrtcMouseCursorMonitorAdaptor::GetDefaultCaptureInterval());
+
+  ASSERT_TRUE(display_info_monitor_->IsStarted());
+  ASSERT_EQ(mouse_monitor_->get_capture_call_count(), 1);
+}
+
+TEST_F(WebrtcMouseCursorMonitorAdaptorTest,
+       CaptureCursorPosition_CursorInDisplay_ReportsFractionalPosition) {
   mouse_monitor_->set_position_to_send(
       webrtc::DesktopVector{kFakeDisplayWidth - 1, kFakeDisplayHeight - 1});
-  base::test::TestFuture<webrtc::DesktopVector> position_future;
-  EXPECT_CALL(callback_, OnMouseCursorPosition(_))
-      .WillOnce([&](const webrtc::DesktopVector& position) {
-        position_future.SetValue(position);
-      });
   base::test::TestFuture<protocol::FractionalCoordinate> fractional_future;
   EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_))
       .WillOnce([&](const protocol::FractionalCoordinate& position) {
@@ -227,13 +208,10 @@ TEST_F(
       });
 
   adaptor_->Init(&callback_);
-  webrtc::DesktopVector captured_position = position_future.Take();
   protocol::FractionalCoordinate captured_fractional_position =
       fractional_future.Take();
 
   ASSERT_TRUE(display_info_monitor_->IsStarted());
-  ASSERT_TRUE(captured_position.equals(
-      {kFakeDisplayWidth - 1, kFakeDisplayHeight - 1}));
   ASSERT_EQ(captured_fractional_position.screen_id(), kFakeScreenId);
   ASSERT_FLOAT_EQ(captured_fractional_position.x(), 1.f);
   ASSERT_FLOAT_EQ(captured_fractional_position.y(), 1.f);

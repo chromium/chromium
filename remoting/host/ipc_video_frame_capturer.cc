@@ -67,13 +67,6 @@ bool IpcVideoFrameCapturer::SelectSource(SourceId id) {
   return true;
 }
 
-void IpcVideoFrameCapturer::SetComposeEnabled(bool enabled) {
-  compose_enabled_ = enabled;
-  if (capturer_control_ && callback_) {
-    capturer_control_->SetComposeEnabled(enabled);
-  }
-}
-
 void IpcVideoFrameCapturer::SetMaxFrameRate(uint32_t max_frame_rate) {
   max_frame_rate_ = max_frame_rate;
   if (capturer_control_ && callback_) {
@@ -162,9 +155,6 @@ void IpcVideoFrameCapturer::StartRemoteCapturer() {
   capturer_control_->Start();
   // The scheduler in the Desktop process only starts capturing once it gets a
   // non-zero frame rate after Start(), so the settings must be sent after it.
-  if (compose_enabled_.has_value()) {
-    capturer_control_->SetComposeEnabled(*compose_enabled_);
-  }
   if (max_frame_rate_.has_value()) {
     capturer_control_->SetMaxFrameRate(*max_frame_rate_);
   }

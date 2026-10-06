@@ -101,7 +101,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/events/types/event_type.h"
 
 namespace {
@@ -519,21 +518,6 @@ void PeerSessionImpl::SetCapabilities(
     }
   }
 
-  host_cursor_rendered_by_client_ = HasCapability(
-      capabilities_, protocol::kClientRenderedHostCursorCapability);
-  if (host_cursor_rendered_by_client_ && cursor_visible_) {
-    // OnCursorVisibilityChanged(true) could have been called with
-    // `host_cursor_rendered_by_client_` being false, e.g., if the IT2ME
-    // helpee moves the cursor before the session is connected, so we call it
-    // again with the updated boolean, which updates MouseShapePump to send the
-    // cursor position to the client.
-    OnCursorVisibilityChanged(true);
-    // OnCursorVisibilityChanged(true) does not hide the host-rendered cursor if
-    // `host_cursor_rendered_by_client_` is true, so we need to call
-    // SetComposeEnabledOnVideoStreams(false) to explicitly hide it.
-    SetComposeEnabledOnVideoStreams(false);
-  }
-
   data_channel_manager_.OnRegistrationComplete();
 
   VLOG(1) << "Client capabilities: " << *client_capabilities_;
@@ -855,10 +839,8 @@ void PeerSessionImpl::OnConnectionChannelsConnected() {
   mouse_shape_pump_ = std::make_unique<MouseShapePump>(
       desktop_environment_->CreateMouseCursorMonitor(),
       connection_->client_stub());
-  mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
   mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
-  mouse_shape_pump_->SetSendCursorPositionToClient(
-      host_cursor_rendered_by_client_ && cursor_visible_);
+  mouse_shape_pump_->SetSendCursorPositionToClient(cursor_visible_);
 
   // Create KeyboardLayoutMonitor to send keyboard layout.
   // Unretained is sound because callback will never be called after
@@ -1044,37 +1026,8 @@ void PeerSessionImpl::OnSessionServicesClientConnected(
 void PeerSessionImpl::OnCursorVisibilityChanged(bool visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cursor_visible_ = visible;
-  if (host_cursor_rendered_by_client_) {
-    if (mouse_shape_pump_) {
-      mouse_shape_pump_->SetSendCursorPositionToClient(cursor_visible_);
-    }
-  } else {
-    SetComposeEnabledOnVideoStreams(visible);
-  }
-}
-
-void PeerSessionImpl::OnMouseCursor(
-    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (const auto& [_, video_stream] : video_streams_) {
-    video_stream->SetMouseCursor(
-        base::WrapUnique(webrtc::MouseCursor::CopyOf(*mouse_cursor)));
-  }
-}
-
-void PeerSessionImpl::OnMouseCursorPosition(
-    const webrtc::DesktopVector& position) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (host_cursor_rendered_by_client_) {
-    // The following code is for updating the cursor position in
-    // DesktopAndCursorComposer. If the host cursor is rendered by the client,
-    // then we don't need to do that.
-    return;
-  }
-
-  for (const auto& [_, video_stream] : video_streams_) {
-    video_stream->SetMouseCursorPosition(position);
+  if (mouse_shape_pump_) {
+    mouse_shape_pump_->SetSendCursorPositionToClient(cursor_visible_);
   }
 }
 
@@ -1173,8 +1126,6 @@ void PeerSessionImpl::OnDesktopEnvironmentCreated(
     host_capabilities_.append(protocol::kRemoteOpenUrlCapability);
   }
 
-  host_capabilities_.append(" ");
-  host_capabilities_.append(protocol::kClientRenderedHostCursorCapability);
   if (security_key_auth_handler_) {
     host_capabilities_.append(" ");
     host_capabilities_.append(protocol::kSecurityKeyV2Capability);
@@ -1574,12 +1525,6 @@ void PeerSessionImpl::OnActiveDisplayChanged(webrtc::ScreenId display) {
   protocol::ActiveDisplay active_display;
   active_display.set_screen_id(display);
   connection_->client_stub()->SetActiveDisplay(active_display);
-}
-
-void PeerSessionImpl::SetComposeEnabledOnVideoStreams(bool enabled) {
-  for (const auto& [_, video_stream] : video_streams_) {
-    video_stream->SetComposeEnabled(enabled);
-  }
 }
 
 PeerSessionImplFactory::PeerSessionImplFactory(

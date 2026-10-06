@@ -99,9 +99,6 @@ class WebrtcVideoStream::Core : public webrtc::DesktopCapturer::Callback {
       scoped_refptr<InputEventTimestampsSource> event_timestamps_source);
   void Pause(bool pause);
   void SelectSource(webrtc::ScreenId id);
-  void SetComposeEnabled(bool enabled);
-  void SetMouseCursor(std::unique_ptr<webrtc::MouseCursor> mouse_cursor);
-  void SetMouseCursorPosition(const webrtc::DesktopVector& position);
   void BoostFramerate(base::TimeDelta capture_interval,
                       base::TimeDelta boost_duration);
 
@@ -204,22 +201,6 @@ void WebrtcVideoStream::Core::SelectSource(webrtc::ScreenId id) {
   screen_id_ = id;
   VLOG(0) << "SelectSource: id=" << id;
   capturer_->SelectSource(id);
-}
-
-void WebrtcVideoStream::Core::SetComposeEnabled(bool enabled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  capturer_->SetComposeEnabled(enabled);
-}
-void WebrtcVideoStream::Core::SetMouseCursor(
-    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  capturer_->SetMouseCursor(std::move(mouse_cursor));
-}
-
-void WebrtcVideoStream::Core::SetMouseCursorPosition(
-    const webrtc::DesktopVector& position) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  capturer_->SetMouseCursorPosition(position);
 }
 
 void WebrtcVideoStream::Core::BoostFramerate(base::TimeDelta capture_interval,
@@ -340,40 +321,6 @@ void WebrtcVideoStream::Pause(bool pause) {
   core_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WebrtcVideoStream::Core::Pause,
                                 base::Unretained(core_.get()), pause));
-}
-
-void WebrtcVideoStream::SetComposeEnabled(bool enabled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Unretained is sound as |core_| is owned by |this| and destroyed on
-  // |core_task_runner_|.
-  core_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WebrtcVideoStream::Core::SetComposeEnabled,
-                                base::Unretained(core_.get()), enabled));
-}
-
-void WebrtcVideoStream::SetMouseCursor(
-    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Unretained is sound as |core_| is owned by |this| and destroyed on
-  // |core_task_runner_|.
-  core_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebrtcVideoStream::Core::SetMouseCursor,
-                     base::Unretained(core_.get()), std::move(mouse_cursor)));
-}
-
-void WebrtcVideoStream::SetMouseCursorPosition(
-    const webrtc::DesktopVector& position) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Unretained is sound as |core_| is owned by |this| and destroyed on
-  // |core_task_runner_|.
-  core_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebrtcVideoStream::Core::SetMouseCursorPosition,
-                     base::Unretained(core_.get()), position));
 }
 
 void WebrtcVideoStream::BoostFramerate(base::TimeDelta capture_interval,

@@ -39,10 +39,6 @@ class MockMouseCursorMonitorCallback
               (std::unique_ptr<webrtc::MouseCursor> cursor),
               (override));
   MOCK_METHOD(void,
-              OnMouseCursorPosition,
-              (const webrtc::DesktopVector& position),
-              (override));
-  MOCK_METHOD(void,
               OnMouseCursorFractionalPosition,
               (const protocol::FractionalCoordinate& fractional_position),
               (override));
@@ -120,10 +116,6 @@ TEST_F(MouseCursorMonitorWinTest, CursorPosition_InDisplay) {
   const webrtc::DesktopVector position(kFakeDisplayWidth - 1,
                                        kFakeDisplayHeight - 1);
 
-  webrtc::DesktopVector captured_position;
-  EXPECT_CALL(callback_, OnMouseCursorPosition(_))
-      .WillOnce([&](const webrtc::DesktopVector& p) { captured_position = p; });
-
   protocol::FractionalCoordinate captured_fractional;
   EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_))
       .WillOnce([&](const protocol::FractionalCoordinate& f) {
@@ -132,7 +124,6 @@ TEST_F(MouseCursorMonitorWinTest, CursorPosition_InDisplay) {
 
   CallOnMouseCursorPosition(position);
 
-  EXPECT_TRUE(captured_position.equals(position));
   EXPECT_EQ(captured_fractional.screen_id(), kFakeScreenId);
   EXPECT_FLOAT_EQ(captured_fractional.x(), 1.f);
   EXPECT_FLOAT_EQ(captured_fractional.y(), 1.f);
@@ -142,14 +133,9 @@ TEST_F(MouseCursorMonitorWinTest, CursorPosition_OutsideDisplay) {
   const webrtc::DesktopVector position(kFakeDisplayWidth + 1,
                                        kFakeDisplayHeight + 1);
 
-  webrtc::DesktopVector captured_position;
-  EXPECT_CALL(callback_, OnMouseCursorPosition(_))
-      .WillOnce([&](const webrtc::DesktopVector& p) { captured_position = p; });
   EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_)).Times(0);
 
   CallOnMouseCursorPosition(position);
-
-  EXPECT_TRUE(captured_position.equals(position));
 }
 
 }  // namespace remoting

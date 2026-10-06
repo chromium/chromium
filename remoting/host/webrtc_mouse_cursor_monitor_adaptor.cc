@@ -63,8 +63,6 @@ void WebrtcMouseCursorMonitorAdaptor::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  callback_->OnMouseCursorPosition(position);
-
   const auto* display_info = display_info_monitor_->GetLatestDisplayInfo();
   if (!display_info) {
     return;

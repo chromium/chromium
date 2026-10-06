@@ -40,7 +40,6 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
-#include "remoting/host/mouse_shape_pump.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
@@ -328,17 +327,6 @@ void DesktopSessionAgent::OnMouseCursor(
   if (desktop_session_event_handler_) {
     desktop_session_event_handler_->OnMouseCursorChanged(*cursor);
   }
-
-  video_capturers_.SetMouseCursor(*cursor);
-}
-
-void DesktopSessionAgent::OnMouseCursorPosition(
-    const webrtc::DesktopVector& position) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  if (!host_cursor_rendered_by_client_) {
-    video_capturers_.SetMouseCursorPosition(position);
-  }
 }
 
 void DesktopSessionAgent::OnMouseCursorFractionalPosition(
@@ -440,7 +428,7 @@ void DesktopSessionAgent::Stop() {
 
     // Stop the video capturers.
     video_capturers_.Clear();
-    mouse_shape_pump_.reset();
+    mouse_cursor_monitor_.reset();
   }
 }
 
@@ -492,11 +480,6 @@ void DesktopSessionAgent::InjectTextEvent(const protocol::TextEvent& event) {
 void DesktopSessionAgent::InjectMouseEvent(const protocol::MouseEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
-
-  if (!host_cursor_rendered_by_client_) {
-    video_capturers_.SetComposeEnabled(event.has_delta_x() ||
-                                       event.has_delta_y());
-  }
 
   // InputStub implementations must verify events themselves, so we don't need
   // verification here. This matches HostEventDispatcher.
@@ -602,21 +585,6 @@ void DesktopSessionAgent::BeginFileWrite(const base::FilePath& file_path,
                                                    std::move(callback));
 }
 
-void DesktopSessionAgent::SetHostCursorRenderedByClient() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  if (host_cursor_rendered_by_client_) {
-    return;
-  }
-
-  host_cursor_rendered_by_client_ = true;
-  // Hide the host cursor from the desktop frames.
-  video_capturers_.SetComposeEnabled(false);
-  if (mouse_shape_pump_) {
-    mouse_shape_pump_->SetSendCursorPositionToClient(true);
-  }
-}
-
 void DesktopSessionAgent::StartAudioInjector(
     std::unique_ptr<IpcFifoBufferReader> audio_reader) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -717,16 +685,8 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
   }
 
   // Start the mouse cursor monitor.
-  mouse_shape_pump_ = std::make_unique<MouseShapePump>(
-      desktop_environment_->CreateMouseCursorMonitor(),
-      /*CursorShapeStub*/ nullptr);
-  mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
-  if (host_cursor_rendered_by_client_) {
-    // Just always send cursor positions to the "client", i.e. the network
-    // process. The MouseShapePump in the network process will decide whether
-    // they should actually be sent to the client.
-    mouse_shape_pump_->SetSendCursorPositionToClient(true);
-  }
+  mouse_cursor_monitor_ = desktop_environment_->CreateMouseCursorMonitor();
+  mouse_cursor_monitor_->Init(this);
 
   // Unretained is sound because callback will never be invoked after
   // |keyboard_layout_monitor_| is destroyed.

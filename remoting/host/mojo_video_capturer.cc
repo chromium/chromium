@@ -52,10 +52,6 @@ void MojoVideoCapturer::Start() {
   video_capturer_->Start(this);
 }
 
-void MojoVideoCapturer::SetComposeEnabled(bool enabled) {
-  video_capturer_->SetComposeEnabled(enabled);
-}
-
 void MojoVideoCapturer::SetMaxFrameRate(uint32_t max_frame_rate) {
   video_capturer_->SetMaxFrameRate(max_frame_rate);
 }
@@ -67,16 +63,6 @@ void MojoVideoCapturer::Pause(bool pause) {
 void MojoVideoCapturer::BoostCaptureRate(base::TimeDelta capture_interval,
                                          base::TimeDelta duration) {
   video_capturer_->BoostCaptureRate(capture_interval, duration);
-}
-
-void MojoVideoCapturer::SetMouseCursor(
-    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
-  video_capturer_->SetMouseCursor(std::move(mouse_cursor));
-}
-
-void MojoVideoCapturer::SetMouseCursorPosition(
-    const webrtc::DesktopVector& position) {
-  video_capturer_->SetMouseCursorPosition(position);
 }
 
 void MojoVideoCapturer::OnFrameCaptureStart() {

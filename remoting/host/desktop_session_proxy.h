@@ -354,12 +354,6 @@ class DesktopSessionProxy
   mojom::UrlForwarderState current_url_forwarder_state_ GUARDED_BY_CONTEXT(
       sequence_checker_) = mojom::UrlForwarderState::kUnknown;
 
-  // Whether the host cursor is rendered by the client.
-  // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
-  // experiment is fully rolled out, where this is always set to true.
-  bool host_cursor_rendered_by_client_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      false;
-
   // Boolean to ensure desktop_session_control_->StartAudioInjector() is
   // called when StartAudioInjector() is called before
   // `desktop_session_control_` is bound.

@@ -52,7 +52,6 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
   void Start(Callback* callback) override;
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
-  void SetComposeEnabled(bool enabled) override;
   void SetMaxFrameRate(uint32_t max_frame_rate) override;
   void Pause(bool pause) override;
   void BoostCaptureRate(base::TimeDelta capture_interval,
@@ -96,7 +95,6 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
 
   // Settings to apply to each new capturer in the Desktop process, since it
   // starts with its default state. Only set values are sent.
-  std::optional<bool> compose_enabled_;
   std::optional<uint32_t> max_frame_rate_;
   std::optional<bool> paused_;
 

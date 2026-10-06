@@ -9,7 +9,6 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/mojo_video_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
 namespace remoting {
 
@@ -65,26 +64,6 @@ bool MojoVideoCapturerList::IsEmpty() const {
 
 void MojoVideoCapturerList::Clear() {
   video_capturers_.clear();
-}
-
-void MojoVideoCapturerList::SetMouseCursor(const webrtc::MouseCursor& cursor) {
-  for (auto& [_, capturer] : video_capturers_) {
-    capturer->SetMouseCursor(
-        base::WrapUnique(webrtc::MouseCursor::CopyOf(cursor)));
-  }
-}
-
-void MojoVideoCapturerList::SetMouseCursorPosition(
-    const webrtc::DesktopVector& position) {
-  for (auto& [_, video_capturer] : video_capturers_) {
-    video_capturer->SetMouseCursorPosition(position);
-  }
-}
-
-void MojoVideoCapturerList::SetComposeEnabled(bool enabled) {
-  for (auto& [_, video_capturer] : video_capturers_) {
-    video_capturer->SetComposeEnabled(enabled);
-  }
 }
 
 }  // namespace remoting
