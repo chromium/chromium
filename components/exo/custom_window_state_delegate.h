@@ -27,7 +27,7 @@ class CustomWindowStateDelegate : public ash::WindowStateDelegate {
 
   // ash::WindowStateDelegate:
   bool ToggleFullscreen(ash::WindowState* window_state) override;
-  void ToggleLockedFullscreen(ash::WindowState* window_state) override;
+  void ToggleTrustedPinned(ash::WindowState* window_state) override;
   void OnDragFinished(bool cancel, const gfx::PointF& location) override;
 
  private:

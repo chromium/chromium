@@ -65,7 +65,7 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
   }
 
   // Overridden from ash::WindowStateDelegate.
-  void ToggleLockedFullscreen(ash::WindowState* window_state) override {
+  void ToggleTrustedPinned(ash::WindowState* window_state) override {
     ash::Shell::Get()->shell_delegate()->SetUpEnvironmentForLockedFullscreen(
         *window_state);
   }

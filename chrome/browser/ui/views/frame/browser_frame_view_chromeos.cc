@@ -848,7 +848,7 @@ bool BrowserFrameViewChromeOS::ShouldShowAvatarForTesting(
 
 bool BrowserFrameViewChromeOS::IsLockedFullscreen() const {
   return ash::WindowState::Get(browser_widget()->GetNativeWindow())
-      ->IsLockedFullscreen();
+      ->IsTrustedPinned();
 }
 
 void BrowserFrameViewChromeOS::PaintAsActiveChanged() {

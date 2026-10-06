@@ -1048,7 +1048,7 @@ void AuraToplevel::OnConfigure(
       AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
     } else if (state_type == chromeos::WindowStateType::kPinned) {
       AddState(&states, ZAURA_TOPLEVEL_STATE_PINNED);
-    } else if (state_type == chromeos::WindowStateType::kLockedFullscreen) {
+    } else if (state_type == chromeos::WindowStateType::kTrustedPinned) {
       AddState(&states, ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED);
     }
 

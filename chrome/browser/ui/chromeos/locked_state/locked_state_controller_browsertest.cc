@@ -42,7 +42,7 @@ class LockedStateControllerBrowserTest : public InProcessBrowserTest {
   bool IsBrowserLockedFullscreen() {
     aura::Window* window = browser()->GetWindow()->GetNativeWindow();
     auto* window_state = ash::WindowState::Get(window);
-    return window_state && window_state->IsLockedFullscreen();
+    return window_state && window_state->IsTrustedPinned();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

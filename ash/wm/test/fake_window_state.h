@@ -47,8 +47,8 @@ class FakeWindowStateDelegate : public WindowStateDelegate {
   FakeWindowStateDelegate& operator=(const FakeWindowStateDelegate&) = delete;
   ~FakeWindowStateDelegate() override;
 
-  int toggle_locked_fullscreen_count() const {
-    return toggle_locked_fullscreen_count_;
+  int toggle_trusted_pinned_count() const {
+    return toggle_trusted_pinned_count_;
   }
 
   bool drag_in_progress() const { return drag_in_progress_; }
@@ -57,12 +57,12 @@ class FakeWindowStateDelegate : public WindowStateDelegate {
 
   // WindowStateDelegate:
   bool ToggleFullscreen(WindowState* window_state) override;
-  void ToggleLockedFullscreen(WindowState* window_state) override;
+  void ToggleTrustedPinned(WindowState* window_state) override;
   void OnDragStarted(int component) override;
   void OnDragFinished(bool cancel, const gfx::PointF& location) override;
 
  private:
-  int toggle_locked_fullscreen_count_ = 0;
+  int toggle_trusted_pinned_count_ = 0;
   bool drag_in_progress_ = false;
   int drag_start_component_ = -1;
   gfx::PointF drag_end_location_;

@@ -89,11 +89,11 @@ UnifiedBrightnessView::UnifiedBrightnessView(
         IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
     more_button_->SetIconColor(cros_tokens::kCrosSysSecondary);
 
-    // In the case that there is a trusted pinned window (fullscreen lock mode)
+    // In the case that there is a trusted pinned window
     // and the brightness slider popup is shown, do not allow the more_button to
     // open quick settings.
     auto* window = Shell::Get()->screen_pinning_controller()->pinned_window();
-    if (window && WindowState::Get(window)->IsLockedFullscreen()) {
+    if (window && WindowState::Get(window)->IsTrustedPinned()) {
       more_button_->SetEnabled(false);
     }
 

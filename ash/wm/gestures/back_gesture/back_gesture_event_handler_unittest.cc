@@ -979,7 +979,7 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, NonMinimizeableApp) {
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
 }
 
-TEST_F(BackGestureEventHandlerTestCantGoBack, LockedFullscreen) {
+TEST_F(BackGestureEventHandlerTestCantGoBack, TrustedPinned) {
   RecreateTopWindow(AppType::SYSTEM_APP);
   PinWindow(top_window(), /*trusted=*/true);
   GenerateBackSequence();

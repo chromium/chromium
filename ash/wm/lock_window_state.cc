@@ -46,7 +46,7 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_PIP:
     case WM_EVENT_FLOAT:
     case WM_EVENT_PIN:
-    case WM_EVENT_LOCKED_FULLSCREEN:
+    case WM_EVENT_TRUSTED_PIN:
       NOTREACHED();
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE:

@@ -669,9 +669,7 @@ api::autotest_private::WindowStateType ToWindowStateType(
       return api::autotest_private::WindowStateType::kSecondarySnapped;
     case chromeos::WindowStateType::kPinned:
       return api::autotest_private::WindowStateType::kPinned;
-    case chromeos::WindowStateType::kLockedFullscreen:
-      // TODO(crbug.com/429215055): Rename to 'LockedFullscreen'. Update the IDL
-      // as well.
+    case chromeos::WindowStateType::kTrustedPinned:
       return api::autotest_private::WindowStateType::kTrustedPinned;
     case chromeos::WindowStateType::kPip:
       return api::autotest_private::WindowStateType::kPip;

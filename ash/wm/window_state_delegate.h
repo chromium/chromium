@@ -31,11 +31,10 @@ class ASH_EXPORT WindowStateDelegate {
   // to the default implementation if this returns false.
   virtual bool ToggleFullscreen(WindowState* window_state);
 
-  // Toggles the locked fullscreen state, aka Pinned and TrustedPinned, where a
-  // window has exclusive control of the screen. Implementers should implement
-  // restrictions related to the relevant pinned mode for their window in this
-  // function.
-  virtual void ToggleLockedFullscreen(WindowState* window_state);
+  // Toggles the trusted-pinned state, where a window has exclusive control of
+  // the screen. Implementers should implement restrictions related to the
+  // relevant pinned mode for their window in this function.
+  virtual void ToggleTrustedPinned(WindowState* window_state);
 
   // Invoked when the user started drag operation. |component| must be
   // a member of ui::HitTestCompat enum and specifies which part of

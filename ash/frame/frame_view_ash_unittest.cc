@@ -869,7 +869,7 @@ TEST_F(FrameViewAshTest, WideFrameButton) {
                  test_api.size_button()->icon_definition_for_test()->name);
   }
   {
-    WMEvent event(WM_EVENT_LOCKED_FULLSCREEN);
+    WMEvent event(WM_EVENT_TRUSTED_PIN);
     WindowState::Get(widget->GetNativeWindow())->OnWMEvent(&event);
     views::test::RunScheduledLayout(header_view);
     EXPECT_STREQ(::features::IsRoundedIconsEnabled()

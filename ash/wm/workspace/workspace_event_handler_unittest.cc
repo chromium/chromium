@@ -624,7 +624,7 @@ TEST_F(WorkspaceEventHandlerTest, DoubleTapCaptionTogglesMaximize) {
 }
 
 TEST_F(WorkspaceEventHandlerTest,
-       DoubleTapOnLockedFullscreenWindowDoesNotToggleMaximize) {
+       DoubleTapOnTrustedPinnedWindowDoesNotToggleMaximize) {
   // Enable tablet mode controller to leverage tablet mode window states for
   // testing purposes.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -640,7 +640,7 @@ TEST_F(WorkspaceEventHandlerTest,
   // Lock window.
   window_util::PinWindow(window.get(), /*trusted=*/true);
   WindowState* const window_state = WindowState::Get(window.get());
-  ASSERT_TRUE(window_state->IsLockedFullscreen());
+  ASSERT_TRUE(window_state->IsTrustedPinned());
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      window.get());
@@ -648,7 +648,7 @@ TEST_F(WorkspaceEventHandlerTest,
   const gfx::Point tap_target = window->bounds().top_center();
   generator.GestureTapAt(tap_target);
   generator.GestureTapAt(tap_target);
-  EXPECT_TRUE(window_state->IsLockedFullscreen());
+  EXPECT_TRUE(window_state->IsTrustedPinned());
 }
 
 // Verifies deleting the window while dragging doesn't crash.

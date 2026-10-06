@@ -2466,10 +2466,10 @@ void ShelfView::OnShelfAlignmentChanged(aura::Window* root_window,
 }
 
 void ShelfView::OnPinnedStateChanged(aura::Window* pinned_window) {
-  // Close context menus in locked fullscreen mode to prevent users from exiting
+  // Close context menus in trusted pinned mode to prevent users from exiting
   // this mode.
   if ((GetWindowPinType(pinned_window) ==
-       chromeos::WindowPinType::kLockedFullscreen) &&
+       chromeos::WindowPinType::kTrustedPinned) &&
       IsShowingMenu()) {
     shelf_menu_model_adapter_->Cancel();
   }

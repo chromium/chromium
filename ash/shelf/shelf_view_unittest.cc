@@ -2835,13 +2835,13 @@ TEST_F(ShelfViewTest, SwipeOnItemDuringFadeOut) {
   VerifyShelfItemBoundsAreValid();
 }
 
-class LockedFullscreenShelfViewTest : public ShelfViewTest,
-                                      public testing::WithParamInterface<bool> {
+class TrustedPinnedShelfViewTest : public ShelfViewTest,
+                                   public testing::WithParamInterface<bool> {
  protected:
-  bool IsLocked() const { return GetParam(); }
+  bool IsTrustedPinned() const { return GetParam(); }
 };
 
-TEST_P(LockedFullscreenShelfViewTest, ContextMenuVisibilityWithPinnedWindow) {
+TEST_P(TrustedPinnedShelfViewTest, ContextMenuVisibilityWithPinnedWindow) {
   // Create an item on the shelf and a test window for testing purposes.
   const ShelfAppButton* const shelf_button = GetButtonByID(AddApp());
   const std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
@@ -2857,12 +2857,12 @@ TEST_P(LockedFullscreenShelfViewTest, ContextMenuVisibilityWithPinnedWindow) {
   ASSERT_TRUE(GetShelfView()->IsShowingMenu());
 
   // Pin the window and verify context menu visibility.
-  PinWindow(window.get(), IsLocked());
-  EXPECT_EQ(GetShelfView()->IsShowingMenu(), !IsLocked());
+  PinWindow(window.get(), IsTrustedPinned());
+  EXPECT_EQ(GetShelfView()->IsShowingMenu(), !IsTrustedPinned());
 }
 
-INSTANTIATE_TEST_SUITE_P(LockedFullscreenShelfViewTests,
-                         LockedFullscreenShelfViewTest,
+INSTANTIATE_TEST_SUITE_P(TrustedPinnedShelfViewTests,
+                         TrustedPinnedShelfViewTest,
                          testing::Bool());
 
 class GhostImageShelfViewTest : public ShelfViewTest {

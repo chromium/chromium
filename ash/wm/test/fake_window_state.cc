@@ -41,9 +41,8 @@ bool FakeWindowStateDelegate::ToggleFullscreen(WindowState* window_state) {
   return false;
 }
 
-void FakeWindowStateDelegate::ToggleLockedFullscreen(
-    WindowState* window_state) {
-  ++toggle_locked_fullscreen_count_;
+void FakeWindowStateDelegate::ToggleTrustedPinned(WindowState* window_state) {
+  ++toggle_trusted_pinned_count_;
 }
 
 void FakeWindowStateDelegate::OnDragStarted(int component) {

@@ -415,10 +415,10 @@ void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 }
 
 void StatusAreaWidget::OnPinnedStateChanged(aura::Window* pinned_window) {
-  // Close all tray bubbles when in locked fullscreen mode to prevent users from
+  // Close all tray bubbles when in trusted pinned mode to prevent users from
   // exiting this mode.
   if (GetWindowPinType(pinned_window) ==
-      chromeos::WindowPinType::kLockedFullscreen) {
+      chromeos::WindowPinType::kTrustedPinned) {
     for (ash::TrayBackgroundView* const tray_button : tray_buttons_) {
       tray_button->CloseBubble(
           TrayBackgroundView::CloseReason::kWindowActivation);

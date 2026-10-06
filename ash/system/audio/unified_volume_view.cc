@@ -53,11 +53,11 @@ UnifiedVolumeView::UnifiedVolumeView(
       device_id_(CrasAudioHandler::Get()->GetPrimaryActiveOutputNode()) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
-  // In the case that there is a locked fullscreen window
+  // In the case that there is a trusted pinned window
   // and the volume slider popup is shown, do not allow the more_button_ to
   // open quick settings.
   auto* window = Shell::Get()->screen_pinning_controller()->pinned_window();
-  if (window && WindowState::Get(window)->IsLockedFullscreen()) {
+  if (window && WindowState::Get(window)->IsTrustedPinned()) {
     more_button_->SetEnabled(false);
   }
 

@@ -293,10 +293,10 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
   // Note that we don't apply this guard to standard pinned mode (kPinned).
   // Standard pinned mode can be exited by the user using back gestures (which
   // triggers minimization/transition events in tablet mode).
-  if (window_state->IsLockedFullscreen() &&
+  if (window_state->IsTrustedPinned() &&
       (event->type() != WM_EVENT_NORMAL && event->type() != WM_EVENT_RESTORE &&
        event->IsTransitionEvent())) {
-    // Locked fullscreen state can be exited only by normal event or restore
+    // Trusted pinned state can be exited only by normal event or restore
     // event.
     return;
   }
@@ -328,9 +328,9 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       // window is in tablet mode. PIP window uses DefaultState instead, not
       // TabletModeWindowState.
       NOTREACHED();
-    case WM_EVENT_LOCKED_FULLSCREEN:
+    case WM_EVENT_TRUSTED_PIN:
       if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
-        UpdateWindow(window_state, WindowStateType::kLockedFullscreen,
+        UpdateWindow(window_state, WindowStateType::kTrustedPinned,
                      /*animate=*/true);
       }
       break;
@@ -404,7 +404,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       } else if (current_state_type_ != WindowStateType::kMinimized &&
                  current_state_type_ != WindowStateType::kFullscreen &&
                  current_state_type_ != WindowStateType::kPinned &&
-                 current_state_type_ != WindowStateType::kLockedFullscreen &&
+                 current_state_type_ != WindowStateType::kTrustedPinned &&
                  current_state_type_ != WindowStateType::kPrimarySnapped &&
                  current_state_type_ != WindowStateType::kSecondarySnapped &&
                  current_state_type_ != WindowStateType::kFloated) {
@@ -472,7 +472,7 @@ void TabletModeWindowState::AttachState(WindowState* window_state,
       // It will get updated later in `FloatController::OnTabletModeStarted`.
       current_state_type_ != WindowStateType::kFloated &&
       current_state_type_ != WindowStateType::kPinned &&
-      current_state_type_ != WindowStateType::kLockedFullscreen) {
+      current_state_type_ != WindowStateType::kTrustedPinned) {
     UpdateWindow(window_state, state_type_on_attach_,
                  animate_bounds_on_attach_);
   }
@@ -492,7 +492,7 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
   DCHECK(target_state == WindowStateType::kMinimized ||
          target_state == WindowStateType::kMaximized ||
          target_state == WindowStateType::kPinned ||
-         target_state == WindowStateType::kLockedFullscreen ||
+         target_state == WindowStateType::kTrustedPinned ||
          (target_state == WindowStateType::kNormal &&
           (!window_state->CanMaximize() || !!wm::GetTransientParent(window))) ||
          target_state == WindowStateType::kFullscreen ||
@@ -544,7 +544,7 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
       chromeos::IsPinnedWindowStateType(target_state)) {
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(window);
     if (window_state->delegate()) {
-      window_state->delegate()->ToggleLockedFullscreen(window_state);
+      window_state->delegate()->ToggleTrustedPinned(window_state);
     }
   }
 }

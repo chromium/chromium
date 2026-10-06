@@ -138,8 +138,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
       << message_;
 
   // Make sure the newly created window is locked fullscreen mode.
-  EXPECT_EQ(chromeos::WindowPinType::kLockedFullscreen,
-            GetCurrentWindowPinType());
+  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 
 IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
@@ -150,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
       << message_;
 
   // Make sure the current window is put into the "locked fullscreen" state.
-  EXPECT_EQ(chromeos::WindowPinType::kLockedFullscreen,
-            GetCurrentWindowPinType());
+  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 
 IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
@@ -161,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
 
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
-  SetCurrentWindowPinType(chromeos::WindowPinType::kLockedFullscreen);
+  SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
   chrome::BrowserCommandController::From(current_browser)
       ->LockedFullscreenStateChanged();
 
@@ -236,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
 
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
-  SetCurrentWindowPinType(chromeos::WindowPinType::kLockedFullscreen);
+  SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
   chrome::BrowserCommandController::From(current_browser)
       ->LockedFullscreenStateChanged();
 
@@ -246,8 +244,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
       << message_;
 
   // The current window is still locked-fullscreen.
-  EXPECT_EQ(chromeos::WindowPinType::kLockedFullscreen,
-            GetCurrentWindowPinType());
+  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 #endif  // BUILDFLAG (IS_CHROMEOS)
 

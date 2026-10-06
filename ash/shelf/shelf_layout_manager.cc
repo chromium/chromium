@@ -1664,13 +1664,13 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state,
 HotseatState ShelfLayoutManager::CalculateHotseatState(
     ShelfVisibilityState visibility_state,
     ShelfAutoHideState auto_hide_state) const {
-  // Hide hotseat when in locked fullscreen mode to prevent users from exiting
+  // Hide hotseat when in trusted pinned mode to prevent users from exiting
   // this mode.
   auto* const screen_pinning_controller =
       Shell::Get()->screen_pinning_controller();
   if (screen_pinning_controller && screen_pinning_controller->IsPinned() &&
       (GetWindowPinType(screen_pinning_controller->pinned_window()) ==
-       chromeos::WindowPinType::kLockedFullscreen)) {
+       chromeos::WindowPinType::kTrustedPinned)) {
     return HotseatState::kHidden;
   }
 

@@ -449,13 +449,13 @@ bool BackGestureEventHandler::CanStartGoingBack(
     return false;
   }
 
-  // Do not enable back gesture in locked fullscreen to prevent users from
+  // Do not enable back gesture in trusted pinned to prevent users from
   // exiting this mode.
   const ScreenPinningController* const screen_pinning_controller =
       shell->screen_pinning_controller();
   if (screen_pinning_controller->IsPinned() &&
       GetWindowPinType(screen_pinning_controller->pinned_window()) ==
-          chromeos::WindowPinType::kLockedFullscreen) {
+          chromeos::WindowPinType::kTrustedPinned) {
     return false;
   }
 

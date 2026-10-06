@@ -36,7 +36,7 @@ enum class WindowStateType {
   // Corresponding shelf should be hidden, also most of windows other than the
   // pinned one should be hidden.
   kPinned,
-  kLockedFullscreen,
+  kTrustedPinned,
 
   // A window in Picture-in-Picture mode (PIP).
   kPip,

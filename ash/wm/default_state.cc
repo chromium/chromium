@@ -590,7 +590,7 @@ void DefaultState::EnterToNextState(
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
     if (window_state->delegate())
-      window_state->delegate()->ToggleLockedFullscreen(window_state);
+      window_state->delegate()->ToggleTrustedPinned(window_state);
   }
 }
 
@@ -690,7 +690,7 @@ void DefaultState::UpdateBoundsFromState(
 
     case WindowStateType::kFullscreen:
     case WindowStateType::kPinned:
-    case WindowStateType::kLockedFullscreen:
+    case WindowStateType::kTrustedPinned:
       MoveWindowToDisplayAsNeeded(window_state->window(),
                                   window_state->GetFullscreenTargetDisplayId());
       bounds_in_parent = screen_util::GetFullscreenWindowBoundsInParent(window);

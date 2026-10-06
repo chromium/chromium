@@ -26,7 +26,7 @@ bool CustomWindowStateDelegate::ToggleFullscreen(
   return false;
 }
 
-void CustomWindowStateDelegate::ToggleLockedFullscreen(
+void CustomWindowStateDelegate::ToggleTrustedPinned(
     ash::WindowState* window_state) {
   // Sets up the shell environment as appropriate for locked Lacros or Ash
   // chrome sessions including disabling ARC.

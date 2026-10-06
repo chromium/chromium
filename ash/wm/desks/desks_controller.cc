@@ -1429,7 +1429,7 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
           case chromeos::WindowStateType::kInactive:
           case chromeos::WindowStateType::kFullscreen:
           case chromeos::WindowStateType::kPinned:
-          case chromeos::WindowStateType::kLockedFullscreen:
+          case chromeos::WindowStateType::kTrustedPinned:
           case chromeos::WindowStateType::kPip:
             NOTREACHED();
         }

@@ -442,10 +442,8 @@ void BrowserDelegateImpl::LeaveLockedFullscreen() {
 }
 
 bool BrowserDelegateImpl::IsLockedFullscreen() const {
-  // TODO(crbug.com/438540029): Rename WindowPinType::kLockedFullscreen to
-  // WindowPinType::kTrustedPinned.
   return ash::GetWindowPinType(GetNativeWindow()) ==
-         chromeos::WindowPinType::kLockedFullscreen;
+         chromeos::WindowPinType::kTrustedPinned;
 }
 
 void BrowserDelegateImpl::SetDevToolsCommandsEnabled(bool enabled) {

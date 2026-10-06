@@ -176,7 +176,8 @@ class ASH_EXPORT ShellDelegate {
   // Returns if window browser sessions are restoring.
   virtual bool IsSessionRestoreInProgress() const = 0;
 
-  // Adjust system configuration for a Locked Fullscreen window.
+  // Adjust system configuration for a trusted-pinned (locked fullscreen)
+  // window.
   virtual void SetUpEnvironmentForLockedFullscreen(
       const WindowState& window_state) = 0;
 
