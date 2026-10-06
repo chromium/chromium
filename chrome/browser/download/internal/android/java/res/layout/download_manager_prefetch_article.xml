@@ -102,7 +102,7 @@ found in the LICENSE file.
         <ImageView
             style="@style/InlineOfflineIconStyle"
             app:srcCompat="@drawable/ic_offline_pin_fill_24dp"
-            android:tint="@color/default_icon_color_secondary_baseline"
+            android:tint="@macro/default_icon_color_secondary"
             app:layout_column="2"
             app:layout_row="2"
             app:layout_columnSpan="2"
