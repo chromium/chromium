@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/notimplemented.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/synced_session.h"
 

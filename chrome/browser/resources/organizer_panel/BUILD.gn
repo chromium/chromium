@@ -19,7 +19,7 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
-    "delegates/cross_device_tabs_delegate.ts",
+    "delegates/foreign_tabs_delegate.ts",
     "delegates/open_tabs_delegate.ts",
     "delegates/recent_tabs_delegate.ts",
     "delegates/tab_delegate_utils.ts",
@@ -60,6 +60,7 @@ build_webui("build") {
     "//components/tabs/public/mojom:mojom_ts__generator",
   ]
   mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/organizer_panel/tab_groups.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/tab_search/tab_search.mojom-webui.ts",

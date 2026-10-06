@@ -2,18 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrossDeviceTabsDelegate} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {ForeignTab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-suite('CrossDeviceTabsDelegateTest', () => {
-  let delegate: CrossDeviceTabsDelegate;
+suite('ForeignTabsDelegateTest', () => {
+  let delegate: ForeignTabsDelegate;
+  let mockHandler: TestMock<ForeignTabsPageHandlerRemote>&
+      ForeignTabsPageHandlerRemote;
+
+  const sampleTabs: ForeignTab[] = [
+    {
+      title: 'Google',
+      url: 'https://www.google.com',
+      lastActiveElapsedText: '5 mins ago',
+      deviceName: 'Pixel 8',
+    },
+    {
+      title: 'YouTube',
+      url: 'https://www.youtube.com',
+      lastActiveElapsedText: '1 hour ago',
+      deviceName: 'Chromebook',
+    },
+    {
+      title: 'GitHub',
+      url: 'https://www.github.com',
+      lastActiveElapsedText: 'Yesterday',
+      deviceName: 'MacBook Pro',
+    },
+  ];
 
   setup(() => {
     loadTimeData.resetForTesting({
       tabsOnOtherDevices: 'Tabs on other devices',
     });
-    delegate = new CrossDeviceTabsDelegate();
+    mockHandler = TestMock.fromClass(ForeignTabsPageHandlerRemote);
+    mockHandler.setResultFor(
+        'getForeignTabs', Promise.resolve({tabs: [...sampleTabs]}));
+    foreignTabsBrowserProxyFactory.setInstance({handler: mockHandler});
+    delegate = new ForeignTabsDelegate();
   });
 
   test('returns id and localized header', () => {
@@ -53,6 +82,8 @@ suite('CrossDeviceTabsDelegateTest', () => {
           assertEquals(2, item.description.length);
           assertEquals(expected.elapsed, item.description[0]!.text);
           assertEquals(expected.device, item.description[1]!.text);
+          assertEquals(sampleTabs[i]!.url, item.prefixIcon?.url);
         }
+        assertEquals(1, mockHandler.getCallCount('getForeignTabs'));
       });
 });

@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
+#include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_ui.h"
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups.mojom.h"
 #include "chrome/browser/ui/webui/page_action_internals/page_action_internals.mojom.h"
@@ -589,6 +590,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
       .Add<tab_search::mojom::PageHandlerFactory>()
       .Add<tab_search::mojom::SearchHandler>();
   registry.ForWebUI<OrganizerPanelUI>()
+      .Add<organizer_panel::mojom::ForeignTabsPageHandlerFactory>()
       .Add<organizer_panel::mojom::PageHandlerFactory>()
       .Add<tab_search::mojom::PageHandlerFactory>()
       .Add<tab_search::mojom::SearchHandler>()

@@ -9,7 +9,7 @@
 namespace organizer_panel {
 
 BASE_FEATURE(kOrganizerPanel, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kOrganizerPanelCrossDeviceTabs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrganizerPanelForeignTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowExtensionsSidePanelUiInOrganizerPanel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -17,9 +17,9 @@ bool IsOrganizerPanelFeatureEnabled() {
   return base::FeatureList::IsEnabled(kOrganizerPanel);
 }
 
-bool IsOrganizerPanelCrossDeviceTabsEnabled() {
+bool IsOrganizerPanelForeignTabsEnabled() {
   return IsOrganizerPanelFeatureEnabled() &&
-         base::FeatureList::IsEnabled(kOrganizerPanelCrossDeviceTabs);
+         base::FeatureList::IsEnabled(kOrganizerPanelForeignTabs);
 }
 
 bool IsShowExtensionsSidePanelUiInOrganizerPanelEnabled() {

@@ -13,7 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {CrossDeviceTabsDelegate} from './delegates/cross_device_tabs_delegate.js';
+import {ForeignTabsDelegate} from './delegates/foreign_tabs_delegate.js';
 import {OpenTabsDelegate} from './delegates/open_tabs_delegate.js';
 import {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';
 import {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
@@ -67,8 +67,8 @@ export class OrganizerPanelAppElement extends CrLitElement {
               []),
       new TabGroupsDelegate(),
     ];
-    if (loadTimeData.getBoolean('crossDeviceTabsEnabled')) {
-      delegates.push(new CrossDeviceTabsDelegate());
+    if (loadTimeData.getBoolean('foreignTabsEnabled')) {
+      delegates.push(new ForeignTabsDelegate());
     }
     return delegates;
   }

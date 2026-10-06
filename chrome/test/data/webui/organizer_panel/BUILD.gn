@@ -8,7 +8,7 @@ build_webui_tests("build") {
   cc_test_files = [ "organizer_panel_browsertest.cc" ]
   files = [
     "app_test.ts",
-    "cross_device_tabs_delegate_test.ts",
+    "foreign_tabs_delegate_test.ts",
     "open_tabs_delegate_test.ts",
     "organizer_list_section_header_test.ts",
     "organizer_list_section_item_description_test.ts",

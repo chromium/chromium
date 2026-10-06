@@ -9,18 +9,22 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 mojom("mojo_bindings") {
   sources = [
+    "foreign_tabs.mojom",
     "organizer_panel.mojom",
     "tab_groups.mojom",
   ]
   public_deps = [
     "//components/tab_groups/public/mojom:mojo_bindings",
     "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/"
 }
 
 source_set("organizer_panel") {
   sources = [
+    "foreign_tabs_page_handler.cc",
+    "foreign_tabs_page_handler.h",
     "organizer_panel_page_handler.cc",
     "organizer_panel_page_handler.h",
     "organizer_panel_ui.cc",
@@ -41,6 +45,7 @@ source_set("organizer_panel") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/organizer_panel:resources",
     "//chrome/browser/resources/tab_group_shared:resources",
+    "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui:ui_features",
@@ -61,6 +66,7 @@ source_set("organizer_panel") {
     "//components/prefs",
     "//components/saved_tab_groups/public",
     "//components/strings:components_strings",
+    "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
     "//ui/base",
@@ -73,6 +79,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "foreign_tabs_page_handler_browsertest.cc",
     "organizer_panel_page_handler_browsertest.cc",
     "tab_groups_organizer_page_handler_browsertest.cc",
   ]
@@ -82,6 +89,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/collaboration/messaging",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
@@ -94,6 +102,8 @@ source_set("browser_tests") {
     "//components/keyed_service/content",
     "//components/prefs",
     "//components/saved_tab_groups/public",
+    "//components/sync_sessions",
+    "//components/sync_sessions:test_support",
     "//components/tab_groups",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 
+#include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom.h"
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class ForeignTabsPageHandler;
 class OrganizerPanelPageHandler;
 class SearchHandler;
 class TabGroupsOrganizerPageHandler;
@@ -31,6 +33,7 @@ class OrganizerPanelUIConfig
 
 class OrganizerPanelUI
     : public TopChromeWebUIController,
+      public organizer_panel::mojom::ForeignTabsPageHandlerFactory,
       public organizer_panel::mojom::PageHandlerFactory,
       public tab_search::mojom::PageHandlerFactory,
       public organizer_panel::mojom::TabGroupsOrganizerPageHandlerFactory {
@@ -41,6 +44,9 @@ class OrganizerPanelUI
   OrganizerPanelUI(const OrganizerPanelUI&) = delete;
   OrganizerPanelUI& operator=(const OrganizerPanelUI&) = delete;
 
+  void BindInterface(
+      mojo::PendingReceiver<
+          organizer_panel::mojom::ForeignTabsPageHandlerFactory> receiver);
   void BindInterface(
       mojo::PendingReceiver<organizer_panel::mojom::PageHandlerFactory>
           receiver);
@@ -56,6 +62,11 @@ class OrganizerPanelUI
   static constexpr std::string_view GetWebUIName() { return "OrganizerPanel"; }
 
  private:
+  // organizer_panel::mojom::ForeignTabsPageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandler>
+          receiver) override;
+
   // organizer_panel::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<organizer_panel::mojom::Page> page,
@@ -74,11 +85,14 @@ class OrganizerPanelUI
           organizer_panel::mojom::TabGroupsOrganizerPageHandler> receiver)
       override;
 
+  std::unique_ptr<ForeignTabsPageHandler> foreign_tabs_page_handler_;
   std::unique_ptr<OrganizerPanelPageHandler> organizer_panel_page_handler_;
   std::unique_ptr<TabSearchPageHandler> page_handler_;
   std::unique_ptr<SearchHandler> search_handler_;
   std::unique_ptr<TabGroupsOrganizerPageHandler>
       tab_groups_organizer_page_handler_;
+  mojo::Receiver<organizer_panel::mojom::ForeignTabsPageHandlerFactory>
+      foreign_tabs_page_factory_receiver_{this};
   mojo::Receiver<organizer_panel::mojom::PageHandlerFactory>
       organizer_panel_page_factory_receiver_{this};
   mojo::Receiver<tab_search::mojom::PageHandlerFactory> page_factory_receiver_{

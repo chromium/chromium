@@ -5,7 +5,7 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerPanelAppElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import {browserProxyFactory, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -16,6 +16,8 @@ suite('OrganizerPanelAppTest', () => {
   let mockPageHandler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let mockTabGroupsHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
       TabGroupsOrganizerPageHandlerRemote;
+  let mockForeignTabsHandler: TestMock<ForeignTabsPageHandlerRemote>&
+      ForeignTabsPageHandlerRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -24,7 +26,7 @@ suite('OrganizerPanelAppTest', () => {
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
       createTabGroup: 'Create tab group',
-      crossDeviceTabsEnabled: false,
+      foreignTabsEnabled: false,
       isIncognitoMode: false,
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
@@ -56,6 +58,12 @@ suite('OrganizerPanelAppTest', () => {
     const {instance: tabGroupsInstance} =
         tabGroupsBrowserProxyFactory.createForTest(mockTabGroupsHandler);
     tabGroupsBrowserProxyFactory.setInstance(tabGroupsInstance);
+
+    mockForeignTabsHandler = TestMock.fromClass(ForeignTabsPageHandlerRemote);
+    mockForeignTabsHandler.setResultFor(
+        'getForeignTabs', Promise.resolve({tabs: []}));
+    foreignTabsBrowserProxyFactory.setInstance(
+        {handler: mockForeignTabsHandler});
 
     app = document.createElement('organizer-panel-app');
     document.body.appendChild(app);
@@ -89,10 +97,10 @@ suite('OrganizerPanelAppTest', () => {
         delegate => !(delegate instanceof RecentTabsDelegate)));
   });
 
-  test('renders cross-device tabs section when flag is enabled', async () => {
+  test('renders foreign tabs section when flag is enabled', async () => {
     loadTimeData.overrideValues({
       tabsOnOtherDevices: 'Tabs on other devices',
-      crossDeviceTabsEnabled: true,
+      foreignTabsEnabled: true,
     });
     const testApp = document.createElement('organizer-panel-app');
     document.body.appendChild(testApp);

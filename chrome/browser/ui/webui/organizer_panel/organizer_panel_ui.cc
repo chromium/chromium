@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/organizer_panel/foreign_tabs_page_handler.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_page_handler.h"
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups_organizer_page_handler.h"
 #include "chrome/browser/ui/webui/tab_search/search_handler.h"
@@ -68,8 +69,8 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "cjkWordBoundaryEnabled",
       base::FeatureList::IsEnabled(tabs::kTabSearchCjkWordBoundary));
-  source->AddBoolean("crossDeviceTabsEnabled",
-                     organizer_panel::IsOrganizerPanelCrossDeviceTabsEnabled());
+  source->AddBoolean("foreignTabsEnabled",
+                     organizer_panel::IsOrganizerPanelForeignTabsEnabled());
   source->AddBoolean("isIncognitoMode", profile->IsIncognitoProfile());
 
   ui::Accelerator accelerator(ui::VKEY_A,
@@ -95,6 +96,13 @@ OrganizerPanelUI::~OrganizerPanelUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(OrganizerPanelUI)
 
 void OrganizerPanelUI::BindInterface(
+    mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandlerFactory>
+        receiver) {
+  foreign_tabs_page_factory_receiver_.reset();
+  foreign_tabs_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OrganizerPanelUI::BindInterface(
     mojo::PendingReceiver<organizer_panel::mojom::PageHandlerFactory>
         receiver) {
   organizer_panel_page_factory_receiver_.reset();
@@ -118,6 +126,13 @@ void OrganizerPanelUI::BindInterface(
         receiver) {
   tab_groups_page_factory_receiver_.reset();
   tab_groups_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OrganizerPanelUI::CreatePageHandler(
+    mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandler>
+        receiver) {
+  foreign_tabs_page_handler_ = std::make_unique<ForeignTabsPageHandler>(
+      std::move(receiver), web_ui()->GetWebContents());
 }
 
 void OrganizerPanelUI::CreatePageHandler(

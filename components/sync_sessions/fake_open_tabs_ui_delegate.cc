@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/notimplemented.h"
 
 namespace sync_sessions {
 
@@ -101,8 +100,16 @@ FakeOpenTabsUIDelegate::GetForeignSession(const std::string& tag) {
 bool FakeOpenTabsUIDelegate::GetForeignSessionTabs(
     const std::string& tag,
     std::vector<const sessions::SessionTab*>* tabs) {
-  NOTIMPLEMENTED();
-  return false;
+  std::vector<const sessions::SessionWindow*> windows = GetForeignSession(tag);
+  if (windows.empty()) {
+    return false;
+  }
+  for (const sessions::SessionWindow* window : windows) {
+    for (const std::unique_ptr<sessions::SessionTab>& tab : window->tabs) {
+      tabs->push_back(tab.get());
+    }
+  }
+  return true;
 }
 
 bool FakeOpenTabsUIDelegate::GetLocalSession(const SyncedSession** local) {
