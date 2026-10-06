@@ -45,6 +45,11 @@ class LinkerJni implements Linker.Natives {
         return nativeGetRelroSharingResult();
     }
 
+    @Override
+    public int getRelroNotSharedPercentage() {
+        return nativeGetRelroNotSharedPercentage();
+    }
+
     // Does not use JNI Generator because the native side is in libchromium_linker.so rather
     // libmonochrome.so
     private static native void nativeFindMemoryRegionAtRandomAddress(Linker.LibInfo libInfo);
@@ -60,4 +65,6 @@ class LinkerJni implements Linker.Natives {
             long localLoadAddress, Linker.LibInfo remoteLibInfo);
 
     private static native int nativeGetRelroSharingResult();
+
+    private static native int nativeGetRelroNotSharedPercentage();
 }

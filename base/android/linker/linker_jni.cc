@@ -38,6 +38,7 @@ LibInfo_class s_lib_info_fields;
 
 // Guarded by |mLock| in Linker.java.
 RelroSharingStatus s_relro_sharing_status = RelroSharingStatus::NOT_ATTEMPTED;
+int s_relro_not_shared_percentage = 100;
 
 // Saved JavaVM passed to JNI_OnLoad().
 JavaVM* s_java_vm = nullptr;
@@ -674,6 +675,7 @@ size_t NativeLibInfo::FindRelroCommonPrefix(
 
 bool NativeLibInfo::CompareRelroAndReplaceItBy(
     const NativeLibInfo& other_lib_info) {
+  s_relro_not_shared_percentage = 100;
   if (other_lib_info.relro_fd_ == -1) {
     LOG_ERROR("No shared region to use");
     s_relro_sharing_status = RelroSharingStatus::EXTERNAL_RELRO_FD_NOT_PROVIDED;
@@ -715,6 +717,8 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
   }
 
   s_relro_sharing_status = RelroSharingStatus::SHARED;
+  s_relro_not_shared_percentage = static_cast<int>(
+      static_cast<uint64_t>(relro_size_ - common_size) * 100 / relro_size_);
   return true;
 }
 
@@ -797,6 +801,7 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeUseRelros(
   NativeLibInfo incoming_lib_info = {env, remote_lib_info_obj};
   if (!incoming_lib_info.CopyFromJavaObject()) {
     s_relro_sharing_status = RelroSharingStatus::CORRUPTED_IN_JAVA;
+    s_relro_not_shared_percentage = 100;
     return false;
   }
 
@@ -817,6 +822,13 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeGetRelroSharingResult(
     JNIEnv* env,
     jclass clazz) {
   return static_cast<int32_t>(s_relro_sharing_status);
+}
+
+JNI_ZERO_BOUNDARY_EXPORT int32_t
+Java_org_chromium_base_library_1loader_LinkerJni_nativeGetRelroNotSharedPercentage(
+    JNIEnv* env,
+    jclass clazz) {
+  return s_relro_not_shared_percentage;
 }
 
 bool LinkerJNIInit(JavaVM* vm, JNIEnv* env) {

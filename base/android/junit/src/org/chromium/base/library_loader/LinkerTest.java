@@ -177,6 +177,7 @@ public class LinkerTest {
         Linker linker = Mockito.spy(new Linker());
         Mockito.doNothing().when(linker).loadLinkerJniLibraryLocked();
         Mockito.when(mNativeMock.getRelroSharingResult()).thenReturn(1);
+        Mockito.when(mNativeMock.getRelroNotSharedPercentage()).thenReturn(3);
         Linker.LibInfo libInfo = Mockito.spy(new Linker.LibInfo());
         long someAddress = 1 << 12;
         libInfo.mLoadAddress = someAddress;
@@ -196,6 +197,10 @@ public class LinkerTest {
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "ChromiumAndroidLinker.RelroSharingStatus2"));
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "ChromiumAndroidLinker.RelroNotSharedPercentage", 3));
     }
 
     @Test

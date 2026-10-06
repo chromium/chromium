@@ -10154,6 +10154,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromiumAndroidLinker.RelroNotSharedPercentage" units="%"
+    expires_after="2027-03-28">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    Recorded once per process when replacing the RELRO region with a shared
+    memory region is attempted, in all processes consuming RELRO. Reports the
+    percentage of the RELRO region that was not shared (e.g. due to
+    process-specific relocations near the end of PT_GNU_RELRO, or 100% if
+    sharing failed altogether).
+  </summary>
+</histogram>
+
 <histogram name="ChromiumAndroidLinker.RelroProvidedSuccessfully"
     enum="BooleanSuccess" expires_after="2026-05-17">
   <owner>lizeb@chromium.org</owner>

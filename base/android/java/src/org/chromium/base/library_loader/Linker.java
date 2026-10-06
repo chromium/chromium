@@ -605,6 +605,9 @@ class Linker {
         assert status != RelroSharingStatus.NOT_ATTEMPTED;
         RecordHistogram.recordEnumeratedHistogram(
                 "ChromiumAndroidLinker.RelroSharingStatus2", status, RelroSharingStatus.COUNT);
+        RecordHistogram.recordCount100Histogram(
+                "ChromiumAndroidLinker.RelroNotSharedPercentage",
+                getLinkerJni().getRelroNotSharedPercentage());
     }
 
     /** Loads the Linker JNI library. Throws UnsatisfiedLinkError on error. */
@@ -783,6 +786,12 @@ class Linker {
          * @return RelroSharingStatus.
          */
         int getRelroSharingResult();
+
+        /**
+         * Returns the percentage (0..100) of the RELRO region that was not shared with the incoming
+         * RELRO region.
+         */
+        int getRelroNotSharedPercentage();
     }
 
     private static Linker.@Nullable Natives sNativesInstance;
