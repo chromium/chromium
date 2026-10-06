@@ -153,8 +153,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
-  std::optional<std::vector<std::string>> GetMetadataForTree() const;
-
   struct AndroidPosition {
     raw_ptr<BrowserAccessibilityAndroid> node = nullptr;
     int offset = -1;

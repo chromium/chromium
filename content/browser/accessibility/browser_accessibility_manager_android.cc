@@ -1026,11 +1026,6 @@ BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
   return wcax->GenerateAccessibilityNodeInfoString(unique_id);
 }
 
-std::optional<std::vector<std::string>>
-BrowserAccessibilityManagerAndroid::GetMetadataForTree() const {
-  return GetTreeData().metadata;
-}
-
 std::optional<BrowserAccessibilityManagerAndroid::SelectionRange>
 BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
   ui::AXSelection selection = ax_tree()->GetSelection();
