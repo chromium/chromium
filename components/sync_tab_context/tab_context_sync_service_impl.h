@@ -15,6 +15,7 @@
 #include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
+#include "components/sync_tab_context/upload_outcome.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -41,6 +42,11 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
   bool UploadPageContext(const ContainerId& container_id,
                          const std::string& entry_id,
                          std::string page_context) override;
+  void UploadPageContext(
+      const ContainerId& container_id,
+      const std::string& entry_id,
+      std::string page_context,
+      base::OnceCallback<void(UploadOutcome)> callback) override;
   void GetContainerAccessToken(
       const ContainerId& container_id,
       base::OnceCallback<void(std::optional<std::string>)> cb) override;

@@ -19,6 +19,7 @@
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_container_sync_bridge.h"
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
+#include "components/sync_tab_context/upload_outcome.h"
 
 namespace sync_tab_context {
 
@@ -91,10 +92,24 @@ bool TabContextSyncServiceImpl::UploadPageContext(
     const ContainerId& container_id,
     const std::string& entry_id,
     std::string page_context) {
+  if (!container_bridge_->GetEncryptionKeyForContainer(container_id)) {
+    return false;
+  }
+  UploadPageContext(container_id, entry_id, std::move(page_context),
+                    base::DoNothing());
+  return true;
+}
+
+void TabContextSyncServiceImpl::UploadPageContext(
+    const ContainerId& container_id,
+    const std::string& entry_id,
+    std::string page_context,
+    base::OnceCallback<void(UploadOutcome)> callback) {
   const syncer::AgileSymmetricKeySet* key_set =
       container_bridge_->GetEncryptionKeyForContainer(container_id);
   if (!key_set) {
-    return false;
+    std::move(callback).Run(UploadOutcome::kFailed);
+    return;
   }
 
   // TODO(crbug.com/527991322): Consider compression before encryption, capping
@@ -102,11 +117,12 @@ bool TabContextSyncServiceImpl::UploadPageContext(
   std::optional<sync_pb::EncryptedData> encrypted_data =
       key_set->Encrypt(base::as_byte_span(page_context));
   if (!encrypted_data) {
-    return false;
+    std::move(callback).Run(UploadOutcome::kFailed);
+    return;
   }
 
-  return item_bridge_->UploadItem(container_id, entry_id,
-                                  std::move(*encrypted_data));
+  item_bridge_->UploadItem(container_id, entry_id, std::move(*encrypted_data),
+                           std::move(callback));
 }
 
 void TabContextSyncServiceImpl::GetContainerAccessToken(
