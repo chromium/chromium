@@ -23,6 +23,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -35,10 +36,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 
 import androidx.annotation.LayoutRes;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -252,6 +255,45 @@ public class ToolbarControlContainerTest {
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 mControlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
+    }
+
+    /**
+     * Inits the control container with a visible, laid out toolbar container and swipe handler.
+     *
+     * @return The mocked swipe handler set on the control container.
+     */
+    private SwipeHandler initControlContainerForBelowToolbarTouch() {
+        initControlContainer(R.layout.toolbar_phone);
+        ToolbarViewResourceCoordinatorLayout toolbarContainer =
+                mControlContainer.findViewById(R.id.toolbar_container);
+        toolbarContainer.setVisibility(View.VISIBLE);
+        mControlContainer.layout(0, 0, 1000, 180);
+        toolbarContainer.layout(0, 0, 1000, 100);
+        SwipeHandler swipeHandler = mock(SwipeHandler.class);
+        mControlContainer.setSwipeHandler(swipeHandler);
+        return swipeHandler;
+    }
+
+    /**
+     * Sends a horizontal drag at the given height through onInterceptTouchEvent() and asserts that
+     * none of its events are intercepted.
+     */
+    private void assertHorizontalDragNotIntercepted(int y) {
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 650, y, 0);
+        assertFalse(mControlContainer.onInterceptTouchEvent(downEvent));
+        for (int i = 1; i <= 5; i++) {
+            MotionEvent moveEvent =
+                    MotionEvent.obtain(0, i * 10, MotionEvent.ACTION_MOVE, 650 + i * 60, y, 0);
+            assertFalse(mControlContainer.onInterceptTouchEvent(moveEvent));
+        }
+    }
+
+    /** Adds a generic visible child, such as the tab sharing toolbar, to the control container. */
+    private FrameLayout addStackedChild() {
+        FrameLayout stackedChild = new FrameLayout(mActivity);
+        stackedChild.setVisibility(View.VISIBLE);
+        mControlContainer.addView(stackedChild);
+        return stackedChild;
     }
 
     private boolean didAdapterLockControls() {
@@ -1321,11 +1363,156 @@ public class ToolbarControlContainerTest {
         ViewStub findToolbarStub = controlContainer.findViewById(R.id.find_toolbar_tablet_stub);
         View findToolbar = findToolbarStub.inflate();
         findToolbar.setVisibility(View.VISIBLE);
+        findToolbar.layout(600, 100, 1000, 200);
 
         MotionEvent belowToolbarClickEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 150, 0);
         assertFalse(controlContainer.onInterceptTouchEvent(belowToolbarClickEvent));
         assertFalse(controlContainer.onTouchEvent(belowToolbarClickEvent));
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer_StackedChild_GapPassesThrough() {
+        initControlContainerForBelowToolbarTouch();
+        View stackedChild = addStackedChild();
+        stackedChild.layout(0, 140, 1000, 180);
+
+        // Click in the gap between the toolbar container and the stacked child (e.g. where the
+        // bookmark bar is).
+        MotionEvent gapClickEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 120, 0);
+        assertFalse(mControlContainer.onInterceptTouchEvent(gapClickEvent));
+        assertFalse(mControlContainer.onTouchEvent(gapClickEvent));
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer_StackedChild_TouchOnChildConsumed() {
+        initControlContainerForBelowToolbarTouch();
+        View stackedChild = addStackedChild();
+        stackedChild.layout(0, 140, 1000, 180);
+
+        // A click on the stacked child's background should not fall through.
+        MotionEvent childClickEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 160, 0);
+        assertTrue(mControlContainer.onTouchEvent(childClickEvent));
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer_StackedChild_ButtonReceivesTouch() {
+        initControlContainerForBelowToolbarTouch();
+        FrameLayout stackedChild = addStackedChild();
+        View button = new View(mActivity);
+        button.setClickable(true);
+        OnTouchListener touchListener = mock(OnTouchListener.class);
+        doReturn(true).when(touchListener).onTouch(eq(button), any(MotionEvent.class));
+        button.setOnTouchListener(touchListener);
+        stackedChild.addView(button);
+        stackedChild.layout(0, 140, 1000, 180);
+        button.layout(0, 0, 200, 40);
+
+        MotionEvent buttonClickEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 160, 0);
+        assertTrue(mControlContainer.dispatchTouchEvent(buttonClickEvent));
+        ArgumentCaptor<MotionEvent> eventCaptor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(touchListener).onTouch(eq(button), eventCaptor.capture());
+        assertEquals(MotionEvent.ACTION_DOWN, eventCaptor.getValue().getActionMasked());
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer_StackedChild_GapReachesSiblingBelow() {
+        initControlContainerForBelowToolbarTouch();
+        View stackedChild = addStackedChild();
+
+        // The bookmark bar is a sibling drawn below the control container. The control container
+        // is added last so that it is hit-tested first. It was inflated without a parent, so it can
+        // be added to a new one.
+        assertNull(mControlContainer.getParent());
+        FrameLayout parent = new FrameLayout(mActivity);
+        View bookmarkSibling = new View(mActivity);
+        OnTouchListener siblingTouchListener = mock(OnTouchListener.class);
+        doReturn(true)
+                .when(siblingTouchListener)
+                .onTouch(eq(bookmarkSibling), any(MotionEvent.class));
+        bookmarkSibling.setOnTouchListener(siblingTouchListener);
+        parent.addView(bookmarkSibling);
+        parent.addView(mControlContainer);
+
+        // Lay out top-down; each layout() call re-lays out the children of the laid out view.
+        parent.layout(0, 0, 1000, 1000);
+        bookmarkSibling.layout(0, 0, 1000, 1000);
+        mControlContainer.layout(0, 0, 1000, 180);
+        mControlContainer.findViewById(R.id.toolbar_container).layout(0, 0, 1000, 100);
+        stackedChild.layout(0, 140, 1000, 180);
+
+        MotionEvent gapClickEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 120, 0);
+        assertTrue(parent.dispatchTouchEvent(gapClickEvent));
+        ArgumentCaptor<MotionEvent> eventCaptor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(siblingTouchListener).onTouch(eq(bookmarkSibling), eventCaptor.capture());
+        assertEquals(MotionEvent.ACTION_DOWN, eventCaptor.getValue().getActionMasked());
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer_NoStackedChild_Unchanged() {
+        initControlContainerForBelowToolbarTouch();
+
+        MotionEvent belowToolbarClickEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 150, 0);
+        assertTrue(mControlContainer.onTouchEvent(belowToolbarClickEvent));
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer_StackedChildGone_Unchanged() {
+        initControlContainerForBelowToolbarTouch();
+        View stackedChild = addStackedChild();
+        stackedChild.layout(0, 140, 1000, 180);
+        stackedChild.setVisibility(View.GONE);
+
+        MotionEvent gapClickEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 120, 0);
+        assertTrue(mControlContainer.onTouchEvent(gapClickEvent));
+    }
+
+    @Test
+    public void testInterceptTouchEvent_BelowToolbarContainer_OnFindToolbar_NotIntercepted() {
+        SwipeHandler swipeHandler = initControlContainerForBelowToolbarTouch();
+        mControlContainer.addTouchEventObserver(mTouchEventObserver);
+        ViewStub findToolbarStub = mControlContainer.findViewById(R.id.find_toolbar_tablet_stub);
+        View findToolbar = findToolbarStub.inflate();
+        findToolbar.setVisibility(View.VISIBLE);
+        findToolbar.layout(600, 100, 1000, 180);
+
+        // A horizontal drag inside the find toolbar (e.g. in its text field) must not be treated
+        // as a toolbar swipe.
+        assertHorizontalDragNotIntercepted(/* y= */ 150);
+        verifyNoInteractions(swipeHandler);
+        verify(mTouchEventObserver, never()).onInterceptTouchEvent(any(MotionEvent.class));
+    }
+
+    @Test
+    public void testInterceptTouchEvent_BelowToolbarContainer_OnStackedChild_NotIntercepted() {
+        SwipeHandler swipeHandler = initControlContainerForBelowToolbarTouch();
+        mControlContainer.addTouchEventObserver(mTouchEventObserver);
+        View stackedChild = addStackedChild();
+        stackedChild.layout(0, 140, 1000, 180);
+
+        // A horizontal drag on the stacked child (e.g. the tab sharing toolbar) must not be
+        // treated as a toolbar swipe.
+        assertHorizontalDragNotIntercepted(/* y= */ 160);
+        verifyNoInteractions(swipeHandler);
+        verify(mTouchEventObserver, never()).onInterceptTouchEvent(any(MotionEvent.class));
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer_FindToolbarBackgroundConsumed() {
+        initControlContainerForBelowToolbarTouch();
+        ViewStub findToolbarStub = mControlContainer.findViewById(R.id.find_toolbar_tablet_stub);
+        View findToolbar = findToolbarStub.inflate();
+        findToolbar.setVisibility(View.VISIBLE);
+        findToolbar.layout(600, 100, 1000, 180);
+
+        // A tap on the find toolbar's background that no child claims is consumed rather than
+        // falling through to views below.
+        MotionEvent findToolbarClickEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 700, 150, 0);
+        assertTrue(mControlContainer.onTouchEvent(findToolbarClickEvent));
     }
 
     @Test

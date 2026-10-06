@@ -99,6 +99,23 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         implements ControlContainer, Observer, DesktopWindowStateManager.AppHeaderObserver {
     private static final String TAG = "ToolbarCtrlContainer";
     private static final double SAMPLE_STALE_CAPTURE_PROBABILITY = 0.01;
+
+    /**
+     * Where a touch falls relative to children stacked below the toolbar container. See
+     * getBelowToolbarTouchArea().
+     */
+    @IntDef({
+        BelowToolbarTouchArea.NOT_APPLICABLE,
+        BelowToolbarTouchArea.ON_STACKED_CHILD,
+        BelowToolbarTouchArea.UNCOVERED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface BelowToolbarTouchArea {
+        int NOT_APPLICABLE = 0;
+        int ON_STACKED_CHILD = 1;
+        int UNCOVERED = 2;
+    }
+
     private static boolean sForceStaleCaptureHistogram;
 
     private boolean mIncognito;
@@ -115,6 +132,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private int mTabStripTopPadding;
     private int mTabStripHeight;
     private final Rect mToolbarCaptureSize = new Rect();
+    private final Rect mTouchHitRect = new Rect();
 
     private View mToolbarHairline;
     private ViewGroup mToolbarView;
@@ -1257,9 +1275,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // Don't react on touch events if the toolbar container is not fully visible.
         if (!isToolbarContainerFullyVisible()) return true;
 
-        // Don't consume the event if it is below the toolbar container and was not handled by any
-        // child (such as the tablet find toolbar).
-        if (isBelowToolbarContainer(event)) return false;
+        // Don't consume the event if it is below the toolbar container, in an area not covered by
+        // any stacked child (such as the tablet find toolbar or the tab sharing toolbar), so that
+        // it reaches views below. Touches on a stacked child's background are still consumed.
+        if (getBelowToolbarTouchArea(event) == BelowToolbarTouchArea.UNCOVERED) return false;
 
         // If we have ACTION_DOWN in this context, that means either no child consumed the event or
         // this class is the top UI at the event position. Then, we don't need to feed the event to
@@ -1279,7 +1298,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // the event here.
         if (!isToolbarContainerFullyVisible()) return true;
         if (isOnTabStrip(event)) return true;
-        if (isBelowToolbarContainer(event)) return false;
+        // Don't intercept touches below the toolbar container while a child is stacked there, so
+        // that they are not treated as toolbar swipes, whether they are on the stacked child (e.g.
+        // a drag in the find toolbar's text field) or in the uncovered area around it.
+        if (getBelowToolbarTouchArea(event) != BelowToolbarTouchArea.NOT_APPLICABLE) return false;
 
         if (mSwipeGestureListener != null && mSwipeGestureListener.onTouchEvent(event)) return true;
 
@@ -1297,14 +1319,42 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         return tabStripHeight != 0 && e.getY() <= tabStripHeight;
     }
 
-    private boolean isBelowToolbarContainer(MotionEvent e) {
-        View findToolbar = findViewById(R.id.find_toolbar);
-        if (findToolbar == null
-                || findToolbar.getVisibility() != VISIBLE
-                || findToolbar.getParent() != this) {
-            return false;
+    /**
+     * Returns where a touch falls relative to the visible children, other than the toolbar
+     * container, that extend below the toolbar container (such as the tablet find toolbar or the
+     * tab sharing toolbar):
+     *
+     * <ul>
+     *   <li>{@link BelowToolbarTouchArea#ON_STACKED_CHILD} if the touch is below the toolbar
+     *       container and inside one of these children.
+     *   <li>{@link BelowToolbarTouchArea#UNCOVERED} if the touch is below the toolbar container, at
+     *       least one such child exists, and the touch is outside all of them.
+     *   <li>{@link BelowToolbarTouchArea#NOT_APPLICABLE} otherwise, including whenever no child
+     *       extends below the toolbar container, so that touch handling is unchanged (see
+     *       crbug.com/553578467).
+     * </ul>
+     */
+    private @BelowToolbarTouchArea int getBelowToolbarTouchArea(MotionEvent e) {
+        float x = e.getX();
+        float y = e.getY();
+        if (mToolbarContainer == null) return BelowToolbarTouchArea.NOT_APPLICABLE;
+        int toolbarBottom = mToolbarContainer.getBottom();
+        if (y <= toolbarBottom) return BelowToolbarTouchArea.NOT_APPLICABLE;
+
+        boolean hasStackedChildBelowToolbar = false;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child == mToolbarContainer || child.getVisibility() != VISIBLE) continue;
+            child.getHitRect(mTouchHitRect);
+            if (mTouchHitRect.bottom <= toolbarBottom) continue;
+            if (mTouchHitRect.contains((int) x, (int) y)) {
+                return BelowToolbarTouchArea.ON_STACKED_CHILD;
+            }
+            hasStackedChildBelowToolbar = true;
         }
-        return mToolbarContainer != null && e.getY() > mToolbarContainer.getBottom();
+        return hasStackedChildBelowToolbar
+                ? BelowToolbarTouchArea.UNCOVERED
+                : BelowToolbarTouchArea.NOT_APPLICABLE;
     }
 
     /**
