@@ -6,16 +6,15 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
 namespace contextual_tasks {
@@ -27,14 +26,29 @@ ContextualTasksExtensionsContainer::ContextualTasksExtensionsContainer(
     : browser_(browser),
       web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
       anchor_provider_(std::move(anchor_provider)),
+      toolbar_model_(browser && browser->GetProfile()
+                         ? ToolbarActionsModel::Get(browser->GetProfile())
+                         : nullptr),
       extensions_menu_coordinator_(
           base::FeatureList::IsEnabled(
               extensions_features::kExtensionsMenuAccessControl)
               ? std::make_unique<ExtensionsMenuCoordinator>(browser, this)
-              : nullptr) {}
+              : nullptr) {
+  if (toolbar_model_) {
+    toolbar_model_observation_.Observe(toolbar_model_);
+    CreateActions();
+  }
+}
 
-ContextualTasksExtensionsContainer::~ContextualTasksExtensionsContainer() =
-    default;
+ContextualTasksExtensionsContainer::~ContextualTasksExtensionsContainer() {
+  CloseExtensionsMenuIfOpen();
+  HideActivePopup();
+  popup_owner_ = nullptr;
+  for (const auto& [_, model] : actions_) {
+    model->UnregisterCommand();
+  }
+  actions_.clear();
+}
 
 void ContextualTasksExtensionsContainer::ShowExtensionsMenu() {
   if (extensions_menu_coordinator_ &&
@@ -75,7 +89,8 @@ void ContextualTasksExtensionsContainer::SetWebContents(
 
 ToolbarActionViewModel* ContextualTasksExtensionsContainer::GetActionForId(
     const std::string& action_id) {
-  return nullptr;
+  auto it = actions_.find(action_id);
+  return it != actions_.end() ? it->second.get() : nullptr;
 }
 
 void ContextualTasksExtensionsContainer::HideActivePopup() {
@@ -104,7 +119,7 @@ void ContextualTasksExtensionsContainer::ToggleExtensionsMenu() {
 }
 
 bool ContextualTasksExtensionsContainer::HasAnyExtensions() const {
-  return false;
+  return !actions_.empty();
 }
 
 content::WebContents* ContextualTasksExtensionsContainer::GetActiveWebContents()
@@ -163,11 +178,10 @@ void ContextualTasksExtensionsContainer::OnPopupClosed(
 
 views::FocusManager*
 ContextualTasksExtensionsContainer::GetFocusManagerForAccelerator() {
-  if (browser_) {
-    if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_)) {
-      return browser_view->GetFocusManager();
-    }
-  }
+  // Extension keyboard shortcuts are registered by the browser window's main
+  // extensions toolbar container. Returning nullptr prevents the side panel
+  // container's action models from overwriting those accelerators or retaining
+  // a keybinding after BrowserView teardown.
   return nullptr;
 }
 
@@ -185,6 +199,63 @@ ContextualTasksExtensionsContainer::GetExtensionsButtonAnchor() {
 views::BubbleBorder::Arrow ContextualTasksExtensionsContainer::GetPopupArrow()
     const {
   return views::BubbleBorder::TOP_LEFT;
+}
+
+void ContextualTasksExtensionsContainer::OnToolbarModelInitialized() {
+  CreateActions();
+}
+
+void ContextualTasksExtensionsContainer::OnToolbarActionAdded(
+    const ToolbarActionsModel::ActionId& action_id) {
+  CreateActionForId(action_id);
+}
+
+void ContextualTasksExtensionsContainer::OnToolbarActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {
+  auto it = actions_.find(action_id);
+  if (it == actions_.end()) {
+    return;
+  }
+  if (popup_owner_ == it->second.get()) {
+    popup_owner_ = nullptr;
+  }
+  it->second->HidePopup();
+  it->second->UnregisterCommand();
+  actions_.erase(it);
+}
+
+void ContextualTasksExtensionsContainer::OnToolbarActionUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {}
+
+void ContextualTasksExtensionsContainer::OnToolbarPinnedActionsChanged() {}
+
+void ContextualTasksExtensionsContainer::OnToolbarActionsModelShutdown() {
+  toolbar_model_observation_.Reset();
+  toolbar_model_ = nullptr;
+  CloseExtensionsMenuIfOpen();
+  HideActivePopup();
+  popup_owner_ = nullptr;
+  for (const auto& [_, model] : actions_) {
+    model->UnregisterCommand();
+  }
+  actions_.clear();
+}
+
+void ContextualTasksExtensionsContainer::CreateActions() {
+  if (!toolbar_model_ || !toolbar_model_->actions_initialized()) {
+    return;
+  }
+
+  for (const auto& action_id : toolbar_model_->action_ids()) {
+    CreateActionForId(action_id);
+  }
+}
+
+void ContextualTasksExtensionsContainer::CreateActionForId(
+    const ToolbarActionsModel::ActionId& action_id) {
+  actions_[action_id] = ExtensionActionViewModel::Create(
+      action_id, browser_,
+      std::make_unique<ExtensionActionDelegateDesktop>(browser_, this, this));
 }
 
 views::BubbleAnchor ContextualTasksExtensionsContainer::GetAnchor() const {

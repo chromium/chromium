@@ -9,14 +9,18 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "ui/views/bubble/bubble_anchor.h"
 
 class BrowserWindowInterface;
+class ExtensionActionViewModel;
 class ExtensionsMenuCoordinator;
 class ToolbarActionViewModel;
 
@@ -30,8 +34,10 @@ namespace contextual_tasks {
 // Implements ExtensionsContainer and ExtensionsContainerViews so that the
 // standard desktop extensions menu can be scoped to the side panel's
 // WebContents and anchored to the side panel toolbar.
-class ContextualTasksExtensionsContainer : public ExtensionsContainer,
-                                           public ExtensionsContainerViews {
+class ContextualTasksExtensionsContainer
+    : public ExtensionsContainer,
+      public ExtensionsContainerViews,
+      public ToolbarActionsModel::Observer {
  public:
   // Returns the anchor that the extensions menu and extension popups should be
   // attached to, or a null anchor if no suitable anchor currently exists.
@@ -49,7 +55,7 @@ class ContextualTasksExtensionsContainer : public ExtensionsContainer,
       const ContextualTasksExtensionsContainer&) = delete;
   ContextualTasksExtensionsContainer& operator=(
       const ContextualTasksExtensionsContainer&) = delete;
-  virtual ~ContextualTasksExtensionsContainer();
+  ~ContextualTasksExtensionsContainer() override;
 
   // Shows the extensions menu, anchored to the anchor returned by the
   // container's `AnchorProvider`. Does nothing if there is no valid anchor.
@@ -93,7 +99,21 @@ class ContextualTasksExtensionsContainer : public ExtensionsContainer,
   views::BubbleAnchor GetExtensionsButtonAnchor() override;
   views::BubbleBorder::Arrow GetPopupArrow() const override;
 
+  // ToolbarActionsModel::Observer:
+  void OnToolbarModelInitialized() override;
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionUpdated(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarPinnedActionsChanged() override;
+  void OnToolbarActionsModelShutdown() override;
+
  private:
+  void CreateActions();
+  void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
+
   // Runs `anchor_provider_`, returning a null anchor if no provider was
   // supplied. The result must never be stored: see `AnchorProvider`.
   views::BubbleAnchor GetAnchor() const;
@@ -101,7 +121,13 @@ class ContextualTasksExtensionsContainer : public ExtensionsContainer,
   const raw_ptr<BrowserWindowInterface> browser_;
   base::WeakPtr<content::WebContents> web_contents_;
   const AnchorProvider anchor_provider_;
+  raw_ptr<ToolbarActionsModel> toolbar_model_ = nullptr;
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      toolbar_model_observation_{this};
   raw_ptr<ToolbarActionViewModel> popup_owner_ = nullptr;
+  base::flat_map<ToolbarActionsModel::ActionId,
+                 std::unique_ptr<ExtensionActionViewModel>>
+      actions_;
   std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 };
 
