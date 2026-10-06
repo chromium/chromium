@@ -28,13 +28,12 @@
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/event_utils.h"
-#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
-#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
@@ -46,6 +45,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_view_horizontal_layout.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view_vertical_layout.h"
 #include "chrome/browser/ui/views/tabs/common/vertical_tab_style_views.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_title.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/buildflags.h"
@@ -1365,7 +1366,7 @@ bool TabView::IsDragging() const {
 int TabView::UncollapsedMinWidth() {
   // This is the width of a tab in a split that is in a tab group, while the
   // tab strip is in the narrowest uncollapsed state.
-  return (VerticalTabStripRegionView::kUncollapsedMinWidth -
+  return (tabs::kVerticalTabStripUncollapsedMinWidth -
           2 * GetLayoutConstant(
                   LayoutConstant::kVerticalTabStripHorizontalPadding) -
           SplitTabView::kSplitViewGap - TabGroupView::kTabLeadingPadding) /
@@ -1374,7 +1375,7 @@ int TabView::UncollapsedMinWidth() {
 
 // static
 int TabView::CollapsedWidth() {
-  return VerticalTabStripRegionView::kCollapsedWidth -
+  return tabs::kVerticalTabStripCollapsedWidth -
          2 * GetLayoutConstant(
                  LayoutConstant::kVerticalTabStripHorizontalPadding);
 }

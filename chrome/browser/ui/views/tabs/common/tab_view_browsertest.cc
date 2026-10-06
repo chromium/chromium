@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -868,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, AlertIndicatorDecorateOnCollapse) {
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !BrowserAnimationController::From(browser())->IsAnimating(
                TabStripAnimations::kVerticalTabStrip) &&
-           region_view->width() <= VerticalTabStripRegionView::kCollapsedWidth;
+           region_view->width() <= tabs::kVerticalTabStripCollapsedWidth;
   }));
 
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();

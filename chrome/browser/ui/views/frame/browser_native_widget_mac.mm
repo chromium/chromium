@@ -37,13 +37,13 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
-#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
@@ -319,7 +319,7 @@ std::optional<int> BrowserNativeWidgetMac::GetGlassFrameWidth() const {
 
   const int corner_padding = GetGlassCornerPadding();
   const int max_width =
-      VerticalTabStripRegionView::kUncollapsedMaxWidth + corner_padding;
+      tabs::kVerticalTabStripUncollapsedMaxWidth + corner_padding;
 
   auto* const controller =
       tabs::VerticalTabStripStateController::From(browser_view_->browser());
@@ -334,7 +334,7 @@ std::optional<int> BrowserNativeWidgetMac::GetGlassFrameWidth() const {
   }
 
   const int width =
-      (controller->IsCollapsed() ? VerticalTabStripRegionView::kCollapsedWidth
+      (controller->IsCollapsed() ? tabs::kVerticalTabStripCollapsedWidth
                                  : controller->GetUncollapsedWidth()) +
       corner_padding;
   return std::min(width, max_width);

@@ -8,6 +8,17 @@
 namespace tabs {
 
 inline constexpr int kVerticalTabStripDefaultUncollapsedWidth = 240;
+// TODO(crbug.com/465833741): Replace constant with derived value based on
+// caption buttons.
+inline constexpr int kVerticalTabStripUncollapsedMinWidth = 126;
+// TODO(crbug.com/465832180): Replace constant based width final max width for
+// view.
+inline constexpr int kVerticalTabStripUncollapsedMaxWidth = 400;
+inline constexpr int kVerticalTabStripCollapsedWidth = 56;
+// TODO(crbug.com/465833741): Determine snapping behavior.
+inline constexpr int kVerticalTabStripCollapseSnapWidth =
+    (kVerticalTabStripUncollapsedMinWidth + kVerticalTabStripCollapsedWidth) /
+    2;
 
 // Per-window state for the vertical tab strip.
 struct VerticalTabStripState {

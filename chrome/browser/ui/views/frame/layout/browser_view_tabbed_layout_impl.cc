@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
@@ -414,8 +415,8 @@ BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize(
                 params.leading_exclusion.ContentWithPadding().height()));
         // Reserve enough width to uncollapse the tabstrip even if it's
         // collapsed, or else uncollapsing the tabstrip will break the browser.
-        result.set_width(std::max(
-            result.width(), VerticalTabStripRegionView::kUncollapsedMinWidth));
+        result.set_width(std::max(result.width(),
+                                  tabs::kVerticalTabStripUncollapsedMinWidth));
       } else {
         result.set_width(std::max(
             result.width(),
@@ -966,8 +967,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                 TabStripAnimations::kExpand ||
             vertical_tab_strip_animation.current_motion ==
                 TabStripAnimations::kCollapse;
-        unclipped_contents_region.Inset(gfx::Insets::TLBR(
-            0, VerticalTabStripRegionView::kCollapsedWidth, 0, 0));
+        unclipped_contents_region.Inset(
+            gfx::Insets::TLBR(0, tabs::kVerticalTabStripCollapsedWidth, 0, 0));
       } else {
         unclipped_contents_region.Inset(gfx::Insets::TLBR(
             0, horizontal_layout.vertical_tab_strip_width, 0, 0));

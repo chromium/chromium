@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
   {
     const int resize_amount = -20;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
+    ASSERT_LE(tabs::kVerticalTabStripUncollapsedMinWidth, resize_width);
 
     region_view()->OnResize(resize_amount, false);
     EXPECT_EQ(resize_width, region_view()->GetPreferredSize().width());
@@ -248,15 +248,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
   {
     const int resize_amount = -120;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LT(VerticalTabStripRegionView::kCollapseSnapWidth, resize_width);
-    ASSERT_LT(resize_width, VerticalTabStripRegionView::kUncollapsedMinWidth);
+    ASSERT_LT(tabs::kVerticalTabStripCollapseSnapWidth, resize_width);
+    ASSERT_LT(resize_width, tabs::kVerticalTabStripUncollapsedMinWidth);
 
     region_view()->OnResize(resize_amount, false);
-    EXPECT_EQ(VerticalTabStripRegionView::kUncollapsedMinWidth,
+    EXPECT_EQ(tabs::kVerticalTabStripUncollapsedMinWidth,
               region_view()->GetPreferredSize().width());
     EXPECT_FALSE(region_view()->target_collapse_state_for_testing().collapsed);
     EXPECT_EQ(
-        VerticalTabStripRegionView::kUncollapsedMinWidth,
+        tabs::kVerticalTabStripUncollapsedMinWidth,
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_FALSE(IsAnimatingSize());
     EXPECT_FALSE(state_controller()->IsCollapsed());
@@ -267,12 +267,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
   {
     const int resize_amount = -180;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kCollapseSnapWidth);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripCollapseSnapWidth);
 
     region_view()->OnResize(resize_amount, false);
     EXPECT_TRUE(region_view()->target_collapse_state_for_testing().collapsed);
     EXPECT_EQ(
-        VerticalTabStripRegionView::kUncollapsedMinWidth,
+        tabs::kVerticalTabStripUncollapsedMinWidth,
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_TRUE(IsAnimatingSize());
 
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
     // When the animation completes, the preferred width will be the collapsed
     // width.
     ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
-    EXPECT_EQ(VerticalTabStripRegionView::kCollapsedWidth,
+    EXPECT_EQ(tabs::kVerticalTabStripCollapsedWidth,
               region_view()->GetPreferredSize().width());
   }
 }
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeSnapsToDefault) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
-  const int initial_width = VerticalTabStripRegionView::kCollapsedWidth;
+  const int initial_width = tabs::kVerticalTabStripCollapsedWidth;
 
   // Start this test from the collapsed state.
   state_controller()->RequestCollapse(true);
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
   {
     const int resize_amount = 10;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kCollapseSnapWidth);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripCollapseSnapWidth);
 
     region_view()->OnResize(resize_amount, false);
     EXPECT_EQ(initial_width, region_view()->GetPreferredSize().width());
@@ -375,13 +375,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
   {
     const int resize_amount = 50;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LT(VerticalTabStripRegionView::kCollapseSnapWidth, resize_width);
-    ASSERT_LT(resize_width, VerticalTabStripRegionView::kUncollapsedMinWidth);
+    ASSERT_LT(tabs::kVerticalTabStripCollapseSnapWidth, resize_width);
+    ASSERT_LT(resize_width, tabs::kVerticalTabStripUncollapsedMinWidth);
 
     region_view()->OnResize(resize_amount, false);
     EXPECT_FALSE(region_view()->target_collapse_state_for_testing().collapsed);
     EXPECT_EQ(
-        VerticalTabStripRegionView::kUncollapsedMinWidth,
+        tabs::kVerticalTabStripUncollapsedMinWidth,
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_TRUE(IsAnimatingSize());
 
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
     // When the animation completes, the preferred width will be the minimum
     // expanded width.
     ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
-    EXPECT_EQ(VerticalTabStripRegionView::kUncollapsedMinWidth,
+    EXPECT_EQ(tabs::kVerticalTabStripUncollapsedMinWidth,
               region_view()->GetPreferredSize().width());
   }
 
@@ -402,8 +402,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
   {
     const int resize_amount = 100;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
+    ASSERT_LE(tabs::kVerticalTabStripUncollapsedMinWidth, resize_width);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripUncollapsedMaxWidth);
 
     region_view()->OnResize(resize_amount, false);
     EXPECT_EQ(resize_width, region_view()->GetPreferredSize().width());
@@ -420,14 +420,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
   {
     const int resize_amount = 500;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LT(VerticalTabStripRegionView::kUncollapsedMaxWidth, resize_width);
+    ASSERT_LT(tabs::kVerticalTabStripUncollapsedMaxWidth, resize_width);
 
     region_view()->OnResize(resize_amount, false);
-    EXPECT_EQ(VerticalTabStripRegionView::kUncollapsedMaxWidth,
+    EXPECT_EQ(tabs::kVerticalTabStripUncollapsedMaxWidth,
               region_view()->GetPreferredSize().width());
     EXPECT_FALSE(region_view()->target_collapse_state_for_testing().collapsed);
     EXPECT_EQ(
-        VerticalTabStripRegionView::kUncollapsedMaxWidth,
+        tabs::kVerticalTabStripUncollapsedMaxWidth,
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_FALSE(IsAnimatingSize());
     EXPECT_FALSE(state_controller()->IsCollapsed());
@@ -447,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   {
     const int resize_amount = 20;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
+    ASSERT_LE(tabs::kVerticalTabStripUncollapsedMinWidth, resize_width);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripUncollapsedMaxWidth);
 
     region_view()->OnResize(resize_amount, false);
     EXPECT_EQ(resize_width, region_view()->GetPreferredSize().width());
@@ -460,8 +460,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   {
     const int resize_amount = -20;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
+    ASSERT_LE(tabs::kVerticalTabStripUncollapsedMinWidth, resize_width);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripUncollapsedMaxWidth);
 
     region_view()->OnResize(resize_amount, true);
     EXPECT_EQ(resize_width, region_view()->GetPreferredSize().width());
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // should be restored to the state controller's uncollapsed width.
   PressCollapseButton();
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
-  EXPECT_EQ(VerticalTabStripRegionView::kCollapsedWidth,
+  EXPECT_EQ(tabs::kVerticalTabStripCollapsedWidth,
             region_view()->GetPreferredSize().width());
   PressCollapseButton();
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
@@ -485,11 +485,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   {
     const int resize_amount = -120;
     const int resize_width = last_uncollapsed_width + resize_amount;
-    ASSERT_LT(VerticalTabStripRegionView::kCollapseSnapWidth, resize_width);
-    ASSERT_LT(resize_width, VerticalTabStripRegionView::kUncollapsedMinWidth);
+    ASSERT_LT(tabs::kVerticalTabStripCollapseSnapWidth, resize_width);
+    ASSERT_LT(resize_width, tabs::kVerticalTabStripUncollapsedMinWidth);
 
     region_view()->OnResize(resize_amount, false);
-    EXPECT_EQ(VerticalTabStripRegionView::kUncollapsedMinWidth,
+    EXPECT_EQ(tabs::kVerticalTabStripUncollapsedMinWidth,
               region_view()->GetPreferredSize().width());
     EXPECT_EQ(last_uncollapsed_width,
               state_controller()->GetUncollapsedWidth());
@@ -500,11 +500,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   {
     const int resize_amount = -180;
     const int resize_width = last_uncollapsed_width + resize_amount;
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kCollapseSnapWidth);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripCollapseSnapWidth);
 
     region_view()->OnResize(resize_amount, true);
     ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
-    EXPECT_EQ(VerticalTabStripRegionView::kCollapsedWidth,
+    EXPECT_EQ(tabs::kVerticalTabStripCollapsedWidth,
               region_view()->GetPreferredSize().width());
     EXPECT_EQ(last_uncollapsed_width,
               state_controller()->GetUncollapsedWidth());
@@ -535,8 +535,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
   {
     const int resize_amount = 20;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
+    ASSERT_LE(tabs::kVerticalTabStripUncollapsedMinWidth, resize_width);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripUncollapsedMaxWidth);
 
     region_view()->OnResize(resize_amount, false);
     EXPECT_EQ(0, user_action_tester.GetActionCount(
@@ -551,8 +551,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
   {
     const int resize_amount = -20;
     const int resize_width = initial_width + resize_amount;
-    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
+    ASSERT_LE(tabs::kVerticalTabStripUncollapsedMinWidth, resize_width);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripUncollapsedMaxWidth);
 
     region_view()->OnResize(resize_amount, true);
     EXPECT_EQ(0, user_action_tester.GetActionCount(
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
     const int resize_amount = -180;
     const int resize_width =
         region_view()->GetPreferredSize().width() + resize_amount;
-    ASSERT_LE(resize_width, VerticalTabStripRegionView::kCollapseSnapWidth);
+    ASSERT_LE(resize_width, tabs::kVerticalTabStripCollapseSnapWidth);
 
     region_view()->OnResize(resize_amount, true);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -578,9 +578,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "VerticalTabs_TabStrip_ResizeToUncollapsed"));
     histogram_tester.ExpectTotalCount("Tabs.VerticalTabs.TabStripSize", 2);
-    histogram_tester.ExpectBucketCount(
-        "Tabs.VerticalTabs.TabStripSize",
-        VerticalTabStripRegionView::kCollapsedWidth, 1);
+    histogram_tester.ExpectBucketCount("Tabs.VerticalTabs.TabStripSize",
+                                       tabs::kVerticalTabStripCollapsedWidth,
+                                       1);
   }
 }
 

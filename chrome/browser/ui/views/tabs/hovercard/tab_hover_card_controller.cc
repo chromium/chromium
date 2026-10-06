@@ -20,10 +20,11 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
-#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_thumbnail_observer.h"
@@ -109,7 +110,7 @@ base::TimeDelta GetShowDelay(BrowserWindowInterface* browser,
     // the default uncollapsed width.
     tab_width = tab_strip->width();
 
-    tab_min_width = VerticalTabStripRegionView::kCollapsedWidth;
+    tab_min_width = tabs::kVerticalTabStripCollapsedWidth;
     tab_standard_width = tabs::kVerticalTabStripDefaultUncollapsedWidth;
   } else {
     // Use the largest tab in the tab strip when determining the delay so that

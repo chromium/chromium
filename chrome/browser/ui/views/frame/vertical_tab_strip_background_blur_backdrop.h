@@ -8,7 +8,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class VerticalTabStripRegionView;
+namespace views {
+class View;
+}
 
 // A view that appears behind the Vertical Tab Strip when in expand-on-hover
 // in Glass mode only. Provides additional effects that are blurred into the
@@ -20,7 +22,7 @@ class VerticalTabStripBackgroundBlurBackdrop : public views::View {
   ~VerticalTabStripBackgroundBlurBackdrop() override;
 
   // Call after the vertical tab strip background is configured.
-  void UpdateGeometry(const VerticalTabStripRegionView* from, float alpha);
+  void UpdateGeometry(const views::View* from, float alpha);
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;

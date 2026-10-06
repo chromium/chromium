@@ -95,6 +95,7 @@ source_set("impl") {
     "//chrome/browser/ui/thumbnails",
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/web_applications",
     "//chrome/common:constants",
     "//components/collaboration/public",

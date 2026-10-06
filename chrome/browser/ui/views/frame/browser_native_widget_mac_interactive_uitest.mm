@@ -14,12 +14,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
-#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacVerticalTabsGlassTest,
   // During drag resizing, glass view expands up to the maximum possible
   // vertical tab strip width.
   const int expected_resizing_width =
-      VerticalTabStripRegionView::kUncollapsedMaxWidth + corner_padding;
+      tabs::kVerticalTabStripUncollapsedMaxWidth + corner_padding;
   controller->SetIsResizing(true);
   EXPECT_EQ(NSWidth(glass_view.frame), expected_resizing_width);
   EXPECT_EQ(NSMinX(opaque_view.frame), expected_resizing_width);
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacVerticalTabsGlassTest,
 
   const int corner_padding = GetGlassCornerPadding();
   const int expected_collapsed_width =
-      VerticalTabStripRegionView::kCollapsedWidth + corner_padding;
+      tabs::kVerticalTabStripCollapsedWidth + corner_padding;
   const int expected_uncollapsed_width =
       controller->GetUncollapsedWidth() + corner_padding;
 

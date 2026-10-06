@@ -416,7 +416,7 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
   const bool blending_with_organizer_tray =
       !organizer_panel_view_ && organizer_panel_show_percent_ > 0.0;
   const int blend_target_width = state_controller_->IsCollapsed()
-                                     ? kCollapsedWidth
+                                     ? tabs::kVerticalTabStripCollapsedWidth
                                      : state_controller_->GetUncollapsedWidth();
 
   views::SizeBounds button_available_size = size_bounds;
@@ -526,8 +526,8 @@ views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
 gfx::Size VerticalTabStripRegionView::GetMinimumSize() const {
   auto min_size = BaseTabStripRegionView::GetMinimumSize();
   min_size.set_width((state_controller_->IsCollapsed() || IsAnimatingSize())
-                         ? kCollapsedWidth
-                         : kUncollapsedMinWidth);
+                         ? tabs::kVerticalTabStripCollapsedWidth
+                         : tabs::kVerticalTabStripUncollapsedMinWidth);
   return min_size;
 }
 
@@ -539,11 +539,12 @@ gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
   const auto motion =
       controller->GetCurrentMotion(TabStripAnimations::kVerticalTabStrip);
   const int expand_amount =
-      std::max(0, target_collapse_state_.uncollapsed_width - kCollapsedWidth);
+      std::max(0, target_collapse_state_.uncollapsed_width -
+                      tabs::kVerticalTabStripCollapsedWidth);
   const double expand_percent =
       *controller->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
                                    TabStripAnimations::kTabStripWidth);
-  size.set_width(kCollapsedWidth +
+  size.set_width(tabs::kVerticalTabStripCollapsedWidth +
                  (motion == TabStripAnimations::kExpand
                       ? std::floor<double>
                       : std::ceil<double>)(expand_amount * expand_percent));
@@ -746,11 +747,13 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
   }
 
   tabs::VerticalTabStripState new_state;
-  new_state.collapsed = proposed_width <= kCollapseSnapWidth;
+  new_state.collapsed =
+      proposed_width <= tabs::kVerticalTabStripCollapseSnapWidth;
   new_state.uncollapsed_width = target_collapse_state_.uncollapsed_width;
   if (!new_state.collapsed) {
     new_state.uncollapsed_width =
-        std::clamp(proposed_width, kUncollapsedMinWidth, kUncollapsedMaxWidth);
+        std::clamp(proposed_width, tabs::kVerticalTabStripUncollapsedMinWidth,
+                   tabs::kVerticalTabStripUncollapsedMaxWidth);
     if (std::abs(new_state.uncollapsed_width -
                  tabs::kVerticalTabStripDefaultUncollapsedWidth) <
         kSnapDistance) {
@@ -777,9 +780,10 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
     base::RecordAction(base::UserMetricsAction(
         new_state.collapsed ? "VerticalTabs_TabStrip_ResizeToCollapsed"
                             : "VerticalTabs_TabStrip_ResizeToUncollapsed"));
-    base::UmaHistogramCounts1000(
-        "Tabs.VerticalTabs.TabStripSize",
-        new_state.collapsed ? kCollapsedWidth : new_state.uncollapsed_width);
+    base::UmaHistogramCounts1000("Tabs.VerticalTabs.TabStripSize",
+                                 new_state.collapsed
+                                     ? tabs::kVerticalTabStripCollapsedWidth
+                                     : new_state.uncollapsed_width);
   }
 
   target_collapse_state_ = new_state;

@@ -64,17 +64,6 @@ class VerticalTabStripRegionView final
  public:
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnimationCompletedEvent);
 
-  // TODO(crbug.com/465833741): Replace constant with derived value based on
-  // caption buttons.
-  static constexpr int kUncollapsedMinWidth = 126;
-  // TODO(crbug.com/465832180): Replace constant based width final max width for
-  // view.
-  static constexpr int kUncollapsedMaxWidth = 400;
-  static constexpr int kCollapsedWidth = 56;
-  // TODO(crbug.com/465833741): Determine snapping behavior.
-  static constexpr int kCollapseSnapWidth =
-      (kUncollapsedMinWidth + kCollapsedWidth) / 2;
-
   explicit VerticalTabStripRegionView(
       tabs::VerticalTabStripStateController* state_controller,
       actions::ActionItem* root_action_item,

@@ -1173,6 +1173,7 @@ source_set("vertical_tab_strip_background_blur_backdrop") {
     "//cc/paint",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
     "//ui/color:color_headers",
     "//ui/compositor",
     "//ui/gfx",

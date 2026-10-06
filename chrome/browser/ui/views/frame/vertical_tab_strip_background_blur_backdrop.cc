@@ -6,10 +6,11 @@
 
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
-#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -25,7 +26,7 @@ VerticalTabStripBackgroundBlurBackdrop::
     ~VerticalTabStripBackgroundBlurBackdrop() = default;
 
 void VerticalTabStripBackgroundBlurBackdrop::UpdateGeometry(
-    const VerticalTabStripRegionView* from,
+    const views::View* from,
     float alpha) {
   border_path_ =
       from->background()->AsA<CustomCornersBackground>()->GetBackgroundPath();
@@ -53,7 +54,7 @@ void VerticalTabStripBackgroundBlurBackdrop::OnPaint(gfx::Canvas* canvas) {
   auto color = GetColorProvider()->GetColor(kColorToolbar);
   color = SkColorSetA(color, base::ClampRound(alpha_ * 255.0f));
   gfx::Rect rect = GetLocalBounds();
-  rect.set_width(VerticalTabStripRegionView::kCollapsedWidth);
+  rect.set_width(tabs::kVerticalTabStripCollapsedWidth);
   rect = GetMirroredRect(rect);
   canvas->FillRect(rect, color);
 

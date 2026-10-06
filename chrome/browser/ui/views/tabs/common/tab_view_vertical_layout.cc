@@ -6,7 +6,7 @@
 
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_title.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr int kIconDesignWidth = 16;
@@ -46,8 +47,8 @@ void TabViewVerticalLayout::OnInstalled(views::View* host) {
 
 views::ProposedLayout TabViewVerticalLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  const int width = size_bounds.width().value_or(
-      VerticalTabStripRegionView::kUncollapsedMaxWidth);
+  const int width =
+      size_bounds.width().value_or(tabs::kVerticalTabStripUncollapsedMaxWidth);
   const int height = GetLayoutConstant(
       TabView().pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
                         : LayoutConstant::kVerticalTabHeight);
