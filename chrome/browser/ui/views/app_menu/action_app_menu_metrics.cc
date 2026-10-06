@@ -475,15 +475,20 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
                    "ShowSyncPassphraseDialog");
       break;
 
+    case kActionShowManagementPage:
+      RecordAction(MENU_ACTION_SHOW_MANAGEMENT_PAGE, "ShowManagementPage");
+      break;
+    case kActionReportUnsafeSite:
+      RecordAction(MENU_ACTION_REPORT_UNSAFE_SITE, "ReportUnsafeSite");
+      break;
+
     // Actions present in the menu that do not have a per-action TimeToAction
     // variant in histograms.xml, but still record the overall
     // WrenchMenu.TimeToAction histogram (and WrenchMenu.MenuAction if defined).
     // TODO(crbug.com/565832018): Add TimeToAction and MenuAction entries for
     // each of these.
     case kActionNameWindow:
-    case kActionReportUnsafeSite:
     case kActionSharingHubScreenshot:
-    case kActionShowManagementPage:
     case kActionTabSearch:
     case kActionTakeScreenshot:
     case kActionToggleVerticalTabs:

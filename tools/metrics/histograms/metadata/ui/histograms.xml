@@ -1581,6 +1581,7 @@ features through Chrome Labs. -->
     <variant name=".ProfilingEnabled"/>
     <variant name=".ReadingListAddTab"/>
     <variant name=".ReadingListShowUi"/>
+    <variant name=".ReportUnsafeSite"/>
     <variant name=".RequestTabletSite"/>
     <variant name=".RestoreTab"/>
     <variant name=".SafetyHubNotificationManageExtensions"/>
@@ -1608,6 +1609,7 @@ features through Chrome Labs. -->
     <variant name=".ShowIdentityDocs"/>
     <variant name=".ShowKaleidoscope"/>
     <variant name=".ShowLensOverlay"/>
+    <variant name=".ShowManagementPage"/>
     <variant name=".ShowPasswordManager"/>
     <variant name=".ShowPaymentMethods"/>
     <variant name=".ShowPerformanceSettings"/>
