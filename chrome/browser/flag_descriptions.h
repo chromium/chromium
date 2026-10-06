@@ -5138,6 +5138,11 @@ inline constexpr char kWebXrIncubationsName[] = "WebXR Incubations";
 inline constexpr char kWebXrIncubationsDescription[] =
     "Enables experimental features for WebXR.";
 
+inline constexpr char kWindowOpenAlwaysOnTopName[] = "Always-on-top popups";
+inline constexpr char kWindowOpenAlwaysOnTopDescription[] =
+    "Allows websites with the window-management permission to open "
+    "always-on-top popup windows via window.open().";
+
 inline constexpr char kZeroCopyName[] = "Zero-copy rasterizer";
 inline constexpr char kZeroCopyDescription[] =
     "Raster threads write directly to GPU memory associated with tiles.";

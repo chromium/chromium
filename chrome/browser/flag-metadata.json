@@ -10491,6 +10491,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "window-open-always-on-top",
+    "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "window-preview-on-shelf",
     "owners": [ "oshima@chromium.org" ],
     "expiry_milestone": 170

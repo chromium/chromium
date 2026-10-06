@@ -9309,6 +9309,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPictureInPictureMuteControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kPictureInPictureMuteControl)},
 
+    {"window-open-always-on-top", flag_descriptions::kWindowOpenAlwaysOnTopName,
+     flag_descriptions::kWindowOpenAlwaysOnTopDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kWindowOpenAlwaysOnTop)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
