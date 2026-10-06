@@ -27,8 +27,8 @@ class MEDIA_EXPORT ChannelMixer {
   // (1 / sqrt(2)) gain to each.
   static constexpr float kHalfPower = 0.707106781186547524401f;
 
-  ChannelMixer(const ChannelLayoutConfig& input_config,
-               const ChannelLayoutConfig& output_config);
+  ChannelMixer(ChannelLayoutConfig input_config,
+               ChannelLayoutConfig output_config);
   ChannelMixer(const AudioParameters& input, const AudioParameters& output);
 
   ChannelMixer(const ChannelMixer&) = delete;
@@ -48,8 +48,8 @@ class MEDIA_EXPORT ChannelMixer {
                         AudioBus* output);
 
  private:
-  void Initialize(const ChannelLayoutConfig& input_config,
-                  const ChannelLayoutConfig& output_config);
+  void Initialize(ChannelLayoutConfig input_config,
+                  ChannelLayoutConfig output_config);
 
   // 2D matrix of output channels to input channels.
   std::vector< std::vector<float> > matrix_;

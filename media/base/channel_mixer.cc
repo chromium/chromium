@@ -15,8 +15,8 @@
 
 namespace media {
 
-ChannelMixer::ChannelMixer(const ChannelLayoutConfig& input_config,
-                           const ChannelLayoutConfig& output_config) {
+ChannelMixer::ChannelMixer(ChannelLayoutConfig input_config,
+                           ChannelLayoutConfig output_config) {
   Initialize(input_config, output_config);
 }
 
@@ -25,8 +25,8 @@ ChannelMixer::ChannelMixer(
   Initialize(input.channel_layout_config(), output.channel_layout_config());
 }
 
-void ChannelMixer::Initialize(const ChannelLayoutConfig& input_config,
-                              const ChannelLayoutConfig& output_config) {
+void ChannelMixer::Initialize(ChannelLayoutConfig input_config,
+                              ChannelLayoutConfig output_config) {
   // Create the transformation matrix
   ChannelMixingMatrix matrix_builder(input_config, output_config);
   remapping_ = matrix_builder.CreateTransformationMatrix(&matrix_);
