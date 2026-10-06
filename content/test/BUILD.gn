@@ -759,6 +759,8 @@ static_library("test_support") {
       "../public/test/system_media_controls_bridge_test_utils.cc",
       "../public/test/system_media_controls_bridge_test_utils.h",
       "../public/test/text_input_test_utils_mac.mm",
+      "run_inside_nsapplication_run_mac.h",
+      "run_inside_nsapplication_run_mac.mm",
     ]
     deps += [
       "//ui/base/mojom",

@@ -125,6 +125,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/sandbox_parameters_mac.h"
+#include "content/test/run_inside_nsapplication_run_mac.h"
 #include "net/test/test_data_directory.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/event_generator_delegate_mac.h"
@@ -605,6 +606,14 @@ void BrowserTestBase::SetUp() {
       std::move(created_main_parts_closure);
   content_main_params.ui_task = base::BindOnce(
       &BrowserTestBase::ProxyRunTestOnMainThreadLoop, base::Unretained(this));
+#if BUILDFLAG(IS_MAC)
+  // In production, all UI code runs inside -[NSApplication run], and AppKit
+  // behaves differently when NSApp is not running (e.g. it doesn't pick a new
+  // key window when the key window is ordered out). Run the test inside
+  // -[NSApplication run] too. See https://crbug.com/570104905.
+  content_main_params.ui_task = base::BindOnce(
+      &RunInsideNSApplicationRun, std::move(content_main_params.ui_task));
+#endif
 
   ContentMainDelegate* overridden_delegate =
       GetOptionalContentMainDelegateOverride();

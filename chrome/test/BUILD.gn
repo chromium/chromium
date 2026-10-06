@@ -8187,6 +8187,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest_mac.h",
         "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest_mac.mm",
         "//ui/display/mac/test/virtual_display_util_mac_interactive_uitest.mm",
+        "base/in_process_browser_test_mac_interactive_uitest.mm",
       ]
 
       data_deps += [
