@@ -181,9 +181,8 @@ TEST_P(SiteTokenURLLoaderFactoryTokenDeliveryTest,
   EXPECT_EQ(result.response_head->headers->GetNormalizedHeader(
                 network::cors::header_names::kAccessControlAllowOrigin),
             url::Origin::Create(GURL(param.initiator_url)).Serialize());
-  EXPECT_EQ(result.response_head->headers->GetNormalizedHeader(
-                network::cors::header_names::kAccessControlAllowCredentials),
-            "true");
+  EXPECT_FALSE(result.response_head->headers->HasHeader(
+      network::cors::header_names::kAccessControlAllowCredentials));
 }
 
 INSTANTIATE_TEST_SUITE_P(

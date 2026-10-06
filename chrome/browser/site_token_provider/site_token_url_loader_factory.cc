@@ -53,9 +53,6 @@ network::mojom::URLResponseHeadPtr BuildResponseHead(
           .AddHeader(net::HttpRequestHeaders::kContentType, kMimeTypePlainText)
           .AddHeader(network::cors::header_names::kAccessControlAllowOrigin,
                      initiator.Serialize())
-          .AddHeader(
-              network::cors::header_names::kAccessControlAllowCredentials,
-              "true")
           .Build();
   return head;
 }
