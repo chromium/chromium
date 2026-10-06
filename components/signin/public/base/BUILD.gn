@@ -26,19 +26,26 @@ proto_library("hybrid_encryption_key_proto") {
   ]
 }
 
-# Internal per-account signin prefs plumbing: the pref keys and the registry of
-# per-account prefs. Only for use by `SigninPrefs` and its tests.
+# Internal per-account signin prefs plumbing: the pref keys, the registry of
+# per-account prefs, and the generic accessor. Only for use by `SigninPrefs`
+# and its tests.
 source_set("signin_prefs_internal") {
   visibility = [
     ":base",
     ":unit_tests",
   ]
   sources = [
+    "signin_prefs_accessor.cc",
+    "signin_prefs_accessor.h",
     "signin_prefs_keys.h",
     "signin_prefs_registry.cc",
     "signin_prefs_registry.h",
   ]
   public_deps = [ "//base" ]
+  deps = [
+    "//components/prefs",
+    "//google_apis",
+  ]
 }
 
 static_library("base") {

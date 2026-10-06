@@ -9,12 +9,14 @@
 
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_prefs_accessor.h"
 #include "components/signin/public/base/signin_prefs_keys.h"
 #include "components/signin/public/base/signin_prefs_registry.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -1005,4 +1007,430 @@ TEST_F(SigninPrefsTest, IsValidValueValidatesTypesAndTimestamps) {
   EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(pass_key, {}, "UnknownPrefKey",
                                                  base::Value(1)));
 }
+
+TEST_F(SigninPrefsTest, SigninPrefsAccessorDirectOperations) {
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  const GaiaId gaia_id("accessor_test_gaia");
+
+  base::MockRepeatingClosure mock_observer;
+  SigninPrefs::ObserveSigninPrefsChanges(pref_change_registrar(),
+                                         mock_observer.Get());
+
+  // ClearPref returns false and does not notify when account or key does not
+  // exist.
+  EXPECT_CALL(mock_observer, Run()).Times(0);
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kChromeSigninInterceptionDismissCount));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // SetValue sets a registered leaf value.
+  EXPECT_CALL(mock_observer, Run()).Times(1);
+  accessor.SetValue(gaia_id,
+                    signin::internal::kChromeSigninInterceptionDismissCount,
+                    base::Value(42));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_EQ(
+      accessor.GetIntPref(
+          gaia_id, signin::internal::kChromeSigninInterceptionDismissCount),
+      42);
+
+  // ClearPref removes the key and returns true.
+  EXPECT_CALL(mock_observer, Run()).Times(1);
+  EXPECT_TRUE(accessor.ClearPref(
+      gaia_id, signin::internal::kChromeSigninInterceptionDismissCount));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_EQ(
+      accessor.GetIntPref(
+          gaia_id, signin::internal::kChromeSigninInterceptionDismissCount),
+      0);
+  // Second ClearPref returns false and does not notify.
+  EXPECT_CALL(mock_observer, Run()).Times(0);
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kChromeSigninInterceptionDismissCount));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // SetValue with a valid timestamp string.
+  const base::Time now = base::Time::Now();
+  EXPECT_CALL(mock_observer, Run()).Times(1);
+  accessor.SetValue(gaia_id, signin::internal::kChromeLastSignoutTime,
+                    base::TimeToValue(now));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_EQ(
+      accessor.GetTimePref(gaia_id, signin::internal::kChromeLastSignoutTime),
+      now);
+
+  // Test IncrementIntPref clamping at INT_MAX.
+  EXPECT_CALL(mock_observer, Run()).Times(2);
+  accessor.SetIntPref(gaia_id,
+                      signin::internal::kChromeSigninInterceptionDismissCount,
+                      std::numeric_limits<int>::max());
+  EXPECT_EQ(
+      accessor.IncrementIntPref(
+          gaia_id, signin::internal::kChromeSigninInterceptionDismissCount),
+      std::numeric_limits<int>::max());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_EQ(
+      accessor.GetIntPref(
+          gaia_id, signin::internal::kChromeSigninInterceptionDismissCount),
+      std::numeric_limits<int>::max());
+
+  // Test nested pref access (CrossDevice history promo) and clearing a DICT
+  // subtree.
+  EXPECT_CALL(mock_observer, Run()).Times(3);
+  accessor.SetValue(gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+                    base::Value(5),
+                    signin::internal::kCrossDeviceHistoryPromoParents);
+  EXPECT_EQ(accessor.GetIntPref(
+                gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+                signin::internal::kCrossDeviceHistoryPromoParents),
+            5);
+  EXPECT_TRUE(accessor.ClearPref(
+      gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+      signin::internal::kCrossDeviceHistoryPromoParents));
+  EXPECT_EQ(accessor.GetIntPref(
+                gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+                signin::internal::kCrossDeviceHistoryPromoParents),
+            0);
+  EXPECT_TRUE(
+      accessor.ClearPref(gaia_id, signin::internal::kCrossDevicePromoPrefs));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+}
+
+// Accessor-level counterpart of
+// `CorruptedAccountsPrefIsIgnoredOnReadAndOverwrittenOnWrite`: the accounts
+// pref itself is not a dict. Reads return defaults, clears are a no-op, and the
+// first write replaces the corrupted value with a proper dict holding only the
+// written account.
+TEST_F(SigninPrefsTest,
+       AccessorCorruptedAccountsPrefIgnoredOnReadOverwrittenOnWrite) {
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  const GaiaId gaia_id("gaia_id_corrupted");
+  const base::Time time = base::Time::FromSecondsSinceUnixEpoch(1700000000);
+  pref_service().SetUserPref(kSigninAccountPrefs, base::Value(42));
+  ASSERT_EQ(*pref_service().GetUserPref(kSigninAccountPrefs), base::Value(42));
+
+  // Reads are ignored: the accounts dict appears empty and every value kind
+  // falls back to its default.
+  EXPECT_TRUE(accessor.GetAccountPrefsDict().empty());
+  EXPECT_FALSE(accessor.HasAccountPrefs(gaia_id));
+  EXPECT_EQ(
+      accessor.MaybeGetIntPref(
+          gaia_id, signin::internal::kChromeSigninInterceptionRepromptCount),
+      std::nullopt);
+  EXPECT_EQ(
+      accessor.GetIntPref(
+          gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+          signin::internal::kAvatarButtonPromoParents),
+      0);
+  EXPECT_FALSE(accessor.GetBooleanPref(
+      gaia_id, signin::internal::kExtensionsExplicitBrowserSigninEnabled));
+  EXPECT_EQ(
+      accessor.GetTimePref(
+          gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+          signin::internal::kCrossDeviceHistoryPromoParents),
+      std::nullopt);
+
+  // Clears are a no-op, report nothing removed, and leave the corrupted value
+  // untouched.
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kChromeSigninInterceptionRepromptCount));
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+      signin::internal::kCrossDeviceHistoryPromoParents));
+  EXPECT_EQ(*pref_service().GetUserPref(kSigninAccountPrefs), base::Value(42));
+
+  // A top-level write replaces the corrupted value with a dict that contains
+  // only the written account and key.
+  accessor.SetValue(gaia_id,
+                    signin::internal::kChromeSigninInterceptionRepromptCount,
+                    base::Value(3));
+  EXPECT_EQ(
+      accessor.MaybeGetIntPref(
+          gaia_id, signin::internal::kChromeSigninInterceptionRepromptCount),
+      3);
+  EXPECT_TRUE(accessor.HasAccountPrefs(gaia_id));
+  base::DictValue expected_accounts;
+  base::DictValue* expected_account =
+      expected_accounts.EnsureDict(gaia_id.ToString());
+  expected_account->Set(
+      signin::internal::kChromeSigninInterceptionRepromptCount, 3);
+  const base::Value* raw_accounts =
+      pref_service().GetUserPref(kSigninAccountPrefs);
+  ASSERT_TRUE(raw_accounts);
+  ASSERT_TRUE(raw_accounts->is_dict());
+  EXPECT_EQ(raw_accounts->GetDict(), expected_accounts);
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+
+  // Nested writes then build on the now valid dict.
+  EXPECT_EQ(
+      accessor.IncrementIntPref(
+          gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+          signin::internal::kAvatarButtonPromoParents),
+      1);
+  accessor.SetTimePref(gaia_id,
+                       signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+                       time, signin::internal::kCrossDeviceHistoryPromoParents);
+  EXPECT_EQ(
+      accessor.GetTimePref(
+          gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+          signin::internal::kCrossDeviceHistoryPromoParents),
+      time);
+  expected_account
+      ->EnsureDict(signin::internal::kAvatarButtonPromoCountDictionary)
+      ->Set(signin::internal::kAvatarButtonHistorySyncPromoShownCount, 1);
+  expected_account->EnsureDict(signin::internal::kCrossDevicePromoPrefs)
+      ->EnsureDict(signin::internal::kCrossDevicePromoHistoryDictKey)
+      ->Set(signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+            base::TimeToValue(time));
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+}
+
+// Accessor-level counterpart of
+// `CorruptedAccountEntryIsIgnoredOnReadAndOverwrittenOnWrite`: an account entry
+// is not a dict. Reads return defaults, clears are a no-op, and the first write
+// replaces the corrupted entry with a dict holding only the written key,
+// without affecting other (valid) accounts.
+TEST_F(SigninPrefsTest,
+       AccessorCorruptedAccountEntryIgnoredOnReadOverwrittenOnWrite) {
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  const GaiaId gaia_id("gaia_id_corrupted");
+  const GaiaId valid_gaia_id("gaia_id_valid");
+  const base::Time time = base::Time::FromSecondsSinceUnixEpoch(1700000000);
+  base::DictValue expected_accounts;
+  expected_accounts.Set(gaia_id.ToString(), "not_a_dict");
+  expected_accounts.EnsureDict(valid_gaia_id.ToString())
+      ->Set(signin::internal::kChromeSigninInterceptionRepromptCount, 7);
+  {
+    ScopedDictPrefUpdate update(&pref_service(), kSigninAccountPrefs);
+    *update = expected_accounts.Clone();
+  }
+  ASSERT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+
+  // Reads are ignored: every value kind falls back to its default.
+  EXPECT_EQ(
+      accessor.MaybeGetIntPref(
+          gaia_id, signin::internal::kChromeSigninInterceptionRepromptCount),
+      std::nullopt);
+  EXPECT_EQ(
+      accessor.GetIntPref(
+          gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+          signin::internal::kAvatarButtonPromoParents),
+      0);
+  EXPECT_FALSE(accessor.GetBooleanPref(
+      gaia_id, signin::internal::kExtensionsExplicitBrowserSigninEnabled));
+  EXPECT_EQ(
+      accessor.GetTimePref(gaia_id, signin::internal::kChromeLastSignoutTime),
+      std::nullopt);
+  EXPECT_EQ(
+      accessor.GetTimePref(
+          gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+          signin::internal::kCrossDeviceHistoryPromoParents),
+      std::nullopt);
+
+  // Clears are a no-op, report nothing removed, and leave the corrupted entry
+  // untouched.
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kChromeSigninInterceptionRepromptCount));
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+      signin::internal::kCrossDeviceHistoryPromoParents));
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+
+  // A nested write replaces the corrupted entry with a dict that contains only
+  // the written key. The valid account is untouched.
+  EXPECT_EQ(
+      accessor.IncrementIntPref(
+          gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+          signin::internal::kAvatarButtonPromoParents),
+      1);
+  base::DictValue* expected_account =
+      expected_accounts.EnsureDict(gaia_id.ToString());
+  expected_account
+      ->EnsureDict(signin::internal::kAvatarButtonPromoCountDictionary)
+      ->Set(signin::internal::kAvatarButtonHistorySyncPromoShownCount, 1);
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+  EXPECT_EQ(accessor.MaybeGetIntPref(
+                valid_gaia_id,
+                signin::internal::kChromeSigninInterceptionRepromptCount),
+            7);
+
+  // Further writes at other depths build on the now valid entry.
+  accessor.SetBooleanPref(
+      gaia_id, signin::internal::kExtensionsExplicitBrowserSigninEnabled, true);
+  accessor.SetValue(gaia_id,
+                    signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+                    base::TimeToValue(time),
+                    signin::internal::kCrossDeviceHistoryPromoParents);
+  EXPECT_TRUE(accessor.GetBooleanPref(
+      gaia_id, signin::internal::kExtensionsExplicitBrowserSigninEnabled));
+  EXPECT_EQ(
+      accessor.GetTimePref(
+          gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+          signin::internal::kCrossDeviceHistoryPromoParents),
+      time);
+  expected_account->Set(
+      signin::internal::kExtensionsExplicitBrowserSigninEnabled, true);
+  expected_account->EnsureDict(signin::internal::kCrossDevicePromoPrefs)
+      ->EnsureDict(signin::internal::kCrossDevicePromoHistoryDictKey)
+      ->Set(signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+            base::TimeToValue(time));
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+}
+
+// Accessor-level counterpart of
+// `CorruptedIntermediateDictIsIgnoredOnReadAndOverwrittenOnWrite`: an
+// intermediate dict inside an otherwise valid account entry is not a dict.
+// Reads below it return defaults, clears are a no-op, and a write below it
+// replaces only that intermediate with a dict, preserving the valid sibling
+// keys of the account.
+TEST_F(SigninPrefsTest,
+       AccessorCorruptedIntermediateDictIgnoredOnReadOverwrittenOnWrite) {
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  const GaiaId gaia_id("gaia_id_corrupted");
+  const base::Time time = base::Time::FromSecondsSinceUnixEpoch(1700000000);
+  base::DictValue expected_accounts;
+  base::DictValue* expected_account =
+      expected_accounts.EnsureDict(gaia_id.ToString());
+  expected_account->Set(signin::internal::kChromeSigninInterceptionUserChoice,
+                        static_cast<int>(ChromeSigninUserChoice::kSignin));
+  expected_account->Set(signin::internal::kAvatarButtonPromoCountDictionary,
+                        "not_a_dict");
+  expected_account->Set(signin::internal::kCrossDevicePromoPrefs, 42);
+  {
+    ScopedDictPrefUpdate update(&pref_service(), kSigninAccountPrefs);
+    *update = expected_accounts.Clone();
+  }
+  ASSERT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+
+  // Reads below the corrupted intermediates are ignored and fall back to their
+  // defaults, while the valid sibling key is still readable.
+  EXPECT_EQ(
+      accessor.MaybeGetIntPref(
+          gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+          signin::internal::kAvatarButtonPromoParents),
+      std::nullopt);
+  EXPECT_EQ(
+      accessor.GetTimePref(
+          gaia_id, signin::internal::kAvatarButtonSigninPromoLastShownTime,
+          signin::internal::kAvatarButtonPromoParents),
+      std::nullopt);
+  EXPECT_EQ(accessor.GetIntPref(
+                gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+                signin::internal::kCrossDeviceHistoryPromoParents),
+            0);
+  EXPECT_FALSE(accessor.GetBooleanPref(
+      gaia_id, signin::internal::kCrossDevicePromoShownAfterDismissalKey,
+      signin::internal::kCrossDeviceHistoryPromoParents));
+  EXPECT_EQ(
+      accessor.GetTimePref(
+          gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+          signin::internal::kCrossDeviceHistoryPromoParents),
+      std::nullopt);
+  EXPECT_EQ(accessor.MaybeGetIntPref(
+                gaia_id, signin::internal::kChromeSigninInterceptionUserChoice),
+            static_cast<int>(ChromeSigninUserChoice::kSignin));
+
+  // Clears below the corrupted intermediates are a no-op, report nothing
+  // removed, and leave the corrupted intermediates untouched.
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+      signin::internal::kAvatarButtonPromoParents));
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+      signin::internal::kCrossDeviceHistoryPromoParents));
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+
+  // A write under `CrossDevicePromoPrefs` replaces only that intermediate with
+  // a dict. The other corrupted intermediate and the sibling key are untouched.
+  accessor.SetIntPref(gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+                      5, signin::internal::kCrossDeviceHistoryPromoParents);
+  EXPECT_EQ(accessor.GetIntPref(
+                gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+                signin::internal::kCrossDeviceHistoryPromoParents),
+            5);
+  expected_account->Remove(signin::internal::kCrossDevicePromoPrefs);
+  expected_account->EnsureDict(signin::internal::kCrossDevicePromoPrefs)
+      ->EnsureDict(signin::internal::kCrossDevicePromoHistoryDictKey)
+      ->Set(signin::internal::kCrossDevicePromoShownCountKey, 5);
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+
+  // Likewise for `AvatarButtonPromoCountDictionary`.
+  EXPECT_EQ(
+      accessor.IncrementIntPref(
+          gaia_id, signin::internal::kAvatarButtonHistorySyncPromoShownCount,
+          signin::internal::kAvatarButtonPromoParents),
+      1);
+  expected_account->Remove(signin::internal::kAvatarButtonPromoCountDictionary);
+  expected_account
+      ->EnsureDict(signin::internal::kAvatarButtonPromoCountDictionary)
+      ->Set(signin::internal::kAvatarButtonHistorySyncPromoShownCount, 1);
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+
+  // Depth-2 corruption: `CrossDevicePromoPrefs` is a valid dict but `history`
+  // is not. Reads are ignored, and a write replaces `history` with a dict that
+  // contains only the written key.
+  {
+    ScopedDictPrefUpdate update(&pref_service(), kSigninAccountPrefs);
+    update->FindDict(gaia_id.ToString())
+        ->FindDict(signin::internal::kCrossDevicePromoPrefs)
+        ->Set(signin::internal::kCrossDevicePromoHistoryDictKey, "not_a_dict");
+  }
+  EXPECT_EQ(accessor.GetIntPref(
+                gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
+                signin::internal::kCrossDeviceHistoryPromoParents),
+            0);
+  accessor.SetTimePref(gaia_id,
+                       signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+                       time, signin::internal::kCrossDeviceHistoryPromoParents);
+  EXPECT_EQ(
+      accessor.GetTimePref(
+          gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+          signin::internal::kCrossDeviceHistoryPromoParents),
+      time);
+  base::DictValue* expected_cross_device =
+      expected_account->FindDict(signin::internal::kCrossDevicePromoPrefs);
+  expected_cross_device->Remove(
+      signin::internal::kCrossDevicePromoHistoryDictKey);
+  expected_cross_device
+      ->EnsureDict(signin::internal::kCrossDevicePromoHistoryDictKey)
+      ->Set(signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+            base::TimeToValue(time));
+  EXPECT_EQ(accessor.GetAccountPrefsDict(), expected_accounts);
+}
+
+// One assertion per distinct `CHECK` path: every `EXPECT_CHECK_DEATH` spawns a
+// child process, so each additional assertion costs several seconds.
+TEST_F(SigninPrefsTest, SigninPrefsAccessorCheckFailures) {
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  const GaiaId gaia_id("accessor_death_test_gaia");
+
+  // Unregistered key, on the typed path and on `ClearPref`.
+  EXPECT_CHECK_DEATH(accessor.SetIntPref(gaia_id, "UnregisteredPrefKey", 1));
+  EXPECT_CHECK_DEATH(accessor.ClearPref(gaia_id, "UnregisteredPrefKey"));
+
+  // Registered leaf key under the wrong parents: `kAccountMetricsId` is only
+  // registered at the top level of the account dictionary.
+  EXPECT_CHECK_DEATH(
+      accessor.SetIntPref(gaia_id, signin::internal::kAccountMetricsId, 1,
+                          signin::internal::kCrossDeviceHistoryPromoParents));
+
+  // Type mismatch: `kAccountMetricsId` is registered as INTEGER.
+  EXPECT_CHECK_DEATH(
+      accessor.GetBooleanPref(gaia_id, signin::internal::kAccountMetricsId));
+
+  // SetValue with a malformed timestamp string.
+  EXPECT_CHECK_DEATH(accessor.SetValue(gaia_id,
+                                       signin::internal::kChromeLastSignoutTime,
+                                       base::Value("not_a_valid_timestamp")));
+
+  // Empty GaiaId.
+  EXPECT_CHECK_DEATH(accessor.SetIntPref(
+      GaiaId(), signin::internal::kChromeSigninInterceptionDismissCount, 1));
+}
+
 

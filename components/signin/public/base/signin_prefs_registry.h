@@ -14,6 +14,8 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 
+class SigninPrefsAccessor;
+
 // Schema of the per-account preferences stored by `SigninPrefs`: which keys
 // exist, how they are nested, and what type each one holds.
 //
@@ -24,7 +26,7 @@ class SigninPrefsRegistry {
   // Listing `SigninPrefsRegistry` itself is what lets
   // `CreatePassKeyForTesting()` mint a key: `base::PassKey<T>` befriends `T`,
   // and a single-holder key converts to a multi-holder one.
-  using PassKey = base::PassKey<SigninPrefsRegistry>;
+  using PassKey = base::PassKey<SigninPrefsAccessor, SigninPrefsRegistry>;
 
   static PassKey CreatePassKeyForTesting() {
     return base::PassKey<SigninPrefsRegistry>();
