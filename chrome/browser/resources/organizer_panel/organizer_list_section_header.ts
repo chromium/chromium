@@ -83,11 +83,16 @@ export class OrganizerListSectionHeaderElement extends
   }
 
   protected onShowSomeClick_() {
-    this.$.menu.close();
+    this.setShowAll_(false);
   }
 
   protected onShowAllClick_() {
+    this.setShowAll_(true);
+  }
+
+  private setShowAll_(showAll: boolean) {
     this.$.menu.close();
+    this.fire('show-all-changed', {value: showAll});
   }
 }
 

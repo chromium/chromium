@@ -20,6 +20,8 @@ import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
 import type {SearchOptions} from './search_utils.js';
 import {search} from './search_utils.js';
 
+export const INITIAL_ITEM_COUNT = 3;
+
 export interface OrganizerListSectionElement {
   $: {
     header: OrganizerListSectionHeaderElement,
@@ -46,6 +48,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
       items: {type: Array},
       expanded_: {type: Boolean},
       noAnimation_: {type: Boolean},
+      showAll_: {type: Boolean},
       searchQuery: {type: String},
       filteredItems_: {type: Array},
       filteredSearchQuery_: {type: String},
@@ -58,6 +61,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = true;
   protected accessor noAnimation_: boolean = false;
+  protected accessor showAll_: boolean = false;
   accessor searchQuery: string = '';
   protected accessor filteredItems_:
       Array<HighlightableOrganizerListSectionItem<unknown>> = [];
@@ -215,6 +219,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return this.delegate?.getZeroState?.();
   }
 
+  protected onShowAllChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showAll_ = e.detail.value;
+  }
+
   protected onItemClick_(e: Event) {
     const target = e.currentTarget as OrganizerListSectionItemElement;
     assert(target.item);
@@ -249,7 +257,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   protected getFilteredItems_():
       Array<HighlightableOrganizerListSectionItem<unknown>> {
-    return this.filteredItems_;
+    if (this.showAll_ || this.isSearching_()) {
+      return this.filteredItems_;
+    }
+    return this.filteredItems_.slice(0, INITIAL_ITEM_COUNT);
   }
 }
 

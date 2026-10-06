@@ -116,16 +116,24 @@ suite('OrganizerListSectionHeaderTest', () => {
         menuButton.getBoundingClientRect().bottom,
         menu.getDialog().getBoundingClientRect().top);
 
+    let whenShowAllChanged = eventToPromise<CustomEvent<{value: boolean}>>(
+        'show-all-changed', header);
     showSomeButton.click();
+    let event = await whenShowAllChanged;
     await microtasksFinished();
+    assertFalse(event.detail.value);
     assertFalse(menu.open);
 
     menuButton.click();
     await microtasksFinished();
     assertTrue(menu.open);
 
+    whenShowAllChanged = eventToPromise<CustomEvent<{value: boolean}>>(
+        'show-all-changed', header);
     showAllButton.click();
+    event = await whenShowAllChanged;
     await microtasksFinished();
+    assertTrue(event.detail.value);
     assertFalse(menu.open);
   });
 });

@@ -4,7 +4,7 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import {organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {INITIAL_ITEM_COUNT, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionElement, OrganizerListSectionItem, OrganizerListSectionItemElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -106,7 +106,7 @@ suite('OrganizerListSectionTest', () => {
     const renderedItems =
         itemsContainer.querySelectorAll<OrganizerListSectionItemElement>(
             'organizer-list-section-item');
-    assertEquals(4, renderedItems.length);
+    assertEquals(INITIAL_ITEM_COUNT, renderedItems.length);
     assertTrue(header.expanded);
     assertTrue(itemsContainer.opened);
     assertEquals(0, mockHandler.getCallCount('setSectionExpanded'));
@@ -180,6 +180,58 @@ suite('OrganizerListSectionTest', () => {
         assertTrue(header.expanded);
         assertTrue(itemsContainer.opened);
         assertEquals(0, mockHandler.getCallCount('setSectionExpanded'));
+      });
+
+  test(
+      'shows some or all items when header menu options are clicked',
+      async () => {
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab 1'], description: [{text: 'tab1.com'}]},
+          {title: ['Tab 2'], description: [{text: 'tab2.com'}]},
+          {title: ['Tab 3'], description: [{text: 'tab3.com'}]},
+          {title: ['Tab 4'], description: [{text: 'tab4.com'}]},
+          {title: ['Tab 5'], description: [{text: 'tab5.com'}]},
+        ];
+        listSection.delegate = new TestSectionDelegate('Open Tabs', items);
+        await microtasksFinished();
+
+        const header = listSection.$.header;
+        let renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(INITIAL_ITEM_COUNT, renderedItems.length);
+        assertDeepEquals(['Tab 1'], renderedItems[0]!.item.title);
+        assertDeepEquals(['Tab 2'], renderedItems[1]!.item.title);
+        assertDeepEquals(['Tab 3'], renderedItems[2]!.item.title);
+
+        header.$.menuButton.click();
+        await microtasksFinished();
+        header.$.showAllButton.click();
+        await microtasksFinished();
+
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(5, renderedItems.length);
+
+        header.$.menuButton.click();
+        await microtasksFinished();
+        header.$.showSomeButton.click();
+        await microtasksFinished();
+
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(INITIAL_ITEM_COUNT, renderedItems.length);
+
+        listSection.searchQuery = 'Tab';
+        await microtasksFinished();
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(5, renderedItems.length);
+
+        listSection.searchQuery = '';
+        await microtasksFinished();
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(INITIAL_ITEM_COUNT, renderedItems.length);
       });
 
   test(

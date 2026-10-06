@@ -11,7 +11,8 @@ export function getHtml(this: OrganizerListSectionElement) {
   return html`<!--_html_template_start_-->
 <organizer-list-section-header id="header" ?expanded="${this.isExpanded_()}"
     ?disabled="${this.isSearching_()}"
-    @expanded-changed="${this.onExpandedChanged_}">
+    @expanded-changed="${this.onExpandedChanged_}"
+    @show-all-changed="${this.onShowAllChanged_}">
   ${this.delegate?.getHeader() || ''}
 </organizer-list-section-header>
 ${this.hasNoSearchResults_() ? html`
