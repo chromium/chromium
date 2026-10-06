@@ -8,9 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -35,17 +35,16 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubBottomBarBottomToolbarDelegateImplUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private PaneManager mPaneManager;
     @Mock private HubColorMixer mHubColorMixer;
-    @Mock private BottomBarView mBottomBarView;
 
     private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private ViewGroup mContainer;
+    private BottomBarView mBottomBarView;
 
     @Before
     public void setUp() {
@@ -53,6 +52,13 @@ public class HubBottomBarBottomToolbarDelegateImplUnitTest {
         mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mContainer = new FrameLayout(mActivity);
+        mBottomBarView =
+                (BottomBarView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(
+                                        R.layout.bottom_bar_layout,
+                                        mContainer,
+                                        /* attachToRoot= */ false);
     }
 
     @After
@@ -116,7 +122,6 @@ public class HubBottomBarBottomToolbarDelegateImplUnitTest {
                 delegate.initializeBottomToolbarView(
                         mActivity, mContainer, mPaneManager, mHubColorMixer);
 
-        when(mBottomBarView.getContext()).thenReturn(mActivity);
         delegate.attachBottomBarView(mBottomBarView);
 
         assertEquals(1, parentView.getChildCount());
@@ -137,7 +142,6 @@ public class HubBottomBarBottomToolbarDelegateImplUnitTest {
                 new HubBottomBarBottomToolbarDelegateImpl(currentTabSupplier, isHidingSupplier);
         delegate.initializeBottomToolbarView(mActivity, mContainer, mPaneManager, mHubColorMixer);
 
-        when(mBottomBarView.getContext()).thenReturn(mActivity);
         delegate.attachBottomBarView(mBottomBarView);
 
         assertNotNull(delegate.getBottomBarColorMixerAdapterForTesting());

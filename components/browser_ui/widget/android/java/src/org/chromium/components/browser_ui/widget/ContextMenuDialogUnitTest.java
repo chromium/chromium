@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -43,23 +42,45 @@ import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestina
 import org.chromium.ui.widget.ChromePopupWindow;
 import org.chromium.ui.widget.UiWidgetFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Unit test for {@link ContextMenuDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuDialogUnitTest {
-    private static final int DIALOG_SIZE_DIP = 50;
+    static class TestDragDispatchingDestinationView extends View
+            implements DragEventDispatchDestination {
+        final List<DragEvent> mDispatchedDragEvents = new ArrayList<>();
+
+        TestDragDispatchingDestinationView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public View view() {
+            return this;
+        }
+
+        @Override
+        public boolean onDragEventWithOffset(DragEvent event, int dx, int dy) {
+            mDispatchedDragEvents.add(event);
+            return false;
+        }
+    }
+
+    private static final int MENU_CONTENT_MIN_SIZE_PX = 100;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     ContextMenuDialog mDialog;
 
     Activity mActivity;
-    View mRootView;
-    TestDragDispatchingDestinationView mSpyDragDispatchingDestinationView;
+    FrameLayout mRootView;
+    TestDragDispatchingDestinationView mDragDispatchingDestinationView;
 
     @Mock UiWidgetFactory mMockUiWidgetFactory;
     private ChromePopupWindow mSpyPopupWindow;
-    @Spy FrameLayout mMenuContentView;
+    FrameLayout mMenuContentView;
 
     @Before
     public void setup() {
@@ -68,17 +89,17 @@ public class ContextMenuDialogUnitTest {
         TextView textView = new TextView(mActivity);
         textView.setText("Test String");
 
-        mMenuContentView = Mockito.spy(new FrameLayout(mActivity));
+        mMenuContentView = new FrameLayout(mActivity);
         mMenuContentView.addView(textView);
-        Mockito.when(mMenuContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
-        Mockito.when(mMenuContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
+        // Ensure the popup is large enough to satisfy AnchoredPopupWindow's minimal size check.
+        mMenuContentView.setMinimumWidth(MENU_CONTENT_MIN_SIZE_PX);
+        mMenuContentView.setMinimumHeight(MENU_CONTENT_MIN_SIZE_PX);
 
         mActivity.setContentView(
                 mRootView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mSpyPopupWindow = Mockito.spy(UiWidgetFactory.getInstance().createPopupWindow(mActivity));
-        mSpyDragDispatchingDestinationView =
-                Mockito.spy(new TestDragDispatchingDestinationView(mActivity));
+        mDragDispatchingDestinationView = new TestDragDispatchingDestinationView(mActivity);
         UiWidgetFactory.setInstance(mMockUiWidgetFactory);
         Mockito.when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
         Mockito.doNothing()
@@ -207,7 +228,14 @@ public class ContextMenuDialogUnitTest {
         requestLayoutForRootView();
         Mockito.verify(mSpyPopupWindow)
                 .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
-        Mockito.doReturn(true).when(mSpyDragDispatchingDestinationView).isAttachedToWindow();
+        attachDragDispatchingDestinationView();
+
+        List<MotionEvent> dispatchedEvents = new ArrayList<>();
+        mDragDispatchingDestinationView.setOnTouchListener(
+                (v, event) -> {
+                    dispatchedEvents.add(event);
+                    return true;
+                });
 
         // common motion events other than ACTION_DOWN should be forwarded to touch event delegate.
         int[] motionEvenActions =
@@ -224,19 +252,19 @@ public class ContextMenuDialogUnitTest {
                     MotionEvent.ACTION_UP
                 };
         for (int actionType : motionEvenActions) {
-            MotionEvent event = createMockMotionEventWithActionType(actionType);
+            MotionEvent event = createMotionEventWithActionType(actionType);
             mDialog.onTouchEvent(event);
-            Mockito.verify(
-                            mSpyDragDispatchingDestinationView,
-                            Mockito.description("Action" + actionType))
-                    .dispatchTouchEvent(eq(event));
+            Assert.assertEquals(
+                    "Action" + actionType + " should be dispatched.",
+                    event,
+                    dispatchedEvents.get(dispatchedEvents.size() - 1));
         }
+        Assert.assertEquals(motionEvenActions.length, dispatchedEvents.size());
 
         // ACTION_DOWN should dismiss the dialog and the popup window.
-        MotionEvent downEvent = createMockMotionEventWithActionType(MotionEvent.ACTION_DOWN);
+        MotionEvent downEvent = createMotionEventWithActionType(MotionEvent.ACTION_DOWN);
         mDialog.onTouchEvent(downEvent);
-        Mockito.verify(mSpyDragDispatchingDestinationView, Mockito.times(0))
-                .dispatchTouchEvent(eq(downEvent));
+        Assert.assertFalse(dispatchedEvents.contains(downEvent));
         Mockito.verify(mSpyPopupWindow).dismiss();
     }
 
@@ -252,16 +280,17 @@ public class ContextMenuDialogUnitTest {
         final DragEvent mockDragEvent = Mockito.mock(DragEvent.class);
         Mockito.doReturn(DragEvent.ACTION_DRAG_LOCATION).when(mockDragEvent).getAction();
 
-        Mockito.doReturn(true).when(mSpyDragDispatchingDestinationView).isAttachedToWindow();
+        attachDragDispatchingDestinationView();
         mDialog.getOnDragListenerForTesting().onDrag(mRootView, mockDragEvent);
-        Mockito.verify(mSpyDragDispatchingDestinationView, Mockito.times(1))
-                .onDragEventWithOffset(eq(mockDragEvent), anyInt(), anyInt());
+        Assert.assertEquals(
+                List.of(mockDragEvent), mDragDispatchingDestinationView.mDispatchedDragEvents);
 
         final DragEvent mockDragEvent2 = Mockito.mock(DragEvent.class);
-        Mockito.doReturn(false).when(mSpyDragDispatchingDestinationView).isAttachedToWindow();
+        Mockito.doReturn(DragEvent.ACTION_DRAG_LOCATION).when(mockDragEvent2).getAction();
+        mRootView.removeView(mDragDispatchingDestinationView);
         mDialog.getOnDragListenerForTesting().onDrag(mRootView, mockDragEvent2);
-        Mockito.verify(mSpyDragDispatchingDestinationView, Mockito.times(0))
-                .onDragEventWithOffset(eq(mockDragEvent2), anyInt(), anyInt());
+        Assert.assertEquals(
+                List.of(mockDragEvent), mDragDispatchingDestinationView.mDispatchedDragEvents);
     }
 
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
@@ -277,7 +306,7 @@ public class ContextMenuDialogUnitTest {
                 /* isFlyout= */ false,
                 shouldRemoveScrim,
                 /* popupMargin= */ 0,
-                mSpyDragDispatchingDestinationView,
+                mDragDispatchingDestinationView,
                 new Rect(0, 0, 0, 0),
                 /* shouldPadForWindowInsets= */ true,
                 /* onDismissCallback= */ null,
@@ -291,27 +320,18 @@ public class ContextMenuDialogUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
-    private MotionEvent createMockMotionEventWithActionType(int actionType) {
-        MotionEvent motionEvent = Mockito.mock(MotionEvent.class);
-        Mockito.doReturn(actionType).when(motionEvent).getAction();
-
-        return motionEvent;
+    private void attachDragDispatchingDestinationView() {
+        mRootView.addView(mDragDispatchingDestinationView);
+        Assert.assertTrue(mDragDispatchingDestinationView.isAttachedToWindow());
     }
 
-    static class TestDragDispatchingDestinationView extends View
-            implements DragEventDispatchDestination {
-        TestDragDispatchingDestinationView(Context context) {
-            super(context);
-        }
-
-        @Override
-        public View view() {
-            return this;
-        }
-
-        @Override
-        public boolean onDragEventWithOffset(DragEvent event, int dx, int dy) {
-            return false;
-        }
+    private static MotionEvent createMotionEventWithActionType(int actionType) {
+        return MotionEvent.obtain(
+                /* downTime= */ 0,
+                /* eventTime= */ 0,
+                actionType,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* metaState= */ 0);
     }
 }

@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.description;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -19,6 +18,10 @@ import static org.mockito.Mockito.verify;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.content.Context;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,7 +44,6 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for MessageQueueManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageQueueManagerTest {
 
     private final MessageQueueDelegate mEmptyDelegate =
@@ -152,16 +154,13 @@ public class MessageQueueManagerTest {
 
     @Before
     public void setUp() {
-        MessageContainer container = Mockito.mock(MessageContainer.class);
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
-                            return null;
-                        })
-                .when(container)
-                .runAfterInitialMessageLayout(any(Runnable.class));
-        doReturn(false).when(container).isIsInitializingLayout();
+        Context context = ApplicationProvider.getApplicationContext();
+        MessageContainer container = new MessageContainer(context, null);
+        // A message view that has already been laid out makes runAfterInitialMessageLayout() run
+        // its callbacks synchronously.
+        View messageView = new View(context);
+        container.addMessage(messageView);
+        messageView.layout(0, 0, 100, 100);
         mAnimationCoordinator = new MessageAnimationCoordinator(container, Animator::start);
     }
 

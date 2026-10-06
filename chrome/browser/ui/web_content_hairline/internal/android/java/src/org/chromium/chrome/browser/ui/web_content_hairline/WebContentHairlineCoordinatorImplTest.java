@@ -5,14 +5,13 @@
 package org.chromium.chrome.browser.ui.web_content_hairline;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +47,6 @@ import java.util.Map;
 /** Unit tests for {@link WebContentHairlineCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebContentHairlineCoordinatorImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -57,7 +55,6 @@ public class WebContentHairlineCoordinatorImplTest {
     @Mock private SideUiStateProvider mSideUiStateProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private TopControlsStacker mTopControlsStacker;
-    @Mock private ViewStub mHairlineContainerStub;
 
     private static final int HAIRLINE_HEIGHT = 1;
 
@@ -76,21 +73,9 @@ public class WebContentHairlineCoordinatorImplTest {
     public void setUp() {
         TestActivity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
-        mLayoutParams = new MarginLayoutParams(0, 0);
-
-        WebContentHairlineContainer hairlineContainer =
-                (WebContentHairlineContainer)
-                        LayoutInflater.from(activity)
-                                .inflate(R.layout.web_content_hairline_container, /* root= */ null);
-        hairlineContainer.setLayoutParams(mLayoutParams);
-        doReturn(hairlineContainer).when(mHairlineContainerStub).inflate();
-
-        mTopHairline = hairlineContainer.getTopHairline();
-        mLeftHairline = hairlineContainer.getLeftHairline();
-        mTopLeftRoundedCorner = hairlineContainer.getTopLeftRoundedCorner();
-        mRightHairline = hairlineContainer.getRightHairline();
-        mTopRightRoundedCorner = hairlineContainer.getTopRightRoundedCorner();
-        mBottomLeftRoundedCorner = hairlineContainer.getBottomLeftRoundedCorner();
+        FrameLayout parent = new FrameLayout(activity);
+        ViewStub hairlineContainerStub = new ViewStub(activity);
+        parent.addView(hairlineContainerStub, new FrameLayout.LayoutParams(0, 0));
 
         mCoordinator =
                 new WebContentHairlineCoordinatorImpl(
@@ -98,7 +83,18 @@ public class WebContentHairlineCoordinatorImplTest {
                         mSideUiStateProvider,
                         mIncognitoStateProvider,
                         mTopControlsStacker,
-                        mHairlineContainerStub);
+                        hairlineContainerStub);
+
+        WebContentHairlineContainer hairlineContainer =
+                (WebContentHairlineContainer) parent.getChildAt(0);
+        mLayoutParams = (MarginLayoutParams) hairlineContainer.getLayoutParams();
+
+        mTopHairline = hairlineContainer.getTopHairline();
+        mLeftHairline = hairlineContainer.getLeftHairline();
+        mTopLeftRoundedCorner = hairlineContainer.getTopLeftRoundedCorner();
+        mRightHairline = hairlineContainer.getRightHairline();
+        mTopRightRoundedCorner = hairlineContainer.getTopRightRoundedCorner();
+        mBottomLeftRoundedCorner = hairlineContainer.getBottomLeftRoundedCorner();
     }
 
     @Test

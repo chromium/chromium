@@ -36,11 +36,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
@@ -51,7 +51,6 @@ import org.chromium.ui.widget.LoadingView;
 
 /** Unit tests for the {@link LogoContainerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LogoContainerViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
@@ -62,8 +61,6 @@ public class LogoContainerViewBinderUnitTest {
     private static final double DELTA = 1e-5;
     private static final String ANIMATED_LOGO_URL =
             "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
-
-    @Mock private LogoContainerView mMockLogoView;
 
     @Mock LogoBridge mLogoBridge;
 
@@ -208,7 +205,7 @@ public class LogoContainerViewBinderUnitTest {
         mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, defaultLogo);
         mLogoContainerView.setLoadingViewVisibilityForTesting(View.VISIBLE);
         mLogoModel.set(LogoProperties.LOGO, null);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(View.GONE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 
@@ -267,13 +264,17 @@ public class LogoContainerViewBinderUnitTest {
 
     @Test
     public void testShowSearchProviderInitialView() {
-        PropertyModel logoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(
-                logoModel, mMockLogoView, new LogoContainerViewBinder());
-        logoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
-        verify(mMockLogoView).showSearchProviderInitialView();
-        logoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
-        verify(mMockLogoView, times(2)).showSearchProviderInitialView();
+        // With no default logo available, showing the initial view falls back to the loading view.
+        mLogoContainerView.setLoadingViewVisibilityForTesting(View.GONE);
+        mLogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(View.VISIBLE, mLogoContainerView.getLoadingViewVisibilityForTesting());
+
+        // Setting the same value again re-triggers the view update.
+        mLogoContainerView.setLoadingViewVisibilityForTesting(View.GONE);
+        mLogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(View.VISIBLE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 
     @Test
@@ -294,12 +295,19 @@ public class LogoContainerViewBinderUnitTest {
 
     @Test
     public void testShowDefaultGoogleLogo() {
-        PropertyModel logoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(
-                logoModel, mMockLogoView, new LogoContainerViewBinder());
+        Drawable defaultLogo =
+                ContextCompat.getDrawable(
+                        mLogoContainerView.getContext(), R.drawable.ic_google_logo);
+        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, defaultLogo);
+        mLogoContainerView.setLoadingViewVisibilityForTesting(View.VISIBLE);
 
-        logoModel.set(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO, true);
-        verify(mMockLogoView).maybeShowDefaultLogoDrawable();
+        mLogoModel.set(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO, true);
+        mLogoContainerView.endAnimationsForTesting();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        LogoView childLogoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
+        assertEquals(defaultLogo, childLogoView.getLogoDrawableForTesting());
+        assertEquals(View.GONE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 
     @Test
@@ -336,7 +344,7 @@ public class LogoContainerViewBinderUnitTest {
     public void testShowLoadingView() {
         mLogoContainerView.setLoadingViewVisibilityForTesting(View.GONE);
         mLogoModel.set(LogoProperties.SHOW_LOADING_VIEW, true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(View.VISIBLE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 

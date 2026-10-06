@@ -4,16 +4,21 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.After;
@@ -37,7 +42,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -49,7 +53,6 @@ import java.util.Collection;
 
 /** Unit tests for {@link HubToolbarCoordinator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubToolbarCoordinatorUnitTest {
     // All the tests in this file will run twice, once for isXrDevice=true and once for
     // isXrDevice=false. Expect all the tests with the same results on XR devices too.
@@ -74,7 +77,6 @@ public class HubToolbarCoordinatorUnitTest {
     private ActivityController<TestActivity> mActivityController;
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
-    private MenuButton mMenuButton;
     private final SettableNonNullObservableSupplier<Boolean> mBottomToolbarVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
 
@@ -108,9 +110,7 @@ public class HubToolbarCoordinatorUnitTest {
         int layoutId = mIsXrDevice ? R.layout.hub_xr_layout : R.layout.hub_layout;
         View rootView = LayoutInflater.from(activity).inflate(layoutId, null);
         activity.setContentView(rootView);
-        mHubToolbarView = spy(rootView.findViewById(R.id.hub_toolbar));
-        mMenuButton = spy(mHubToolbarView.findViewById(R.id.menu_button_wrapper));
-        when(mHubToolbarView.findViewById(R.id.menu_button_wrapper)).thenReturn(mMenuButton);
+        mHubToolbarView = rootView.findViewById(R.id.hub_toolbar);
         mCoordinator =
                 new HubToolbarCoordinator(
                         activity,
@@ -151,16 +151,31 @@ public class HubToolbarCoordinatorUnitTest {
 
     @Test
     public void testSetPaneSwitcherScrollPosition() {
-        mCoordinator.setPaneSwitcherScrollPosition(1, 0.5f);
-        verify(mHubToolbarView).setPaneSwitcherScrollPosition(1, 0.5f);
+        TabLayout paneSwitcher = mHubToolbarView.findViewById(R.id.pane_switcher);
+        paneSwitcher.addTab(paneSwitcher.newTab().setText("A"));
+        paneSwitcher.addTab(paneSwitcher.newTab().setText("B"));
+        paneSwitcher.setVisibility(View.VISIBLE);
+        paneSwitcher.measure(
+                MeasureSpec.makeMeasureSpec(400, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        paneSwitcher.layout(0, 0, 400, 100);
+        int firstTabLeft = paneSwitcher.getTabAt(0).view.getLeft();
+        int secondTabLeft = paneSwitcher.getTabAt(1).view.getLeft();
+
+        // The indicator should be halfway between the first and second tab.
+        mCoordinator.setPaneSwitcherScrollPosition(0, 0.5f);
+        Rect indicatorBounds = paneSwitcher.getTabSelectedIndicator().getBounds();
+        assertTrue(indicatorBounds.left > firstTabLeft);
+        assertTrue(indicatorBounds.left < secondTabLeft);
     }
 
     @Test
     public void testSetBlockTabSelectionCallback() {
+        TabLayout paneSwitcher = mHubToolbarView.findViewById(R.id.pane_switcher);
         mCoordinator.setBlockTabSelectionCallback(true);
-        verify(mHubToolbarView).setBlockTabSelectionCallback(true);
+        assertNotNull(shadowOf(paneSwitcher).getOnTouchListener());
 
         mCoordinator.setBlockTabSelectionCallback(false);
-        verify(mHubToolbarView).setBlockTabSelectionCallback(false);
+        assertNull(shadowOf(paneSwitcher).getOnTouchListener());
     }
 }
