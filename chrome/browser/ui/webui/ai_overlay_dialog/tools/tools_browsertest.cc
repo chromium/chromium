@@ -47,7 +47,6 @@ using FindAndHighlightResult = base::expected<std::monostate, std::string>;
 using PlayVideoResult = base::expected<std::monostate, std::string>;
 using PauseVideoResult = base::expected<std::monostate, std::string>;
 using SeekToTimestampResult = base::expected<std::monostate, std::string>;
-using OpenUrlResult = base::expected<std::monostate, std::string>;
 using SwitchTabResult =
     base::expected<ai_overlay_dialog::mojom::SwitchTabResultPtr, std::string>;
 using CloseTabResult = base::expected<std::monostate, std::string>;
@@ -185,57 +184,6 @@ class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<PageContextMonitor> page_context_monitor_;
   std::unique_ptr<AiOverlayTools> tools_;
 };
-
-IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlNewTab) {
-  GURL initial_url = embedded_test_server()->GetURL("/empty.html?initial");
-  GURL target_url = embedded_test_server()->GetURL("/empty.html?target");
-
-  AddTabWithTitle(initial_url, "Initial");
-  int initial_count = browser()->GetTabStripModel()->count();
-
-  base::test::TestFuture<OpenUrlResult> future;
-  tools()->OpenUrl(target_url.spec(), /*new_tab=*/true, future.GetCallback());
-
-  EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(initial_count + 1, browser()->GetTabStripModel()->count());
-  EXPECT_EQ(
-      target_url,
-      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
-}
-
-IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlCurrentTab) {
-  GURL initial_url = embedded_test_server()->GetURL("/empty.html?initial");
-  GURL target_url = embedded_test_server()->GetURL("/empty.html?target");
-
-  AddTabWithTitle(initial_url, "Initial");
-  int initial_count = browser()->GetTabStripModel()->count();
-
-  base::test::TestFuture<OpenUrlResult> future;
-  tools()->OpenUrl(target_url.spec(), /*new_tab=*/false, future.GetCallback());
-
-  EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(initial_count, browser()->GetTabStripModel()->count());
-  EXPECT_EQ(
-      target_url,
-      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
-}
-
-IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlInvalid) {
-  base::test::TestFuture<OpenUrlResult> future;
-  tools()->OpenUrl("invalid_url", /*new_tab=*/true, future.GetCallback());
-
-  EXPECT_FALSE(future.Get().has_value());
-  EXPECT_EQ("Invalid URL", future.Get().error());
-}
-
-IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlBlocksNonHttpSchemes) {
-  base::test::TestFuture<OpenUrlResult> future;
-  tools()->OpenUrl("file:///tmp/local_secret.txt", /*new_tab=*/true,
-                   future.GetCallback());
-
-  EXPECT_FALSE(future.Get().has_value());
-  EXPECT_EQ("Invalid URL", future.Get().error());
-}
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SwitchTabByTitle) {
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?1"), "First Tab");

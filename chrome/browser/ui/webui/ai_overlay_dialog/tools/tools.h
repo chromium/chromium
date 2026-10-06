@@ -61,6 +61,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   // ai_overlay_dialog::mojom::AiOverlayTools:
   // Only the platform-agnostic tools are implemented here; the rest are
   // implemented by the platform subclasses.
+  void OpenUrl(const std::string& url,
+               bool new_tab,
+               OpenUrlCallback callback) override;
   void FollowLink(const std::string& id, FollowLinkCallback callback) override;
   void PerformSearch(const std::string& query,
                      bool new_tab,
@@ -107,7 +110,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   }
   base::CancelableTaskTracker& task_tracker() { return task_tracker_; }
 
-  virtual content::WebContents* GetActiveWebContents() const = 0;
+  // Returns the active tab's WebContents in `browser()`, or nullptr if there is
+  // none.
+  content::WebContents* GetActiveWebContents() const;
 
  private:
   class AnnotationTask : public blink::mojom::AnnotationAgentHost {

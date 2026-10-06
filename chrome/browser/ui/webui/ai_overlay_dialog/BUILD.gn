@@ -67,6 +67,7 @@ source_set("impl") {
     "//chrome/browser/page_content_annotations:screenshot_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/tab_list",
     "//chrome/browser/translate",
     "//chrome/browser/ttc/core",
     "//chrome/browser/ttc/resources",
@@ -146,28 +147,40 @@ source_set("unit_tests") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
+# Included in browser_tests on desktop and android_browsertests on Desktop
+# Android.
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tools/tools_platform_browsertest.cc" ]
+  deps = [
+    ":ai_overlay_dialog",
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test:test_support",
+    "//chrome/test/base:platform_browser_test",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+  if (!is_android) {
+    sources += [
       "ai_overlay_notes_browsertest.cc",
       "markdown_builder_browsertest.cc",
       "tools/tools_browsertest.cc",
     ]
-    deps = [
-      ":ai_overlay_dialog",
-      ":impl",
-      "//base",
-      "//base/test:test_support",
+    deps += [
       "//chrome/browser/translate",
       "//chrome/browser/ui",
-      "//chrome/test:test_support",
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//content/test:browsertest_support",
-      "//testing/gtest",
-      "//url",
     ]
   }
 }

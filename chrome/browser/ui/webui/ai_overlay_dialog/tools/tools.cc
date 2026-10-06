@@ -22,6 +22,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
@@ -31,15 +32,19 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -97,6 +102,42 @@ void AiOverlayTools::RecordToolCallInvoked(std::string_view tool_name) {
 // static
 glic::InvokeWithAutoSubmitPasskey AiOverlayTools::GetGlicPassKey() {
   return glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
+}
+
+content::WebContents* AiOverlayTools::GetActiveWebContents() const {
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  if (!tab_list) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab = tab_list->GetActiveTab();
+  return tab ? tab->GetContents() : nullptr;
+}
+
+void AiOverlayTools::OpenUrl(const std::string& url_string,
+                             bool new_tab,
+                             OpenUrlCallback callback) {
+  RecordToolCallInvoked("OpenUrl");
+  GURL url(url_string);
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(base::unexpected("Invalid URL"));
+    return;
+  }
+
+  if (!browser()) {
+    std::move(callback).Run(base::unexpected("No browser window available"));
+    return;
+  }
+
+  WindowOpenDisposition disposition =
+      new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+              : WindowOpenDisposition::CURRENT_TAB;
+  // TODO(crbug.com/534887116): Report the navigation outcome instead of
+  // succeeding immediately. On Android, OpenURL() may start the navigation
+  // asynchronously.
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         url, disposition, ui::PAGE_TRANSITION_LINK),
+                     /*navigation_handle_callback=*/{});
+  std::move(callback).Run(std::monostate());
 }
 
 void AiOverlayTools::FollowLink(const std::string& id,

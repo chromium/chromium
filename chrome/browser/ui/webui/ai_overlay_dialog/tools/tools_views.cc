@@ -184,30 +184,6 @@ AiOverlayToolsViews::AiOverlayToolsViews(
 
 AiOverlayToolsViews::~AiOverlayToolsViews() = default;
 
-content::WebContents* AiOverlayToolsViews::GetActiveWebContents() const {
-  if (!browser() || !browser()->GetTabStripModel()) {
-    return nullptr;
-  }
-  return browser()->GetTabStripModel()->GetActiveWebContents();
-}
-
-void AiOverlayToolsViews::OpenUrl(const std::string& url_string,
-                                  bool new_tab,
-                                  OpenUrlCallback callback) {
-  RecordToolCallInvoked("OpenUrl");
-  GURL url(url_string);
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    std::move(callback).Run(base::unexpected("Invalid URL"));
-    return;
-  }
-
-  WindowOpenDisposition disposition =
-      new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-              : WindowOpenDisposition::CURRENT_TAB;
-  browser()->OpenGURL(url, disposition);
-  std::move(callback).Run(std::monostate());
-}
-
 void AiOverlayToolsViews::SwitchTab(const std::string& query,
                                     SwitchTabCallback callback) {
   RecordToolCallInvoked("SwitchTab");

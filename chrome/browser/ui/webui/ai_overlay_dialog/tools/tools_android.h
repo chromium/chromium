@@ -27,9 +27,6 @@ class AiOverlayToolsAndroid : public AiOverlayTools {
   ~AiOverlayToolsAndroid() override;
 
   // ai_overlay_dialog::mojom::AiOverlayTools:
-  void OpenUrl(const std::string& url,
-               bool new_tab,
-               OpenUrlCallback callback) override;
   void SwitchTab(const std::string& query, SwitchTabCallback callback) override;
   void CloseCurrentTab(CloseCurrentTabCallback callback) override;
   void Scroll(ai_overlay_dialog::mojom::ScrollGranularity granularity,
@@ -40,9 +37,6 @@ class AiOverlayToolsAndroid : public AiOverlayTools {
   void OpenGeminiPanel(const std::string& prompt,
                        OpenGeminiPanelCallback callback) override;
   void CloseGeminiPanel(CloseGeminiPanelCallback callback) override;
-
- protected:
-  content::WebContents* GetActiveWebContents() const override;
 
  private:
   base::WeakPtrFactory<AiOverlayToolsAndroid> weak_factory_{this};
