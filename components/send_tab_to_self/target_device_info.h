@@ -18,12 +18,11 @@ namespace send_tab_to_self {
 
 // Device information for generating send tab to self UI.
 struct TargetDeviceInfo {
- public:
   TargetDeviceInfo();
   TargetDeviceInfo(std::string device_name,
                    std::string cache_guid,
-                   const syncer::DeviceInfo::FormFactor form_factor,
-                   const syncer::DeviceInfo::OsType os_type,
+                   syncer::DeviceInfo::FormFactor form_factor,
+                   syncer::DeviceInfo::OsType os_type,
                    base::Time last_updated_timestamp,
                    bool has_high_precision_timestamp = false);
   TargetDeviceInfo(const TargetDeviceInfo& other);

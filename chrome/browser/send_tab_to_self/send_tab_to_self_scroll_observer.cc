@@ -36,19 +36,21 @@ void SendTabToSelfScrollObserver::DidFinishNavigation(
     return;
   }
 
-  if (!observed_host_) {
-    content::RenderWidgetHost* host =
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
-    if (host) {
-      host->AddInputEventObserver(this);
-      host->AddObserver(this);
-      observed_host_ = host;
-    }
-  } else {
+  if (observed_host_) {
     // Navigated away, record what we have and stop.
     RecordMetrics();
     web_contents()->RemoveUserData(UserDataKey());
+    return;
   }
+
+  content::RenderWidgetHost* host =
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  if (!host) {
+    return;
+  }
+  host->AddInputEventObserver(this);
+  host->AddObserver(this);
+  observed_host_ = host;
 }
 
 void SendTabToSelfScrollObserver::RenderWidgetHostDestroyed(

@@ -20,6 +20,8 @@ class SendTabToSelfSpecifics;
 
 namespace send_tab_to_self {
 
+class SendTabToSelfLocal;
+
 inline constexpr base::TimeDelta kExpiryTime = base::Days(10);
 
 // Maximum size of the PageContext proto in bytes. Arbitrarily chosen as
@@ -54,7 +56,6 @@ struct NavigationHistory {
   std::optional<int> current_navigation_index;
 };
 
-class SendTabToSelfLocal;
 // A tab that is being shared. The URL is a unique identifier for an entry, as
 // such it should not be empty and is the only thing considered when comparing
 // entries.

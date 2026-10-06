@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -18,13 +17,12 @@ namespace send_tab_to_self {
 
 TargetDeviceInfo::TargetDeviceInfo() = default;
 
-TargetDeviceInfo::TargetDeviceInfo(
-    std::string device_name,
-    std::string cache_guid,
-    const syncer::DeviceInfo::FormFactor form_factor,
-    const syncer::DeviceInfo::OsType os_type,
-    base::Time last_updated_timestamp,
-    bool has_high_precision_timestamp)
+TargetDeviceInfo::TargetDeviceInfo(std::string device_name,
+                                   std::string cache_guid,
+                                   syncer::DeviceInfo::FormFactor form_factor,
+                                   syncer::DeviceInfo::OsType os_type,
+                                   base::Time last_updated_timestamp,
+                                   bool has_high_precision_timestamp)
     : device_name(std::move(device_name)),
       cache_guid(std::move(cache_guid)),
       form_factor(form_factor),
@@ -36,21 +34,17 @@ TargetDeviceInfo::TargetDeviceInfo(const TargetDeviceInfo& other) = default;
 TargetDeviceInfo::~TargetDeviceInfo() = default;
 
 bool TargetDeviceInfo::operator==(const TargetDeviceInfo& rhs) const {
-  return this->device_name == rhs.device_name &&
-         this->cache_guid == rhs.cache_guid &&
-         this->form_factor == rhs.form_factor && this->os_type == rhs.os_type &&
-         this->last_updated_timestamp == rhs.last_updated_timestamp &&
-         this->has_high_precision_timestamp == rhs.has_high_precision_timestamp;
+  return device_name == rhs.device_name && cache_guid == rhs.cache_guid &&
+         form_factor == rhs.form_factor && os_type == rhs.os_type &&
+         last_updated_timestamp == rhs.last_updated_timestamp &&
+         has_high_precision_timestamp == rhs.has_high_precision_timestamp;
 }
 
 std::u16string TargetDeviceInfo::GetLastActiveTimeForDisplay() const {
-  base::TimeDelta delta = base::Time::Now() - last_updated_timestamp;
-  if (delta.is_negative()) {
-    delta = base::TimeDelta();
-  }
+  const base::TimeDelta delta =
+      std::max(base::TimeDelta(), base::Time::Now() - last_updated_timestamp);
 
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfImprovedLastActiveLabels) &&
+  if (base::FeatureList::IsEnabled(kSendTabToSelfImprovedLastActiveLabels) &&
       has_high_precision_timestamp) {
     if (delta < base::Minutes(1)) {
       return l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_NOW);

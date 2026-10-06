@@ -61,7 +61,7 @@ namespace {
 
 // Converts a time object to the format used in sync protobufs (microseconds
 // since the Windows epoch).
-int64_t TimeToProtoTime(const base::Time t) {
+int64_t TimeToProtoTime(base::Time t) {
   return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
@@ -93,9 +93,9 @@ SendTabToSelfEntry::SendTabToSelfEntry(
   DCHECK(IsValidUrl(url_));
 }
 
-SendTabToSelfEntry::~SendTabToSelfEntry() = default;
-
 SendTabToSelfEntry::SendTabToSelfEntry(const SendTabToSelfEntry&) = default;
+
+SendTabToSelfEntry::~SendTabToSelfEntry() = default;
 
 const std::string& SendTabToSelfEntry::GetGUID() const {
   return guid_;

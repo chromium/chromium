@@ -76,7 +76,7 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     return std::nullopt;
   }
 
-  send_tab_to_self::SendTabToSelfSyncService* service =
+  SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   const GURL& url_to_check = url.value_or(web_contents->GetLastCommittedURL());
