@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -15,9 +16,12 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,6 +40,10 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAmbientAutofillNotice,
               (base::WeakPtr<TouchToFillAutofillDelegate> delegate),
               (override));
+  MOCK_METHOD(bool,
+              ShowPrivateInferenceNoticeBottomSheet,
+              (base::WeakPtr<TouchToFillAutofillDelegate> delegate),
+              (override));
   MOCK_METHOD(void, HideAmbientAutofillNotice, (), (override));
 };
 
@@ -43,11 +51,30 @@ class TouchToFillAutofillDelegateAndroidImplTest
     : public testing::Test,
       public WithTestAutofillClientDriverManager<NiceMock<MockAutofillClient>> {
  protected:
+  explicit TouchToFillAutofillDelegateAndroidImplTest(
+      bool enable_private_inference_notice_bottom_sheet = false)
+      : feature_list_(
+            CreateFeatureList(enable_private_inference_notice_bottom_sheet)) {}
+  ~TouchToFillAutofillDelegateAndroidImplTest() override = default;
+
+ private:
+  static base::test::ScopedFeatureList CreateFeatureList(
+      bool enable_private_inference_notice_bottom_sheet) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(
+        features::kAutofillAiPrivateInferenceNoticeBottomSheet,
+        enable_private_inference_notice_bottom_sheet);
+    return feature_list;
+  }
+
+  // Declared first so that it is initialized before and destroyed after the
+  // task environment and the web database, which access features on other
+  // threads.
+  base::test::ScopedFeatureList feature_list_;
+
+ protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  TouchToFillAutofillDelegateAndroidImplTest() = default;
-  ~TouchToFillAutofillDelegateAndroidImplTest() override = default;
 
   void SetUp() override {
     InitAutofillClient();
@@ -87,6 +114,10 @@ class TouchToFillAutofillDelegateAndroidImplTest
     return {suggestion};
   }
 
+  std::vector<Suggestion> CreatePrivateInferenceNoticeSuggestions() {
+    return {Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)};
+  }
+
   // Creates a test form, calls `AutofillManager::OnFormsSeen` with it and
   // returns a pair of the form's id and its first field's id.
   std::pair<FormGlobalId, FieldGlobalId> SeeForm() {
@@ -101,6 +132,15 @@ class TouchToFillAutofillDelegateAndroidImplTest
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   std::unique_ptr<TouchToFillAutofillDelegateAndroidImpl> delegate_;
+};
+
+// Test fixture with the private inference notice bottom sheet enabled.
+class TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest
+    : public TouchToFillAutofillDelegateAndroidImplTest {
+ protected:
+  TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest()
+      : TouchToFillAutofillDelegateAndroidImplTest(
+            /*enable_private_inference_notice_bottom_sheet=*/true) {}
 };
 
 // Verifies that the delegate intends to show TouchToFill when the client allows
@@ -461,6 +501,154 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
       ->set_should_show_ambient_autofill_notice(true);
   auto [form_id, field_id] = SeeForm();
   EXPECT_FALSE(delegate().IntendsToShowTouchToFill(form_id, field_id));
+}
+
+// Verifies that the private inference notice is not shown if the feature is
+// disabled.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       PrivateInferenceNoticeIsNotShownWhenFeatureIsDisabled) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePrivateInferenceNoticeSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(false);
+  EXPECT_CALL(autofill_client(), ShowPrivateInferenceNoticeBottomSheet)
+      .Times(0);
+
+  auto [form_id, field_id] = SeeForm();
+  EXPECT_FALSE(delegate().IntendsToShowTouchToFill(form_id, field_id));
+}
+
+// Verifies that the delegate intends to show TouchToFill if the suggestions
+// contain a private inference notice suggestion.
+TEST_F(TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest,
+       IntendsToShowTouchToFillForPrivateInferenceNotice) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePrivateInferenceNoticeSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(false);
+
+  auto [form_id, field_id] = SeeForm();
+  EXPECT_TRUE(delegate().IntendsToShowTouchToFill(form_id, field_id));
+}
+
+// Verifies that showing the private inference notice records its impression,
+// which starts the cool off period.
+TEST_F(TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest,
+       TryToShowTouchToFillShowsPrivateInferenceNotice) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePrivateInferenceNoticeSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(false);
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice).Times(0);
+  EXPECT_CALL(autofill_client(), ShowPrivateInferenceNoticeBottomSheet)
+      .WillOnce(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  EXPECT_TRUE(delegate().IsShowingTouchToFill());
+  EXPECT_FALSE(
+      autofill_client()
+          .GetPrefs()
+          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
+          .is_null());
+}
+
+// Verifies that the personal context notice takes precedence over the private
+// inference notice.
+TEST_F(TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest,
+       PersonalContextNoticeTakesPrecedence) {
+  std::vector<Suggestion> suggestions = CreatePersonalContextSuggestions();
+  suggestions.emplace_back(SuggestionType::kAutofillAiPrivateInferenceNotice);
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions).WillByDefault(Return(suggestions));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(true);
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
+      .WillOnce(Return(true));
+  EXPECT_CALL(autofill_client(), ShowPrivateInferenceNoticeBottomSheet)
+      .Times(0);
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+}
+
+// Verifies that acknowledging the private inference notice is persisted.
+TEST_F(TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest,
+       OnNoticeAcknowledgedUpdatesPrefs) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePrivateInferenceNoticeSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(false);
+  EXPECT_CALL(autofill_client(), ShowPrivateInferenceNoticeBottomSheet)
+      .WillOnce(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+
+  delegate().OnNoticeAcknowledged();
+  EXPECT_FALSE(
+      autofill_client()
+          .GetPrefs()
+          ->GetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null());
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalContextFirstRunService()
+                   ->is_ambient_autofill_notice_acknowledged());
+}
+
+// Verifies that opening the settings from the private inference notice counts
+// as an acknowledgement of the notice.
+TEST_F(TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest,
+       OnSettingsLinkClickedAcknowledgesNotice) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePrivateInferenceNoticeSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(false);
+  EXPECT_CALL(autofill_client(), ShowPrivateInferenceNoticeBottomSheet)
+      .WillOnce(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+
+  delegate().OnSettingsLinkClicked();
+  EXPECT_FALSE(
+      autofill_client()
+          .GetPrefs()
+          ->GetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null());
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalContextFirstRunService()
+                   ->is_ambient_autofill_notice_acknowledged());
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
 }
 
 }  // namespace

@@ -251,6 +251,13 @@ BASE_FEATURE(kAutofillAiOrder, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillAiPrivateAiShadowMetric,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, the Autofill AI private inference notice is shown in the Touch To
+// Fill bottom sheet instead of an Android message.
+BASE_FEATURE(kAutofillAiPrivateInferenceNoticeBottomSheet,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // If enabled, AutofillAi requires re-auth when filling/viewing sensitive
 // fields. As part of this feature sensitive fields are also obfuscated during
 // suggestion generation time.

@@ -13,14 +13,16 @@
 
 namespace autofill {
 
+class AutofillField;
 class BrowserAutofillManager;
+class FormStructure;
 
 // Android implementation of TouchToFillAutofillDelegate.
 //
 // This class manages the state of the TouchToFill bottom sheet (currently
-// showing a Personal Context notice). It uses a state machine to track
-// whether the sheet is showing, inactive, or transitioning away (e.g., to
-// settings).
+// showing either a Personal Context notice or an Autofill AI private inference
+// notice). It uses a state machine to track whether the sheet is showing,
+// inactive, or transitioning away (e.g., to settings).
 //
 // State transitions on dismissal:
 // - User dismissal (swipe down or click Acknowledge): Transitions from
@@ -71,17 +73,30 @@ class TouchToFillAutofillDelegateAndroidImpl
   enum class NoticeType {
     // Informs the user that data from their Google Account can be filled.
     kPersonalContext,
+    // Informs the user that page content may be processed in a private space
+    // in the cloud.
+    kPrivateInference,
   };
 
   // Returns the notice that should be shown for the given form field, or
-  // `std::nullopt` if no notice should be shown.
+  // `std::nullopt` if no notice should be shown. Personal Context takes
+  // precedence over the private inference notice, mirroring the priority of
+  // the corresponding suggestions.
   std::optional<NoticeType> GetNoticeToShow(FormGlobalId form_id,
                                             FieldGlobalId field_id);
+
+  // Returns whether all conditions for showing the respective notice on
+  // `field` of `form` are met.
+  bool CanShowPersonalContextNotice(const FormStructure& form,
+                                    const AutofillField& field);
+  bool CanShowPrivateInferenceNotice(const FormStructure& form,
+                                     const AutofillField& field);
 
   // Shows `notice` via the client. Returns whether it was shown.
   bool ShowNotice(NoticeType notice);
 
   void OnPersonalContextNoticeAcknowledged();
+  void OnPrivateInferenceNoticeAcknowledged();
 
   void TriggerAskForValuesToFill();
 
