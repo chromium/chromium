@@ -745,13 +745,7 @@ const base::FeatureParam<double> kNavigationConfidenceEpsilonValue{
 // When NavigationNetworkResponseQueue is enabled, the browser will schedule
 // some tasks related to navigation network responses in a kHigh priority
 // queue.
-BASE_FEATURE(kNavigationNetworkResponseQueue,
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kNavigationNetworkResponseQueue, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When PrioritizeMainFrameNavigationNetworkResponse is enabled, the browser
 // will schedule tasks related to primary main frame navigation network

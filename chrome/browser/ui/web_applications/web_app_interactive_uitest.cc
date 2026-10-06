@@ -24,9 +24,6 @@
 #include "ui/display/test/virtual_display_util.h"
 
 namespace web_app {
-namespace {
-constexpr const char kExampleURL[] = "http://example.org/";
-}
 
 class WebAppInteractiveUiTest : public WebAppBrowserTestBase {};
 
@@ -64,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
   }
 
   // Install test app.
-  const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
+  const webapps::AppId app_id = InstallPWA(GetInstallableAppURL());
 
   // Figure out what display the original tabbed browser was created on, as well
   // as what the display Id is for a second display.
@@ -86,6 +83,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
   // By default opening a PWA in a tab should open on the same display as the
   // existing tabbed browser, and thus in the same browser window.
   BrowserWindowInterface* app_browser = LaunchBrowserForWebAppInTab(app_id);
+  ASSERT_NE(app_browser, nullptr);
   EXPECT_EQ(app_browser, original_browser);
   EXPECT_EQ(2, original_browser->GetTabStripModel()->count());
 
@@ -96,6 +94,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
     // new windows.
     display::ScopedDisplayForNewWindows scoped_display(other_display.id());
     app_browser = LaunchBrowserForWebAppInTab(app_id);
+    ASSERT_NE(app_browser, nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS)
     EXPECT_NE(app_browser, original_browser);
@@ -109,6 +108,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
 
     // A second launch should re-use the same browser window.
     BrowserWindowInterface* app_browser2 = LaunchBrowserForWebAppInTab(app_id);
+    ASSERT_NE(app_browser2, nullptr);
     EXPECT_EQ(app_browser, app_browser2);
     EXPECT_EQ(2, original_browser->GetTabStripModel()->count());
     EXPECT_EQ(2, app_browser->GetTabStripModel()->count());
@@ -123,6 +123,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
     // in the original browser.
     display::ScopedDisplayForNewWindows scoped_display(original_display.id());
     app_browser = LaunchBrowserForWebAppInTab(app_id);
+    ASSERT_NE(app_browser, nullptr);
     EXPECT_EQ(app_browser, original_browser);
 #if BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(3, original_browser->GetTabStripModel()->count());
