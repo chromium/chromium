@@ -21,7 +21,7 @@ struct ServerCvc {
   bool operator==(const ServerCvc&) const = default;
 
   // A server generated id to identify the corresponding credit card.
-  int64_t instrument_id;
+  int64_t instrument_id = 0;
   // CVC value of the card.
   std::u16string cvc;
   // The timestamp of the most recent update to the data entry.
