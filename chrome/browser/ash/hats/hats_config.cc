@@ -92,40 +92,6 @@ const HatsConfig kHatsBluetoothAudioSurvey = {
     ash::prefs::
         kHatsBluetoothAudioSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
-// Personalization Avatar Survey -- shown 60 seconds after a user closes the
-// Avatar selection page of either OS Settings or Personalization Hub, depending
-// on whether PersonalizationHub feature is enabled.
-const HatsConfig kHatsPersonalizationAvatarSurvey = {
-    ash::features::kHappinessTrackingPersonalizationAvatar,  // feature
-    base::Days(1),  // new_device_threshold
-    ash::prefs::
-        kHatsPersonalizationAvatarSurveyIsSelected,  // is_selected_pref_name
-    ash::prefs::
-        kHatsPersonalizationAvatarSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
-};
-
-// Personalization Screensaver Survey -- shown 60 seconds after a user closes
-// the Screensaver settings page of either OS Settings or Personalization Hub,
-// depending on whether PersonalizationHub feature is enabled.
-const HatsConfig kHatsPersonalizationScreensaverSurvey = {
-    ash::features::kHappinessTrackingPersonalizationScreensaver,  // feature
-    base::Days(1),  // new_device_threshold
-    ash::prefs::
-        kHatsPersonalizationScreensaverSurveyIsSelected,  // is_selected_pref_name
-    ash::prefs::
-        kHatsPersonalizationScreensaverSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
-};
-
-// Personalization Wallpaper Survey -- shown 60 seconds after a user closes the
-// Wallpaper subpage of the Personalization App.
-const HatsConfig kHatsPersonalizationWallpaperSurvey = {
-    ash::features::kHappinessTrackingPersonalizationWallpaper,  // feature
-    base::Days(1),  // new_device_threshold
-    ash::prefs::
-        kHatsPersonalizationWallpaperSurveyIsSelected,  // is_selected_pref_name
-    ash::prefs::
-        kHatsPersonalizationWallpaperSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
-};
 
 // MediaApp PDF Editing experience survey -- shown after a user clicks `Save`
 // after editing a PDF in the MediaApp (Gallery), and the save is complete.

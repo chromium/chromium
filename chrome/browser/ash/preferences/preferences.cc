@@ -510,21 +510,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(ash::prefs::kHatsPeripheralsIsSelected, false);
 
-  // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
-  // features.
-  registry->RegisterInt64Pref(
-      ash::prefs::kHatsPersonalizationAvatarSurveyCycleEndTs, 0);
-  registry->RegisterBooleanPref(
-      ash::prefs::kHatsPersonalizationAvatarSurveyIsSelected, false);
-  registry->RegisterInt64Pref(
-      ash::prefs::kHatsPersonalizationScreensaverSurveyCycleEndTs, 0);
-  registry->RegisterBooleanPref(
-      ash::prefs::kHatsPersonalizationScreensaverSurveyIsSelected, false);
-  registry->RegisterInt64Pref(
-      ash::prefs::kHatsPersonalizationWallpaperSurveyCycleEndTs, 0);
-  registry->RegisterBooleanPref(
-      ash::prefs::kHatsPersonalizationWallpaperSurveyIsSelected, false);
-
   // MediaApp HaTS prefs for Pdf and Photos experiences.
   registry->RegisterInt64Pref(ash::prefs::kHatsMediaAppPdfCycleEndTs, 0);
   registry->RegisterBooleanPref(ash::prefs::kHatsMediaAppPdfIsSelected, false);
