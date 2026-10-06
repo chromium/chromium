@@ -50,10 +50,10 @@ namespace content {
 namespace {
 
 BASE_FEATURE(kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -165,7 +165,7 @@ constexpr size_t kServiceWorkerRegistrationCacheSize = 100;
 
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
 BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 template <typename... ReplyArgs>
 class InflightCallWithInvoker final

@@ -16861,31 +16861,6 @@
             ]
         }
     ],
-    "ServiceWorkerBackgroundUpdate": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrewarmServiceWorkerRegistrationForDSE",
-                        "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
-                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
-                    ],
-                    "disable_features": [
-                        "ServiceWorkerMergeFindRegistrationForClientUrl"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerDatabaseDoomOnMissingNextId": [
         {
             "platforms": [
