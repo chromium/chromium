@@ -163,8 +163,12 @@ def main(argv):
     kotlinc_cmd = [build_utils.KOTLINC_PATH]
 
     kotlinc_cmd += [
+        # Keep consistent with javac_args release flag in
+        # //build/android/gyp/compile_java.py.
+        # LINT.IfChange
         "-jvm-target",
-        "11",
+        "25",
+        # LINT.ThenChange(//build/android/gyp/compile_java.py)
         '-no-jdk',  # Avoid depending on the bundled JDK.
         # Avoid depending on the bundled Kotlin stdlib. This may have a version
         # skew with the one in //third_party/android_deps (which is the one we

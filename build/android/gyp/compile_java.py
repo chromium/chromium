@@ -708,10 +708,15 @@ def main(
         '-parameters',
         # Jacoco does not currently support a higher value.
         '--release',
-        # Keep consistent with javac_cmd in //build/android/gyp/turbine.py.
+        # Keep consistent with javac_cmd in //build/android/gyp/turbine.py and
+        # -jvm-target in //build/android/gyp/compile_kt.py.
         # LINT.IfChange
         '25',
-        # LINT.ThenChange(//depot/chromium/components/cronet/gn2bp/templates/Android.extras.bp.template)
+        # LINT.ThenChange(
+        #     //build/android/gyp/compile_kt.py,
+        #     //build/android/gyp/turbine.py,
+        #     //components/cronet/gn2bp/templates/Android.extras.bp.template
+        # )
         # Chromium only allows UTF8 source files.  Being explicit avoids
         # javac pulling a default encoding from the user's environment.
         '-encoding',
