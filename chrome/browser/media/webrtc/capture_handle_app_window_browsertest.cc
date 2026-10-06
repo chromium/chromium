@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -224,14 +225,11 @@ class WindowCaptureSession {
   raw_ptr<content::WebContents> capturer_contents_ = nullptr;
 };
 
-const std::string& GetCapturedWindowTitle() {
-  // Because this is static, it is initialized exactly once per OS process
-  // (batch). All tests in this batch will share it, while parallel batches
-  // get unique ones.
-  static const std::string title =
-      base::StringPrintf("Capture Target - %s",
-                         base::UnguessableToken::Create().ToString().c_str());
-  return title;
+std::string GetCapturedWindowTitle() {
+  // Tests in the same OS process (batch) share the title, while parallel
+  // batches, which run in other processes, get unique ones.
+  return base::StringPrintf("Capture Target - %d",
+                            static_cast<int>(base::GetCurrentProcId()));
 }
 
 #if defined(USE_AURA)

@@ -413,10 +413,6 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    # Some of these tests declare file-scope objects with non-trivial
-    # destructors (e.g. webrtc_getdisplaymedia_browsertest.cc).
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
     sources = [
       "capture_handle_browsertest.cc",
       "display_media_access_handler_browsertest.cc",

@@ -102,8 +102,7 @@ static const char kMainHtmlTitle[] = "WebRTC Automated Test";
 // The captured tab is identified by its title.
 static const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
 static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
-static const std::u16string kShareThisTabInsteadMessage =
-    u"Share this tab instead";
+constexpr char16_t kShareThisTabInsteadMessage[] = u"Share this tab instead";
 
 constexpr TabSharingInfoBarButton kCscIndicator =
     TabSharingInfoBarButton::kCapturedSurfaceControlIndicator;
