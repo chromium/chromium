@@ -9,6 +9,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
@@ -18,6 +19,10 @@
 namespace media {
 class CameraAppDeviceProviderImpl;
 }  // namespace media
+
+namespace media_device_salt {
+class MediaDeviceSaltService;
+}  // namespace media_device_salt
 
 namespace ash {
 
@@ -36,8 +41,12 @@ class CameraAppUIConfig : public SystemWebAppUIConfig<CameraAppUI> {
 class CameraAppUI : public ui::MojoWebUIController,
                     public content::DevToolsAgentHostObserver {
  public:
-  CameraAppUI(content::WebUI* web_ui,
-              std::unique_ptr<CameraAppUIDelegate> delegate);
+  // `media_device_salt_service` provides the persistent salts used to
+  // translate media device IDs. It must be non-null and must outlive `this`.
+  CameraAppUI(
+      content::WebUI* web_ui,
+      std::unique_ptr<CameraAppUIDelegate> delegate,
+      media_device_salt::MediaDeviceSaltService* media_device_salt_service);
 
   CameraAppUI(const CameraAppUI&) = delete;
   CameraAppUI& operator=(const CameraAppUI&) = delete;
@@ -71,6 +80,9 @@ class CameraAppUI : public ui::MojoWebUIController,
 
  private:
   std::unique_ptr<CameraAppUIDelegate> delegate_;
+
+  const raw_ref<media_device_salt::MediaDeviceSaltService>
+      media_device_salt_service_;
 
   std::unique_ptr<media::CameraAppDeviceProviderImpl> provider_;
 

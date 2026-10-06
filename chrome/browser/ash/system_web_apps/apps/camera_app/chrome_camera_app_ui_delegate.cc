@@ -39,7 +39,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/pdf/pdf_service.h"
 #include "chrome/browser/policy/policy_util.h"
@@ -758,13 +757,6 @@ void ChromeCameraAppUIDelegate::OnStorageMonitorInitialized(
   // |storage_task_runner_|, so it will be dereferenced and invalidated on the
   // same sequence.
   storage_monitor_weak_ptr_ = storage_monitor_.get()->GetWeakPtr();
-}
-
-media_device_salt::MediaDeviceSaltService*
-ChromeCameraAppUIDelegate::GetMediaDeviceSaltService(
-    content::BrowserContext* context) {
-  return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
-      context);
 }
 
 void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
