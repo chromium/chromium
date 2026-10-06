@@ -1298,6 +1298,10 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
 
   switch (command_id) {
     case IDC_UPGRADE_DIALOG:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.UpgradeDialog",
+                                      delta);
+      }
       LogMenuAction(MENU_ACTION_UPGRADE_DIALOG);
       break;
     case IDC_NEW_TAB:

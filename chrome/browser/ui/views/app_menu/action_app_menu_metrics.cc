@@ -414,15 +414,15 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
                    "SafetyHubNotificationManageExtensions");
       break;
 
+    case kActionUpgradeDialog:
+      RecordAction(MENU_ACTION_UPGRADE_DIALOG, "UpgradeDialog");
+      break;
+
     // Actions present in the menu that do not have a per-action TimeToAction
     // variant in histograms.xml, but still record the overall
     // WrenchMenu.TimeToAction histogram (and WrenchMenu.MenuAction if defined).
     // TODO(crbug.com/565832018): Add TimeToAction and MenuAction entries for
     // each of these.
-    case kActionUpgradeDialog:
-      RecordTimeToAction();
-      LogMenuActionHistogram(MENU_ACTION_UPGRADE_DIALOG);
-      break;
     case kActionNewIsolatedWindow:
       RecordTimeToAction();
       LogMenuActionHistogram(MENU_ACTION_NEW_ISOLATED_WINDOW);

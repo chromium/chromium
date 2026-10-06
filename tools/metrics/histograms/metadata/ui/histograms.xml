@@ -1613,6 +1613,7 @@ features through Chrome Labs. -->
     <variant name=".SwitchToAnotherProfile"/>
     <variant name=".TaskManager"/>
     <variant name=".TtcAppMenu"/>
+    <variant name=".UpgradeDialog"/>
     <variant name=".ViewSource"/>
     <variant name=".VisitChromeWebStore"/>
     <variant name=".Win8MetroRestart"/>
