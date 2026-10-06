@@ -694,6 +694,11 @@ class SameDocumentNavigationObserver : public content::WebContentsObserver {
   // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
+    // Ignore subframe or prerender navigations (such as background DSE
+    // prewarm navigations) so they don't trigger the IsSameDocument() assert.
+    if (!navigation_handle->IsInPrimaryMainFrame()) {
+      return;
+    }
     ASSERT_TRUE(navigation_handle->IsSameDocument());
     run_loop_.Quit();
   }

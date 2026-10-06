@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -85,8 +86,14 @@ class SSLUITestBase : public InProcessBrowserTest {
   net::EmbeddedTestServer wss_server_mismatched_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+
  private:
   network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams();
+
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_BROWSERTEST_BASE_H_

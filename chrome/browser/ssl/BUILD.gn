@@ -218,6 +218,7 @@ source_set("test_support") {
   if (!is_android) {
     public += [ "ssl_browsertest_base.h" ]
     sources += [ "ssl_browsertest_base.cc" ]
+    public_deps += [ "//chrome/browser/preloading:test_support" ]
     deps += [
       ":ssl",
       "//chrome/browser/interstitials:test_support",
