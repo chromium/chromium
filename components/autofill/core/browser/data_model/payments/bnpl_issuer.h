@@ -131,7 +131,7 @@ class BnplIssuer {
 
  private:
   // Unique identifier for the BNPL partner.
-  IssuerId issuer_id_;
+  IssuerId issuer_id_ = IssuerId::kBnplAffirm;
 
   // If the issuer is linked, `payment_instrument_` will contain the
   // instrument_id. If the issuer is unlinked, `payment_instrument_` will be
