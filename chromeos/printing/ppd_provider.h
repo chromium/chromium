@@ -19,10 +19,6 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"
 
-namespace network::mojom {
-class URLLoaderFactory;
-}
-
 namespace chromeos {
 
 class PpdCache;
@@ -174,13 +170,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider {
                               const std::string& manufacturer,
                               const std::string& model)>;
 
-  // Called to get the current URLLoaderFactory on demand. Needs to be
-  // Repeating since it gets called once per fetch.
-  using LoaderFactoryGetter =
-      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>;
-
   // Create and return a new PpdProvider with the given cache and options.
-  // A references to |url_context_getter| is taken.
   static std::unique_ptr<PpdProvider> Create(
       const base::Version& current_version,
       scoped_refptr<PpdCache> cache,

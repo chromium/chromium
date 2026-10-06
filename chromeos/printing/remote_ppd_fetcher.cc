@@ -16,6 +16,7 @@
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
@@ -56,9 +57,10 @@ namespace chromeos {
 class RemotePpdFetcherImpl : public RemotePpdFetcher {
  public:
   explicit RemotePpdFetcherImpl(
-      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-          loader_factory_dispenser)
-      : loader_factory_dispenser_(loader_factory_dispenser) {}
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : url_loader_factory_(std::move(url_loader_factory)) {
+    CHECK(url_loader_factory_);
+  }
 
   void Fetch(const GURL& url, FetchCallback cb) const override {
     DCHECK(url.SchemeIsHTTPOrHTTPS());
@@ -109,21 +111,19 @@ class RemotePpdFetcherImpl : public RemotePpdFetcher {
                                                        traffic_annotation);
     network::SimpleURLLoader* url_loader_ptr = url_loader.get();
     url_loader_ptr->DownloadToString(
-        loader_factory_dispenser_.Run(),
+        url_loader_factory_.get(),
         base::BindOnce(&OnRemoteUrlLoaded, std::move(cb),
                        std::move(url_loader)),
         network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
   }
 
-  base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-      loader_factory_dispenser_;
+ private:
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 std::unique_ptr<RemotePpdFetcher> RemotePpdFetcher::Create(
-    base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-        loader_factory_dispenser) {
-  return std::make_unique<RemotePpdFetcherImpl>(
-      std::move(loader_factory_dispenser));
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return std::make_unique<RemotePpdFetcherImpl>(std::move(url_loader_factory));
 }
 
 }  // namespace chromeos

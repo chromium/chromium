@@ -10,11 +10,12 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
-namespace network::mojom {
-class URLLoaderFactory;
-}
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace chromeos {
 
@@ -44,13 +45,10 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) RemotePpdFetcher {
 
   // Create a `RemotePpdFetcher` instance.
   //
-  // `loader_factory_dispenser` is a functor that can create fresh
-  // URLLoaderFactory instances. We use this indirection to avoid
-  // caching a raw pointer to a URLLoaderFactory instance, which is
-  // invalidated by network service restarts.
+  // `url_loader_factory` must be non-null. It is held for the lifetime of the
+  // returned instance and transparently survives network service restarts.
   static std::unique_ptr<RemotePpdFetcher> Create(
-      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-          loader_factory_dispenser);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 };
 
 }  // namespace chromeos

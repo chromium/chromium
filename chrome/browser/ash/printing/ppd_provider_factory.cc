@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/printing/ppd_cache.h"
 #include "chromeos/printing/ppd_metadata_manager.h"
@@ -19,17 +18,11 @@
 #include "chromeos/printing/printer_config_cache.h"
 #include "chromeos/printing/remote_ppd_fetcher.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/browser_thread.h"
 #include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 namespace {
-
-network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  return g_browser_process->system_network_context_manager()
-      ->GetURLLoaderFactory();
-}
 
 chromeos::PpdIndexChannel ToPpdIndexChannel(const std::string& channel) {
   if (channel == ash::switches::kPrintingPpdChannelStaging) {
@@ -57,19 +50,22 @@ std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
       use_localhost_as_root ? FILE_PATH_LITERAL("PPDCacheLocalhost")
                             : FILE_PATH_LITERAL("PPDCache"));
 
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
+
   auto provider_config_cache = chromeos::PrinterConfigCache::Create(
-      base::DefaultClock::GetInstance(),
-      base::BindRepeating(&GetURLLoaderFactory), use_localhost_as_root);
+      base::DefaultClock::GetInstance(), url_loader_factory,
+      use_localhost_as_root);
 
   auto manager_config_cache = chromeos::PrinterConfigCache::Create(
-      base::DefaultClock::GetInstance(),
-      base::BindRepeating(&GetURLLoaderFactory), use_localhost_as_root);
+      base::DefaultClock::GetInstance(), url_loader_factory,
+      use_localhost_as_root);
   auto metadata_manager = chromeos::PpdMetadataManager::Create(
       channel, base::DefaultClock::GetInstance(),
       std::move(manager_config_cache));
 
-  auto remote_ppd_fetcher = chromeos::RemotePpdFetcher::Create(
-      base::BindRepeating(&GetURLLoaderFactory));
+  auto remote_ppd_fetcher =
+      chromeos::RemotePpdFetcher::Create(std::move(url_loader_factory));
 
   return chromeos::PpdProvider::Create(
       version_info::GetVersion(), chromeos::PpdCache::Create(ppd_cache_path),

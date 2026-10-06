@@ -10,13 +10,13 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -74,17 +74,12 @@ class PrinterConfigCacheTest : public ::testing::Test {
   // Creates |this| with
   // *  a testing task environment for testing sequenced code,
   // *  a testing clock for time-aware testing, and
-  // *  a loader factory dispenser (specified by header comment on
-  //    Create()).
+  // *  a testing URLLoaderFactory loaned to the class under test.
   PrinterConfigCacheTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        cache_(PrinterConfigCache::Create(
-            &clock_,
-            base::BindLambdaForTesting([&]() {
-              return reinterpret_cast<network::mojom::URLLoaderFactory*>(
-                  &loader_factory_);
-            }),
-            /*use_localhost_as_root=*/false)) {}
+        cache_(PrinterConfigCache::Create(&clock_,
+                                          loader_factory_.GetSafeWeakWrapper(),
+                                          /*use_localhost_as_root=*/false)) {}
 
   // Sets up the default responses to dispense.
   void SetUp() override {

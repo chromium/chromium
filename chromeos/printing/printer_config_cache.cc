@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -24,6 +25,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
@@ -84,15 +86,16 @@ PrinterConfigCache::FetchResult PrinterConfigCache::FetchResult::Success(
 
 class PrinterConfigCacheImpl : public PrinterConfigCache {
  public:
-  explicit PrinterConfigCacheImpl(
+  PrinterConfigCacheImpl(
       const base::Clock* clock,
-      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-          loader_factory_dispenser,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool use_localhost_as_root)
       : clock_(clock),
-        loader_factory_dispenser_(std::move(loader_factory_dispenser)),
+        url_loader_factory_(std::move(url_loader_factory)),
         use_localhost_as_root_(use_localhost_as_root),
-        weak_factory_(this) {}
+        weak_factory_(this) {
+    CHECK(url_loader_factory_);
+  }
 
   ~PrinterConfigCacheImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -220,7 +223,7 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
                                                 traffic_annotation);
 
     fetcher_->DownloadToString(
-        loader_factory_dispenser_.Run(),
+        url_loader_factory_.get(),
         base::BindOnce(&PrinterConfigCacheImpl::FinishNetworkedFetch,
                        weak_factory_.GetWeakPtr(), std::move(context)),
         network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
@@ -265,10 +268,7 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
   // Dispenses Time objects to mark time of fetch on Entry instances.
   raw_ptr<const base::Clock> clock_;
 
-  // Dispenses fresh URLLoaderFactory instances; see header comment
-  // on Create().
-  base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-      loader_factory_dispenser_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Talks to the networked service to fetch resources.
   //
@@ -291,11 +291,10 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
 // static
 std::unique_ptr<PrinterConfigCache> PrinterConfigCache::Create(
     const base::Clock* clock,
-    base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-        loader_factory_dispenser,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     bool use_localhost_as_root) {
   return std::make_unique<PrinterConfigCacheImpl>(
-      clock, std::move(loader_factory_dispenser), use_localhost_as_root);
+      clock, std::move(url_loader_factory), use_localhost_as_root);
 }
 
 }  // namespace chromeos

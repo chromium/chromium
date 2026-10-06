@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -27,14 +27,6 @@ void RecordContents(RemotePpdFetcher::FetchResultCode& out_code,
   out_contents = std::move(fetch_contents);
 }
 
-base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-GetLoaderFactoryDispenser(network::TestURLLoaderFactory* loader_factory) {
-  return base::BindRepeating(
-      [](network::TestURLLoaderFactory* ptr)
-          -> network::mojom::URLLoaderFactory* { return ptr; },
-      loader_factory);
-}
-
 }  // namespace
 
 TEST(RemotePpdFetcherTest, FetchSuccessful) {
@@ -42,7 +34,7 @@ TEST(RemotePpdFetcherTest, FetchSuccessful) {
   network::TestURLLoaderFactory loader_factory;
   loader_factory.AddResponse("https://good-url", "ppd-content");
   auto ppd_fetcher =
-      RemotePpdFetcher::Create(GetLoaderFactoryDispenser(&loader_factory));
+      RemotePpdFetcher::Create(loader_factory.GetSafeWeakWrapper());
 
   RemotePpdFetcher::FetchResultCode code;
   std::string result;
@@ -60,7 +52,7 @@ TEST(RemotePpdFetcherTest, NetworkError) {
   network::TestURLLoaderFactory loader_factory;
   loader_factory.AddResponse("https://bad-url", "", net::HTTP_NOT_FOUND);
   auto ppd_fetcher =
-      RemotePpdFetcher::Create(GetLoaderFactoryDispenser(&loader_factory));
+      RemotePpdFetcher::Create(loader_factory.GetSafeWeakWrapper());
 
   RemotePpdFetcher::FetchResultCode code;
   std::string result;

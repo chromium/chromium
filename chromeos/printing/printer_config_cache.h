@@ -15,12 +15,13 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 
-namespace network::mojom {
-class URLLoaderFactory;
-}
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace chromeos {
 
@@ -34,21 +35,15 @@ namespace chromeos {
 // a sequenced context.
 class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterConfigCache {
  public:
-  // |loader_factory_dispenser| is a functor that can create fresh
-  // URLLoaderFactory instances. We use this indirection to avoid
-  // caching raw pointers to URLLoaderFactory instances, which are
-  // invalidated by network service restarts.
-  //
-  // Caller must guarantee that |loader_factory_dispenser| is always
-  // safe to Run() for the lifetime of |this|.
+  // `url_loader_factory` must be non-null. It is held for the lifetime of
+  // `this` and transparently survives network service restarts.
   //
   // Setting `use_localhost_as_root` to true sets the Chrome OS Printing
   // serving root to localhost. It allows to run integration tests without
   // connecting to actual Chrome OS Printing serving root.
   static std::unique_ptr<PrinterConfigCache> Create(
       const base::Clock* clock,
-      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>
-          loader_factory_dispenser,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool use_localhost_as_root);
   virtual ~PrinterConfigCache() = default;
 
