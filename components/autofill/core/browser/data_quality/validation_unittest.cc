@@ -284,13 +284,9 @@ TEST(AutofillValidation, IsValidNameOnCard) {
   }
 
   const char16_t* const kInvalidNamesOnCard[] = {
-      u"John D0E",   u"Jane@Doe",
-      u"John#Smith", u"Maria$V",
-      u"Test^Name",  u"Name*Here",
-      u"John(Doe)",  u"Jane[Doe]",
-      u"Maria{V}",   u"Test=Name",
-      u"Name?Here",  u"|Doe",
-      u"•Name",      u"This name is way too long for a card",
+      u"John D0E",  u"Jane@Doe",  u"John#Smith", u"Maria$V",  u"Test^Name",
+      u"Name*Here", u"John(Doe)", u"Jane[Doe]",  u"Maria{V}", u"Test=Name",
+      u"Name?Here", u"|Doe",      u"•Name",
   };
   for (const char16_t* name : kInvalidNamesOnCard) {
     SCOPED_TRACE(base::UTF16ToUTF8(name));

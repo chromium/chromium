@@ -1491,9 +1491,9 @@ TEST_F(PaymentsFormDataImporterTest,
             u"Clyde Barrow");
 }
 
-// Tests that an invalid cardholder name (e.g. containing digits, prohibited
-// punctuation, or exceeding 26 characters) is not copied onto a matched server
-// card that is missing a cardholder name.
+// Tests that an invalid cardholder name (e.g. containing digits or prohibited
+// punctuation) is not copied onto a matched server card that is missing a
+// cardholder name.
 TEST_F(PaymentsFormDataImporterTest,
        DuplicateMaskedServerCard_MissingCardholderName_IgnoresInvalidName) {
   base::test::ScopedFeatureList scoped_feature_list(
@@ -1505,8 +1505,7 @@ TEST_F(PaymentsFormDataImporterTest,
   server_card.SetNetworkForMaskedCard(kVisaCard);
   payments_data_manager().AddServerCreditCard(server_card);
 
-  for (const char* invalid_name :
-       {"John 123", "John@Doe", "ABCDEFGHIJKLMNOPQRSTUVWXYZ!"}) {
+  for (const char* invalid_name : {"John 123", "John@Doe", "John(Doe)"}) {
     std::unique_ptr<FormStructure> form_structure =
         ConstructFormStructureFromFormData(CreateFullCreditCardForm(
             invalid_name, "4012888888881881", "01", "2999"));

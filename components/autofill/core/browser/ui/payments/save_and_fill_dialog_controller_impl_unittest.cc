@@ -263,8 +263,6 @@ TEST_F(SaveAndFillDialogControllerImplTest, IsValidNameOnCard) {
   EXPECT_FALSE(controller()->IsValidNameOnCard(u""));
   EXPECT_FALSE(controller()->IsValidNameOnCard(u"John123"));
   EXPECT_FALSE(controller()->IsValidNameOnCard(u"Invalid@Name"));
-  EXPECT_FALSE(
-      controller()->IsValidNameOnCard(u"This name is way too long for a card"));
 }
 
 TEST_F(SaveAndFillDialogControllerImplTest,

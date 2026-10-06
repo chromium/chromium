@@ -252,13 +252,8 @@ bool IsPlausible4DigitExpirationYear(std::u16string_view value) {
 }
 
 bool IsValidNameOnCard(std::u16string_view name) {
-  static constexpr size_t kMaxNameOnCardLength = 26;
   static constexpr char16_t kInvalidNameCharacters[] =
       u"[0-9@#$^*()\\[\\]<>{}=?\"“”|•]";
-
-  if (name.length() > kMaxNameOnCardLength) {
-    return false;
-  }
 
   return !MatchesRegex<kInvalidNameCharacters>(name);
 }
