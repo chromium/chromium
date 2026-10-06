@@ -2711,6 +2711,9 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "RenderWidgetHostViewAndroid::ProcessAckedTouchEvent");
+  if (destroy_pending()) {
+    return;
+  }
   input::ScopedInputDispatchPin pin(this);
   input_helper_->ProcessAckedTouchEvent(touch, ack_result);
 }
@@ -2978,6 +2981,9 @@ void RenderWidgetHostViewAndroid::SendMouseWheelEvent(
 
 void RenderWidgetHostViewAndroid::SendGestureEvent(
     const blink::WebGestureEvent& event) {
+  if (destroy_pending()) {
+    return;
+  }
   input::ScopedInputDispatchPin pin(this);
   // Sending a gesture that may trigger overscroll should resume the effect.
   if (overscroll_controller_)
