@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/autofill_dialog_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_dialog_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -176,6 +177,73 @@ TEST_F(AutofillDialogControllerImplTest, Dismiss_DeletesView) {
 
   controller_->DismissForTest();
   EXPECT_FALSE(controller_->HasDialogViewForTest());
+}
+
+// Test that OnPositiveButtonClicked runs the callback with
+// Result::kAccepted.
+TEST_F(AutofillDialogControllerImplTest,
+       OnPositiveButtonClicked_RunsCallbackWithAccepted) {
+  base::MockCallback<AutofillDialogController::DialogResultCallback> callback;
+  EXPECT_CALL(callback, Run(AutofillDialogController::Result::kAccepted));
+
+  controller_->Show(u"Title", u"Description",
+                    /*positive_button_text=*/u"Button",
+                    /*negative_button_text=*/std::u16string(), callback.Get());
+  controller_->OnPositiveButtonClicked();
+}
+
+// Test that OnNegativeButtonClicked runs the callback with
+// Result::kDeclined.
+TEST_F(AutofillDialogControllerImplTest,
+       OnNegativeButtonClicked_RunsCallbackWithDeclined) {
+  base::MockCallback<AutofillDialogController::DialogResultCallback> callback;
+  EXPECT_CALL(callback, Run(AutofillDialogController::Result::kDeclined));
+
+  controller_->Show(u"Title", u"Description",
+                    /*positive_button_text=*/u"Button",
+                    /*negative_button_text=*/u"Cancel", callback.Get());
+  controller_->OnNegativeButtonClicked();
+}
+
+// Test that OnDismissed runs the callback with Result::kUnknown if the
+// callback was not invoked before.
+TEST_F(AutofillDialogControllerImplTest,
+       OnDismissed_RunsCallbackWithUnknown_WhenNotPreviouslyInvoked) {
+  base::MockCallback<AutofillDialogController::DialogResultCallback> callback;
+  EXPECT_CALL(callback, Run(AutofillDialogController::Result::kUnknown));
+
+  controller_->Show(u"Title", u"Description",
+                    /*positive_button_text=*/u"Button",
+                    /*negative_button_text=*/std::u16string(), callback.Get());
+  controller_->OnDismissed();
+}
+
+// Test that OnDismissed does not invoke the callback again if
+// OnPositiveButtonClicked was already invoked.
+TEST_F(AutofillDialogControllerImplTest,
+       OnDismissed_DoesNotRunCallback_WhenPositiveButtonClickedPreviously) {
+  base::MockCallback<AutofillDialogController::DialogResultCallback> callback;
+  EXPECT_CALL(callback, Run(AutofillDialogController::Result::kAccepted));
+
+  controller_->Show(u"Title", u"Description",
+                    /*positive_button_text=*/u"Button",
+                    /*negative_button_text=*/std::u16string(), callback.Get());
+  controller_->OnPositiveButtonClicked();
+  controller_->OnDismissed();
+}
+
+// Test that OnDismissed does not invoke the callback again if
+// OnNegativeButtonClicked was already invoked.
+TEST_F(AutofillDialogControllerImplTest,
+       OnDismissed_DoesNotRunCallback_WhenNegativeButtonClickedPreviously) {
+  base::MockCallback<AutofillDialogController::DialogResultCallback> callback;
+  EXPECT_CALL(callback, Run(AutofillDialogController::Result::kDeclined));
+
+  controller_->Show(u"Title", u"Description",
+                    /*positive_button_text=*/u"Button",
+                    /*negative_button_text=*/u"Cancel", callback.Get());
+  controller_->OnNegativeButtonClicked();
+  controller_->OnDismissed();
 }
 
 }  // namespace autofill

@@ -29,6 +29,7 @@ class AutofillDialogViewAndroid : public AutofillDialogView {
   // Methods called from Java via JNI
   // --------------------------------------------------------------------------
   void OnPositiveButtonClicked();
+  void OnNegativeButtonClicked();
   void OnDismissed();
 
  private:

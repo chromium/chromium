@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_DIALOG_CONTROLLER_H_
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents.h"
 
@@ -14,6 +15,14 @@ namespace autofill {
 // Controller interface that exposes dialog functionality to autofill views.
 class AutofillDialogController {
  public:
+  enum class Result {
+    kAccepted,
+    kDeclined,
+    kUnknown,
+  };
+
+  using DialogResultCallback = base::OnceCallback<void(Result)>;
+
   virtual ~AutofillDialogController() = default;
 
   // Shows the dialog. The negative button is not displayed when an empty
@@ -22,7 +31,7 @@ class AutofillDialogController {
                     std::u16string description,
                     std::u16string positive_button_text,
                     std::u16string negative_button_text,
-                    base::OnceClosure on_positive_button_clicked_callback) = 0;
+                    DialogResultCallback dialog_result_callback) = 0;
 
   virtual void ShowLoadingDialog(const std::u16string& title,
                                  base::TimeDelta min_time) = 0;
@@ -32,6 +41,9 @@ class AutofillDialogController {
 
   // User clicked the positive button on the dialog.
   virtual void OnPositiveButtonClicked() = 0;
+
+  // User clicked the negative button on the dialog.
+  virtual void OnNegativeButtonClicked() = 0;
 
   // The dialog was dismissed without any user interaction.
   virtual void OnDismissed() = 0;

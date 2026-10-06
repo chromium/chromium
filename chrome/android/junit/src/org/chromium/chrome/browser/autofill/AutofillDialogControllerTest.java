@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -100,12 +101,13 @@ public class AutofillDialogControllerTest {
 
         // Simulate dismissal after positive button click.
         verify(mNativeMock).onPositiveButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock, never()).onNegativeButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
         // The onDismissed should only be called if the dialog was dismissed by the user.
         verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
     }
 
     @Test
-    public void testNegativeButtonClick_CallsNativeOnDismissed() {
+    public void testNegativeButtonClick_CallsNative() {
         mController.show(
                 TEST_TITLE, TEST_DESCRIPTION, TEST_POSITIVE_BUTTON_TEXT, TEST_NEGATIVE_BUTTON_TEXT);
 
@@ -116,6 +118,7 @@ public class AutofillDialogControllerTest {
 
         // Simulate dismissal after negative button click.
         verify(mNativeMock, times(0)).onPositiveButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
+        verify(mNativeMock).onNegativeButtonClicked(NATIVE_AUTOFILL_DIALOG_VIEW);
         // The onDismissed should only be called if the dialog was dismissed by the user.
         verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
     }

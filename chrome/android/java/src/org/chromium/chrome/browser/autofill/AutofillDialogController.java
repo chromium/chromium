@@ -162,6 +162,8 @@ public class AutofillDialogController {
         }
         if (buttonClickResult == ButtonClickResult.POSITIVE) {
             AutofillDialogControllerJni.get().onPositiveButtonClicked(mNativeAutofillDialogView);
+        } else if (buttonClickResult == ButtonClickResult.NEGATIVE) {
+            AutofillDialogControllerJni.get().onNegativeButtonClicked(mNativeAutofillDialogView);
         }
         AutofillDialogControllerJni.get().onDismissed(mNativeAutofillDialogView);
         mNativeAutofillDialogView = 0;
@@ -171,6 +173,8 @@ public class AutofillDialogController {
     @NativeMethods
     interface Natives {
         void onPositiveButtonClicked(long nativeAutofillDialogViewAndroid);
+
+        void onNegativeButtonClicked(long nativeAutofillDialogViewAndroid);
 
         void onDismissed(long nativeAutofillDialogViewAndroid);
     }

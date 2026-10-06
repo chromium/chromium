@@ -78,6 +78,10 @@ void AutofillDialogViewAndroid::OnPositiveButtonClicked() {
   controller_->OnPositiveButtonClicked();
 }
 
+void AutofillDialogViewAndroid::OnNegativeButtonClicked() {
+  controller_->OnNegativeButtonClicked();
+}
+
 void AutofillDialogViewAndroid::OnDismissed() {
   controller_->OnDismissed();
 }
