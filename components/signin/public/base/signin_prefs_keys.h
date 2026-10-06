@@ -19,8 +19,16 @@ namespace signin::internal {
 // `SigninPrefsRegistry`. External consumers must use the typed `SigninPrefs`
 // API.
 //
+// IMPORTANT: Every active key added here must also be registered in
+// `kRegisteredSigninPrefs` (`signin_prefs_registry.cc`) with its enclosing
+// parent path and `base::Value::Type`, and exercised in
+// `SigninPrefsTest.AllWrittenPrefsAreRegisteredWithMatchingType` under every
+// feature state that selects it.
+//
 // A key is a single dictionary key. A '.' inside a key is part of the name, it
 // never denotes nesting.
+
+// LINT.IfChange(SigninPrefsKeys)
 
 // Pref used to track the last time the user signed out of Chrome.
 inline constexpr std::string_view kChromeLastSignoutTime =
@@ -160,6 +168,10 @@ inline constexpr std::string_view kCrossDevicePromoLastDismissedTimeKey =
 inline constexpr std::string_view kCrossDevicePromoShownAfterDismissalKey =
     "shown_after_dismissal";
 
+// Parent path for data-type sub-dictionaries under `kCrossDevicePromoPrefs`.
+inline constexpr auto kCrossDevicePromoRootParents =
+    std::to_array<std::string_view>({kCrossDevicePromoPrefs});
+
 // Common parent path for cross-device history promo prefs within an account
 // dictionary.
 inline constexpr auto kCrossDeviceHistoryPromoParents =
@@ -208,6 +220,8 @@ inline constexpr std::string_view kAvatarButtonSigninPromoUsedCount =
     "AvatarButtonSigninPromoUsedCount";
 inline constexpr std::string_view kAvatarButtonSigninPromoLastShownTime =
     "AvatarButtonSigninPromoLastShownTime";
+
+// LINT.ThenChange(//components/signin/public/base/signin_prefs_registry.cc:SigninPrefsKeys)
 
 // -----------------------------------------------------------------------------
 // DEPRECATED prefs: Check `SigninPrefs::MigrateObsoleteSigninPrefs()`.

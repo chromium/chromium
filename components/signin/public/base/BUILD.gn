@@ -26,9 +26,19 @@ proto_library("hybrid_encryption_key_proto") {
   ]
 }
 
+# Internal per-account signin prefs plumbing: the pref keys and the registry of
+# per-account prefs. Only for use by `SigninPrefs` and its tests.
 source_set("signin_prefs_internal") {
-  visibility = [ ":base" ]
-  sources = [ "signin_prefs_keys.h" ]
+  visibility = [
+    ":base",
+    ":unit_tests",
+  ]
+  sources = [
+    "signin_prefs_keys.h",
+    "signin_prefs_registry.cc",
+    "signin_prefs_registry.h",
+  ]
+  public_deps = [ "//base" ]
 }
 
 static_library("base") {
@@ -200,6 +210,7 @@ source_set("unit_tests") {
 
   deps = [
     ":base",
+    ":signin_prefs_internal",
     ":test_support",
     "//base",
     "//base/test:test_support",

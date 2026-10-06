@@ -15,6 +15,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_prefs_keys.h"
+#include "components/signin/public/base/signin_prefs_registry.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -912,3 +914,95 @@ TEST_F(SigninPrefsTest,
                                                     base::TimeToValue(time));
   EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
 }
+
+TEST_F(SigninPrefsTest, RegisteredPrefsAreNonEmptyAndValid) {
+  auto pass_key = SigninPrefsRegistry::CreatePassKeyForTesting();
+  base::span<const SigninPrefsRegistry::PrefDescriptor> prefs =
+      SigninPrefsRegistry::GetAll(pass_key);
+  EXPECT_FALSE(prefs.empty());
+
+  for (const auto& pref : prefs) {
+    EXPECT_FALSE(pref.key.empty());
+    EXPECT_NE(pref.type, base::Value::Type::NONE);
+    if (pref.is_timestamp) {
+      EXPECT_EQ(pref.type, base::Value::Type::STRING);
+    }
+    EXPECT_EQ(SigninPrefsRegistry::Find(pass_key, pref.parent_keys(), pref.key),
+              &pref);
+  }
+
+  EXPECT_EQ(SigninPrefsRegistry::Find(pass_key, {}, "UnknownPrefKey"), nullptr);
+  EXPECT_NE(SigninPrefsRegistry::Find(
+                pass_key, {}, signin::internal::kPasswordSignInPromoShownCount),
+            nullptr);
+  EXPECT_NE(SigninPrefsRegistry::Find(
+                pass_key,
+                {{signin::internal::kCrossDevicePromoPrefs,
+                  signin::internal::kCrossDevicePromoHistoryDictKey}},
+                signin::internal::kCrossDevicePromoShownCountKey),
+            nullptr);
+}
+
+TEST_F(SigninPrefsTest, IsValidValueValidatesTypesAndTimestamps) {
+  auto pass_key = SigninPrefsRegistry::CreatePassKeyForTesting();
+
+  // Integer preference: accepts integers, rejects strings/booleans.
+  EXPECT_TRUE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kPasswordSignInPromoShownCount,
+      base::Value(3)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kPasswordSignInPromoShownCount,
+      base::Value("3")));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kPasswordSignInPromoShownCount,
+      base::Value(true)));
+
+  // Boolean preference: accepts booleans, rejects integers.
+  EXPECT_TRUE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kExtensionsExplicitBrowserSigninEnabled,
+      base::Value(true)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kExtensionsExplicitBrowserSigninEnabled,
+      base::Value(1)));
+
+  // Timestamp preference: accepts valid TimeToValue strings, rejects arbitrary
+  // strings and integers.
+  EXPECT_TRUE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kChromeLastSignoutTime,
+      base::TimeToValue(base::Time::Now())));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kChromeLastSignoutTime,
+      base::Value("not_a_timestamp")));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kChromeLastSignoutTime,
+      base::Value(12345)));
+
+  // Nested preference under CrossDevicePromoPrefs.history.
+  EXPECT_TRUE(SigninPrefsRegistry::IsValidValue(
+      pass_key, signin::internal::kCrossDeviceHistoryPromoParents,
+      signin::internal::kCrossDevicePromoShownCountKey, base::Value(2)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, signin::internal::kCrossDeviceHistoryPromoParents,
+      signin::internal::kCrossDevicePromoShownCountKey, base::Value("2")));
+  // Same leaf key at the top level is NOT registered.
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kCrossDevicePromoShownCountKey,
+      base::Value(2)));
+
+  // Dictionary containers cannot be set as leaf values.
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kCrossDevicePromoPrefs,
+      base::Value(base::Value::Type::DICT)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kAvatarButtonPromoCountDictionary,
+      base::Value(base::Value::Type::DICT)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, signin::internal::kCrossDevicePromoRootParents,
+      signin::internal::kCrossDevicePromoHistoryDictKey,
+      base::Value(base::Value::Type::DICT)));
+
+  // Unknown preference key: always rejected.
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(pass_key, {}, "UnknownPrefKey",
+                                                 base::Value(1)));
+}
+
