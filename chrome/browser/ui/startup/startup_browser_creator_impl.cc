@@ -321,6 +321,13 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   }
 #endif
 
+  // Launchers that only need to hand a URL to an already-running browser can
+  // ask for the tabs to be added without taking the user's focus. This is a
+  // no-op when a window has to be created below, since a brand new window has
+  // no state worth preserving.
+  const bool open_in_background =
+      command_line_->HasSwitch(switches::kOpenInBackground);
+
   const bool create_new_browser =
       !browser ||
       browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL;
@@ -442,8 +449,12 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       // user-typed omnibox navigation.
       params.initiator_origin = url::Origin();
     }
-    params.disposition = first_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                   : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    // NormalizeDisposition() promotes a background tab back to the foreground
+    // when the tab strip is empty, so the first tab of a new window is still
+    // activated under kOpenInBackground.
+    params.disposition = (first_tab && !open_in_background)
+                             ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                             : WindowOpenDisposition::NEW_BACKGROUND_TAB;
     params.tabstrip_add_types = add_types;
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -472,7 +483,13 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     base::nix::SetActivationToken(startup_id);
   }
 #endif
-  browser->GetWindow()->Show();
+  if (open_in_background && !create_new_browser) {
+    // A no-op for an already-visible window, which is the common case here;
+    // this only matters for a window that is currently hidden.
+    browser->GetWindow()->ShowInactive();
+  } else {
+    browser->GetWindow()->Show();
+  }
 
   return browser;
 }

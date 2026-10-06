@@ -175,6 +175,7 @@ class StartupBrowserCreator {
       const base::CommandLine& command_line);
 
  private:
+  friend class StartupBrowserCreatorActivationTest;
   friend class StartupBrowserCreatorImpl;
   friend class StartupBrowserCreatorInfobarsTest;
   friend class StartupBrowserCreatorInfobarsWithoutStartupWindowTest;
@@ -231,6 +232,10 @@ class StartupBrowserCreator {
                            LastUsedProfilesWithWebApp);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            KSameTabSwitchReplacesActiveTab);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+                           OpenInBackgroundSwitchKeepsActiveTab);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+                           OpenInBackgroundSwitchActivatesFirstTabOfNewWindow);
 
   bool ProcessCmdLineImpl(const base::CommandLine& command_line,
                           const base::FilePath& cur_dir,

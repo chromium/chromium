@@ -23,8 +23,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -119,6 +121,74 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   EXPECT_FALSE(new_browser->GetWindow()->IsActive());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
+
+// Covers whether a command line handed to an already-running browser activates
+// the window its tabs land in.
+class StartupBrowserCreatorActivationTest : public InProcessBrowserTest {
+ protected:
+  static GURL StartupTestUrl() {
+    return chrome_test_utils::GetTestUrl(
+        base::FilePath(base::FilePath::kCurrentDirectory),
+        base::FilePath(FILE_PATH_LITERAL("title1.html")));
+  }
+
+  // Leaves browser() visible but inactive while keeping it the window that a
+  // command line for its profile targets. Activating a window of a *different*
+  // profile takes the focus away without making that window a candidate for the
+  // tabs, which a second same-profile window would.
+  //
+  // The window left holding the focus is handed back through
+  // |other_profile_browser| rather than stored on the fixture: the browser is
+  // destroyed during teardown, before the fixture is, so a member would outlive
+  // it.
+  void SetUpInactiveTargetWindow(
+      BrowserWindowInterface** other_profile_browser) {
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+    BrowserWindowInterface* const other = CreateIncognitoBrowser();
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(other));
+    ASSERT_TRUE(other->GetWindow()->IsActive());
+    ASSERT_FALSE(browser()->GetWindow()->IsActive());
+    *other_profile_browser = other;
+  }
+
+  // Hands |command_line| to the running browser the way the process singleton
+  // does for a second launch.
+  bool ProcessCommandLineForRunningBrowser(
+      const base::CommandLine& command_line) {
+    return StartupBrowserCreator().ProcessCmdLineImpl(
+        command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+        {browser()->GetProfile(), StartupProfileMode::kBrowserWindow}, {});
+  }
+};
+
+// With --open-in-background the same launch delivers the tab without taking
+// focus away from what the user was doing.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorActivationTest,
+                       OpenInBackgroundSwitchDoesNotActivateWindow) {
+  BrowserWindowInterface* other_profile_browser = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpInactiveTargetWindow(&other_profile_browser));
+
+  TabStripModel* const tab_strip = browser()->GetTabStripModel();
+  const int initial_count = tab_strip->count();
+  const int initial_active_index = tab_strip->active_index();
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kOpenInBackground);
+  command_line.AppendArg(StartupTestUrl().spec());
+
+  ASSERT_TRUE(ProcessCommandLineForRunningBrowser(command_line));
+
+  // The tab landed in the target window, in the background ...
+  ASSERT_EQ(initial_count + 1, tab_strip->count());
+  EXPECT_EQ(StartupTestUrl(),
+            tab_strip->GetWebContentsAt(initial_count)->GetVisibleURL());
+  EXPECT_EQ(initial_active_index, tab_strip->active_index());
+
+  // ... and the window was neither raised nor activated.
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+  EXPECT_TRUE(other_profile_browser->GetWindow()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
+}
 
 #if defined(USE_AURA)
 class StartupPagePrefSetterMainExtraParts : public ChromeBrowserMainExtraParts {
