@@ -4,6 +4,8 @@
 
 static_library("facilitated_payments") {
   sources = [
+    "facilitated_payments_driver_binder.cc",
+    "facilitated_payments_driver_binder.h",
     "ui/chrome_facilitated_payments_client.cc",
     "ui/chrome_facilitated_payments_client.h",
   ]
@@ -25,8 +27,11 @@ static_library("facilitated_payments") {
     "//components/device_reauth",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
     "//components/facilitated_payments/core/utils",
     "//components/tabs:public",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
   ]
 
   # The payment UI, payment link handling, and platform API client are

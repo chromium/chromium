@@ -15,6 +15,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
+#include "chrome/browser/facilitated_payments/facilitated_payments_driver_binder.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net_benchmarking.h"
@@ -31,6 +32,8 @@
 #include "chrome/common/request_header_integrity/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
+#include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/metrics/call_stacks/call_stack_profile_collector.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -432,6 +435,13 @@ void ChromeContentBrowserClient::
       base::BindRepeating(
           &autofill::ContentAutofillDriverFactory::BindAutofillDriver,
           &render_frame_host));
+  if (base::FeatureList::IsEnabled(
+          payments::facilitated::kEnableDesktopQrCodeDetection)) {
+    associated_registry
+        .AddInterface<payments::facilitated::mojom::FacilitatedPaymentsDriver>(
+            base::BindRepeating(&BindFacilitatedPaymentsDriver,
+                                &render_frame_host));
+  }
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed)) {
     associated_registry.AddInterface<surface_embed::mojom::SurfaceEmbedHost>(
