@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.messages;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Resources;
+import android.app.Activity;
 import android.view.View;
 
 import org.junit.Assert;
@@ -19,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -28,23 +27,34 @@ import org.chromium.components.messages.MessageContainer;
 
 /** Unit tests for {@link MessageContainerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageContainerCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private MessageContainer mContainer;
     @Mock private BrowserControlsManager mControlsManager;
-    @Mock private Resources mResources;
 
+    private Activity mActivity;
+    private MessageContainer mContainer;
     private MessageContainerCoordinator mCoordinator;
-    private static final int BUBBLE_INSET = 10;
+    private int mBubbleInset;
 
     @Before
     public void setUp() {
-        when(mContainer.getResources()).thenReturn(mResources);
-        when(mResources.getDimensionPixelOffset(R.dimen.message_bubble_inset))
-                .thenReturn(BUBBLE_INSET);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContainer = new MessageContainer(mActivity, null);
+        mActivity.setContentView(mContainer);
+        mBubbleInset =
+                mActivity.getResources().getDimensionPixelOffset(R.dimen.message_bubble_inset);
         mCoordinator = new MessageContainerCoordinator(mContainer, mControlsManager);
+    }
+
+    /** Adds a focusable child to the container. */
+    private View addChild() {
+        View child = new View(mActivity);
+        child.setFocusable(true);
+        child.setFocusableInTouchMode(true);
+        // MessageContainer#addView(View) is final and throws; addMessage() is package-private.
+        mContainer.addView(child, 0);
+        return child;
     }
 
     @Test
@@ -52,7 +62,7 @@ public class MessageContainerCoordinatorTest {
         when(mControlsManager.getContentOffset()).thenReturn(100);
 
         int offset = mCoordinator.getMessageTopOffset();
-        Assert.assertEquals(100 - BUBBLE_INSET, offset);
+        Assert.assertEquals(100 - mBubbleInset, offset);
     }
 
     @Test
@@ -64,7 +74,7 @@ public class MessageContainerCoordinatorTest {
         when(mControlsManager.isVisibilityForced()).thenReturn(true);
 
         int offset = mCoordinator.getMessageTopOffset();
-        Assert.assertEquals(80 - BUBBLE_INSET, offset);
+        Assert.assertEquals(80 - mBubbleInset, offset);
     }
 
     @Test
@@ -98,47 +108,50 @@ public class MessageContainerCoordinatorTest {
 
     @Test
     public void testIsVisible_containerNotVisible() {
-        when(mContainer.getVisibility()).thenReturn(View.GONE);
-        when(mContainer.getChildCount()).thenReturn(1);
+        mContainer.setVisibility(View.GONE);
+        addChild();
         Assert.assertFalse(mCoordinator.isVisible());
     }
 
     @Test
     public void testIsVisible_containerVisibleNoChildren() {
-        when(mContainer.getVisibility()).thenReturn(View.VISIBLE);
-        when(mContainer.getChildCount()).thenReturn(0);
+        mContainer.setVisibility(View.VISIBLE);
         Assert.assertFalse(mCoordinator.isVisible());
     }
 
     @Test
     public void testIsVisible_containerVisibleWithChild() {
-        when(mContainer.getVisibility()).thenReturn(View.VISIBLE);
-        when(mContainer.getChildCount()).thenReturn(1);
+        mContainer.setVisibility(View.VISIBLE);
+        addChild();
         Assert.assertTrue(mCoordinator.isVisible());
     }
 
     @Test
     public void testContainsKeyboardFocus() {
-        when(mContainer.hasFocus()).thenReturn(false);
+        View child = addChild();
         Assert.assertFalse(mCoordinator.containsKeyboardFocus());
 
-        when(mContainer.hasFocus()).thenReturn(true);
+        Assert.assertTrue(child.requestFocus());
         Assert.assertTrue(mCoordinator.containsKeyboardFocus());
     }
 
     @Test
     public void testRequestKeyboardFocus_notVisible() {
-        when(mContainer.getVisibility()).thenReturn(View.GONE);
+        // The container is visible but has no message, so isVisible() is false. Make the container
+        // itself focusable so that only the coordinator's guard prevents it from taking focus.
+        mContainer.setFocusable(true);
+        mContainer.setFocusableInTouchMode(true);
         mCoordinator.requestKeyboardFocus();
-        verify(mContainer, never()).requestFocus();
+        Assert.assertFalse(mContainer.hasFocus());
     }
 
     @Test
     public void testRequestKeyboardFocus_visible() {
-        when(mContainer.getVisibility()).thenReturn(View.VISIBLE);
-        when(mContainer.getChildCount()).thenReturn(1);
+        mContainer.setVisibility(View.VISIBLE);
+        View child = addChild();
 
         mCoordinator.requestKeyboardFocus();
-        verify(mContainer).requestFocus();
+        Assert.assertTrue(child.isFocused());
+        Assert.assertTrue(mContainer.hasFocus());
     }
 }

@@ -7,7 +7,6 @@ package org.chromium.ui.dragdrop;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -27,8 +26,6 @@ import android.view.View.DragShadowBuilder;
 import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,11 +34,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowContentResolver;
+import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -53,8 +53,24 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
+@Config(shadows = DragAndDropDelegateImplUnitTest.ShadowDragView.class)
 public class DragAndDropDelegateImplUnitTest {
+    /**
+     * View#startDragAndDrop() is final (so cannot be overridden in a subclass) and returns false
+     * under Robolectric, so this shadow records the shadow builder and reports success.
+     */
+    @Implements(View.class)
+    public static class ShadowDragView extends ShadowView {
+        private DragShadowBuilder mLastDragShadowBuilder;
+
+        @Implementation
+        protected boolean startDragAndDrop(
+                ClipData data, DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
+            mLastDragShadowBuilder = shadowBuilder;
+            return true;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
@@ -67,11 +83,11 @@ public class DragAndDropDelegateImplUnitTest {
 
     @Mock private DragAndDropPermissions mDragAndDropPermissions;
     @Mock private DragAndDropBrowserDelegate mDragAndDropBrowserDelegate;
-    @Spy private View mContainerView;
+    private View mContainerView;
 
     private DragAndDropDelegateImpl mDragAndDropDelegateImpl;
     private DropDataProviderImpl mDropDataProviderImpl;
-    private @Nullable DragShadowBuilder mLastDragShadowBuilder;
+    private ShadowDragView mShadowContainerView;
 
     @Before
     public void setup() {
@@ -87,14 +103,8 @@ public class DragAndDropDelegateImplUnitTest {
 
         ShadowContentResolver.registerProviderInternal(
                 DropDataProviderImpl.FULL_AUTH_URI.getAuthority(), provider);
-        mContainerView = Mockito.spy(new View(context));
-        doAnswer(
-                        invocationOnMock -> {
-                            mLastDragShadowBuilder = invocationOnMock.getArgument(1);
-                            return true;
-                        })
-                .when(mContainerView)
-                .startDragAndDrop(any(), any(DragShadowBuilder.class), any(), anyInt());
+        mContainerView = new View(context);
+        mShadowContainerView = Shadow.extract(mContainerView);
         View rootView = mContainerView.getRootView();
         rootView.measure(
                 MeasureSpec.makeMeasureSpec(WINDOW_WIDTH, MeasureSpec.EXACTLY),
@@ -168,7 +178,8 @@ public class DragAndDropDelegateImplUnitTest {
                 /* dragObjRectHeight= */ 200);
         Assert.assertFalse(
                 "The DragShadowBuilder should not be AnimatedImageDragShadowBuilder.",
-                mLastDragShadowBuilder instanceof AnimatedImageDragShadowBuilder);
+                mShadowContainerView.mLastDragShadowBuilder
+                        instanceof AnimatedImageDragShadowBuilder);
         // width = scaledShadowSize + padding * 2 = 100 * 0.6 + 1 * 2 = 62
         Assert.assertEquals(
                 "Drag shadow width not match. Should do resize for image and add 1dp border.",
@@ -212,7 +223,8 @@ public class DragAndDropDelegateImplUnitTest {
                 /* dragObjRectHeight= */ 200);
         Assert.assertTrue(
                 "The DragShadowBuilder should be AnimatedImageDragShadowBuilder.",
-                mLastDragShadowBuilder instanceof AnimatedImageDragShadowBuilder);
+                mShadowContainerView.mLastDragShadowBuilder
+                        instanceof AnimatedImageDragShadowBuilder);
         // width = scaledShadowSize + padding * 2 = 100 * 0.6 + 1 * 2 = 62
         Assert.assertEquals(
                 "Drag shadow width not match. Should do resize for image and add 1dp border.",
@@ -391,8 +403,9 @@ public class DragAndDropDelegateImplUnitTest {
                 /* dragObjRectWidth= */ 100,
                 /* dragObjRectHeight= */ 200);
 
-        Assert.assertNotNull("LastDragShadowBuilder is null.", mLastDragShadowBuilder);
-        View shadowView = mLastDragShadowBuilder.getView();
+        Assert.assertNotNull(
+                "LastDragShadowBuilder is null.", mShadowContainerView.mLastDragShadowBuilder);
+        View shadowView = mShadowContainerView.mLastDragShadowBuilder.getView();
         Assert.assertTrue(
                 "DrawShadowBuilder should host an ImageView.", shadowView instanceof ImageView);
         Assert.assertTrue(

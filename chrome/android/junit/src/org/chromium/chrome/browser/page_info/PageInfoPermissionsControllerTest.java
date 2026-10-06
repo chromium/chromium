@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.page_info;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -20,11 +20,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -44,17 +45,14 @@ import java.util.Arrays;
 
 /** Tests for PageInfoPermissionsController. */
 @RunWith(RobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PageInfoPermissionsControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock private PageInfoMainController mMainController;
-    @Mock private PageInfoRowView mRowView;
     @Mock private PageInfoControllerDelegate mDelegate;
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Context mContext;
     @Mock private PermissionUtil.Natives mPermissionUtilJni;
 
     private GURL mPageUrl;
@@ -67,16 +65,16 @@ public class PageInfoPermissionsControllerTest {
         PermissionUtilJni.setInstanceForTesting(mPermissionUtilJni);
         mPageUrl = new GURL("https://example.com");
 
-        when(mRowView.getContext()).thenReturn(mContext);
-        when(mContext.getResources())
-                .thenReturn(ContextUtils.getApplicationContext().getResources());
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        PageInfoRowView rowView = new PageInfoRowView(activity, null);
         when(mMainController.getURL()).thenReturn(mPageUrl);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
 
         mController =
                 new PageInfoPermissionsController(
                         mMainController,
-                        mRowView,
+                        rowView,
                         mDelegate,
                         mWebContents,
                         ContentSettingsType.NOTIFICATIONS) {

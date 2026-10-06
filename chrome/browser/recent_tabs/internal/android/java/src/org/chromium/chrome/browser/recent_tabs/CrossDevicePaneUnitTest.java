@@ -37,13 +37,12 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link CrossDevicePane}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CrossDevicePaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private HubContainerView mHubContainerView;
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    private HubContainerView mHubContainerView;
     private Pane mCrossDevicePane;
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.createMonotonic();
@@ -51,6 +50,7 @@ public class CrossDevicePaneUnitTest {
     @Before
     public void setUp() {
         ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);
+        mHubContainerView = new HubContainerView(ApplicationProvider.getApplicationContext());
 
         mCrossDevicePane =
                 new CrossDevicePaneImpl(

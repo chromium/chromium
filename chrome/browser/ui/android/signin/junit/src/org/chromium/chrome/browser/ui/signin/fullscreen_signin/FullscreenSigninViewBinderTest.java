@@ -4,41 +4,43 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertSame;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.ImageView;
 
-import com.airbnb.lottie.LottieAnimationView;
-
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link FullscreenSigninViewBinder} and {@link FullscreenSigninProperties}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FullscreenSigninViewBinderTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    private FullscreenSigninView mView;
 
-    @Mock private FullscreenSigninView mView;
-    @Mock private LottieAnimationView mAnimationView;
+    @Before
+    public void setUp() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mView =
+                (FullscreenSigninView)
+                        activity.getLayoutInflater()
+                                .inflate(R.layout.fullscreen_signin_portrait_view, null);
+    }
 
     @Test
     public void testCreateModel_animationInitiallyHidden() {
-        when(mView.getAnimationView()).thenReturn(mAnimationView);
+        mView.getAnimationView().setVisibility(View.VISIBLE);
         PropertyModel model =
                 FullscreenSigninProperties.createModel(
                         () -> {},
@@ -52,41 +54,39 @@ public class FullscreenSigninViewBinderTest {
                         false);
         assertFalse(model.get(FullscreenSigninProperties.SHOW_ANIMATION));
         FullscreenSigninViewBinder.bind(model, mView, FullscreenSigninProperties.SHOW_ANIMATION);
-        verify(mAnimationView).setVisibility(View.GONE);
+        assertEquals(View.GONE, mView.getAnimationView().getVisibility());
     }
 
     @Test
     public void testBindShowAnimation_visible() {
-        when(mView.getAnimationView()).thenReturn(mAnimationView);
+        mView.getAnimationView().setVisibility(View.GONE);
         PropertyModel model =
                 new PropertyModel.Builder(FullscreenSigninProperties.ALL_KEYS)
                         .with(FullscreenSigninProperties.SHOW_ANIMATION, true)
                         .build();
         FullscreenSigninViewBinder.bind(model, mView, FullscreenSigninProperties.SHOW_ANIMATION);
-        verify(mAnimationView).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mView.getAnimationView().getVisibility());
     }
 
     @Test
     public void testBindShowAnimation_gone() {
-        when(mView.getAnimationView()).thenReturn(mAnimationView);
+        mView.getAnimationView().setVisibility(View.VISIBLE);
         PropertyModel model =
                 new PropertyModel.Builder(FullscreenSigninProperties.ALL_KEYS)
                         .with(FullscreenSigninProperties.SHOW_ANIMATION, false)
                         .build();
         FullscreenSigninViewBinder.bind(model, mView, FullscreenSigninProperties.SHOW_ANIMATION);
-        verify(mAnimationView).setVisibility(View.GONE);
+        assertEquals(View.GONE, mView.getAnimationView().getVisibility());
     }
 
     @Test
     public void testBindProfilePicture() {
-        Drawable drawable = mock(Drawable.class);
-        ImageView iconView = mock(ImageView.class);
-        when(mView.getIcon()).thenReturn(iconView);
+        Drawable drawable = new ColorDrawable(Color.RED);
         PropertyModel model =
                 new PropertyModel.Builder(FullscreenSigninProperties.ALL_KEYS)
                         .with(FullscreenSigninProperties.PROFILE_PICTURE, drawable)
                         .build();
         FullscreenSigninViewBinder.bind(model, mView, FullscreenSigninProperties.PROFILE_PICTURE);
-        verify(iconView).setImageDrawable(drawable);
+        assertSame(drawable, mView.getIcon().getDrawable());
     }
 }
