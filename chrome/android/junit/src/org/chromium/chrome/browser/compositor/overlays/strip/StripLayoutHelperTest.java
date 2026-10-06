@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -242,6 +243,7 @@ public class StripLayoutHelperTest {
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
     @Mock private LeadingButtonDelegate mLeadingButtonDelegate;
     @Mock private Tracker mTracker;
+    @Mock private ReorderDelegate mReorderDelegate;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
@@ -749,14 +751,7 @@ public class StripLayoutHelperTest {
         // Somewhat arbitrary, just pick a tab with an index in (0, numTabs).
         final int closeTabIndex = 8;
 
-        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
-        closeTabAt(stripLayoutHelperSpy, closeTabIndex);
-
-        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder
-                .verify(stripLayoutHelperSpy)
-                .startAnimations(mAnimationListCaptor.capture(), any());
-        final List<Animator> animationList = mAnimationListCaptor.getValue();
+        final List<Animator> animationList = closeTabAndCaptureAnimations(closeTabIndex);
         // Only the tabs that come after the closed tab should have to move and get animations
         // created.
         final int expectedAnimationCount = numTabs - closeTabIndex - 1;
@@ -781,14 +776,7 @@ public class StripLayoutHelperTest {
                 tabs[closeTabIndex].getDrawX()
                         > mStripLayoutHelper.getFullyVisibleRightUnpinnedBound());
 
-        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
-        closeTabAt(stripLayoutHelperSpy, closeTabIndex);
-
-        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder
-                .verify(stripLayoutHelperSpy)
-                .startAnimations(mAnimationListCaptor.capture(), any());
-        final List<Animator> animationList = mAnimationListCaptor.getValue();
+        final List<Animator> animationList = closeTabAndCaptureAnimations(closeTabIndex);
         assertEquals("There should 1 animation for the closing tab.", 1, animationList.size());
     }
 
@@ -812,14 +800,7 @@ public class StripLayoutHelperTest {
                 tabs[closeTabIndex].getDrawX() + tabs[closeTabIndex].getWidth()
                         < mStripLayoutHelper.getFullyVisibleLeftUnpinnedBound());
 
-        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
-        closeTabAt(stripLayoutHelperSpy, closeTabIndex);
-
-        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder
-                .verify(stripLayoutHelperSpy)
-                .startAnimations(mAnimationListCaptor.capture(), any());
-        final List<Animator> animationList = mAnimationListCaptor.getValue();
+        final List<Animator> animationList = closeTabAndCaptureAnimations(closeTabIndex);
         assertEquals("There should be 1 animations for the closing tab.", 1, animationList.size());
     }
 
@@ -850,14 +831,7 @@ public class StripLayoutHelperTest {
                 tabs[closeTabIndex].getDrawX()
                         <= mStripLayoutHelper.getFullyVisibleRightUnpinnedBound());
 
-        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
-        closeTabAt(stripLayoutHelperSpy, closeTabIndex);
-
-        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder
-                .verify(stripLayoutHelperSpy)
-                .startAnimations(mAnimationListCaptor.capture(), any());
-        final List<Animator> animationList = mAnimationListCaptor.getValue();
+        final List<Animator> animationList = closeTabAndCaptureAnimations(closeTabIndex);
         assertEquals(
                 "There should be one animation for the tab moving into the visible bounds",
                 1,
@@ -1155,274 +1129,208 @@ public class StripLayoutHelperTest {
     @Test
     @Feature("Pinned Tabs")
     public void testTabSelected_Pinned_HideCloseBtn() {
-        initializeTest(
-                /* rtl= */ false, /* incognito= */ true, /* tabIndex= */ 3, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-
-        // Non-last tab not overlapping strip fade:
-        // drawX(530) + tabWidth(140 - 28) < width(800) - offsetXRight(20) - longRightFadeWidth(136)
-        when(tabs[3].getDrawX()).thenReturn(530.f);
-        when(tabs[3].getIsSelected()).thenReturn(true);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ false, /* incognito= */ true, /* selectedIndex= */ 3);
 
         // Pin the third tab.
         when(tabs[3].getIsPinned()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        // Non-last tab not overlapping strip fade:
+        // drawX(530) + tabWidth(140 - 28) < width(800) - offsetXRight(20) - longRightFadeWidth(136)
+        selectTabAtDrawX(tabs, 3, 530.f);
 
-        // Close btn is hidden on the selected tab, because its pinned.
-        verify(tabs[3]).setCanShowCloseButton(false, false);
-        // Close btn is hidden for the rest of tabs.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[4]).setCanShowCloseButton(false, false);
+        // Close btn is hidden on the selected tab, because its pinned. Close btn is hidden for the
+        // rest of tabs.
+        verifyCloseButtonVisibility(tabs, 3, /* selectedTabShowsCloseButton= */ false);
     }
 
     @Test
     public void testTabSelected_SelectedNonLastTab_ShowCloseBtn() {
-        initializeTest(
-                /* rtl= */ false, /* incognito= */ true, /* tabIndex= */ 3, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ false, /* incognito= */ true, /* selectedIndex= */ 3);
 
         // Non-last tab not overlapping strip fade:
         // drawX(530) + tabWidth(140 - 28) < width(800) - offsetXRight(20) - longRightFadeWidth(136)
-        when(tabs[3].getDrawX()).thenReturn(530.f);
-        when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 3, 530.f);
 
-        // Close btn is visible on the selected tab.
-        verify(tabs[3]).setCanShowCloseButton(true, false);
-        // Close btn is hidden for the rest of tabs.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[4]).setCanShowCloseButton(false, false);
+        // Close btn is visible on the selected tab. Close btn is hidden for the rest of tabs.
+        verifyCloseButtonVisibility(tabs, 3, /* selectedTabShowsCloseButton= */ true);
     }
 
     @Test
     public void testTabSelected_SelectedNonLastTab_HideCloseBtn() {
-        initializeTest(
-                /* rtl= */ false, /* incognito= */ true, /* tabIndex= */ 3, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ false, /* incognito= */ true, /* selectedIndex= */ 3);
 
         // Non-last tab overlapping strip fade:
         // drawX(600) + tabWidth(140 - 28) > width(800) - offsetXRight(20) - longRightFadeWidth(136)
-        when(tabs[3].getDrawX()).thenReturn(600.f);
-        when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 3, 600.f);
 
-        // Close btn is hidden on the selected tab.
-        verify(tabs[3]).setCanShowCloseButton(false, false);
-        // Close btn is hidden for the rest of tabs as well.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[4]).setCanShowCloseButton(false, false);
+        // Close btn is hidden on the selected tab. Close btn is hidden for the rest of tabs as
+        // well.
+        verifyCloseButtonVisibility(tabs, 3, /* selectedTabShowsCloseButton= */ false);
     }
 
     @Test
     public void testTabSelected_SelectedLastTab_ShowCloseBtn() {
-        initializeTest(
-                /* rtl= */ false, /* incognito= */ true, /* tabIndex= */ 4, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ false, /* incognito= */ true, /* selectedIndex= */ 4);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Last tab not overlapping NTB:
         // drawX(550) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
-        when(tabs[4].getDrawX()).thenReturn(550.f);
-        when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 4, 550.f);
 
-        // Close btn is visible on the selected last tab.
-        verify(tabs[4]).setCanShowCloseButton(true, false);
-        // Close button is hidden for the rest of tabs.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[3]).setCanShowCloseButton(false, false);
+        // Close btn is visible on the selected last tab. Close button is hidden for the rest of
+        // tabs.
+        verifyCloseButtonVisibility(tabs, 4, /* selectedTabShowsCloseButton= */ true);
     }
 
     @Test
     public void testTabSelected_SelectedLastTab_HideCloseBtn() {
-        initializeTest(
-                /* rtl= */ false, /* incognito= */ true, /* tabIndex= */ 4, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ false, /* incognito= */ true, /* selectedIndex= */ 4);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Last tab overlapping NTB:
         // drawX(600) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
-        when(tabs[4].getDrawX()).thenReturn(600.f);
-        when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 4, 600.f);
 
-        // Close btn is hidden on the selected last tab.
-        verify(tabs[4]).setCanShowCloseButton(false, false);
-        // Close button is hidden for the rest of tabs.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[3]).setCanShowCloseButton(false, false);
+        // Close btn is hidden on the selected last tab. Close button is hidden for the rest of
+        // tabs.
+        verifyCloseButtonVisibility(tabs, 4, /* selectedTabShowsCloseButton= */ false);
     }
 
     @Test
     public void testTabSelected_SelectedNonLastTab_NoModelSelBtn_HideCloseBtn() {
-        initializeTest(/* tabIndex= */ 3);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ false, /* incognito= */ false, /* selectedIndex= */ 3);
 
         // Non-last tab overlapping strip fade:
         // drawX(630) + tabWidth(140 - 28) > width(800) - offsetXRight(20) -
         // mediumRightFadeWidth(72)
-        when(tabs[3].getDrawX()).thenReturn(630.f);
-        when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 3, 630.f);
 
-        // Close button is hidden for selected tab.
-        verify(tabs[3]).setCanShowCloseButton(false, false);
-        // Close button is hidden for the rest of tabs as well.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[4]).setCanShowCloseButton(false, false);
+        // Close button is hidden for selected tab. Close button is hidden for the rest of tabs as
+        // well.
+        verifyCloseButtonVisibility(tabs, 3, /* selectedTabShowsCloseButton= */ false);
     }
 
     @Test
     public void testTabSelected_SelectedNonLastTab_NoModelSelBtn_ShowCloseBtn() {
-        initializeTest(/* tabIndex= */ 3);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ false, /* incognito= */ false, /* selectedIndex= */ 3);
 
         // Non-last tab not overlapping strip fade:
         // drawX(580) + tabWidth(140 - 28) > width(800) - offsetXRight(20) -
         // mediumRightFadeWidth(72)
-        when(tabs[3].getDrawX()).thenReturn(580.f);
-        when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 3, 580.f);
 
-        // Close button is visible for selected tab
-        verify(tabs[3]).setCanShowCloseButton(true, false);
-        // Close button is hidden for the rest of tabs.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[4]).setCanShowCloseButton(false, false);
+        // Close button is visible for selected tab. Close button is hidden for the rest of tabs.
+        verifyCloseButtonVisibility(tabs, 3, /* selectedTabShowsCloseButton= */ true);
     }
 
     @Test
     public void testTabSelected_SelectedLastTab_Rtl_HideCloseBtn() {
-        initializeTest(
-                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 4, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ true, /* incognito= */ false, /* selectedIndex= */ 4);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X_RTL);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Last tab overlapping NTB:
         // drawX(100) + tabOverlapWidth(28) < NTB_X(100) + NTB_WIDTH(100)
-        when(tabs[4].getDrawX()).thenReturn(100.f);
-        when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 4, 100.f);
 
-        // Close button is hidden for the selected last tab.
-        verify(tabs[4]).setCanShowCloseButton(false, false);
-        // Close button is hidden for the rest of tabs as well.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[3]).setCanShowCloseButton(false, false);
+        // Close button is hidden for the selected last tab. Close button is hidden for the rest of
+        // tabs as well.
+        verifyCloseButtonVisibility(tabs, 4, /* selectedTabShowsCloseButton= */ false);
     }
 
     @Test
     public void testTabSelected_SelectedLastTab_Rtl_ShowCloseBtn() {
-        initializeTest(
-                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 4, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ true, /* incognito= */ false, /* selectedIndex= */ 4);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X_RTL);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Last tab not overlapping NTB:
         // drawX(200) + tabOverlapWidth(28) > NTB_X(100) + NTB_WIDTH(100)
-        when(tabs[4].getDrawX()).thenReturn(200.f);
-        when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 4, 200.f);
 
-        // Close button is visible for selected last tab.
-        verify(tabs[4]).setCanShowCloseButton(true, false);
-        // Close button is hidden for the rest of tabs.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[3]).setCanShowCloseButton(false, false);
+        // Close button is visible for selected last tab. Close button is hidden for the rest of
+        // tabs.
+        verifyCloseButtonVisibility(tabs, 4, /* selectedTabShowsCloseButton= */ true);
     }
 
     @Test
     public void testTabSelected_SelectedNonLastTab_Rtl_HideCloseBtn() {
-        initializeTest(
-                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 3, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ true, /* incognito= */ false, /* selectedIndex= */ 3);
 
         // Non-last tab overlapping strip fade:
         // drawX(50) + tabOverlapWidth(28) < offsetXRight(20) + mediumRightFadeWidth(72)
-        when(tabs[3].getDrawX()).thenReturn(50.f);
-        when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 3, 50.f);
 
-        // Close btn is hidden for selected tab.
-        verify(tabs[3]).setCanShowCloseButton(false, false);
-        // Close btn is hidden for all the rest of tabs as well.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[4]).setCanShowCloseButton(false, false);
+        // Close btn is hidden for selected tab. Close btn is hidden for all the rest of tabs as
+        // well.
+        verifyCloseButtonVisibility(tabs, 3, /* selectedTabShowsCloseButton= */ false);
     }
 
     @Test
     public void testTabSelected_SelectedNonLastTab_Rtl_ShowCloseBtn() {
-        initializeTest(
-                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 3, /* numTabs= */ 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
-        resizeStrip(STRIP_WIDTH);
+        StripLayoutTab[] tabs =
+                initializeCloseButtonTest(
+                        /* rtl= */ true, /* incognito= */ false, /* selectedIndex= */ 3);
         mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         // Non-last tab not overlapping strip fade:
         // drawX(70) + tabOverlapWidth(28) > offsetXRight(20) + mediumRightFadeWidth(72)
-        when(tabs[3].getDrawX()).thenReturn(70.f);
-        when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        selectTabAtDrawX(tabs, 3, 70.f);
 
-        // Close button is visible for the selected tab.
-        verify(tabs[3]).setCanShowCloseButton(true, false);
-        // Close button is hidden for the rest of tabs.
-        verify(tabs[0]).setCanShowCloseButton(false, false);
-        verify(tabs[1]).setCanShowCloseButton(false, false);
-        verify(tabs[2]).setCanShowCloseButton(false, false);
-        verify(tabs[4]).setCanShowCloseButton(false, false);
+        // Close button is visible for the selected tab. Close button is hidden for the rest of
+        // tabs.
+        verifyCloseButtonVisibility(tabs, 3, /* selectedTabShowsCloseButton= */ true);
+    }
+
+    /**
+     * Initializes the strip with 5 mocked tabs of width {@link #TAB_WIDTH_1} on a strip of the
+     * default width, for the tab selection close button tests.
+     */
+    private StripLayoutTab[] initializeCloseButtonTest(
+            boolean rtl, boolean incognito, int selectedIndex) {
+        initializeTest(rtl, incognito, selectedIndex, /* numTabs= */ 5);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
+        resizeStrip(STRIP_WIDTH);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        return tabs;
+    }
+
+    /** Places the tab at {@code index} at {@code drawX}, marks it selected, and selects it. */
+    private void selectTabAtDrawX(StripLayoutTab[] tabs, int index, float drawX) {
+        when(tabs[index].getDrawX()).thenReturn(drawX);
+        when(tabs[index].getIsSelected()).thenReturn(true);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, index, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+    }
+
+    /**
+     * Verifies that the close button is hidden on every tab, except on the selected tab when {@code
+     * selectedTabShowsCloseButton} is true.
+     */
+    private void verifyCloseButtonVisibility(
+            StripLayoutTab[] tabs, int selectedIndex, boolean selectedTabShowsCloseButton) {
+        for (int i = 0; i < tabs.length; i++) {
+            verify(tabs[i])
+                    .setCanShowCloseButton(
+                            i == selectedIndex && selectedTabShowsCloseButton, false);
+        }
     }
 
     @Test
@@ -2712,8 +2620,7 @@ public class StripLayoutHelperTest {
         // Setup
         var tabs = initializeTestWithMockedTabs();
         setupForIndividualTabContextMenu();
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         mStripLayoutHelper.onTabStateInitialized();
         float dragDistance = 40f; // Greater than INITIATE_REORDER_DRAG_THRESHOLD
 
@@ -2723,7 +2630,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
 
         // Verify we start reorder mode.
-        verify(mockDelegate)
+        verify(mReorderDelegate)
                 .startReorderMode(
                         any(),
                         any(),
@@ -2737,8 +2644,7 @@ public class StripLayoutHelperTest {
     public void testOnLongPress_OnTab_NoReorder() {
         // Setup
         var tabs = initializeTestWithMockedTabs();
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         mStripLayoutHelper.onTabStateInitialized();
         setupForIndividualTabContextMenu();
 
@@ -2746,20 +2652,20 @@ public class StripLayoutHelperTest {
         onLongPress_OnTab(tabs);
 
         // Verify we start reorder mode.
-        verify(mockDelegate, never()).startReorderMode(any(), any(), any(), any(), any(), anyInt());
+        verify(mReorderDelegate, never())
+                .startReorderMode(any(), any(), any(), any(), any(), anyInt());
     }
 
     /**
      * Starts a within-strip reorder on the tab at {@code index} and returns the view that the
      * {@link ReorderDelegate} was actually asked to reorder, which is not necessarily the tab that
-     * was dragged. {@code mockDelegate} must already be installed via {@code
+     * was dragged. {@code mReorderDelegate} must already be installed via {@code
      * setReorderDelegateForTesting}.
      */
-    private StripLayoutView startReorderAtIndexAndCaptureInteractingView(
-            int index, ReorderDelegate mockDelegate) {
+    private StripLayoutView startReorderAtIndexAndCaptureInteractingView(int index) {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(index);
 
-        verify(mockDelegate)
+        verify(mReorderDelegate)
                 .startReorderMode(
                         any(),
                         any(),
@@ -2773,13 +2679,12 @@ public class StripLayoutHelperTest {
     @Test
     public void testStartReorder_LastTabInGroup_ReordersGroupInstead() {
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         // Tab 0 is the sole member of its group, so dragging it out would dissolve the group.
         groupTabs(0, 1, TAB_GROUP_ID_1);
 
         StripLayoutView interactingView =
-                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0, mockDelegate);
+                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0);
 
         assertTrue(
                 "Dragging the last tab in a group should reorder the group, not the tab.",
@@ -2793,15 +2698,14 @@ public class StripLayoutHelperTest {
     @Test
     public void testStartReorder_DragDrop_LastTabInGroup_ReordersGroupInstead() {
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         // Tab 0 is the sole member of its group, so dragging it out would dissolve the group.
         groupTabs(0, 1, TAB_GROUP_ID_1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
-        verify(mockDelegate)
+        verify(mReorderDelegate)
                 .startReorderMode(
                         any(),
                         any(),
@@ -2822,8 +2726,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testStartReorder_LastTabInGroup_MultiSelected_ReordersTab() {
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         // Tab 0 is the sole member of its group, so it would normally be reordered as a group.
         groupTabs(0, 1, TAB_GROUP_ID_1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -2832,7 +2735,7 @@ public class StripLayoutHelperTest {
         mModel.setTabsMultiSelected(Set.of(tabs[0].getTabId(), tabs[1].getTabId()), true);
 
         StripLayoutView interactingView =
-                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0, mockDelegate);
+                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0);
 
         assertEquals(
                 "A multi-selected tab should be reordered as a tab, even if it is the last tab in"
@@ -2844,8 +2747,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testStartReorder_LastTabInGroup_OnlySelectedTab_ReordersGroupInstead() {
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         // Tab 0 is the sole member of its group, so dragging it out would dissolve the group.
         groupTabs(0, 1, TAB_GROUP_ID_1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -2854,7 +2756,7 @@ public class StripLayoutHelperTest {
         mModel.setTabsMultiSelected(Set.of(tabs[0].getTabId()), true);
 
         StripLayoutView interactingView =
-                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0, mockDelegate);
+                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0);
 
         assertTrue(
                 "A solely selected last tab in a group should still reorder the group.",
@@ -2868,15 +2770,14 @@ public class StripLayoutHelperTest {
     @Test
     public void testStartReorder_NotLastTabInGroup_ReordersTab() {
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         // Tabs 0 and 1 share a group, so the group survives tab 0 being dragged out. This is the
         // boundary case for the group size check.
         groupTabs(0, 2, TAB_GROUP_ID_1);
         StripLayoutTab draggedTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
 
         StripLayoutView interactingView =
-                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0, mockDelegate);
+                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0);
 
         assertEquals(
                 "A grouped tab with siblings should still be reordered as a tab.",
@@ -2887,12 +2788,11 @@ public class StripLayoutHelperTest {
     @Test
     public void testStartReorder_UngroupedTab_ReordersTab() {
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         StripLayoutTab draggedTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
 
         StripLayoutView interactingView =
-                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0, mockDelegate);
+                startReorderAtIndexAndCaptureInteractingView(/* index= */ 0);
 
         assertEquals("An ungrouped tab should be reordered as a tab.", draggedTab, interactingView);
     }
@@ -2900,15 +2800,15 @@ public class StripLayoutHelperTest {
     @Test
     public void testStartReorder_DyingTab_NoReorder() {
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         when(tabs[0].isDying()).thenReturn(true);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
         mStripLayoutHelper.startReorderModeAtIndexForTesting(/* index= */ 0);
 
-        verify(mockDelegate, never()).startReorderMode(any(), any(), any(), any(), any(), anyInt());
+        verify(mReorderDelegate, never())
+                .startReorderMode(any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -3298,15 +3198,14 @@ public class StripLayoutHelperTest {
         initializeTest(/* tabIndex= */ 0);
 
         // Enter reorder mode and drag.
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
-        when(mockDelegate.getInReorderMode()).thenReturn(true);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
+        when(mReorderDelegate.getInReorderMode()).thenReturn(true);
         float dragDistance = 100.f;
         float endX = 50.f + dragDistance;
         mStripLayoutHelper.drag(endX, 0f, dragDistance);
 
         // Verify we update reorder position.
-        verify(mockDelegate)
+        verify(mReorderDelegate)
                 .updateReorderPosition(
                         any(),
                         any(),
@@ -3795,20 +3694,7 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testTabGroupDeleteDialog_Close_Collaboration() {
-        // Set up resources for testing tab group delete dialog.
-        mTabRemover.mForceCloseOnPrepared = false;
-        setupTabGroup(0, 1, TAB_GROUP_ID_1);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-
-        // Close the first tab.
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-        verify(mTabRemover)
-                .prepareCloseTabs(
-                        argThat(params -> params.tabs.get(0).getId() == tabs[0].getTabId()),
-                        /* allowDialog= */ eq(true),
-                        mTabModelActionListenerCaptor.capture(),
-                        mTabRemoverCallbackCaptor.capture());
+        StripLayoutTab[] tabs = clickCloseOnLoneGroupedTab();
 
         mTabModelActionListenerCaptor
                 .getValue()
@@ -3819,14 +3705,8 @@ public class StripLayoutHelperTest {
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
         assertFalse("Tab should not be closing yet", tabs[0].isDying());
-        mTabRemoverCallbackCaptor
-                .getValue()
-                .onResult(
-                        TabClosureParams.closeTab(mModel.getTabById(tabs[0].getTabId()))
-                                .allowUndo(true)
-                                .build());
-        mTabRemover.forceCloseTabs(mTabRemover.mLastParamsForPrepareCloseTabs);
-        mStripLayoutHelper.multipleTabsClosed(mTabRemover.mLastParamsForForceCloseTabs.tabs);
+        continuePendingTabClosure(tabs[0]);
+        forceClosePreparedTabs();
         assertTrue("Tab should be closing", tabs[0].isDying());
 
         // No further view assertions are required as the state don't have changed.
@@ -3841,20 +3721,7 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testTabGroupDeleteDialog_Close_Sync_ImmediateContinue() {
-        // Set up resources for testing tab group delete dialog.
-        mTabRemover.mForceCloseOnPrepared = false;
-        setupTabGroup(0, 1, TAB_GROUP_ID_1);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-
-        // Close the first tab.
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-        verify(mTabRemover)
-                .prepareCloseTabs(
-                        argThat(params -> params.tabs.get(0).getId() == tabs[0].getTabId()),
-                        /* allowDialog= */ eq(true),
-                        mTabModelActionListenerCaptor.capture(),
-                        mTabRemoverCallbackCaptor.capture());
+        StripLayoutTab[] tabs = clickCloseOnLoneGroupedTab();
 
         mTabModelActionListenerCaptor
                 .getValue()
@@ -3866,37 +3733,18 @@ public class StripLayoutHelperTest {
         assertFalse("Tab should not be closing yet", tabs[0].isDying());
 
         // Simulate the continuation of the operation.
-        mTabRemoverCallbackCaptor
-                .getValue()
-                .onResult(
-                        TabClosureParams.closeTab(mModel.getTabById(tabs[0].getTabId()))
-                                .allowUndo(true)
-                                .build());
+        continuePendingTabClosure(tabs[0]);
         mTabModelActionListenerCaptor
                 .getValue()
                 .onConfirmationDialogResult(
                         DialogType.SYNC, ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        mTabRemover.forceCloseTabs(mTabRemover.mLastParamsForPrepareCloseTabs);
-        mStripLayoutHelper.multipleTabsClosed(mTabRemover.mLastParamsForForceCloseTabs.tabs);
+        forceClosePreparedTabs();
         assertTrue("Tab should be closing", tabs[0].isDying());
     }
 
     @Test
     public void testTabGroupDeleteDialog_Close_Sync_Positive() {
-        // Set up resources for testing tab group delete dialog.
-        mTabRemover.mForceCloseOnPrepared = false;
-        setupTabGroup(0, 1, TAB_GROUP_ID_1);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-
-        // Close the first tab.
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-        verify(mTabRemover)
-                .prepareCloseTabs(
-                        argThat(params -> params.tabs.get(0).getId() == tabs[0].getTabId()),
-                        /* allowDialog= */ eq(true),
-                        mTabModelActionListenerCaptor.capture(),
-                        mTabRemoverCallbackCaptor.capture());
+        StripLayoutTab[] tabs = clickCloseOnLoneGroupedTab();
 
         mTabModelActionListenerCaptor
                 .getValue()
@@ -3908,37 +3756,18 @@ public class StripLayoutHelperTest {
         assertFalse("Tab should not be closing yet", tabs[0].isDying());
 
         // Simulate the operation interrupted by the dialog being continued.
-        mTabRemoverCallbackCaptor
-                .getValue()
-                .onResult(
-                        TabClosureParams.closeTab(mModel.getTabById(tabs[0].getTabId()))
-                                .allowUndo(true)
-                                .build());
+        continuePendingTabClosure(tabs[0]);
         mTabModelActionListenerCaptor
                 .getValue()
                 .onConfirmationDialogResult(
                         DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_POSITIVE);
-        mTabRemover.forceCloseTabs(mTabRemover.mLastParamsForPrepareCloseTabs);
-        mStripLayoutHelper.multipleTabsClosed(mTabRemover.mLastParamsForForceCloseTabs.tabs);
+        forceClosePreparedTabs();
         assertTrue("Tab should be closing", tabs[0].isDying());
     }
 
     @Test
     public void testTabGroupDeleteDialog_Close_Sync_Negative() {
-        // Set up resources for testing tab group delete dialog.
-        mTabRemover.mForceCloseOnPrepared = false;
-        setupTabGroup(0, 1, TAB_GROUP_ID_1);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-
-        // Close the first tab.
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-        verify(mTabRemover)
-                .prepareCloseTabs(
-                        argThat(params -> params.tabs.get(0).getId() == tabs[0].getTabId()),
-                        /* allowDialog= */ eq(true),
-                        mTabModelActionListenerCaptor.capture(),
-                        mTabRemoverCallbackCaptor.capture());
+        StripLayoutTab[] tabs = clickCloseOnLoneGroupedTab();
 
         mTabModelActionListenerCaptor
                 .getValue()
@@ -3958,6 +3787,46 @@ public class StripLayoutHelperTest {
         // Verify group title is restored.
         views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+    }
+
+    /**
+     * Groups the first tab on its own, clicks its close button, and captures the resulting {@link
+     * TabModelActionListener} and {@link TabRemover} callback.
+     *
+     * @return The strip's tabs.
+     */
+    private StripLayoutTab[] clickCloseOnLoneGroupedTab() {
+        // Set up resources for testing tab group delete dialog.
+        mTabRemover.mForceCloseOnPrepared = false;
+        setupTabGroup(0, 1, TAB_GROUP_ID_1);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Close the first tab.
+        mStripLayoutHelper.handleCloseButtonClick(
+                tabs[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+        verify(mTabRemover)
+                .prepareCloseTabs(
+                        argThat(params -> params.tabs.get(0).getId() == tabs[0].getTabId()),
+                        /* allowDialog= */ eq(true),
+                        mTabModelActionListenerCaptor.capture(),
+                        mTabRemoverCallbackCaptor.capture());
+        return tabs;
+    }
+
+    /** Continues the closure of {@code tab} that was paused by the {@link TabRemover}. */
+    private void continuePendingTabClosure(StripLayoutTab tab) {
+        mTabRemoverCallbackCaptor
+                .getValue()
+                .onResult(
+                        TabClosureParams.closeTab(mModel.getTabById(tab.getTabId()))
+                                .allowUndo(true)
+                                .build());
+    }
+
+    /** Force closes the tabs prepared by the {@link TabRemover} and notifies the strip. */
+    private void forceClosePreparedTabs() {
+        mTabRemover.forceCloseTabs(mTabRemover.mLastParamsForPrepareCloseTabs);
+        mStripLayoutHelper.multipleTabsClosed(mTabRemover.mLastParamsForForceCloseTabs.tabs);
     }
 
     private void setupTabGroup(int groupStartIndex, int groupEndIndex, Token tabGroupId) {
@@ -5250,15 +5119,14 @@ public class StripLayoutHelperTest {
     public void testDrag_DragOntoSourceStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(/* tabIndex= */ 0);
-        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
-        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
-        when(mockDelegate.getInReorderMode()).thenReturn(true);
+        mStripLayoutHelper.setReorderDelegateForTesting(mReorderDelegate);
+        when(mReorderDelegate.getInReorderMode()).thenReturn(true);
 
         // Drag tab back onto strip.
         mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
 
         // Verify we continue reorder.
-        verify(mockDelegate)
+        verify(mReorderDelegate)
                 .updateReorderPosition(
                         any(),
                         any(),
@@ -5614,24 +5482,22 @@ public class StripLayoutHelperTest {
         when(mModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(false);
 
         // Set nonexistent group ID to hide and verify an AssertionError is thrown.
-        try {
-            mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1);
-            throw new Error("Expected assert to be triggered with invalid group ID to hide.");
-        } catch (AssertionError ignored) {
-        }
+        assertThrows(
+                "Expected assert to be triggered with invalid group ID to hide.",
+                AssertionError.class,
+                () -> mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1));
     }
 
     @Test
     public void testRebuildStripViews_WithNonContiguousTabGroup_Asserts() {
         initializeTest(/* tabIndex= */ 0);
+        groupTabs(0, 1, TAB_GROUP_ID_1);
 
-        // Create a non-contiguous tab group and verify an AssertionError is thrown.
-        try {
-            groupTabs(0, 1, TAB_GROUP_ID_1);
-            groupTabs(3, 4, TAB_GROUP_ID_1);
-            throw new Error("Expected assert to be triggered with a non-contiguous tab group.");
-        } catch (AssertionError ignored) {
-        }
+        // Make the tab group non-contiguous and verify an AssertionError is thrown.
+        assertThrows(
+                "Expected assert to be triggered with a non-contiguous tab group.",
+                AssertionError.class,
+                () -> groupTabs(3, 4, TAB_GROUP_ID_1));
     }
 
     @Test
@@ -7571,6 +7437,21 @@ public class StripLayoutHelperTest {
 
     private void closeTabAt(int index) {
         closeTabAt(mStripLayoutHelper, index);
+    }
+
+    /**
+     * Closes the tab at {@code index} through a spy of the strip, and returns the animations that
+     * the strip started as a result.
+     */
+    private List<Animator> closeTabAndCaptureAnimations(int index) {
+        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+        closeTabAt(stripLayoutHelperSpy, index);
+
+        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
+        stripLayoutOrder
+                .verify(stripLayoutHelperSpy)
+                .startAnimations(mAnimationListCaptor.capture(), any());
+        return mAnimationListCaptor.getValue();
     }
 
     private void closeTabAt(StripLayoutHelper stripLayoutHelper, int index) {
