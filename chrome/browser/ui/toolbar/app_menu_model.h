@@ -140,6 +140,7 @@ enum AppMenuAction {
   MENU_ACTION_TAKE_SCREENSHOT = 118,
   MENU_ACTION_TAB_SEARCH = 119,
   MENU_ACTION_TOGGLE_VERTICAL_TABS = 120,
+  MENU_ACTION_NAME_WINDOW = 121,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)

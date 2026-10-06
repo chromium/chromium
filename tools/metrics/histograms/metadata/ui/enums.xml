@@ -1305,6 +1305,7 @@ chromium-metrics-reviews@google.com.
   <int value="118" label="Take screenshot"/>
   <int value="119" label="Tab search"/>
   <int value="120" label="Toggle vertical tabs"/>
+  <int value="121" label="Name window"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

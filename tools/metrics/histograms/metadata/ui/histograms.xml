@@ -1565,6 +1565,7 @@ features through Chrome Labs. -->
     <variant name=".ManageChromeProfiles"/>
     <variant name=".ManageExtensions"/>
     <variant name=".ManageGoogleAccount"/>
+    <variant name=".NameWindow"/>
     <variant name=".NewIncognitoWindow"/>
     <variant name=".NewIsolatedWindow"/>
     <variant name=".NewTab"/>
