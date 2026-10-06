@@ -2093,8 +2093,6 @@ if (!is_android) {
       "//chrome/browser/ui/views/web_apps:launch_dialogs",
       "//chrome/browser/ui/views/web_apps:web_app_install_dialog_delegate",
       "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
-      "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
-      "//chrome/browser/ui/views/web_apps/isolated_web_apps:user_installability_checker",
       "//chrome/browser/ui/views/webauthn:browser_tests",
       "//chrome/browser/ui/views/webid:browser_tests",
       "//chrome/browser/ui/views/webid:test_support",
@@ -2735,11 +2733,6 @@ if (!is_android) {
       "../browser/ui/views/sharing/sharing_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.h",
       "../browser/ui/views/storage/storage_pressure_bubble_view_browsertest.cc",
-      "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
-      "../browser/ui/views/web_apps/frame_toolbar/web_app_menu_browsertest.cc",
-      "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
-      "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_browsertest.cc",
-      "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_browsertest.cc",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
       "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
@@ -3260,15 +3253,8 @@ if (!is_android) {
         "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view",
         "//chrome/browser/ui/views/web_apps:image_carousel_view",
         "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_content_settings_container",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_menu_button",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button",
-        "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_identity_view",
+        "//chrome/browser/ui/views/web_apps/frame_toolbar:browser_tests",
+        "//chrome/browser/ui/views/web_apps/isolated_web_apps:browser_tests",
         "//chrome/browser/ui/views/web_apps/sub_apps",
         "//chrome/browser/web_applications/isolated_web_apps/window_management:browser_tests",
       ]
@@ -3301,8 +3287,6 @@ if (!is_android) {
         "//chrome/browser/ui/views/web_apps:image_carousel_view",
         "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
         "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
-        "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_coordinator",
-        "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
         "//chrome/browser/ui/wallet:browser_tests",
       ]
       if (is_win) {
@@ -7016,8 +7000,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/views/translate:unit_tests",
       "//chrome/browser/ui/views/web_apps:unit_tests",
-      "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
-      "//chrome/browser/ui/views/web_apps/isolated_web_apps:user_installability_checker",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:unit_tests",
       "//chrome/browser/ui/views/web_dialogs:unit_tests",
       "//components/app_constants",
       "//components/commerce/core:pref_names",
@@ -7057,8 +7040,6 @@ test("unit_tests") {
       "../browser/ui/views/hats/hats_next_web_dialog_unittest.cc",
       "../browser/ui/views/location_bar/selected_keyword_view_unittest.cc",
       "../browser/ui/views/location_bar/webui_location_bar_unittest.cc",
-      "../browser/ui/views/web_apps/isolated_web_apps/callback_delayer_unittest.cc",
-      "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller_unittest.cc",
     ]
 
     deps += [
@@ -7075,8 +7056,6 @@ test("unit_tests") {
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/profiles:unit_tests",
       "//chrome/browser/ui/views/relaunch_notification:unit_tests",
-      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
-      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_impl",
     ]
     if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/browser/ui/views/scheduled_restart:unit_tests" ]
@@ -7602,7 +7581,6 @@ if (!is_android && !is_chromeos_device) {
 
     sources = [
       "../browser/ui/views/new_tab_footer/footer_interactive_uitest.cc",
-      "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
     ]
@@ -8223,10 +8201,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/translate",
         "//chrome/browser/ui/views/translate:interactive_ui_tests",
         "//chrome/browser/ui/views/translate:test_support",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_menu_button",
-        "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container",
+        "//chrome/browser/ui/views/web_apps/frame_toolbar:interactive_ui_tests",
         "//chrome/browser/ui/views/webid:interactive_ui_tests",
         "//chrome/browser/ui/views/zoom:interactive_ui_tests",
         "//chrome/browser/ui/web_applications:launch_utils",

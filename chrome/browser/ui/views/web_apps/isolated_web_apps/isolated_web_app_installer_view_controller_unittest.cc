@@ -756,15 +756,15 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, DisabledViewAccessibility) {
   controller.SetViewForTesting(view.get());
   view->ShowDisabledScreen();
 
-  ASSERT_GE(view->children().size(), 5);
+  ASSERT_GE(view->children().size(), 5u);
   // DisabledView instance (the class is internal so parent class checked)
   auto disabled_view = view->children()[0];
   ASSERT_TRUE(views::IsViewClass<views::BoxLayoutView>(disabled_view));
 
   // The view hierarchy is: disabled view-> header box -> [icon, title,
   // subtitle]
-  ASSERT_EQ(disabled_view->children().size(), 1);
-  ASSERT_EQ(disabled_view->children()[0]->children().size(), 3);
+  ASSERT_EQ(disabled_view->children().size(), 1u);
+  ASSERT_EQ(disabled_view->children()[0]->children().size(), 3u);
   views::StyledLabel* subtitle_label = views::AsViewClass<views::StyledLabel>(
       disabled_view->children()[0]->children()[2]);
   ASSERT_NE(subtitle_label, nullptr);
