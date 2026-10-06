@@ -1531,6 +1531,9 @@ features through Chrome Labs. -->
     <variant name=".AppInfo"/>
     <variant name=".BetaForum"/>
     <variant name=".BookmarkAllTabs"/>
+    <variant name=".BookmarkBarAlwaysHide"/>
+    <variant name=".BookmarkBarAlwaysShow"/>
+    <variant name=".BookmarkBarOnlyOnNtp"/>
     <variant name=".BookmarkPage"/>
     <variant name=".Cast"/>
     <variant name=".ChromeOSRestart"/>

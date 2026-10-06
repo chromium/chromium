@@ -1294,6 +1294,9 @@ chromium-metrics-reviews@google.com.
   <int value="107" label="Saved tab group: open in browser"/>
   <int value="108" label="Saved tab group: open in new window"/>
   <int value="109" label="Saved tab group: pin"/>
+  <int value="110" label="Bookmark bar: always hide"/>
+  <int value="111" label="Bookmark bar: always show"/>
+  <int value="112" label="Bookmark bar: only on new tab page"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

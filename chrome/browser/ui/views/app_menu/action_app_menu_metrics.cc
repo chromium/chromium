@@ -453,14 +453,25 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
       RecordAction(MENU_ACTION_SAVED_TAB_GROUP_PIN, "SavedTabGroupPin");
       break;
 
+    // Bookmark bar visibility submenu.
+    case kActionBookmarkBarSubmenuAlwaysHide:
+      RecordAction(MENU_ACTION_BOOKMARK_BAR_ALWAYS_HIDE,
+                   "BookmarkBarAlwaysHide");
+      break;
+    case kActionBookmarkBarSubmenuAlwaysShow:
+      RecordAction(MENU_ACTION_BOOKMARK_BAR_ALWAYS_SHOW,
+                   "BookmarkBarAlwaysShow");
+      break;
+    case kActionBookmarkBarSubmenuOnlyOnNtp:
+      RecordAction(MENU_ACTION_BOOKMARK_BAR_ONLY_ON_NTP,
+                   "BookmarkBarOnlyOnNtp");
+      break;
+
     // Actions present in the menu that do not have a per-action TimeToAction
     // variant in histograms.xml, but still record the overall
     // WrenchMenu.TimeToAction histogram (and WrenchMenu.MenuAction if defined).
     // TODO(crbug.com/565832018): Add TimeToAction and MenuAction entries for
     // each of these.
-    case kActionBookmarkBarSubmenuAlwaysHide:
-    case kActionBookmarkBarSubmenuAlwaysShow:
-    case kActionBookmarkBarSubmenuOnlyOnNtp:
     case kActionGlobalError:
     case kActionNameWindow:
     case kActionReportUnsafeSite:
