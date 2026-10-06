@@ -445,6 +445,16 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid) {
                          /*description=*/"50% off your next purchase",
                          /*pass_view_url=*/"https://safeway.com/offer-details",
                          /*offer_title_image_url=*/"invalid_url"))));
+
+  // Description is optional and does not affect validity.
+  specifics.mutable_offer()->clear_description();
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  EXPECT_TRUE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(TestOfferSpecifics(
+          kId1, /*offer_code=*/"SAFEWAY50",
+          /*description=*/"",
+          /*pass_view_url=*/"https://safeway.com/offer-details"))));
 }
 
 // The server is not required to send numeric offer ids, so ids that cannot be
@@ -473,20 +483,6 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
           kId1, /*offer_code=*/"",
           /*description=*/"50% off your next purchase",
           /*pass_view_url=*/"https://safeway.com/offer-details"))));
-
-  // Invalid description.
-  EXPECT_FALSE(bridge().IsEntityDataValid(
-      *CreateEntityDataFromSpecifics(TestOfferSpecifics(
-          kId1, /*offer_code=*/"SAFEWAY50",
-          /*description=*/"",
-          /*pass_view_url=*/"https://safeway.com/offer-details"))));
-
-  // Missing description.
-  sync_pb::AutofillValuableSpecifics empty_description_specifics =
-      TestOfferSpecifics(kId1);
-  empty_description_specifics.mutable_offer()->clear_description();
-  EXPECT_FALSE(bridge().IsEntityDataValid(
-      *CreateEntityDataFromSpecifics(empty_description_specifics)));
 
   // Invalid offer details url.
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(

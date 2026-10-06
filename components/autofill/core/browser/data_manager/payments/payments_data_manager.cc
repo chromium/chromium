@@ -981,7 +981,6 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     // TODO(crbug.com/546252995): Drop empty promo codes at the sync
     // bridge / disk loading level instead of filtering them here.
     if (autofill_offer_data->IsActiveAndEligibleForOrigin(origin) &&
-        !autofill_offer_data->GetDisplayStrings().value_prop_text.empty() &&
         !autofill_offer_data->GetPromoCode().empty()) {
       promo_code_offers_for_origin.push_back(autofill_offer_data.get());
     }

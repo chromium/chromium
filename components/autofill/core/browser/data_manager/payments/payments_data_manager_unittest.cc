@@ -1207,7 +1207,7 @@ TEST_P(PaymentsDataManagerServerTest,
       {GURL("http://www.some-other-merchant.com")},
       GURL("https://pay.google.com"), display_strings, "CODE222"));
 
-  // Invalid wallet direct offers (empty value prop) should not be returned.
+  // Active wallet direct offers with empty value prop should still be returned.
   DisplayStrings empty_display_strings;
   AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
       /*offer_id=*/"333", AutofillClock::Now() + base::Days(35),
@@ -1226,12 +1226,13 @@ TEST_P(PaymentsDataManagerServerTest,
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       display_strings, "CODE555"));
 
-  // Only the valid, active, matching offer for example.com should be returned.
+  // Active matching offers for example.com should be returned.
   auto offers =
       payments_data_manager().GetActiveAutofillPromoCodeOffersForOrigin(
           GURL("http://www.example.com"));
-  ASSERT_EQ(offers.size(), 1U);
-  EXPECT_EQ(offers[0]->GetOfferId(), "555");
+  ASSERT_EQ(offers.size(), 2U);
+  EXPECT_EQ(offers[0]->GetOfferId(), "333");
+  EXPECT_EQ(offers[1]->GetOfferId(), "555");
 }
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any

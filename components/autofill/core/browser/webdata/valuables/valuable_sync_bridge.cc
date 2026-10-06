@@ -109,7 +109,7 @@ bool AreAutofillOfferSpecificsValid(
                             return !domain.empty() && GURL(domain).is_valid();
                           });
   return !specifics.id().empty() && !offer.offer_code().empty() &&
-         !offer.description().empty() && !offer.offer_short_title().empty() &&
+         !offer.offer_short_title().empty() &&
          offer.expiration_time_unix_epoch_micros() > 0 &&
          GURL(specifics.pass_view_url()).is_valid() && has_valid_issuer_domains;
 }
