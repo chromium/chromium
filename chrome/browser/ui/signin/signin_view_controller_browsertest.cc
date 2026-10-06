@@ -1396,6 +1396,135 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_EQ(future2.Get(), SigninInterceptionResult::kIgnored);
 }
 
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninBubble_Accepted) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  base::HistogramTester histogram_tester;
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(browser())->ShowChromeSigninBubble(
+      account, signin_metrics::AccessPoint::kMenu);
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  auto* web_view = views::AsViewClass<views::WebView>(
+      widget->widget_delegate()->GetInitiallyFocusedView());
+  ASSERT_TRUE(web_view);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  ASSERT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      "document.querySelector('chrome-signin-app').shadowRoot."
+                      "querySelector('#accept-button').click();"));
+  destroyed_waiter.Wait();
+
+  EXPECT_EQ(
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      account.GetAccountId());
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed",
+                                      signin_metrics::AccessPoint::kMenu, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninBubble_Declined) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  base::HistogramTester histogram_tester;
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(browser())->ShowChromeSigninBubble(
+      account, signin_metrics::AccessPoint::kMenu);
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  auto* web_view = views::AsViewClass<views::WebView>(
+      widget->widget_delegate()->GetInitiallyFocusedView());
+  ASSERT_TRUE(web_view);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  ASSERT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      "document.querySelector('chrome-signin-app').shadowRoot."
+                      "querySelector('#cancel-button').click();"));
+  destroyed_waiter.Wait();
+
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninBubble_ConflictWithInterceptionBubble) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account,
+      /*primary_account=*/AccountInfo());
+
+  views::NamedWidgetShownWaiter widget_waiter1(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> future1;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle1 =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, future1.GetCallback());
+  ASSERT_TRUE(handle1);
+  views::Widget* widget1 = widget_waiter1.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget1);
+
+  // Showing a self-owned Chrome Signin bubble replaces the interception bubble.
+  views::test::WidgetDestroyedWaiter destroyed_waiter1(widget1);
+  views::NamedWidgetShownWaiter widget_waiter2(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(browser())->ShowChromeSigninBubble(
+      account, signin_metrics::AccessPoint::kMenu);
+
+  destroyed_waiter1.Wait();
+  EXPECT_EQ(future1.Get(), SigninInterceptionResult::kIgnored);
+
+  views::Widget* widget2 = widget_waiter2.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget2);
+  EXPECT_TRUE(widget2->IsVisible());
+
+  // Destroying the stale interception handle must not close the Chrome Signin
+  // bubble.
+  handle1.reset();
+  EXPECT_FALSE(widget2->IsClosed());
+
+  // Showing a new interception bubble replaces the Chrome Signin bubble without
+  // signing the user in.
+  views::test::WidgetDestroyedWaiter destroyed_waiter2(widget2);
+  views::NamedWidgetShownWaiter widget_waiter3(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> future3;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle3 =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, future3.GetCallback());
+  ASSERT_TRUE(handle3);
+
+  destroyed_waiter2.Wait();
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  views::Widget* widget3 = widget_waiter3.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget3);
+  EXPECT_TRUE(widget3->IsVisible());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter3(widget3);
+  handle3.reset();
+  destroyed_waiter3.Wait();
+  EXPECT_EQ(future3.Get(), SigninInterceptionResult::kIgnored);
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,

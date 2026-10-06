@@ -25,9 +25,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -36,6 +39,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -52,6 +56,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
@@ -59,7 +64,10 @@
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
@@ -774,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuReportUnsafeSiteTest,
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-using AppMenuModelSigninPromoTest = AppMenuModelTest;
+using AppMenuModelSigninPromoTest = SigninBrowserTestBaseT<AppMenuModelTest>;
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelSigninPromoTest, SignedIn) {
   base::HistogramTester histogram_tester;
@@ -813,6 +821,63 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSigninPromoTest, SignedOut) {
       "Signin.SignIn.Offered.NewAccountNoExistingAccount",
       signin_metrics::AccessPoint::kMenu, 1);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_F(AppMenuModelSigninPromoTest, WebSignedIn) {
+  SetAccountsCookiesAndTokens({"user@example.com"});
+  base::HistogramTester histogram_tester;
+
+  AppMenuModel model(this, browser());
+  model.Init();
+  const size_t profile_menu_index =
+      model.GetIndexOfCommandId(AppMenuModel::kProfileMenuPlaceholder).value();
+  ui::SimpleMenuModel* profile_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(profile_menu_index));
+
+  EXPECT_FALSE(profile_menu->GetIndexOfCommandId(IDC_TURN_ON_SYNC).has_value());
+  std::optional<size_t> signin_index =
+      profile_menu->GetIndexOfCommandId(IDC_SHOW_SIGNIN);
+  ASSERT_TRUE(signin_index.has_value());
+
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
+                                      signin_metrics::AccessPoint::kMenu, 1);
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered.WithDefault",
+                                      signin_metrics::AccessPoint::kMenu, 1);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  profile_menu->ActivatedAt(signin_index.value());
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelSigninPromoTest,
+                       WebSignedIn_ActionShowSignin) {
+  SetAccountsCookiesAndTokens({"user@example.com"});
+
+  actions::ActionItem* show_signin_action =
+      actions::ActionManager::Get().FindAction(
+          kActionShowSignin,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(show_signin_action);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  show_signin_action->InvokeAction();
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class AppMenuModelBookmarkLimitExceededSyncingTest : public AppMenuModelTest {
  public:

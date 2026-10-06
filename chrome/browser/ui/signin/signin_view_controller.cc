@@ -412,10 +412,7 @@ SigninViewController::~SigninViewController() = default;
 void SigninViewController::TearDownPreBrowserWindowDestruction() {
   CloseModalSignin();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (intercept_bubble_) {
-    intercept_bubble_->Close();
-    intercept_bubble_.reset();
-  }
+  CloseInterceptBubble();
 #endif
 }
 
@@ -589,10 +586,31 @@ std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 SigninViewController::ShowSigninInterceptionBubble(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
-  if (intercept_bubble_) {
-    intercept_bubble_->Close();
-  }
+  CloseInterceptBubble();
+  CreateInterceptionBubble(bubble_parameters, std::move(callback));
+  return std::make_unique<ScopedInterceptBubbleHandle>(intercept_bubble_);
+}
 
+void SigninViewController::ShowChromeSigninBubble(
+    const AccountInfo& account,
+    signin_metrics::AccessPoint access_point) {
+  CloseInterceptBubble();
+  chrome_signin_bubble_callback_.Reset(
+      base::BindOnce(&SigninViewController::OnChromeSigninBubbleResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     account.GetCoreAccountInfo(), access_point));
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account,
+      /*primary_account=*/AccountInfo());
+  CreateInterceptionBubble(bubble_parameters,
+                           chrome_signin_bubble_callback_.callback());
+}
+
+void SigninViewController::CreateInterceptionBubble(
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+    base::OnceCallback<void(SigninInterceptionResult)> callback) {
+  CHECK(!intercept_bubble_);
   views::BubbleAnchor anchor =
       BrowserView::GetBrowserViewForBrowser(&browser_.get())
           ->toolbar_button_provider()
@@ -600,7 +618,33 @@ SigninViewController::ShowSigninInterceptionBubble(
           ->GetBubbleAnchor(*browser_);
   intercept_bubble_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
       &browser_.get(), anchor, bubble_parameters, std::move(callback));
-  return std::make_unique<ScopedInterceptBubbleHandle>(intercept_bubble_);
+}
+
+void SigninViewController::OnChromeSigninBubbleResult(
+    const CoreAccountInfo& account,
+    signin_metrics::AccessPoint access_point,
+    SigninInterceptionResult result) {
+  CloseInterceptBubble();
+  if (result == SigninInterceptionResult::kAccepted) {
+    signin_ui_util::SignInFromSingleAccountPromo(GetProfile(), account,
+                                                 access_point);
+  }
+}
+
+void SigninViewController::CloseInterceptBubble() {
+  // Cancel any pending `OnChromeSigninBubbleResult()` callback. Closing the
+  // bubble widget is asynchronous: if a Chrome Signin bubble is preempted by a
+  // second bubble, `intercept_bubble_` is updated to point to the second bubble
+  // before the first widget is destroyed. When the first widget's teardown
+  // completes, `DiceWebSigninInterceptionBubbleView` invokes its callback with
+  // `kIgnored`; if not cancelled, `OnChromeSigninBubbleResult()` would run for
+  // the first bubble and call `CloseInterceptBubble()`, closing the second
+  // bubble.
+  chrome_signin_bubble_callback_.Cancel();
+  if (intercept_bubble_) {
+    intercept_bubble_->Close();
+    intercept_bubble_.reset();
+  }
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

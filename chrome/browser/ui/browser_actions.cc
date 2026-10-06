@@ -258,6 +258,12 @@
 #include "components/prefs/pref_service.h"
 #endif
 
+#include "components/signin/public/base/signin_buildflags.h"
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 namespace {
 
 ui::Accelerator GetAcceleratorForCommandId(int command_id) {
@@ -4162,6 +4168,22 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                     IdentityManagerFactory::GetForProfileIfExists(profile);
                 CoreAccountInfo account;
                 if (identity_manager) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                  if (!identity_manager->HasPrimaryAccount(
+                          signin::ConsentLevel::kSignin)) {
+                    AccountInfo account_for_promos =
+                        signin_ui_util::GetSingleAccountForPromos(
+                            identity_manager,
+                            AccountPreviewDataServiceFactory::GetForProfile(
+                                profile));
+                    if (!account_for_promos.IsEmpty()) {
+                      SigninViewController::From(bwi)->ShowChromeSigninBubble(
+                          account_for_promos,
+                          signin_metrics::AccessPoint::kMenu);
+                      return;
+                    }
+                  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
                   account = identity_manager->GetPrimaryAccountInfo(
                       signin::ConsentLevel::kSignin);
                 }

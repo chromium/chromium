@@ -290,7 +290,6 @@ struct SigninSectionInfo {
 
 SigninSectionInfo ComputeSigninSectionInfo(Profile* profile) {
   SigninSectionInfo info;
-  // TODO(crbug.com/440342282): Support personalized signin button.
   if (!CanOfferSignin(profile, GaiaId(), /*email=*/std::string(),
                       /*allow_account_from_other_profile=*/true)
            .IsOk()) {

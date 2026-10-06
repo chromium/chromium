@@ -197,6 +197,11 @@
 #include "chrome/browser/ui/shortcuts/desktop_shortcuts_utils.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 using Extension = extensions::Extension;
@@ -990,13 +995,29 @@ void BrowserCommandController::HandleCommandWithDisposition(
               .GetCoreAccountInfo(),
           signin_metrics::AccessPoint::kMenu);
       break;
-    case IDC_SHOW_SIGNIN:
+    case IDC_SHOW_SIGNIN: {
+      Profile* profile = browser_->GetProfile();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfileIfExists(profile);
+      if (identity_manager &&
+          !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        AccountInfo account_for_promos =
+            signin_ui_util::GetSingleAccountForPromos(
+                identity_manager,
+                AccountPreviewDataServiceFactory::GetForProfile(profile));
+        if (!account_for_promos.IsEmpty()) {
+          SigninViewController::From(browser_)->ShowChromeSigninBubble(
+              account_for_promos, signin_metrics::AccessPoint::kMenu);
+          break;
+        }
+      }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
       signin_ui_util::SignInFromSingleAccountPromo(
-          browser_->GetProfile(),
-          GetAccountInfoFromProfile(browser_->GetProfile())
-              .GetCoreAccountInfo(),
+          profile, GetAccountInfoFromProfile(profile).GetCoreAccountInfo(),
           signin_metrics::AccessPoint::kMenu);
       break;
+    }
     case IDC_SHOW_SIGNIN_WHEN_PAUSED:
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
           browser_->GetProfile(), signin_metrics::AccessPoint::kMenu);
