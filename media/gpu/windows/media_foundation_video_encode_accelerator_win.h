@@ -232,7 +232,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Check if |size| is supported.
   bool IsFrameSizeAllowed(gfx::Size size);
   // Update frame size without re-initializing the encoder.
-  void UpdateFrameSize(const gfx::Size& size);
+  bool UpdateFrameSize(const gfx::Size& size);
 
   // Initialize video processing (for scaling).
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);

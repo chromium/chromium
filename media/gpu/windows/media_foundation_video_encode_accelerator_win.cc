@@ -1076,6 +1076,23 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 
   bitrate_allocation_ = bitrate_allocation;
   frame_rate_ = framerate;
+
+  if (size.has_value()) {
+    if (!UpdateFrameSize(size.value())) {
+      return;
+    }
+    if (rate_ctrl_) {
+      // Some software rate controllers require reset on resolution change.
+      rate_ctrl_.reset();
+      SetSWRateControl();
+      if (!rate_ctrl_) {
+        NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                           "Failed to reset software rate controller."});
+        return;
+      }
+    }
+  }
+
   // For SW BRC we don't reconfigure the encoder.
   if (rate_ctrl_) {
     if (!rate_ctrl_->UpdateRateControl(CreateRateControllerConfig(
@@ -1126,10 +1143,6 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
         break;
     }
   }
-
-  if (size.has_value()) {
-    UpdateFrameSize(size.value());
-  }
 }
 
 bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
@@ -1168,7 +1181,7 @@ bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
   return false;
 }
 
-void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
+bool MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
     const gfx::Size& frame_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(imf_output_media_type_);
@@ -1183,13 +1196,13 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderIllegalState,
                        "Can't change frame size when there are pending input "
                        "frames"});
-    return;
+    return false;
   }
 
   if (!IsFrameSizeAllowed(frame_size)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                        "Unsupported frame size"});
-    return;
+    return false;
   }
   input_visible_size_ = frame_size;
 
@@ -1208,7 +1221,7 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
           {EncoderStatus::Codes::kSystemAPICallError,
            "Couldn't set ProcessMessage MFT_MESSAGE_COMMAND_FLUSH: " +
                PrintHr(hr)});
-      return;
+      return false;
     }
   }
   // Reset the need input counter since MFT was notified to end stream.
@@ -1219,7 +1232,7 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
         {EncoderStatus::Codes::kSystemAPICallError,
          "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_OF_STREAM: " +
              PrintHr(hr)});
-    return;
+    return false;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, 0);
   if (FAILED(hr)) {
@@ -1227,21 +1240,21 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
         {EncoderStatus::Codes::kSystemAPICallError,
          "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_STREAMING: " +
              PrintHr(hr)});
-    return;
+    return false;
   }
   hr = encoder_->SetInputType(input_stream_id_, nullptr, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kSystemAPICallError,
          "Couldn't set input stream type to nullptr: " + PrintHr(hr)});
-    return;
+    return false;
   }
   hr = encoder_->SetOutputType(output_stream_id_, nullptr, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kSystemAPICallError,
          "Couldn't set output stream type to nullptr: " + PrintHr(hr)});
-    return;
+    return false;
   }
   hr = MFSetAttributeSize(imf_output_media_type_.Get(), MF_MT_FRAME_SIZE,
                           input_visible_size_.width(),
@@ -1249,14 +1262,14 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Couldn't set output frame size: " + PrintHr(hr)});
-    return;
+    return false;
   }
   hr = encoder_->SetOutputType(output_stream_id_, imf_output_media_type_.Get(),
                                0);
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Couldn't set output media type: " + PrintHr(hr)});
-    return;
+    return false;
   }
   hr = MFSetAttributeSize(imf_input_media_type_.Get(), MF_MT_FRAME_SIZE,
                           input_visible_size_.width(),
@@ -1264,13 +1277,13 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Couldn't set input frame size: " + PrintHr(hr)});
-    return;
+    return false;
   }
   hr = encoder_->SetInputType(input_stream_id_, imf_input_media_type_.Get(), 0);
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Couldn't set input media type: " + PrintHr(hr)});
-    return;
+    return false;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
   if (FAILED(hr)) {
@@ -1278,7 +1291,7 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
         {EncoderStatus::Codes::kSystemAPICallError,
          "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_BEGIN_STREAMING: " +
              PrintHr(hr)});
-    return;
+    return false;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
   if (FAILED(hr)) {
@@ -1286,7 +1299,7 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
         {EncoderStatus::Codes::kSystemAPICallError,
          "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_START_OF_STREAM: " +
              PrintHr(hr)});
-    return;
+    return false;
   }
 
   bitstream_buffer_size_ = EstimateBitstreamBufferSize(
@@ -1305,8 +1318,11 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
       NotifyErrorStatus(
           {EncoderStatus::Codes::kSystemAPICallError,
            "Couldn't update Video processor output size: " + PrintHr(hr)});
+      return false;
     }
   }
+
+  return true;
 }
 
 void MediaFoundationVideoEncodeAccelerator::Destroy() {
