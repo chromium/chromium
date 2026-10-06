@@ -457,7 +457,6 @@ let mojoLockManagerProfile = Profile(
         .jsBlinkMojomLockMode,
         .jsBlinkMojomLockManager_WaitMode,
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [
-    ] + commonMojoOptionsBags,
+    additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )

@@ -1112,18 +1112,20 @@ extension ILType {
 /// Unions
 ///
 extension ILType {
-    fileprivate static let jsBlinkMojomGetCredentialResponse: ILType =
-        OptionsBag.blinkMojomGetCredentialResponse.group.instanceType
+    fileprivate static let jsBlinkMojomGetCredentialResponse: ILType = .object(
+        ofGroup: "blink.mojom.GetCredentialResponse")
+    fileprivate static let jsBlinkMojomGetCredentialResponseGetAssertionResponseConstructor: ILType = .constructor(
+        [.plain(.jsBlinkMojomGetAssertionResponse)] => .jsBlinkMojomGetCredentialResponse)
+    fileprivate static let jsBlinkMojomGetCredentialResponsePasswordResponseConstructor: ILType = .constructor(
+        [.plain(.jsBlinkMojomCredentialInfo)] => .jsBlinkMojomGetCredentialResponse)
 }
 
-extension OptionsBag {
-    fileprivate static let blinkMojomGetCredentialResponse = OptionsBag(
+extension ObjectGroup {
+    fileprivate static let blinkMojomGetCredentialResponse = ObjectGroup(
         name: "blink.mojom.GetCredentialResponse",
-        properties: [
-            "getAssertionResponse": .jsBlinkMojomGetAssertionResponse,
-            "passwordResponse": .jsBlinkMojomCredentialInfo,
-        ],
-        selectionMode: .exactlyOne,
+        instanceType: .jsBlinkMojomGetCredentialResponse,
+        properties: [:],
+        methods: [:]
     )
 }
 
@@ -1210,6 +1212,8 @@ private let mojoBuiltins: [String: ILType] = [
     "blink.mojom.AllAcceptedCredentialsOptions": .jsBlinkMojomAllAcceptedCredentialsOptionsConstructor,
     "blink.mojom.CurrentUserDetailsOptions": .jsBlinkMojomCurrentUserDetailsOptionsConstructor,
     "blink.mojom.WebAuthnClientCapability": .jsBlinkMojomWebAuthnClientCapabilityConstructor,
+    "blink.mojom.GetCredentialResponse.getAssertionResponse": .jsBlinkMojomGetCredentialResponseGetAssertionResponseConstructor,
+    "blink.mojom.GetCredentialResponse.passwordResponse": .jsBlinkMojomGetCredentialResponsePasswordResponseConstructor,
 ]
 
 private let keepGenerators = [
@@ -1309,6 +1313,7 @@ let mojoAuthenticatorProfile = Profile(
         .blinkMojomAuthenticatorIsConditionalMediationAvailableResponseParams,
         .blinkMojomAuthenticatorReportResponseParams,
         .blinkMojomAuthenticatorGetClientCapabilitiesResponseParams,
+        .blinkMojomGetCredentialResponse,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
         .jsBlinkMojomPublicKeyCredentialType,
@@ -1324,8 +1329,6 @@ let mojoAuthenticatorProfile = Profile(
         .jsBlinkMojomMediation,
         .jsBlinkMojomCredentialType,
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [
-        .blinkMojomGetCredentialResponse,
-    ] + commonMojoOptionsBags,
+    additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )

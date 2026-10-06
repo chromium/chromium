@@ -315,7 +315,6 @@ let mojoCredentialManagerProfile = Profile(
         .jsBlinkMojomCredentialMediationRequirement,
         .jsBlinkMojomCredentialManagerError,
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [
-    ] + commonMojoOptionsBags,
+    additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )

@@ -229,18 +229,20 @@ extension ILType {
 /// Unions
 ///
 extension ILType {
-    fileprivate static let jsNetworkMojomSearchParamsVariance: ILType =
-        OptionsBag.networkMojomSearchParamsVariance.group.instanceType
+    fileprivate static let jsNetworkMojomSearchParamsVariance: ILType = .object(
+        ofGroup: "network.mojom.SearchParamsVariance")
+    fileprivate static let jsNetworkMojomSearchParamsVarianceNoVaryParamsConstructor: ILType = .constructor(
+        [.plain(.jsStringMojoArray)] => .jsNetworkMojomSearchParamsVariance)
+    fileprivate static let jsNetworkMojomSearchParamsVarianceVaryParamsConstructor: ILType = .constructor(
+        [.plain(.jsStringMojoArray)] => .jsNetworkMojomSearchParamsVariance)
 }
 
-extension OptionsBag {
-    fileprivate static let networkMojomSearchParamsVariance = OptionsBag(
+extension ObjectGroup {
+    fileprivate static let networkMojomSearchParamsVariance = ObjectGroup(
         name: "network.mojom.SearchParamsVariance",
-        properties: [
-            "noVaryParams": .jsStringMojoArray,
-            "varyParams": .jsStringMojoArray,
-        ],
-        selectionMode: .exactlyOne,
+        instanceType: .jsNetworkMojomSearchParamsVariance,
+        properties: [:],
+        methods: [:]
     )
 }
 
@@ -303,6 +305,8 @@ private let mojoBuiltins: [String: ILType] = [
     "blink.mojom.SpeculationCandidate": .jsBlinkMojomSpeculationCandidateConstructor,
     "blink.mojom.Referrer": .jsBlinkMojomReferrerConstructor,
     "network.mojom.NoVarySearch": .jsNetworkMojomNoVarySearchConstructor,
+    "network.mojom.SearchParamsVariance.noVaryParams": .jsNetworkMojomSearchParamsVarianceNoVaryParamsConstructor,
+    "network.mojom.SearchParamsVariance.varyParams": .jsNetworkMojomSearchParamsVarianceVaryParamsConstructor,
 ]
 
 private let keepGenerators = [
@@ -365,6 +369,7 @@ let mojoSpeculationHostProfile = Profile(
         .blinkMojomSpeculationCandidate,
         .blinkMojomReferrer,
         .networkMojomNoVarySearch,
+        .networkMojomSearchParamsVariance,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
         .jsBlinkMojomSpeculationAction,
@@ -374,8 +379,6 @@ let mojoSpeculationHostProfile = Profile(
         .jsBlinkMojomSpeculationInjectionType,
         .jsBlinkMojomSpeculationHeuristic,
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [
-        .networkMojomSearchParamsVariance,
-    ] + commonMojoOptionsBags,
+    additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )
