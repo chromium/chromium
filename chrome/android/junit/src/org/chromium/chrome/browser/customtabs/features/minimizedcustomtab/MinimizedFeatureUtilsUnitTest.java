@@ -35,6 +35,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils.MinimizedFeatureAvailability;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 
 /** Unit tests for {@link MinimizedFeatureUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -71,6 +72,12 @@ public class MinimizedFeatureUtilsUnitTest {
     @After
     public void tearDown() {
         SysUtils.setIsLowEndDeviceForTesting(false);
+    }
+
+    @Test
+    public void testAndroidAutoProjected() {
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
+        assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
     }
 
     @Test
