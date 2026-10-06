@@ -4,5 +4,11 @@ include_rules = [
   "+chrome/browser/ash/concierge_helper",
 
   "+chrome/browser/profiles",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "concierge_helper_service_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

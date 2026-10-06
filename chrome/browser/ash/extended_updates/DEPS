@@ -16,13 +16,23 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/ownership",
-  "+chrome/browser/ash/settings",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/extended_updates",
   "+chrome/grit",
-  "+chrome/test/base",
 
   "+ui/message_center/message_center.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "extended_updates_controller_unittest\\.cc": [
+    "+chrome/browser/ash/login/users",
+    "+chrome/browser/ash/settings",
+    "+chrome/test/base",
+  ],
+  "extended_updates_notification_unittest\\.cc": [
+    "+chrome/browser/ash/settings",
+    "+chrome/test/base",
+  ],
+}

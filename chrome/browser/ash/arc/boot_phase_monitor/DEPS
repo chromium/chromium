@@ -12,5 +12,11 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc",
   "+chrome/browser/sessions",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "arc_boot_phase_monitor_bridge_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

@@ -18,10 +18,26 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc/input_method_manager",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/shelf/app_service",
-  "+chrome/test/base",
-  "+chrome/test/views",
 
   # Dependencies outside of //chrome:
   "+services/accessibility/android",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "arc_accessibility_helper_bridge_browsertest\\.cc": [
+    "+chrome/browser/ui/ash/shelf/app_service",
+    "+chrome/test/base",
+  ],
+  "arc_accessibility_helper_bridge_unittest\\.cc": [
+    "+chrome/test/base",
+    "+chrome/test/views",
+  ],
+  "arc_accessibility_tree_tracker_unittest\\.cc": [
+    "+chrome/test/base",
+    "+chrome/test/views",
+  ],
+  "arc_serialization_delegate_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

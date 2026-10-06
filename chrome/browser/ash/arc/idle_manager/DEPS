@@ -15,8 +15,26 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc/instance_throttle",
-  "+chrome/browser/ash/arc/session",
-  "+chrome/browser/ash/arc/test",
   "+chrome/browser/ash/arc/vmm",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "arc_cpu_throttle_observer_unittest\\.cc": [
+    "+chrome/browser/ash/arc/session",
+    "+chrome/browser/ash/arc/test",
+    "+chrome/test/base",
+  ],
+  "arc_display_power_observer_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+  "arc_idle_manager_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+  "arc_on_battery_observer_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+  "arc_window_observer_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

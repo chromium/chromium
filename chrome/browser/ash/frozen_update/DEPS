@@ -1,6 +1,12 @@
 include_rules = [
-  "+chrome/browser/ash/login",
-  "+chrome/browser/ui/webui/ash/login",
-  "+chrome/test/base",
   "+ui/message_center",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "frozen_update_notification_browsertest\\.cc": [
+    "+chrome/browser/ash/login",
+    "+chrome/browser/ui/webui/ash/login",
+    "+chrome/test/base",
+  ],
+}

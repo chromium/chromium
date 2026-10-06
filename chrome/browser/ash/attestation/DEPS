@@ -14,7 +14,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/platform_keys/key_permissions",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/settings",
@@ -23,10 +22,26 @@ include_rules = [
   "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_constants.h",
-  "+chrome/test/base",
 
   # Dependencies outside of //chrome:
   "+third_party/securemessage",
   "+third_party/boringssl/src/pki",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "attestation_ca_client_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+  "platform_verification_flow_unittest\\.cc": [
+    "+chrome/browser/ash/login/users",
+  ],
+  "tpm_challenge_key_subtle_unittest\\.cc": [
+    "+chrome/browser/ash/login/users",
+    "+chrome/common/chrome_constants.h",
+    "+chrome/test/base",
+  ],
+  "tpm_challenge_key_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

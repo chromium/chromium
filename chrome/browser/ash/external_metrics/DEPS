@@ -4,5 +4,11 @@ include_rules = [
   "+chrome/browser/ash/external_metrics",
 
   "+chrome/browser/metrics",
-  "+chrome/test/base/chromeos/crosier",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "external_metrics_integration_test\\.cc": [
+    "+chrome/test/base/chromeos/crosier",
+  ],
+}

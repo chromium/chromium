@@ -21,5 +21,11 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/web_applications/web_app_utils.h",
-  "+chrome/common/chrome_features.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "install_isolated_web_app_virtual_task_unittest\\.cc": [
+    "+chrome/common/chrome_features.h",
+  ],
+}

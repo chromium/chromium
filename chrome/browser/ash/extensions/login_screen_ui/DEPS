@@ -16,9 +16,15 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/policy/login",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/settings",
   "+chrome/browser/chromeos/extensions/login_screen",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
-  "+chrome/common/chrome_constants.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "ui_handler_unittest\\.cc": [
+    "+chrome/browser/ash/settings",
+    "+chrome/common/chrome_constants.h",
+  ],
+}

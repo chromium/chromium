@@ -10,6 +10,12 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ui/ash/shelf",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "arc_user_session_service_browsertest\\.cc": [
+    "+chrome/browser/ui/ash/shelf",
+    "+chrome/test/base",
+  ],
+}

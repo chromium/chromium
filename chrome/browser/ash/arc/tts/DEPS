@@ -15,8 +15,14 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/speech",
-  "+chrome/test/base",
 
   # Dependencies outside of //chrome:
   "+content/public/browser/tts_controller.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "arc_tts_service_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

@@ -12,14 +12,26 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/certificate_provider",
-  "+chrome/browser/ash/login/test",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/platform_keys",
-  "+chrome/browser/ash/policy/affiliation",
   "+chrome/browser/ash/policy/remote_commands",
-  "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
   "+chrome/common/net",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "arc_cert_installer_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+  "arc_enterprise_reporting_service_unittest\\.cc": [
+    "+chrome/browser/ash/login/users",
+    "+chrome/test/base",
+  ],
+  "cert_store_service_browsertest\\.cc": [
+    "+chrome/browser/ash/login/test",
+    "+chrome/browser/ash/policy/affiliation",
+    "+chrome/browser/chromeos/platform_keys",
+    "+chrome/test/base",
+  ],
+}
