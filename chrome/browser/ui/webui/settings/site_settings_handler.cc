@@ -29,6 +29,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -118,6 +119,8 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -210,7 +213,7 @@ enum class AllSitesAction2 {
 };
 
 // Return an appropriate API Permission ID for the given string name.
-APIPermissionID APIPermissionFromGroupName(std::string type) {
+APIPermissionID APIPermissionFromGroupName(std::string_view type) {
   // Once there are more than two groups to consider, this should be changed to
   // something better than if's.
 
@@ -366,13 +369,13 @@ void UpdateDataForOriginAndPartition(
 }
 
 // Converts |etld_plus1| into an origin representation by adding HTTP(S) scheme.
-url::Origin ConvertEtldToOrigin(const std::string etld_plus1, bool secure) {
+url::Origin ConvertEtldToOrigin(std::string etld_plus1, bool secure) {
   if (secure) {
-    return url::Origin::CreateFromNormalizedTuple(url::kHttpsScheme, etld_plus1,
-                                                  kHttpsDefaultPort);
+    return url::Origin::CreateFromNormalizedTuple(
+        url::kHttpsScheme, std::move(etld_plus1), kHttpsDefaultPort);
   }
-  return url::Origin::CreateFromNormalizedTuple(url::kHttpScheme, etld_plus1,
-                                                80);
+  return url::Origin::CreateFromNormalizedTuple(url::kHttpScheme,
+                                                std::move(etld_plus1), 80);
 }
 
 bool IsPatternValidForType(const std::string& pattern_string,
@@ -439,10 +442,11 @@ void LogAllSitesAction(AllSitesAction2 action) {
 
 // Returns the registrable domain (eTLD+1) for the `host`. If it doesn't exist,
 // returns the host.
-std::string GetEtldPlusOneForHost(const std::string& host) {
-  auto eltd_plus_one = net::registry_controlled_domains::GetDomainAndRegistry(
-      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return eltd_plus_one.empty() ? host : eltd_plus_one;
+std::string GetEtldPlusOneForHost(std::string_view host) {
+  const std::string eltd_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return eltd_plus_one.empty() ? std::string(host) : eltd_plus_one;
 }
 
 // Returns the registrable domain (eTLD+1) for the `origin`. If it doesn't
@@ -452,10 +456,9 @@ std::string GetEtldPlusOne(const url::Origin& origin) {
 }
 
 // Converts |etld_plus1| into an HTTPS SchemefulSite.
-net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
-  return net::SchemefulSite(GURL(std::string(url::kHttpsScheme) +
-                                 url::kStandardSchemeSeparator + etld_plus1 +
-                                 "/"));
+net::SchemefulSite ConvertEtldToSchemefulSite(std::string_view etld_plus1) {
+  return net::SchemefulSite(GURL(base::StrCat(
+      {url::kHttpsScheme, url::kStandardSchemeSeparator, etld_plus1, "/"})));
 }
 
 // Iterates over data owners in `browsing_data_model` which contains all sites
@@ -466,7 +469,8 @@ std::map<std::string, std::pair<std::string, int>> GetRwsMap(
     PrivacySandboxService* privacy_sandbox_service,
     BrowsingDataModel* browsing_data_model) {
   // Used to count unique eTLD+1 owned by an RWS owner.
-  std::map<std::string, std::set<std::string>> rws_owner_to_members;
+  absl::flat_hash_map<std::string, absl::flat_hash_set<std::string>>
+      rws_owner_to_members;
 
   // Count members by unique eTLD+1 for each related website set.
   if (browsing_data_model) {
@@ -477,7 +481,8 @@ std::map<std::string, std::pair<std::string, int>> GetRwsMap(
       auto rws_owner = privacy_sandbox_service->GetRelatedWebsiteSetOwner(
           schemeful_site.GetURL());
       if (rws_owner.has_value()) {
-        rws_owner_to_members[rws_owner->GetURL().GetHost()].insert(etld_plus1);
+        rws_owner_to_members[rws_owner->GetURL().host()].insert(
+            std::move(etld_plus1));
       }
     }
   }
@@ -643,12 +648,12 @@ GroupingKey GroupingKey::Create(const url::Origin& origin) {
 }
 
 // static
-GroupingKey GroupingKey::CreateFromEtldPlus1(const std::string& etld_plus1) {
-  return GroupingKey(etld_plus1);
+GroupingKey GroupingKey::CreateFromEtldPlus1(std::string_view etld_plus1) {
+  return GroupingKey(std::string(etld_plus1));
 }
 
 // static
-GroupingKey GroupingKey::Deserialize(const std::string& serialized) {
+GroupingKey GroupingKey::Deserialize(std::string_view serialized) {
   if (base::StartsWith(serialized, kGroupingKeyEtldPrefix)) {
     return GroupingKey::CreateFromEtldPlus1(
         serialized.substr(sizeof(kGroupingKeyEtldPrefix) - 1));
@@ -666,14 +671,16 @@ GroupingKey& GroupingKey::operator=(const GroupingKey& other) = default;
 GroupingKey::~GroupingKey() = default;
 
 std::string GroupingKey::Serialize() const {
-  return std::visit(absl::Overload{[](const std::string& etld_plus1) {
-                                     return kGroupingKeyEtldPrefix + etld_plus1;
-                                   },
-                                   [](const url::Origin& origin) {
-                                     return kGroupingKeyOriginPrefix +
-                                            origin.GetURL().spec();
-                                   }},
-                    value_);
+  return std::visit(
+      absl::Overload{[](const std::string& etld_plus1) {
+                       return base::StrCat(
+                           {kGroupingKeyEtldPrefix, etld_plus1});
+                     },
+                     [](const url::Origin& origin) {
+                       return base::StrCat(
+                           {kGroupingKeyOriginPrefix, origin.GetURL().spec()});
+                     }},
+      value_);
 }
 
 std::optional<std::string> GroupingKey::GetEtldPlusOne() const {
@@ -2175,7 +2182,7 @@ void SiteSettingsHandler::SendZoomLevels() {
         std::string origin_for_favicon = host_or_spec;
         std::string display_name = host_or_spec;
 
-        if (host_or_spec == unreachable_web_data_url.GetHost()) {
+        if (host_or_spec == unreachable_web_data_url.host()) {
           display_name =
               l10n_util::GetStringUTF8(IDS_ZOOMLEVELS_CHROME_ERROR_PAGES_LABEL);
         }
@@ -2218,7 +2225,7 @@ void SiteSettingsHandler::HandleRemoveZoomLevel(const base::ListValue& args) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (url.is_valid() && url.GetScheme() == webapps::kIsolatedAppScheme) {
+  if (url.is_valid() && url.scheme() == webapps::kIsolatedAppScheme) {
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> iwa_url_info =
         web_app::IsolatedWebAppUrlInfo::Create(url);
     if (!iwa_url_info.has_value()) {
@@ -2470,7 +2477,7 @@ void SiteSettingsHandler::GetHostCookies(
     std::optional<std::string> partition_etld_plus1;
     std::optional<GroupingKey> partition_grouping_key;
     if (cookie->IsPartitioned()) {
-      partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().GetHost();
+      partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().host();
       partition_grouping_key =
           GroupingKey::CreateFromEtldPlus1(*partition_etld_plus1);
     }
