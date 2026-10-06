@@ -531,15 +531,8 @@ void InitializeNowFunctionPointer() {
   // `QueryPerformanceFrequency` always succeeds and sets its out parameter to a
   // nonzero value on Windows versions more recent than Windows XP:
   // https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency
-  // Once these `CHECK`s are shown to not trigger in the wild, this condition
-  // can be changed to a CHECK and `ticks_per_sec.QuadPart <= 0 ` can be removed
-  // from the ternary below that selects the function pointer.
-  if (!QueryPerformanceFrequency(&ticks_per_sec)) {
-    ticks_per_sec.QuadPart = 0;
-    NOTREACHED(base::NotFatalUntil::M138);
-  } else {
-    CHECK(ticks_per_sec.QuadPart > 0, base::NotFatalUntil::M138);
-  }
+  CHECK(QueryPerformanceFrequency(&ticks_per_sec));
+  CHECK_GT(ticks_per_sec.QuadPart, 0);
 
   // If the QPC implementation is expensive and/or unreliable, TimeTicks::Now()
   // will still use the low-resolution clock. A CPU lacking a non-stop time

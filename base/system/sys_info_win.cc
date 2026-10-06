@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
@@ -205,8 +204,8 @@ std::optional<SysInfo::DiskSpaceInfo> SysInfo::AmountOfDiskSpace(
     return std::nullopt;
   }
   constexpr uint64_t kMaxBytes = uint64_t{std::numeric_limits<int64_t>::max()};
-  CHECK_LE(total.QuadPart, kMaxBytes, NotFatalUntil::M151);
-  CHECK_LE(available.QuadPart, kMaxBytes, NotFatalUntil::M151);
+  CHECK_LE(total.QuadPart, kMaxBytes);
+  CHECK_LE(available.QuadPart, kMaxBytes);
   return DiskSpaceInfo{
       .total = ByteSize(std::min(total.QuadPart, kMaxBytes)),
       .available = ByteSize(std::min(available.QuadPart, kMaxBytes))};

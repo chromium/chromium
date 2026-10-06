@@ -141,7 +141,7 @@ std::optional<int64_t> SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
   // Report the actual amount of free space in |path|'s filesystem.
   int64_t available;
   if (GetDiskSpaceInfo(path, &available, nullptr)) {
-    CHECK(available >= 0, base::NotFatalUntil::M150);
+    CHECK(available >= 0);
     return available;
   }
 
@@ -164,7 +164,7 @@ std::optional<int64_t> SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
 
   // Report the actual space in |path|'s filesystem.
   if (GetDiskSpaceInfo(path, nullptr, &total_space)) {
-    CHECK(total_space >= 0, base::NotFatalUntil::M150);
+    CHECK(total_space >= 0);
     return total_space;
   }
 

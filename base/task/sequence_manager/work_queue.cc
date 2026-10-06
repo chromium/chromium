@@ -246,7 +246,7 @@ bool WorkQueue::RemoveCancelledTasks(RemoveCancelledTasksPolicy policy) {
     TaskAnnotator::SetCurrentTaskForThread(base::PassKey<WorkQueue>(),
                                            &pending_task);
 #endif
-    CHECK(pending_task.task, base::NotFatalUntil::M140);
+    CHECK(pending_task.task);
 
     if (pending_task.task.IsCancelled()) {
       tasks_to_delete.push_back(std::move(pending_task));

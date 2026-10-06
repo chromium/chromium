@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -43,13 +42,13 @@ class SequenceManagerRegistry {
   void AddSequenceManager(SequenceManager* sequence_manager) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto [_, inserted] = sequence_managers_.emplace(sequence_manager);
-    CHECK(inserted, NotFatalUntil::M145);
+    CHECK(inserted);
   }
 
   void RemoveSequenceManager(SequenceManager* sequence_manager) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     size_t erased = sequence_managers_.erase(sequence_manager);
-    CHECK_EQ(erased, 1u, NotFatalUntil::M145);
+    CHECK_EQ(erased, 1u);
   }
 
   std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>>
@@ -78,13 +77,13 @@ class SequenceManagerRegistry {
 
 ScopedThreadPoolExecutionFence::ScopedThreadPoolExecutionFence() {
   auto* thread_pool = ThreadPoolInstance::Get();
-  CHECK(thread_pool, NotFatalUntil::M145);
+  CHECK(thread_pool);
   thread_pool->BeginFence();
 }
 
 ScopedThreadPoolExecutionFence::~ScopedThreadPoolExecutionFence() {
   auto* thread_pool = ThreadPoolInstance::Get();
-  CHECK(thread_pool, NotFatalUntil::M145);
+  CHECK(thread_pool);
   thread_pool->EndFence();
 }
 
@@ -95,13 +94,13 @@ ScopedBestEffortExecutionFence::ScopedBestEffortExecutionFence() {
         SequenceManagerRegistry::GetInstance().GetCurrentVoters();
   }
   auto* thread_pool = ThreadPoolInstance::Get();
-  CHECK(thread_pool, NotFatalUntil::M145);
+  CHECK(thread_pool);
   thread_pool->BeginBestEffortFence();
 }
 
 ScopedBestEffortExecutionFence::~ScopedBestEffortExecutionFence() {
   auto* thread_pool = ThreadPoolInstance::Get();
-  CHECK(thread_pool, NotFatalUntil::M145);
+  CHECK(thread_pool);
   thread_pool->EndBestEffortFence();
 }
 
