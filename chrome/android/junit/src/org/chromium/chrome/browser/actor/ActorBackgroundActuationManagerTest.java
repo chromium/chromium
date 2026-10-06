@@ -193,7 +193,7 @@ public class ActorBackgroundActuationManagerTest {
         watcher.assertExpected();
 
         // Verify the tab was prepared and set on ActorKeyedService
-        verify(mActorKeyedService).setPreparedBackgroundTab(mTab, MESSAGE_ID_SUCCESS);
+        verify(mActorKeyedService).setTabReady(mTab, MESSAGE_ID_SUCCESS);
         verify(mActorKeyedService, never()).notifyBackgroundSetupFailed(any());
 
         // Verify the provisioned background tab was registered in BackgroundTabPool
@@ -277,8 +277,8 @@ public class ActorBackgroundActuationManagerTest {
         observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
         watcher.assertExpected();
 
-        // Verify setPreparedBackgroundTab was NOT called because session was cleaned up
-        verify(mActorKeyedService, never()).setPreparedBackgroundTab(any(), any());
+        // Verify setTabReady was NOT called because session was cleaned up
+        verify(mActorKeyedService, never()).setTabReady(any(), any());
     }
 
     @Test

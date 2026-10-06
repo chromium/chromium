@@ -151,7 +151,7 @@ public class ActorBackgroundActuationManager {
                     BackgroundSession session = new BackgroundSession(tab, glicTriggerMessageId);
                     mBackgroundSessions.add(session);
                     ingestSessionsIntoPool(profile, List.of(session));
-                    actorService.setPreparedBackgroundTab(tab, glicTriggerMessageId);
+                    actorService.setTabReady(tab, glicTriggerMessageId);
                     ActorMetrics.recordBackgroundActuationTrigger(
                             ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM);
                 });
