@@ -70,12 +70,14 @@ class TestWidgetActionDelegate
     : public GlicSelectionWidgetDelegate::ActionDelegate {
  public:
   void OnAskGemini() override { ask_gemini_called = true; }
+  gfx::Rect GetContainerBounds() override { return container_bounds; }
   void OnCopy() override { copy_called = true; }
   void OnCopyLink() override { copy_link_called = true; }
   void OnHide() override { hide_called = true; }
   void OnSettings() override { settings_called = true; }
   void OnWidgetClose() override { widget_close_called = true; }
 
+  gfx::Rect container_bounds;
   bool widget_close_called = false;
   bool ask_gemini_called = false;
   bool copy_called = false;
@@ -262,6 +264,49 @@ TEST_F(GlicSelectionWidgetTest, SmallChipBottom) {
       *test_delegate, anchor_rect, selected_text);
 
   EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::TOP_LEFT);
+}
+
+class GlicSelectionWidgetBoundsTest : public GlicSelectionWidgetTest {
+ protected:
+  static constexpr gfx::Rect kContainerBounds{100, 100, 300, 200};
+
+  std::unique_ptr<GlicSelectionWidgetDelegate> CreateWidgetDelegate(
+      const gfx::Rect& selection) {
+    test_delegate_.container_bounds = kContainerBounds;
+    return std::make_unique<GlicSelectionWidgetDelegate>(
+        test_delegate_, selection, u"selected text");
+  }
+
+  TestWidgetActionDelegate test_delegate_;
+};
+
+TEST_F(GlicSelectionWidgetBoundsTest, FlipsBelowWhenOverflowingTop) {
+  auto widget_delegate = CreateWidgetDelegate(gfx::Rect(200, 105, 30, 15));
+  EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::TOP_RIGHT);
+}
+
+TEST_F(GlicSelectionWidgetBoundsTest, ShiftsHorizontallyWithoutFlipping) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionSmallChip);
+
+  auto widget_delegate = CreateWidgetDelegate(gfx::Rect(380, 250, 15, 15));
+  EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::BOTTOM_LEFT);
+
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  anchor_widget->Show();
+  widget_delegate->set_parent_window(anchor_widget->GetNativeView());
+  widget_delegate->ShowWidget();
+  views::Widget* widget = widget_delegate->GetWidget();
+  ASSERT_TRUE(widget);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().right(),
+            kContainerBounds.right());
+
+  TestWidgetObserver observer(widget);
+  base::RunLoop run_loop;
+  observer.quit_closure = run_loop.QuitClosure();
+  widget_delegate->CloseWidget();
+  run_loop.Run();
 }
 
 }  // namespace glic

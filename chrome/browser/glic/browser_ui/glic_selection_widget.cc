@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -456,6 +458,21 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
   set_corner_radius(kCornerRadius);
   SetBackgroundColor(ui::ColorVariant(SK_ColorTRANSPARENT));
   set_shadow(views::BubbleBorder::NO_SHADOW);
+  set_adjust_if_offscreen(false);
+
+  // Flip the chip below the selection if it overflows the top of the page.
+  const gfx::Rect page_bounds = action_delegate_->GetContainerBounds();
+  if (!views::BubbleBorder::is_arrow_on_top(arrow()) &&
+      !page_bounds.IsEmpty() &&
+      original_anchor_rect_.y() -
+              GetContentsView()->GetPreferredSize().height() <
+          page_bounds.y()) {
+    // TODO(b/535254667): Update the small chip's sharp corner when flipped.
+    SetArrowWithoutResizing(
+        base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)
+            ? views::BubbleBorder::TOP_LEFT
+            : views::BubbleBorder::TOP_RIGHT);
+  }
 
   UpdatePosition();
 }
@@ -503,7 +520,7 @@ void GlicSelectionWidgetDelegate::UpdatePosition() {
   if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)) {
     int left_inset = 0;
     int y_inset = 0;
-    const bool is_on_top = features::kGlicSelectionSmallChipOnTop.Get();
+    const bool is_on_top = !views::BubbleBorder::is_arrow_on_top(arrow());
     if (auto* contents_view = GetContentsView()) {
       left_inset = contents_view->GetInsets().left();
       y_inset = is_on_top ? contents_view->GetInsets().bottom()
@@ -540,6 +557,18 @@ views::ClientView* GlicSelectionWidgetDelegate::CreateClientView(
     client_view->layer()->SetFillsBoundsOpaquely(false);
   }
   return client_view;
+}
+
+gfx::Rect GlicSelectionWidgetDelegate::GetBubbleBounds() {
+  gfx::Rect bounds = views::BubbleDialogDelegate::GetBubbleBounds();
+  const gfx::Rect page_bounds = action_delegate_->GetContainerBounds();
+  if (page_bounds.IsEmpty()) {
+    return bounds;
+  }
+  bounds.set_x(std::clamp(
+      bounds.x(), page_bounds.x(),
+      std::max(page_bounds.x(), page_bounds.right() - bounds.width())));
+  return bounds;
 }
 
 void GlicSelectionWidgetDelegate::OnBeforeBubbleWidgetInit(

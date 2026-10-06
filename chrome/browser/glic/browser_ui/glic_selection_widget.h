@@ -32,6 +32,7 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
     virtual void OnHide() = 0;
     virtual void OnSettings() = 0;
     virtual void OnWidgetClose() = 0;
+    virtual gfx::Rect GetContainerBounds() = 0;
 
    protected:
     virtual ~ActionDelegate() = default;
@@ -51,6 +52,8 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   void UpdatePosition();
 
   views::ClientView* CreateClientView(views::Widget* widget) override;
+
+  gfx::Rect GetBubbleBounds() override;
 
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;

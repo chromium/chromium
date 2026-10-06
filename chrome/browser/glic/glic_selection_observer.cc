@@ -351,6 +351,10 @@ class GlicSelectionObserver::WidgetActionDelegate
   void OnHide() override { observer_->OnHide(); }
   void OnSettings() override { observer_->OnSettings(); }
   void OnWidgetClose() override { observer_->OnWidgetClose(); }
+  gfx::Rect GetContainerBounds() override {
+    content::WebContents* contents = observer_->web_contents();
+    return contents ? contents->GetContainerBounds() : gfx::Rect();
+  }
 
  private:
   raw_ptr<GlicSelectionObserver> observer_;
