@@ -55,7 +55,7 @@ PowerMonitorDeviceSourceLinux::PowerMonitorDeviceSourceLinux(
                          weak_ptr_factory_.GetWeakPtr()));
 
   dbus_xdg::RequestXdgDesktopPortal(
-      session_bus_.get(),
+      session_bus_.get(), kPortalPowerProfileMonitorInterface,
       base::BindOnce(&PowerMonitorDeviceSourceLinux::OnPortalRequested,
                      weak_ptr_factory_.GetWeakPtr()));
 }

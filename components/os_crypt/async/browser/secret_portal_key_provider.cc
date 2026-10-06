@@ -71,7 +71,7 @@ void SecretPortalKeyProvider::GetKey(KeyCallback callback) {
   key_callback_ = std::move(callback);
 
   dbus_xdg::RequestXdgDesktopPortal(
-      bus_.get(),
+      bus_.get(), kInterfaceSecret,
       base::BindOnce(&SecretPortalKeyProvider::OnPortalServiceStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

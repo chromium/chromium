@@ -119,7 +119,7 @@ class DynamicLauncherPortalTest : public testing::Test {
               std::move(callback).Run(response.get(), nullptr);
             });
 
-    // Default mock behavior for CallMethod (e.g. FileChooser version check):
+    // Default mock behavior for CallMethod (e.g. portal version checks):
     ON_CALL(*mock_proxy_, CallMethod(_, _, _))
         .WillByDefault([this](dbus::MethodCall* method_call, int timeout_ms,
                               dbus::ObjectProxy::ResponseCallback callback) {
@@ -251,7 +251,6 @@ TEST_F(DynamicLauncherPortalTest, IsAvailableWebappSupported) {
   SetServiceOwnerExists(dbus_xdg::kPortalServiceName, true);
   SetPropertyUint32(kDynamicLauncherInterfaceName, "version", 1);
   SetPropertyUint32(kDynamicLauncherInterfaceName, "SupportedLauncherTypes", 2);
-  SetPropertyUint32(dbus_xdg::kFileChooserInterfaceName, "version", 1);
 
   base::test::TestFuture<bool> future;
   DynamicLauncherPortal portal(mock_bus_);
@@ -263,7 +262,6 @@ TEST_F(DynamicLauncherPortalTest, IsAvailableNoWebappSupport) {
   SetServiceOwnerExists(dbus_xdg::kPortalServiceName, true);
   SetPropertyUint32(kDynamicLauncherInterfaceName, "version", 1);
   SetPropertyUint32(kDynamicLauncherInterfaceName, "SupportedLauncherTypes", 1);
-  SetPropertyUint32(dbus_xdg::kFileChooserInterfaceName, "version", 1);
 
   base::test::TestFuture<bool> future;
   DynamicLauncherPortal portal(mock_bus_);

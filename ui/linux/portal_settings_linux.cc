@@ -39,8 +39,9 @@ PortalSettingsLinux::PortalSettingsLinux(
           kFreedesktopSettingsService,
           dbus::ObjectPath(kFreedesktopSettingsObjectPath))) {
   dbus_xdg::RequestXdgDesktopPortal(
-      bus_.get(), base::BindOnce(&PortalSettingsLinux::OnPortalRequestResult,
-                                 weak_ptr_factory_.GetWeakPtr()));
+      bus_.get(), kFreedesktopSettingsInterface,
+      base::BindOnce(&PortalSettingsLinux::OnPortalRequestResult,
+                     weak_ptr_factory_.GetWeakPtr()));
   // No seeding is needed: until the portal preference (if any) arrives, the
   // toolkit OsSettingsProviders source the toolkit-derived color scheme for
   // the web NativeTheme.

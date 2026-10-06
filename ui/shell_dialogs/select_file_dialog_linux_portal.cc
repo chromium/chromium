@@ -153,6 +153,7 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
 
   dbus_xdg::RequestXdgDesktopPortal(
       dbus_thread_linux::GetSharedSessionBus().get(),
+      dbus_xdg::kFileChooserInterfaceName,
       base::BindOnce(&SelectFileDialogLinuxPortal::OnPortalAvailable,
                      weak_factory_.GetWeakPtr(), title, default_path,
                      default_extension, std::move(caller_copy)));

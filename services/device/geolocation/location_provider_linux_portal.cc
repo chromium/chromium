@@ -91,7 +91,7 @@ void LocationProviderLinuxPortal::StartProvider(bool high_accuracy) {
   high_accuracy_ = high_accuracy;
 
   dbus_xdg::RequestXdgDesktopPortal(
-      bus_.get(),
+      bus_.get(), kLocationInterface,
       base::BindOnce(&LocationProviderLinuxPortal::OnPortalRequested,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -90,7 +90,7 @@ GlobalAcceleratorListenerLinux::GlobalAcceleratorListenerLinux(
   }
 
   dbus_xdg::RequestXdgDesktopPortal(
-      bus_.get(),
+      bus_.get(), kGlobalShortcutsInterface,
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnServiceStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

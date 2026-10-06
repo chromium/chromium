@@ -108,8 +108,9 @@ EyeDropperPortal::~EyeDropperPortal() = default;
 void EyeDropperPortal::OnWindowHandleExported(std::string handle) {
   parent_handle_ = std::move(handle);
   dbus_xdg::RequestXdgDesktopPortal(
-      bus_.get(), base::BindOnce(&EyeDropperPortal::OnPortalServiceStarted,
-                                 weak_ptr_factory_.GetWeakPtr()));
+      bus_.get(), kScreenshotInterfaceName,
+      base::BindOnce(&EyeDropperPortal::OnPortalServiceStarted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EyeDropperPortal::OnPortalServiceStarted(uint32_t version) {

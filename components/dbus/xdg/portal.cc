@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/environment.h"
@@ -14,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version_info/nix/version_extra_utils.h"
 #include "components/dbus/utils/call_method.h"
@@ -29,44 +31,77 @@ namespace dbus_xdg {
 
 namespace {
 
+constexpr char kVersionProperty[] = "version";
+
 class PortalRegistrar {
  public:
   PortalRegistrar() = default;
   ~PortalRegistrar() = default;
 
-  void Request(dbus::Bus* bus, PortalSetupCallback callback) {
+  void Request(dbus::Bus* bus,
+               std::string_view interface_name,
+               PortalSetupCallback callback) {
     bus->AssertOnOriginThread();
 
-    // If initialization is already done, run the callback immediately,
-    // otherwise add it to the callback list.
-    if (state_ == PortalRegistrarState::kSuccess ||
-        state_ == PortalRegistrarState::kFailed) {
-      std::move(callback).Run(
-          state_ == PortalRegistrarState::kSuccess ? version_ : 0);
-      return;
-    }
-    callbacks_.push_back(std::move(callback));
-
-    if (state_ == PortalRegistrarState::kInitializing) {
-      CHECK_EQ(bus_.get(), bus);
+    if (state_ == PortalRegistrarState::kFailed) {
+      std::move(callback).Run(0);
       return;
     }
 
-    CHECK_EQ(state_, PortalRegistrarState::kIdle);
-    state_ = PortalRegistrarState::kInitializing;
-    bus_ = bus;
+    if (state_ == PortalRegistrarState::kSuccess) {
+      if (auto it = versions_.find(interface_name); it != versions_.end()) {
+        std::move(callback).Run(it->second);
+        return;
+      }
+      if (default_version_for_testing_) {
+        std::move(callback).Run(*default_version_for_testing_);
+        return;
+      }
+    }
 
-    internal::SetSystemdScopeUnitNameForXdgPortal(
-        bus, base::BindOnce(&PortalRegistrar::OnSystemdUnitNameSet,
-                            weak_ptr_factory_.GetWeakPtr()));
+    auto& callbacks = pending_callbacks_[std::string(interface_name)];
+    const bool first_request_for_interface = callbacks.empty();
+    callbacks.push_back(std::move(callback));
+
+    switch (state_) {
+      case PortalRegistrarState::kIdle:
+        state_ = PortalRegistrarState::kInitializing;
+        bus_ = bus;
+        internal::SetSystemdScopeUnitNameForXdgPortal(
+            bus, base::BindOnce(&PortalRegistrar::OnSystemdUnitNameSet,
+                                weak_ptr_factory_.GetWeakPtr()));
+        return;
+      case PortalRegistrarState::kInitializing:
+        CHECK_EQ(bus_.get(), bus);
+        // The version is queried once setup completes.
+        return;
+      case PortalRegistrarState::kSuccess:
+        // If this is not the first request, a version query for this interface
+        // is already in flight.
+        if (first_request_for_interface) {
+          GetVersion(bus, std::string(interface_name));
+        }
+        return;
+      case PortalRegistrarState::kFailed:
+        NOTREACHED();
+    }
   }
 
   void SetStateForTesting(PortalRegistrarState state) {
     state_ = state;
     bus_ = nullptr;
-    version_ = (state == PortalRegistrarState::kSuccess) ? 3 : 0;
-    callbacks_.clear();
+    versions_.clear();
+    pending_callbacks_.clear();
+    default_version_for_testing_ =
+        state == PortalRegistrarState::kSuccess
+            ? std::optional<uint32_t>(kDefaultPortalVersionForTesting)
+            : std::nullopt;
     weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+
+  void SetInterfaceVersionForTesting(std::string_view interface_name,
+                                     uint32_t version) {
+    versions_[std::string(interface_name)] = version;
   }
 
  private:
@@ -80,7 +115,7 @@ class PortalRegistrar {
 
   void OnServiceChecked(std::optional<bool> service_started) {
     if (!service_started.value_or(false)) {
-      SetStateAndRunCallbacks(PortalRegistrarState::kFailed);
+      OnSetupFailed();
       return;
     }
 
@@ -88,7 +123,7 @@ class PortalRegistrar {
     // sandbox, so there's no need to register.
     if (systemd_unit_status_ ==
         internal::SystemdUnitStatus::kUnitNotNecessary) {
-      GetVersion();
+      OnSetupSucceeded();
       return;
     }
 
@@ -126,61 +161,91 @@ class PortalRegistrar {
       LOG(WARNING) << "Failed to register with " << kRegistryInterface;
     }
 
-    GetVersion();
+    // Re-registration after a portal restart also lands here, after setup has
+    // already succeeded.
+    if (state_ == PortalRegistrarState::kInitializing) {
+      OnSetupSucceeded();
+    }
   }
 
-  void GetVersion() {
-    dbus::ObjectProxy* proxy = bus_->GetObjectProxy(
+  void OnSetupSucceeded() {
+    state_ = PortalRegistrarState::kSuccess;
+    // Copy the interface names first, since replies may modify
+    // `pending_callbacks_`.
+    std::vector<std::string> interface_names;
+    for (const auto& entry : pending_callbacks_) {
+      interface_names.push_back(entry.first);
+    }
+    for (const std::string& interface_name : interface_names) {
+      GetVersion(bus_.get(), interface_name);
+    }
+  }
+
+  void OnSetupFailed() {
+    state_ = PortalRegistrarState::kFailed;
+    auto pending_callbacks = std::move(pending_callbacks_);
+    pending_callbacks_.clear();
+    for (auto& [interface_name, callbacks] : pending_callbacks) {
+      for (auto& callback : callbacks) {
+        std::move(callback).Run(0);
+      }
+    }
+  }
+
+  void GetVersion(dbus::Bus* bus, const std::string& interface_name) {
+    dbus::ObjectProxy* proxy = bus->GetObjectProxy(
         kPortalServiceName, dbus::ObjectPath(kPortalObjectPath));
 
     dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, "Get");
     dbus::MessageWriter writer(&method_call);
-    writer.AppendString(kFileChooserInterfaceName);
-    writer.AppendString("version");
-    proxy->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                      base::BindOnce(&PortalRegistrar::OnGetVersionReply,
-                                     weak_ptr_factory_.GetWeakPtr()));
+    writer.AppendString(interface_name);
+    writer.AppendString(kVersionProperty);
+    proxy->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PortalRegistrar::OnGetVersionReply,
+                       weak_ptr_factory_.GetWeakPtr(), interface_name));
   }
 
-  void OnGetVersionReply(dbus::Response* response) {
-    if (!response) {
-      SetStateAndRunCallbacks(PortalRegistrarState::kFailed);
+  void OnGetVersionReply(const std::string& interface_name,
+                         dbus::Response* response) {
+    uint32_t version = 0;
+    if (response) {
+      dbus::MessageReader reader(response);
+      if (!reader.PopVariantOfUint32(&version)) {
+        version = 0;
+      }
+    }
+    versions_[interface_name] = version;
+
+    auto node = pending_callbacks_.extract(interface_name);
+    if (node.empty()) {
       return;
     }
-
-    dbus::MessageReader reader(response);
-    if (!reader.PopVariantOfUint32(&version_)) {
-      SetStateAndRunCallbacks(PortalRegistrarState::kFailed);
-      return;
+    for (auto& callback : node.mapped()) {
+      std::move(callback).Run(version);
     }
-
-    SetStateAndRunCallbacks(PortalRegistrarState::kSuccess);
   }
 
   void OnNameOwnerChanged(const std::string& old_owner,
                           const std::string& new_owner) {
+    // The set of available interfaces may change when the portal restarts,
+    // so re-query versions on the next request.
+    versions_.clear();
     if (!new_owner.empty()) {
       // Service restarted or appeared. Re-register.
       Register();
     }
   }
 
-  void SetStateAndRunCallbacks(PortalRegistrarState state) {
-    state_ = state;
-    uint32_t version =
-        (state_ == PortalRegistrarState::kSuccess) ? version_ : 0;
-    std::vector<PortalSetupCallback> callbacks;
-    callbacks.swap(callbacks_);
-    for (auto& callback : callbacks) {
-      std::move(callback).Run(version);
-    }
-  }
-
   scoped_refptr<dbus::Bus> bus_;
   PortalRegistrarState state_ = PortalRegistrarState::kIdle;
   std::optional<internal::SystemdUnitStatus> systemd_unit_status_;
-  uint32_t version_ = 0;
-  std::vector<PortalSetupCallback> callbacks_;
+  // Cached interface versions. 0 means the interface is unavailable.
+  std::map<std::string, uint32_t, std::less<>> versions_;
+  // Callbacks waiting for setup to complete or for an interface version query.
+  std::map<std::string, std::vector<PortalSetupCallback>, std::less<>>
+      pending_callbacks_;
+  std::optional<uint32_t> default_version_for_testing_;
   base::WeakPtrFactory<PortalRegistrar> weak_ptr_factory_{this};
 };
 
@@ -191,12 +256,20 @@ PortalRegistrar* GetPortalRegistrar() {
   return registrar.get();
 }
 
-void RequestXdgDesktopPortal(dbus::Bus* bus, PortalSetupCallback callback) {
-  GetPortalRegistrar()->Request(bus, std::move(callback));
+void RequestXdgDesktopPortal(dbus::Bus* bus,
+                             std::string_view interface_name,
+                             PortalSetupCallback callback) {
+  GetPortalRegistrar()->Request(bus, interface_name, std::move(callback));
 }
 
 void SetPortalStateForTesting(PortalRegistrarState state) {
   GetPortalRegistrar()->SetStateForTesting(state);  // IN-TEST
+}
+
+void SetPortalInterfaceVersionForTesting(std::string_view interface_name,
+                                         uint32_t version) {
+  GetPortalRegistrar()->SetInterfaceVersionForTesting(  // IN-TEST
+      interface_name, version);
 }
 
 }  // namespace dbus_xdg
