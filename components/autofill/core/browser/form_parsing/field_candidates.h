@@ -44,8 +44,8 @@ enum class HeuristicParser {
 struct FieldCandidatePriority {
   FieldCandidatePriority(bool is_name_or_high_quality_label_match,
                          HeuristicParser parser_type);
-  bool is_name_or_high_quality_label_match;
-  size_t parser_priority;
+  bool is_name_or_high_quality_label_match = false;
+  size_t parser_priority = 0;
   auto operator<=>(const FieldCandidatePriority&) const = default;
 };
 
