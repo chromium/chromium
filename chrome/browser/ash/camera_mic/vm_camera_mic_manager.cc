@@ -30,6 +30,8 @@
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -380,9 +382,13 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     }
 
     // A notification can only exist after `OnPrimaryUserSessionStarted()`, so
-    // the primary user is guaranteed to be present here.
+    // the primary session is guaranteed to be present here.
+    const session_manager::Session* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    CHECK(primary_session);
     ash::SettingsAppManager::Get()->Open(
-        CHECK_DEREF(user_manager::UserManager::Get()->GetPrimaryUser()),
+        CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+            primary_session->account_id())),
         ash::SettingsAppManager::OpenParams{.sub_page = sub_page,
                                             .entry_point = entry_point});
   }

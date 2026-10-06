@@ -21,7 +21,8 @@
 #include "components/account_id/account_id.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/webui/flags/flags_storage.h"
 #include "components/webui/flags/flags_ui_pref_names.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
@@ -211,15 +212,16 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
   // Note that this early return could be removed when things like flags UI of
   // secondary users are fixed properly - in that case a CHECK should be added
   // that the active user is the primary user.
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
-  if (!primary_user || primary_user != user_manager->GetActiveUser())
+  auto* manager = session_manager::SessionManager::Get();
+  const session_manager::Session* active_session = manager->GetActiveSession();
+  if (!active_session || active_session != manager->GetPrimarySession()) {
     return;
+  }
 
-  auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(
-      primary_user->GetAccountId());
   SessionManagerClient::Get()->SetFeatureFlagsForUser(
-      account_id, {flags_.begin(), flags_.end()}, origin_list_flags_);
+      cryptohome::CreateAccountIdentifierFromAccountId(
+          active_session->account_id()),
+      {flags_.begin(), flags_.end()}, origin_list_flags_);
 }
 
 // static

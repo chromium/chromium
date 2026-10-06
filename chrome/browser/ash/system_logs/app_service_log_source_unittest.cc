@@ -4,45 +4,59 @@
 
 #include "chrome/browser/ash/system_logs/app_service_log_source.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace system_logs {
 
+namespace {
+
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@test.com",
+                                            GaiaId::Literal("1234567890"));
+
+}  // namespace
+
 class AppServiceLogSourceTest : public ::testing::Test {
  public:
   void SetUp() override {
-    constexpr char kEmail[] = "test@test";
-    const AccountId account_id = AccountId::FromUserEmail(kEmail);
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    EXPECT_TRUE(profile_manager_->SetUp());
-    auto* profile = profile_manager_->CreateTestingProfile(kEmail);
-    profile_ = profile;
-    fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false, user_manager::UserType::kRegular, profile);
-    fake_user_manager->LoginUser(account_id);
-    fake_user_manager->SwitchActiveUser(account_id);
-    user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kAccountId));
+    ASSERT_TRUE(profile_);
 
     // Wait for AppServiceProxy to be ready.
     app_service_test_.SetUp(profile_);
   }
-  void TearDown() override { user_manager_.reset(); }
+  void TearDown() override {
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+  }
 
  protected:
   void AddApp(const std::string& app_id,
@@ -69,9 +83,9 @@ class AppServiceLogSourceTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<Profile> profile_ = nullptr;
   apps::AppServiceTest app_service_test_;
 };
 

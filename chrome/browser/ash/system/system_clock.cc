@@ -20,6 +20,8 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -158,11 +160,11 @@ bool SystemClock::ShouldUse24HourClock() const {
     return scoped_hour_clock_type_ == base::k24HourClock;
   }
 
-  user_manager::User* const active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
+  const session_manager::Session* const active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
 
-  return ShouldUse24HourClockForUser(active_user ? active_user->GetAccountId()
-                                                 : EmptyAccountId());
+  return ShouldUse24HourClockForUser(
+      active_session ? active_session->account_id() : EmptyAccountId());
 }
 
 void SystemClock::OnSystemPrefChanged() {

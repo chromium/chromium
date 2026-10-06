@@ -34,12 +34,14 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -236,12 +238,13 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   source->AddBoolean("isManagedDevice",
                      profile->GetProfilePolicyConnector()->IsManaged());
-  if (user_manager->GetActiveUser()) {
-    source->AddInteger(
-        "userType", static_cast<int>(user_manager->GetActiveUser()->GetType()));
+  const user_manager::User* user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (user) {
+    source->AddInteger("userType", static_cast<int>(user->GetType()));
   } else {
-    // It's possible that there is no logged-in user. Set to -1 to indicate when
-    // this is the case.
+    // Null on non-user profiles (e.g. sign-in), where there is no logged-in
+    // user. Set to -1 to indicate when this is the case.
     source->AddInteger("userType", -1);
   }
   source->AddBoolean("isEphemeralUser",
