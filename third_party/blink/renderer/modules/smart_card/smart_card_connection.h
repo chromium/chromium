@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_CONNECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_CONNECTION_H_
 
+#include "base/containers/span.h"
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -44,7 +44,7 @@ class SmartCardConnection final : public ScriptWrappable,
       const V8SmartCardDisposition& disposition,
       ExceptionState& exception_state);
   ScriptPromise<DOMArrayBuffer> transmit(ScriptState* script_state,
-                                         const DOMArrayPiece& send_buffer,
+                                         base::span<const uint8_t> send_buffer,
                                          SmartCardTransmitOptions* options,
                                          ExceptionState& exception_state);
   ScriptPromise<SmartCardConnectionStatus> status(
@@ -59,7 +59,7 @@ class SmartCardConnection final : public ScriptWrappable,
                                              ExceptionState& exception_state);
   ScriptPromise<IDLUndefined> setAttribute(ScriptState* script_state,
                                            uint32_t tag,
-                                           const DOMArrayPiece& data,
+                                           base::span<const uint8_t> data,
                                            ExceptionState& exception_state);
   ScriptPromise<IDLUndefined> startTransaction(
       ScriptState* script_state,

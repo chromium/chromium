@@ -12,8 +12,6 @@ blink_core_sources_typed_arrays = [
   "dom_array_buffer_util.h",
   "dom_array_buffer_view.cc",
   "dom_array_buffer_view.h",
-  "dom_array_piece.cc",
-  "dom_array_piece.h",
   "dom_data_view.cc",
   "dom_data_view.h",
   "dom_shared_array_buffer.cc",
