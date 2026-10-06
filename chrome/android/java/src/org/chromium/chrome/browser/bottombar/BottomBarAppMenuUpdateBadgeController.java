@@ -31,7 +31,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class BottomBarAppMenuUpdateBadgeController implements Destroyable {
     private final NullableObservableSupplier<PropertyModel> mAppMenuActionSupplier;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
-    private final Runnable mMenuStateObserver = this::updateBadgeState;
+    private final Runnable mMenuStateObserver =
+            () -> {
+                mIsBadgeDismissed = false;
+                updateBadgeState();
+            };
     private final CallbackController mCallbackController = new CallbackController();
     private final Callback<@Nullable PropertyModel> mActionModelObserver =
             (actionModel) -> {
@@ -44,17 +48,21 @@ public class BottomBarAppMenuUpdateBadgeController implements Destroyable {
             new Callback<@Nullable Profile>() {
                 @Override
                 public void onResult(@Nullable Profile profile) {
+                    @Nullable UpdateMenuItemHelper helper =
+                            profile == null
+                                    ? null
+                                    : UpdateMenuItemHelper.getInstance(
+                                            profile.getOriginalProfile());
+                    if (mUpdateMenuItemHelper == helper) return;
+
                     if (mUpdateMenuItemHelper != null) {
                         mUpdateMenuItemHelper.unregisterObserver(mMenuStateObserver);
-                        mUpdateMenuItemHelper = null;
                     }
-                    if (profile == null) {
-                        updateBadgeState();
-                        return;
+                    mIsBadgeDismissed = false;
+                    mUpdateMenuItemHelper = helper;
+                    if (mUpdateMenuItemHelper != null) {
+                        mUpdateMenuItemHelper.registerObserver(mMenuStateObserver);
                     }
-                    mUpdateMenuItemHelper =
-                            UpdateMenuItemHelper.getInstance(profile.getOriginalProfile());
-                    mUpdateMenuItemHelper.registerObserver(mMenuStateObserver);
                     updateBadgeState();
                 }
             };
@@ -77,6 +85,7 @@ public class BottomBarAppMenuUpdateBadgeController implements Destroyable {
 
     private @Nullable UpdateMenuItemHelper mUpdateMenuItemHelper;
     private @Nullable AppMenuHandler mAppMenuHandler;
+    private boolean mIsBadgeDismissed;
 
     /**
      * Creates a new {@link BottomBarAppMenuUpdateBadgeController}.
@@ -111,8 +120,11 @@ public class BottomBarAppMenuUpdateBadgeController implements Destroyable {
 
         if (mUpdateMenuItemHelper != null) {
             MenuUiState uiState = mUpdateMenuItemHelper.getUiState();
-            showBadge = uiState.buttonState != null;
             buttonState = uiState.buttonState;
+            if (buttonState == null) {
+                mIsBadgeDismissed = false;
+            }
+            showBadge = buttonState != null && !mIsBadgeDismissed;
         }
 
         if (mAppMenuHandler != null && mAppMenuHandler.isAppMenuShowing()) {
@@ -143,6 +155,7 @@ public class BottomBarAppMenuUpdateBadgeController implements Destroyable {
         if (actionModel == null || !actionModel.get(AppMenuActionProperties.SHOW_UPDATE_BADGE)) {
             return;
         }
+        mIsBadgeDismissed = true;
 
         actionModel.set(AppMenuActionProperties.SHOW_UPDATE_BADGE, false);
         actionModel.set(
@@ -163,5 +176,9 @@ public class BottomBarAppMenuUpdateBadgeController implements Destroyable {
             mAppMenuHandler.removeObserver(mAppMenuObserver);
             mAppMenuHandler = null;
         }
+    }
+
+    boolean isBadgeDismissedForTesting() {
+        return mIsBadgeDismissed;
     }
 }
