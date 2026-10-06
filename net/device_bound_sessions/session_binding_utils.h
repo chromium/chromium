@@ -54,10 +54,20 @@ NET_EXPORT std::optional<crypto::sign::SignatureKind> FromJoseAlgorithm(
 NET_EXPORT std::vector<crypto::sign::SignatureKind> ParseSupportedAlgorithms(
     base::span<const structured_headers::ParameterizedItem> items);
 
-// Formats a binding statement into a dictionary as defined in
+// Formats a registration statement into a dictionary as defined in
 // https://github.com/WICG/dbsc-sso#identity-providers-session-initialization.
-base::DictValue NET_EXPORT
-CreateBindingStatement(const crypto::AttestationStatement& statement);
+NET_EXPORT base::DictValue CreateRegistrationStatement(
+    const crypto::AttestationStatement& statement);
+
+// Serializes an attestation statement into a Base64URL-encoded JSON binding
+// statement as defined in
+// https://github.com/WICG/dbsc-sso#relying-partys-session-initialization,
+// suitable for the Secure-Session-KeyBinding header. Unlike the registration
+// statement, it omits "fmt", per https://github.com/WICG/dbsc-sso/issues/15.
+// TODO(crbug.com/481630807): Drop the issue reference once
+// https://github.com/WICG/dbsc-sso/pull/22 updates the explainer.
+NET_EXPORT std::optional<std::string> SerializeBindingStatement(
+    const crypto::AttestationStatement& statement);
 
 // Creates outer header and payload parts of a nested registration JWT. This is
 // needed for sessions including an attestation key.

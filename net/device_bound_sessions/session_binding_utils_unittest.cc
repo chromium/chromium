@@ -407,11 +407,12 @@ TEST_P(SessionBindingUtilsTest, TestMaybeIncreaseSessionUsage) {
   EXPECT_EQ(request.usage_map[key2], SessionUsage::kInScopeRefreshNotAllowed);
 }
 
-TEST_P(SessionBindingUtilsTest, CreateBindingStatement_Tpm) {
-  base::DictValue result = CreateBindingStatement({.format = kTpm,
-                                                   .statement = {1, 2, 3},
-                                                   .signature = {4, 5, 6},
-                                                   .subject_key = {7, 8, 9}});
+TEST_P(SessionBindingUtilsTest, CreateRegistrationStatement_Tpm) {
+  base::DictValue result =
+      CreateRegistrationStatement({.format = kTpm,
+                                   .statement = {1, 2, 3},
+                                   .signature = {4, 5, 6},
+                                   .subject_key = {7, 8, 9}});
 
   EXPECT_THAT(result.FindString("fmt"), Pointee(Eq("TPM")));
   // base64url of {1, 2, 3}
@@ -422,8 +423,8 @@ TEST_P(SessionBindingUtilsTest, CreateBindingStatement_Tpm) {
   EXPECT_THAT(result.FindString("sub_key"), Pointee(Eq("BwgJ")));
 }
 
-TEST_P(SessionBindingUtilsTest, CreateBindingStatement_SecureEnclave) {
-  base::DictValue result = CreateBindingStatement({
+TEST_P(SessionBindingUtilsTest, CreateRegistrationStatement_SecureEnclave) {
+  base::DictValue result = CreateRegistrationStatement({
       .format = kSecureEnclave,
       .statement = {1, 2, 3},
       .signature = {4, 5, 6},
@@ -434,6 +435,23 @@ TEST_P(SessionBindingUtilsTest, CreateBindingStatement_SecureEnclave) {
   EXPECT_THAT(result.FindString("stmt"), Pointee(Eq("AQID")));
   EXPECT_THAT(result.FindString("sig"), Pointee(Eq("BAUG")));
   EXPECT_THAT(result.FindString("sub_key"), Pointee(Eq("BwgJ")));
+}
+
+TEST_P(SessionBindingUtilsTest, SerializeBindingStatement) {
+  const crypto::AttestationStatement statement = {
+      .format = kTpm,
+      .statement = {1, 2, 3},
+      .signature = {4, 5, 6},
+      .subject_key = {7, 8, 9},
+  };
+  ASSERT_OK_AND_ASSIGN(std::string result,
+                       SerializeBindingStatement(statement));
+  // Unlike the registration statement, the binding statement omits "fmt".
+  const base::DictValue expected = base::DictValue()
+                                       .Set("stmt", "AQID")
+                                       .Set("sig", "BAUG")
+                                       .Set("sub_key", "BwgJ");
+  EXPECT_EQ(Base64UrlEncodedJsonToValue(result), expected);
 }
 
 TEST_P(SessionBindingUtilsTest,
@@ -467,7 +485,7 @@ TEST_P(SessionBindingUtilsTest,
       base::DictValue()
           .Set("aud", "https://example.com/register")
           .Set("jti", "inner_jws")
-          .Set("att", CreateBindingStatement({
+          .Set("att", CreateRegistrationStatement({
                           .format = kTpm,
                           .statement = {1, 2, 3},
                           .signature = {4, 5, 6},

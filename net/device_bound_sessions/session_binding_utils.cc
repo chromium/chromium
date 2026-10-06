@@ -105,6 +105,16 @@ std::optional<std::string> CreateHeaderAndPayload(
   return CombineHeaderAndPayload(header, payload);
 }
 
+// Formats a binding statement into a dictionary as defined in
+// https://github.com/WICG/dbsc-sso#relying-partys-session-initialization.
+base::DictValue CreateBindingStatement(
+    const crypto::AttestationStatement& statement) {
+  return base::DictValue()
+      .Set("stmt", Base64UrlEncode(statement.statement))
+      .Set("sig", Base64UrlEncode(statement.signature))
+      .Set("sub_key", Base64UrlEncode(statement.subject_key));
+}
+
 }  // namespace
 
 // Source: JSON Web Signature and Encryption Algorithms
@@ -159,7 +169,7 @@ std::vector<crypto::sign::SignatureKind> ParseSupportedAlgorithms(
   return supported_algos;
 }
 
-base::DictValue CreateBindingStatement(
+base::DictValue CreateRegistrationStatement(
     const crypto::AttestationStatement& statement) {
   std::string_view format = [&] {
     switch (statement.format) {
@@ -170,11 +180,13 @@ base::DictValue CreateBindingStatement(
     }
     NOTREACHED();
   }();
-  return base::DictValue()
-      .Set("fmt", format)
-      .Set("stmt", Base64UrlEncode(statement.statement))
-      .Set("sig", Base64UrlEncode(statement.signature))
-      .Set("sub_key", Base64UrlEncode(statement.subject_key));
+  return CreateBindingStatement(statement).Set("fmt", format);
+}
+
+std::optional<std::string> SerializeBindingStatement(
+    const crypto::AttestationStatement& statement) {
+  return base::WriteJson(CreateBindingStatement(statement))
+      .transform([](std::string_view json) { return Base64UrlEncode(json); });
 }
 
 std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
@@ -199,7 +211,7 @@ std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
   auto payload = base::DictValue()
                      .Set("aud", RemoveQueryAndFragment(destination_url).spec())
                      .Set("jti", inner_jws)
-                     .Set("att", CreateBindingStatement(attestation_stmt));
+                     .Set("att", CreateRegistrationStatement(attestation_stmt));
 
   return CombineHeaderAndPayload(header, payload);
 }
