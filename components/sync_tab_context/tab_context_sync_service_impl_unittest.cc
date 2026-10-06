@@ -42,6 +42,7 @@
 #include "components/sync_tab_context/upload_outcome.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace sync_tab_context {
 namespace {
@@ -223,7 +224,8 @@ TEST_F(TabContextSyncServiceImplTest,
   EXPECT_THAT(fake_fetcher_->DecryptContainerKeySet(*token_string), NotNull());
 }
 
-TEST_F(TabContextSyncServiceImplTest, ShouldUploadAndDecryptPageContext) {
+TEST_F(TabContextSyncServiceImplTest,
+       ShouldCompressAndEncryptPageContextOnUpload) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return service_->IsActiveForTesting(); }));
 
@@ -235,12 +237,12 @@ TEST_F(TabContextSyncServiceImplTest, ShouldUploadAndDecryptPageContext) {
   base::test::TestFuture<UploadOutcome> upload_future;
   service_->UploadPageContext(*container_id, "entry_1", kPageContext,
                               upload_future.GetCallback());
+
+  const std::vector<const syncer::CommitRequestData*> commit_batch =
+      item_worker_->WaitForPendingCommits();
+  ASSERT_EQ(commit_batch.size(), 1u);
   EXPECT_FALSE(upload_future.IsReady());
 
-  ASSERT_EQ(item_worker_->GetNumPendingCommits(), 1u);
-  const std::vector<const syncer::CommitRequestData*> commit_batch =
-      item_worker_->GetNthPendingCommit(0);
-  ASSERT_EQ(commit_batch.size(), 1u);
   ASSERT_THAT(commit_batch[0]->entity, NotNull());
 
   const sync_pb::EncryptedTabContextItemSpecifics& item_specifics =
@@ -248,7 +250,7 @@ TEST_F(TabContextSyncServiceImplTest, ShouldUploadAndDecryptPageContext) {
   EXPECT_EQ(item_specifics.container_id(),
             container_id->value().AsLowercaseString());
   EXPECT_EQ(item_specifics.item_id(), "entry_1");
-  ASSERT_TRUE(item_specifics.has_encrypted_data());
+  ASSERT_TRUE(item_specifics.has_encrypted_content());
 
   // Decrypt the uploaded payload using the container access token.
   std::optional<std::string> token_string =
@@ -257,10 +259,19 @@ TEST_F(TabContextSyncServiceImplTest, ShouldUploadAndDecryptPageContext) {
 
   std::optional<std::vector<uint8_t>> decrypted_bytes =
       fake_fetcher_->DecryptWithAccessToken(*token_string,
-                                            item_specifics.encrypted_data());
+                                            item_specifics.encrypted_content());
   ASSERT_TRUE(decrypted_bytes.has_value());
-  EXPECT_EQ(std::string(decrypted_bytes->begin(), decrypted_bytes->end()),
-            kPageContext);
+
+  sync_pb::TabContextItemContent item_content;
+  ASSERT_TRUE(item_content.ParseFromArray(decrypted_bytes->data(),
+                                          decrypted_bytes->size()));
+  EXPECT_FALSE(item_content.has_raw_data());
+  ASSERT_TRUE(item_content.has_gzip_compressed_data());
+
+  std::string uncompressed_page_context;
+  ASSERT_TRUE(compression::GzipUncompress(item_content.gzip_compressed_data(),
+                                          &uncompressed_page_context));
+  EXPECT_EQ(uncompressed_page_context, kPageContext);
 
   item_worker_->AckOnePendingCommit();
   EXPECT_EQ(upload_future.Get(), UploadOutcome::kSucceeded);
@@ -290,7 +301,7 @@ TEST_F(TabContextSyncServiceImplTest,
   base::test::TestFuture<UploadOutcome> upload_future;
   service_->UploadPageContext(*container_id, "entry_1", "page_context",
                               upload_future.GetCallback());
-  ASSERT_EQ(item_worker_->GetNumPendingCommits(), 1u);
+  ASSERT_EQ(item_worker_->WaitForPendingCommits().size(), 1u);
 
   // Simulate a transient per-item commit error. The callback should remain
   // pending and the processor should be able to reload the item via
@@ -316,7 +327,7 @@ TEST_F(TabContextSyncServiceImplTest,
   base::test::TestFuture<UploadOutcome> upload_future;
   service_->UploadPageContext(*container_id, "entry_1", "page_context",
                               upload_future.GetCallback());
-  ASSERT_EQ(item_worker_->GetNumPendingCommits(), 1u);
+  ASSERT_EQ(item_worker_->WaitForPendingCommits().size(), 1u);
 
   item_worker_->FailFullCommitRequest();
   EXPECT_EQ(upload_future.Get(), UploadOutcome::kFailed);

@@ -13,11 +13,24 @@ package sync_pb;
 
 import "components/sync/protocol/encryption.proto";
 
+// Plaintext content serialized and encrypted into
+// EncryptedTabContextItemSpecifics.encrypted_content.
+message TabContextItemContent {
+  oneof content {
+    // Uncompressed payload bytes.
+    bytes raw_data = 1;
+    // Gzip-compressed (RFC 1952) payload bytes.
+    bytes gzip_compressed_data = 2;
+  }
+}
+
 // Specifics for ENCRYPTED_TAB_CONTEXT_ITEM.
 message EncryptedTabContextItemSpecifics {
   // Lowercase string representation of a base::Uuid.
   optional string container_id = 1;
   // Unique identifier for the item within the container (arbitrary string).
   optional string item_id = 2;
-  optional EncryptedData encrypted_data = 3;
+  // Encrypted serialized TabContextItemContent proto, encrypted with the
+  // container's encryption key.
+  optional EncryptedData encrypted_content = 3;
 }

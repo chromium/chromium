@@ -56,6 +56,7 @@ class MockDataTypeWorker : public CommitQueue {
   // Getters to inspect the requests sent to this object.
   size_t GetNumPendingCommits() const;
   std::vector<const CommitRequestData*> GetNthPendingCommit(size_t n) const;
+  std::vector<const CommitRequestData*> WaitForPendingCommits();
   bool HasPendingCommitForHash(const ClientTagHash& tag_hash) const;
   const CommitRequestData* GetLatestPendingCommitForHash(
       const ClientTagHash& tag_hash) const;

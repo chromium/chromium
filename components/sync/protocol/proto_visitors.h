@@ -703,10 +703,15 @@ VISIT_PROTO_FIELDS(const sync_pb::EncryptedData& proto) {
   VISIT(key_id_v2);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::TabContextItemContent& proto) {
+  VISIT_BYTES(raw_data);
+  VISIT_BYTES(gzip_compressed_data);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::EncryptedTabContextItemSpecifics& proto) {
   VISIT(container_id);
   VISIT(item_id);
-  VISIT(encrypted_data);
+  VISIT(encrypted_content);
 }
 
 VISIT_PROTO_FIELDS(

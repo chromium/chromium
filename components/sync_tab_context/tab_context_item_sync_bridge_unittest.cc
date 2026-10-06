@@ -204,7 +204,7 @@ TEST_F(TabContextItemSyncBridgeTest, ShouldReturnInFlightDataForCommit) {
   syncer::KeyAndData key_and_data = commit_batch->Next();
   EXPECT_EQ(key_and_data.first, storage_key);
   EXPECT_EQ(key_and_data.second->specifics.encrypted_tab_context_item()
-                .encrypted_data()
+                .encrypted_content()
                 .blob(),
             "encrypted_blob");
   EXPECT_FALSE(commit_batch->HasNext());
@@ -241,7 +241,7 @@ TEST_F(TabContextItemSyncBridgeTest, ShouldReturnInFlightDataForDebugging) {
   syncer::KeyAndData key_and_data = debug_batch->Next();
   EXPECT_EQ(key_and_data.first, storage_key);
   EXPECT_EQ(key_and_data.second->specifics.encrypted_tab_context_item()
-                .encrypted_data()
+                .encrypted_content()
                 .blob(),
             "encrypted_blob");
   EXPECT_FALSE(debug_batch->HasNext());
@@ -280,7 +280,7 @@ TEST_F(TabContextItemSyncBridgeTest, ShouldValidateEntityData) {
       valid_entity.specifics.mutable_encrypted_tab_context_item();
   specifics->set_container_id(container_id.value().AsLowercaseString());
   specifics->set_item_id("item1");
-  specifics->mutable_encrypted_data()->set_blob("blob");
+  specifics->mutable_encrypted_content()->set_blob("blob");
 
   EXPECT_TRUE(bridge_->IsEntityDataValid(valid_entity));
 
@@ -289,7 +289,7 @@ TEST_F(TabContextItemSyncBridgeTest, ShouldValidateEntityData) {
       invalid_container_entity.specifics.mutable_encrypted_tab_context_item();
   invalid_spec1->set_container_id("not-a-uuid");
   invalid_spec1->set_item_id("item1");
-  invalid_spec1->mutable_encrypted_data()->set_blob("blob");
+  invalid_spec1->mutable_encrypted_content()->set_blob("blob");
 
   EXPECT_FALSE(bridge_->IsEntityDataValid(invalid_container_entity));
 
@@ -297,7 +297,7 @@ TEST_F(TabContextItemSyncBridgeTest, ShouldValidateEntityData) {
   sync_pb::EncryptedTabContextItemSpecifics* invalid_spec2 =
       missing_item_entity.specifics.mutable_encrypted_tab_context_item();
   invalid_spec2->set_container_id(container_id.value().AsLowercaseString());
-  invalid_spec2->mutable_encrypted_data()->set_blob("blob");
+  invalid_spec2->mutable_encrypted_content()->set_blob("blob");
 
   EXPECT_FALSE(bridge_->IsEntityDataValid(missing_item_entity));
 }

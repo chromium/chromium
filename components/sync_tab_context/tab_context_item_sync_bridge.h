@@ -48,7 +48,7 @@ class TabContextItemSyncBridge : public syncer::DataTypeSyncBridge {
   // completion.
   void UploadItem(const ContainerId& container_id,
                   const std::string& item_id,
-                  sync_pb::EncryptedData encrypted_data,
+                  sync_pb::EncryptedData encrypted_content,
                   UploadCompletionCallback callback);
 
   // syncer::DataTypeSyncBridge implementation.

@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/collaboration_metadata.h"
@@ -106,6 +107,14 @@ std::vector<const CommitRequestData*> MockDataTypeWorker::GetNthPendingCommit(
     nth_pending_commits.push_back(request_data.get());
   }
   return nth_pending_commits;
+}
+
+std::vector<const CommitRequestData*>
+MockDataTypeWorker::WaitForPendingCommits() {
+  EXPECT_TRUE(
+      base::test::RunUntil([this]() { return !pending_commits_.empty(); }));
+  EXPECT_EQ(1u, GetNumPendingCommits());
+  return GetNthPendingCommit(0);
 }
 
 bool MockDataTypeWorker::HasPendingCommitForHash(

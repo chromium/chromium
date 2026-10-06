@@ -75,10 +75,11 @@ TabContextItemSyncBridge::~TabContextItemSyncBridge() {
   FailAllPendingCommits();
 }
 
-void TabContextItemSyncBridge::UploadItem(const ContainerId& container_id,
-                                          const std::string& item_id,
-                                          sync_pb::EncryptedData encrypted_data,
-                                          UploadCompletionCallback callback) {
+void TabContextItemSyncBridge::UploadItem(
+    const ContainerId& container_id,
+    const std::string& item_id,
+    sync_pb::EncryptedData encrypted_content,
+    UploadCompletionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(container_id.value().is_valid());
   CHECK(!item_id.empty());
@@ -91,7 +92,7 @@ void TabContextItemSyncBridge::UploadItem(const ContainerId& container_id,
   sync_pb::EncryptedTabContextItemSpecifics specifics;
   specifics.set_container_id(container_id.value().AsLowercaseString());
   specifics.set_item_id(item_id);
-  *specifics.mutable_encrypted_data() = std::move(encrypted_data);
+  *specifics.mutable_encrypted_content() = std::move(encrypted_content);
 
   const std::string storage_key = GetStorageKeyFromSpecifics(specifics);
   const syncer::ClientTagHash client_tag_hash =
@@ -192,7 +193,7 @@ bool TabContextItemSyncBridge::IsEntityDataValid(
       entity_data.specifics.encrypted_tab_context_item();
   return base::Uuid::ParseCaseInsensitive(specifics.container_id())
              .is_valid() &&
-         !specifics.item_id().empty() && specifics.has_encrypted_data();
+         !specifics.item_id().empty() && specifics.has_encrypted_content();
 }
 
 void TabContextItemSyncBridge::OnCommitAttemptErrors(

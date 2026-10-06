@@ -50,6 +50,7 @@ static_library("sync_tab_context") {
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
+    "//third_party/zlib/google:compression_utils",
   ]
 }
 
@@ -79,5 +80,6 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
   ]
 }
