@@ -5,19 +5,19 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.ViewTreeObserver;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,42 +32,99 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class InstanceSwitcherCoordinatorUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private View mDialogView;
-    @Mock private TabLayout mTabHeaderRow;
-    @Mock private FrameLayout mInstanceListContainer;
-    @Mock private RecyclerView mActiveInstancesList;
-    @Mock private RecyclerView mInactiveInstancesList;
-    @Mock private View mCommandItem;
-    @Mock private RecyclerView.Adapter mActiveListAdapter;
-    @Mock private RecyclerView.Adapter mInactiveListAdapter;
+    /** A LayoutManager that reports a fixed vertical scroll range. */
+    private static final class FixedScrollRangeLayoutManager extends RecyclerView.LayoutManager {
+        private int mVerticalScrollRange;
+
+        @Override
+        public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+            return new RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        @Override
+        public boolean canScrollVertically() {
+            return true;
+        }
+
+        @Override
+        public int computeVerticalScrollRange(RecyclerView.State state) {
+            return mVerticalScrollRange;
+        }
+    }
 
     private static final int MIN_COMMAND_ITEM_HEIGHT_PX = 64;
     private static final int ITEM_PADDING_HEIGHT_PX = 2;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private RecyclerView.Adapter mActiveListAdapter;
+    @Mock private RecyclerView.Adapter mInactiveListAdapter;
+
+    private View mDialogView;
+    private TabLayout mTabHeaderRow;
+    private FrameLayout mInstanceListContainer;
+    private RecyclerView mActiveInstancesList;
+    private RecyclerView mInactiveInstancesList;
+    private View mCommandItem;
+    private FixedScrollRangeLayoutManager mActiveListLayoutManager;
+
     @Before
     public void setup() {
-        when(mDialogView.getPaddingTop()).thenReturn(16);
-        when(mTabHeaderRow.getMeasuredHeight()).thenReturn(50);
-        when(mInstanceListContainer.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
-        when(mCommandItem.getVisibility()).thenReturn(View.VISIBLE);
-        when(mCommandItem.getMeasuredHeight()).thenReturn(64);
-        when(mActiveInstancesList.getAdapter()).thenReturn(mActiveListAdapter);
-        when(mInactiveInstancesList.getAdapter()).thenReturn(mInactiveListAdapter);
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+
+        mDialogView = new View(context);
+        mDialogView.setPadding(0, /* top= */ 16, 0, 0);
+
+        mTabHeaderRow = new TabLayout(context);
+        measureExactly(mTabHeaderRow, /* height= */ 50);
+
+        mInstanceListContainer = new FrameLayout(context);
+
+        mCommandItem = new View(context);
+        measureExactly(mCommandItem, MIN_COMMAND_ITEM_HEIGHT_PX);
+
+        mActiveListLayoutManager = new FixedScrollRangeLayoutManager();
+        mActiveInstancesList = new RecyclerView(context);
+        mActiveInstancesList.setLayoutManager(mActiveListLayoutManager);
+        mActiveInstancesList.setAdapter(mActiveListAdapter);
+
+        mInactiveInstancesList = new RecyclerView(context);
+        mInactiveInstancesList.setAdapter(mInactiveListAdapter);
+    }
+
+    private static void measureExactly(View view, int height) {
+        view.measure(
+                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+    }
+
+    private void setUpActiveList(int measuredHeight, int verticalScrollRange) {
+        mActiveListLayoutManager.mVerticalScrollRange = verticalScrollRange;
+        measureExactly(mActiveInstancesList, measuredHeight);
+    }
+
+    /** Simulates the XML spec. */
+    private LayoutParams setInitialContainerLayoutParams() {
+        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
+        initialLayoutParams.weight = 1;
+        mInstanceListContainer.setLayoutParams(initialLayoutParams);
+        return initialLayoutParams;
     }
 
     @Test
     public void testInstanceListGlobalLayoutListener_NoOpWhenDefault() {
-        // Simulate XML spec.
-        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
-        initialLayoutParams.weight = 1;
+        setInitialContainerLayoutParams();
+        // Clear the pending layout request so that a later setLayoutParams() is observable.
+        measureExactly(mInstanceListContainer, /* height= */ 100);
+        mInstanceListContainer.layout(0, 0, 100, 100);
+        assertFalse(mInstanceListContainer.isLayoutRequested());
 
         // Simulate a scrollable active instances list.
-        when(mActiveInstancesList.getMeasuredHeight()).thenReturn(200);
-        when(mActiveInstancesList.computeVerticalScrollRange()).thenReturn(250);
-        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+        setUpActiveList(/* measuredHeight= */ 200, /* verticalScrollRange= */ 250);
 
         // Run the GlobalLayoutListener callback.
         var listener =
@@ -86,19 +142,18 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify there is no update to layout params, since the layout should use the default spec.
-        verify(mInstanceListContainer, never()).setLayoutParams(any());
+        assertFalse(mInstanceListContainer.isLayoutRequested());
+        LayoutParams params = (LayoutParams) mInstanceListContainer.getLayoutParams();
+        assertEquals("Height is incorrect.", 0, params.height);
+        assertEquals("Weight is incorrect.", 1, params.weight, 0);
     }
 
     @Test
     public void testInstanceListGlobalLayoutListener_NonScrollableList() {
-        // Simulate XML spec.
-        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
-        initialLayoutParams.weight = 1;
+        setInitialContainerLayoutParams();
 
         // Simulate a non-scrollable active instances list.
-        when(mActiveInstancesList.getMeasuredHeight()).thenReturn(200);
-        when(mActiveInstancesList.computeVerticalScrollRange()).thenReturn(200);
-        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+        setUpActiveList(/* measuredHeight= */ 200, /* verticalScrollRange= */ 200);
 
         // Run the GlobalLayoutListener callback.
         var listener =
@@ -116,23 +171,17 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify layout params.
-        ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
-        assertEquals(
-                "Height is incorrect.", LayoutParams.WRAP_CONTENT, paramsCaptor.getValue().height);
-        assertEquals("Weight is incorrect.", 0, paramsCaptor.getValue().weight, 0);
+        LayoutParams params = (LayoutParams) mInstanceListContainer.getLayoutParams();
+        assertEquals("Height is incorrect.", LayoutParams.WRAP_CONTENT, params.height);
+        assertEquals("Weight is incorrect.", 0, params.weight, 0);
     }
 
     @Test
     public void testInstanceListGlobalLayoutListener_SwitchToScrollableList() {
-        // Simulate XML spec.
-        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
-        initialLayoutParams.weight = 1;
+        setInitialContainerLayoutParams();
 
         // Simulate a non-scrollable active instances list.
-        when(mActiveInstancesList.getMeasuredHeight()).thenReturn(200);
-        when(mActiveInstancesList.computeVerticalScrollRange()).thenReturn(200);
-        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+        setUpActiveList(/* measuredHeight= */ 200, /* verticalScrollRange= */ 200);
 
         // Run the GlobalLayoutListener callback.
         var listener =
@@ -149,13 +198,9 @@ public class InstanceSwitcherCoordinatorUnitTest {
                         /* registerResizeListener= */ false);
         listener.onGlobalLayout();
         // Verify layout params.
-        ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
-        LayoutParams capturedParams = paramsCaptor.getValue();
-        assertEquals("Height is incorrect.", LayoutParams.WRAP_CONTENT, capturedParams.height);
-        assertEquals("Weight is incorrect.", 0, capturedParams.weight, 0);
-
-        when(mInstanceListContainer.getLayoutParams()).thenReturn(capturedParams);
+        LayoutParams params = (LayoutParams) mInstanceListContainer.getLayoutParams();
+        assertEquals("Height is incorrect.", LayoutParams.WRAP_CONTENT, params.height);
+        assertEquals("Weight is incorrect.", 0, params.weight, 0);
 
         // Simulate switching to the inactive instances list, that adds the listener again.
         when(mInactiveListAdapter.getItemCount()).thenReturn(5);
@@ -174,17 +219,14 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify layout params.
-        verify(mInstanceListContainer, times(2)).setLayoutParams(paramsCaptor.capture());
-        assertEquals("Height is incorrect.", 0, paramsCaptor.getValue().height);
-        assertEquals("Weight is incorrect.", 1, paramsCaptor.getValue().weight, 0);
+        params = (LayoutParams) mInstanceListContainer.getLayoutParams();
+        assertEquals("Height is incorrect.", 0, params.height);
+        assertEquals("Weight is incorrect.", 1, params.weight, 0);
     }
 
     @Test
     public void testInstanceListGlobalLayoutListener_InactiveListEmpty() {
-        // Simulate XML spec.
-        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
-        initialLayoutParams.weight = 1;
-        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+        setInitialContainerLayoutParams();
 
         // Simulate an empty inactive instances list.
         when(mInactiveListAdapter.getItemCount()).thenReturn(0);
@@ -205,19 +247,14 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify layout params
-        ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
-        assertEquals(
-                "Height is incorrect.", LayoutParams.WRAP_CONTENT, paramsCaptor.getValue().height);
-        assertEquals("Weight is incorrect.", 0, paramsCaptor.getValue().weight, 0);
+        LayoutParams params = (LayoutParams) mInstanceListContainer.getLayoutParams();
+        assertEquals("Height is incorrect.", LayoutParams.WRAP_CONTENT, params.height);
+        assertEquals("Weight is incorrect.", 0, params.weight, 0);
     }
 
     @Test
     public void testInstanceListGlobalLayoutListener_SetsMinimumDialogHeight() {
-        // Simulate XML spec.
-        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
-        initialLayoutParams.weight = 1;
-        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+        setInitialContainerLayoutParams();
 
         // Simulate an active list with 5 items and an inactive list with 2 items
         int activeCount = 5;
@@ -251,15 +288,12 @@ public class InstanceSwitcherCoordinatorUnitTest {
         listener.onGlobalLayout();
 
         // Verify minimum height is set correctly
-        verify(mDialogView).setMinimumHeight(expectedHeight);
+        assertEquals(expectedHeight, mDialogView.getMinimumHeight());
     }
 
     @Test
     public void testLayoutChangeListener_TriggersUpdateOnHeightChange() {
-        // Simulate XML spec.
-        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
-        initialLayoutParams.weight = 1;
-        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+        LayoutParams initialLayoutParams = setInitialContainerLayoutParams();
 
         // Register OnLayoutChangeListener
         InstanceSwitcherCoordinator.addLayoutListeners(
@@ -273,18 +307,16 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 MIN_COMMAND_ITEM_HEIGHT_PX,
                 ITEM_PADDING_HEIGHT_PX,
                 /* registerResizeListener= */ true);
+        assertEquals("Weight should not change yet.", 1, initialLayoutParams.weight, 0);
 
-        // Verify listener was added and capture it
-        ArgumentCaptor<View.OnLayoutChangeListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnLayoutChangeListener.class);
-        verify(mDialogView).addOnLayoutChangeListener(listenerCaptor.capture());
-        View.OnLayoutChangeListener listener = listenerCaptor.getValue();
+        // Simulate a height change of the dialog view.
+        mDialogView.layout(0, 0, 100, 800);
 
-        // Simulate a height change (e.g., bottom changes from 300 to 600)
-        listener.onLayoutChange(mDialogView, 0, 0, 100, 800, 0, 0, 100, 400);
-
-        // Verify (indirectly via getLayoutParams) that maybeUpdateInstanceListContainerParams was
-        // triggered in response
-        verify(mInstanceListContainer).getLayoutParams();
+        // Verify that the instance list container params were updated in response (the active
+        // list is not scrollable and the command item is not compressed, so it should wrap
+        // content).
+        LayoutParams params = (LayoutParams) mInstanceListContainer.getLayoutParams();
+        assertEquals("Height is incorrect.", LayoutParams.WRAP_CONTENT, params.height);
+        assertEquals("Weight is incorrect.", 0, params.weight, 0);
     }
 }

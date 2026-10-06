@@ -13,7 +13,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Handler;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -31,19 +33,17 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
-import java.util.concurrent.Callable;
-
 /** Unit tests for {@link ThreadedInputConnectionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ThreadedInputConnectionFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -61,6 +61,7 @@ public class ThreadedInputConnectionFactoryTest {
         @Override
         protected ThreadedInputConnectionProxyView createProxyView(
                 Handler handler, View containerView) {
+            mProxyView = super.createProxyView(handler, containerView);
             return mProxyView;
         }
 
@@ -101,12 +102,27 @@ public class ThreadedInputConnectionFactoryTest {
         }
     }
 
+    /**
+     * A container view that creates its InputConnection through the factory, as ContentView does.
+     * The real ThreadedInputConnectionProxyView calls back into this method.
+     */
+    private class TestContainerView extends View {
+        TestContainerView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+            return mFactory.initializeAndGet(this, mImeAdapter, 1, 0, 0, 0, 0, 0, "", outAttrs);
+        }
+    }
+
     @Mock private ImeAdapterImpl mImeAdapter;
-    @Mock private View mContainerView;
-    @Mock private ThreadedInputConnectionProxyView mProxyView;
     @Mock private InputMethodManager mInputMethodManager;
     @Mock private Context mContext;
 
+    private View mContainerView;
+    private ThreadedInputConnectionProxyView mProxyView;
     private EditorInfo mEditorInfo;
     private Handler mImeHandler;
     private Handler mUiHandler;
@@ -129,43 +145,43 @@ public class ThreadedInputConnectionFactoryTest {
 
         when(mContext.getSystemService(Context.INPUT_METHOD_SERVICE))
                 .thenReturn(mInputMethodManager);
+
+        ActivityController<Activity> activityController =
+                Robolectric.buildActivity(Activity.class).setup();
+        Activity activity = activityController.get();
         // ThreadedInputConnectionFactory#initializeAndGet() logic is activated when the package is
         // "com.htc.android.mail"
-        when(mContext.getPackageName()).thenReturn("com.htc.android.mail");
-        when(mContainerView.getContext()).thenReturn(mContext);
-        when(mContainerView.getHandler()).thenReturn(mUiHandler);
-        when(mContainerView.hasFocus()).thenReturn(true);
-        when(mContainerView.hasWindowFocus()).thenReturn(true);
-
-        when(mProxyView.getContext()).thenReturn(mContext);
-        when(mProxyView.requestFocus()).thenReturn(true);
-        when(mProxyView.getHandler()).thenReturn(mImeHandler);
-        final Callable<InputConnection> callable =
-                new Callable<InputConnection>() {
+        Context htcContext =
+                new ContextWrapper(activity) {
                     @Override
-                    public InputConnection call() {
-                        return mFactory.initializeAndGet(
-                                mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, "", mEditorInfo);
+                    public String getPackageName() {
+                        return "com.htc.android.mail";
                     }
                 };
-        when(mProxyView.onCreateInputConnection(any(EditorInfo.class)))
-                .thenAnswer(
-                        (InvocationOnMock invocation) -> {
-                            mFactory.setTriggerDelayedOnCreateInputConnection(false);
-                            InputConnection connection =
-                                    ThreadUtils.runOnUiThreadBlocking(callable);
-                            mFactory.setTriggerDelayedOnCreateInputConnection(true);
-                            return connection;
-                        });
+        mContainerView = new TestContainerView(htcContext);
+        mContainerView.setFocusable(true);
+        mContainerView.setFocusableInTouchMode(true);
+        activity.setContentView(mContainerView);
+        assertTrue(mContainerView.requestFocus());
+        activityController.windowFocusChanged(true);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(mContainerView.hasFocus());
+        assertTrue(mContainerView.hasWindowFocus());
+        // Focusing the container must not have triggered the delayed proxy logic yet.
+        assertNull(mProxyView);
 
-        when(mInputMethodManager.isActive(mContainerView))
+        when(mInputMethodManager.isActive(any(View.class)))
                 .thenAnswer(
                         new Answer<Boolean>() {
                             private int mCount;
 
                             @Override
-                            @SuppressWarnings("DirectInvocationOnMock")
                             public Boolean answer(InvocationOnMock invocation) {
+                                View view = invocation.getArgument(0);
+                                if (view == mProxyView) {
+                                    return mInputConnection != null;
+                                }
+                                assertEquals(mContainerView, view);
                                 mCount++;
                                 // To simplify IMM's behavior, let's say that it succeeds input
                                 // method activation only when the view has a window focus.
@@ -178,16 +194,8 @@ public class ThreadedInputConnectionFactoryTest {
                                 return mHasWindowFocus;
                             }
                         });
-        when(mInputMethodManager.isActive(mProxyView))
-                .thenAnswer(
-                        new Answer<Boolean>() {
-                            @Override
-                            public Boolean answer(InvocationOnMock invocation) {
-                                return mInputConnection != null;
-                            }
-                        });
 
-        mInOrder = inOrder(mImeAdapter, mInputMethodManager, mContainerView, mProxyView);
+        mInOrder = inOrder(mImeAdapter, mInputMethodManager);
     }
 
     private void activateInput() {
@@ -228,18 +236,13 @@ public class ThreadedInputConnectionFactoryTest {
         runOneUiTask();
         assertEquals(0, mFactory.delayMs());
 
-        mInOrder.verify(mContainerView).hasFocus();
-        mInOrder.verify(mContainerView).hasWindowFocus();
-        mInOrder.verify(mProxyView).requestFocus();
-        mInOrder.verify(mContainerView).getHandler();
+        assertNotNull("Proxy view should have been created.", mProxyView);
         mInOrder.verifyNoMoreInteractions();
         assertNull(mInputConnection);
 
         // The second onCreateInputConnection().
         runOneUiTask();
-        mInOrder.verify(mProxyView).onWindowFocusChanged(true);
         mInOrder.verify(mInputMethodManager).isActive(mContainerView);
-        mInOrder.verify(mProxyView).onCreateInputConnection(any(EditorInfo.class));
         assertNotNull(mInputConnection);
         assertTrue(ThreadedInputConnection.class.isInstance(mInputConnection));
 
@@ -267,20 +270,16 @@ public class ThreadedInputConnectionFactoryTest {
         runOneUiTask();
         assertEquals(0, mFactory.delayMs());
 
-        mInOrder.verify(mContainerView).hasFocus();
-        mInOrder.verify(mContainerView).hasWindowFocus();
-        mInOrder.verify(mProxyView).requestFocus();
-        mInOrder.verify(mContainerView).getHandler();
+        assertNotNull("Proxy view should have been created.", mProxyView);
         mInOrder.verifyNoMoreInteractions();
         assertNull(mInputConnection);
 
         // Now window focus was lost before the second onCreateInputConnection().
         mFactory.onWindowFocusChanged(false);
-        mInOrder.verify(mProxyView).onOriginalViewWindowFocusChanged(false);
+        assertFalse(mProxyView.hasWindowFocus());
 
         // The second onCreateInputConnection().
         runOneUiTask();
-        mInOrder.verify(mProxyView).onWindowFocusChanged(true);
         mInOrder.verify(mInputMethodManager).isActive(mContainerView);
         mInOrder.verifyNoMoreInteractions();
 
@@ -289,12 +288,10 @@ public class ThreadedInputConnectionFactoryTest {
 
         // Verification process.
         mImeShadowLooper.runOneTask();
-        mInOrder.verify(mContainerView).getHandler();
         runOneUiTask();
         mInOrder.verify(mInputMethodManager).isActive(mProxyView);
 
         // Wait one more UI loop.
-        mInOrder.verify(mContainerView).getHandler();
         runOneUiTask();
         mInOrder.verify(mInputMethodManager).isActive(mProxyView);
 
@@ -329,18 +326,13 @@ public class ThreadedInputConnectionFactoryTest {
         // We delay the keyboard activation when view gets focused before window does.
         assertEquals(1000, mFactory.delayMs());
 
-        mInOrder.verify(mContainerView).hasFocus();
-        mInOrder.verify(mContainerView).hasWindowFocus();
-        mInOrder.verify(mProxyView).requestFocus();
-        mInOrder.verify(mContainerView).getHandler();
+        assertNotNull("Proxy view should have been created.", mProxyView);
         mInOrder.verifyNoMoreInteractions();
         assertNull(mInputConnection);
 
         // The second onCreateInputConnection().
         runOneUiTask();
-        mInOrder.verify(mProxyView).onWindowFocusChanged(true);
         mInOrder.verify(mInputMethodManager).isActive(mContainerView);
-        mInOrder.verify(mProxyView).onCreateInputConnection(any(EditorInfo.class));
         assertNotNull(mInputConnection);
         assertTrue(ThreadedInputConnection.class.isInstance(mInputConnection));
 

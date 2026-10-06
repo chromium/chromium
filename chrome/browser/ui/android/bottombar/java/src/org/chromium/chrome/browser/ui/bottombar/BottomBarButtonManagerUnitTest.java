@@ -13,7 +13,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -41,7 +46,6 @@ import java.util.List;
 /** Unit tests for {@link BottomBarButtonManager}. */
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomBarButtonManagerUnitTest {
     private static final int HOME = ActionId.HOME_BUTTON;
     private static final int GLIC = ActionId.GLIC;
@@ -53,13 +57,13 @@ public class BottomBarButtonManagerUnitTest {
 
     @Mock private PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> mBinder;
     @Mock private BottomBarButtonManager.Listener mListener;
-    @Mock private BottomBarButtonContainer mContainerHome;
-    @Mock private BottomBarButtonContainer mContainerExtra;
-    @Mock private BottomBarButtonContainer mContainerNewTab;
-    @Mock private BottomBarButtonContainer mContainerTabSwitcher;
-    @Mock private BottomBarButtonContainer mContainerAppMenu;
     @Mock private ActionRegistry mActionRegistry;
 
+    private BottomBarButtonContainer mContainerHome;
+    private BottomBarButtonContainer mContainerExtra;
+    private BottomBarButtonContainer mContainerNewTab;
+    private BottomBarButtonContainer mContainerTabSwitcher;
+    private BottomBarButtonContainer mContainerAppMenu;
     private SettableNullableObservableSupplier<PropertyModel> mSupplierHome;
     private SettableNullableObservableSupplier<PropertyModel> mSupplierGlic;
     private SettableNullableObservableSupplier<PropertyModel> mSupplierNewTab;
@@ -70,6 +74,14 @@ public class BottomBarButtonManagerUnitTest {
 
     @Before
     public void setUp() {
+        Context context = ApplicationProvider.getApplicationContext();
+        AttributeSet attrs = Robolectric.buildAttributeSet().build();
+        mContainerHome = new BottomBarButtonContainer(context, attrs);
+        mContainerExtra = new BottomBarButtonContainer(context, attrs);
+        mContainerNewTab = new BottomBarButtonContainer(context, attrs);
+        mContainerTabSwitcher = new BottomBarButtonContainer(context, attrs);
+        mContainerAppMenu = new BottomBarButtonContainer(context, attrs);
+
         mBottomBarModel = new PropertyModel(BottomBarProperties.ALL_KEYS);
 
         mSupplierHome = ObservableSuppliers.createNullable();

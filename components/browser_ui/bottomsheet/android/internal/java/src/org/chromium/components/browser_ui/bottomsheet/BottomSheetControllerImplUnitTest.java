@@ -25,6 +25,7 @@ import static org.robolectric.Robolectric.buildActivity;
 import android.app.Activity;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,7 +65,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link BottomSheetControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomSheetControllerImplUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -77,11 +77,9 @@ public class BottomSheetControllerImplUnitTest {
 
     private @Mock ScrimManager mScrimManager;
     private @Mock KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    private @Mock ViewGroup mRoot;
     private @Mock DesktopWindowStateManager mDesktopWindowStateManager;
     private @Mock AppHeaderState mAppHeaderState;
     private @Mock BottomSheetCoordinator mBottomSheet;
-    private @Mock BottomSheetView mBottomSheetView;
     private @Mock BottomSheetContent mSheetContent;
     private @Mock InsetObserver mInsetObserver;
     private @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -89,15 +87,15 @@ public class BottomSheetControllerImplUnitTest {
 
     private BottomSheetControllerImpl mController;
     private Window mWindow;
+    private FrameLayout mRoot;
 
     @Before
     public void setUp() {
         Activity activity = buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = activity.getWindow();
-        when(mRoot.getContext()).thenReturn(activity);
-        when(mBottomSheet.getView()).thenReturn(mBottomSheetView);
-        when(mBottomSheetView.getContext()).thenReturn(activity);
+        mRoot = new FrameLayout(activity);
+        when(mBottomSheet.getView()).thenReturn(new BottomSheetView(activity, null));
         mScrimManagerSupplier.set(mScrimManager);
         mRootSupplier.set(mRoot);
         mController =
@@ -219,14 +217,15 @@ public class BottomSheetControllerImplUnitTest {
         verify(mScrimManager).showScrim(mScrimPropertyModelCaptor.capture());
         var callback =
                 mScrimPropertyModelCaptor.getValue().get(ScrimProperties.VISIBILITY_CALLBACK);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
 
         // 2. Trigger callback to hide scrim -> verify Z-elevation is cleared.
         callback.onResult(false);
-        verify(mRoot, times(2)).setZ(0.0f);
+        assertEquals(0.0f, mRoot.getZ(), 0f);
 
         // 3. Trigger callback to show scrim -> verify Z-elevation is elevated again.
         callback.onResult(true);
-        verify(mRoot, times(2)).setZ(1.0f);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
     }
 
     @Test
@@ -273,13 +272,13 @@ public class BottomSheetControllerImplUnitTest {
         // 2. Set bottom controls offset to 100 while scrim is visible -> margin must stay 0.
         mController.setBottomControlsOffset(100);
         verify(mBottomSheet, times(3)).setBottomMargin(0);
-        verify(mRoot, times(3)).setZ(1.0f);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
 
         // 3. Hide scrim via callback -> with coversBottomControls() true, bottom margin must
         // remain 0 and Z-axis must stay elevated (1.0f) rather than shifting to offset (100).
         callback.onResult(false);
         verify(mBottomSheet, times(4)).setBottomMargin(0);
-        verify(mRoot, times(4)).setZ(1.0f);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
     }
 
     // Verify that when requestShowContent is called with content specifying coversBottomControls()
@@ -307,7 +306,7 @@ public class BottomSheetControllerImplUnitTest {
         // Verify that the bottom margin was adjusted to 0 and Z-axis was elevated for this content.
         verify(mBottomSheet).showContent(content);
         verify(mBottomSheet, atLeastOnce()).setBottomMargin(0);
-        verify(mRoot, atLeastOnce()).setZ(1.0f);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
     }
 
     @Test
@@ -318,7 +317,7 @@ public class BottomSheetControllerImplUnitTest {
 
         doReturn(true).when(mBottomSheet).isSheetOpen();
         mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
-        verify(mRoot).setZ(1.0f);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
     }
 
     @Test
@@ -788,15 +787,15 @@ public class BottomSheetControllerImplUnitTest {
                 visibilityCallback != null);
 
         // 4. Verify that the synchronous callback trigger set Z to 1.0f initially.
-        verify(mRoot).setZ(1.0f);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
 
         // 5. Trigger the callback with false -> verify Z-elevation is cleared.
         visibilityCallback.onResult(false);
-        verify(mRoot, times(2)).setZ(0.0f);
+        assertEquals(0.0f, mRoot.getZ(), 0f);
 
         // 6. Trigger the callback with true -> verify Z-elevation is elevated again.
         visibilityCallback.onResult(true);
-        verify(mRoot, times(2)).setZ(1.0f);
+        assertEquals(1.0f, mRoot.getZ(), 0f);
     }
 
     @Test
@@ -818,7 +817,7 @@ public class BottomSheetControllerImplUnitTest {
         verify(mScrimManager, never()).showScrim(any());
 
         // 4. Verify that Z-elevation remains 0.0f (not elevated to 1.0f automatically).
-        verify(mRoot, never()).setZ(1.0f);
+        assertEquals(0.0f, mRoot.getZ(), 0f);
     }
 
     @Test
