@@ -76,6 +76,18 @@ void EmptyEmbedderDelegate::SwitchConversation(
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   std::move(callback).Run(std::nullopt);
 }
+void Host::Metrics::OnContentsCreated() {
+  contents_creation_time_ = base::TimeTicks::Now();
+}
+
+void Host::Metrics::OnContentsDestroyed() {
+  if (!contents_creation_time_.is_null()) {
+    base::TimeDelta lifetime = base::TimeTicks::Now() - contents_creation_time_;
+    base::UmaHistogramCustomTimes("Glic.Host.AwakeDuration", lifetime,
+                                  base::Milliseconds(1), base::Days(7), 50);
+    contents_creation_time_ = base::TimeTicks();
+  }
+}
 
 Host::Host(Profile* profile,
            GlicSharingManagerProvider* sharing_manager_provider,
@@ -115,6 +127,9 @@ void Host::HibernateImpl(bool is_destroying) {
   // failure. This also keeps `Reload()` (Hibernate() then Awaken()) from
   // carrying a failure from the old load into the new one.
   client_load_failed_ = false;
+  if (contents_) {
+    metrics_.OnContentsDestroyed();
+  }
   contents_.reset();
   web_contents_visibility_ = content::Visibility::HIDDEN;
   if (!is_destroying) {
@@ -200,6 +215,7 @@ void Host::Awaken() {
   VLOG(1) << "Glic [Host] CreateContents";
 
   contents_ = instance_delegate_->CreateWebContentsManager();
+  metrics_.OnContentsCreated();
   contents_changed_subscription_ =
       contents_->RegisterWebContentsChangedCallback(base::BindRepeating(
           &Host::OnActiveWebContentsChanged, base::Unretained(this)));

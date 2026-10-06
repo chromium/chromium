@@ -1144,6 +1144,15 @@ chromium-metrics-reviews@google.com.
   <token key="Suffix" variants="ProfileEnablementSuffix"/>
 </histogram>
 
+<histogram name="Glic.Host.AwakeDuration" units="ms" expires_after="2027-04-01">
+  <owner>harringtond@google.com</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Records the time from when the Glic WebContents is created (when the Host
+    awakens) until it is destroyed (when the Host hibernates or is destroyed).
+  </summary>
+</histogram>
+
 <histogram name="Glic.Host.LoadingStageDuration.{LoadingStage}" units="ms"
     expires_after="2027-04-04">
   <owner>iwells@chromium.org</owner>

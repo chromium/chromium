@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -431,7 +432,6 @@ class Host : public GlicSharingManagerProvider {
 
   void NotifyActorTaskListRowClicked(int32_t task_id);
 
-
   virtual void Invoke(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback);
   void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
@@ -440,6 +440,15 @@ class Host : public GlicSharingManagerProvider {
 
   void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
+
+  class Metrics {
+   public:
+    void OnContentsCreated();
+    void OnContentsDestroyed();
+
+   private:
+    base::TimeTicks contents_creation_time_;
+  };
 
  private:
   friend class GlicWebClientManager;
@@ -500,6 +509,8 @@ class Host : public GlicSharingManagerProvider {
   std::optional<mojom::PanelState> pending_panel_state_;
   ClientState client_state_;
   bool drag_resize_enabled_ = false;
+
+  Metrics metrics_;
 
   void OnActiveWebContentsChanged(content::WebContents* new_contents);
 
