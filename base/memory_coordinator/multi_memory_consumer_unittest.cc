@@ -155,8 +155,9 @@ class SyncNotifyingMemoryConsumerRegistry : public MemoryConsumerRegistry {
                              std::string_view consumer_name,
                              MemoryConsumerTraits traits,
                              MemoryConsumer* consumer) override {
-    NotifyUpdateMemoryLimitNoNotification(
-        consumer, MemoryLimit::ModeratePressureThreshold());
+    // The callback is expected to be suppressed because the consumer is being
+    // registered.
+    NotifyUpdateMemoryLimit(consumer, MemoryLimit::ModeratePressureThreshold());
   }
 
   void OnMemoryConsumerRemoved(uint32_t consumer_id,

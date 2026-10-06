@@ -54,8 +54,6 @@ class BASE_EXPORT MemoryConsumerRegistry {
   static void NotifyReleaseMemory(MemoryConsumer* consumer);
   static void NotifyUpdateMemoryLimit(MemoryConsumer* consumer,
                                       MemoryLimit memory_limit);
-  static void NotifyUpdateMemoryLimitNoNotification(MemoryConsumer* consumer,
-                                                    MemoryLimit memory_limit);
 
   // Implementations must call this at the beginning of their destructors.
   // Notifies all registered MemoryConsumerRegistryDestructionObservers.
