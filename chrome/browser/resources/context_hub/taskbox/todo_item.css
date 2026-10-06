@@ -15,6 +15,7 @@
   border: 1px solid var(--cr-separator-color);
   box-shadow: none;
   overflow: hidden;
+  container-type: inline-size;
 }
 
 cr-expand-button,
@@ -46,7 +47,16 @@ cr-expand-button::part(icon) {
   gap: 20px;
 }
 
+.todo-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+}
+
 #check-circle {
+  flex-shrink: 0;
   margin-inline-start: 0;
   --cr-icon-button-margin-start: 0;
 }
@@ -62,6 +72,7 @@ cr-expand-button::part(icon) {
   align-items: flex-start;
   flex: 1;
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .todo-info h3 {
@@ -205,4 +216,35 @@ cr-expand-button::part(icon) {
 
 .dismiss-button {
   flex-shrink: 0;
+}
+
+@container (max-width: 520px) {
+  .todo-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .todo-main {
+    gap: 12px;
+  }
+
+  .tab-todo-content .todo-info h3 {
+    white-space: normal;
+  }
+
+  .todo-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .expanded-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .dismiss-button {
+    align-self: flex-end;
+  }
 }

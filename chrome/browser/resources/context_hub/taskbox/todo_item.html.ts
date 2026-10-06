@@ -15,25 +15,27 @@ export function getHtml(this: TodoItemElement) {
 ${this.variant === TodoItemVariant.TAB ?
       html`
       <div class="todo-content tab-todo-content">
-        ${this.status === AutoTodoStatus.kDismissed ? html`
-          <cr-button class="tonal-button mark-active-button"
-              id="markActiveButton"
-              ?disabled="${this.disable_state_mgmt}"
-              @click="${this.onMarkActiveClick_}">
-            Mark active
-          </cr-button>
-        ` : html`
-          ${this.groupType !== AutoTodoGroup.kReadingList ? html`
-            <cr-icon-button id="check-circle"
+        <div class="todo-main">
+          ${this.status === AutoTodoStatus.kDismissed ? html`
+            <cr-button class="tonal-button mark-active-button"
+                id="markActiveButton"
                 ?disabled="${this.disable_state_mgmt}"
-                iron-icon="cr:check-circle"
-                @click="${this.onCheckCircleClick_}">
-            </cr-icon-button>
-          ` : ''}
-        `}
-        <div class="todo-info">
-          <h3 title="${this.heading}">${this.heading}</h3>
-          <p class="description">${this.description}</p>
+                @click="${this.onMarkActiveClick_}">
+              Mark active
+            </cr-button>
+          ` : html`
+            ${this.groupType !== AutoTodoGroup.kReadingList ? html`
+              <cr-icon-button id="check-circle"
+                  ?disabled="${this.disable_state_mgmt}"
+                  iron-icon="cr:check-circle"
+                  @click="${this.onCheckCircleClick_}">
+              </cr-icon-button>
+            ` : ''}
+          `}
+          <div class="todo-info">
+            <h3 title="${this.heading}">${this.heading}</h3>
+            <p class="description">${this.description}</p>
+          </div>
         </div>
         <div class="todo-actions" @click="${this.onActionsClick_}">
           <cr-button class="tonal-button"
@@ -84,23 +86,25 @@ ${this.variant === TodoItemVariant.TAB ?
         ?expanded="${this.expanded_}"
         @expanded-changed="${this.onExpandedChanged_}">
       <div class="todo-content">
-        ${this.status === AutoTodoStatus.kDismissed ? html`
-          <cr-button class="tonal-button mark-active-button"
-              id="markActiveButton"
-              ?disabled="${this.disable_state_mgmt}"
-              @click="${this.onMarkActiveClick_}">
-            Mark active
-          </cr-button>
-        ` : html`
-          <cr-icon-button id="check-circle"
-              ?disabled="${this.disable_state_mgmt}"
-              iron-icon="cr:check-circle"
-              @click="${this.onCheckCircleClick_}">
-          </cr-icon-button>
-        `}
-        <div class="todo-info">
-          <h3>${this.heading}</h3>
-          <p class="description">${this.description}</p>
+        <div class="todo-main">
+          ${this.status === AutoTodoStatus.kDismissed ? html`
+            <cr-button class="tonal-button mark-active-button"
+                id="markActiveButton"
+                ?disabled="${this.disable_state_mgmt}"
+                @click="${this.onMarkActiveClick_}">
+              Mark active
+            </cr-button>
+          ` : html`
+            <cr-icon-button id="check-circle"
+                ?disabled="${this.disable_state_mgmt}"
+                iron-icon="cr:check-circle"
+                @click="${this.onCheckCircleClick_}">
+            </cr-icon-button>
+          `}
+          <div class="todo-info">
+            <h3>${this.heading}</h3>
+            <p class="description">${this.description}</p>
+          </div>
         </div>
         <div class="todo-actions" @click="${this.onActionsClick_}">
           ${this.canActOnWeb_ ? html`
