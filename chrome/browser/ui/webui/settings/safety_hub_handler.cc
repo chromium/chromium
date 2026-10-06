@@ -71,7 +71,11 @@ using safety_hub::SafetyHubCardState;
 
 namespace {
 
-const char kRevocationTypeKey[] = "revocation_type";
+// LINT.IfChange(RevocationTypeKey)
+const char kRevocationTypeKey[] = "revocationType";
+// LINT.ThenChange(
+//   //chrome/browser/resources/settings/safety_hub/safety_hub_browser_proxy.ts:RevocationTypeKey
+// )
 
 // Get values from |UnusedSitePermissions| object in
 // safety_hub_browser_proxy.ts.

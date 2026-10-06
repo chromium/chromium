@@ -55,7 +55,11 @@ export interface UnusedSitePermissions {
   origin: string;
   permissions: UnusedSitePermission[];
   expiration: string;
+  // LINT.IfChange(RevocationTypeKey)
   revocationType: PermissionsRevocationType;
+  // LINT.ThenChange(
+  //   //chrome/browser/ui/webui/settings/safety_hub_handler.cc:RevocationTypeKey
+  // )
 }
 
 // The information for top cards in Safety Hub page.

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
@@ -717,6 +718,17 @@ TEST_F(SafetyHubHandlerTest, PopulateAbusiveAndUnusedSitePermissionsData) {
   EXPECT_EQ(*(*revoked_permission_list_abusive)[0].GetDict().FindString(
                 site_settings::kType),
             "notifications");
+
+  // Each entry should expose its revocation type under the key read by the
+  // WebUI (`UnusedSitePermissions.revocationType`).
+  EXPECT_EQ(revoked_permissions[0].GetDict().FindInt("revocationType"),
+            static_cast<int>(PermissionsRevocationType::kUnusedPermissions));
+  EXPECT_EQ(revoked_permissions[1].GetDict().FindInt("revocationType"),
+            static_cast<int>(PermissionsRevocationType::
+                                 kUnusedPermissionsAndAbusiveNotifications));
+  EXPECT_EQ(revoked_permissions[2].GetDict().FindInt("revocationType"),
+            static_cast<int>(
+                PermissionsRevocationType::kAbusiveNotificationPermissions));
 
   // Notifications should not be allowed.
   ExpectRevokedAbusiveNotificationPermission(kAbusiveAndUnusedTestSite);
