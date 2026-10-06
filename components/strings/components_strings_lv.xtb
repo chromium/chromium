@@ -2553,7 +2553,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5286195392366054103">Šajā politikā ir vairāk nekā <ph name="MAX_URL_PATTERNS_LIMIT" /> URL rakstu. Tiks izmantoti tikai pirmie <ph name="MAX_URL_PATTERNS_LIMIT" /> vietrāžu URL modeļi.</translation>
 <translation id="5288108484102287882">Validējot politikas vērtības, tika konstatētas kļūdas</translation>
 <translation id="5289384342738547352">Vairāku dokumentu apstrāde</translation>
-<translation id="5293160437421672778">Atrodi ģimenei draudzīgus restorānus, kuros var veikt rezervācijas. Jābūt bērnu ēdienkartei un neformālai atmosfērai.</translation>
+<translation id="5293160437421672778">Atrodi ģimenei draudzīgus restorānus, kuros var veikt rezervācijas. Jābūt ēdienkartei bērniem un neformālai atmosfērai.</translation>
 <translation id="5298618990685278995">melnraksta pirmo versiju;</translation>
 <translation id="5299298092464848405">Parsējot politiku, radās kļūda.</translation>
 <translation id="5300062471671636390">Paslēpt ierīču sarakstu apraidei</translation>
@@ -4634,7 +4634,7 @@ Papildu informācija:
 <translation id="8874824191258364635">Ievadiet derīgu kartes numuru</translation>
 <translation id="8877356245007430672">Izveido atskaņošanas sarakstu pēc mana noskaņojuma</translation>
 <translation id="888117890813270681">Laukam “<ph name="DATA_CONTROLS_RESTRICTION" />” nevar iestatīt vērtību “<ph name="DATA_CONTROLS_LEVEL" />”.</translation>
-<translation id="888169490072887292">Atrodi ģimenēm piemērotus restorānus, kas piedāvā bērnu ēdienkarti</translation>
+<translation id="888169490072887292">Atrodi ģimenēm piemērotus restorānus, kas piedāvā ēdienkarti bērniem</translation>
 <translation id="8883863364960302898">Google diska mape</translation>
 <translation id="8884537526797090108">Konfidenciālu saturu nevar ierakstīt</translation>
 <translation id="8889525327610245418">Autovadītāja apliecības informācijas droša atjaunināšana Google makā</translation>

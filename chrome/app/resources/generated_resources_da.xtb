@@ -2442,7 +2442,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2854453262159518435">Erstat eksisterende fanegruppe</translation>
 <translation id="2855243985454069333">Sletter historikken fra alle synkroniserede enheder</translation>
 <translation id="2855812646048059450">Log ind med <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="2857047802954430547">Log ind for at få adgang til dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
+<translation id="2857047802954430547">Log ind for at tilgå adgangskoder, bogmærker og andet på alle dine enheder</translation>
 <translation id="2857195263461649321">Fortsæt, hvor du slap, i Gemini</translation>
 <translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Virksomhedspolitikker</translation>
@@ -5258,7 +5258,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>
 <translation id="4983159853748980742">Din adgangskode blev ikke delt. Tjek din internetforbindelse, og sørg for, at du er logget ind i Chrome. Prøv derefter igen.</translation>
 <translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
-<translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan personligt tilpasse Søgning og andre tjenester baseret på din historik.</translation>
+<translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan tilpasse Søgning og andre tjenester personligt baseret på din historik.</translation>
 <translation id="4986728572522335985">Denne handling sletter alle data på sikkerhedsnøglen, bl.a. pinkoden</translation>
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4989479404508898003">Du kan søge i din browserhistorik baseret på generelt sideindhold, ikke kun sidetitel og webadresse, og få bedre resultater</translation>

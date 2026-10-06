@@ -4759,7 +4759,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4617001782309103936">Muito curto</translation>
 <translation id="4617270414136722281">Opções de extensão</translation>
 <translation id="4617880081511131945">Não é possível estabelecer uma conexão</translation>
-<translation id="4619564267100705184">Confirmar sua identidade</translation>
+<translation id="4619564267100705184">Confirme sua identidade</translation>
 <translation id="4619615317237390068">Guias de outros dispositivos</translation>
 <translation id="4620757807254334872">mouse</translation>
 <translation id="4620809267248568679">Esta configuração é aplicada por uma extensão.</translation>
@@ -5841,7 +5841,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5452716108542782563">A extensão "<ph name="NAME" />" está controlando esta configuração. Para mudar o mecanismo de pesquisa padrão, <ph name="BEGIN_LINK_DISABLE" />desative a extensão<ph name="END_LINK_DISABLE" /> ou <ph name="BEGIN_LINK_MANAGE" />gerencie as configurações<ph name="END_LINK_MANAGE" />.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona off-line)</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">Adicione à pesquisa</translation>
+<translation id="5457082343331641453">Adicionar à pesquisa</translation>
 <translation id="5457459357461771897">Ler e excluir fotos, músicas e outras mídias do seu computador</translation>
 <translation id="5457795687441958389">Continuar sem fazer login</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -8275,7 +8275,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="735288298862560236">{COUNT,plural, =0{Nenhuma senha}=1{Verificando {COUNT} senha…}one{Verificando {COUNT} senha…}other{Verificando {COUNT} senhas…}}</translation>
 <translation id="7353261921908507769">Seus contatos podem compartilhar itens com você quando estão por perto. As transferências só são iniciadas depois que você as aceita.</translation>
-<translation id="7353432112255316844">Confirmar sua identidade</translation>
+<translation id="7353432112255316844">Confirme sua identidade</translation>
 <translation id="7356506068433555887">Palmeira</translation>
 <translation id="7356696499551368971">As permissões escolhidas serão removidas</translation>
 <translation id="7356908624372060336">Registros da rede</translation>
@@ -10421,7 +10421,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8986494364107987395">Envia estatísticas de uso e relatórios de erros ao Google automaticamente</translation>
 <translation id="8987321822984361516">Navegador gerenciado por uma organização, perfil gerenciado por <ph name="PROFILE_DOMAIN" /></translation>
-<translation id="8987736167266086032">Recomece de onde você parou</translation>
+<translation id="8987736167266086032">Continue de onde você parou</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989359959810288806">Atualizar status do tethering</translation>
 <translation id="8989779557457435460">Compartilhar a guia atual por padrão</translation>

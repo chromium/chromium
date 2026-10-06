@@ -1697,7 +1697,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6421038304268477484">Testo tradotto</translation>
 <translation id="6429213933892582367">Apri Opzioni password</translation>
 <translation id="6435236283694032571">Aggiungi all'elenco di lettura</translation>
-<translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>
+<translation id="6435307030888827407">Continua senza accedere</translation>
 <translation id="6436318499800111867">Condivisi con me il: <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442327260099531031"><ph name="BEGIN_LINK" />Rispetta la privacy degli altri<ph name="END_LINK" /> e chiedi l'autorizzazione prima di registrarli o includerli in una chat Live.</translation>
 <translation id="6442697326824312960">Sblocca scheda</translation>
@@ -1839,7 +1839,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6858718102216837409">Aggiungi lingua…</translation>
 <translation id="6858855187367714033">Scansione eseguita</translation>
 <translation id="6859944681507688231">Per eseguire la scansione di un codice QR o di una carta di credito, attiva la fotocamera dalle impostazioni.</translation>
-<translation id="6862212368460840758">Hai eseguito l'accesso come <ph name="SIGNED_EMAIL" />.
+<translation id="6862212368460840758">Hai usato <ph name="SIGNED_EMAIL" /> per accedere.
 
 Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
 <translation id="6867369562105931222">password</translation>
@@ -2574,7 +2574,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="9162432979321511934">Attiva l'opzione Compila automaticamente le password.</translation>
 <translation id="9165320910061267720">Per ricevere notifiche relative agli avvisi sui cali di prezzo, devi attivare le notifiche nelle impostazioni di iOS.</translation>
 <translation id="9179151630575358778">Nasconde questo elemento</translation>
-<translation id="9183563643084679152">Hai eseguito l'accesso a Chrome tramite la scansione di un codice QR. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
+<translation id="9183563643084679152">Hai usato la scansione di un codice QR per accedere a Chrome. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
 <translation id="9183733013282108610">Ricerca in incognito</translation>
 <translation id="9186762474139509529">Avvia logging</translation>
 <translation id="9191031968346938109">Aggiungi a…</translation>

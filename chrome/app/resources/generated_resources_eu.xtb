@@ -5060,7 +5060,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4852383141291180386">Kudeatu aplikazioen jakinarazpenak</translation>
 <translation id="4852916668365817106">Sagu-kurtsorearen kolorea</translation>
 <translation id="4853020600495124913">Ireki leiho &amp;berrian</translation>
-<translation id="4853328060971905294">Aktibatuta (gaitu lerro-fokua)</translation>
+<translation id="4853328060971905294">Aktibatuta (gaitu kontzentratzeko tresnak)</translation>
 <translation id="4854317507773910281">Aukeratu onartu beharreko guraso-kontua</translation>
 <translation id="4854603338816296098">Kendu da helbidea</translation>
 <translation id="485480310608090163">Ezarpen eta baimen gehiago</translation>
@@ -5988,7 +5988,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5576472948015790634">Orain, toki berean kudea ditzakezu fitxa taldeak eta Gemini-ko elkarrizketak. Edonoiz kendu ahal izango diozu aingura honi.</translation>
 <translation id="5578059481725149024">Saio-hasiera automatikoa</translation>
 <translation id="5578387000057347457">Idatzi eskaera-mezu pertsonalizatu bat edo nabarmendu testua irudi bat sortzeko</translation>
-<translation id="557893471177655572">Probatu lerro-fokua</translation>
+<translation id="557893471177655572">Probatu kontzentratzeko tresnak</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 elementu gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, <ph name="BEGIN_LINK" />gorde ezazu Google-ko kontuan<ph name="END_LINK" />.}other{{ITEM_COUNT} elementu gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, <ph name="BEGIN_LINK" />gorde itzazu Google-ko kontuan<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">Kendu <ph name="SITE" /> <ph name="SECTION_HEADER" /> zerrendatik</translation>
 <translation id="5581031802689147441">Ikuspegi zatitua</translation>
@@ -8461,7 +8461,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7502220299952823578">Gehitu mantendu beti webgune hauek aktibo zerrendan</translation>
 <translation id="7502528909759062987">Pausatu fitxa <ph name="DEVICE_NAME" /> gailura igortzeko prozesua</translation>
 <translation id="7502804472671406749">Fitxa partekatuetan gora/behera egin, eta zooma erabil daiteke</translation>
-<translation id="750314150962284310">Lerro-fokua</translation>
+<translation id="750314150962284310">Kontzentratzeko tresnak</translation>
 <translation id="7503191893372251637">Netscape ziurtagiri mota</translation>
 <translation id="7503259455663961898">Aldatu nire izenean</translation>
 <translation id="7503985202154027481">Webgune hau bisitatu izana erregistratu egingo da segurtasun-giltzan.</translation>
@@ -10786,7 +10786,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> webguneak gailu mugikorretik informazioa lortu nahi du</translation>
 <translation id="988320949174893488">Noizbehinka moztu egiten da</translation>
 <translation id="988978206646512040">Pasaesaldia ezin da hutsik utzi</translation>
-<translation id="989111665033316622">Desaktibatuta (desgaitu lerro-fokua)</translation>
+<translation id="989111665033316622">Desaktibatuta (desgaitu kontzentratzeko tresnak)</translation>
 <translation id="992032470292211616">Luzapenek, aplikazioek eta gaiek gailua kalte diezazukete. Ziur aurrera jarraitu nahi duzula?</translation>
 <translation id="992256792861109788">Arrosa</translation>
 <translation id="994087375490600917">Alboko panelak</translation>
