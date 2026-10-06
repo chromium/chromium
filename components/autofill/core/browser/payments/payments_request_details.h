@@ -144,7 +144,7 @@ struct UnmaskIbanRequestDetails {
   ~UnmaskIbanRequestDetails();
 
   int64_t billing_customer_number = 0;
-  int64_t instrument_id;
+  int64_t instrument_id = 0;
 };
 
 // Information required to either opt-in or opt-out a user for FIDO
