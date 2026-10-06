@@ -98,7 +98,7 @@ void HapticsManagerImplWin::PlayHaptics(blink::mojom::HapticEffect effect,
   // default.
   std::optional<uint16_t> preferred = WaveformForEffect(effect);
   std::optional<uint16_t> device_default =
-      DefaultWaveformForDevice(device_type);
+      DefaultWaveformForEffectAndDevice(effect, device_type);
 
   uint16_t target = 0;
   if (preferred && std::ranges::contains(supported, *preferred)) {
@@ -230,7 +230,9 @@ std::optional<uint16_t> HapticsManagerImplWin::ComputeWaveformForEffect(
   return value;
 }
 
-std::optional<uint16_t> HapticsManagerImplWin::DefaultWaveformForDevice(
+std::optional<uint16_t>
+HapticsManagerImplWin::DefaultWaveformForEffectAndDevice(
+    blink::mojom::HapticEffect effect,
     haptics::HapticDeviceType device_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!known_waveforms2_) {
@@ -238,7 +240,13 @@ std::optional<uint16_t> HapticsManagerImplWin::DefaultWaveformForDevice(
   }
 
   UINT16 value = 0;
-  if (device_type == haptics::HapticDeviceType_None) {
+  if (device_type == haptics::HapticDeviceType_None ||
+      device_type == haptics::HapticDeviceType_Generic) {
+    return std::nullopt;
+  }
+  if (device_type == haptics::HapticDeviceType_Touchpad &&
+      (effect == blink::mojom::HapticEffect::kSuccess ||
+       effect == blink::mojom::HapticEffect::kError)) {
     return std::nullopt;
   }
   if (device_type == haptics::HapticDeviceType_Pen) {
@@ -251,7 +259,7 @@ std::optional<uint16_t> HapticsManagerImplWin::DefaultWaveformForDevice(
                : std::nullopt;
   }
 
-  // Mouse, Touchpad, and Generic default to Hover.
+  // Mouse and Touchpad default to Hover.
   return SUCCEEDED(known_waveforms2_->get_Hover(&value))
              ? std::optional<uint16_t>(value)
              : std::nullopt;

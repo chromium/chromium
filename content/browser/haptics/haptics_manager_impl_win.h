@@ -77,11 +77,9 @@ class CONTENT_EXPORT HapticsManagerImplWin : public HapticsManager {
   std::optional<uint16_t> ComputeWaveformForEffect(
       blink::mojom::HapticEffect effect);
 
-  // Returns the device-type default waveform used when the current device does
-  // not advertise the semantic waveform: Pen -> Click, Mouse/Touchpad/Generic
-  // -> Hover. Returns std::nullopt if the waveform statics are unavailable or
-  // the device is not haptics-capable.
-  std::optional<uint16_t> DefaultWaveformForDevice(
+  // Returns the fallback waveform for |effect| and |device_type|.
+  std::optional<uint16_t> DefaultWaveformForEffectAndDevice(
+      blink::mojom::HapticEffect effect,
       ABI::Windows::Devices::Haptics::HapticDeviceType device_type);
 
   Microsoft::WRL::ComPtr<

@@ -514,6 +514,28 @@ TEST_F(HapticsManagerImplWinTest, NoDeviceDefaultWhenDeviceTypeNone) {
   EXPECT_EQ(manager->play_count(), 0);
 }
 
+TEST_F(HapticsManagerImplWinTest, NoDeviceDefaultWhenDeviceTypeGeneric) {
+  FakeInputHapticsManager* manager =
+      InstallDeviceScenario({kHoverId}, haptics::HapticDeviceType_Generic);
+  HapticsManagerImplWin haptics_manager;
+
+  haptics_manager.PlayHaptics(blink::mojom::HapticEffect::kEdge, 1.0);
+
+  EXPECT_EQ(manager->play_count(), 0);
+}
+
+TEST_F(HapticsManagerImplWinTest,
+       SupportedGenericEffectUsesRequestedWaveformAsFallback) {
+  FakeInputHapticsManager* manager =
+      InstallDeviceScenario({kCollideId}, haptics::HapticDeviceType_Generic);
+  HapticsManagerImplWin haptics_manager;
+
+  haptics_manager.PlayHaptics(blink::mojom::HapticEffect::kEdge, 1.0);
+
+  EXPECT_EQ(manager->last_waveform(), kCollideId);
+  EXPECT_EQ(manager->last_fallback(), kCollideId);
+}
+
 TEST_F(HapticsManagerImplWinTest, FallsBackToDeviceDefaultClickForPen) {
   // A pen advertises Click but not the requested edge (Collide) waveform.
   FakeInputHapticsManager* manager =
@@ -526,6 +548,33 @@ TEST_F(HapticsManagerImplWinTest, FallsBackToDeviceDefaultClickForPen) {
   EXPECT_EQ(manager->last_waveform(), kClickId);
   EXPECT_EQ(manager->last_fallback(), kClickId);
   EXPECT_TRUE(manager->last_sent());
+}
+
+TEST_F(HapticsManagerImplWinTest,
+       TouchpadDropsUnsupportedProcessConfirmationEffects) {
+  FakeInputHapticsManager* manager =
+      InstallDeviceScenario({kHoverId}, haptics::HapticDeviceType_Touchpad);
+  HapticsManagerImplWin haptics_manager;
+
+  haptics_manager.PlayHaptics(blink::mojom::HapticEffect::kSuccess, 1.0);
+  haptics_manager.PlayHaptics(blink::mojom::HapticEffect::kError, 1.0);
+
+  EXPECT_EQ(manager->play_count(), 0);
+}
+
+TEST_F(HapticsManagerImplWinTest,
+       SupportedTouchpadProcessConfirmationUsesRequestedWaveformAsFallback) {
+  FakeInputHapticsManager* manager = InstallDeviceScenario(
+      {kSuccessId, kErrorId}, haptics::HapticDeviceType_Touchpad);
+  HapticsManagerImplWin haptics_manager;
+
+  haptics_manager.PlayHaptics(blink::mojom::HapticEffect::kSuccess, 1.0);
+  EXPECT_EQ(manager->last_waveform(), kSuccessId);
+  EXPECT_EQ(manager->last_fallback(), kSuccessId);
+
+  haptics_manager.PlayHaptics(blink::mojom::HapticEffect::kError, 1.0);
+  EXPECT_EQ(manager->last_waveform(), kErrorId);
+  EXPECT_EQ(manager->last_fallback(), kErrorId);
 }
 
 TEST_F(HapticsManagerImplWinTest, PassesDeviceDefaultAsFallbackArgument) {
