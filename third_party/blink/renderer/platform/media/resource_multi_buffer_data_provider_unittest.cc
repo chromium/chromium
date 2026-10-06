@@ -320,6 +320,32 @@ TEST_F(ResourceMultiBufferDataProviderTest, DidFailOtherErrorNotCrossOrigin) {
   EXPECT_FALSE(url_data->is_cors_cross_origin());
 }
 
+// An ORB block is deterministic, so it must fail immediately rather than being
+// retried, even at a non-zero position where transient failures are retried.
+TEST_F(ResourceMultiBufferDataProviderTest, DidFailBlockedByOrbDoesNotRetry) {
+  Initialize(kHttpUrl, 100);
+  // Exactly one loader must be created: the initial one. A retry would create
+  // a second one. The default action from the fixture's ON_CALL applies.
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(1);
+  Start();
+  scoped_refptr<UrlData> url_data = url_data_;
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFail(WebURLError(net::ERR_BLOCKED_BY_ORB, url_));
+  EXPECT_TRUE(url_data->is_cors_cross_origin());
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+// Transient errors at a non-zero position are still retried.
+TEST_F(ResourceMultiBufferDataProviderTest, DidFailOtherErrorRetries) {
+  Initialize(kHttpUrl, 100);
+  // The initial loader plus one retry.
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(2);
+  Start();
+  EXPECT_CALL(*this, RedirectCallback(_)).Times(0);
+  loader_->DidFail(WebURLError(net::ERR_FAILED, url_));
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
 TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexDidFinish) {
   Initialize(kHttpUrl, 100);
   Start();

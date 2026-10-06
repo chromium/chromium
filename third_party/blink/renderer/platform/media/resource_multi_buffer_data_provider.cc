@@ -519,9 +519,12 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
 
   // ORB only blocks cross-origin no-cors responses, which are opaque. Record
   // this so that the failure is not distinguishable from other opaque
-  // failures (e.g. via error messages exposed by the media element).
+  // failures (e.g. via error messages exposed by the media element). An ORB
+  // block is also deterministic, so fail immediately rather than retrying.
   if (error.reason() == net::ERR_BLOCKED_BY_ORB) {
     url_data_->set_is_cors_cross_origin(true);
+    url_data_->Fail();
+    return;  // "this" may be deleted now.
   }
 
   if (url_data_->url_index() && retries_ < kMaxRetries && pos_ != 0) {
