@@ -36,6 +36,7 @@
   config.descriptionText = self.descriptionText;
   config.progressTotal = self.progressTotal;
   config.progressCompleted = self.progressCompleted;
+  config.commandHandler = self.commandHandler;
   return config;
 }
 

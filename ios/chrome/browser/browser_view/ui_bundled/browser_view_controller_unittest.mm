@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
@@ -267,6 +268,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(QuickDeleteCommands));
     [dispatcher startDispatchingToTarget:mock_quick_delete_handler
                              forProtocol:@protocol(QuickDeleteCommands)];
+
+    id mock_level_up_handler = OCMProtocolMock(@protocol(LevelUpCommands));
+    [dispatcher startDispatchingToTarget:mock_level_up_handler
+                             forProtocol:@protocol(LevelUpCommands)];
 
     // Create three web states.
     for (int i = 0; i < 3; i++) {

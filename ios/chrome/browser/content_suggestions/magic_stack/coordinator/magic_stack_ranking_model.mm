@@ -268,6 +268,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   _prefChangeRegistrar.Reset();
   _prefObserverBridge.reset();
   _backgroundCustomizationService = nullptr;
+  _levelUpHandler = nil;
 }
 
 #pragma mark - Public
@@ -1233,6 +1234,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   int total = [self totalTasksForCategory:*category];
   config.progressTotal = total;
   config.progressCompleted = total - remaining;
+  config.commandHandler = self.levelUpHandler;
   return config;
 }
 

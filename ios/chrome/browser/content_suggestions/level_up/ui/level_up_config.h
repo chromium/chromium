@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
 
+@protocol LevelUpCommands;
+
 // Item containing the configurations for the Level Up Module view.
 @interface LevelUpConfig : MagicStackModule
 
@@ -18,6 +20,8 @@
 @property(nonatomic, assign) NSInteger progressTotal;
 // The number of completed tasks.
 @property(nonatomic, assign) NSInteger progressCompleted;
+// Command handler for Level Up actions.
+@property(nonatomic, weak) id<LevelUpCommands> commandHandler;
 
 @end
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -57,6 +58,13 @@ constexpr CGFloat kArrowIconPointSize = 16.0;
   return self;
 }
 
+#pragma mark - UIAccessibility
+
+- (NSString*)accessibilityLabel {
+  return [NSString
+      stringWithFormat:@"%@, %@", _config.titleText, _config.descriptionText];
+}
+
 #pragma mark - NewTabPageColorUpdating
 
 - (void)applyBackgroundColors {
@@ -71,6 +79,13 @@ constexpr CGFloat kArrowIconPointSize = 16.0;
 // Creates and configures the child views for the Level Up Magic Stack card.
 - (void)createSubviews {
   self.translatesAutoresizingMaskIntoConstraints = NO;
+  self.isAccessibilityElement = YES;
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
+
+  UITapGestureRecognizer* tapRecognizer =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handleTap:)];
+  [self addGestureRecognizer:tapRecognizer];
 
   _iconContainerView = [self createIconContainerView];
 
@@ -91,6 +106,13 @@ constexpr CGFloat kArrowIconPointSize = 16.0;
 
   [self addSubview:contentStack];
   AddSameConstraints(contentStack, self);
+}
+
+// Handles tap gestures on the Level Up card.
+- (void)handleTap:(UITapGestureRecognizer*)sender {
+  if (sender.state == UIGestureRecognizerStateEnded) {
+    [_config.commandHandler showLevelUp];
+  }
 }
 
 // Creates the text stack view.

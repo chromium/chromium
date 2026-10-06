@@ -25,6 +25,7 @@ class AuthenticationService;
 enum class ContentSuggestionsModuleType;
 class LevelUpService;
 @protocol HomeStartDataSource;
+@protocol LevelUpCommands;
 @class MagicStackModule;
 @protocol MagicStackRankingModelDelegate;
 class PrefService;
@@ -40,6 +41,9 @@ class HomeBackgroundCustomizationService;
 
 // Data Source for the Home Start state.
 @property(nonatomic, weak) id<HomeStartDataSource> homeStartDataSource;
+
+// Handler for Level Up commands.
+@property(nonatomic, weak) id<LevelUpCommands> levelUpHandler;
 
 // Default initializer with the module mediators passed in through
 // `moduleMediators`.
