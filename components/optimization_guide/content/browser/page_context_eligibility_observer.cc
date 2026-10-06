@@ -91,6 +91,7 @@ bool PageContextEligibilityObserver::ComputePageContextEligibility() {
 
 void PageContextEligibilityObserver::ResetToUnknown() {
   meta_tags_observer_.reset();
+  observed_meta_tag_names_.clear();
   current_metadata_.clear();
   received_meta_tags_for_current_page_ = false;
   if (last_eligibility_ != PageContextEligibilityStatus::kUnknown) {
@@ -205,14 +206,18 @@ void PageContextEligibilityObserver::UpdateObserver() {
     meta_tags_observer_.reset();
     observed_meta_tag_names_ = names;
     current_metadata_.clear();
+    received_meta_tags_for_current_page_ = false;
 
     if (!names.empty()) {
+      // Registering `PageContentMetadataObserver` causes the renderer's
+      // `FrameMetadataObserverRegistry` to send an initial `OnMetaTagsChanged`
+      // update once the document finishes parsing (or immediately if it has
+      // already finished parsing), so there is no need to force an update here.
       meta_tags_observer_ = std::make_unique<PageContentMetadataObserver>(
           web_contents(), names,
           base::BindRepeating(
               &PageContextEligibilityObserver::OnMetaTagsChanged,
               base::Unretained(this)));
-      OnMetaTagsChanged(meta_tags_observer_->GetCurrentMetadata());
     }
   }
 
@@ -221,12 +226,13 @@ void PageContextEligibilityObserver::UpdateObserver() {
 
 void PageContextEligibilityObserver::OnMetaTagsChanged(
     blink::mojom::PageMetadataPtr metadata) {
-  received_meta_tags_for_current_page_ = true;
   current_metadata_.clear();
   if (!metadata) {
+    received_meta_tags_for_current_page_ = false;
     CheckEligibilityAndNotify();
     return;
   }
+  received_meta_tags_for_current_page_ = true;
 
   for (const auto& frame_metadata_mojom : metadata->frame_metadata) {
     std::vector<MetaTag> meta_tags;

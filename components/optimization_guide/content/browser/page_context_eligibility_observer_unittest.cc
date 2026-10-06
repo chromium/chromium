@@ -139,6 +139,10 @@ class PageContextEligibilityObserverTest
     observer.OnMetaTagsChanged(std::move(metadata));
   }
 
+  bool HasMetaTagsObserver(const PageContextEligibilityObserver& observer) {
+    return observer.meta_tags_observer_ != nullptr;
+  }
+
  private:
   std::unique_ptr<MockEligibilityAPI> mock_api_;
   std::unique_ptr<PageContextEligibility> test_eligibility_holder_;
@@ -178,13 +182,21 @@ TEST_F(PageContextEligibilityObserverTest, MetaTagParsingAndObserverUpdates) {
           .meta_tag_names_affecting_eligibility = {.data = kMetaTagNames,
                                                    .size = 1}}));
 
-  EXPECT_CALL(*mock_api(), IsPageContextEligibleWithAccount(
-                               "www.example.com", "/path", "", testing::_))
-      .WillRepeatedly(testing::Return(true));
-
   auto observer_ptr = CreateObserver();
   ASSERT_TRUE(observer_ptr);
   PageContextEligibilityObserver& observer = *observer_ptr;
+
+  // Before the renderer provides initial metadata, eligibility should remain
+  // kUnknown rather than evaluating with empty metadata.
+  EXPECT_TRUE(HasMetaTagsObserver(observer));
+  EXPECT_EQ(observer.IsPageContextEligible(),
+            PageContextEligibilityStatus::kUnknown);
+
+  // Null metadata (indicating the primary main frame has not reported initial
+  // metadata yet) should keep eligibility at kUnknown.
+  CallOnMetaTagsChanged(observer, nullptr);
+  EXPECT_EQ(observer.IsPageContextEligible(),
+            PageContextEligibilityStatus::kUnknown);
 
   // Simulate meta tag update.
   auto page_metadata = blink::mojom::PageMetadata::New();
@@ -313,6 +325,92 @@ TEST_F(PageContextEligibilityObserverTest, NavigationResetsObserver) {
   // The fact that GetMetaTagNamesAffectingEligibility and
   // IsPageContextEligibleWithAccount are called with the new URL means the
   // observer properly reset and re-evaluated.
+}
+
+TEST_F(PageContextEligibilityObserverTest,
+       NavigationBetweenConditionalMetaTagPagesRecreatesObserver) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/page1"));
+
+  static constexpr std::string_view kMetaTagNames[] = {"test_tag"};
+  EXPECT_CALL(*mock_api(),
+              CheckPageEligibility(IsSingleFrame("www.example.com", "/page1")))
+      .WillOnce(testing::Return(PageEligibilityResult{
+          .status = PageEligibility::kConditionalOnMetaTags,
+          .meta_tag_names_affecting_eligibility = {.data = kMetaTagNames,
+                                                   .size = 1}}));
+
+  std::vector<PageContextEligibilityStatus> notifications;
+  auto observer_ptr = CreateObserver(
+      "user@example.com",
+      base::BindRepeating(
+          [](std::vector<PageContextEligibilityStatus>* out,
+             PageContextEligibilityStatus status) { out->push_back(status); },
+          &notifications));
+  ASSERT_TRUE(observer_ptr);
+  PageContextEligibilityObserver& observer = *observer_ptr;
+
+  EXPECT_TRUE(HasMetaTagsObserver(observer));
+  EXPECT_EQ(observer.IsPageContextEligible(),
+            PageContextEligibilityStatus::kUnknown);
+  EXPECT_TRUE(notifications.empty());
+
+  // Deliver initial metadata for page1.
+  auto page_metadata1 = blink::mojom::PageMetadata::New();
+  auto frame_metadata1 = blink::mojom::FrameMetadata::New();
+  frame_metadata1->url = GURL("https://www.example.com/page1");
+  page_metadata1->frame_metadata.push_back(std::move(frame_metadata1));
+
+  EXPECT_CALL(*mock_api(), IsPageContextEligibleWithAccount(
+                               "www.example.com", "/page1", "user@example.com",
+                               testing::SizeIs(1)))
+      .WillOnce(testing::Return(true));
+
+  CallOnMetaTagsChanged(observer, std::move(page_metadata1));
+  EXPECT_EQ(observer.IsPageContextEligible(),
+            PageContextEligibilityStatus::kEligible);
+  EXPECT_THAT(notifications,
+              testing::ElementsAre(PageContextEligibilityStatus::kEligible));
+
+  // Navigate to a second conditional meta-tag page with the same required
+  // meta tag names.
+  EXPECT_CALL(*mock_api(),
+              CheckPageEligibility(IsSingleFrame("www.example.com", "/page2")))
+      .WillOnce(testing::Return(PageEligibilityResult{
+          .status = PageEligibility::kConditionalOnMetaTags,
+          .meta_tag_names_affecting_eligibility = {.data = kMetaTagNames,
+                                                   .size = 1}}));
+
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/page2"));
+
+  // The observer must recreate `meta_tags_observer_` and transition to
+  // kUnknown while waiting for the new page's metadata.
+  EXPECT_TRUE(HasMetaTagsObserver(observer));
+  EXPECT_EQ(observer.IsPageContextEligible(),
+            PageContextEligibilityStatus::kUnknown);
+  EXPECT_THAT(notifications,
+              testing::ElementsAre(PageContextEligibilityStatus::kEligible,
+                                   PageContextEligibilityStatus::kUnknown));
+
+  // Deliver initial metadata for page2.
+  auto page_metadata2 = blink::mojom::PageMetadata::New();
+  auto frame_metadata2 = blink::mojom::FrameMetadata::New();
+  frame_metadata2->url = GURL("https://www.example.com/page2");
+  page_metadata2->frame_metadata.push_back(std::move(frame_metadata2));
+
+  EXPECT_CALL(*mock_api(), IsPageContextEligibleWithAccount(
+                               "www.example.com", "/page2", "user@example.com",
+                               testing::SizeIs(1)))
+      .WillOnce(testing::Return(true));
+
+  CallOnMetaTagsChanged(observer, std::move(page_metadata2));
+  EXPECT_EQ(observer.IsPageContextEligible(),
+            PageContextEligibilityStatus::kEligible);
+  EXPECT_THAT(notifications,
+              testing::ElementsAre(PageContextEligibilityStatus::kEligible,
+                                   PageContextEligibilityStatus::kUnknown,
+                                   PageContextEligibilityStatus::kEligible));
 }
 
 TEST_F(PageContextEligibilityObserverTest, SubframeNavigation) {
