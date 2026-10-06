@@ -5,10 +5,15 @@
 package org.chromium.chrome.browser.actor;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -35,6 +40,12 @@ public class ActorExternalTriggerSnackbarController
                 StartStopWithNativeObserver,
                 Destroyable,
                 SnackbarManager.SnackbarController {
+    /** Android package name for the Gemini (Bard) shell app. */
+    @VisibleForTesting
+    static final String BARD_PACKAGE_NAME = "com.google.android.apps.bard";
+
+    private static final String GEMINI_APP_BASE_URL = "https://gemini.google.com/app";
+
     private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -107,13 +118,16 @@ public class ActorExternalTriggerSnackbarController
         }
         String errorMessage =
                 mActivity.getString(R.string.actor_task_list_bubble_row_failed_task_subtitle);
+        String actionText = mActivity.getString(R.string.actor_snackbar_back_to_gemini);
         Snackbar errorSnackbar =
                 Snackbar.make(
                         errorMessage,
                         this,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_ACTOR_EXTERNAL_TRIGGER);
+        errorSnackbar.setAction(actionText, null);
         mSnackbarManager.showSnackbar(errorSnackbar);
+
         mIsErrorSnackbarShowing = true;
     }
 
@@ -140,10 +154,14 @@ public class ActorExternalTriggerSnackbarController
         mSnackbarManager.showSnackbar(snackbar);
     }
 
-    private void dismissSnackbar() {
+    private void clearState() {
         mHandler.removeCallbacks(mTimeoutRunnable);
         mIsPendingTaskStart = false;
         mIsErrorSnackbarShowing = false;
+    }
+
+    private void dismissSnackbar() {
+        clearState();
         mSnackbarManager.dismissSnackbars(this);
     }
 
@@ -165,16 +183,30 @@ public class ActorExternalTriggerSnackbarController
 
     @Override
     public void onAction(@Nullable Object actionData) {
-        mHandler.removeCallbacks(mTimeoutRunnable);
-        mIsPendingTaskStart = false;
-        mIsErrorSnackbarShowing = false;
+        clearState();
+
+        // Launch the Gemini shell app directly via its package launcher intent so it resumes the
+        // active conversation in place (sending https://gemini.google.com/app via ACTION_VIEW to
+        // AGSA triggers a ZeroState FLAG_ACTIVITY_CLEAR_TASK reset). Chrome declares
+        // QUERY_ALL_PACKAGES in AndroidManifest.xml, so Android 11+ (API 30+) package visibility
+        // is satisfied without an explicit <queries> entry.
+        Intent launchIntent =
+                mActivity.getPackageManager().getLaunchIntentForPackage(BARD_PACKAGE_NAME);
+        if (launchIntent != null && IntentUtils.safeStartActivity(mActivity, launchIntent)) {
+            return;
+        }
+
+        // If the Gemini app is not installed, open the Gemini web app URL directly in Chrome
+        // rather than routing an implicit ACTION_VIEW through the system browser resolver.
+        Intent fallbackViewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GEMINI_APP_BASE_URL));
+        fallbackViewIntent.setPackage(mActivity.getPackageName());
+        IntentUtils.addTrustedIntentExtras(fallbackViewIntent);
+        IntentUtils.safeStartActivity(mActivity, fallbackViewIntent);
     }
 
     @Override
     public void onDismissNoAction(@Nullable Object actionData) {
-        mHandler.removeCallbacks(mTimeoutRunnable);
-        mIsPendingTaskStart = false;
-        mIsErrorSnackbarShowing = false;
+        clearState();
     }
 
     @Override

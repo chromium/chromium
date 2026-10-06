@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +17,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,9 +31,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -225,5 +232,53 @@ public class ActorExternalTriggerSnackbarControllerTest {
 
         mController.onStartWithNative();
         verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    public void testTimeout_showsErrorSnackbarWithAction() {
+        mController.onPendingActorTaskTrigger();
+        ShadowLooper.idleMainLooper(2, TimeUnit.MINUTES);
+
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager, times(2)).showSnackbar(snackbarCaptor.capture());
+        Snackbar errorSnackbar = snackbarCaptor.getValue();
+
+        assertEquals(
+                mActivity.getString(R.string.actor_snackbar_back_to_gemini),
+                errorSnackbar.getActionText());
+        assertNull(errorSnackbar.getActionData());
+    }
+
+    @Test
+    public void testOnAction_startsGeminiActivity_usesLaunchIntentWhenInstalled() {
+        Intent mockLaunchIntent = new Intent(Intent.ACTION_MAIN);
+        mockLaunchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        mockLaunchIntent.setPackage(ActorExternalTriggerSnackbarController.BARD_PACKAGE_NAME);
+
+        ResolveInfo info = new ResolveInfo();
+        info.activityInfo = new ActivityInfo();
+        info.activityInfo.packageName = ActorExternalTriggerSnackbarController.BARD_PACKAGE_NAME;
+        info.activityInfo.name = "BardActivity";
+        Shadows.shadowOf(mActivity.getPackageManager())
+                .addResolveInfoForIntent(mockLaunchIntent, info);
+
+        mController.onAction(null);
+
+        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(Intent.ACTION_MAIN, intent.getAction());
+        assertEquals(ActorExternalTriggerSnackbarController.BARD_PACKAGE_NAME, intent.getPackage());
+    }
+
+    @Test
+    public void testOnAction_startsGeminiActivity_fallbackViewWhenNotInstalled() {
+        mController.onAction(null);
+
+        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(Uri.parse("https://gemini.google.com/app"), intent.getData());
+        assertEquals(mActivity.getPackageName(), intent.getPackage());
+        assertTrue(IntentUtils.isTrustedIntentFromSelf(intent));
     }
 }
