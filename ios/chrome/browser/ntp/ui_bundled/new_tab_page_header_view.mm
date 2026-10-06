@@ -1348,6 +1348,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
   _isAIMAllowed = allowed;
   [self refreshFakeboxContent];
+  [self updateFakeboxDisplay];
 }
 
 - (void)setFuseboxEligible:(BOOL)eligible {
@@ -2195,8 +2196,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (CGFloat)headerHeight {
-  return content_suggestions::HeightForLogoHeader(self.searchEngineLogoState,
-                                                  self.traitCollection);
+  return content_suggestions::HeightForLogoHeader(
+      self.searchEngineLogoState, self.traitCollection, _isAIMAllowed);
 }
 
 #pragma mark - Private (Fakebox & Logo Layout Helpers)
@@ -2218,7 +2219,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 - (void)updateFakeboxDisplay {
   self.doodleTopMarginConstraint.constant = content_suggestions::LogoTopPadding(
-      self.searchEngineLogoState, self.traitCollection);
+      self.searchEngineLogoState, self.traitCollection, _isAIMAllowed);
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(self.searchEngineLogoState,
                                                     self.traitCollection)];
@@ -2226,8 +2227,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       CanShowTabStrip(self) &&
       (self.searchEngineLogoState == SearchEngineLogoState::kNone);
   self.headerViewHeightConstraint.constant =
-      content_suggestions::HeightForLogoHeader(self.searchEngineLogoState,
-                                               self.traitCollection);
+      content_suggestions::HeightForLogoHeader(
+          self.searchEngineLogoState, self.traitCollection, _isAIMAllowed);
   if (self.window) {
     [self layoutIfNeeded];
   } else {
@@ -2242,7 +2243,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       constraintEqualToAnchor:headerView.topAnchor
                      constant:content_suggestions::LogoTopPadding(
                                   self.searchEngineLogoState,
-                                  self.traitCollection)];
+                                  self.traitCollection, _isAIMAllowed)];
   self.doodleHeightConstraint = [logoView.heightAnchor
       constraintEqualToConstant:content_suggestions::DoodleHeight(
                                     self.searchEngineLogoState,

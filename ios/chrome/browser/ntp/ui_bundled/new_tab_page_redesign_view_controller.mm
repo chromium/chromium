@@ -1288,7 +1288,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   if ([self isCompactHeight]) {
     return kLandscapeLogoTopMargin;
   }
-  return content_suggestions::LogoTopPadding(_logoState, self.traitCollection);
+  return content_suggestions::LogoTopPadding(_logoState, self.traitCollection,
+                                             _isAIMAllowed);
 }
 
 - (CGFloat)centeredFakeOmniboxTop {

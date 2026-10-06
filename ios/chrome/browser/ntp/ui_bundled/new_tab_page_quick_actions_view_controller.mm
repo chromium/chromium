@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
 #import "components/ntp_tiles/features.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_button_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -21,10 +21,6 @@ using ntp_tiles::AimButtonRefactorArm;
 
 // The spacing in points between the buttons.
 constexpr CGFloat kButtonStackViewSpacing = 8.0;
-
-// The height for the quick actions button row.
-constexpr CGFloat kQuickActionsHeight = 44.0;
-constexpr CGFloat kQuickActionsHeightUICleanup = 50.0;
 
 // Width ratio of the leading quick action button to the total width of the
 // quick actions row when there are three (3) buttons in the row.
@@ -81,10 +77,7 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
 }
 
 - (CGSize)preferredContentSize {
-  return CGSizeMake(super.preferredContentSize.width,
-                    IsNewTabPageUICleanupEnabled()
-                        ? kQuickActionsHeightUICleanup
-                        : kQuickActionsHeight);
+  return CGSizeMake(super.preferredContentSize.width, QuickActionsHeight());
 }
 
 #pragma mark - Private
@@ -181,9 +174,7 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
 
   [NSLayoutConstraint activateConstraints:@[
     [_buttonStackView.heightAnchor
-        constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
-                                      ? kQuickActionsHeightUICleanup
-                                      : kQuickActionsHeight],
+        constraintEqualToConstant:QuickActionsHeight()],
   ]];
 
   if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||

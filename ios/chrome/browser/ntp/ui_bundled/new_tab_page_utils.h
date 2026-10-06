@@ -46,4 +46,7 @@ CGFloat MostVisitedContainerHeight(
     MostVisitedTilesCollectionView* collectionView,
     UIView* fallbackView = nil);
 
+/// Returns the height for the NTP Quick Actions button row.
+CGFloat QuickActionsHeight();
+
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_UTILS_H_
