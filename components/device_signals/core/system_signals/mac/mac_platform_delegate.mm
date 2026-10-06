@@ -15,7 +15,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_view_util.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/asn1_util.h"
 
 namespace device_signals {
@@ -140,7 +140,8 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeys(
     return public_keys;
   }
 
-  public_keys.hashes.push_back(crypto::SHA256HashString(spki_bytes));
+  public_keys.hashes.push_back(
+      std::string(base::as_string_view(crypto::hash::Sha256(spki_bytes))));
   return public_keys;
 }
 

@@ -19,11 +19,12 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
+#include "crypto/hash.h"
 #include "crypto/scoped_capi_types.h"
-#include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
 
 namespace device_signals {
@@ -73,7 +74,7 @@ std::pair<std::optional<std::string>, std::optional<std::string>> GetSPKIHash(
 
     std::string_view spki;
     if (net::asn1::ExtractSPKIFromDERCert(der_bytes, &spki)) {
-      ret.first = crypto::SHA256HashString(spki);
+      ret.first = std::string(base::as_string_view(crypto::hash::Sha256(spki)));
     }
 
     // Get the subject. First ask how long the name is, including null
