@@ -508,21 +508,8 @@ public class PasswordManagerHelper {
                 forAccount
                         ? PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM
                         : PasswordMetricsUtil.LOCAL_GET_INTENT_API_ERROR_HISTOGRAM;
-        final String kGetIntentErrorConnectionResultCodeHistogram =
-                forAccount
-                        ? PasswordMetricsUtil
-                                .ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM
-                        : PasswordMetricsUtil
-                                .LOCAL_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM;
-
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
         RecordHistogram.recordSparseHistogram(kGetIntentApiErrorHistogram, apiErrorCode);
-        Integer connectionResultCode =
-                PasswordManagerAndroidBackendUtil.getConnectionResultCode(exception);
-        if (connectionResultCode == null) return;
-
-        RecordHistogram.recordSparseHistogram(
-                kGetIntentErrorConnectionResultCodeHistogram, connectionResultCode);
     }
 
     private static void launchIntentAndRecordSuccess(

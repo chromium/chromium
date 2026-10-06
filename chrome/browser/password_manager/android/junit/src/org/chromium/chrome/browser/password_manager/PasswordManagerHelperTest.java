@@ -543,9 +543,6 @@ public class PasswordManagerHelperTest {
                                 CommonStatusCodes.INTERNAL_ERROR)
                         .expectNoRecords(
                                 PasswordMetricsUtil
-                                        .ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM)
-                        .expectNoRecords(
-                                PasswordMetricsUtil
                                         .ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
         chooseToSyncPasswords();
@@ -575,9 +572,6 @@ public class PasswordManagerHelperTest {
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
                                 CredentialManagerError.OTHER_API_ERROR)
                         .expectNoRecords(PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM)
-                        .expectNoRecords(
-                                PasswordMetricsUtil
-                                        .ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM)
                         .expectNoRecords(
                                 PasswordMetricsUtil
                                         .ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)

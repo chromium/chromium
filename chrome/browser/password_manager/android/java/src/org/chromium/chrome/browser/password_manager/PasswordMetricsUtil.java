@@ -53,8 +53,6 @@ public class PasswordMetricsUtil {
             "PasswordManager.CredentialManager.Account.GetIntent.Error";
     public static final String ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.GetIntent.APIError";
-    public static final String ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM =
-            "PasswordManager.CredentialManager.Account.GetIntent.APIError.ConnectionResultCode";
     public static final String ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.Launch.Success";
 
@@ -66,9 +64,6 @@ public class PasswordMetricsUtil {
             "PasswordManager.CredentialManager.LocalProfile.GetIntent.Error";
     public static final String LOCAL_GET_INTENT_API_ERROR_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.GetIntent.APIError";
-    public static final String LOCAL_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM =
-            "PasswordManager.CredentialManager.LocalProfile.GetIntent.APIError"
-                    + ".ConnectionResultCode";
     public static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
