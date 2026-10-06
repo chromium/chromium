@@ -47,11 +47,7 @@ class TestDatabase : public BtmDatabase {
   void LogDatabaseMetricsForTesting() { LogDatabaseMetrics(); }
 };
 
-enum ColumnType {
-  kUserActivation,
-  kBounce,
-  kWebAuthnAssertion
-};
+enum ColumnType { kUserActivation, kBounce, kWebAuthnAssertion };
 }  // namespace
 
 class BtmDatabaseTest : public testing::Test {
@@ -62,7 +58,9 @@ class BtmDatabaseTest : public testing::Test {
   // FromSecondsSinceUnixEpoch.
   base::TimeDelta tiny_delta = base::Milliseconds(1);
 
-  TimestampRange ToRange(base::Time& time) { return {{time, time}}; }
+  TimestampRange ToRange(base::Time& time) {
+    return {{time, time}};
+  }
 
  protected:
   base::SimpleTestClock clock_;
@@ -1339,8 +1337,7 @@ TEST_F(BtmDatabaseHistogramTest, HealthMetrics) {
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 1);
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 1);
 
-  // These should each have one sample after database initialization.
-  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseHealthMetricsTime", 1);
+  // Should have one sample after database initialization.
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseSize", 1);
 
   // The database should be empty.
@@ -1359,8 +1356,7 @@ TEST_F(BtmDatabaseHistogramTest, HealthMetrics) {
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 1);
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 1);
 
-  // These should each have two samples now.
-  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseHealthMetricsTime", 2);
+  // Should have two samples now.
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseSize", 2);
 
   // The database should now have one entry.

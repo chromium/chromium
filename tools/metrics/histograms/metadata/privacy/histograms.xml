@@ -250,21 +250,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
-    expires_after="2025-05-27">
-  <owner>liu@chromium.org</owner>
-  <owner>src/content/browser/btm/OWNERS</owner>
-  <summary>
-    The time taken to gather DIPS database health metrics. For each user
-    profile, these metrics are reported at profile open (which usually happens
-    at startup). They are also reported approximately once every 24 hours
-    thereafter, while the profile remains open and active. Note that Guest and
-    other OTR profiles (e.g. Incognito) will always startup with empty
-    databases, so that may explain why some databases collect health metrics so
-    quickly.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
     expires_after="2027-07-27">
   <owner>liu@chromium.org</owner>

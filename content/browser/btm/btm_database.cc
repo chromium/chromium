@@ -299,7 +299,6 @@ sql::InitStatus BtmDatabase::Init() {
 
 void BtmDatabase::LogDatabaseMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeTicks start_time = base::TimeTicks::Now();
 
   std::optional<int64_t> db_size = base::GetFileSize(db_path_);
   if (db_size.has_value()) {
@@ -309,9 +308,6 @@ void BtmDatabase::LogDatabaseMetrics() {
 
   base::UmaHistogramCounts10000("Privacy.DIPS.DatabaseEntryCount",
                                 GetEntryCount(BtmDatabaseTable::kBounces));
-
-  base::UmaHistogramTimes("Privacy.DIPS.DatabaseHealthMetricsTime",
-                          base::TimeTicks::Now() - start_time);
 }
 
 bool BtmDatabase::CheckDBInit() {
