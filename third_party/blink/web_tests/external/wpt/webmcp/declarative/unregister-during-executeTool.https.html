@@ -17,29 +17,26 @@ promise_test(async t => {
 
   await waitForTool('endless_tool');
 
-  let resolveRespondWith;
-  const submitted_promise = new Promise((resolve) => {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      // Respond with a Promise that resolves when resolveRespondWith is called.
-      e.respondWith(new Promise(res => {
-        resolveRespondWith = res;
-      }));
-      resolve();
-    });
+  const { promise: submittedPromise, resolve: resolveSubmitted } = Promise.withResolvers();
+  const { promise: respondWithPromise, resolve: resolveRespondWith } = Promise.withResolvers();
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // Respond with a Promise that resolves when resolveRespondWith is called.
+    e.respondWith(respondWithPromise);
+    resolveSubmitted();
   });
 
   const tools = await document.modelContext.getTools();
   const tool = tools.find(t => t.name === 'endless_tool');
   assert_true(!!tool, 'Tool should be registered');
 
-  const execute_promise = document.modelContext.executeTool(tool);
+  const executePromise = document.modelContext.executeTool(tool);
 
   // Wait deterministically for the form to submit and call respondWith().
-  await submitted_promise;
+  await submittedPromise;
 
-  const toolChangePromise = new Promise(resolve =>
-      document.modelContext.addEventListener('toolchange', resolve, { once: true }));
+  const { promise: toolChangePromise, resolve: resolveToolChange } = Promise.withResolvers();
+  document.modelContext.addEventListener('toolchange', resolveToolChange, { once: true });
 
   // Unregister the declarative tool by removing the form element while execution is pending.
   form.remove();
@@ -50,7 +47,7 @@ promise_test(async t => {
 
   resolveRespondWith('form_dom_result');
 
-  const result = await execute_promise;
+  const result = await executePromise;
   assert_equals(result, 'form_dom_result', 'Pending execution Promise should resolve to tool result even if form element was removed from DOM');
 }, 'Pending executeTool() Promise resolves successfully when target declarative tool is unregistered via DOM removal');
 
@@ -64,28 +61,25 @@ promise_test(async t => {
 
   await waitForTool('endless_tool_attr');
 
-  let resolveRespondWith;
-  const submitted_promise = new Promise((resolve) => {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      e.respondWith(new Promise(res => {
-        resolveRespondWith = res;
-      }));
-      resolve();
-    });
+  const { promise: submittedPromise, resolve: resolveSubmitted } = Promise.withResolvers();
+  const { promise: respondWithPromise, resolve: resolveRespondWith } = Promise.withResolvers();
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    e.respondWith(respondWithPromise);
+    resolveSubmitted();
   });
 
   const tools = await document.modelContext.getTools();
   const tool = tools.find(t => t.name === 'endless_tool_attr');
   assert_true(!!tool, 'Tool should be registered');
 
-  const execute_promise = document.modelContext.executeTool(tool);
+  const executePromise = document.modelContext.executeTool(tool);
 
   // Wait deterministically for the form to submit and call respondWith().
-  await submitted_promise;
+  await submittedPromise;
 
-  const toolChangePromise = new Promise(resolve =>
-      document.modelContext.addEventListener('toolchange', resolve, { once: true }));
+  const { promise: toolChangePromise, resolve: resolveToolChange } = Promise.withResolvers();
+  document.modelContext.addEventListener('toolchange', resolveToolChange, { once: true });
 
   // Unregister by removing required tooldescription attribute while execution is pending.
   form.removeAttribute('tooldescription');
@@ -96,7 +90,7 @@ promise_test(async t => {
 
   resolveRespondWith('form_attr_result');
 
-  const result = await execute_promise;
+  const result = await executePromise;
   assert_equals(result, 'form_attr_result', 'Pending execution Promise should resolve to tool result even if form attribute was removed');
 }, 'Pending executeTool() Promise resolves successfully when target declarative tool is unregistered via attribute removal');
 

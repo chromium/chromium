@@ -13,12 +13,12 @@ promise_test(async t => {
   const regController = new AbortController();
   t.add_cleanup(() => regController.abort());
 
-  let received_signal = null;
+  let receivedSignal = null;
   await document.modelContext.registerTool({
     name: 'default_signal_tool',
     description: 'Test default signal',
     execute: async (input, options) => {
-      received_signal = options.signal;
+      receivedSignal = options.signal;
       return 'success';
     }
   }, { signal: regController.signal });
@@ -26,8 +26,8 @@ promise_test(async t => {
   const [tool] = await document.modelContext.getTools();
   const result = await document.modelContext.executeTool(tool);
   assert_equals(result, 'success');
-  assert_true(received_signal instanceof AbortSignal, 'options.signal should be an AbortSignal instance');
-  assert_false(received_signal.aborted, 'signal should not be aborted');
+  assert_true(receivedSignal instanceof AbortSignal, 'options.signal should be an AbortSignal instance');
+  assert_false(receivedSignal.aborted, 'signal should not be aborted');
 }, 'executeTool() provides a non-aborted default AbortSignal when called without options');
 
 promise_test(async t => {
