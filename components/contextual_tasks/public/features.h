@@ -178,6 +178,9 @@ size_t GetCopyTextJourneysMinQueryMatchLength();
 
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 
+BASE_DECLARE_FEATURE(kContextualSearchContextualCuesHandleEdu);
+BASE_DECLARE_FEATURE(kContextualSearchContextualCuesHandleShopping);
+
 enum class OverflowMenuItems {
   kAllItems,
   kAllWithoutNewThread,
