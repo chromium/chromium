@@ -38,7 +38,7 @@ suite('SiteSettingsMixinLit', function() {
 
   test('PropertiesAndBrowserProxy', async function() {
     assertEquals(browserProxy, testElement.browserProxy);
-    assertEquals(ContentSettingsTypes.COOKIES, testElement.category);
+    assertEquals(undefined, testElement.category);
 
     testElement.category = ContentSettingsTypes.GEOLOCATION;
     await microtasksFinished();

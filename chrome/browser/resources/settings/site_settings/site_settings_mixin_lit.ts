@@ -9,7 +9,8 @@
 import {dedupingMixin} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {ContentSettingsTypes, SiteSettingSource} from './constants.js';
+import {SiteSettingSource} from './constants.js';
+import type {ContentSettingsTypes} from './constants.js';
 import type {RawSiteException, SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 
@@ -30,7 +31,7 @@ export const SiteSettingsMixinLit = dedupingMixin(
           };
         }
 
-        accessor category: ContentSettingsTypes = ContentSettingsTypes.COOKIES;
+        accessor category: ContentSettingsTypes|undefined = undefined;
 
         browserProxy: SiteSettingsBrowserProxy =
             SiteSettingsBrowserProxyImpl.getInstance();
@@ -143,7 +144,7 @@ export const SiteSettingsMixinLit = dedupingMixin(
 
 export interface SiteSettingsMixinLitInterface {
   browserProxy: SiteSettingsBrowserProxy;
-  category: ContentSettingsTypes;
+  category?: ContentSettingsTypes;
   originRepresentation(origin: string): string;
   toUrl(originOrPattern: string): URL|null;
   expandSiteException(exception: RawSiteException): SiteException;
