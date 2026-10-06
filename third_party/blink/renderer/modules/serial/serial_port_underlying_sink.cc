@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -223,11 +223,12 @@ void SerialPortUnderlyingSink::WriteData() {
   DCHECK(pending_operation_);
   DCHECK(buffer_source_);
 
-  DOMArrayPiece array_piece(buffer_source_);
+  base::span<const uint8_t> data =
+      AsSpan<SharedBufferPolicy::kDisallow>(*buffer_source_);
   // From https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy, if the
   // buffer source is detached then an empty byte sequence is returned, which
   // means the write is complete.
-  if (array_piece.IsDetached()) {
+  if (data.empty()) {
     buffer_source_ = nullptr;
     offset_ = 0;
     pending_operation_->Resolve();
@@ -236,13 +237,12 @@ void SerialPortUnderlyingSink::WriteData() {
   }
 
   size_t actually_written_bytes = 0;
-  MojoResult result =
-      data_pipe_->WriteData(array_piece.ByteSpan().subspan(offset_),
-                            MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
+  MojoResult result = data_pipe_->WriteData(
+      data.subspan(offset_), MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
   switch (result) {
     case MOJO_RESULT_OK:
       offset_ += actually_written_bytes;
-      if (offset_ == array_piece.ByteLength()) {
+      if (offset_ == data.size()) {
         buffer_source_ = nullptr;
         offset_ = 0;
         pending_operation_->Resolve();
