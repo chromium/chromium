@@ -698,8 +698,8 @@ TEST_F(PopupRowFactoryUtilsTest,
 }
 
 // Tests that Wallet Direct Offer suggestions have a multiline main text label
-// with max 2 lines and extra vertical padding when the text wraps onto multiple
-// lines.
+// with max 2 lines and 3-row vertical padding when the text wraps onto
+// multiple lines.
 TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferMultiLineAndHeight) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableWalletDirectOffers);
@@ -729,8 +729,28 @@ TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferMultiLineAndHeight) {
   EXPECT_EQ(insets.bottom(), 8);
 }
 
-// Tests that Wallet Direct Offer suggestions with short main text do not get
-// extra vertical padding.
+// Tests that 3-row Wallet Direct Offer suggestions with a single-line main
+// text get the same vertical padding as wrapped ones.
+TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferShortTextThreeRowsPadding) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
+  EXPECT_CALL(controller(), GetMainFillingProduct())
+      .WillRepeatedly(testing::Return(FillingProduct::kMerchantPromoCode));
+
+  Suggestion suggestion(u"5% off", SuggestionType::kMerchantPromoCodeEntry);
+  suggestion.icon = Suggestion::Icon::kOfferTag;
+  suggestion.labels = {{Suggestion::Text(u"Code: PROMO123")},
+                       {Suggestion::Text(u"Expires in 2 days")}};
+  ShowSuggestion(suggestion);
+
+  gfx::Insets insets = row_view().GetContentView().GetInsideBorderInsets();
+  EXPECT_EQ(insets.top(), 8);
+  EXPECT_EQ(insets.bottom(), 8);
+}
+
+// Tests that 2-row Wallet Direct Offer suggestions with short main text do not
+// get extra vertical padding.
 TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferShortTextNoExtraPadding) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableWalletDirectOffers);
