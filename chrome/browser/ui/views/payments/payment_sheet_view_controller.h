@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_SHEET_VIEW_CONTROLLER_H_
 
 #include <memory>
-#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
@@ -46,9 +45,8 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
 
   void ButtonPressed(base::RepeatingClosure closure);
 
-  void SetInputEventActivationProtectorForTesting(
-      std::unique_ptr<views::InputEventActivationProtector> input_protector) {
-    input_protector_ = std::move(input_protector);
+  views::InputEventActivationProtector* input_protector_for_testing() {
+    return input_protector_.get();
   }
 
  private:

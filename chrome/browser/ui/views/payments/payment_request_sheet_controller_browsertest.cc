@@ -49,6 +49,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
 
   ASSERT_TRUE(WaitForObservedEvent());
 
+  EXPECT_FALSE(test_api(dialog_view()).view_stack()->GetVisible());
   EXPECT_TRUE(test_api(dialog_view()).throbber_overlay()->GetVisible());
   EXPECT_FALSE(test_api(dialog_view())
                    .throbber_overlay()
@@ -62,6 +63,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   ResetEventWaiter(DialogEvent::PROCESSING_SPINNER_HIDDEN);
   dialog_view()->HideProcessingSpinner();
   ASSERT_TRUE(WaitForObservedEvent());
+  EXPECT_TRUE(test_api(dialog_view()).view_stack()->GetVisible());
   EXPECT_FALSE(test_api(dialog_view()).throbber_overlay()->GetVisible());
   EXPECT_TRUE(test_api(dialog_view())
                   .throbber_overlay()

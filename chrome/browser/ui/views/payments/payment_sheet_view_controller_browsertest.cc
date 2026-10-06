@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/payment_sheet_view_controller.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
@@ -11,8 +12,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/test/mock_input_event_activation_protector.h"
+#include "ui/views/metrics.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/views_switches.h"
 
 namespace payments {
 
@@ -27,9 +33,17 @@ class PaymentSheetViewControllerTest : public PaymentRequestBrowserTestBase {
   bool pay_was_called_ = false;
 };
 
-// The [Continue] button should be protected against accidental double-inputs.
+// The [Continue] button should be protected against accidental inputs on
+// initial show and have protection restarted when revealed after the processing
+// spinner or widget visibility changes.
 IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
                        ContinueButtonIgnoresAccidentalInputs) {
+  // `PaymentRequestBrowserTestBase::SetUpCommandLine()` disables input event
+  // activation protection by default so other tests can click buttons
+  // immediately. Remove the switch here to test the real input protector.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      views::switches::kDisableInputEventActivationProtectionForTesting);
+
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
   InstallPaymentApp("a.com", "/payment_request_success_responder.js",
@@ -48,32 +62,51 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
   ASSERT_TRUE(IsPayButtonEnabled());
   ASSERT_FALSE(pay_was_called_);
 
-  // Set up a mock input protector, which ignores the first input and then
-  // accepts all subsequent inputs.
-  auto input_protector =
-      std::make_unique<views::MockInputEventActivationProtector>();
-  // Expect that `allow_key_events` is set to false to protect against
-  // enter-jacking.
-  EXPECT_CALL(*input_protector,
-              IsPossiblyUnintendedInteraction(
-                  testing::_, /*allow_key_events=*/false, testing::_))
-      .WillOnce(testing::Return(true))
-      .WillRepeatedly(testing::Return(false));
-
   views::View* sheet_view =
       GetByDialogViewID(DialogViewID::PAYMENT_REQUEST_SHEET);
-  static_cast<PaymentSheetViewController*>(
-      test_api(dialog_view()).controller_map()->at(sheet_view).get())
-      ->SetInputEventActivationProtectorForTesting(std::move(input_protector));
-
-  // Because of the input protector, the first press of the button should be
-  // ignored.
+  auto* controller = static_cast<PaymentSheetViewController*>(
+      test_api(dialog_view()).controller_map()->at(sheet_view).get());
   views::View* button_view = GetByDialogViewID(DialogViewID::PAY_BUTTON);
+  ASSERT_TRUE(button_view);
+
+  // Immediately after initial show, key inputs within the cooldown window are
+  // ignored (verifying `allow_key_events = false`).
+  views::test::ButtonTestApi(static_cast<views::Button*>(button_view))
+      .NotifyClick(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                                ui::EF_NONE));
+  EXPECT_FALSE(pay_was_called_);
+
+  controller->input_protector_for_testing()->ResetForTesting();
+
+  // Covering the sheet with the processing spinner and then revealing it
+  // should restart the input protection window.
+  ResetEventWaiter(DialogEvent::PROCESSING_SPINNER_SHOWN);
+  dialog_view()->ShowProcessingSpinner();
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  ResetEventWaiter(DialogEvent::PROCESSING_SPINNER_HIDDEN);
+  dialog_view()->HideProcessingSpinner();
+  ASSERT_TRUE(WaitForObservedEvent());
+
   ClickOnDialogView(button_view);
   EXPECT_FALSE(pay_was_called_);
 
-  // However a subsequent press should result in Pay() being called.
+  controller->input_protector_for_testing()->ResetForTesting();
+
+  // Hiding and re-showing the dialog widget (e.g. across a tab switch) should
+  // also restart the input protection window.
+  dialog_view()->GetWidget()->Hide();
+  dialog_view()->GetWidget()->Show();
+
   ClickOnDialogView(button_view);
+  EXPECT_FALSE(pay_was_called_);
+
+  // A click after the cooldown interval has elapsed should succeed.
+  views::test::ButtonTestApi(static_cast<views::Button*>(button_view))
+      .NotifyClick(ui::MouseEvent(
+          ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+          ui::EventTimeForNow() + views::GetDoubleClickInterval(),
+          ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_TRUE(pay_was_called_);
 }
 

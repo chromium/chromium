@@ -230,6 +230,7 @@ void PaymentRequestDialogView::ShowProcessingSpinner() {
   throbber_overlay_->SetVisible(true);
   throbber_overlay_->GetViewAccessibility().SetIsIgnored(false);
   throbber_overlay_->GetViewAccessibility().SetIsLeaf(false);
+  view_stack_->SetVisible(false);
   if (observer_for_testing_) {
     observer_for_testing_->OnProcessingSpinnerShown();
   }
@@ -603,6 +604,8 @@ void PaymentRequestDialogView::HideProcessingSpinner() {
   // the accessibility tree.
   throbber_overlay_->GetViewAccessibility().SetIsIgnored(true);
   throbber_overlay_->GetViewAccessibility().SetIsLeaf(true);
+  view_stack_->SetVisible(true);
+  RequestFocus();
   if (observer_for_testing_) {
     observer_for_testing_->OnProcessingSpinnerHidden();
   }

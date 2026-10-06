@@ -63,6 +63,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/input_protection/default_input_protection_policy.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/table_layout.h"
@@ -379,19 +380,11 @@ PaymentSheetViewController::PaymentSheetViewController(
     base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<PaymentRequestState> state,
     base::WeakPtr<PaymentRequestDialogView> dialog)
-    : PaymentRequestSheetController(spec, state, dialog),
-      input_protector_(
-          std::make_unique<views::InputEventActivationProtector>()) {
+    : PaymentRequestSheetController(spec, state, dialog) {
   DCHECK(spec);
   DCHECK(state);
   spec->AddObserver(this);
   state->AddObserver(this);
-
-  // This class is constructed as the view is being shown, so we mark it as
-  // visible now. The view may become hidden again in the future (if the user
-  // clicks into a sub-view), but we only need to defend the initial showing
-  // against acccidental clicks on [Continue] and so this location suffices.
-  input_protector_->VisibilityChanged(/*is_visible=*/true);
 }
 
 PaymentSheetViewController::~PaymentSheetViewController() {
@@ -451,6 +444,14 @@ std::u16string PaymentSheetViewController::GetSheetTitle() {
 void PaymentSheetViewController::FillContentView(views::View* content_view) {
   if (!spec()) {
     return;
+  }
+  // `primary_button()` is created in
+  // `PaymentRequestSheetController::CreateView()`, after
+  // `PaymentSheetViewController` is constructed.
+  if (!input_protector_) {
+    input_protector_ = std::make_unique<views::InputEventActivationProtector>(
+        std::make_unique<views::DefaultInputProtectionPolicy>(
+            primary_button()));
   }
 
   auto builder = views::Builder<views::View>(content_view)
