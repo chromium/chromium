@@ -97,9 +97,21 @@ bool IsSingleCtrlKey(const WebKeyboardEvent& event) {
   }
 }
 
+// Beware of GetFrame() nullptrs. For example:
+//
+//   WebElement e = ...;
+//   WebLocalFrame* f = GetFrame(e);
+//   e.Focus();  // This may synchronously call JavaScript listeners.
+//   f->Foo();   // This may dereference a nullptr `f->frame_`.
+//
+// Therefore, callers should avoid storing the WebLocalFrame in variables.
+WebLocalFrame* GetFrame(const WebNode& node) {
+  return node ? node.GetDocument().GetFrame() : nullptr;
+}
+
 // Returns true if window-level focus is in the web content area, or more
 // precisely, in one of the frames of this renderer process.
-bool HasWindowFocus(const blink::WebLocalFrame& frame) {
+bool HasWindowFocus(const WebLocalFrame& frame) {
   blink::WebFrameWidget* widget = frame.LocalRoot()->FrameWidget();
   return widget && widget->HasFocus();
 }
@@ -246,7 +258,7 @@ void AtMemoryHandler::FocusedElementChanged(
 }
 
 void AtMemoryHandler::DidReceiveLeftMouseDownOrGestureTapInNode(
-    const blink::WebNode& node) {
+    const WebNode& node) {
   ctrl_state_ = {};
 }
 
@@ -268,14 +280,10 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   constexpr int kMaxRetries = 5;
   constexpr base::TimeDelta kDelayBeforeRetry = base::Milliseconds(20);
 
-  auto get_frame = [field_id = info.field_id]() -> WebLocalFrame* {
-    WebElement field =
-        WebNode::FromDomNodeId(*field_id).DynamicTo<WebElement>();
-    return field ? field.GetDocument().GetFrame() : nullptr;
-  };
+  WebElement field =
+      WebNode::FromDomNodeId(*info.field_id).DynamicTo<WebElement>();
 
-  WebLocalFrame* frame = get_frame();
-  if (!frame) {
+  if (!field || !GetFrame(field)) {
     return;
   }
 
@@ -285,7 +293,7 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   // The browser process steals the window-level focus to display the AtMemory
   // popup (which contains a text field) and returns it when the popup is
   // closed. We wait for the focus `kDelayBeforeRetry * kMaxRetries`.
-  if (!HasWindowFocus(*frame) && num_try < kMaxRetries) {
+  if (!HasWindowFocus(*GetFrame(field)) && num_try < kMaxRetries) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -293,12 +301,6 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
             weak_ptr_factory_.GetWeakPtr(), std::move(info), std::move(value),
             num_try + 1),
         kDelayBeforeRetry);
-    return;
-  }
-
-  WebElement field =
-      WebNode::FromDomNodeId(*info.field_id).DynamicTo<WebElement>();
-  if (!field) {
     return;
   }
 
@@ -310,8 +312,8 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   }
 
   // Ensures that `field.GetDocument().FocusedElement() == field` and that
-  // SetEditableSelectionOffsets() and ExtendSelectionAndReplace() operate on
-  // that field (assuming no JavaScript `focus` listener moves it elsewhere).
+  // SetEditableSelectionOffsets() operates on that field (assuming no
+  // JavaScript `focus` listener moves it elsewhere).
   //
   // This is to handle the case where DOM-level focus moved out of the field.
   // That may happen especially when AtMemory has a high filling latency due to
@@ -322,31 +324,16 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   field.Focus();
 
   if (!info.selection_range.IsNull()) {
-    // `field.Focus()` dispatches `blur`/`focusout` on the previously focused
-    // element and `focus`/`focusin` on `field`. Those listeners may run
-    // JavaScript that detaches the frame, which would leave `frame` dangling.
-    // Therefore, re-fetch it before using it below.
-    frame = get_frame();
-    if (!frame) {
-      return;
+    if (WebLocalFrame* frame = GetFrame(field)) {
+      // Restores the text selection at the time of AskForValuesToFill() so that
+      // filling replaces the selected text.
+      frame->SetEditableSelectionOffsets(info.selection_range.StartOffset(),
+                                         info.selection_range.EndOffset());
     }
-    // Restores the text selection at the time of AskForValuesToFill() so that
-    // filling replaces the selected text.
-    frame->SetEditableSelectionOffsets(info.selection_range.StartOffset(),
-                                       info.selection_range.EndOffset());
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillAtMemoryPasteText)) {
-    field.PasteText(WebString::FromUtf16(value), /*replace_all=*/false,
-                    /*smart_replace=*/true);
-  } else {
-    frame = get_frame();
-    if (!frame) {
-      return;
-    }
-    frame->ExtendSelectionAndReplace(/*before=*/0,
-                                     /*after=*/0, WebString::FromUtf16(value));
-  }
+  field.PasteText(WebString::FromUtf16(value), /*replace_all=*/false,
+                  /*smart_replace=*/true);
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>
@@ -384,7 +371,7 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
     last_at_memory_ask_for_values_to_fills_.pop_front();
   }
 
-  WebLocalFrame* frame = field.GetDocument().GetFrame();
+  WebLocalFrame* frame = GetFrame(field);
 
   last_at_memory_ask_for_values_to_fills_.push_back(AskForValuesToFillInfo{
       .field_id = form_util::GetFieldRendererId(field),
@@ -437,7 +424,7 @@ void AtMemoryHandler::RecordDoubleCtrl(const WebElement& field) {
         HashFieldSignature(CalculateFieldSignatureForField(field_data)));
     builder.SetFormControlType(
         std::to_underlying(field_data.form_control_type()));
-    if (WebLocalFrame* frame = field.GetDocument().GetFrame()) {
+    if (WebLocalFrame* frame = GetFrame(field)) {
       const FieldRendererId field_id = field_data.renderer_id();
       const blink::LocalFrameToken frame_token = frame->GetLocalFrameToken();
       builder.SetFieldSessionIdentifier(StrToHash64Bit(
