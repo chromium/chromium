@@ -150,8 +150,7 @@
     <li><b>Below the cap.</b> Click <b>A: addWords(["zzzzzqqqqq"])</b>. Its squiggle
         should clear &mdash; the dictionary works normally below the cap.</li>
     <li><b>Fill the cap.</b> Click <b>Fill cap</b>. The page must not throw and must
-        stay responsive, and the DevTools console should show exactly one warning:
-        <i>&ldquo;per-document word limit reached&hellip;&rdquo;</i></li>
+        stay responsive.</li>
     <li><b>Above the cap.</b> Click <b>B: addWords(["capwordzz"])</b>. The squiggle on
         <span class="word">capwordzz</span> should <b>stay</b> &mdash; the word is
         rejected because the per-document set is full. (If it clears, the cap is not

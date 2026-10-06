@@ -29,7 +29,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -265,7 +264,6 @@ void SpellCheckProvider::DidCreateNewDocument() {
         static_cast<int>(document_custom_words_.size()));
   }
   document_custom_words_.clear();
-  document_custom_dictionary_overflow_warned_ = false;
 }
 
 void SpellCheckProvider::FocusedElementChanged(
@@ -391,34 +389,19 @@ void SpellCheckProvider::SpellCheckCustomDictionaryChanged(
 
   std::vector<std::string> effective_added;
   effective_added.reserve(words_added.size());
-  bool dropped_some = false;
   for (const std::string& word : words_added) {
     if (word.size() > spellcheck::kMaxDocumentCustomDictionaryWordBytes) {
-      dropped_some = true;
       continue;
     }
     if (document_custom_words_.size() >=
         spellcheck::kMaxDocumentCustomDictionaryWords) {
       // Once the cap is reached every later word would be rejected.
-      dropped_some = true;
       break;
     }
     // Below the cap: insert once and forward only words that were actually new.
     if (document_custom_words_.insert(base::UTF8ToUTF16(word)).second) {
       effective_added.push_back(word);
     }
-  }
-
-  if (dropped_some && !document_custom_dictionary_overflow_warned_) {
-    if (auto* frame = render_frame()) {
-      frame->GetWebFrame()->AddMessageToConsole(blink::WebConsoleMessage(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          blink::WebString::FromAscii(
-              "SpellCheckCustomDictionary: per-document word limit reached "
-              "or a word exceeded the maximum length; some additions were "
-              "ignored.")));
-    }
-    document_custom_dictionary_overflow_warned_ = true;
   }
 
   spellcheck_->SpellCheckCustomDictionaryChanged(effective_added,

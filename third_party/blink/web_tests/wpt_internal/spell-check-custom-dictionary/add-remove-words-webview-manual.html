@@ -195,11 +195,7 @@
         <b>A: addWords</b>. Its squiggle clears &mdash; normal behaviour below
         the cap.</li>
     <li><b>Fill the cap.</b> Tap <b>Fill cap</b>. WebView must not crash or ANR,
-        the page must stay scrollable and responsive, and the DevTools console
-        (the setup doc, step 6) should show <b>exactly one</b> warning:
-        <i>&ldquo;per-document word limit reached&hellip;&rdquo;</i>. The
-        warning is emitted once per document, so tapping <b>Fill cap</b> again
-        must not add a second one.</li>
+        and the page must stay scrollable and responsive.</li>
     <li><b>Above the cap.</b> Tap into field B, then tap <b>B: addWords</b>. The
         squiggle on <span class="word">capwordzz</span> must <b>stay</b>: the
         word is rejected because the set is full. If it clears, the cap is not

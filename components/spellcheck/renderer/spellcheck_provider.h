@@ -208,10 +208,6 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // move the size, the cap bounds the resident set rather than lifetime churn.
   std::set<std::u16string> document_custom_words_;
 
-  // Tracks whether a console warning has already been emitted for this
-  // document.
-  bool document_custom_dictionary_overflow_warned_ = false;
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   std::unordered_map<int, HybridSpellCheckRequestInfo> hybrid_requests_info_;
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
