@@ -2500,8 +2500,15 @@ void NavigationRequest::BeginNavigation() {
     std::move(begin_navigation_callback_for_testing_).Run();
   }
 
+  base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
   if (MaybeStartPrerenderingActivationChecks()) {
     // BeginNavigationImpl() will be called after the checks.
+    return;
+  }
+  if (!weak_self) {
+    // DO NOT ADD CODE after this. The previous call to
+    // MaybeStartPrerenderingActivationChecks() has destroyed the
+    // NavigationRequest.
     return;
   }
 
