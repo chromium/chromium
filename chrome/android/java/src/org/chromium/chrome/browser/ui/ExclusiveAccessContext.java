@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -97,6 +99,13 @@ public class ExclusiveAccessContext implements Destroyable {
                         }
                     }
                 };
+    }
+
+    /**
+     * @return The Activity associated with this window, or null if unavailable.
+     */
+    public @Nullable Activity getActivity() {
+        return mWindowAndroid.getActivity().get();
     }
 
     /**

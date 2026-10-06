@@ -27,6 +27,8 @@ class ExclusiveAccessBubbleAndroid : public ExclusiveAccessBubble {
     virtual void Update(const std::u16string& text) = 0;
     virtual bool IsVisible() const = 0;
     virtual bool IsKeyboardConnected() const = 0;
+    virtual std::u16string GetCustomFullscreenExitInstruction(
+        const std::optional<std::u16string>& origin) const = 0;
   };
 
   ExclusiveAccessBubbleAndroid(

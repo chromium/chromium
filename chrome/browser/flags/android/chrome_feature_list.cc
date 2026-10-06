@@ -198,7 +198,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kDisplayEdgeToEdgeFullscreen,
     &features::kElasticOverscroll,
     &features::kEmailVerificationProtocol,
-    &features::kEnableExclusiveAccessManager,
     &features::kEnableFullscreenToAnyScreenAndroid,
     &features::kFluidResize,
     &features::kGenericSensorExtraClasses,

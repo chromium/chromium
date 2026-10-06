@@ -904,17 +904,17 @@
       </message>
 
       <!-- Fullscreen -->
-      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
-        Drag from top and touch the back button to exit full screen.
-      </message>
       <message name="IDS_IMMERSIVE_FULLSCREEN_GESTURE_NAVIGATION_MODE_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit when the system gesture navigation mode is on.">
         Drag from top and swipe from the left or right edge to exit full screen.
       </message>
-      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION_DESKTOP" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit when is on desktop.">
-        Drag from top or press Esc key to exit full screen.
+      <message name="IDS_IMMERSIVE_FULLSCREEN_GESTURE_NAVIGATION_MODE_API_NOTIFICATION_WITH_ORIGIN" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit when the system gesture navigation mode is on, with the origin of the URL that requests fullscreen.">
+        <ph name="ORIGIN">%1$s<ex>www.youtube.com</ex></ph> &#x2013; Drag from top and swipe from the left or right edge to exit full screen.
       </message>
       <message name="IDS_IMMERSIVE_FULLSCREEN_AUTOMOTIVE_TOOLBAR_IMPROVEMENTS" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit by swiping left.">
         Drag from the side of the screen to exit full screen.
+      </message>
+      <message name="IDS_IMMERSIVE_FULLSCREEN_AUTOMOTIVE_TOOLBAR_IMPROVEMENTS_WITH_ORIGIN" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit by swiping left, with the origin of the URL that requests fullscreen.">
+        <ph name="ORIGIN">%1$s<ex>www.youtube.com</ex></ph> &#x2013; Drag from the side of the screen to exit full screen.
       </message>
 
       <!-- WebApk name/icon report abuse dialog -->

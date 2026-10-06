@@ -883,16 +883,6 @@ public class KeyboardShortcuts {
                     }
                 }
 
-                // Exiting full screen takes priority over other actions when Escape is pressed,
-                // regardless of modifier keys. This means for example that you cannot open the task
-                // manager in full screen mode.
-                // TODO(crbug.com/398061359): Remove when Esc key logic ships without a kill switch.
-                if (!ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
-                    if (fullscreenManager.getPersistentFullscreenMode()) {
-                        fullscreenManager.exitPersistentFullscreenMode();
-                        return true;
-                    }
-                }
                 break;
             case KeyEvent.KEYCODE_F6:
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {

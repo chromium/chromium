@@ -11735,13 +11735,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kWebAppInstallation)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-exclusive-access-manager-on-android",
-     flag_descriptions::kEnableExclusiveAccessManagerName,
-     flag_descriptions::kEnableExclusiveAccessManagerDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kEnableExclusiveAccessManager)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {"autofill-enable-buy-now-pay-later-for-klarna",

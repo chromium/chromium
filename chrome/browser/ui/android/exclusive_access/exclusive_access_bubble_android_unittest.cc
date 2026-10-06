@@ -35,6 +35,10 @@ class MockBridge : public ExclusiveAccessBubbleAndroid::Bridge {
   MOCK_METHOD(void, Update, (const std::u16string& text), (override));
   MOCK_METHOD(bool, IsVisible, (), (const override));
   MOCK_METHOD(bool, IsKeyboardConnected, (), (const override));
+  MOCK_METHOD(std::u16string,
+              GetCustomFullscreenExitInstruction,
+              (const std::optional<std::u16string>& origin),
+              (const override));
 };
 
 using ExclusiveAccessBubbleAndroidTest = ChromeRenderViewHostTestHarness;
@@ -424,6 +428,34 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, LongOriginIsElidedInBubbleNotice) {
           /*has_download=*/false, /*notify_overridden=*/false);
   EXPECT_EQ(captured_text, expected_text);
   EXPECT_EQ(captured_text.find(u"accounts.google.com"), std::u16string::npos);
+}
+
+TEST_F(ExclusiveAccessBubbleAndroidTest,
+       CustomFullscreenExitInstructionWithOrigin) {
+  ExclusiveAccessBubbleParams params;
+  params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+  params.origin = url::Origin::Create(GURL("https://example.com"));
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+
+  std::u16string gesture_nav_instruction =
+      u"example.com \u2013 Drag from top and swipe from the left or right "
+      u"edge to exit full screen.";
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr,
+              GetCustomFullscreenExitInstruction(
+                  std::optional<std::u16string>(u"example.com")))
+      .WillOnce(Return(gesture_nav_instruction));
+  EXPECT_CALL(*mock_bridge_ptr, Update(gesture_nav_instruction)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
+                                      std::move(mock_bridge));
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  EXPECT_CALL(*mock_bridge_ptr, Hide()).Times(1);
 }
 
 }  // namespace

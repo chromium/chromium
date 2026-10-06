@@ -729,15 +729,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
-    public void testCanEnterFullscreenModeForTab_exclusiveAccessManagerDisabled() {
-        assertTrue(mTabWebContentsDelegateAndroid.canEnterFullscreenModeForTab(mRenderFrameHost));
-        verify(mExclusiveAccessManager, never()).canEnterFullscreenModeForTab(any());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
-    public void testCanEnterFullscreenModeForTab_exclusiveAccessManagerEnabled() {
+    public void testCanEnterFullscreenModeForTab() {
         when(mExclusiveAccessManager.canEnterFullscreenModeForTab(mRenderFrameHost))
                 .thenReturn(true);
         assertTrue(mTabWebContentsDelegateAndroid.canEnterFullscreenModeForTab(mRenderFrameHost));

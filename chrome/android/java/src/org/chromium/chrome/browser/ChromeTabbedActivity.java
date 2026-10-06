@@ -151,7 +151,6 @@ import org.chromium.chrome.browser.finds.FindsService;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
@@ -1017,20 +1016,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             // Fullscreen to screen feature during activity recreation.
                             if (ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)) {
-                                if (type == TabLaunchType.FROM_RESTORE
-                                        && (creationState == TabCreationState.LIVE_IN_FOREGROUND
-                                                || creationState
-                                                        == TabCreationState.LIVE_IN_BACKGROUND)) {
-                                    FullscreenOptions fo =
-                                            TabAttributes.from(tab)
-                                                    .get(TabAttributeKeys.FULLSCREEN_OPTIONS);
-                                    if (fo != null) {
-                                        if (!ChromeFeatureList.sEnableExclusiveAccessManager
-                                                .isEnabled()) {
-                                            getFullscreenManager().onEnterFullscreen(tab, fo);
-                                        }
-                                    }
-                                } else {
+                                if (type != TabLaunchType.FROM_RESTORE
+                                        || (creationState != TabCreationState.LIVE_IN_FOREGROUND
+                                                && creationState
+                                                        != TabCreationState.LIVE_IN_BACKGROUND)) {
                                     TabAttributes attrs = TabAttributes.from(tab);
                                     if (attrs.get(TabAttributeKeys.FULLSCREEN_OPTIONS) != null) {
                                         attrs.clear(TabAttributeKeys.FULLSCREEN_OPTIONS);

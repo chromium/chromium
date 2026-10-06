@@ -2763,13 +2763,6 @@ blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::LockPointer(
     return blink::mojom::PointerLockResult::kWrongDocument;
   }
 
-  // ExclusiveAccessManager handles the pointer lock toast.
-  if (!base::FeatureList::IsEnabled(features::kEnableExclusiveAccessManager)) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_RenderWidgetHostViewImpl_showPointerLockToast(
-        env, GetJavaObject(), window_android->GetJavaObject());
-  }
-
   return blink::mojom::PointerLockResult::kSuccess;
 }
 
@@ -2810,12 +2803,6 @@ void RenderWidgetHostViewAndroid::UnlockPointer() {
   }
 
   window_android->ReleasePointerLock(view_);
-
-  // ExclusiveAccessManager handles the pointer lock toast.
-  if (!base::FeatureList::IsEnabled(features::kEnableExclusiveAccessManager)) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_RenderWidgetHostViewImpl_hidePointerLockToast(env, GetJavaObject());
-  }
 
   host()->LostPointerLock();
 }

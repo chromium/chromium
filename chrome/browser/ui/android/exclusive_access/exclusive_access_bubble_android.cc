@@ -91,6 +91,17 @@ class BridgeImpl : public ExclusiveAccessBubbleAndroid::Bridge {
     return false;
   }
 
+  std::u16string GetCustomFullscreenExitInstruction(
+      const std::optional<std::u16string>& origin) const override {
+    if (j_bubble_) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      return Java_ExclusiveAccessBubble_getCustomFullscreenExitInstruction(
+                 env, j_bubble_, origin)
+          .value_or(std::u16string());
+    }
+    return std::u16string();
+  }
+
  private:
   jni_zero::ScopedJavaGlobalRef<jobject> j_bubble_;
 };
@@ -194,9 +205,24 @@ std::u16string ExclusiveAccessBubbleAndroid::GetBubbleText(
     ExclusiveAccessBubbleType bubble_type,
     bool keyboard_connected) const {
   if (!keyboard_connected) {
+    std::optional<std::u16string> origin_string =
+        GetOriginString(params_.origin);
+    if (!params_.has_download &&
+        bubble_type !=
+            EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION) {
+      std::optional<std::u16string> display_origin =
+          exclusive_access_bubble::IsExclusiveAccessModeBrowserFullscreen(
+              bubble_type)
+              ? std::nullopt
+              : origin_string;
+      std::u16string custom_instruction =
+          bridge_->GetCustomFullscreenExitInstruction(display_origin);
+      if (!custom_instruction.empty()) {
+        return custom_instruction;
+      }
+    }
     return exclusive_access_bubble::GetInstructionTextForTypeTouchBased(
-        bubble_type, GetOriginString(params_.origin), params_.has_download,
-        notify_overridden_);
+        bubble_type, origin_string, params_.has_download, notify_overridden_);
   }
 
   std::u16string accelerator;

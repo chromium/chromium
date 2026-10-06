@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.Activity;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,8 +16,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
@@ -138,5 +143,22 @@ public class ExclusiveAccessBubbleTest {
         Assert.assertSame(firstSnackbar, secondSnackbar);
         Assert.assertEquals("Press and hold Esc", secondSnackbar.getTextForTesting());
         Mockito.verify(mSnackbarManager, Mockito.never()).dismissSnackbars(Mockito.any());
+    }
+
+    @Test
+    public void testCustomFullscreenExitInstructionAutomotive() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        Mockito.when(mExclusiveAccessContext.getActivity()).thenReturn(activity);
+        ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
+
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        Assert.assertEquals(
+                activity.getString(R.string.immersive_fullscreen_automotive_toolbar_improvements),
+                bubble.getCustomFullscreenExitInstruction(/* origin= */ null));
+        Assert.assertEquals(
+                activity.getString(
+                        R.string.immersive_fullscreen_automotive_toolbar_improvements_with_origin,
+                        "example.com"),
+                bubble.getCustomFullscreenExitInstruction("example.com"));
     }
 }

@@ -6,7 +6,6 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/fullscreen/FullscreenBackPressHandler.java",
     "java/src/org/chromium/chrome/browser/fullscreen/FullscreenManager.java",
     "java/src/org/chromium/chrome/browser/fullscreen/FullscreenOptions.java",
   ]

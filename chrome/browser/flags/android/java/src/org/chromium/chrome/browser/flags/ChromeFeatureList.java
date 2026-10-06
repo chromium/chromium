@@ -581,7 +581,6 @@ public abstract class ChromeFeatureList {
             "EnableDownloadSaveAsContextMenu";
     public static final String ENABLE_DOWNLOAD_SAVE_AS_SYSTEM_FILE_DIALOG =
             "EnableDownloadSaveAsSystemFileDialog";
-    public static final String ENABLE_EXCLUSIVE_ACCESS_MANAGER = "EnableExclusiveAccessManager";
     public static final String ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID =
             "EnableFullscreenToAnyScreenAndroid";
     public static final String ENABLE_PIX_ACCOUNT_LINKING_NATIVE = "EnablePixAccountLinkingNative";
@@ -1214,8 +1213,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY,
                     /* defaultValue= */ true);
-    public static final CachedFlag sEnableExclusiveAccessManager =
-            newCachedFlag(ENABLE_EXCLUSIVE_ACCESS_MANAGER, true);
     public static final CachedFlag sEnableFullscreenToAnyScreenAndroid =
             newCachedFlag(ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID, false, true);
     public static final CachedFlag sEnableXAxisActivityTransition =
@@ -1591,7 +1588,6 @@ public abstract class ChromeFeatureList {
                     sEnableAndroidSidePanelLogs,
                     sEnableAndroidSidePanelManualResizing,
                     sEnableBrowserWindowInterfaceForCustomTabActivity,
-                    sEnableExclusiveAccessManager,
                     sEnableFullscreenToAnyScreenAndroid,
                     sEnableXAxisActivityTransition,
                     sFaviconDisableHostFallback,

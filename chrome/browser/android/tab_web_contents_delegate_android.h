@@ -215,9 +215,6 @@ class TabWebContentsDelegateAndroid
                                      find_in_page::FindResultObserver>
       find_result_observations_{this};
 
-  // Timestamp when the user last successfully escaped from a lock request.
-  base::TimeTicks pointer_lock_last_user_escape_time_;
-
   void NavigationStateChangedDeferred(content::WebContents* source,
                                       content::InvalidateTypes changed_flags);
 

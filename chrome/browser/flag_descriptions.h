@@ -6133,12 +6133,6 @@ inline constexpr char kEnableAccessibilityLabeledByDescription[] =
     "relationships in "
     "the accessibility tree for android.";
 
-inline constexpr char kEnableExclusiveAccessManagerName[] =
-    "Enable Exclusive Access Manager on Android builds";
-inline constexpr char kEnableExclusiveAccessManagerDescription[] =
-    "Enables the integrated handling of the fullscreen, pointer and keyboard "
-    "locks. Unifies the UI for the mentioned features.";
-
 inline constexpr char kEnableAndroidSidePanelName[] =
     "Enable Android Side Panel";
 inline constexpr char kEnableAndroidSidePanelDescription[] =

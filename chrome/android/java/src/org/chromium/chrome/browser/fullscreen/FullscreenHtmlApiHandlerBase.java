@@ -103,8 +103,6 @@ public abstract class FullscreenHtmlApiHandlerBase
     protected @Nullable Tab mTabInFullscreen;
     private @Nullable FullscreenOptions mFullscreenOptions;
 
-    private @Nullable FullscreenToast mToast;
-
     private @Nullable OnLayoutChangeListener mFullscreenOnLayoutChangeListener;
 
     private @Nullable FullscreenOptions mPendingFullscreenOptions;
@@ -233,20 +231,6 @@ public abstract class FullscreenHtmlApiHandlerBase
             implements MultiWindowModeStateDispatcher.MultiWindowModeObserver {
         @Override
         public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
-            if (isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice()
-                    && !ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
-                // Fix for https://crbug.com/416443642 exiting from full screen mode when
-                // transition to PIP is done.
-                // When playing video in full screen mode and the home button is pushed the page
-                // should transition into PIP. Keeping it the same for desktops, as PIP can be
-                // entered when Chrome is playing video in background.
-                if (mTab != null
-                        && !mActivity.isInPictureInPictureMode() // Not in the PIP mode
-                        && !mIsInMultiWindowMode // Window was in the fullscreen mode
-                        && isInMultiWindowMode) { // Window is not in fullscreen anymore
-                    mFullscreenManagerDelegate.onExitFullscreen(mTab);
-                }
-            }
             mIsInMultiWindowMode = isInMultiWindowMode;
         }
     }
@@ -365,20 +349,6 @@ public abstract class FullscreenHtmlApiHandlerBase
     @Override
     public void removeObserver(FullscreenManager.Observer observer) {
         mObservers.removeObserver(observer);
-    }
-
-    @VisibleForTesting
-    private FullscreenToast getToast() {
-        if (mToast == null) {
-            if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
-                mToast = new FullscreenToast.NoEffectToastStub();
-            } else {
-                mToast =
-                        new FullscreenToast.AndroidToast(
-                                mActivity, this::getPersistentFullscreenMode);
-            }
-        }
-        return mToast;
     }
 
     @Override
@@ -644,7 +614,6 @@ public abstract class FullscreenHtmlApiHandlerBase
         }
 
         if (getPersistentFullscreenMode()) {
-            getToast().onExitPersistentFullscreen();
             mPersistentModeSupplier.set(false);
 
             if (mWebContentsInFullscreen != null && mTabInFullscreen != null) {
@@ -719,7 +688,6 @@ public abstract class FullscreenHtmlApiHandlerBase
     }
 
     private void exitFullscreen(WebContents webContents, View contentView) {
-        getToast().onExitFullscreen();
         mHandler.removeMessages(MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS);
         mHandler.removeMessages(MSG_ID_UNSET_FULLSCREEN_LAYOUT);
 
@@ -832,7 +800,6 @@ public abstract class FullscreenHtmlApiHandlerBase
         mWebContentsInFullscreen = webContents;
         mContentViewInFullscreen = contentView;
         mTabInFullscreen = tab;
-        getToast().onEnterFullscreen();
     }
 
     private void resetEnterFullscreenLayoutChangeListener(View contentView) {
@@ -869,7 +836,6 @@ public abstract class FullscreenHtmlApiHandlerBase
                             }
                         }
 
-                        getToast().onFullscreenLayout();
                         contentView.removeOnLayoutChangeListener(this);
                     }
                 };
@@ -898,10 +864,6 @@ public abstract class FullscreenHtmlApiHandlerBase
     @Override
     public void onWindowFocusChanged(Activity activity, boolean hasWindowFocus) {
         if (mActivity != activity) return;
-
-        // Window focus events can occur before the fullscreen toast is ready. It may skip and
-        // wait till fullscreen is entered, by which time the toast object will be ready.
-        if (mToast != null) mToast.onWindowFocusChanged(hasWindowFocus);
 
         mHandler.removeMessages(MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS);
         mHandler.removeMessages(MSG_ID_UNSET_FULLSCREEN_LAYOUT);
@@ -986,12 +948,9 @@ public abstract class FullscreenHtmlApiHandlerBase
         return mPendingFullscreenOptions;
     }
 
-    boolean isToastVisibleForTesting() {
-        return getToast().isVisible();
-    }
-
     /**
      * Hide the system bars (to enter fullscreen mode) based on the fullscreen options.
+     *
      * @param contentView The content view being shown or to be shown in fullscreen mode.
      * @param fullscreenOptions The fullscreen options to guide what UI is shown or hidden.
      */

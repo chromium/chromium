@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.UiAndroidFeatures;
 
 import java.util.HashMap;
 
@@ -66,30 +65,11 @@ import java.util.HashMap;
  */
 @Features.EnableFeatures({
     ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN,
-    ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID,
-    UiAndroidFeatures.MAXIMUM_WINDOW_FOR_GESTURE_NAV_DETECTION
+    ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID
 })
-@Features.DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FullscreenHtmlApiHandlerCompatUnitTest {
-    private static final int DEVICE_WIDTH = 900;
-    private static final int DEVICE_HEIGHT = 1600;
-    private static final int SYSTEM_UI_HEIGHT = 100;
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private Activity mActivity;
-    @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;
-    @Mock private Tab mTab;
-    @Mock private WebContents mWebContents;
-    @Mock private ContentView mContentView;
-    @Mock private TabModelSelector mTabModelSelector;
-    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
-    private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
-    private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
-    private SettableNonNullObservableSupplier<Boolean> mAreControlsHidden;
-    private UserDataHost mHost;
-
     @SuppressLint("NewApi")
     private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 100);
 
@@ -105,6 +85,21 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                     .setVisible(WindowInsetsCompat.Type.statusBars(), true)
                     .setVisible(WindowInsetsCompat.Type.systemBars(), true)
                     .build();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private ContentView mContentView;
+    @Mock private TabModelSelector mTabModelSelector;
+
+    private Activity mActivity;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
+    private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
+    private SettableNonNullObservableSupplier<Boolean> mAreControlsHidden;
+    private UserDataHost mHost;
 
     @Implements(Activity.class)
     public static class FullscreenShadowActivity extends ShadowActivity {
@@ -403,173 +398,6 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.destroy();
 
         assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
-    }
-
-    @Test
-    public void testToastIsShownInFullscreenButNotPictureInPicture() {
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mContentView).when(mTab).getContentView();
-        doReturn(true).when(mTab).isUserInteractable();
-        doReturn(true).when(mTab).isHidden();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
-        // The window must have focus and already have the controls hidden, else fullscreen will be
-        // deferred.  The toast would be deferred with it.
-        doReturn(true).when(mContentView).hasWindowFocus();
-        mAreControlsHidden.set(true);
-
-        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
-
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
-        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
-
-        // Catch the layout listener, which is an implementation detail but what can one do?  Note
-        // that we make the layout appear to have gotten bigger, which is important since the
-        // fullscreen handler checks for it.
-        ArgumentCaptor<OnLayoutChangeListener> arg =
-                ArgumentCaptor.forClass(OnLayoutChangeListener.class);
-        verify(mContentView).addOnLayoutChangeListener(arg.capture());
-        arg.getValue().onLayoutChange(mContentView, 0, 0, 100, 100, 0, 0, 10, 10);
-
-        // We should now be in fullscreen, with the toast shown.
-        assertTrue(
-                "Fullscreen toast should be visible in fullscreen",
-                mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-
-        // Losing / gaining the focus should hide / show the toast when it's applicable.  This also
-        // covers picture in picture.
-        mFullscreenHtmlApiHandlerCompat.onWindowFocusChanged(mActivity, false);
-        assertTrue(
-                "Fullscreen toast should not be visible when unfocused",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-        mFullscreenHtmlApiHandlerCompat.onWindowFocusChanged(mActivity, true);
-        assertTrue(
-                "Fullscreen toast should be visible when focused",
-                mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-
-        // Toast should not be visible when we exit fullscreen.
-        mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
-        assertTrue(
-                "Fullscreen toast should not be visible outside of fullscreen",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-
-        // If we gain / lose the focus outside of fullscreen, then nothing interesting should happen
-        // with the toast.
-        mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.PAUSED);
-        assertTrue(
-                "Fullscreen toast should not be visible after pause",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-        mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.RESUMED);
-        assertTrue(
-                "Fullscreen toast should not be visible after resume when not in fullscreen",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-    }
-
-    @Test
-    @Features.EnableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
-    public void
-            testToastIsNotShownInFullscreenButNotPictureInPictureExclusiveAccessManagerEnabled() {
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mContentView).when(mTab).getContentView();
-        doReturn(true).when(mTab).isUserInteractable();
-        doReturn(true).when(mTab).isHidden();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
-        // The window must have focus and already have the controls hidden, else fullscreen will be
-        // deferred.  The toast would be deferred with it.
-        doReturn(true).when(mContentView).hasWindowFocus();
-        mAreControlsHidden.set(true);
-
-        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
-
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
-        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
-
-        // Catch the layout listener, which is an implementation detail but what can one do?  Note
-        // that we make the layout appear to have gotten bigger, which is important since the
-        // fullscreen handler checks for it.
-        ArgumentCaptor<OnLayoutChangeListener> arg =
-                ArgumentCaptor.forClass(OnLayoutChangeListener.class);
-        verify(mContentView).addOnLayoutChangeListener(arg.capture());
-        arg.getValue().onLayoutChange(mContentView, 0, 0, 100, 100, 0, 0, 10, 10);
-
-        // We should now be in fullscreen, with the toast not shown because exclusive access manager
-        // is enabled and the toast is stubbed out.
-        assertTrue(
-                "Fullscreen toast should not be visible in fullscreen, exclusive access manager "
-                        + "is enabled",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-
-        // Losing / gaining the focus should have no effect on the toast because exclusive access
-        // manager is enabled and the toast is stubbed out.
-        mFullscreenHtmlApiHandlerCompat.onWindowFocusChanged(mActivity, false);
-        assertTrue(
-                "Fullscreen toast should not be visible when unfocused",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-        mFullscreenHtmlApiHandlerCompat.onWindowFocusChanged(mActivity, true);
-        assertTrue(
-                "Fullscreen toast should not be visible when focused, exclusive access manager "
-                        + "is enabled",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-
-        // Toast should not be visible when we exit fullscreen.
-        mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
-        assertTrue(
-                "Fullscreen toast should not be visible outside of fullscreen",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-
-        // If we gain / lose the focus outside of fullscreen, then nothing interesting should happen
-        // with the toast.
-        mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.PAUSED);
-        assertTrue(
-                "Fullscreen toast should not be visible after pause",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-        mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.RESUMED);
-        assertTrue(
-                "Fullscreen toast should not be visible after resume when not in fullscreen",
-                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
-    }
-
-    @Test
-    public void testToastIsShownAtLayoutChangeWithRotation() {
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mContentView).when(mTab).getContentView();
-        doReturn(true).when(mTab).isUserInteractable();
-        doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
-        mAreControlsHidden.set(true);
-
-        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
-
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
-        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
-
-        ArgumentCaptor<OnLayoutChangeListener> arg =
-                ArgumentCaptor.forClass(OnLayoutChangeListener.class);
-        verify(mContentView).addOnLayoutChangeListener(arg.capture());
-
-        // Device rotation swaps device width/height dimension.
-        arg.getValue()
-                .onLayoutChange(
-                        mContentView,
-                        0,
-                        0,
-                        DEVICE_HEIGHT,
-                        DEVICE_WIDTH,
-                        0,
-                        0,
-                        /* oldRight= */ DEVICE_WIDTH,
-                        /* oldBottom= */ DEVICE_HEIGHT - SYSTEM_UI_HEIGHT);
-
-        // We should now be in fullscreen, with the toast shown.
-        assertTrue(
-                "Fullscreen toast should be visible in fullscreen",
-                mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
     }
 
     @Test

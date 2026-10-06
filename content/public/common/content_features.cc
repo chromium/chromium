@@ -1576,11 +1576,6 @@ BASE_FEATURE(kWebauthnDisabledOnAuto,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enables Exclusive Access Manager on Android platform
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kEnableExclusiveAccessManager, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Sets IO threads to kInteractive all the time.
 BASE_FEATURE(kIOThreadInteractiveThreadType, base::FEATURE_DISABLED_BY_DEFAULT);
 
