@@ -49,9 +49,21 @@ class BASE_EXPORT LockMetricsRecorder {
 
   // The internal buffer size is a trade-off between memory usage and the number
   // of samples that can be stored. With sampling, this buffer size should be
-  // sufficient for most cases. If the buffer overflows, the `RingBuffer` will
+  // sufficient for most cases.
+  //
+  // Samples are only recorded in the ring buffer for contended lock
+  // acquisitions (subsampled at 0.1%), and flushed whenever the thread goes
+  // idle. Assuming samples follow a Poisson distribution with mean `lambda =
+  // 0.001 * N` (where `N` is the number of contended lock acquisitions on a
+  // single thread between two idle periods), even if a thread experienced
+  // 10,000 contended lock acquisitions before going idle, the probability of
+  // recording more than 32 samples is on the order of 1e-9. Based on field
+  // data, the P99 of ThreadController active duration before going idle is less
+  // than 20ms across all platforms. Over 20ms, 10,000 contended lock
+  // acquisitions corresponds to 1 contended lock acquisition every 2us, which
+  // is extremely unlikely. If the buffer does overflow, the `RingBuffer` will
   // overwrite the oldest samples.
-  constexpr static size_t kMaxSamples = 512;
+  constexpr static size_t kMaxSamples = 32;
 
   explicit LockMetricsRecorder(PassKey, std::string_view histogram_suffix);
   LockMetricsRecorder(const LockMetricsRecorder&) = delete;
