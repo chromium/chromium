@@ -5,29 +5,55 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_HISTORY_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_HISTORY_TOOL_REQUEST_H_
 
-#include <memory>
-#include <string>
+#include <string_view>
 
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "url/gurl.h"
 
 namespace actor {
 class ToolRequestVisitorFunctor;
 
-// Invokes a history back, forward traversal, or reload in a specified tab.
-class HistoryToolRequest : public TabToolRequest {
+// Invokes a history back traversal in a specified tab.
+class HistoryBackToolRequest : public TabToolRequest {
  public:
-  static constexpr char kName[] = "History";
+  static constexpr char kName[] = "HistoryBack";
 
-  enum class Direction {
-    kBack,
-    kForward,
-    kReload,
-    kReloadBypassingCache,
-  };
+  explicit HistoryBackToolRequest(tabs::TabHandle tab_handle);
+  ~HistoryBackToolRequest() override;
 
-  HistoryToolRequest(tabs::TabHandle handle, Direction direction);
-  ~HistoryToolRequest() override;
+  void Apply(ToolRequestVisitorFunctor& f) const override;
+
+  // ToolRequest
+  CreateToolResult CreateTool(TaskId task_id,
+                              ToolDelegate& tool_delegate) const override;
+  std::string_view Name() const override;
+  bool RequiresUrlCheckInCurrentTab() const override;
+};
+
+// Invokes a history forward traversal in a specified tab.
+class HistoryForwardToolRequest : public TabToolRequest {
+ public:
+  static constexpr char kName[] = "HistoryForward";
+
+  explicit HistoryForwardToolRequest(tabs::TabHandle tab_handle);
+  ~HistoryForwardToolRequest() override;
+
+  void Apply(ToolRequestVisitorFunctor& f) const override;
+
+  // ToolRequest
+  CreateToolResult CreateTool(TaskId task_id,
+                              ToolDelegate& tool_delegate) const override;
+  std::string_view Name() const override;
+  bool RequiresUrlCheckInCurrentTab() const override;
+};
+
+// Invokes a page reload in a specified tab.
+class ReloadPageToolRequest : public TabToolRequest {
+ public:
+  static constexpr char kName[] = "ReloadPage";
+
+  explicit ReloadPageToolRequest(tabs::TabHandle tab_handle,
+                                 bool bypass_cache = false);
+  ~ReloadPageToolRequest() override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
@@ -37,8 +63,8 @@ class HistoryToolRequest : public TabToolRequest {
   std::string_view Name() const override;
   bool RequiresUrlCheckInCurrentTab() const override;
 
-  // Whether the navigation is backwards or forwards in session history.
-  Direction direction_;
+ private:
+  bool bypass_cache_ = false;
 };
 
 }  // namespace actor

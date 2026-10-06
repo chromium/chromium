@@ -517,8 +517,7 @@ void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
 void ToolController::GoBack(ToolResponseCallback callback) {
   PerformActionOnActiveTab(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::HistoryToolRequest>(
-            tab_handle, actor::HistoryToolRequest::Direction::kBack);
+        return std::make_unique<actor::HistoryBackToolRequest>(tab_handle);
       },
       std::move(callback));
 }
@@ -526,8 +525,7 @@ void ToolController::GoBack(ToolResponseCallback callback) {
 void ToolController::GoForward(ToolResponseCallback callback) {
   PerformActionOnActiveTab(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::HistoryToolRequest>(
-            tab_handle, actor::HistoryToolRequest::Direction::kForward);
+        return std::make_unique<actor::HistoryForwardToolRequest>(tab_handle);
       },
       std::move(callback));
 }
@@ -535,8 +533,7 @@ void ToolController::GoForward(ToolResponseCallback callback) {
 void ToolController::ReloadPage(ToolResponseCallback callback) {
   PerformActionOnActiveTab(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::HistoryToolRequest>(
-            tab_handle, actor::HistoryToolRequest::Direction::kReload);
+        return std::make_unique<actor::ReloadPageToolRequest>(tab_handle);
       },
       std::move(callback));
 }

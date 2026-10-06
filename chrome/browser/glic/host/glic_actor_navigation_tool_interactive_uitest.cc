@@ -5,7 +5,6 @@
 // TODO(crbug.com/537846713): Migrate this test suite to GlicBrowserTest.
 
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "content/public/test/browser_test.h"
 
@@ -15,17 +14,20 @@ namespace {
 
 using optimization_guide::proto::NavigateAction;
 
-using HistoryDirection = ::actor::HistoryToolRequest::Direction;
+enum class HistoryDirection {
+  kBack,
+  kForward,
+};
 using MultiStep = GlicActorUiTest::MultiStep;
 
 class GlicActorNavigationUiTest : public GlicActorUiTest {
  public:
-  MultiStep HistoryAction(actor::HistoryToolRequest::Direction direction,
+  MultiStep HistoryAction(HistoryDirection direction,
                           actor::TaskId& task_id,
                           tabs::TabHandle& tab_handle,
                           ExpectedErrorResult expected_result = {});
 
-  MultiStep HistoryAction(actor::HistoryToolRequest::Direction direction,
+  MultiStep HistoryAction(HistoryDirection direction,
                           ExpectedErrorResult expected_result = {});
 };
 

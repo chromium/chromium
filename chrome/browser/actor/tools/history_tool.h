@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -29,10 +29,17 @@ namespace actor {
 // Performs a history navigation in a WebContents.
 class HistoryTool : public Tool, content::WebContentsObserver {
  public:
+  enum class Direction {
+    kBack,
+    kForward,
+    kReload,
+    kReloadBypassingCache,
+  };
+
   HistoryTool(TaskId task_id,
               ToolDelegate& tool_delegate,
               tabs::TabInterface& tab,
-              HistoryToolRequest::Direction direction);
+              Direction direction);
   ~HistoryTool() override;
 
   // actor::Tool
@@ -66,7 +73,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   int GetTargetOffset() const;
 
   // Whether the navigation is backwards or forwards in session history.
-  HistoryToolRequest::Direction direction_;
+  Direction direction_;
 
   // This class tracks all navigation handles created as a result of the history
   // traversal in `pending_navigations_`. However, these navigations may or may

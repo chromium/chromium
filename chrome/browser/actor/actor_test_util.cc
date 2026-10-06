@@ -613,21 +613,16 @@ std::unique_ptr<ToolRequest> MakeClickRequest(TabInterface& tab,
 }
 
 std::unique_ptr<ToolRequest> MakeHistoryBackRequest(TabInterface& tab) {
-  return std::make_unique<HistoryToolRequest>(
-      tab.GetHandle(), HistoryToolRequest::Direction::kBack);
+  return std::make_unique<HistoryBackToolRequest>(tab.GetHandle());
 }
 
 std::unique_ptr<ToolRequest> MakeHistoryForwardRequest(TabInterface& tab) {
-  return std::make_unique<HistoryToolRequest>(
-      tab.GetHandle(), HistoryToolRequest::Direction::kForward);
+  return std::make_unique<HistoryForwardToolRequest>(tab.GetHandle());
 }
 
-std::unique_ptr<ToolRequest> MakeHistoryReloadRequest(TabInterface& tab,
-                                                      bool bypass_cache) {
-  HistoryToolRequest::Direction direction =
-      bypass_cache ? HistoryToolRequest::Direction::kReloadBypassingCache
-                   : HistoryToolRequest::Direction::kReload;
-  return std::make_unique<HistoryToolRequest>(tab.GetHandle(), direction);
+std::unique_ptr<ToolRequest> MakeReloadPageRequest(TabInterface& tab,
+                                                   bool bypass_cache) {
+  return std::make_unique<ReloadPageToolRequest>(tab.GetHandle(), bypass_cache);
 }
 
 std::unique_ptr<ToolRequest> MakeMouseMoveRequest(content::RenderFrameHost& rfh,

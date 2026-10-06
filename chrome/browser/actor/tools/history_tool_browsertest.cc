@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Reload) {
   content::NavigationHandleObserver handle_observer(web_contents(), url);
   ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action =
-      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+      MakeReloadPageRequest(*active_tab(), /*bypass_cache=*/false);
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   content::NavigationHandleObserver handle_observer(web_contents(), url);
   ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action =
-      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/true);
+      MakeReloadPageRequest(*active_tab(), /*bypass_cache=*/true);
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   content::TestNavigationObserver observer(web_contents(), 1);
   ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action =
-      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+      MakeReloadPageRequest(*active_tab(), /*bypass_cache=*/false);
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 
   ActResultFuture fut;
   std::unique_ptr<ToolRequest> action =
-      MakeHistoryReloadRequest(*new_tab, /*bypass_cache=*/false);
+      MakeReloadPageRequest(*new_tab, /*bypass_cache=*/false);
   actor_task().Act(ToRequestList(action), fut.GetCallback());
   ExpectErrorResult(fut, mojom::ActionResultCode::kHistoryNoNavigationsCreated);
 }
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   content::TestNavigationObserver observer(web_contents(), 1);
   ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action =
-      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+      MakeReloadPageRequest(*active_tab(), /*bypass_cache=*/false);
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   // Attempting a reload on the blocked URL should fail validation.
   ActResultFuture fut;
   std::unique_ptr<ToolRequest> action =
-      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+      MakeReloadPageRequest(*active_tab(), /*bypass_cache=*/false);
   actor_task().Act(ToRequestList(action), fut.GetCallback());
   ExpectErrorResult(fut, mojom::ActionResultCode::kUrlBlocked);
 }

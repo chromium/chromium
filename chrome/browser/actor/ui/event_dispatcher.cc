@@ -84,7 +84,8 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<FileUploadToolRequest>,
     NoUiEvents<FindAndHighlightToolRequest>,
-    NoUiEvents<HistoryToolRequest>,
+    NoUiEvents<HistoryBackToolRequest>,
+    NoUiEvents<HistoryForwardToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<LoadAndExtractContentToolRequest>,
 #endif
@@ -100,6 +101,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<PlayMediaToolRequest>,
+    NoUiEvents<ReloadPageToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SeekMediaToolRequest>,
@@ -136,7 +138,8 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<FileUploadToolRequest>,
     NoUiEvents<FindAndHighlightToolRequest>,
-    NoUiEvents<HistoryToolRequest>,
+    NoUiEvents<HistoryBackToolRequest>,
+    NoUiEvents<HistoryForwardToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<LoadAndExtractContentToolRequest>,
 #endif
@@ -148,6 +151,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<PlayMediaToolRequest>,
+    NoUiEvents<ReloadPageToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SeekMediaToolRequest>,

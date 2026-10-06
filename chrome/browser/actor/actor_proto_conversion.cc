@@ -551,8 +551,7 @@ std::unique_ptr<ToolRequest> CreateBackRequest(
   if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
-  return std::make_unique<HistoryToolRequest>(
-      tab_handle, HistoryToolRequest::Direction::kBack);
+  return std::make_unique<HistoryBackToolRequest>(tab_handle);
 }
 
 std::unique_ptr<ToolRequest> CreateForwardRequest(
@@ -561,8 +560,7 @@ std::unique_ptr<ToolRequest> CreateForwardRequest(
   if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
-  return std::make_unique<HistoryToolRequest>(
-      tab_handle, HistoryToolRequest::Direction::kForward);
+  return std::make_unique<HistoryForwardToolRequest>(tab_handle);
 }
 
 std::unique_ptr<ToolRequest> CreateWaitRequest(const WaitAction& action) {
