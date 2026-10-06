@@ -238,6 +238,9 @@ class DownloadDeepScanningBrowserTestBase
     SetBinaryUploadServiceTestFactory();
     SetUrlLoaderInterceptor();
     ObserveDownloadManager();
+    test_sb_factory_->test_safe_browsing_service()
+        ->download_protection_service()
+        ->SetDownloadRequestTimeoutForTesting(base::Seconds(60));
 
     if (!is_consumer_) {
       AuthorizeForDeepScanning();
