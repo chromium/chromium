@@ -13,8 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import androidx.annotation.CallSuper;
@@ -25,7 +23,6 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.VeryLongPressAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
@@ -53,9 +50,11 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
                         isDescendantOfA(withId(R.id.content_view)));
         titleElement = declareView(cardTitleMatcher);
 
-        ViewSpec<View> cardSpec =
-                viewSpec(isAssignableFrom(TabGridView.class), hasDescendant(cardTitleMatcher));
-        cardViewElement = declareView(cardSpec);
+        // TODO(crbug.com/570644422): Replace isAssignableFrom(TabGridView.class) with
+        // TabGridView.class once ViewSpec includes isAssignableFrom() in its generated
+        // Matcher<View>.
+        cardViewElement =
+                declareView(isAssignableFrom(TabGridView.class), hasDescendant(cardTitleMatcher));
 
         if (mCardIndex != null) {
             declareEnterCondition(

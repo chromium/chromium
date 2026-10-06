@@ -7,8 +7,6 @@ package org.chromium.chrome.test.transit.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.allOf;
-
 import static org.chromium.base.test.transit.Condition.whether;
 
 import android.view.View;
@@ -67,11 +65,13 @@ public class RegularNewTabPageStation extends CtaPageStation {
             // Scoped to the NTP's own fakebox class: R.id.search_box is also used by the Hub
             // toolbar (and by bookmarks and settings search boxes), and an unscoped matcher
             // here would match the Hub's search box while leaving the NTP for the Hub.
+            // TODO(crbug.com/570644422): Replace isAssignableFrom(SearchBoxContainerView.class)
+            // with SearchBoxContainerView.class once ViewSpec includes isAssignableFrom() in its
+            // generated Matcher<View>.
             searchBoxElement =
                     declareView(
-                            allOf(
-                                    withId(R.id.search_box),
-                                    isAssignableFrom(SearchBoxContainerView.class)));
+                            withId(R.id.search_box),
+                            isAssignableFrom(SearchBoxContainerView.class));
             ntpMicButtonElement = declareOptionalView(withId(R.id.voice_search_button));
 
             nativePageElement =
