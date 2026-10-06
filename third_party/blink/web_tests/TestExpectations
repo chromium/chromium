@@ -1561,6 +1561,11 @@ crbug.com/500774800 accessibility/image-map-usemap-removed-crash.html [ Crash ]
 crbug.com/500774800 accessibility/image-map-name-changed-crash.html [ Crash ]
 crbug.com/500774800 accessibility/image-map-usemap-removed-successive-images.html [ Crash ]
 
+# Reproduction for stale slots in customizable select options crash
+crbug.com/500774800 accessibility/customizable-select-option-text-replaced-crash.html [ Crash ]
+crbug.com/500774800 accessibility/customizable-select-option-element-removed-crash.html [ Crash Failure ]
+crbug.com/500774799 accessibility/customizable-select-option-hidden-text-replaced-crash.html [ Crash ]
+
 # Temporarily disabled after chromium change
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]
 crbug.com/492511 [ Mac ] virtual/text-antialias/international/arabic-justify.html [ Failure ]

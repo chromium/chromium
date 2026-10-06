@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Removing a customizable select option's only element does not crash</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
+
+<select>
+  <option id="opt">Item<span id="span"></span></option>
+</select>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // Builds the tree. Under base-select, <option>'s child is its <slot>.
+  accessibilityController.rootElement;
+
+  // Queues an accessibility update for <slot>. This is the step under test.
+  // With only text left, <option> can't have children, so it must remove its
+  // <slot> from the tree.
+  span.remove();
+
+  // Runs the queued update. If <slot> wasn't removed, a tree check fails or
+  // <option> still has a child.
+  const accessibleOpt = accessibilityController.accessibleElementById('opt');
+  assert_true(!!accessibleOpt, 'The option should still be in the tree');
+  assert_equals(accessibleOpt.role, 'AXRole: AXMenuListOption');
+  assert_equals(accessibleOpt.childrenCount, 0,
+                'The option should have no children');
+}, 'Removing a customizable select option\'s only element does not crash');
+</script>

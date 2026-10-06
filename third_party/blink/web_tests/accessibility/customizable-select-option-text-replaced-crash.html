@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Replacing a customizable select option's element with text does not crash</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
+
+<select>
+  <option id="opt"><span>Item</span></option>
+</select>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // Builds the tree. Under base-select, <option>'s child is its <slot>.
+  accessibilityController.rootElement;
+
+  // Queues an accessibility update for <slot>. This is the step under test.
+  // With only text left, <option> can't have children, so it must remove its
+  // <slot> from the tree.
+  opt.textContent = 'Changed';
+
+  // Runs the queued update. A tree check fails if <slot> wasn't removed.
+  const accessibleOpt = accessibilityController.accessibleElementById('opt');
+  assert_true(!!accessibleOpt, 'The option should still be in the tree');
+  assert_equals(accessibleOpt.role, 'AXRole: AXMenuListOption');
+  assert_equals(accessibleOpt.childrenCount, 0,
+                'The option should have no children');
+}, 'Replacing a customizable select option\'s element with text does not crash');
+</script>
