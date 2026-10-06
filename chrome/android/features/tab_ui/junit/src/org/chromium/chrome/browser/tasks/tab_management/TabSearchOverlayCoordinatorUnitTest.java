@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
@@ -114,7 +113,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -187,11 +185,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
-        when(mTabModelSelector.getCurrentTabModelSupplier())
-                .thenReturn(ObservableSuppliers.createNonNull(mTabModel));
-        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
-        when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
-        when(mTabModel.iterator()).thenReturn(Collections.emptyIterator());
 
         when(mSearchUiCoordinator.getLocationBarCoordinator()).thenReturn(mLocationBarCoordinator);
         when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlBarCoordinator);
@@ -1448,61 +1441,5 @@ public class TabSearchOverlayCoordinatorUnitTest {
         KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN);
         closeButton.dispatchKeyEvent(downEvent);
         verify(mUrlBar, times(2)).requestFocus();
-    }
-
-    @Test
-    public void testMaybeReassertFocus_whenVisibleAndUnfocused_reassertsFocusAndQuery() {
-        showOverlay();
-        clearInvocations(mSearchUiCoordinator);
-
-        // Simulate UrlBar losing focus while overlay is still visible (e.g. background tab load
-        // event).
-        when(mOmniboxStub.isUrlBarFocused()).thenReturn(false);
-        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("");
-
-        mCoordinator.maybeReassertFocus();
-
-        verify(mSearchUiCoordinator)
-                .beginQuery(eq(IntentOrigin.HUB), eq(SearchType.TEXT), eq(""), eq(mWindowAndroid));
-    }
-
-    @Test
-    public void testMaybeReassertFocus_preservesUserTextWhenRefocusing() {
-        showOverlay();
-        clearInvocations(mSearchUiCoordinator);
-
-        when(mOmniboxStub.isUrlBarFocused()).thenReturn(false);
-        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("github");
-
-        mCoordinator.maybeReassertFocus();
-
-        verify(mSearchUiCoordinator)
-                .beginQuery(
-                        eq(IntentOrigin.HUB),
-                        eq(SearchType.TEXT),
-                        eq("github"),
-                        eq(mWindowAndroid));
-    }
-
-    @Test
-    public void testMaybeReassertFocus_whenHidden_noOp() {
-        // Overlay is hidden by default.
-        when(mOmniboxStub.isUrlBarFocused()).thenReturn(false);
-
-        mCoordinator.maybeReassertFocus();
-
-        verify(mSearchUiCoordinator, never()).beginQuery(anyInt(), anyInt(), any(), any());
-    }
-
-    @Test
-    public void testMaybeReassertFocus_whenAlreadyFocused_noOp() {
-        showOverlay();
-        clearInvocations(mSearchUiCoordinator);
-
-        when(mOmniboxStub.isUrlBarFocused()).thenReturn(true);
-
-        mCoordinator.maybeReassertFocus();
-
-        verify(mSearchUiCoordinator, never()).beginQuery(anyInt(), anyInt(), any(), any());
     }
 }
