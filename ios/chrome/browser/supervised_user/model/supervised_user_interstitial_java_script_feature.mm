@@ -56,16 +56,16 @@ SupervisedUserInterstitialJavaScriptFeature::GetScriptMessageHandlerName()
 void SupervisedUserInterstitialJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& script_message) {
-  if (!script_message.legacy_body() ||
-      !script_message.legacy_body()->is_dict()) {
+  const web::ScriptMessageValue& body = script_message.body();
+  if (body.type() != base::Value::Type::DICT) {
     return;
   }
 
-  const base::DictValue& dict = script_message.legacy_body()->GetDict();
+  const web::ScriptMessageDictValue& dict = body.GetDict();
   // Expected valid message body struct is:
   // `{"command": "requestUrlAccessRemote"}`, `{"command": "back"}`, or
   // `{"command": "requestUrlAccessLocal"}`
-  const std::string* command = dict.FindString("command");
+  std::optional<std::string> command = dict.FindString("command");
   if (!command) {
     return;
   }
