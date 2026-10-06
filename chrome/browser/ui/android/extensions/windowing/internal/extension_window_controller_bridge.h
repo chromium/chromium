@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -22,10 +23,10 @@ enum class ExtensionInternalWindowEventForTesting;
 // it.
 class ExtensionWindowControllerBridge final {
  public:
-  ExtensionWindowControllerBridge(JNIEnv* env,
-                                  const base::android::JavaRef<jobject>&
-                                      java_extension_window_controller_bridge,
-                                  BrowserWindowInterface* browser_window);
+  ExtensionWindowControllerBridge(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& java_bridge,
+      BrowserWindowInterface* browser_window);
   ExtensionWindowControllerBridge(const ExtensionWindowControllerBridge&) =
       delete;
   ExtensionWindowControllerBridge& operator=(
@@ -61,8 +62,7 @@ class ExtensionWindowControllerBridge final {
       extensions::WindowController* window_controller,
       ExtensionInternalWindowEventForTesting event);
 
-  base::android::ScopedJavaGlobalRef<jobject>
-      java_extension_window_controller_bridge_;
+  JavaObjectWeakGlobalRef java_bridge_;
 
   extensions::BrowserExtensionWindowController extension_window_controller_;
 

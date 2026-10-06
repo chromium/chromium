@@ -26,10 +26,10 @@ class ExtensionSidePanelManager;
 // window.
 class ExtensionSidePanelManagerBridge final {
  public:
-  ExtensionSidePanelManagerBridge(JNIEnv* env,
-                                  const base::android::JavaRef<jobject>&
-                                      java_extension_side_panel_manager_bridge,
-                                  BrowserWindowInterface* browser_window);
+  ExtensionSidePanelManagerBridge(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& java_bridge,
+      BrowserWindowInterface* browser_window);
   ExtensionSidePanelManagerBridge(const ExtensionSidePanelManagerBridge&) =
       delete;
   ExtensionSidePanelManagerBridge& operator=(
@@ -40,7 +40,7 @@ class ExtensionSidePanelManagerBridge final {
   void Destroy(JNIEnv* env);
 
  private:
-  JavaObjectWeakGlobalRef java_extension_side_panel_manager_bridge_;
+  JavaObjectWeakGlobalRef java_bridge_;
   raw_ptr<BrowserWindowInterface> browser_window_;
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;

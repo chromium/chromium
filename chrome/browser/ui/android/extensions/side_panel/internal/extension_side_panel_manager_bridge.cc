@@ -34,13 +34,9 @@ static int64_t JNI_ExtensionSidePanelManagerBridgeImpl_Create(
 
 ExtensionSidePanelManagerBridge::ExtensionSidePanelManagerBridge(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>&
-        java_extension_side_panel_manager_bridge,
+    const base::android::JavaRef<jobject>& java_bridge,
     BrowserWindowInterface* browser_window)
-    : java_extension_side_panel_manager_bridge_(
-          env,
-          java_extension_side_panel_manager_bridge),
-      browser_window_(browser_window) {
+    : java_bridge_(env, java_bridge), browser_window_(browser_window) {
   CHECK(browser_window_);
 
   SidePanelRegistry* registry = SidePanelRegistry::From(browser_window_);
@@ -53,11 +49,12 @@ ExtensionSidePanelManagerBridge::ExtensionSidePanelManagerBridge(
 
 ExtensionSidePanelManagerBridge::~ExtensionSidePanelManagerBridge() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_bridge =
-      java_extension_side_panel_manager_bridge_.get(env);
-  if (java_bridge) {
-    Java_ExtensionSidePanelManagerBridgeImpl_clearNativePtr(env, java_bridge);
-  }
+  ScopedJavaLocalRef<jobject> java_bridge = java_bridge_.get(env);
+  CHECK(java_bridge)
+      << "Java ExtensionSidePanelManagerBridge is the sole owner of "
+         "C++ ExtensionSidePanelManagerBridge, so the Java object "
+         "shouldn't be destroyed before the C++ object";
+  Java_ExtensionSidePanelManagerBridgeImpl_clearNativePtr(env, java_bridge);
 }
 
 void ExtensionSidePanelManagerBridge::Destroy(JNIEnv* env) {

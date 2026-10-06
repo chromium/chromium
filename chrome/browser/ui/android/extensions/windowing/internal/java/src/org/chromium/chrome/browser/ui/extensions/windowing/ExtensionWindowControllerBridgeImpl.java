@@ -11,6 +11,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
@@ -77,6 +78,7 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
     @Override
     public void onAddedToTask(InitInfo initInfo) {
+        ThreadUtils.assertOnUiThread();
         assert mNativeExtensionWindowControllerBridge == 0
                 : "ExtensionWindowControllerBridge is already added to a task.";
 
@@ -87,11 +89,13 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
     @Override
     public void onFeatureRemoved() {
+        ThreadUtils.assertOnUiThread();
         destroyNativeExtensionWindowControllerBridge();
     }
 
     @Override
     public void onTaskBoundsChanged(int displayId, Rect newBoundsInDp, Rect newBoundsInPx) {
+        ThreadUtils.assertOnUiThread();
         if (mNativeExtensionWindowControllerBridge != 0) {
             ExtensionWindowControllerBridgeImplJni.get()
                     .onTaskBoundsChanged(mNativeExtensionWindowControllerBridge);
@@ -100,6 +104,7 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
     @Override
     public void onTaskFocusChanged(boolean hasFocus) {
+        ThreadUtils.assertOnUiThread();
         if (mNativeExtensionWindowControllerBridge != 0) {
             ExtensionWindowControllerBridgeImplJni.get()
                     .onTaskFocusChanged(mNativeExtensionWindowControllerBridge, hasFocus);

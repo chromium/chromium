@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.extensions.side_panel;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
@@ -19,6 +20,7 @@ final class ExtensionSidePanelManagerBridgeImpl implements ExtensionSidePanelMan
 
     @Override
     public void onAddedToTask(InitInfo initInfo) {
+        ThreadUtils.assertOnUiThread();
         assert mNativeExtensionSidePanelManagerBridge == 0
                 : "ExtensionSidePanelManagerBridge is already added to a task.";
 
@@ -29,6 +31,7 @@ final class ExtensionSidePanelManagerBridgeImpl implements ExtensionSidePanelMan
 
     @Override
     public void onFeatureRemoved() {
+        ThreadUtils.assertOnUiThread();
         destroyNativeExtensionSidePanelManagerBridge();
     }
 

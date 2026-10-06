@@ -19,6 +19,7 @@
 namespace {
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
 using extensions::BrowserExtensionWindowController;
 using extensions::WindowController;
 using extensions::WindowControllerList;
@@ -65,18 +66,20 @@ void ExtensionWindowControllerBridge::RecordExtensionInternalEventForTesting(
 
 ExtensionWindowControllerBridge::ExtensionWindowControllerBridge(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>&
-        java_extension_window_controller_bridge,
+    const base::android::JavaRef<jobject>& java_bridge,
     BrowserWindowInterface* browser_window)
-    : extension_window_controller_(
-          BrowserExtensionWindowController(browser_window)) {
-  java_extension_window_controller_bridge_.Reset(
-      env, java_extension_window_controller_bridge);
-}
+    : java_bridge_(env, java_bridge),
+      extension_window_controller_(
+          BrowserExtensionWindowController(browser_window)) {}
 
 ExtensionWindowControllerBridge::~ExtensionWindowControllerBridge() {
-  Java_ExtensionWindowControllerBridgeImpl_clearNativePtr(
-      AttachCurrentThread(), java_extension_window_controller_bridge_);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> java_bridge = java_bridge_.get(env);
+  CHECK(java_bridge)
+      << "Java ExtensionWindowControllerBridge is the sole owner of "
+         "C++ ExtensionWindowControllerBridge, so the Java object "
+         "shouldn't be destroyed before the C++ object";
+  Java_ExtensionWindowControllerBridgeImpl_clearNativePtr(env, java_bridge);
 }
 
 void ExtensionWindowControllerBridge::Destroy(JNIEnv* env) {
