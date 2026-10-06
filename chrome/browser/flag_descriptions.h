@@ -4889,12 +4889,6 @@ inline constexpr char kVcSegmentationInferenceBackendDescription[] =
     "Select segmentation backend to be used for running model inference "
     "during video conferencing, which may offload work from GPU.";
 
-inline constexpr char kVcStudioLookName[] =
-    "Enables Studio Look for video conferencing";
-inline constexpr char kVcStudioLookDescription[] =
-    "Enables Studio Look and VC settings UI, which contains settings for Studio"
-    "Look.";
-
 inline constexpr char kVcSegmentationModelName[] =
     "Use a different segmentation model";
 inline constexpr char kVcSegmentationModelDescription[] =
