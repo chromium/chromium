@@ -323,6 +323,8 @@ public class BottomBarMediator
             mResolvedCandidateExtraAction = candidateExtraAction;
             long decisionDuration = SystemClock.uptimeMillis() - startTime;
             BottomBarMetrics.recordCandidateDecisionTime(decisionDuration);
+            BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(
+                    originalProfile, country);
 
             @CandidateAction
             int candidateMetric =

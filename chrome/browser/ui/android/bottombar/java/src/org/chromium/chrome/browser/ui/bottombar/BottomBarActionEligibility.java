@@ -110,13 +110,17 @@ public class BottomBarActionEligibility {
     }
 
     /**
-     * Resolves the static candidate action (if any) that can be displayed in the bottom bar's
-     * shared extra container for the given profile and country.
+     * Resolves and caches the static candidate action (if any) that can be displayed in the bottom
+     * bar's shared extra container for the given profile and country.
+     *
+     * <p>This is a pure resolver and does not record eligibility metrics; callers that need to emit
+     * startup ineligibility metrics should call {@link
+     * #recordGlicIneligibilityReasonIfNeeded(Profile, String)}.
      *
      * @param profile The current user profile.
      * @param country The variations country code.
-     * @return The candidate {@link ActionId} ({@link ActionId#GLIC}), or {@link #ACTION_NONE} if no
-     *     action is eligible.
+     * @return The eligible {@link ActionId} ({@link ActionId#GLIC}), or {@link #ACTION_NONE} if no
+     *     action is currently eligible to be shown.
      */
     @ActionId
     public static int getCandidateExtraAction(@Nullable Profile profile, @Nullable String country) {
@@ -125,8 +129,7 @@ public class BottomBarActionEligibility {
         }
 
         Profile originalProfile = profile.getOriginalProfile();
-        String normalizedCountry = normalizeCountry(country);
-        boolean isGlicAllowed = isGlicAllowedInCountry(normalizedCountry);
+        boolean isGlicAllowed = isGlicAllowedInCountry(country);
         boolean isGlicProfileEnabled = GlicEnabling.isEnabledForProfile(originalProfile);
 
         // Check if GLIC is enabled for this profile and allowed in country.
@@ -138,21 +141,44 @@ public class BottomBarActionEligibility {
             if (BottomBarConfigUtils.isGlicButtonEnabled()) {
                 return ActionId.GLIC;
             }
-            BottomBarMetrics.recordGlicIneligibilityReason(
-                    GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS);
             return ACTION_NONE;
-        }
-
-        if (!isGlicProfileEnabled) {
-            BottomBarMetrics.recordGlicIneligibilityReason(
-                    GlicIneligibilityReason.PROFILE_INELIGIBLE);
-        } else if (!isGlicAllowed) {
-            BottomBarMetrics.recordGlicIneligibilityReason(
-                    GlicIneligibilityReason.COUNTRY_GEOFENCED);
         }
 
         sCachedCandidateExtraAction = ACTION_NONE;
         return ACTION_NONE;
+    }
+
+    /**
+     * Records the reason why GLIC is ineligible to be shown in the bottom bar for the given profile
+     * and country, if GLIC is not currently eligible.
+     *
+     * @param profile The current user profile.
+     * @param country The variations country code.
+     */
+    public static void recordGlicIneligibilityReasonIfNeeded(
+            @Nullable Profile profile, @Nullable String country) {
+        if (profile == null) {
+            return;
+        }
+
+        Profile originalProfile = profile.getOriginalProfile();
+        if (!GlicEnabling.isEnabledForProfile(originalProfile)) {
+            BottomBarMetrics.recordGlicIneligibilityReason(
+                    GlicIneligibilityReason.PROFILE_INELIGIBLE);
+            return;
+        }
+
+        if (!isGlicAllowedInCountry(country)) {
+            BottomBarMetrics.recordGlicIneligibilityReason(
+                    GlicIneligibilityReason.COUNTRY_GEOFENCED);
+            return;
+        }
+
+        if (!GlicEnabling.isPolicyEnforced(originalProfile)
+                && !BottomBarConfigUtils.isGlicButtonEnabled()) {
+            BottomBarMetrics.recordGlicIneligibilityReason(
+                    GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS);
+        }
     }
 
     /**

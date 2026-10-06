@@ -302,14 +302,36 @@ public class BottomBarActionEligibilityUnitTest {
     }
 
     @Test
-    public void testGetCandidateExtraAction_RecordsIneligibilityReasons() {
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testGetCandidateExtraAction_DoesNotRecordIneligibilityReason() {
+        var noRecordWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BottomBar.Glic.IneligibilityReason")
+                        .build();
+
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        BottomBarActionEligibility.getCandidateExtraAction(mProfile, "us");
+
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        BottomBarActionEligibility.getCandidateExtraAction(mProfile, "au");
+
+        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
+        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ false);
+        BottomBarActionEligibility.getCandidateExtraAction(mProfile, "us");
+
+        noRecordWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testRecordGlicIneligibilityReasonIfNeeded() {
         // 1. GLIC profile ineligible -> GLIC ProfileIneligible recorded.
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         var glicProfileIneligibleWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BottomBar.Glic.IneligibilityReason",
                         GlicIneligibilityReason.PROFILE_INELIGIBLE);
-        BottomBarActionEligibility.getCandidateExtraAction(mProfile, "us");
+        BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(mProfile, "us");
         glicProfileIneligibleWatcher.assertExpected();
 
         // 2. GLIC country geofenced -> GLIC CountryGeofenced recorded.
@@ -318,7 +340,26 @@ public class BottomBarActionEligibilityUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BottomBar.Glic.IneligibilityReason",
                         GlicIneligibilityReason.COUNTRY_GEOFENCED);
-        BottomBarActionEligibility.getCandidateExtraAction(mProfile, "au");
+        BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(mProfile, "au");
         glicCountryGeofencedWatcher.assertExpected();
+
+        // 3. GLIC disabled in settings -> GLIC UserDisabledInSettings recorded.
+        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
+        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ false);
+        var glicDisabledInSettingsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.Glic.IneligibilityReason",
+                        GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS);
+        BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(mProfile, "us");
+        glicDisabledInSettingsWatcher.assertExpected();
+
+        // 4. GLIC eligible -> no ineligibility reason recorded.
+        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ true);
+        var glicEligibleWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BottomBar.Glic.IneligibilityReason")
+                        .build();
+        BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(mProfile, "us");
+        glicEligibleWatcher.assertExpected();
     }
 }

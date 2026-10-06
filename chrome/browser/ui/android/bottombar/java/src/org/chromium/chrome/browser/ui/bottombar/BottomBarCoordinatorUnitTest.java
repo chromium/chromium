@@ -43,6 +43,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -646,5 +648,25 @@ public class BottomBarCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/48")
     public void testBottomBarHeight() {
         assertEquals(48, mCoordinator.getView().getLayoutParams().height);
+    }
+
+    @Test
+    public void testMaybeShowPromoDialog_DoesNotDoubleRecordIneligibilityReason() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        GlicEnabling.setEnabledForTesting(false);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.Glic.IneligibilityReason",
+                        GlicIneligibilityReason.PROFILE_INELIGIBLE);
+
+        mProfileSupplier.set(mProfile);
+        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
+
+        watcher.assertExpected();
     }
 }
