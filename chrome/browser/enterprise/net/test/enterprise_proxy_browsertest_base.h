@@ -71,8 +71,10 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   // Sets the "ProxyProvisioningDomains" policy at the machine (device) scope.
   void SetMachineProxyProvisioningDomains(base::ListValue domains);
 
-  base::DictValue CreateDomainPolicyEntry(const std::string& domain_id,
-                                          bool use_oauth = false);
+  base::DictValue CreateDomainPolicyEntry(
+      const std::string& domain_id,
+      bool use_oauth = false,
+      base::ListValue extra_headers = base::ListValue());
 
   std::string BuildValidPvdJson(const std::string& domain_id,
                                 const std::string& proxy_host_port,
@@ -107,6 +109,10 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   bool was_auth_header_received() const { return was_auth_header_received_; }
   const std::string& last_received_auth_header() const {
     return last_received_auth_header_;
+  }
+  const net::test_server::HttpRequest::HeaderMap& last_pvd_request_headers()
+      const {
+    return last_pvd_request_headers_;
   }
 
  protected:
@@ -156,6 +162,8 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   bool was_auth_header_received_ = false;
   // The value of the last received Proxy-Authorization header.
   std::string last_received_auth_header_;
+  // The HTTP headers received on the last request to `/.well-known/pvd`.
+  net::test_server::HttpRequest::HeaderMap last_pvd_request_headers_;
 
   std::unique_ptr<enterprise_net::ScopedExtraAllowedDomainsForTesting>
       scoped_extra_domains_;

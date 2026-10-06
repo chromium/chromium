@@ -5,15 +5,19 @@
 #include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/net/test/enterprise_proxy_browsertest_base.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -108,6 +112,159 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   EXPECT_EQ("token_acquired",
             *resolved_entries[0].params.FindString("decision"));
   EXPECT_EQ(received_entries[0].source.id, resolved_entries[0].source.id);
+}
+
+// Verifies both extra_headers expansion contracts end-to-end:
+// 1. Policy `extra_headers` (configured with "key" and "value" without "type")
+//    expand `${profile_id}` and `${accept_language}` (and drop unsupported
+//    placeholders) when calling the PvD endpoint (`/.well-known/pvd`).
+// 2. PvD response `extra-headers` (configured with "constant" and "variable"
+//    entries) expand variables and placeholders (and drop unsupported
+//    placeholders) into the Basic auth username when handling HTTP 407 proxy
+//    authentication challenges.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
+                       ExpandsExtraHeadersInPolicyAndPvdResponse) {
+  constexpr char kTestAcceptLanguages[] = "en-US,fr";
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  profile->GetPrefs()->SetString("intl.selected_languages",
+                                 kTestAcceptLanguages);
+  profile->GetPrefs()->SetString("intl.accept_languages", kTestAcceptLanguages);
+
+  auto* profile_id_service = GetProfileIdService();
+  ASSERT_TRUE(profile_id_service);
+  std::optional<std::string> profile_id = profile_id_service->GetProfileId();
+  ASSERT_TRUE(profile_id.has_value());
+
+  // Configure PvD response with both "constant" and "variable" extra-headers.
+  std::string pvd_json = base::StringPrintf(
+      R"({
+        "identifier": "%s",
+        "expires": "Wed, 21 Oct 2026 07:28:00 GMT",
+        "proxies": [
+          {
+            "protocol": "https-connect",
+            "identity": "proxy1",
+            "proxy": "%s",
+            "google_chrome": {
+              "auth": {
+                "type": "profile_bearer_token",
+                "scope": "cloud_secure_gateway"
+              },
+              "extra-headers": [
+                {
+                  "key": "x-resource-key",
+                  "constant": "pvd-resource-val"
+                },
+                {
+                  "key": "x-profile-id",
+                  "variable": "profileId"
+                },
+                {
+                  "key": "x-profile-placeholder",
+                  "variable": "pid-${profile_id}"
+                },
+                {
+                  "key": "accept-language",
+                  "variable": "acceptLanguage"
+                },
+                {
+                  "key": "x-lang-placeholder",
+                  "variable": "${accept_language}"
+                },
+                {
+                  "key": "x-pvd-unsupported",
+                  "variable": "${unsupported_var}"
+                }
+              ]
+            }
+          }
+        ],
+        "proxy-match": [
+          {
+            "proxies": ["proxy1"],
+            "domains": ["%s"]
+          }
+        ]
+      })",
+      kTestPvdDomain, https_server_.host_port_pair().ToString().c_str(),
+      kDestinationHost);
+  SetPvdResponseOverride(net::HttpStatusCode::HTTP_OK, pvd_json);
+
+  // Configure policy extra_headers using the policy schema format ("key" and
+  // "value" without "type").
+  base::ListValue policy_extra_headers;
+  policy_extra_headers.Append(base::DictValue()
+                                  .Set("key", "x-resource-key")
+                                  .Set("value", "policy-resource-val"));
+  policy_extra_headers.Append(base::DictValue()
+                                  .Set("key", "x-profile-id")
+                                  .Set("value", "${profile_id}"));
+  policy_extra_headers.Append(base::DictValue()
+                                  .Set("key", "x-accept-language")
+                                  .Set("value", "${accept_language}"));
+  policy_extra_headers.Append(base::DictValue()
+                                  .Set("key", "x-policy-unsupported")
+                                  .Set("value", "${unsupported_var}"));
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/true,
+                                         std::move(policy_extra_headers)));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  WaitForDynamicRoutesReady();
+
+  // 1. Verify policy extra_headers were expanded on the /.well-known/pvd fetch.
+  const auto& pvd_headers = last_pvd_request_headers();
+  auto auth_it = pvd_headers.find("Authorization");
+  ASSERT_NE(auth_it, pvd_headers.end());
+  EXPECT_EQ(auth_it->second,
+            base::StringPrintf("Bearer %s", kExpectedAccessToken));
+
+  auto resource_it = pvd_headers.find("x-resource-key");
+  ASSERT_NE(resource_it, pvd_headers.end());
+  EXPECT_EQ(resource_it->second, "policy-resource-val");
+
+  auto profile_it = pvd_headers.find("x-profile-id");
+  ASSERT_NE(profile_it, pvd_headers.end());
+  EXPECT_EQ(profile_it->second, *profile_id);
+
+  auto lang_it = pvd_headers.find("x-accept-language");
+  ASSERT_NE(lang_it, pvd_headers.end());
+  EXPECT_EQ(lang_it->second, kTestAcceptLanguages);
+
+  EXPECT_EQ(pvd_headers.find("x-policy-unsupported"), pvd_headers.end());
+
+  // 2. Navigate through the proxy and verify PvD response extra-headers are
+  //    expanded in the Proxy-Authorization Basic auth challenge response.
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
+
+  const std::string& auth_header = last_received_auth_header();
+  ASSERT_TRUE(auth_header.starts_with("Basic "));
+  std::string decoded_creds;
+  ASSERT_TRUE(base::Base64Decode(auth_header.substr(6), &decoded_creds));
+  size_t colon_pos = decoded_creds.find(':');
+  ASSERT_NE(std::string::npos, colon_pos);
+  std::string username = decoded_creds.substr(0, colon_pos);
+  std::string password = decoded_creds.substr(colon_pos + 1);
+  EXPECT_EQ(password, kExpectedAccessToken);
+
+  auto escape = [](const std::string& val) {
+    return base::EscapeQueryParamValue(val, /*use_plus=*/true);
+  };
+  std::vector<std::string> expected_params = {
+      "x-resource-key=pvd-resource-val",
+      "x-profile-id=" + escape(*profile_id),
+      "x-profile-placeholder=" + escape("pid-" + *profile_id),
+      "accept-language=" + escape(kTestAcceptLanguages),
+      "x-lang-placeholder=" + escape(kTestAcceptLanguages),
+  };
+  EXPECT_EQ(username, base::JoinString(expected_params, "&"));
 }
 
 // Verifies that traffic to unmatched destinations bypasses the proxy and
