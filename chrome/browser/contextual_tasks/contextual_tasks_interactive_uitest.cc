@@ -43,6 +43,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -61,6 +62,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -1008,6 +1010,192 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
                 [](PinnedActionToolbarButton* button) {
                   return !button->IsActive();
                 }));
+}
+
+// This tests the following CUJ:
+//  (1) User has a webpage open in a window with a second tab.
+//  (2) User clicks the pinned Contextual Tasks toolbar button.
+//  (3) Contextual Tasks side panel opens with a task for the active tab.
+//  (4) User moves the active tab to a new window.
+//  (5) The tab opens in the new window and keeps its task. The side panel in
+//      the original window closes and does not open in the new window.
+//  (6) User clicks the pinned Contextual Tasks toolbar button in the new
+//      window.
+//  (7) Contextual Tasks side panel opens in the new window with a new
+//      zero-state task for the moved tab.
+IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
+                       MoveTabToNewWindowAndReopenPanel) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMovedTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewWindowSidePanelId);
+
+  const GURL kPageUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kOtherPageUrl = embedded_test_server()->GetURL("/title2.html");
+  const DeepQuery kComposebox = {"contextual-tasks-app", "#composebox",
+                                 "#composebox"};
+
+  // Pinning is profile-wide (incognito reads the original profile's pins), so
+  // the pinned button also shows in the window that the tab moves to.
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
+      ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+
+  // The tab's WebContents stays alive when the tab moves between windows.
+  content::WebContents* moved_contents = nullptr;
+  std::optional<base::Uuid> task_id;
+
+  auto get_task_id = [this, &moved_contents]() -> std::optional<base::Uuid> {
+    std::optional<ContextualTask> task =
+        CHECK_DEREF(ContextualTasksServiceFactory::GetForProfile(
+                        browser()->GetProfile()))
+            .GetContextualTaskForTab(
+                sessions::SessionTabHelper::IdForTab(moved_contents));
+    if (!task.has_value()) {
+      return std::nullopt;
+    }
+    return task->GetTaskId();
+  };
+
+  auto get_moved_tab_window = [&moved_contents]() -> BrowserWindowInterface* {
+    tabs::TabInterface* const tab =
+        tabs::TabInterface::MaybeGetFromContents(moved_contents);
+    return tab ? tab->GetBrowserWindowInterface() : nullptr;
+  };
+
+  // Returns the task ID in the `kTaskQueryParam` query param of the WebUI URL
+  // that the side panel in `window` shows.
+  auto get_side_panel_task_param =
+      [](BrowserWindowInterface* window) -> std::string {
+    content::WebContents* const panel_contents =
+        ContextualTasksPanelController::From(window)->GetActiveWebContents();
+    std::string task_param;
+    if (panel_contents) {
+      net::GetValueForKeyInQuery(panel_contents->GetLastCommittedURL(),
+                                 kTaskQueryParam, &task_param);
+    }
+    return task_param;
+  };
+
+  RunTestSequence(
+      // (1) Open a webpage in the first tab, with a second tab in the window.
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kPageUrl),
+      AddInstrumentedTab(kGenericTab, kOtherPageUrl),
+      WaitForWebContentsReady(kGenericTab, kOtherPageUrl),
+      SelectTab(kTabStripElementId, 0),
+
+      // (2) Click the pinned Contextual Tasks toolbar button.
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+      // (3) The side panel opens with a task for the active tab.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "MoveTabSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelId, "MoveTabSidePanelContents"),
+      WaitForElementExists(kSidePanelId, kComposebox), Do([&]() {
+        moved_contents = browser()->tab_strip_model()->GetActiveWebContents();
+        task_id = get_task_id();
+      }),
+      Check([&]() { return task_id.has_value(); },
+            "Active tab is associated with a task"),
+      Check(
+          [&]() {
+            return get_side_panel_task_param(browser()) ==
+                   task_id->AsLowercaseString();
+          },
+          "Side panel shows the active tab's task"),
+      // The original window's side panel contents are released after the tab
+      // moves away, so stop tracking them first.
+      UninstrumentWebContents(kSidePanelId),
+
+      // (4) Move the active tab to a new window.
+      InstrumentNextTab(kMovedTabId, AnyBrowser()),
+      CheckResult(
+          [this]() {
+            return chrome::ExecuteCommand(browser(),
+                                          IDC_MOVE_TAB_TO_NEW_WINDOW);
+          },
+          true),
+
+      // (5) The tab opens in a new window and keeps its task.
+      InAnyContext(WaitForWebContentsReady(kMovedTabId, kPageUrl)),
+      Check(
+          [&]() {
+            BrowserWindowInterface* const window = get_moved_tab_window();
+            return window && window != browser();
+          },
+          "Moved tab is in a new window"),
+      Check([&]() { return get_task_id() == task_id; },
+            "Moved tab keeps its task"),
+      // The original window is left with the other tab, which has no task, so
+      // its side panel closes.
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+      Check(
+          [this]() {
+            return !ContextualTasksPanelController::From(browser())
+                        ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is closed in the original window"),
+      // Side panels belong to a window, so the panel does not move with the
+      // tab (crbug.com/534437253).
+      Check(
+          [&]() {
+            return !ContextualTasksPanelController::From(get_moved_tab_window())
+                        ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is not open yet in the new window"),
+
+      // (6) Click the pinned toolbar button in the new window. The steps run
+      // in the new window's context, which owns the moved tab.
+      Do([&]() {
+        SidePanelUI::From(get_moved_tab_window())
+            ->DisableAnimationsForTesting();
+      }),
+      InSameContextAs(
+          kMovedTabId,
+          WaitForShow(
+              kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+          PressButton(
+              kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+          // (7) The side panel opens in the new window. The pinned button
+          // starts a new zero-state task for the active tab.
+          WaitForShow(kContextualTasksSidePanelWebViewElementId),
+          NameViewRelative(
+              kContextualTasksSidePanelWebViewElementId,
+              "MoveTabNewWindowSidePanelContents",
+              [](ContextualTasksWebView* web_view) -> views::View* {
+                return web_view->content_web_view();
+              }),
+          InstrumentNonTabWebView(kNewWindowSidePanelId,
+                                  "MoveTabNewWindowSidePanelContents"),
+          WaitForElementExists(kNewWindowSidePanelId, kComposebox)),
+      Check(
+          [&]() {
+            return ContextualTasksPanelController::From(get_moved_tab_window())
+                ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is open in the new window"),
+      // The original task is not restored in the new window
+      // (crbug.com/534437253).
+      Check(
+          [&]() {
+            std::optional<base::Uuid> current_task_id = get_task_id();
+            return current_task_id.has_value() && current_task_id != task_id;
+          },
+          "Pinned button starts a new zero-state task for the moved tab"),
+      Check(
+          [&]() {
+            std::optional<base::Uuid> current_task_id = get_task_id();
+            return current_task_id.has_value() &&
+                   get_side_panel_task_param(get_moved_tab_window()) ==
+                       current_task_id->AsLowercaseString();
+          },
+          "Side panel in the new window shows the moved tab's task"));
 }
 
 // TODO(crbug.com/500717050): Parameterize this test suite on the feature flag.
