@@ -154,6 +154,10 @@ public class TabListRecyclerView extends RecyclerView
         mKeyPageListenerCallback = callback;
     }
 
+    @Nullable Callback<TabKeyEventData> getPageKeyListenerCallbackForTesting() {
+        return mKeyPageListenerCallback;
+    }
+
     /**
      * Returns a boolean indicating whether any animator in {@link TabListItemAnimator} is running.
      */

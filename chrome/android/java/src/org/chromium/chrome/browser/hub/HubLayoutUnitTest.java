@@ -23,7 +23,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -111,7 +110,6 @@ import java.util.function.Supplier;
  * tests.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubLayoutUnitTest {
     // All the tests in this file will run twice, once for isXrDevice=true and once for
     // isXrDevice=false. Expect all the tests with the same results on XR devices too.
@@ -163,8 +161,6 @@ public class HubLayoutUnitTest {
     @Mock private Tab mTab;
     @Mock private OverviewModeAlphaObserver mOnAlphaChange;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private HubContainerView mHubContainerViewMock;
-    @Mock private HubContainerView mPaneHostViewMock;
     @Mock private HubLayoutAnimationRunner mCurrentAnimationRunner;
     @Captor private ArgumentCaptor<HubLayoutAnimationListener> mAnimationListenerCaptor;
     private SceneLayer mStaticSceneLayer;
@@ -178,6 +174,7 @@ public class HubLayoutUnitTest {
 
     private HubLayout mHubLayout;
     private HubContainerView mHubContainerView;
+    private HubContainerView mFinalRectContainerView;
 
     private SyncOneshotSupplierImpl<HubLayoutAnimator> mHubLayoutAnimatorSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -652,34 +649,36 @@ public class HubLayoutUnitTest {
 
     @Test
     public void testFinalRectWithHubSearch_SwitchingModel() {
-        setupFinalRectMocks(/* modelIsIncognito= */ false);
-        Rect expectedRect = new Rect(0, 0, 90, 110);
+        setupFinalRectViews();
+        // The rect starts from the top of the container when switching models.
+        Rect expectedRect = new Rect(0, 0, 90, 140);
         Rect actualRect = new Rect();
 
         mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ true, actualRect);
+                mFinalRectContainerView, /* newIsIncognito= */ true, actualRect);
         assertEquals(expectedRect, actualRect);
 
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
         mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ false, actualRect);
+                mFinalRectContainerView, /* newIsIncognito= */ false, actualRect);
         assertEquals(expectedRect, actualRect);
     }
 
     @Test
     public void testFinalRectWithHubSearch_SameModel() {
-        setupFinalRectMocks(/* modelIsIncognito= */ false);
-        Rect spyRect = spy(new Rect());
+        setupFinalRectViews();
+        // The pane host rect is moved up and extended by the search box height (10).
+        Rect expectedRect = new Rect(0, 30, 90, 140);
+        Rect actualRect = new Rect();
 
         mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ false, spyRect);
-        verify(spyRect, times(2)).offset(anyInt(), anyInt());
+                mFinalRectContainerView, /* newIsIncognito= */ false, actualRect);
+        assertEquals(expectedRect, actualRect);
 
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
-        reset(spyRect);
         mHubLayout.getFinalRectForNewTabAnimation(
-                mHubContainerViewMock, /* newIsIncognito= */ true, spyRect);
-        verify(spyRect, times(2)).offset(anyInt(), anyInt());
+                mFinalRectContainerView, /* newIsIncognito= */ true, actualRect);
+        assertEquals(expectedRect, actualRect);
     }
 
     @Test
@@ -980,31 +979,29 @@ public class HubLayoutUnitTest {
                 .thenReturn(mHubLayoutAnimatorSupplier);
     }
 
-    private void setupFinalRectMocks(boolean modelIsIncognito) {
-        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(modelIsIncognito);
-        when(mHubController.getContainerView()).thenReturn(mHubContainerViewMock);
-        when(mHubContainerViewMock.isLaidOut()).thenReturn(true);
-        Rect hubContainerRect = new Rect(10, 10, 100, 100);
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(hubContainerRect);
-                            return true;
-                        })
-                .when(mHubContainerViewMock)
-                .getGlobalVisibleRect(any());
+    private void setupFinalRectViews() {
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
 
-        when(mHubController.getPaneHostView()).thenReturn(mPaneHostViewMock);
-        when(mPaneHostViewMock.isLaidOut()).thenReturn(true);
-        Rect paneHostRect = new Rect(10, 20, 100, 120);
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(paneHostRect);
-                            return true;
-                        })
-                .when(mPaneHostViewMock)
-                .getGlobalVisibleRect(any());
+        // Global visible rects: container is (10, 10, 100, 160), pane host is (10, 50, 100, 150).
+        // The search box height is the hub toolbar bottom minus the action container bottom (10).
+        FrameLayout root = new FrameLayout(mActivity);
+        mFinalRectContainerView = new HubContainerView(mActivity);
+        FrameLayout paneHostView = new FrameLayout(mActivity);
+        View hubToolbarView = new View(mActivity);
+        hubToolbarView.setId(R.id.hub_toolbar);
+        View toolbarActionContainerView = new View(mActivity);
+        toolbarActionContainerView.setId(R.id.toolbar_action_container);
+        mFinalRectContainerView.addView(paneHostView);
+        mFinalRectContainerView.addView(hubToolbarView);
+        mFinalRectContainerView.addView(toolbarActionContainerView);
+        root.addView(mFinalRectContainerView);
+        root.layout(0, 0, 200, 200);
+        mFinalRectContainerView.layout(10, 10, 100, 160);
+        paneHostView.layout(0, 40, 90, 140);
+        hubToolbarView.layout(0, 0, 90, 40);
+        toolbarActionContainerView.layout(0, 0, 90, 30);
+
+        when(mHubController.getPaneHostView()).thenReturn(paneHostView);
     }
 
     private void forceLayout() {

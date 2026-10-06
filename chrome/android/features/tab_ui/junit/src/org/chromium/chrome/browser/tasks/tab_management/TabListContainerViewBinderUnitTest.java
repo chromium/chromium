@@ -7,15 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FETCH_VIEW_BY_INDEX_CALLBACK;
@@ -27,10 +22,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SEARCH_BOX_VISIBILITY_FRACTION_SUPPLIER;
 
-import android.content.Context;
-import android.content.res.Resources;
+import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -39,7 +35,6 @@ import androidx.core.util.Function;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,12 +45,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SupplementaryContainerAnimationMetadata;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -63,69 +60,70 @@ import java.util.function.Supplier;
 
 /** Robolectric tests for {@link TabListContainerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListContainerViewBinderUnitTest {
-    private static class MockViewHolder extends RecyclerView.ViewHolder {
-        public MockViewHolder(@NonNull View itemView) {
-            super(itemView);
+    /** Adapter with {@link #ITEM_COUNT} focusable plain views of a fixed height. */
+    private static class TestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        @Override
+        public @NonNull RecyclerView.ViewHolder onCreateViewHolder(
+                @NonNull ViewGroup parent, int viewType) {
+            View view = new View(parent.getContext());
+            view.setLayoutParams(
+                    new RecyclerView.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT_PX));
+            view.setFocusable(true);
+            return new RecyclerView.ViewHolder(view) {};
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {}
+
+        @Override
+        public int getItemCount() {
+            return ITEM_COUNT;
         }
     }
 
+    private static final int ITEM_COUNT = 5;
+    private static final int ITEM_HEIGHT_PX = 100;
+    private static final int RECYCLER_VIEW_SIZE_PX = 300;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabListRecyclerView mTabListRecyclerViewMock;
-    @Mock private LinearLayoutManager mLinearLayoutManager;
-    @Mock private ImageView mPaneHairlineMock;
-    @Mock private LinearLayout mSupplementaryContainerMock;
-    @Mock private View mViewMock1;
-    @Mock private View mViewMock2;
-    @Mock private Context mContextMock;
-    @Mock private Resources mResourcesMock;
     @Mock Callback<Function<Integer, View>> mFetchViewByIndexCallback;
     @Mock Callback<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCallback;
     @Mock Callback<TabKeyEventData> mPageKeyEventDataCallback;
+    @Mock View.AccessibilityDelegate mAccessibilityDelegate;
 
     @Captor ArgumentCaptor<Function<Integer, View>> mFetchViewByIndexCaptor;
     @Captor ArgumentCaptor<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCaptor;
-    @Captor ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
 
+    private TabListRecyclerView mTabListRecyclerView;
+    private LinearLayout mSupplementaryContainer;
     private MonotonicObservableSupplier<Boolean> mIsScrollingSupplier;
     private TabListContainerViewBinder.ViewHolder mViewHolder;
-    private float mSupplementaryContainerTranslationY;
 
     @Before
     public void setUp() {
-        when(mTabListRecyclerViewMock.findViewById(R.id.tab_list_recycler_view))
-                .thenReturn(mTabListRecyclerViewMock);
-        when(mTabListRecyclerViewMock.getLayoutManager()).thenReturn(mLinearLayoutManager);
-        when(mTabListRecyclerViewMock.getResources()).thenReturn(mResourcesMock);
-        when(mTabListRecyclerViewMock.getContext()).thenReturn(mContextMock);
-        when(mContextMock.getResources()).thenReturn(mResourcesMock);
-        when(mResourcesMock.getDimensionPixelSize(R.dimen.hub_search_box_gap)).thenReturn(10);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mTabListRecyclerView = new TabListRecyclerView(activity, null);
+        mTabListRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        mTabListRecyclerView.setAdapter(new TestAdapter());
+        activity.setContentView(
+                mTabListRecyclerView,
+                new FrameLayout.LayoutParams(RECYCLER_VIEW_SIZE_PX, RECYCLER_VIEW_SIZE_PX));
+        RobolectricUtil.runAllBackgroundAndUi();
 
-        // Round-trip translationY on the mock so getTranslationY() reflects the latest
-        // setTranslationY() call. The bind logic reads translationY back after force-finish, and
-        // an early-return optimization depends on it being non-zero post-finish.
-        mSupplementaryContainerTranslationY = 0f;
-        when(mSupplementaryContainerMock.getTranslationY())
-                .thenAnswer(invocation -> mSupplementaryContainerTranslationY);
-        doAnswer(
-                        invocation -> {
-                            mSupplementaryContainerTranslationY = invocation.getArgument(0);
-                            return null;
-                        })
-                .when(mSupplementaryContainerMock)
-                .setTranslationY(anyFloat());
-
+        mSupplementaryContainer = new LinearLayout(activity);
         mViewHolder =
                 new TabListContainerViewBinder.ViewHolder(
-                        mTabListRecyclerViewMock, mPaneHairlineMock, mSupplementaryContainerMock);
+                        mTabListRecyclerView, new ImageView(activity), mSupplementaryContainer);
     }
 
     @Test
     public void testFocusTabIndexForAccessibilityProperty() {
-        MockViewHolder viewHolder = spy(new MockViewHolder(mViewMock1));
-        doReturn(viewHolder).when(mTabListRecyclerViewMock).findViewHolderForAdapterPosition(eq(2));
+        View itemView = mTabListRecyclerView.findViewHolderForAdapterPosition(2).itemView;
+        itemView.setAccessibilityDelegate(mAccessibilityDelegate);
+        assertFalse(itemView.isFocused());
         PropertyModel propertyModel =
                 new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)
                         .with(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY, 2)
@@ -134,16 +132,14 @@ public class TabListContainerViewBinderUnitTest {
         TabListContainerViewBinder.bind(
                 propertyModel, mViewHolder, FOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
 
-        verify(mViewMock1).requestFocus();
-        verify(mViewMock1).sendAccessibilityEvent(eq(AccessibilityEvent.TYPE_VIEW_FOCUSED));
+        assertTrue(itemView.isFocused());
+        // Sent once by requestFocus() and once explicitly by the binder.
+        verify(mAccessibilityDelegate, times(2))
+                .sendAccessibilityEvent(itemView, AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Test
     public void testFetchViewByIndexCallback() {
-        MockViewHolder viewHolder1 = spy(new MockViewHolder(mViewMock1));
-        MockViewHolder viewHolder2 = spy(new MockViewHolder(mViewMock2));
-        doReturn(viewHolder1).when(mTabListRecyclerViewMock).findViewHolderForAdapterPosition(0);
-        doReturn(viewHolder2).when(mTabListRecyclerViewMock).findViewHolderForAdapterPosition(1);
         PropertyModel propertyModel =
                 new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)
                         .with(FETCH_VIEW_BY_INDEX_CALLBACK, mFetchViewByIndexCallback)
@@ -152,9 +148,15 @@ public class TabListContainerViewBinderUnitTest {
         TabListContainerViewBinder.bind(propertyModel, mViewHolder, FETCH_VIEW_BY_INDEX_CALLBACK);
 
         verify(mFetchViewByIndexCallback).onResult(mFetchViewByIndexCaptor.capture());
-        assertEquals(mViewMock1, mFetchViewByIndexCaptor.getValue().apply(0));
-        assertEquals(mViewMock2, mFetchViewByIndexCaptor.getValue().apply(1));
-        assertEquals(null, mFetchViewByIndexCaptor.getValue().apply(2));
+        Function<Integer, View> fetchViewByIndex = mFetchViewByIndexCaptor.getValue();
+        assertEquals(
+                mTabListRecyclerView.findViewHolderForAdapterPosition(0).itemView,
+                fetchViewByIndex.apply(0));
+        assertEquals(
+                mTabListRecyclerView.findViewHolderForAdapterPosition(1).itemView,
+                fetchViewByIndex.apply(1));
+        // Only the first 3 items fit, so item 4 has no attached view.
+        assertNull(fetchViewByIndex.apply(4));
     }
 
     @Test
@@ -166,13 +168,19 @@ public class TabListContainerViewBinderUnitTest {
 
         TabListContainerViewBinder.bind(propertyModel, mViewHolder, GET_VISIBLE_RANGE_CALLBACK);
 
-        when(mLinearLayoutManager.findFirstCompletelyVisibleItemPosition()).thenReturn(1);
-        when(mLinearLayoutManager.findLastCompletelyVisibleItemPosition()).thenReturn(2);
         verify(mGetVisibleRangeCallback).onResult(mGetVisibleRangeCaptor.capture());
-        Pair<Integer, Integer> range = mGetVisibleRangeCaptor.getValue().get();
+        Supplier<Pair<Integer, Integer>> visibleRangeSupplier = mGetVisibleRangeCaptor.getValue();
+        Pair<Integer, Integer> range = visibleRangeSupplier.get();
         assertNotNull(range);
-        assertEquals(1, range.first.intValue());
+        assertEquals(0, range.first.intValue());
         assertEquals(2, range.second.intValue());
+
+        ((LinearLayoutManager) mTabListRecyclerView.getLayoutManager())
+                .scrollToPositionWithOffset(1, 0);
+        RobolectricUtil.runAllBackgroundAndUi();
+        range = visibleRangeSupplier.get();
+        assertEquals(1, range.first.intValue());
+        assertEquals(3, range.second.intValue());
     }
 
     @Test
@@ -184,21 +192,15 @@ public class TabListContainerViewBinderUnitTest {
                                 supplier -> mIsScrollingSupplier = supplier)
                         .build();
         TabListContainerViewBinder.bind(propertyModel, mViewHolder, IS_SCROLLING_SUPPLIER_CALLBACK);
-
-        verify(mTabListRecyclerViewMock).addOnScrollListener(mOnScrollListenerCaptor.capture());
-        OnScrollListener listener = mOnScrollListenerCaptor.getValue();
         assertNotNull(mIsScrollingSupplier);
-
-        listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_IDLE);
         assertFalse(mIsScrollingSupplier.get());
 
-        listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_DRAGGING);
+        mTabListRecyclerView.smoothScrollBy(0, ITEM_HEIGHT_PX);
+        assertEquals(RecyclerView.SCROLL_STATE_SETTLING, mTabListRecyclerView.getScrollState());
         assertTrue(mIsScrollingSupplier.get());
 
-        listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_SETTLING);
-        assertTrue(mIsScrollingSupplier.get());
-
-        listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_IDLE);
+        mTabListRecyclerView.stopScroll();
+        assertEquals(RecyclerView.SCROLL_STATE_IDLE, mTabListRecyclerView.getScrollState());
         assertFalse(mIsScrollingSupplier.get());
     }
 
@@ -211,19 +213,20 @@ public class TabListContainerViewBinderUnitTest {
 
         TabListContainerViewBinder.bind(propertyModel, mViewHolder, PAGE_KEY_LISTENER);
 
-        verify(mTabListRecyclerViewMock, times(1))
-                .setPageKeyListenerCallback(mPageKeyEventDataCallback);
+        assertEquals(
+                mPageKeyEventDataCallback,
+                mTabListRecyclerView.getPageKeyListenerCallbackForTesting());
     }
 
     /**
      * Regression test: a burst of identical "show" requests during a fling must not force-finish
      * the in-flight animation, otherwise the search box would snap to its final position instead of
-     * animating. Observable: {@link android.view.View#setTranslationY} is called exactly once (from
-     * the start-value seed of the first animator); any further calls indicate a force-finish that
-     * snapped the value to the end target.
+     * animating. Observable: the container's translationY stays at the animation's start value; a
+     * force-finish would have snapped it to the end target.
      */
     @Test
     public void testAnimateSupplementaryContainer_burstOfIdenticalRequestsKeepsOneAnimation() {
+        assertTrue(mViewHolder.mSearchBoxGapPx > 0);
         PropertyModel model = buildAnimationModel();
 
         for (int i = 0; i < 5; i++) {
@@ -231,7 +234,11 @@ public class TabListContainerViewBinderUnitTest {
         }
 
         assertTrue(mViewHolder.mSupplementaryContainerAnimationHandler.isAnimationPresent());
-        verify(mSupplementaryContainerMock, times(1)).setTranslationY(anyFloat());
+        assertEquals(0f, mSupplementaryContainer.getTranslationY(), 0.001f);
+
+        mViewHolder.mSupplementaryContainerAnimationHandler.forceFinishAnimation();
+        assertEquals(
+                mViewHolder.mSearchBoxGapPx, mSupplementaryContainer.getTranslationY(), 0.001f);
     }
 
     /**
@@ -256,7 +263,7 @@ public class TabListContainerViewBinderUnitTest {
         // started after the show, and hubVisibilitySupplier would stay true.
         mViewHolder.mSupplementaryContainerAnimationHandler.forceFinishAnimation();
         assertFalse(hubVisibilitySupplier.get());
-        assertEquals(0f, mSupplementaryContainerTranslationY, 0.001f);
+        assertEquals(0f, mSupplementaryContainer.getTranslationY(), 0.001f);
     }
 
     private PropertyModel buildAnimationModel() {
