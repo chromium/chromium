@@ -627,7 +627,9 @@ void NavigateEvent::PotentiallyResetTheFocus() {
 
   if (Element* focus_delegate = document->GetAutofocusDelegate()) {
     focus_delegate->Focus(FocusParams(
-        user_initiated_ ? FocusTrigger::kUserGesture : FocusTrigger::kScript));
+        dispatch_params_->involvement == UserNavigationInvolvement::kActivation
+            ? FocusTrigger::kUserGesture
+            : FocusTrigger::kScript));
   } else {
     document->ClearFocusedElement();
     document->SetSequentialFocusNavigationStartingPoint(nullptr);

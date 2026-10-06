@@ -6,9 +6,11 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -233,6 +235,69 @@ TEST_F(NavigationApiTest, InformAboutCanceledNavigationAfterPurgeMemory) {
   // NavigationApi::InformAboutCanceledNavigation. InformAboutCanceledNavigation
   // shouldn't crash due to the invalid v8::Context.
   frame->ForciblyPurgeV8Memory();
+}
+
+TEST_F(
+    NavigationApiTest,
+    BrowserInitiatedSameDocumentBackForwardDoesNotAutofocusCapabilityElement) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/foo.html"),
+      test::CoreTestDataPath("foo.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("https://example.com/foo.html");
+
+  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  Document* document = frame->GetDocument();
+  document->body()->SetInnerHTMLWithoutTrustedTypes(
+      "<geolocation id='geo' autofocus></geolocation>");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  document->View()->UpdateAllLifecyclePhasesForTest();
+
+  ClassicScript::CreateUnspecifiedScript(
+      "navigation.addEventListener('navigate', e => e.intercept());")
+      ->RunScript(frame->DomWindow());
+
+  Element* geo = document->getElementById(AtomicString("geo"));
+  ASSERT_TRUE(geo);
+  EXPECT_EQ(document->FocusedElement(), nullptr);
+
+  DocumentLoader* document_loader = frame->Loader().GetDocumentLoader();
+  const KURL& url = document_loader->Url();
+  const String& key = document_loader->GetHistoryItem()->GetNavigationApiKey();
+
+  // Emulate a browser-initiated same-document back-forward navigation without
+  // transient user activation (UserNavigationInvolvement::kBrowserUI). Even
+  // though NavigateEvent.userInitiated is true, intercepting the navigation
+  // must not focus the autofocused capability element without user activation.
+  auto result1 = document_loader->CommitSameDocumentNavigation(
+      url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
+      ClientRedirectPolicy::kNotClientRedirect,
+      /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
+      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent,
+      /*is_browser_initiated=*/true, /*has_ua_visual_transition=*/false,
+      std::nullopt, /*should_skip_screenshot=*/false);
+  EXPECT_EQ(result1, mojom::blink::CommitResult::Ok);
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document->FocusedElement(), nullptr);
+
+  // When initiated by user activation (UserNavigationInvolvement::kActivation),
+  // intercepting the navigation should focus the autofocused capability
+  // element.
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::blink::UserActivationNotificationType::kTest);
+  auto result2 = document_loader->CommitSameDocumentNavigation(
+      url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
+      ClientRedirectPolicy::kNotClientRedirect,
+      /*has_transient_user_activation=*/true, /*initiator_origin=*/nullptr,
+      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
+      mojom::blink::TriggeringEventInfo::kFromTrustedEvent,
+      /*is_browser_initiated=*/false, /*has_ua_visual_transition=*/false,
+      std::nullopt, /*should_skip_screenshot=*/false);
+  EXPECT_EQ(result2, mojom::blink::CommitResult::Ok);
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document->FocusedElement(), geo);
 }
 
 }  // namespace blink
