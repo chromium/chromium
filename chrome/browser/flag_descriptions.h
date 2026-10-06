@@ -6418,11 +6418,6 @@ inline constexpr char kReengagementNotificationDescription[] =
     "Enables Chrome to use the in-product help system to decide when "
     "to show re-engagement notifications.";
 
-inline constexpr char kRelatedSearchesSwitchName[] =
-    "Enables an experiment for Related Searches on Android";
-inline constexpr char kRelatedSearchesSwitchDescription[] =
-    "Enables requesting related searches suggestions.";
-
 inline constexpr char kSafeBrowsingSyncCheckerCheckAllowlistName[] =
     "Safe Browsing Sync Checker Check Allowlist";
 inline constexpr char kSafeBrowsingSyncCheckerCheckAllowlistDescription[] =

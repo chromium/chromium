@@ -481,7 +481,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloudIPHMenuButtonHighlightCCT,
     &kRecordSuppressionMetrics,
     &kReengagementNotification,
-    &kRelatedSearchesSwitch,
     &kRemoveExtraHeadersOnCrossOriginRedirect,
     &kRobustWindowManagementExperimental,
     &kSafetyFrePromo,
@@ -914,7 +913,6 @@ BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT, base::FEATURE_DISABLED_BY_DEFA
 BASE_FEATURE(kReadAloudServerExperiments, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kRecordSuppressionMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReengagementNotification, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kRelatedSearchesSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRemoveExtraHeadersOnCrossOriginRedirect, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRobustWindowManagementExperimental, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSafetyFrePromo, base::FEATURE_DISABLED_BY_DEFAULT);

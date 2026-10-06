@@ -8,7 +8,6 @@ import android.net.Uri;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * Handles the management of the Related Searches processing "stamp" CGI parameter.
@@ -95,8 +94,7 @@ class RelatedSearchesStamp {
      *     Searches or the feature is not enabled.
      */
     String getRelatedSearchesStamp(String basePageLanguage) {
-        if (!isQualifiedForRelatedSearches(basePageLanguage)
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_SWITCH)) {
+        if (!isQualifiedForRelatedSearches(basePageLanguage)) {
             return "";
         }
 

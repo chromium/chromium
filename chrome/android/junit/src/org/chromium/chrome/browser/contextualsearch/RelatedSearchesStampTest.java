@@ -22,10 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Tests the {@link RelatedSearchesStamp} class. */
@@ -81,16 +79,10 @@ public class RelatedSearchesStampTest {
         mPolicy.overrideAllowSendingPageUrlForTesting(canSend);
     }
 
-    /** Sets whether the Related Searches switch is enabled. */
-    private void setRelatedSearchesSwitch(boolean enable) {
-        FeatureOverrides.overrideFlag(ChromeFeatureList.RELATED_SEARCHES_SWITCH, enable);
-    }
-
     /** Sets a standard config setup for the default Related Searches launch configuration. */
     private void setStandardDefaultLaunchConfiguration() {
         setCanSendUrl(true);
         setCanSendContent(true);
-        setRelatedSearchesSwitch(true);
     }
 
     // ====================================================================================
@@ -187,20 +179,5 @@ public class RelatedSearchesStampTest {
         assertFalse(
                 "Replacing a non-existing parameter is adding the new parameter anyway!",
                 shouldBeUnchanged.contains("qqq"));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testRelatedSearchSwitchIsDisabled() {
-        setStandardDefaultLaunchConfiguration();
-        setRelatedSearchesSwitch(false);
-        assertThat(
-                "related searches should be disabled!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(""));
-        assertThat(
-                "related searches should be disabled!",
-                mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(""));
     }
 }
