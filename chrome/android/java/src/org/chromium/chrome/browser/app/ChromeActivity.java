@@ -237,6 +237,8 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFac
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.extensions.browser_window_helper.ExtensionBrowserWindowHelperBridge;
+import org.chromium.chrome.browser.ui.extensions.browser_window_helper.ExtensionBrowserWindowHelperBridgeFactory;
 import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridge;
 import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridgeFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -1196,6 +1198,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             ChromeAndroidTask chromeAndroidTask,
             Profile profile,
             ActivityWindowAndroid activityWindowAndroid) {
+        chromeAndroidTask.addFeature(
+                new ChromeAndroidTaskFeatureKey(
+                        ExtensionBrowserWindowHelperBridge.class, profile, activityWindowAndroid),
+                ExtensionBrowserWindowHelperBridgeFactory::create);
         chromeAndroidTask.addFeature(
                 new ChromeAndroidTaskFeatureKey(
                         ExtensionWindowControllerBridge.class, profile, activityWindowAndroid),

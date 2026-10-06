@@ -231,10 +231,10 @@ source_set("internal") {
     if (is_win) {
       deps += [ "//chrome/browser/ui/views/frame:windows_taskbar_icon_updater" ]
     }
-  }
 
-  if (enable_extensions_core) {
-    deps += [ "//chrome/browser/extensions" ]
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/extensions" ]
+    }
   }
 
   if (!is_android) {

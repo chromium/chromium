@@ -1,0 +1,55 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+assert(enable_extensions_core)
+
+# Android C++ extension browser window helper internals.
+#
+# This target shouldn't be used by anything outside this directory, except
+# //c/b/ui, which is the C++ "glue" that links the implementation into
+# libchrome.so.
+source_set("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser/ui",
+  ]
+  sources = [
+    "extension_browser_window_helper_bridge.cc",
+    "extension_browser_window_helper_bridge.h",
+  ]
+  deps = [
+    ":jni",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui/browser_window",
+  ]
+}
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/extensions/browser_window_helper/ExtensionBrowserWindowHelperBridgeFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/extensions/browser_window_helper/ExtensionBrowserWindowHelperBridgeImpl.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/ui/android/extensions/browser_window_helper:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni" ]
+}
+
+generate_jni("jni") {
+  visibility = [ ":*" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/browser_window_helper/ExtensionBrowserWindowHelperBridgeImpl.java" ]
+}
