@@ -10,6 +10,8 @@
 #import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
+#import "base/test/scoped_command_line.h"
+#import "components/enterprise/browser/enterprise_switches.h"
 #import "components/policy/core/browser/policy_pref_mapping_test.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/policy/core/common/policy_map.h"
@@ -31,6 +33,8 @@ class PolicyTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableChromeBrowserCloudManagement);
     ASSERT_TRUE(state_directory_.CreateUniqueTempDir());
     enterprise_policy_helper_ = std::make_unique<EnterprisePolicyTestHelper>(
         state_directory_.GetPath());
@@ -46,6 +50,8 @@ class PolicyTest : public PlatformTest {
   }
 
  protected:
+  base::test::ScopedCommandLine scoped_command_line_;
+
   // Temporary directory to hold preference files.
   base::ScopedTempDir state_directory_;
 

@@ -189,6 +189,8 @@ const char kTestPageText[] = "pony";
   // app, this policy data will appear under the
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.additional_args.push_back(
+      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }

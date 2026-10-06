@@ -106,14 +106,16 @@ class ConfigurationPolicyHandlerListTest : public ::testing::Test {
                                        &future_policies_);
   }
 
-  void CreateHandlerList(bool are_future_policies_allowed_by_default = false) {
+  void CreateHandlerList(bool are_future_policies_allowed_by_default = false,
+                         bool are_cloud_only_policies_allowed = true) {
     handler_list_ = std::make_unique<ConfigurationPolicyHandlerList>(
         ConfigurationPolicyHandlerList::
             PopulatePolicyHandlerParametersCallback(),
         base::BindRepeating(
             &ConfigurationPolicyHandlerListTest::GetPolicyDetails,
             base::Unretained(this)),
-        are_future_policies_allowed_by_default);
+        are_future_policies_allowed_by_default,
+        are_cloud_only_policies_allowed);
   }
 
   PrefValueMap* prefs() { return &prefs_; }
@@ -331,6 +333,42 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithCloudOnlyPolicy) {
             l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR));
   ClearErrors();
 #endif
+}
+
+TEST_F(ConfigurationPolicyHandlerListTest,
+       ApplySettingsWithoutCloudOnlyPoliciesAllowed) {
+  CreateHandlerList(/*are_future_policies_allowed_by_default=*/false,
+                    /*are_cloud_only_policies_allowed=*/false);
+  details()->source_restriction = kSourceRestrictionCloudOnly;
+
+  // Cloud source is disallowed when cloud-only policies are not allowed.
+  AddPolicy(kPolicyName, /*is_cloud=*/true, base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
+  EXPECT_EQ(GetErrorMessages(kPolicyName),
+            l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR));
+  ClearErrors();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Command line source on Android remains allowed for development and testing.
+  ClearPrefs();
+  SetPolicy(kPolicyName, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+            POLICY_SOURCE_COMMAND_LINE, base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+  EXPECT_TRUE(IsErrorsEmpty());
+#endif
+
+  // CloudReportingEnabled is also disallowed when cloud-only policies are not
+  // allowed.
+  ClearPolicies();
+  AddPolicy(key::kCloudReportingEnabled, /*is_cloud=*/true,
+            base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(key::kCloudReportingEnabled, /*in_pref=*/false);
+  EXPECT_EQ(GetErrorMessages(key::kCloudReportingEnabled),
+            l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR));
+  ClearErrors();
 }
 
 // TODO(crbug.com/491119520): Remove this test once the CloudReportingEnabled

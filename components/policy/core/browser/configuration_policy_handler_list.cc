@@ -31,11 +31,13 @@ const char kPolicyCommentPrefix[] = "_comment";
 ConfigurationPolicyHandlerList::ConfigurationPolicyHandlerList(
     const PopulatePolicyHandlerParametersCallback& parameters_callback,
     const GetChromePolicyDetailsCallback& details_callback,
-    bool are_future_policies_allowed_by_default)
+    bool are_future_policies_allowed_by_default,
+    bool are_cloud_only_policies_allowed)
     : parameters_callback_(parameters_callback),
       details_callback_(details_callback),
       are_future_policies_allowed_by_default_(
-          are_future_policies_allowed_by_default) {}
+          are_future_policies_allowed_by_default),
+      are_cloud_only_policies_allowed_(are_cloud_only_policies_allowed) {}
 
 ConfigurationPolicyHandlerList::~ConfigurationPolicyHandlerList() = default;
 
@@ -203,6 +205,17 @@ bool IsCloudOnlyPolicySource(const policy::PolicyMap::Entry& policy) {
 
 bool ConfigurationPolicyHandlerList::IsCloudOnlyPolicy(
     PolicyMap::const_reference entry) const {
+#if BUILDFLAG(IS_ANDROID)
+  // For development and testing without a policy server.
+  if (entry.second.source == POLICY_SOURCE_COMMAND_LINE) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (!are_cloud_only_policies_allowed_) {
+    return false;
+  }
+
   // CloudReportingEnabled was added before the cloud_only tag and historically
   // never checked the policy source. Skip enforcement for it to avoid breaking
   // existing setups.
@@ -210,13 +223,6 @@ bool ConfigurationPolicyHandlerList::IsCloudOnlyPolicy(
   if (entry.first == key::kCloudReportingEnabled) {
     return true;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // For development and testing without a policy server.
-  if (entry.second.source == POLICY_SOURCE_COMMAND_LINE) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   if (entry.second.source == POLICY_SOURCE_MERGED) {
     for (const auto& conflict : entry.second.conflicts) {

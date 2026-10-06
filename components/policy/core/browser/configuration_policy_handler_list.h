@@ -37,7 +37,8 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
   explicit ConfigurationPolicyHandlerList(
       const PopulatePolicyHandlerParametersCallback& parameters_callback,
       const GetChromePolicyDetailsCallback& details_callback,
-      bool are_future_policies_allowed_by_default);
+      bool are_future_policies_allowed_by_default,
+      bool are_cloud_only_policies_allowed = true);
   ConfigurationPolicyHandlerList(const ConfigurationPolicyHandlerList&) =
       delete;
   ConfigurationPolicyHandlerList& operator=(
@@ -49,8 +50,9 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
 
   // Translates |policies| to their corresponding preferences in |prefs|. Any
   // errors found while processing the policies are stored in |errors|.
-  // Policies that are |cloud_only| but are not set from a cloud source will not
-  // be applied, and an error will be stored in |errors|.
+  // Policies that are |cloud_only| but are not set from a cloud source (or when
+  // |are_cloud_only_policies_allowed_| is false) will not be applied, and an
+  // error will be stored in |errors|.
   // All deprecated policies will be stored into |deprecated_policies|.
   // All non-applying unreleased policies will be stored in
   // |future_policies_blocked|. |prefs|, |deprecated_policies|,
@@ -69,7 +71,8 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
   // Returns true if the policy |entry| should be passed to the |handlers_|,
   // and false otherwise.
   // On all channels, |cloud_only| policies are enforced to be set from a cloud
-  // source - if they are not, returns false and adds an error to |errors|.
+  // source and allowed by |are_cloud_only_policies_allowed_| - if they are not,
+  // returns false and adds an error to |errors|.
   // On Stable and Beta channel, future policies that are not in the
   // |future_policies_allowed| will be filtered out and put into the
   // |future_policies_blocked|.
@@ -98,6 +101,7 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
   const GetChromePolicyDetailsCallback details_callback_;
 
   bool are_future_policies_allowed_by_default_ = false;
+  bool are_cloud_only_policies_allowed_ = true;
 };
 
 // Callback with signature of BuildHandlerList(), to be used in constructor of

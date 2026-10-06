@@ -184,6 +184,8 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
   PrefMappingChunkInfo chunk_info_{GetParam(), GetNumChunks()};
 #if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list_;
+#else
+  policy::FakeBrowserDMTokenStorage storage_;
 #endif
 };
 
@@ -198,8 +200,7 @@ IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  policy::FakeBrowserDMTokenStorage storage;
-  policy::BrowserDMTokenStorage::SetForTesting(&storage);
+  policy::BrowserDMTokenStorage::SetForTesting(&storage_);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   PrefService* local_state = g_browser_process->local_state();

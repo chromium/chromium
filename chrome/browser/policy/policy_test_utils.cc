@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
 #include "components/safe_search_api/safe_search_util.h"
@@ -56,6 +57,10 @@ PolicyTest::~PolicyTest() = default;
 
 void PolicyTest::SetUpInProcessBrowserTestFixture() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableChromeBrowserCloudManagement);
+#endif
   provider_.SetDefaultReturns(true /* is_initialization_complete_return */,
                               true /* is_first_policy_load_complete_return */);
   BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);

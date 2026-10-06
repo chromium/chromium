@@ -243,6 +243,7 @@
 #include "components/user_manager/user_manager_pref_names.h"
 #else
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/idle/idle_timeout_policy_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2614,6 +2615,14 @@ bool AreFuturePoliciesEnabledByDefault() {
          channel != version_info::Channel::BETA;
 }
 
+bool AreCloudOnlyPoliciesAllowed() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  return ChromeBrowserCloudManagementController::IsEnabled();
+#else
+  return true;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
 }  // namespace
 
 void PopulatePolicyHandlerParameters(PolicyHandlerParameters* parameters) {
@@ -2634,7 +2643,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       new ConfigurationPolicyHandlerList(
           base::BindRepeating(&PopulatePolicyHandlerParameters),
           base::BindRepeating(&GetChromePolicyDetails),
-          AreFuturePoliciesEnabledByDefault()));
+          AreFuturePoliciesEnabledByDefault(), AreCloudOnlyPoliciesAllowed()));
   for (const PolicyToPreferenceMapEntry& entry : kSimplePolicyMap) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
         entry.policy_name, entry.preference_path, entry.value_type));
