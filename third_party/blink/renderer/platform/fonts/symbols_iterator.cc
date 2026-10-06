@@ -31,7 +31,7 @@ SymbolsIterator::SymbolsIterator(base::span<const UChar> buffer) {
   }
 }
 
-bool SymbolsIterator::Consume(unsigned* symbols_limit,
+bool SymbolsIterator::Consume(wtf_size_t* symbols_limit,
                               FontFallbackPriority* font_fallback_priority) {
   if (cursor_ >= buffer_iterator_.size()) {
     return false;

@@ -50,19 +50,19 @@ namespace blink {
 // Freetype does not parse these tables so we do so here.
 
 // Parse a TrueType VDMX table.
-//   yMax: (output) the ascender value from the table
-//   yMin: (output) the descender value from the table (negative!)
+//   y_max: (output) the ascender value from the table
+//   y_min: (output) the descender value from the table (negative!)
 //   vdmx: the table bytes
-//   targetPixelSize: the pixel size of the font (e.g. 16)
+//   target_pixel_size: the pixel size of the font (e.g. 16)
 //
-// Returns true iff a suitable match are found. Otherwise, *yMax and *yMin are
+// Returns true iff a suitable match is found. Otherwise, *y_max and *y_min are
 // untouched. size_t must be 32-bits to avoid overflow.
 //
 // See http://www.microsoft.com/opentype/otspec/vdmx.htm
 bool ParseVDMX(int* y_max,
                int* y_min,
                base::span<const uint8_t> vdmx,
-               unsigned target_pixel_size) {
+               wtf_size_t target_pixel_size) {
   // We ignore the version. Future tables should be backwards compatible with
   // this layout.
   uint16_t num_ratios;
@@ -83,12 +83,12 @@ bool ParseVDMX(int* y_max,
   size_t offset_table_offset =
       ratios_offset + 4u /* sizeof struct ratio */ * num_ratios;
 
-  unsigned desired_ratio = 0xffffffff;
+  wtf_size_t desired_ratio = 0xffffffff;
   // We read 4 bytes per record, so the offset range is
   //   6 <= x <= 524286
   {
     auto reader = base::SpanReader(vdmx.subspan(ratios_offset));
-    for (unsigned i = 0; i < num_ratios; ++i) {
+    for (wtf_size_t i = 0; i < num_ratios; ++i) {
       uint8_t x_ratio, y_ratio1, y_ratio2;
 
       if (!reader.Skip(1u) || !reader.ReadU8BigEndian(x_ratio) ||
@@ -134,7 +134,7 @@ bool ParseVDMX(int* y_max,
 
     // We read 6 bytes per record, so the offset range is
     //   4 <= x <= 458749
-    for (unsigned i = 0; i < num_records; ++i) {
+    for (wtf_size_t i = 0; i < num_records; ++i) {
       uint16_t pixel_size;
       if (!reader.ReadU16BigEndian(pixel_size)) {
         return false;

@@ -32,7 +32,7 @@ class PLATFORM_EXPORT OrientationIterator {
   OrientationIterator(const OrientationIterator&) = delete;
   OrientationIterator& operator=(const OrientationIterator&) = delete;
 
-  bool Consume(unsigned* orientation_limit, RenderOrientation*);
+  bool Consume(wtf_size_t* orientation_limit, RenderOrientation*);
 
  private:
   UTF16TextIterator utf16_iterator_;

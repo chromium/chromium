@@ -75,7 +75,7 @@ std::optional<uint16_t> PaletteInterpolation::RetrievePaletteIndex(
 
 Vector<FontPalette::FontPaletteOverride>
 PaletteInterpolation::RetrieveColorRecords(const FontPalette* palette,
-                                           unsigned int palette_index) const {
+                                           wtf_size_t palette_index) const {
   Vector<Color> colors =
       OpenTypeCpalLookup::RetrieveColorRecords(typeface_, palette_index);
 
@@ -104,7 +104,7 @@ PaletteInterpolation::ComputeInterpolableFontPalette(
   if (!palette->IsInterpolablePalette()) {
     std::optional<uint16_t> retrieved_palette_index =
         RetrievePaletteIndex(palette);
-    unsigned int new_palette_index =
+    wtf_size_t new_palette_index =
         retrieved_palette_index.has_value() ? *retrieved_palette_index : 0;
     return RetrieveColorRecords(palette, new_palette_index);
   }

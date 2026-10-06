@@ -49,8 +49,8 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
         font_(font) {}
 
  protected:
-  const ShapeResult* Shape(unsigned start,
-                           unsigned end,
+  const ShapeResult* Shape(wtf_size_t start,
+                           wtf_size_t end,
                            ShapeOptions options) final {
     return shaper_->Shape(font_, GetShapeResult().Direction(), start, end);
   }

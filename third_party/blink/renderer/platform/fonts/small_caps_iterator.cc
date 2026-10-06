@@ -12,7 +12,7 @@ namespace blink {
 SmallCapsIterator::SmallCapsIterator(base::span<const UChar> buffer)
     : utf16_iterator_(buffer), at_end_(buffer.empty()) {}
 
-bool SmallCapsIterator::Consume(unsigned* caps_limit,
+bool SmallCapsIterator::Consume(wtf_size_t* caps_limit,
                                 SmallCapsBehavior* small_caps_behavior) {
   if (at_end_)
     return false;

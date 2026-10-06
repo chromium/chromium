@@ -37,11 +37,11 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
 
 void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
                                     bool subpixel,
-                                    unsigned count,
+                                    wtf_size_t count,
                                     const hb_codepoint_t* glyphs,
-                                    unsigned glyph_stride_32,
+                                    wtf_size_t glyph_stride_32,
                                     hb_position_t* advances,
-                                    unsigned advance_stride_32) {
+                                    wtf_size_t advance_stride_32) {
   if (count == 0) {
     return;
   }
@@ -63,25 +63,25 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
   // for the given stride.
   if (subpixel) {
     if (advance_stride_32 == 1) {
-      for (unsigned i = 0; i < count; ++i) {
+      for (wtf_size_t i = 0; i < count; ++i) {
         UNSAFE_BUFFERS(advances[i] = SkiaScalarToHarfBuzzPosition(advance[i]));
       }
     } else {
-      for (unsigned i = 0; i < count;
-           i++, UNSAFE_BUFFERS(advance += advance_stride_32)) {
+      for (wtf_size_t i = 0; i < count;
+           ++i, UNSAFE_BUFFERS(advance += advance_stride_32)) {
         UNSAFE_BUFFERS(*reinterpret_cast<hb_position_t*>(advance) =
                            SkiaScalarToHarfBuzzPosition(*advance));
       }
     }
   } else {
     if (advance_stride_32 == 1) {
-      for (unsigned i = 0; i < count; ++i) {
+      for (wtf_size_t i = 0; i < count; ++i) {
         UNSAFE_BUFFERS(advances[i] = SkiaScalarToHarfBuzzPosition(
                            SkScalarRoundToScalar(advance[i])));
       }
     } else {
-      for (unsigned i = 0; i < count;
-           i++, UNSAFE_BUFFERS(advance += advance_stride_32)) {
+      for (wtf_size_t i = 0; i < count;
+           ++i, UNSAFE_BUFFERS(advance += advance_stride_32)) {
         UNSAFE_BUFFERS(
             *reinterpret_cast<hb_position_t*>(advance) =
                 SkiaScalarToHarfBuzzPosition(SkScalarRoundToScalar(*advance)));
@@ -196,7 +196,7 @@ void SkFontGetBoundsForGlyphs(const SkFont& font,
                               const Vector<Glyph, 256>& glyphs,
                               base::span<SkRect> bounds) {
 #if BUILDFLAG(IS_APPLE)
-  for (unsigned i = 0; i < glyphs.size(); i++) {
+  for (wtf_size_t i = 0; i < glyphs.size(); ++i) {
     SkFontGetBoundsForGlyph(font, glyphs[i], &bounds[i]);
   }
 #else
@@ -204,7 +204,7 @@ void SkFontGetBoundsForGlyphs(const SkFont& font,
   font.getBounds(glyphs, {bounds.data(), glyphs.size()}, nullptr);
 
   if (!font.isSubpixel()) {
-    for (unsigned i = 0; i < glyphs.size(); i++) {
+    for (wtf_size_t i = 0; i < glyphs.size(); ++i) {
       SkIRect ir;
       bounds[i].roundOut(&ir);
       bounds[i].set(ir);

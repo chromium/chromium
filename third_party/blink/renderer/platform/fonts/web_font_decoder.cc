@@ -100,7 +100,7 @@ void BlinkOTSContext::Message(int level, const char* format, ...) {
     AppendErrorMessage(String("Unspecified OTS Error"));
   } else {
     Vector<char, 256> buffer;
-    unsigned len = result;
+    wtf_size_t len = result;
     buffer.Grow(len + 1);
 
     va_start(args, format);
@@ -117,7 +117,7 @@ void BlinkOTSContext::AppendErrorMessage(const String& new_error_string) {
   // text for diagnostics, but avoid unbounded string growth. Once the
   // accumulated string reaches the budget, stop accepting further messages
   // entirely rather than truncating individual ones.
-  static constexpr unsigned kMaxAccumulatedErrorStringLength = 4096;
+  static constexpr wtf_size_t kMaxAccumulatedErrorStringLength = 4096;
 
   if (accumulated_error_string_.length() >= kMaxAccumulatedErrorStringLength) {
     return;

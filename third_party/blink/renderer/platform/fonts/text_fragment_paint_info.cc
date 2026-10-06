@@ -6,8 +6,8 @@
 
 namespace blink {
 
-TextFragmentPaintInfo TextFragmentPaintInfo::Slice(unsigned slice_from,
-                                                   unsigned slice_to) const {
+TextFragmentPaintInfo TextFragmentPaintInfo::Slice(wtf_size_t slice_from,
+                                                   wtf_size_t slice_to) const {
   DCHECK_LE(from, slice_from);
   DCHECK_LE(slice_from, slice_to);
   DCHECK_LE(slice_to, to);
@@ -18,12 +18,12 @@ TextFragmentPaintInfo TextFragmentPaintInfo::Slice(unsigned slice_from,
 }
 
 TextFragmentPaintInfo TextFragmentPaintInfo::WithStartOffset(
-    unsigned start_from) const {
+    wtf_size_t start_from) const {
   return Slice(start_from, to);
 }
 
 TextFragmentPaintInfo TextFragmentPaintInfo::WithEndOffset(
-    unsigned end_to) const {
+    wtf_size_t end_to) const {
   return Slice(from, end_to);
 }
 

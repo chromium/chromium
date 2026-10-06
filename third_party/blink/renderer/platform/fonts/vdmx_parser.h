@@ -34,12 +34,15 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+
 bool ParseVDMX(int* ymax,
                int* ymin,
                base::span<const uint8_t> vdmx,
-               unsigned target_pixel_size);
+               wtf_size_t target_pixel_size);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_VDMX_PARSER_H_

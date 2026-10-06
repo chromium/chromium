@@ -16,11 +16,11 @@ struct OrientationTestRun {
 };
 
 struct OrientationExpectedRun {
-  unsigned limit;
+  wtf_size_t limit;
   OrientationIterator::RenderOrientation render_orientation;
 
   OrientationExpectedRun(
-      unsigned the_limit,
+      wtf_size_t the_limit,
       OrientationIterator::RenderOrientation the_render_orientation)
       : limit(the_limit), render_orientation(the_render_orientation) {}
 };
@@ -42,7 +42,7 @@ class OrientationIteratorTest : public testing::Test {
 
   void VerifyRuns(OrientationIterator* orientation_iterator,
                   const Vector<OrientationExpectedRun>& expect) {
-    unsigned limit;
+    wtf_size_t limit;
     OrientationIterator::RenderOrientation render_orientation;
     wtf_size_t run_count = 0;
     while (orientation_iterator->Consume(&limit, &render_orientation)) {
@@ -63,7 +63,7 @@ TEST_F(OrientationIteratorTest, Empty) {
   String empty(g_empty_string16_bit);
   OrientationIterator orientation_iterator(empty.Span16(),
                                            FontOrientation::kVerticalMixed);
-  unsigned limit = 0;
+  wtf_size_t limit = 0;
   OrientationIterator::RenderOrientation orientation =
       OrientationIterator::kOrientationInvalid;
   DCHECK(!orientation_iterator.Consume(&limit, &orientation));

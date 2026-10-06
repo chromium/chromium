@@ -27,7 +27,7 @@ class PLATFORM_EXPORT PaletteInterpolation {
  private:
   Vector<FontPalette::FontPaletteOverride> RetrieveColorRecords(
       const FontPalette* palette,
-      unsigned int palette_index) const;
+      wtf_size_t palette_index) const;
   static Vector<FontPalette::FontPaletteOverride> MixColorRecords(
       Vector<FontPalette::FontPaletteOverride>&& start_color_records,
       Vector<FontPalette::FontPaletteOverride>&& end_color_records,

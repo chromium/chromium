@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -82,7 +83,7 @@ class GlyphMetricsMap {
       // `metrics_` array, so `glyph % kSize` is in-bounds.
       UNSAFE_BUFFERS(SetMetricsForIndex(glyph % kSize, metrics));
     }
-    UNSAFE_BUFFER_USAGE void SetMetricsForIndex(unsigned index,
+    UNSAFE_BUFFER_USAGE void SetMetricsForIndex(wtf_size_t index,
                                                 const T& metrics) {
       // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
       SECURITY_DCHECK(index < kSize);
@@ -93,13 +94,13 @@ class GlyphMetricsMap {
     T metrics_[kSize];
   };
 
-  GlyphMetricsPage* LocatePage(unsigned page_number) {
+  GlyphMetricsPage* LocatePage(wtf_size_t page_number) {
     if (!page_number && filled_primary_page_)
       return &primary_page_;
     return LocatePageSlowCase(page_number);
   }
 
-  GlyphMetricsPage* LocatePageSlowCase(unsigned page_number);
+  GlyphMetricsPage* LocatePageSlowCase(wtf_size_t page_number);
 
   static constexpr T UnknownMetrics();
 
@@ -121,7 +122,7 @@ inline constexpr gfx::RectF GlyphMetricsMap<gfx::RectF>::UnknownMetrics() {
 
 template <class T>
 typename GlyphMetricsMap<T>::GlyphMetricsPage*
-GlyphMetricsMap<T>::LocatePageSlowCase(unsigned page_number) {
+GlyphMetricsMap<T>::LocatePageSlowCase(wtf_size_t page_number) {
   GlyphMetricsPage* page;
   if (!page_number) {
     DCHECK(!filled_primary_page_);
@@ -141,7 +142,7 @@ GlyphMetricsMap<T>::LocatePageSlowCase(unsigned page_number) {
   }
 
   // Fill in the whole page with the unknown glyph information.
-  for (unsigned i = 0; i < GlyphMetricsPage::kSize; i++) {
+  for (wtf_size_t i = 0; i < GlyphMetricsPage::kSize; ++i) {
     // SAFETY: `kSize` is the size of the metrics array to be indexed.
     UNSAFE_BUFFERS(page->SetMetricsForIndex(i, UnknownMetrics()));
   }

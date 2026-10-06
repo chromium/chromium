@@ -16,11 +16,11 @@ struct SmallCapsTestRun {
 };
 
 struct SmallCapsExpectedRun {
-  unsigned limit;
+  wtf_size_t limit;
   SmallCapsIterator::SmallCapsBehavior small_caps_behavior;
 
   SmallCapsExpectedRun(
-      unsigned the_limit,
+      wtf_size_t the_limit,
       SmallCapsIterator::SmallCapsBehavior the_small_caps_behavior)
       : limit(the_limit), small_caps_behavior(the_small_caps_behavior) {}
 };
@@ -41,7 +41,7 @@ class SmallCapsIteratorTest : public testing::Test {
 
   void VerifyRuns(SmallCapsIterator* small_caps_iterator,
                   const Vector<SmallCapsExpectedRun>& expect) {
-    unsigned limit;
+    wtf_size_t limit;
     SmallCapsIterator::SmallCapsBehavior small_caps_behavior;
     wtf_size_t run_count = 0;
     while (small_caps_iterator->Consume(&limit, &small_caps_behavior)) {
@@ -61,7 +61,7 @@ class SmallCapsIteratorTest : public testing::Test {
 TEST_F(SmallCapsIteratorTest, Empty) {
   String empty(g_empty_string16_bit);
   SmallCapsIterator small_caps_iterator(empty.Span16());
-  unsigned limit = 0;
+  wtf_size_t limit = 0;
   SmallCapsIterator::SmallCapsBehavior small_caps_behavior =
       SmallCapsIterator::kSmallCapsInvalid;
   DCHECK(!small_caps_iterator.Consume(&limit, &small_caps_behavior));

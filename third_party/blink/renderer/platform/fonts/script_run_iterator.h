@@ -36,7 +36,7 @@ class PLATFORM_EXPORT ScriptRunIterator {
   ScriptRunIterator(const ScriptRunIterator&) = delete;
   ScriptRunIterator& operator=(const ScriptRunIterator&) = delete;
 
-  bool Consume(unsigned* limit, UScriptCode*);
+  bool Consume(wtf_size_t* limit, UScriptCode*);
 
   static constexpr int kMaxUnicodeScriptExtensions = 23;
   static constexpr int kMaxScriptCount = kMaxUnicodeScriptExtensions + 1;
@@ -118,7 +118,7 @@ class PLATFORM_EXPORT ScriptData {
 
   virtual PairedBracketType GetPairedBracketType(UChar32) const = 0;
 
-  static constexpr unsigned kFirstSurrogate = 0xD800;
+  static constexpr wtf_size_t kFirstSurrogate = 0xD800;
   using UnicodeBitSet = std::bitset<kFirstSurrogate>;
 
   // Get the set of Unicode code points that would be allowed to skip

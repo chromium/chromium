@@ -310,12 +310,12 @@ ScriptRunIterator::ScriptRunIterator(base::span<const UChar> text,
 ScriptRunIterator::ScriptRunIterator(base::span<const UChar> text)
     : ScriptRunIterator(text, ICUScriptData::Instance()) {}
 
-ALWAYS_INLINE static bool IsSet(unsigned ch,
+ALWAYS_INLINE static bool IsSet(uint32_t ch,
                                 const ScriptData::UnicodeBitSet* set) {
   return ch < ScriptData::kFirstSurrogate && set->test(ch);
 }
 
-bool ScriptRunIterator::Consume(unsigned* limit, UScriptCode* script) {
+bool ScriptRunIterator::Consume(wtf_size_t* limit, UScriptCode* script) {
   if (current_set_.empty()) {
     return false;
   }

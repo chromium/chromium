@@ -43,7 +43,7 @@ OrientationIterator::OrientationIterator(base::span<const UChar> buffer,
   DCHECK_EQ(run_orientation, FontOrientation::kVerticalMixed);
 }
 
-bool OrientationIterator::Consume(unsigned* orientation_limit,
+bool OrientationIterator::Consume(wtf_size_t* orientation_limit,
                                   RenderOrientation* render_orientation) {
   if (at_end_)
     return false;

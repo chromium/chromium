@@ -313,8 +313,8 @@ TEST_F(PlainTextNodeTest, SegmentLatinLeftToRight) {
   TextRun text_run(base::byte_span_from_cstring("ABC DEF."));
   PlainTextNode& node =
       CreatePlainTextNode(text_run, kNormalizeSpace, kSupportsBidi);
-  unsigned start_index = 0;
-  unsigned num_glyphs = 0;
+  wtf_size_t start_index = 0;
+  wtf_size_t num_glyphs = 0;
   hb_script_t script = HB_SCRIPT_INVALID;
 
   ASSERT_EQ(3u, node.ItemList().size());
@@ -345,12 +345,12 @@ TEST_F(PlainTextNodeTest, SegmentCommonAccentLeftToRight) {
   TextRun text_run{base::span(kStr)};
   PlainTextNode& node =
       CreatePlainTextNode(text_run, kNormalizeSpace, kSupportsBidi);
-  unsigned start_index = 0;
-  unsigned num_glyphs = 0;
+  wtf_size_t start_index = 0;
+  wtf_size_t num_glyphs = 0;
   hb_script_t script = HB_SCRIPT_INVALID;
 
   ASSERT_EQ(3u, node.ItemList().size());
-  unsigned offset = 0;
+  wtf_size_t offset = 0;
   const ShapeResult* result = node.ItemList()[0].GetShapeResult();
   ASSERT_TRUE(
       TestInfo(result)->RunInfoForTesting(0, start_index, num_glyphs, script));

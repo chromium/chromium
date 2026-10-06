@@ -20,10 +20,10 @@ struct FallbackTestRun {
 };
 
 struct FallbackExpectedRun {
-  unsigned limit;
+  wtf_size_t limit;
   FontFallbackPriority font_fallback_priority;
 
-  FallbackExpectedRun(unsigned the_limit,
+  FallbackExpectedRun(wtf_size_t the_limit,
                       FontFallbackPriority the_font_fallback_priority)
       : limit(the_limit), font_fallback_priority(the_font_fallback_priority) {}
 };
@@ -47,7 +47,7 @@ class SymbolsIteratorTest : public testing::Test {
 
   void VerifyRuns(SymbolsIterator* symbols_iterator,
                   const Vector<FallbackExpectedRun>& expect) {
-    unsigned limit;
+    wtf_size_t limit;
     FontFallbackPriority font_fallback_priority;
     wtf_size_t run_count = 0;
     while (symbols_iterator->Consume(&limit, &font_fallback_priority)) {
@@ -73,7 +73,7 @@ INSTANTIATE_TEST_SUITE_P(SymbolsIteratorTest,
 TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Empty) {
   String empty(g_empty_string16_bit);
   SymbolsIterator symbols_iterator(empty.Span16());
-  unsigned limit = 0;
+  wtf_size_t limit = 0;
   FontFallbackPriority symbols_font = FontFallbackPriority::kInvalid;
   DCHECK(!symbols_iterator.Consume(&limit, &symbols_font));
   ASSERT_EQ(limit, 0u);

@@ -102,8 +102,8 @@ void PlainTextPainter::DrawWithoutBidi(const TextRun& run,
 
 bool PlainTextPainter::DrawWithBidiReorder(
     const TextRun& run,
-    unsigned from_index,
-    unsigned to_index,
+    wtf_size_t from_index,
+    wtf_size_t to_index,
     const Font& font,
     Font::CustomFontNotReadyAction action,
     cc::PaintCanvas& canvas,
@@ -183,8 +183,8 @@ float PlainTextPainter::ComputeInlineSize(const TextRun& run,
 }
 
 float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
-                                             unsigned from_index,
-                                             unsigned to_index,
+                                             wtf_size_t from_index,
+                                             wtf_size_t to_index,
                                              const Font& font,
                                              gfx::RectF* glyph_bounds) {
   if (run.length() == 0) {
@@ -199,8 +199,8 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
       continue;
     }
     // Calculate the required indexes for this specific run.
-    unsigned run_from = std::max(0u, from_index - start_offset);
-    unsigned run_to = std::min(item.Length(), to_index - start_offset);
+    wtf_size_t run_from = std::max(0u, from_index - start_offset);
+    wtf_size_t run_to = std::min(item.Length(), to_index - start_offset);
     // Measure the subrun.
     StringView sub_text(node.TextContent(), start_offset, item.Length());
     TextRun text_run(sub_text, item.Direction());

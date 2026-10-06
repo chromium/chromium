@@ -45,13 +45,13 @@ class PLATFORM_EXPORT SymbolsIterator {
   SymbolsIterator(const SymbolsIterator&) = delete;
   SymbolsIterator& operator=(const SymbolsIterator&) = delete;
 
-  bool Consume(unsigned* symbols_limit, FontFallbackPriority*);
+  bool Consume(wtf_size_t* symbols_limit, FontFallbackPriority*);
 
  private:
   UTF16RagelIterator buffer_iterator_;
-  unsigned cursor_ = 0;
+  wtf_size_t cursor_ = 0;
 
-  unsigned next_token_end_ = 0;
+  wtf_size_t next_token_end_ = 0;
   bool next_token_emoji_ = false;
   bool next_token_has_vs_ = false;
 };

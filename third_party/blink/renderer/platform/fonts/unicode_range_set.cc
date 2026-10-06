@@ -25,8 +25,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 
-#include <unicode/utf16.h>
-
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -71,12 +70,10 @@ bool UnicodeRangeSet::IntersectsWith(const String& text) const {
   if (text.Is8Bit() && ranges_[0].From() >= 0x100)
     return false;
 
-  unsigned index = 0;
-  while (index < text.length()) {
-    UChar32 c = text.CodePointAtOrZero(index);
-    index += U16_LENGTH(c);
-    if (Contains(c))
+  for (UChar32 c : text) {
+    if (Contains(c)) {
       return true;
+    }
   }
   return false;
 }

@@ -48,8 +48,8 @@ class PLATFORM_EXPORT SegmentedFontData : public FontData {
   void AppendFace(FontDataForRangeSet* font_data_for_range_set) {
     faces_.push_back(std::move(font_data_for_range_set));
   }
-  unsigned NumFaces() const { return faces_.size(); }
-  FontDataForRangeSet* FaceAt(unsigned i) const { return faces_[i].Get(); }
+  wtf_size_t NumFaces() const { return faces_.size(); }
+  FontDataForRangeSet* FaceAt(wtf_size_t i) const { return faces_[i].Get(); }
   bool ContainsCharacter(UChar32) const;
 
  private:

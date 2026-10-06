@@ -24,10 +24,10 @@ struct ScriptTestRun {
 };
 
 struct ScriptExpectedRun {
-  unsigned limit;
+  wtf_size_t limit;
   UScriptCode code;
 
-  ScriptExpectedRun(unsigned the_limit, UScriptCode the_code)
+  ScriptExpectedRun(wtf_size_t the_limit, UScriptCode the_code)
       : limit(the_limit), code(the_code) {}
 
   bool operator==(const ScriptExpectedRun& other) const {
@@ -338,7 +338,7 @@ class ScriptRunIteratorTest : public testing::Test {
   void VerifyRuns(ScriptRunIterator* script_run_iterator,
                   const Vector<ScriptExpectedRun>& expect) {
     Vector<ScriptExpectedRun> actual;
-    unsigned limit;
+    wtf_size_t limit;
     UScriptCode code;
     while (script_run_iterator->Consume(&limit, &code))
       actual.emplace_back(limit, code);
@@ -349,7 +349,7 @@ class ScriptRunIteratorTest : public testing::Test {
 TEST_F(ScriptRunIteratorTest, Empty) {
   String empty(g_empty_string16_bit);
   ScriptRunIterator script_run_iterator(empty.Span16());
-  unsigned limit = 0;
+  wtf_size_t limit = 0;
   UScriptCode code = USCRIPT_INVALID_CODE;
   DCHECK(!script_run_iterator.Consume(&limit, &code));
   ASSERT_EQ(limit, 0u);

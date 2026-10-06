@@ -74,8 +74,8 @@ class PLATFORM_EXPORT PlainTextPainter
   // This function returns `false` if a web font `font` is not ready and
   // `action` is `kDoNotPaintIfFontNotReady`.
   bool DrawWithBidiReorder(const TextRun& run,
-                           unsigned from_index,
-                           unsigned to_index,
+                           wtf_size_t from_index,
+                           wtf_size_t to_index,
                            const Font& font,
                            Font::CustomFontNotReadyAction action,
                            cc::PaintCanvas& canvas,
@@ -91,8 +91,8 @@ class PLATFORM_EXPORT PlainTextPainter
                           const Font& font,
                           gfx::RectF* glyph_bounds = nullptr);
   float ComputeSubInlineSize(const TextRun&,
-                             unsigned from_index,
-                             unsigned to_index,
+                             wtf_size_t from_index,
+                             wtf_size_t to_index,
                              const Font& font,
                              gfx::RectF* glyph_bounds = nullptr);
   // This doesn't apply BiDi reorder for compatibility.

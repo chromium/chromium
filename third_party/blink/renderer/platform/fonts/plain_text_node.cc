@@ -91,8 +91,8 @@ bool IsWordDelimiter(UChar ch) {
          (kSplitByZws && ch == uchar::kZeroWidthSpace);
 }
 
-unsigned NextWordEndIndex(StringView text, unsigned start_index) {
-  const unsigned length = text.length();
+wtf_size_t NextWordEndIndex(StringView text, wtf_size_t start_index) {
+  const wtf_size_t length = text.length();
   if (start_index >= length) {
     return 0;
   }
@@ -106,7 +106,7 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
   // 8Bit words end at IsWordDelimiter().
   // SAFETY: start_index + 1 tested in previous if-statement.
   if (text.Is8Bit()) {
-    for (unsigned i = start_index + 1;; ++i) {
+    for (wtf_size_t i = start_index + 1;; ++i) {
       if (i == length || IsWordDelimiter<false>(UNSAFE_BUFFERS(text[i]))) {
         return i;
       }
@@ -114,10 +114,10 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
   }
 
   // Non-CJK/Emoji words end at IsWordDelimiter() or CJK/Emoji characters.
-  unsigned end = start_index;
+  wtf_size_t end = start_index;
   UChar32 ch = UNSAFE_TODO(text.CodePointAtAndNext(end));
   if (!Character::IsCjkIdeographOrSymbol(ch)) {
-    for (unsigned next_end = end; end < length; end = next_end) {
+    for (wtf_size_t next_end = end; end < length; end = next_end) {
       ch = UNSAFE_TODO(text.CodePointAtAndNext(next_end));
       if (IsWordDelimiter<true>(ch) ||
           Character::IsCjkIdeographOrSymbolBase(ch)) {
@@ -131,7 +131,7 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
   // not delimit words by spaces, and delimiting only at IsWordDelimiter()
   // worsen the cache efficiency.
   bool has_any_script = !Character::IsCommonOrInheritedScript(ch);
-  for (unsigned next_end = end; end < length; end = next_end) {
+  for (wtf_size_t next_end = end; end < length; end = next_end) {
     ch = UNSAFE_TODO(text.CodePointAtAndNext(next_end));
     // Modifier check in order not to split Emoji sequences.
     if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
@@ -166,7 +166,7 @@ struct CharacterRangeContext {
   int from;
   int to;
   float current_x;
-  unsigned total_num_characters = 0;
+  wtf_size_t total_num_characters = 0;
   std::optional<float> from_x;
   std::optional<float> to_x;
   float min_y = 0;
@@ -183,11 +183,11 @@ void CharacterRangeContext::ComputeRangeIn(const ShapeResult& result,
     // Convert logical offsets to visual offsets, because results are in
     // logical order while runs are in visual order.
     if (!from_x && from >= 0 &&
-        static_cast<unsigned>(from) < result.NumCharacters()) {
+        static_cast<wtf_size_t>(from) < result.NumCharacters()) {
       from = result.NumCharacters() - from - 1;
     }
     if (!to_x && to >= 0 &&
-        static_cast<unsigned>(to) < result.NumCharacters()) {
+        static_cast<wtf_size_t>(to) < result.NumCharacters()) {
       to = result.NumCharacters() - to - 1;
     }
     current_x -= result.Width();
@@ -325,7 +325,7 @@ void PlainTextNode::SegmentText(const TextRun& run,
             // `original_text`, which is longer than `text_content_` by two
             // characters.  SegmentWord() handles `text_content_`, and we need
             // to adjust offsets.
-            const unsigned run_length = bidi_run.Length();
+            const wtf_size_t run_length = bidi_run.Length();
             // The bidi_run contains both of the leading and trailing BiDi
             // override controls.
             if (bidi_run.start == 0 && bidi_run.end == original_text.length()) {
@@ -494,8 +494,8 @@ float PlainTextNode::AccumulateInlineSize(gfx::RectF* glyph_bounds) const {
 }
 
 CharacterRange PlainTextNode::ComputeCharacterRange(
-    unsigned absolute_from,
-    unsigned absolute_to) const {
+    wtf_size_t absolute_from,
+    wtf_size_t absolute_to) const {
   const bool is_rtl = IsRtl(base_direction_);
   const float total_width = AccumulateInlineSize(nullptr);
 

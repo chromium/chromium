@@ -89,8 +89,8 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   PlainTextNode& operator=(const PlainTextNode&) = delete;
 
   float AccumulateInlineSize(gfx::RectF* glyph_bounds) const;
-  CharacterRange ComputeCharacterRange(unsigned absolute_from,
-                                       unsigned absolute_to) const;
+  CharacterRange ComputeCharacterRange(wtf_size_t absolute_from,
+                                       wtf_size_t absolute_to) const;
 
   // The text contains:
   //  - Normalized whitespace

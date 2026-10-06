@@ -27,7 +27,7 @@ class PLATFORM_EXPORT SmallCapsIterator {
   SmallCapsIterator(const SmallCapsIterator&) = delete;
   SmallCapsIterator& operator=(const SmallCapsIterator&) = delete;
 
-  bool Consume(unsigned* caps_limit, SmallCapsBehavior*);
+  bool Consume(wtf_size_t* caps_limit, SmallCapsBehavior*);
 
  private:
   UTF16TextIterator utf16_iterator_;

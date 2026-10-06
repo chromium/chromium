@@ -65,8 +65,8 @@ class PLATFORM_EXPORT UTF16TextIterator {
     offset_ += current_glyph_length_;
   }
 
-  unsigned Offset() const { return offset_; }
-  unsigned Size() const { return size_; }
+  wtf_size_t Offset() const { return offset_; }
+  wtf_size_t Size() const { return size_; }
   const UChar* Characters() const { return characters_; }
   const UChar* GlyphEnd() const {
     return UNSAFE_TODO(characters_ + current_glyph_length_);
@@ -79,9 +79,9 @@ class PLATFORM_EXPORT UTF16TextIterator {
 
   const UChar* characters_;
   const UChar* const characters_end_;
-  unsigned offset_ = 0;
-  const unsigned size_;
-  unsigned current_glyph_length_ = 0;
+  wtf_size_t offset_ = 0;
+  const wtf_size_t size_;
+  wtf_size_t current_glyph_length_ = 0;
 };
 
 }  // namespace blink
