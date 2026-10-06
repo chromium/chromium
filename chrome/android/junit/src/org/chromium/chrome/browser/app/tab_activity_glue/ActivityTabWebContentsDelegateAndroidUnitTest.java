@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
@@ -57,6 +58,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -69,6 +73,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -184,6 +189,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock ExclusiveAccessManager mExclusiveAccessManager;
     @Mock FullscreenManager mFullscreenManager;
     @Mock RenderFrameHost mRenderFrameHost;
+    @Mock TabWindowManager mTabWindowManager;
 
     @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
 
@@ -208,6 +214,14 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         }
     }
 
+    /** A ChromeTabbedActivity with a fixed task id. */
+    private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
+        @Override
+        public int getTaskId() {
+            return TEST_TASK_ID;
+        }
+    }
+
     @Before
     public void setup() {
         mActivity = Robolectric.buildActivity(TaskIdActivity.class).setup().get();
@@ -215,6 +229,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mActivity.setContentView(mContentView);
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         PopupCreatorFactory.setInstanceForTesting(mPopupCreator);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        when(mTabWindowManager.getIdForWindow(any()))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
                         mTab,
@@ -579,6 +596,36 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.bringActivityToForeground();
 
         verify(mActivityManager).moveTaskToFront(TEST_TASK_ID, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION)
+    public void testBringActivityToForeground_LaunchesIntentInInstance() {
+        int windowId = 1;
+        int testTabId = 42;
+        when(mTab.getId()).thenReturn(testTabId);
+
+        ChromeTabbedActivity tabbedActivity = new TestChromeTabbedActivity();
+        when(mTabWindowManager.getIdForWindow(tabbedActivity)).thenReturn(windowId);
+        MultiWindowUtils.setActivityByWindowIdForTesting(windowId, tabbedActivity);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        TestActivityTabWebContentsDelegateAndroid delegate =
+                new TestActivityTabWebContentsDelegateAndroid(
+                        mTab,
+                        tabbedActivity,
+                        mTabCreatorManager,
+                        mTabModel,
+                        mExclusiveAccessManager,
+                        mFullscreenManager);
+
+        delegate.bringActivityToForeground();
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mAppTask).startActivity(any(), intentCaptor.capture(), eq(null));
+        assertEquals(testTabId, IntentHandler.getBringTabToFrontId(intentCaptor.getValue()));
+        assertEquals(0, intentCaptor.getValue().getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+        verify(mActivityManager, never()).moveTaskToFront(anyInt(), anyInt());
     }
 
     @Test

@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -448,6 +449,15 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (mActivity == null) return;
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION)) {
+            int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(mActivity);
+            if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
+                Intent newIntent =
+                        IntentHandler.createTrustedBringTabToFrontIntent(
+                                mTab.getId(), IntentHandler.BringToFrontSource.ACTIVATE_TAB);
+                if (MultiWindowUtils.launchIntentInInstance(newIntent, windowId)) {
+                    return;
+                }
+            }
             ApiCompatibilityUtils.moveTaskToFront(mActivity, mActivity.getTaskId(), 0);
         } else {
             // This intent is sent in order to get the activity back to the foreground if it was
