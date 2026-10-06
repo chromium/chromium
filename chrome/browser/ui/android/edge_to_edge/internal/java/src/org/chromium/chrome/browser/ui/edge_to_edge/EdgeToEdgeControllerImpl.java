@@ -17,7 +17,6 @@ import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -27,7 +26,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -74,67 +72,6 @@ public class EdgeToEdgeControllerImpl
                 LayoutStateProvider.LayoutStateObserver,
                 FullscreenManager.Observer {
     private static final String TAG = "E2E_ControllerImpl";
-    private static final String DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM =
-            "Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration";
-    private static final String SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM =
-            "Android.EdgeToEdge.SupportedConfigurationSwitch2";
-    private static final String CONFIGURATION_SWITCH_OUTCOME_HISTOGRAM =
-            "Android.EdgeToEdge.Debugging.ConfigurationSwitchOutcome";
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED,
-        SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED,
-        SupportedConfigurationSwitch.NUM_ENTRIES
-    })
-    @interface SupportedConfigurationSwitch {
-        int FROM_SUPPORTED_TO_UNSUPPORTED = 0;
-        int FROM_UNSUPPORTED_TO_SUPPORTED = 1;
-        int NUM_ENTRIES = 2;
-    }
-
-    /** When configuration changes from supported to unsupported, what's the outcome */
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        ConfigurationSwitchOutcome.ADD_PADDING_NEW_INSETS,
-        ConfigurationSwitchOutcome.ADD_PADDING_ORIGINAL_INSETS,
-        ConfigurationSwitchOutcome.ERROR_ADD_PADDING_BOTH_INSETS_EMPTY,
-        ConfigurationSwitchOutcome.NO_PADDING_BOTH_INSETS_EMPTY,
-        ConfigurationSwitchOutcome.NO_PADDING_NO_NEW_INSETS,
-        ConfigurationSwitchOutcome.ERROR_NO_PADDING_WITH_NEW_INSETS,
-        ConfigurationSwitchOutcome.NUM_ENTRIES
-    })
-    public @interface ConfigurationSwitchOutcome {
-
-        // Correct cases
-        int ADD_PADDING_ORIGINAL_INSETS = 0;
-        int ADD_PADDING_NEW_INSETS = 1;
-        // Error case / impossible case
-        int ERROR_ADD_PADDING_BOTH_INSETS_EMPTY = 2;
-        int NO_PADDING_BOTH_INSETS_EMPTY = 3;
-        int NO_PADDING_NO_NEW_INSETS = 4;
-        // Error case / impossible case
-        int ERROR_NO_PADDING_WITH_NEW_INSETS = 5;
-
-        int NUM_ENTRIES = 6;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        SupportedConfigurationStrangeInsetsState.TAPPABLE_ELEMENT_NOT_GESTURE_NAV,
-        SupportedConfigurationStrangeInsetsState.NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV,
-        SupportedConfigurationStrangeInsetsState.ERROR_TAPPABLE_ELEMENT_GESTURE_NAV,
-        SupportedConfigurationStrangeInsetsState.NUM_ENTRIES
-    })
-    @interface SupportedConfigurationStrangeInsetsState {
-        int TAPPABLE_ELEMENT_NOT_GESTURE_NAV = 0;
-        int NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV = 1;
-        int ERROR_TAPPABLE_ELEMENT_GESTURE_NAV = 2;
-        int NUM_ENTRIES = 2;
-    }
 
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
@@ -683,8 +620,7 @@ public class EdgeToEdgeControllerImpl
         final boolean isChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
 
         if (!isChinEnabled && !mIsEdgeToEdgeRefactorEnabled) {
-            RecordHistogram.recordBooleanHistogram(
-                    DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM, changedWindowState);
+            EdgeToEdgeUtils.recordDrawToEdgeInUnsupportedConfig(changedWindowState);
         }
 
         // Exit early if there is a tappable navbar (3-button) as bottom edge to edge should not
@@ -749,47 +685,10 @@ public class EdgeToEdgeControllerImpl
         }
     }
 
-    private void verifyInsetsInSupportedConfiguration(WindowInsetsCompat windowInsets) {
-        // Check for the presence of a tappable element (in case the navigation bar inset is
-        // missing for some reason) for logging purposes.
-        Insets tappableElementInsets =
-                windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
-        // The navigation bar will never be at the top.
-        boolean tappableElement =
-                tappableElementInsets.bottom > 0
-                        || tappableElementInsets.left > 0
-                        || tappableElementInsets.right > 0;
-
-        // Check whether the device appears to be in gesture navigation mode.
-        boolean isGestureNavigation = EdgeToEdgeUtils.isInGestureNavigationMode(windowInsets);
-        @SupportedConfigurationStrangeInsetsState int state;
-        if (tappableElement) {
-            if (isGestureNavigation) {
-                state = SupportedConfigurationStrangeInsetsState.ERROR_TAPPABLE_ELEMENT_GESTURE_NAV;
-            } else {
-                state = SupportedConfigurationStrangeInsetsState.TAPPABLE_ELEMENT_NOT_GESTURE_NAV;
-            }
-        } else {
-            if (isGestureNavigation) {
-                // !tappableElement && isGestureNavigation is intended
-                return;
-            } else {
-                state =
-                        SupportedConfigurationStrangeInsetsState
-                                .NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV;
-            }
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.EdgeToEdge.Debugging.SupportedConfigurationStrangeInsets",
-                state,
-                SupportedConfigurationStrangeInsetsState.NUM_ENTRIES);
-    }
-
     @VisibleForTesting
     WindowInsetsCompat handleWindowInsets(View rootView, WindowInsetsCompat windowInsets) {
         boolean changedWindowState = false;
-        @SupportedConfigurationSwitch
-        int configurationChanged = SupportedConfigurationSwitch.NUM_ENTRIES;
+        boolean switchedToUnsupportedConfig = false;
         if (mIsBottomChinEnabled != isSupportedByConfiguration(mActivity, mInsetObserver)) {
             Log.v(
                     TAG,
@@ -797,15 +696,9 @@ public class EdgeToEdgeControllerImpl
                     (mIsBottomChinEnabled
                             ? "supported to unsupported"
                             : "unsupported to supported"));
-            configurationChanged =
-                    mIsBottomChinEnabled
-                            ? SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED
-                            : SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED;
-            RecordHistogram.recordEnumeratedHistogram(
-                    SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM,
-                    configurationChanged,
-                    SupportedConfigurationSwitch.NUM_ENTRIES);
+            switchedToUnsupportedConfig = mIsBottomChinEnabled;
             mIsBottomChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
+            EdgeToEdgeUtils.recordSupportedConfigurationSwitch(mIsBottomChinEnabled);
             if (mCurrentTab != null) {
                 mIsPageOptedIntoEdgeToEdge =
                         EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab)
@@ -814,7 +707,7 @@ public class EdgeToEdgeControllerImpl
             changedWindowState = true;
         }
         if (mIsBottomChinEnabled) {
-            verifyInsetsInSupportedConfiguration(windowInsets);
+            EdgeToEdgeUtils.verifyInsetsInSupportedConfiguration(windowInsets);
         }
 
         // Exit early if there is a tappable navbar (3-button) as bottom edge to edge should not
@@ -868,12 +761,10 @@ public class EdgeToEdgeControllerImpl
         }
 
         // Signal: When configuration is changed, did we pad the system correctly.
-        if (configurationChanged == SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED) {
-            recordConfigurationSwitchScenario(
+        if (switchedToUnsupportedConfig) {
+            EdgeToEdgeUtils.recordConfigurationSwitchScenario(
                     originalSystemInsets, newInsets, mAppliedContentViewPadding);
         }
-
-        var builder = new WindowInsetsCompat.Builder(windowInsets);
 
         // TODO(crbug.com/498302496): In the unified top scalp architecture, top window insets will
         // be consumed at the root view level and managed by top controls.
@@ -884,36 +775,8 @@ public class EdgeToEdgeControllerImpl
                                         && mFullscreenManager.getPersistentFullscreenMode())
                                 || isDrawingToTopEdge())
                         : (mAppliedContentViewPadding.top == 0);
-        if (consumeTopInsets) {
-            builder.setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE);
-            builder.setInsets(WindowInsetsCompat.Type.captionBar(), Insets.NONE);
-            Insets displayCutout = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
-            if (displayCutout.top > 0) {
-                // TODO(crbug.com/498302496): Only the top display cutout is consumed for now.
-                // Support for drawing into display cutouts on the side with pillarboxing will be
-                // added in future iterations.
-                builder.setInsets(
-                        WindowInsetsCompat.Type.displayCutout(),
-                        Insets.of(
-                                displayCutout.left, 0, displayCutout.right, displayCutout.bottom));
-            }
-        }
-        Insets mandatorySystemGestures =
-                windowInsets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
-        if (mAppliedContentViewPadding.bottom == 0) {
-            builder.setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE);
-            builder.setInsets(WindowInsetsCompat.Type.tappableElement(), Insets.NONE);
-            builder.setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE);
-            mandatorySystemGestures =
-                    Insets.of(
-                            mandatorySystemGestures.left,
-                            mandatorySystemGestures.top,
-                            mandatorySystemGestures.right,
-                            0);
-        }
-        builder.setInsets(
-                WindowInsetsCompat.Type.mandatorySystemGestures(), mandatorySystemGestures);
-        return builder.build();
+        boolean consumeBottomInsets = mAppliedContentViewPadding.bottom == 0;
+        return consumeWindowInsets(windowInsets, consumeTopInsets, consumeBottomInsets);
     }
 
     private boolean updateVisibilityRects(View rootView) {
@@ -1083,41 +946,6 @@ public class EdgeToEdgeControllerImpl
         mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(mEdgeToEdgeToken);
     }
 
-    static void recordConfigurationSwitchScenario(
-            Insets originalInsets, Insets newInsets, Insets paddingApplied) {
-        // Do not record when configuration change is disabled.
-        if (!shouldMonitorConfigurationChanges()) return;
-
-        // Do not record landscape mode. Assuming the configuration change will be triggered
-        // mostly with nav bar in portrait mode.
-        if (paddingApplied.left > 0 || paddingApplied.right > 0) return;
-
-        @ConfigurationSwitchOutcome int outcome;
-        // Correct cases - fixed applied
-        if (paddingApplied.bottom > 0) {
-            if (originalInsets.bottom != 0) {
-                outcome = ConfigurationSwitchOutcome.ADD_PADDING_ORIGINAL_INSETS;
-            } else if (newInsets.bottom != 0) {
-                outcome = ConfigurationSwitchOutcome.ADD_PADDING_NEW_INSETS;
-            } else {
-                outcome = ConfigurationSwitchOutcome.ERROR_ADD_PADDING_BOTH_INSETS_EMPTY;
-            }
-        } else { // paddingApplied.bottom == 0
-            if (originalInsets.bottom == 0 && newInsets.bottom == 0) {
-                outcome = ConfigurationSwitchOutcome.NO_PADDING_BOTH_INSETS_EMPTY;
-            } else if (originalInsets.bottom > 0) {
-                outcome = ConfigurationSwitchOutcome.NO_PADDING_NO_NEW_INSETS;
-            } else {
-                outcome = ConfigurationSwitchOutcome.ERROR_NO_PADDING_WITH_NEW_INSETS;
-            }
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                CONFIGURATION_SWITCH_OUTCOME_HISTOGRAM,
-                outcome,
-                ConfigurationSwitchOutcome.NUM_ENTRIES);
-    }
-
     @VisibleForTesting
     @Nullable WebContentsObserver getWebContentsObserver() {
         return mWebContentsObserver;
@@ -1161,6 +989,70 @@ public class EdgeToEdgeControllerImpl
 
     public Insets getAppliedContentViewPaddingForTesting() {
         return mAppliedContentViewPadding;
+    }
+
+    @VisibleForTesting
+    static WindowInsetsCompat consumeWindowInsets(
+            WindowInsetsCompat windowInsets,
+            boolean consumeTopInsets,
+            boolean consumeBottomInsets) {
+        if (!consumeTopInsets && !consumeBottomInsets) {
+            return windowInsets;
+        }
+        var builder = new WindowInsetsCompat.Builder(windowInsets);
+
+        builder.setInsets(
+                WindowInsetsCompat.Type.statusBars(),
+                consumeTopInsets
+                        ? Insets.NONE
+                        : windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()));
+        builder.setInsets(
+                WindowInsetsCompat.Type.captionBar(),
+                consumeTopInsets
+                        ? Insets.NONE
+                        : windowInsets.getInsets(WindowInsetsCompat.Type.captionBar()));
+
+        // TODO(crbug.com/498302496): Only the top display cutout is consumed for now.
+        // Support for drawing into display cutouts on the side with pillarboxing will be
+        // added in future iterations.
+        Insets displayCutout = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
+        if (displayCutout.top > 0) {
+            builder.setInsets(
+                    WindowInsetsCompat.Type.displayCutout(),
+                    Insets.of(
+                            displayCutout.left,
+                            consumeTopInsets ? 0 : displayCutout.top,
+                            displayCutout.right,
+                            displayCutout.bottom));
+        }
+
+        builder.setInsets(
+                WindowInsetsCompat.Type.navigationBars(),
+                consumeBottomInsets
+                        ? Insets.NONE
+                        : windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        builder.setInsets(
+                WindowInsetsCompat.Type.tappableElement(),
+                consumeBottomInsets
+                        ? Insets.NONE
+                        : windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        builder.setInsets(
+                WindowInsetsCompat.Type.ime(),
+                consumeBottomInsets
+                        ? Insets.NONE
+                        : windowInsets.getInsets(WindowInsetsCompat.Type.ime()));
+
+        Insets mandatorySystemGestures =
+                windowInsets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        builder.setInsets(
+                WindowInsetsCompat.Type.mandatorySystemGestures(),
+                Insets.of(
+                        mandatorySystemGestures.left,
+                        mandatorySystemGestures.top,
+                        mandatorySystemGestures.right,
+                        consumeBottomInsets ? 0 : mandatorySystemGestures.bottom));
+
+        return builder.build();
     }
 
     private static Insets getSystemInsets(

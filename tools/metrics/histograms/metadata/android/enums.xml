@@ -1295,6 +1295,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/viz/service/input/android_state_transfer_handler.cc:DroppedSequenceEventAndDownTimeDelta) -->
 
+<!-- LINT.IfChange(EdgeToEdgeConfigurationSwitchOutcome) -->
+
 <enum name="EdgeToEdgeConfigurationSwitchOutcome">
   <summary>
     When edge to edge changed into unsupported configuration, what's the outcome
@@ -1306,6 +1308,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="NO_PADDING_NO_NEW_INSETS"/>
   <int value="5" label="ERROR_NO_PADDING_WITH_NEW_INSETS"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/edge_to_edge/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java:ConfigurationSwitchOutcome) -->
 
 <!-- LINT.IfChange(FixupResult) -->
 
@@ -2116,6 +2120,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(SupportedConfigurationStrangeInsetsState) -->
+
 <enum name="SupportedConfigurationStrangeInsetsState">
   <summary>
     The state of insets that don't seem to align with a configuration that
@@ -2126,10 +2132,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ERROR_TAPPABLE_ELEMENT_GESTURE_NAV"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ui/android/edge_to_edge/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java:SupportedConfigurationStrangeInsetsState) -->
+
+<!-- LINT.IfChange(SupportedConfigurationSwitch) -->
+
 <enum name="SupportedConfigurationSwitch">
   <int value="0" label="FromSupportedToUnsupported"/>
   <int value="1" label="FromUnsupportedToSupported"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/edge_to_edge/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java:SupportedConfigurationSwitch) -->
 
 <enum name="SurveyDownloadResponseCodes2">
   <summary>

@@ -12,6 +12,7 @@ import android.view.Window;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.os.BuildCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -59,6 +60,14 @@ public class EdgeToEdgeUtils {
             "Android.EdgeToEdge.IneligibilityReason2.OnCreateController";
     private static final String MISSING_NAVBAR_INSETS_HISTOGRAM =
             "Android.EdgeToEdge.MissingNavbarInsets2";
+    private static final String DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM =
+            "Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration";
+    private static final String SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM =
+            "Android.EdgeToEdge.SupportedConfigurationSwitch2";
+    private static final String CONFIGURATION_SWITCH_OUTCOME_HISTOGRAM =
+            "Android.EdgeToEdge.Debugging.ConfigurationSwitchOutcome";
+    private static final String SUPPORTED_CONFIGURATION_STRANGE_INSETS_HISTOGRAM =
+            "Android.EdgeToEdge.Debugging.SupportedConfigurationStrangeInsets";
 
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
@@ -99,6 +108,74 @@ public class EdgeToEdgeUtils {
 
         int NUM_ENTRIES = 5;
     }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(SupportedConfigurationSwitch)
+    @IntDef({
+        SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED,
+        SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED,
+        SupportedConfigurationSwitch.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface SupportedConfigurationSwitch {
+        int FROM_SUPPORTED_TO_UNSUPPORTED = 0;
+        int FROM_UNSUPPORTED_TO_SUPPORTED = 1;
+        int NUM_ENTRIES = 2;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:SupportedConfigurationSwitch)
+
+    /** When configuration changes from supported to unsupported, what's the outcome */
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(ConfigurationSwitchOutcome)
+    @IntDef({
+        ConfigurationSwitchOutcome.ADD_PADDING_NEW_INSETS,
+        ConfigurationSwitchOutcome.ADD_PADDING_ORIGINAL_INSETS,
+        ConfigurationSwitchOutcome.ERROR_ADD_PADDING_BOTH_INSETS_EMPTY,
+        ConfigurationSwitchOutcome.NO_PADDING_BOTH_INSETS_EMPTY,
+        ConfigurationSwitchOutcome.NO_PADDING_NO_NEW_INSETS,
+        ConfigurationSwitchOutcome.ERROR_NO_PADDING_WITH_NEW_INSETS,
+        ConfigurationSwitchOutcome.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ConfigurationSwitchOutcome {
+
+        // Correct cases
+        int ADD_PADDING_NEW_INSETS = 0;
+        int ADD_PADDING_ORIGINAL_INSETS = 1;
+        // Error case / impossible case
+        int ERROR_ADD_PADDING_BOTH_INSETS_EMPTY = 2;
+        int NO_PADDING_BOTH_INSETS_EMPTY = 3;
+        int NO_PADDING_NO_NEW_INSETS = 4;
+        // Error case / impossible case
+        int ERROR_NO_PADDING_WITH_NEW_INSETS = 5;
+
+        int NUM_ENTRIES = 6;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:EdgeToEdgeConfigurationSwitchOutcome)
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(SupportedConfigurationStrangeInsetsState)
+    @IntDef({
+        SupportedConfigurationStrangeInsetsState.TAPPABLE_ELEMENT_NOT_GESTURE_NAV,
+        SupportedConfigurationStrangeInsetsState.NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV,
+        SupportedConfigurationStrangeInsetsState.ERROR_TAPPABLE_ELEMENT_GESTURE_NAV,
+        SupportedConfigurationStrangeInsetsState.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface SupportedConfigurationStrangeInsetsState {
+        int TAPPABLE_ELEMENT_NOT_GESTURE_NAV = 0;
+        int NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV = 1;
+        int ERROR_TAPPABLE_ELEMENT_GESTURE_NAV = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:SupportedConfigurationStrangeInsetsState)
 
     /** Whether it is allowed to use other insets as a backup for missing navigation bar insets. */
     public static boolean isUseBackupNavbarInsetsEnabled() {
@@ -292,6 +369,114 @@ public class EdgeToEdgeUtils {
     public static void recordIfMissingNavigationBar(@MissingNavbarInsetsReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 MISSING_NAVBAR_INSETS_HISTOGRAM, reason, MissingNavbarInsetsReason.NUM_ENTRIES);
+    }
+
+    /**
+     * Record if drawToEdge is called when in an unsupported configuration.
+     *
+     * @param changedWindowState Whether drawToEdge was called due to window state change.
+     */
+    static void recordDrawToEdgeInUnsupportedConfig(boolean changedWindowState) {
+        RecordHistogram.recordBooleanHistogram(
+                DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM, changedWindowState);
+    }
+
+    /**
+     * Record when the activity switches between supported and unsupported configurations.
+     *
+     * @param isSupportedConfiguration Whether the new configuration is supported.
+     */
+    static void recordSupportedConfigurationSwitch(boolean isSupportedConfiguration) {
+        @SupportedConfigurationSwitch
+        int configurationChanged =
+                isSupportedConfiguration
+                        ? SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED
+                        : SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED;
+        RecordHistogram.recordEnumeratedHistogram(
+                SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM,
+                configurationChanged,
+                SupportedConfigurationSwitch.NUM_ENTRIES);
+    }
+
+    /**
+     * Verify whether window insets in a supported configuration contain unexpected tappable
+     * elements or non-gesture navigation insets, and record a histogram if so.
+     *
+     * @param windowInsets The window insets to check.
+     */
+    static void verifyInsetsInSupportedConfiguration(WindowInsetsCompat windowInsets) {
+        // Check for the presence of a tappable element (in case the navigation bar inset is
+        // missing for some reason) for logging purposes.
+        Insets tappableElementInsets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
+        // The navigation bar will never be at the top.
+        boolean tappableElement =
+                tappableElementInsets.bottom > 0
+                        || tappableElementInsets.left > 0
+                        || tappableElementInsets.right > 0;
+
+        // Check whether the device appears to be in gesture navigation mode.
+        boolean isGestureNavigation = isInGestureNavigationMode(windowInsets);
+        @SupportedConfigurationStrangeInsetsState int state;
+        if (tappableElement) {
+            if (isGestureNavigation) {
+                state = SupportedConfigurationStrangeInsetsState.ERROR_TAPPABLE_ELEMENT_GESTURE_NAV;
+            } else {
+                state = SupportedConfigurationStrangeInsetsState.TAPPABLE_ELEMENT_NOT_GESTURE_NAV;
+            }
+        } else {
+            if (isGestureNavigation) {
+                // !tappableElement && isGestureNavigation is intended
+                return;
+            } else {
+                state =
+                        SupportedConfigurationStrangeInsetsState
+                                .NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV;
+            }
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                SUPPORTED_CONFIGURATION_STRANGE_INSETS_HISTOGRAM,
+                state,
+                SupportedConfigurationStrangeInsetsState.NUM_ENTRIES);
+    }
+
+    /**
+     * Record the padding outcome when switching from a supported configuration to an unsupported
+     * configuration.
+     */
+    static void recordConfigurationSwitchScenario(
+            Insets originalInsets, Insets newInsets, Insets paddingApplied) {
+        // Do not record when configuration change is disabled.
+        if (!ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) return;
+
+        // Do not record landscape mode. Assuming the configuration change will be triggered
+        // mostly with nav bar in portrait mode.
+        if (paddingApplied.left > 0 || paddingApplied.right > 0) return;
+
+        @ConfigurationSwitchOutcome int outcome;
+        // Correct cases - fixed applied
+        if (paddingApplied.bottom > 0) {
+            if (originalInsets.bottom != 0) {
+                outcome = ConfigurationSwitchOutcome.ADD_PADDING_ORIGINAL_INSETS;
+            } else if (newInsets.bottom != 0) {
+                outcome = ConfigurationSwitchOutcome.ADD_PADDING_NEW_INSETS;
+            } else {
+                outcome = ConfigurationSwitchOutcome.ERROR_ADD_PADDING_BOTH_INSETS_EMPTY;
+            }
+        } else { // paddingApplied.bottom == 0
+            if (originalInsets.bottom == 0 && newInsets.bottom == 0) {
+                outcome = ConfigurationSwitchOutcome.NO_PADDING_BOTH_INSETS_EMPTY;
+            } else if (originalInsets.bottom > 0) {
+                outcome = ConfigurationSwitchOutcome.NO_PADDING_NO_NEW_INSETS;
+            } else {
+                outcome = ConfigurationSwitchOutcome.ERROR_NO_PADDING_WITH_NEW_INSETS;
+            }
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                CONFIGURATION_SWITCH_OUTCOME_HISTOGRAM,
+                outcome,
+                ConfigurationSwitchOutcome.NUM_ENTRIES);
     }
 
     /**

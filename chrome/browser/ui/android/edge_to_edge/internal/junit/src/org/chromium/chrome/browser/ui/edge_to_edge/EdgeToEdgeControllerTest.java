@@ -84,7 +84,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl.SupportedConfigurationSwitch;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.SupportedConfigurationSwitch;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
@@ -2518,6 +2518,93 @@ public class EdgeToEdgeControllerTest {
         // When scrolling stops, pad adjusters should be updated to BOTTOM_INSET.
         mEdgeToEdgeControllerImpl.onContentViewScrollingStateChanged(false);
         mockPadAdjuster.checkInsets(BOTTOM_INSET);
+    }
+
+    @Test
+    public void testConsumeWindowInsets() {
+        Insets statusBars = Insets.of(0, TOP_INSET, 0, 0);
+        Insets captionBar = Insets.of(0, 40, 0, 0);
+        Insets displayCutout = Insets.of(10, 20, 30, 40);
+        Insets navBars = Insets.of(0, 0, 0, BOTTOM_INSET);
+        Insets tappable = Insets.of(0, 0, 0, BOTTOM_INSET);
+        Insets ime = Insets.of(0, 0, 0, BOTTOM_KEYBOARD_INSET);
+        Insets mandatoryGestures = Insets.of(5, TOP_INSET, 15, BOTTOM_INSET);
+
+        WindowInsetsCompat inputInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), statusBars)
+                        .setInsets(WindowInsetsCompat.Type.captionBar(), captionBar)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), displayCutout)
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), navBars)
+                        .setInsets(WindowInsetsCompat.Type.tappableElement(), tappable)
+                        .setInsets(WindowInsetsCompat.Type.ime(), ime)
+                        .setInsets(
+                                WindowInsetsCompat.Type.mandatorySystemGestures(),
+                                mandatoryGestures)
+                        .build();
+
+        // 1. Neither top nor bottom consumed: returns original windowInsets instance.
+        WindowInsetsCompat noneConsumed =
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, false);
+        assertEquals(inputInsets, noneConsumed);
+        assertEquals(statusBars, noneConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(captionBar, noneConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                displayCutout, noneConsumed.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(navBars, noneConsumed.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(tappable, noneConsumed.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(ime, noneConsumed.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                mandatoryGestures,
+                noneConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
+
+        // 2. Only top consumed: statusBars, captionBar, and top displayCutout are cleared.
+        WindowInsetsCompat topConsumed =
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, false);
+        assertEquals(Insets.NONE, topConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, topConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                Insets.of(10, 0, 30, 40),
+                topConsumed.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(navBars, topConsumed.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(tappable, topConsumed.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(ime, topConsumed.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                mandatoryGestures,
+                topConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
+
+        // 3. Only bottom consumed: navigationBars, tappableElement, ime, and bottom mandatory
+        // system gestures are cleared.
+        WindowInsetsCompat bottomConsumed =
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, true);
+        assertEquals(statusBars, bottomConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(captionBar, bottomConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                displayCutout, bottomConsumed.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(
+                Insets.NONE, bottomConsumed.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(
+                Insets.NONE, bottomConsumed.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(Insets.NONE, bottomConsumed.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                Insets.of(5, TOP_INSET, 15, 0),
+                bottomConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
+
+        // 4. Both top and bottom consumed.
+        WindowInsetsCompat bothConsumed =
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, true);
+        assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                Insets.of(10, 0, 30, 40),
+                bothConsumed.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(
+                Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                Insets.of(5, TOP_INSET, 15, 0),
+                bothConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
     }
 
     // TODO: Verify that the value of the updated insets returned from the
