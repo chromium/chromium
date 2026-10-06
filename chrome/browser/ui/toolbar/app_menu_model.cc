@@ -1325,6 +1325,10 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_NEW_INCOGNITO_WINDOW);
       break;
     case IDC_NEW_ISOLATED_WINDOW:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.NewIsolatedWindow", delta);
+      }
       LogMenuAction(MENU_ACTION_NEW_ISOLATED_WINDOW);
       break;
 
