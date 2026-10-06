@@ -8301,6 +8301,12 @@ TEST_F(ComposeboxQueryControllerTest,
 
   controller().SetAuthUserIndex(3);
 
+  lens::LensOverlayServerResponse fake_upload_response;
+  fake_upload_response.mutable_objects_response()
+      ->mutable_text()
+      ->set_content_language("en");
+  controller().set_fake_file_upload_response(fake_upload_response);
+
   std::vector<std::optional<size_t>> received_indices;
   controller().set_get_auth_headers_callback_for_testing(
       base::BindLambdaForTesting(
@@ -8321,6 +8327,13 @@ TEST_F(ComposeboxQueryControllerTest,
   for (const auto& idx : received_indices) {
     EXPECT_EQ(idx, std::make_optional<size_t>(3));
   }
+
+  const auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  ASSERT_EQ(file_info->response_bodies.size(), 1u);
+  lens::LensOverlayServerResponse parsed_response;
+  EXPECT_TRUE(parsed_response.ParseFromString(file_info->response_bodies[0]));
+  EXPECT_EQ(parsed_response.objects_response().text().content_language(), "en");
 }
 
 TEST_F(ComposeboxQueryControllerTest, ClusterInfoMetricsRecordedOnSuccess) {

@@ -2864,11 +2864,13 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
-       StartQueryFlow_DoesNotAddObserver_WhenSessionHandleExists) {
+       StartQueryFlow_AddsObserver_WhenSessionHandleExists) {
   // Arrange
   // Simulate an existing session handle from the side panel.
   auto side_panel_session_handle =
       std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  ON_CALL(*side_panel_session_handle, GetController())
+      .WillByDefault(Return(mock_context_controller_.get()));
 
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
@@ -2885,8 +2887,9 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   float ui_scale_factor = 1.0f;
   base::TimeTicks invocation_time = base::TimeTicks::Now();
 
-  // Assert: Expect AddObserver NOT to be called on the controller.
-  EXPECT_CALL(*mock_context_controller_, AddObserver(&router)).Times(0);
+  // Assert: Expect AddObserver to be called on the controller even when a
+  // session handle already exists.
+  EXPECT_CALL(*mock_context_controller_, AddObserver(&router)).Times(1);
 
   // Expect StartTabContextUploadFlow on the SIDE PANEL handle.
   EXPECT_CALL(*side_panel_session_handle, CreateContextToken())

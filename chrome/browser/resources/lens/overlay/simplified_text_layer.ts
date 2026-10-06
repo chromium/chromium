@@ -266,6 +266,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     this.textReceivedTimeout.timeoutId = setTimeout(() => {
       this.textReceivedTimeout.timeoutElapsedOrCleared = true;
       this.textReceivedTimeout.timeoutId = -1;
+      this.fire('finished-receiving-text');
     }, this.textReceivedTimeout.timeout);
   }
 
@@ -308,11 +309,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
         this.fullTextResponse.receivedWords.length > 0) {
       const selection = findWordsInRegion(
           this.fullTextResponse.receivedWords, box, this.selectionOverlayRect);
-      // Words may be found in the region even if the IOU threshold is not met.
-      // If IOU threshold is not met, behave as if no words were found. Show the
-      // context menu but do not send the selection indices so that options for
-      // detected text are not shown.
-      if (selection.iou > 0.1) {
+      if (selection.startIndex !== -1 && selection.endIndex !== -1) {
         this.fire(showOrUpdateEventName, {
           box,
           selectionStartIndex: selection.startIndex,

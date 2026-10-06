@@ -322,7 +322,10 @@ suite('SimplifiedSelection', function() {
 
   test(
       'SelectedRegionContextMenuAppearsAfterTimeoutElapsesNoText', async () => {
+        const receivedTextEventPromise =
+            eventToPromise('finished-receiving-text', document.body);
         callTextReceivedTimeout();
+        await receivedTextEventPromise;
 
         // When the detect text in region event is received, the context menu
         // should be shown without any detected text.
@@ -394,6 +397,36 @@ suite('SimplifiedSelection', function() {
     assertEquals(
         showSelectedRegionContextMenuEvent.detail.text, 'hello there\r\ntest');
   });
+
+  test(
+      'SelectedRegionContextMenuAppearsWithSmallTextInLargeRegion',
+      async () => {
+        await addGenericWordsToPageNormalized(callbackRouterRemote);
+
+        // Select the entire image so that the words occupy a small fraction of
+        // the region (overall selection IoU < 0.1) while still being fully
+        // contained within the region.
+        const showSelectedRegionContextMenuEventPromise =
+            eventToPromise<SelectedRegionContextMenuEvent>(
+                'show-selected-region-context-menu', document.body);
+        const largeRegionBox: CenterRotatedBox = {
+          box: {x: 0.5, y: 0.5, width: 1.0, height: 1.0},
+          rotation: 0,
+          coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+        };
+        textLayerElement.fire('detect-text-in-region', largeRegionBox);
+        await flushTasks();
+
+        const showSelectedRegionContextMenuEvent =
+            await showSelectedRegionContextMenuEventPromise;
+        assertEquals(
+            showSelectedRegionContextMenuEvent.detail.selectionStartIndex, 0);
+        assertEquals(
+            showSelectedRegionContextMenuEvent.detail.selectionEndIndex, 2);
+        assertEquals(
+            showSelectedRegionContextMenuEvent.detail.text,
+            'hello there\r\ntest');
+      });
 
   test('SelectedRegionContextMenuAppearsWithRegionText', async () => {
     // Two add text calls to have text be used from the region.
