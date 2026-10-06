@@ -58,14 +58,15 @@ TEST_F(GeminiModalContentViewControllerTest, TestCloseButtonNotifiesDelegate) {
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
-// Tests that the navigation bar never covers the top of the content while
-// the sides and bottom remain full bleed.
+// Tests that the content is inset by the safe area on the top and sides, and
+// extends to the bottom edge.
 TEST_F(GeminiModalContentViewControllerTest, TestContentViewLayout) {
   UIView* view = view_controller_.view;
   [view layoutIfNeeded];
 
-  EXPECT_EQ(view.safeAreaInsets.top, CGRectGetMinY(content_view_.frame));
-  EXPECT_EQ(CGRectGetMinX(view.bounds), CGRectGetMinX(content_view_.frame));
-  EXPECT_EQ(CGRectGetMaxX(view.bounds), CGRectGetMaxX(content_view_.frame));
+  CGRect safeFrame = view.safeAreaLayoutGuide.layoutFrame;
+  EXPECT_EQ(CGRectGetMinY(safeFrame), CGRectGetMinY(content_view_.frame));
+  EXPECT_EQ(CGRectGetMinX(safeFrame), CGRectGetMinX(content_view_.frame));
+  EXPECT_EQ(CGRectGetMaxX(safeFrame), CGRectGetMaxX(content_view_.frame));
   EXPECT_EQ(CGRectGetMaxY(view.bounds), CGRectGetMaxY(content_view_.frame));
 }
