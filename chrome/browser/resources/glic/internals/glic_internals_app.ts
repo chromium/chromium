@@ -58,7 +58,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   static override get properties() {
     return {
       data_: {type: Object},
-      invokePrompt_: {type: String},
+      invokePrompts_: {type: Array},
       invokeAutoSubmit_: {type: Boolean},
       invokeFreOverride_: {type: Number},
       invokeFeatureMode_: {type: Number},
@@ -98,7 +98,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   private copyResetTimeoutId_: number|null = null;
 
   protected accessor data_: InternalsDataPayload|undefined;
-  protected accessor invokePrompt_: string = '';
+  protected accessor invokePrompts_: string[] = [''];
   protected accessor invokeAutoSubmit_: boolean = true;
   protected accessor invokeFreOverride_: FreOverride = FreOverride.kUnspecified;
   protected accessor invokeFeatureMode_: FeatureMode = FeatureMode.kUnspecified;
@@ -566,7 +566,25 @@ export class GlicInternalsAppElement extends CrLitElement {
   }
 
   protected onInvokePromptInput_(e: Event) {
-    this.invokePrompt_ = (e.target as HTMLInputElement).value;
+    const input = e.target as HTMLInputElement;
+    const index = Number(input.dataset['index']);
+    const newPrompts = [...this.invokePrompts_];
+    newPrompts[index] = input.value;
+    this.invokePrompts_ = newPrompts;
+  }
+
+  protected onAddPromptClick_() {
+    this.invokePrompts_ = [...this.invokePrompts_, ''];
+  }
+
+  protected onRemovePromptClick_(e: Event) {
+    if (this.invokePrompts_.length <= 1) {
+      return;
+    }
+    const button = e.currentTarget as HTMLElement;
+    const indexToRemove = Number(button.dataset['index']);
+    this.invokePrompts_ =
+        this.invokePrompts_.filter((_, index) => index !== indexToRemove);
   }
 
   protected onInvokeAutoSubmitChange_(e: Event) {
@@ -720,7 +738,7 @@ export class GlicInternalsAppElement extends CrLitElement {
 
     const options: TriggerInvokeFromInternalsOptions = {
       invocationSource: this.invokeInvocationSource_,
-      prompts: this.invokePrompt_ ? [this.invokePrompt_] : [],
+      prompts: this.invokePrompts_.filter(prompt => prompt.length > 0),
       conversation: conversationSelection,
       featureMode: this.invokeFeatureMode_,
       disableZss: false,

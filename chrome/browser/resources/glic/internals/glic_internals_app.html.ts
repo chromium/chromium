@@ -309,10 +309,31 @@ export function getHtml(this: GlicInternalsAppElement) {
             </label>
           </div>
           <h3>Invoke</h3>
-          <label for="invokePromptInput">Prompt</label>
-          <input id="invokePromptInput" .value="${this.invokePrompt_}"
-              @input="${this.onInvokePromptInput_}">
-          </input>
+          <label for="invokePromptInput0">
+            ${this.invokePrompts_.length > 1 ? 'Prompts' : 'Prompt'}
+          </label>
+          <div class="prompts-container">
+            ${this.invokePrompts_.map((prompt, index) => html`
+              <div class="prompt-row">
+                <input id="invokePromptInput${index}" class="prompt-input"
+                    .value="${prompt}" data-index="${index}"
+                    aria-label="Prompt ${index + 1}"
+                    @input="${this.onInvokePromptInput_}">
+                </input>
+                ${this.invokePrompts_.length > 1 ? html`
+                  <cr-button class="remove-prompt-button" data-index="${index}"
+                      aria-label="Remove prompt ${index + 1}"
+                      @click="${this.onRemovePromptClick_}">
+                    x
+                  </cr-button>
+                ` : html``}
+              </div>
+            `)}
+            <cr-button id="addPromptButton" aria-label="Add prompt"
+                @click="${this.onAddPromptClick_}">
+              +
+            </cr-button>
+          </div>
           <label for="invokeTimeoutInput">Timeout Override (ms)</label>
           <input id="invokeTimeoutInput" type="number"
               .value="${this.invokeTimeoutMs_}"

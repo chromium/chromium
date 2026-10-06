@@ -251,6 +251,22 @@ td.property-name {
   padding: 8px;
 }
 
+.prompts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prompt-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.prompt-input {
+  flex: 1;
+}
+
 .consents-container {
   align-items: center;
   display: flex;
