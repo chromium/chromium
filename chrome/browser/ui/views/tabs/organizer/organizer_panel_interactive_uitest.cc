@@ -618,13 +618,7 @@ class OrganizerPanelPixelTest : public OrganizerPanelUiTest {
   }
 };
 
-// TODO(crbug.com/568826436): Fix flakiness on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HorizontalTabs DISABLED_HorizontalTabs
-#else
-#define MAYBE_HorizontalTabs HorizontalTabs
-#endif
-IN_PROC_BROWSER_TEST_F(OrganizerPanelPixelTest, MAYBE_HorizontalTabs) {
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPixelTest, HorizontalTabs) {
   RunTestSequence(SetVerticalTabsEnabled(false), OpenOrganizerPanel(),
                   ScreenshotPanel());
 }
