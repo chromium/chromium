@@ -943,6 +943,10 @@ bool WebContentsAndroid::NeedToFireBeforeUnloadOrUnloadEvents(JNIEnv* env) {
   return web_contents_->NeedToFireBeforeUnloadOrUnloadEvents();
 }
 
+bool WebContentsAndroid::NeedToFireBeforeUnload(JNIEnv* env) {
+  return web_contents_->NeedToFireBeforeUnload();
+}
+
 void WebContentsAndroid::OnContentForNavigationEntryShown(JNIEnv* env) {
   if (auto* animation =
           web_contents_->GetBackForwardTransitionAnimationManager()) {

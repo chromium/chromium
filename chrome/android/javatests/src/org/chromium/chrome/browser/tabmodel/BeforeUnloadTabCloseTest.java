@@ -28,12 +28,14 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -42,6 +44,7 @@ import org.chromium.components.javascript_dialogs.JavascriptAppModalDialog;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
+import org.chromium.net.test.util.TestWebServer;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -53,9 +56,13 @@ import java.util.concurrent.TimeoutException;
  * TabWebContentsDelegateAndroidImpl.onBeforeUnloadFired}, and the {@code TabObserver} fan-out that
  * resumes the closure. Unit tests stub one side or the other of that JNI boundary; these do not.
  *
- * <p>Every case depends on that fan-out. The prompter marks the tab so that Content does not close
- * it on its own, and the closure resumes only when the answer reaches Java: a completion that stops
- * short leaves an agreeing tab open and a refusing tab's closure unresolved.
+ * <p>Every case with a {@code beforeunload} handler depends on that fan-out. The prompter marks the
+ * tab so that Content does not close it on its own, and the closure resumes only when the answer
+ * reaches Java: a completion that stops short leaves an agreeing tab open and a refusing tab's
+ * closure unresolved.
+ *
+ * <p>A page with only unload-time handlers gets no dispatch; those handlers run when the tab's
+ * {@code WebContents} is torn down.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -155,6 +162,80 @@ public class BeforeUnloadTabCloseTest {
         waitForTabCount(tabCount - 1);
         waitForTabDestroyed(closed);
         assertTabOpen(kept);
+    }
+
+    // Graceful shutdown is enabled in the unload-time handler tests, as on desktop Android builds, so
+    // that teardown runs the handlers rather than racing the renderer's shutdown.
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN})
+    public void testCloseTab_PageHideHandlerOnly_NoDispatchAndHandlerRuns() throws Exception {
+        closeTabWithOnlyHandlerAndWaitForBeacon("window", "pagehide");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN})
+    // The unload Permissions-Policy deprecation would stop the handler from being registered.
+    @DisableFeatures({"DeprecateUnload"})
+    public void testCloseTab_UnloadHandlerOnly_NoDispatchAndHandlerRuns() throws Exception {
+        closeTabWithOnlyHandlerAndWaitForBeacon("window", "unload");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN})
+    public void testCloseTab_VisibilityChangeHandlerOnly_NoDispatchAndHandlerRuns()
+            throws Exception {
+        closeTabWithOnlyHandlerAndWaitForBeacon("document", "visibilitychange");
+    }
+
+    /**
+     * Opens a page whose only handler is {@code eventName} on {@code target}, closes its tab, and
+     * checks that the tab closes without a {@code beforeunload} dispatch and that the handler runs.
+     * The handler reports that it ran by sending a beacon to a local server.
+     */
+    private void closeTabWithOnlyHandlerAndWaitForBeacon(String target, String eventName)
+            throws Exception {
+        TestWebServer server = TestWebServer.start();
+        try {
+            String beaconPath = "/" + eventName + "_beacon";
+            String beaconUrl = server.setResponseWithNoContentStatus(beaconPath);
+            String pageUrl =
+                    server.setResponse(
+                            "/" + eventName + "_only.html",
+                            "<html><head><script>"
+                                    + target
+                                    + ".addEventListener('"
+                                    + eventName
+                                    + "', () => {navigator.sendBeacon('"
+                                    + beaconUrl
+                                    + "');});</script></head><body><p>No beforeunload.</p>"
+                                    + "</body></html>",
+                            /* responseHeaders= */ null);
+            Tab tab = mActivityTestRule.loadUrlInNewTab(pageUrl);
+            int tabCount = mActivityTestRule.tabsCount(/* incognito= */ false);
+            CallbackHelper beforeUnloadFired = new CallbackHelper();
+            TabObserver observer =
+                    new TabObserver() {
+                        @Override
+                        public void onBeforeUnloadFired(Tab observedTab, boolean proceed) {
+                            beforeUnloadFired.notifyCalled();
+                        }
+                    };
+            ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(observer));
+
+            closeTabs(List.of(tab), /* listener= */ null);
+
+            waitForTabCount(tabCount - 1);
+            waitForTabDestroyed(tab);
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> Criteria.checkThat(server.getRequestCount(beaconPath), Matchers.is(1)));
+            assertEquals(0, beforeUnloadFired.getCallCount());
+        } finally {
+            server.shutdown();
+        }
     }
 
     /** Opens {@code url} in a new foreground tab and taps it, so its page can show a dialog. */

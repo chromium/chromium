@@ -1224,6 +1224,12 @@ public class WebContentsImpl
                 .needToFireBeforeUnloadOrUnloadEvents(mNativeWebContentsAndroid);
     }
 
+    @Override
+    public boolean needToFireBeforeUnload() {
+        if (mNativeWebContentsAndroid == 0) return false;
+        return WebContentsImplJni.get().needToFireBeforeUnload(mNativeWebContentsAndroid);
+    }
+
     public void addTearDownDialogOverlaysHandler(Runnable handler) {
         if (mTearDownDialogOverlaysHandlers == null) {
             mTearDownDialogOverlaysHandlers = new ObserverList<>();
@@ -1539,6 +1545,8 @@ public class WebContentsImpl
         boolean isBeingDestroyed(long nativeWebContentsAndroid);
 
         boolean needToFireBeforeUnloadOrUnloadEvents(long nativeWebContentsAndroid);
+
+        boolean needToFireBeforeUnload(long nativeWebContentsAndroid);
 
         void onContentForNavigationEntryShown(long nativeWebContentsAndroid);
 

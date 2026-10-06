@@ -215,6 +215,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   void NotifyBrowserControlsHeightChanged(JNIEnv* env);
 
   bool NeedToFireBeforeUnloadOrUnloadEvents(JNIEnv* env);
+  bool NeedToFireBeforeUnload(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetRenderWidgetHostView(
       JNIEnv* env);

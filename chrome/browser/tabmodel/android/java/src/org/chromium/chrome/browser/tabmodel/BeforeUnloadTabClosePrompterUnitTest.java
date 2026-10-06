@@ -60,7 +60,7 @@ public class BeforeUnloadTabClosePrompterUnitTest {
         DeviceInfo.setIsDesktopForTesting(true);
 
         lenient().when(mTab.getWebContents()).thenReturn(mWebContents);
-        lenient().when(mWebContents.needToFireBeforeUnloadOrUnloadEvents()).thenReturn(true);
+        lenient().when(mWebContents.needToFireBeforeUnload()).thenReturn(true);
 
         mPrompter = new BeforeUnloadTabClosePrompter();
         mParams = TabClosureParams.closeTab(mTab).build();
@@ -299,8 +299,10 @@ public class BeforeUnloadTabClosePrompterUnitTest {
     }
 
     @Test
-    public void testPrompt_NothingToFire_NotAsked() {
-        when(mWebContents.needToFireBeforeUnloadOrUnloadEvents()).thenReturn(false);
+    public void testPrompt_NoBeforeUnloadHandler_NotAsked() {
+        // A page with only unload, pagehide or visibilitychange handlers.
+        lenient().when(mWebContents.needToFireBeforeUnloadOrUnloadEvents()).thenReturn(true);
+        when(mWebContents.needToFireBeforeUnload()).thenReturn(false);
 
         assertFalse(mPrompter.prompt(mParams, mTab, mOnProceed, mOnCancel));
         verifyNothingDispatched();

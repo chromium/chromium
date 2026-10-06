@@ -512,6 +512,7 @@ class CONTENT_EXPORT WebContentsImpl
   void WasOccluded() override;
   Visibility GetVisibility() override;
   bool NeedToFireBeforeUnloadOrUnloadEvents() override;
+  bool NeedToFireBeforeUnload() override;
   void DispatchBeforeUnload(bool auto_cancel) override;
   void AttachInnerWebContents(std::unique_ptr<WebContents> inner_web_contents,
                               RenderFrameHost* render_frame_host,
@@ -2126,6 +2127,13 @@ class CONTENT_EXPORT WebContentsImpl
   void SetHistoryIndexAndLengthForView(RenderViewHost* render_view_host,
                                        int history_index,
                                        int history_length);
+
+  // Returns false if disconnection notifications are suppressed or the primary
+  // main frame is ready to be closed. Otherwise returns true if
+  // `frame_needs_events` returns true for any live frame in the primary frame
+  // tree.
+  bool NeedToFirePageCloseEvents(
+      base::FunctionRef<bool(RenderFrameHostImpl&)> frame_needs_events);
 
   // Helper functions for sending notifications.
   void NotifyViewSwapped(RenderViewHost* old_view, RenderViewHost* new_view);

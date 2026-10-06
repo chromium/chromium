@@ -1054,12 +1054,23 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 
   // This function checks *all* frames in this WebContents (not just the main
   // frame) and returns true if at least one frame has either a beforeunload or
-  // an unload/pagehide/visibilitychange handler.
+  // an unload/pagehide/visibilitychange handler. Such a page needs the slow
+  // close path: DispatchBeforeUnload() followed by ClosePage(), which runs the
+  // unload-time handlers, with the renderer kept out of fast shutdown until
+  // they have run.
   //
   // The value of this may change over time. For example, if true and the
   // beforeunload listener is executed and allows the user to exit, then this
   // returns false.
   virtual bool NeedToFireBeforeUnloadOrUnloadEvents() = 0;
+
+  // Like NeedToFireBeforeUnloadOrUnloadEvents(), but only considers
+  // beforeunload handlers: returns true if at least one live frame of the
+  // primary page has one, that is, if closing the page could show a
+  // beforeunload dialog. It does not say whether the page needs the slow close
+  // path, so it only suits a caller that runs DispatchBeforeUnload() to let the
+  // page ask the user to stay and then closes the page without ClosePage().
+  virtual bool NeedToFireBeforeUnload() = 0;
 
   // Runs the beforeunload handler for the main frame and all its subframes.
   // See also ClosePage in RenderViewHostImpl, which runs the unload handler.

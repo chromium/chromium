@@ -381,6 +381,11 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     }
 
     @Override
+    public boolean needToFireBeforeUnload() {
+        return false;
+    }
+
+    @Override
     public void onContentForNavigationEntryShown() {}
 
     @Override

@@ -603,9 +603,20 @@ public interface WebContents extends Parcelable {
     /**
      * This function checks all frames in this WebContents (not just the main frame) and returns
      * true if at least one frame has either a beforeunload or an unload/pagehide/visibilitychange
-     * handler.
+     * handler. Such a page needs the slow close path: {@link #dispatchBeforeUnload(boolean)}
+     * followed by the page being closed through Content, which runs the unload-time handlers, with
+     * the renderer kept out of fast shutdown until they have run.
      */
     boolean needToFireBeforeUnloadOrUnloadEvents();
+
+    /**
+     * Like {@link #needToFireBeforeUnloadOrUnloadEvents()}, but only considers beforeunload
+     * handlers: returns true if at least one live frame of the primary page has one, that is, if
+     * closing the page could show a beforeunload dialog. It does not say whether the page needs the
+     * slow close path, so it only suits a caller that runs {@link #dispatchBeforeUnload(boolean)}
+     * to let the page ask the user to stay and then closes the page itself.
+     */
+    boolean needToFireBeforeUnload();
 
     /**
      * For cases where the content for a navigation entry is being drawn by the embedder (instead of
