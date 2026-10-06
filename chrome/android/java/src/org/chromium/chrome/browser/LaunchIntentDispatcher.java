@@ -290,8 +290,7 @@ public class LaunchIntentDispatcher {
 
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
         mActivity = activity;
-        boolean unparcelFds = ChromeFeatureList.sUnparcelIntentFileDescriptors.isEnabled();
-        mIntent = assertNonNull(IntentUtils.sanitizeIntent(intent, unparcelFds));
+        mIntent = assertNonNull(IntentUtils.sanitizeIntent(intent));
     }
 
     /** When started with an intent, maybe pre-resolve the domain. */

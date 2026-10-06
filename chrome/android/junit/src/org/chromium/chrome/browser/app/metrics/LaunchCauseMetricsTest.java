@@ -21,12 +21,9 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Tests basic functionality of LaunchCauseMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.LAUNCH_CAUSE_SCREEN_OFF_FIX})
 public final class LaunchCauseMetricsTest {
     private Activity mActivity;
 

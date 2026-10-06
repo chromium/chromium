@@ -24,11 +24,6 @@ namespace features {
 
 // All features in alphabetical order.
 
-// Marks navigations as aborted when the NavigationHandle is destroyed mid
-// navigation, likely due to a tab closure. This is a kill switch.
-BASE_FEATURE(kAbortNavigationsFromTabClosures,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows loading Top Chrome Webium.
 BASE_FEATURE(kDebugTopChromeWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
 

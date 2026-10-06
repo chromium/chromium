@@ -2279,9 +2279,7 @@ NavigationRequest::~NavigationRequest() {
 
   // If navigation has started but not finished, mark it as aborted for
   // Navigation callbacks.
-  if (base::FeatureList::IsEnabled(
-          features::kAbortNavigationsFromTabClosures) &&
-      state_ < DID_COMMIT && net_error_ == net::OK) {
+  if (state_ < DID_COMMIT && net_error_ == net::OK) {
     net_error_ = net::ERR_ABORTED;
   }
 

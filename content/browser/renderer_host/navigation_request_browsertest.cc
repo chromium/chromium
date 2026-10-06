@@ -5971,9 +5971,7 @@ class NavigationRequestPartitionBrowserTest
  public:
   NavigationRequestPartitionBrowserTest() {
     feature_list_.InitWithFeatures(
-        {blink::features::kDeclarativePerformanceObserver,
-         features::kAbortNavigationsFromTabClosures},
-        {});
+        {blink::features::kDeclarativePerformanceObserver}, {});
   }
 
  private:

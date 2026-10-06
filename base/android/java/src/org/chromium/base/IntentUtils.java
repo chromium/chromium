@@ -426,14 +426,13 @@ public class IntentUtils {
      *
      * @return A safe to use version of this intent.
      */
-    public static @Nullable Intent sanitizeIntent(
-            final Intent incomingIntent, boolean sanitizeFds) {
+    public static @Nullable Intent sanitizeIntent(final Intent incomingIntent) {
         if (incomingIntent == null) return null;
         try {
             // On Android API B+, if we attempt to launch an Intent that contains a file
             // descriptor that hasn't been unparcelled we crash. This can happen any time we forward
             // extras from the received intent.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA && sanitizeFds) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
                 deepSanitizeIntentFds(incomingIntent);
             } else {
                 // On Android T+, items are only deserialized when the items themselves are queried,

@@ -40,7 +40,6 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -407,11 +406,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @Override
     public final void onMultiWindowModeChanged(boolean inMultiWindowMode) {
         // Some OEMs double-notify about multi-window mode changes (eg. Samsung tablets).
-        if (FeatureList.isNativeInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.AVOID_DOUBLE_MULTIWINDOW_CHANGES)
-                && mInMultiWindowMode == inMultiWindowMode) {
-            return;
-        }
+        if (mInMultiWindowMode == inMultiWindowMode) return;
         mInMultiWindowMode = inMultiWindowMode;
         handleMultiWindowModeChanged(inMultiWindowMode);
         super.onMultiWindowModeChanged(inMultiWindowMode);

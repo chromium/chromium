@@ -1632,21 +1632,12 @@ class TabImpl implements Tab, TabInternal {
         onAlertStateChanged(TabAlert.NONE);
 
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
-        boolean abortNavigationsFromTabClosures =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.ABORT_NAVIGATIONS_FROM_TAB_CLOSURES);
-        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
-        if (abortNavigationsFromTabClosures) {
-            mUserDataHost.destroy();
-            status = destroyWebContents(deleteNativeWebContents);
-        }
+        mUserDataHost.destroy();
+        @TabDestroyStatus int status = destroyWebContents(deleteNativeWebContents);
 
         mObservers.clear();
-        if (!abortNavigationsFromTabClosures) mUserDataHost.destroy();
         mTabViewManager.destroy();
         hideNativePage(false, null);
-        if (!abortNavigationsFromTabClosures) {
-            status = destroyWebContents(deleteNativeWebContents);
-        }
         if (mWebContentsState != null) {
             mWebContentsState.destroy();
             mWebContentsState = null;
