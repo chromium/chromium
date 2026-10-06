@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -84,7 +83,6 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
   virtual const std::string GetAnimationHistogramName(AnimationType type);
 
   // views::Button:
-  void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
@@ -113,10 +111,6 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
   // Owned by views hierarchy.
   raw_ptr<views::Label> label_;
   raw_ptr<views::ImageView> image_;
-
-  // Cached icons used to display the chevron in the button.
-  gfx::ImageSkia expanded_image_;
-  gfx::ImageSkia collapsed_image_;
 
   // Used in layer bounds animation.
   gfx::Rect previous_bounds_;

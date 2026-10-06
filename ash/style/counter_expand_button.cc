@@ -20,7 +20,6 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -39,7 +38,7 @@ constexpr gfx::Insets kFocusInsets(2);
 constexpr gfx::Insets kImageInsets(2);
 constexpr auto kLabelInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kCornerRadius = 12;
-constexpr int kJellyChevronIconSize = 20;
+constexpr int kChevronSmallIconSize = 20;
 constexpr int kLabelFontSize = 12;
 
 std::optional<bool> g_tooltip_enabled_for_testing;
@@ -70,6 +69,7 @@ CounterExpandButton::CounterExpandButton() {
   image->SetProperty(views::kMarginsKey, kImageInsets);
   image_ = AddChildView(std::move(image));
 
+  UpdateIcons();
   UpdateTooltip();
 
   views::InstallRoundRectHighlightPathGenerator(this, kFocusInsets,
@@ -106,8 +106,7 @@ void CounterExpandButton::SetExpanded(bool expanded) {
   label_->SetText(base::NumberToString16(counter_));
   label_->SetVisible(ShouldShowLabel());
 
-  image_->SetImage(ui::ImageModel::FromImageSkia(expanded_ ? expanded_image_
-                                                           : collapsed_image_));
+  UpdateIcons();
 
   UpdateTooltip();
 }
@@ -123,18 +122,9 @@ void CounterExpandButton::UpdateCounter(int count) {
 }
 
 void CounterExpandButton::UpdateIcons() {
-  const SkColor icon_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface);
-  const int icon_size = kJellyChevronIconSize;
-
-  expanded_image_ =
-      gfx::CreateVectorIcon(kChevronUpSmallIcon, icon_size, icon_color);
-
-  collapsed_image_ =
-      gfx::CreateVectorIcon(kChevronDownSmallIcon, icon_size, icon_color);
-
-  image_->SetImage(ui::ImageModel::FromImageSkia(expanded_ ? expanded_image_
-                                                           : collapsed_image_));
+  image_->SetImage(ui::ImageModel::FromVectorIcon(
+      expanded_ ? kChevronUpSmallIcon : kChevronDownSmallIcon,
+      cros_tokens::kCrosSysOnSurface, kChevronSmallIconSize));
 }
 
 void CounterExpandButton::UpdateTooltip() {
@@ -209,12 +199,6 @@ void CounterExpandButton::AnimateExpandCollapse() {
 const std::string CounterExpandButton::GetAnimationHistogramName(
     AnimationType type) {
   return "";
-}
-
-void CounterExpandButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-
-  UpdateIcons();
 }
 
 gfx::Size CounterExpandButton::CalculatePreferredSize(
