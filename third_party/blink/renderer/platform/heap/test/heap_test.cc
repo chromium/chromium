@@ -371,7 +371,8 @@ class ThreadedTesterBase {
 
  private:
   static void ThreadFunc(ThreadedTesterBase* tester, v8::Platform* platform) {
-    ThreadState::AttachCurrentThreadForTesting(platform);
+    cppgc::StackStartMarker stack_start_marker;
+    ThreadState::AttachCurrentThreadForTesting(platform, stack_start_marker);
     tester->RunThread();
     ThreadState::DetachCurrentThread();
     if (!tester->threads_to_finish_.Decrement())

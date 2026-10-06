@@ -79,8 +79,10 @@ ThreadState* ThreadState::AttachMainThread(
 }
 
 // static
-ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform* platform) {
-  auto* thread_state = new ThreadState(platform);
+ThreadState* ThreadState::AttachMainThreadForTesting(
+    v8::Platform* platform,
+    std::optional<cppgc::StackStartMarker> stack_start_marker) {
+  auto* thread_state = new ThreadState(platform, stack_start_marker);
   ThreadStateStorage::AttachMainThread(
       *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
       thread_state->cpp_heap().GetHeapHandle());
@@ -89,8 +91,10 @@ ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform* platform) {
 }
 
 // static
-ThreadState* ThreadState::AttachCurrentThread() {
-  auto* thread_state = new ThreadState(gin::V8Platform::Get());
+ThreadState* ThreadState::AttachCurrentThread(
+    std::optional<cppgc::StackStartMarker> stack_start_marker) {
+  auto* thread_state =
+      new ThreadState(gin::V8Platform::Get(), stack_start_marker);
   ThreadStateStorage::AttachNonMainThread(
       *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
       thread_state->cpp_heap().GetHeapHandle());
@@ -99,8 +103,9 @@ ThreadState* ThreadState::AttachCurrentThread() {
 
 // static
 ThreadState* ThreadState::AttachCurrentThreadForTesting(
-    v8::Platform* platform) {
-  ThreadState* thread_state = new ThreadState(platform);
+    v8::Platform* platform,
+    std::optional<cppgc::StackStartMarker> stack_start_marker) {
+  ThreadState* thread_state = new ThreadState(platform, stack_start_marker);
   ThreadStateStorage::AttachNonMainThread(
       *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
       thread_state->cpp_heap().GetHeapHandle());

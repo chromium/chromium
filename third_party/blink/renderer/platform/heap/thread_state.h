@@ -55,7 +55,8 @@ class PLATFORM_EXPORT ThreadState final {
       std::optional<cppgc::StackStartMarker> stack_start_marker = std::nullopt);
   // Attaches a ThreadState to the currently running thread. Must not be the
   // main thread and must be called after AttachMainThread().
-  static ThreadState* AttachCurrentThread();
+  static ThreadState* AttachCurrentThread(
+      std::optional<cppgc::StackStartMarker> stack_start_marker = std::nullopt);
   static void DetachCurrentThread();
 
   // Attaches custom GC handling to an Isolate. CppHeap is already owned by the
@@ -106,8 +107,12 @@ class PLATFORM_EXPORT ThreadState final {
     return active_script_wrappable_manager_.Get();
   }
 
-  static ThreadState* AttachMainThreadForTesting(v8::Platform*);
-  static ThreadState* AttachCurrentThreadForTesting(v8::Platform*);
+  static ThreadState* AttachMainThreadForTesting(
+      v8::Platform*,
+      std::optional<cppgc::StackStartMarker> stack_start_marker = std::nullopt);
+  static ThreadState* AttachCurrentThreadForTesting(
+      v8::Platform*,
+      std::optional<cppgc::StackStartMarker> stack_start_marker = std::nullopt);
 
   // Forced garbage collection for testing.
   //
