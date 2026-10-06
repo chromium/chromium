@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
@@ -218,85 +217,6 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                 [](views::View* view) { return view->GetVisible(); }));
 }
 
-class TabStripComboButtonOrganizerPanelInteractiveUiTest
-    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
- public:
-  TabStripComboButtonOrganizerPanelInteractiveUiTest() = default;
-  ~TabStripComboButtonOrganizerPanelInteractiveUiTest() override = default;
-
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    return {{organizer_panel::kOrganizerPanel, {}}};
-  }
-
-  auto SetPinned(const char* pref, bool pinned) {
-    return Do([this, pref, pinned]() {
-      browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
-    });
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
-                       TabStripButtonPresentAndHidesOrganizerPanel) {
-  RunTestSequence(
-      // Tab search and tab strip button should be visible.
-      WaitForShow(kTabSearchButtonElementId),
-      WaitForShow(kVerticalTabStripTabStripButtonElementId),
-      // Saved tab group button should NOT be present.
-      EnsureNotPresent(kSavedTabGroupButtonElementId),
-      CheckViewProperty(
-          kVerticalTabStripTabStripButtonElementId,
-          &views::View::GetTooltipText,
-          l10n_util::GetStringUTF16(IDS_TAB_STRIP_BUTTON_TOOLTIP)),
-      // Open organizer panel.
-      Do([this]() {
-        OrganizerPanelController::From(browser())->SetOrganizerVisible(true);
-      }),
-      CheckResult(
-          [this]() {
-            return OrganizerPanelController::From(browser())
-                ->IsOrganizerPanelVisible();
-          },
-          true),
-      // Clicking the tab search button when the organizer panel is already
-      // showing should NOT dismiss the panel when the tab strip button is
-      // visible.
-      PressButton(kTabSearchButtonElementId),
-      CheckResult(
-          [this]() {
-            return OrganizerPanelController::From(browser())
-                ->IsOrganizerPanelVisible();
-          },
-          true),
-      // Pressing tab strip button should hide organizer panel.
-      PressButton(kVerticalTabStripTabStripButtonElementId),
-      CheckResult(
-          [this]() {
-            return OrganizerPanelController::From(browser())
-                ->IsOrganizerPanelVisible();
-          },
-          false));
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
-                       TabStripButtonUpdatesOnExpandOnHoverChanged) {
-  auto* const controller =
-      tabs::VerticalTabStripStateController::From(browser());
-  RunTestSequence(
-      WaitForShow(kVerticalTabStripTabStripButtonElementId),
-      // Collapse the tab strip.
-      PressButton(kVerticalTabStripCollapseButtonElementId),
-      // With expand on hover enabled (default), button remains visible.
-      WaitForShow(kVerticalTabStripTabStripButtonElementId),
-      // Disable expand on hover while collapsed.
-      Do([controller]() { controller->SetExpandOnHoverEnabled(false); }),
-      // Button should now be hidden.
-      WaitForHide(kVerticalTabStripTabStripButtonElementId),
-      // Re-enable expand on hover.
-      Do([controller]() { controller->SetExpandOnHoverEnabled(true); }),
-      // Button should now be visible again.
-      WaitForShow(kVerticalTabStripTabStripButtonElementId));
-}
 
 class TabStripComboButtonHorizontalInteractiveUiTest
     : public InteractiveBrowserTest,
