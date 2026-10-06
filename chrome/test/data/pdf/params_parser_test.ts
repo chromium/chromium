@@ -291,9 +291,8 @@ chrome.test.runTests([
     chrome.test.assertEq(2, params.pageIndex);
     chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX, params.view);
     chrome.test.assertTrue(params.boundingBox !== undefined);
-    // TODO(crbug.com/568852321): The page at index 2 should return (12, 17).
-    chrome.test.assertEq(11, params.boundingBox.x);
-    chrome.test.assertEq(16, params.boundingBox.y);
+    chrome.test.assertEq(12, params.boundingBox.x);
+    chrome.test.assertEq(17, params.boundingBox.y);
     chrome.test.assertEq(200, params.boundingBox.width);
     chrome.test.assertEq(300, params.boundingBox.height);
 

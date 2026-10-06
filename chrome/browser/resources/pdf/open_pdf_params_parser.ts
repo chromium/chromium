@@ -394,7 +394,7 @@ export class OpenPdfParamsParser {
 
       if (data.pageIndex !== -1) {
         params.pageIndex = data.pageIndex;
-        pageNumber = data.pageIndex;
+        pageNumber = data.pageIndex + 1;
       }
 
       if (data.namedDestinationView) {
