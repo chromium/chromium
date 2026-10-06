@@ -83,6 +83,10 @@ Integrity Block and Web Bundle parsing it delegates to is implemented in
 `base::MayBlock()` sequence, so that neither parsing nor file I/O happens on the
 UI thread.
 
+The following graphic illustrates the relationship between these classes:
+
+![Reader and parser class diagram](signed_web_bundle_parser_class_structure.png)
+
 The `SignedWebBundleReader` is supposed to be a generic reader for Signed Web
 Bundles, unrelated to Isolated Web Apps. As such, it does not know anything
 about Isolated Web Apps or the `isolated-app:` scheme. Usually, code dealing

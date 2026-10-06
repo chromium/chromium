@@ -1,0 +1,71 @@
+// Regenerate the PNG with the command below. It needs Graphviz, ImageMagick
+// and the Roboto font, which fontconfig otherwise silently replaces.
+//   dot -Tpng signed_web_bundle_parser_class_structure.gv |
+//     convert - -strip -alpha off -dither None -colors 256 \
+//       -define png:compression-level=9 \
+//       PNG8:signed_web_bundle_parser_class_structure.png
+// Could be done with Graphviz directly, but then the output image is about
+// three times as large.
+digraph signed_web_bundle_parser_class_structure {
+  graph [rankdir=TB, fontname="Roboto", fontsize=12, nodesep=0.3,
+         ranksep=0.5, labeljust=l, bgcolor=white, dpi=192];
+  node [shape=box, style=filled, fontname="Roboto", fontsize=12,
+        height=0.45];
+  edge [fontname="Roboto", fontsize=10];
+
+  subgraph cluster_caller {
+    label="Browser process: caller's sequence";
+    style=rounded;
+    color=gray60;
+
+    signed_reader [label="web_app::SignedWebBundleReader", fillcolor="#e2f3e8"];
+    unsecure_reader [
+      label="web_app::UnsecureSignedWebBundleIdReader\n(: web_app::UnsecureReader)",
+      fillcolor="#e2f3e8"
+    ];
+    verifier [label="web_package::SignedWebBundleSignatureVerifier",
+              fillcolor="#fff4e0"];
+    mojo_parser [label="web_app::MojoWebBundleParser", fillcolor="#e2f3e8"];
+  }
+
+  subgraph cluster_parser_sequence {
+    label="Browser process: MayBlock() sequence, one per connection";
+    labelloc=b;
+    style=rounded;
+    color=gray60;
+
+    factory [label="web_package::WebBundleParserFactory", fillcolor="#fff4e0"];
+    parser [label="web_package::WebBundleParser", fillcolor="#fff4e0"];
+    data_source [label="FileDataSource\n(web_bundle_parser_factory.cc)",
+                 fillcolor="#fff4e0"];
+    integrity_block_parser [label="web_package::IntegrityBlockParser",
+                            fillcolor="#fff4e0"];
+    metadata_parser [label="web_package::WebBundleParser::MetadataParser",
+                     fillcolor="#fff4e0"];
+    response_parser [label="web_package::WebBundleParser::ResponseParser",
+                     fillcolor="#fff4e0"];
+    rust [label="Rust parsers\n#![forbid(unsafe_code)]", fillcolor="#fde2d5"];
+
+    {rank=same; parser; data_source;}
+  }
+
+  signed_reader -> mojo_parser;
+  unsecure_reader -> mojo_parser;
+  signed_reader -> verifier;
+
+  mojo_parser -> factory [style=dashed, label=" mojom::WebBundleParserFactory",
+                          minlen=2];
+  mojo_parser -> parser [style=dashed, label=" mojom::WebBundleParser",
+                         minlen=3];
+  factory -> parser [label=" creates"];
+  factory -> data_source [label=" creates"];
+  parser -> data_source [style=dashed, label="mojom::BundleDataSource"];
+
+  parser -> integrity_block_parser;
+  parser -> metadata_parser;
+  parser -> response_parser;
+  verifier -> rust [minlen=2];
+  integrity_block_parser -> rust;
+  metadata_parser -> rust;
+  response_parser -> rust;
+}
