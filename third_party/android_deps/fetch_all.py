@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -12,6 +11,13 @@ For each dependency in `build.gradle`:
   - Generate a README.chromium file
   - Generate a GN target in BUILD.gn
   - Generate .info files for AAR libraries
+
+When --android-deps-dir contains a build.gradle.template (and no
+--output-subdir is given), this script also drives a full roll of that
+project: it fills the template, runs the steps above into <dir>/cipd/,
+writes VERSION.txt, to_commit.zip and cipd.yaml for the
+chromium/third_party/android_deps/autorolled CIPD package, and with --local
+extracts the committed files into the tree.
 """
 
 import argparse
@@ -22,6 +28,7 @@ import logging
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -45,6 +52,9 @@ _ADDITIONAL_README_PATHS = 'additional_readme_paths.json'
 
 # Path to Bill of Materials json output by gradle.
 _BOM_NAME = 'bill_of_materials.json'
+
+# CIPD package produced by a full roll (see module docstring).
+_ROLL_CIPD_PACKAGE = 'chromium/third_party/android_deps/autorolled'
 
 # Path to BUILD.gn file from custom 'android_deps' directory.
 _BUILD_GN = 'BUILD.gn'
@@ -349,6 +359,16 @@ def _GenerateSettingsGradle(subproject_dirs: Dict[str, str],
         f.write(template_content)
 
 
+def _SubstituteAndroidxRepo(build_gradle_data):
+    """Points the // <ANDROIDX_REPO> placeholder at the current androidx repo."""
+    if '// <ANDROIDX_REPO>' not in build_gradle_data:
+        return build_gradle_data
+    version = fetch_util.get_current_androidx_version()
+    repo_url = fetch_util.make_androidx_maven_url(version)
+    return build_gradle_data.replace('// <ANDROIDX_REPO>',
+                                     f'maven {{ url = "{repo_url}" }}')
+
+
 def _InitSubprojects(android_deps_dir, build_android_deps_dir,
                      using_build_dir: bool):
     subprojects = _ParseSubprojects(
@@ -358,12 +378,7 @@ def _InitSubprojects(android_deps_dir, build_android_deps_dir,
         subdir = subdirs[name]
         build_gradle = os.path.join(subdir, _BUILD_GRADLE)
         src_path = pathlib.Path(android_deps_dir) / original_path
-        data = src_path.read_text()
-        if '// <ANDROIDX_REPO>' in data:
-            version = fetch_util.get_current_androidx_version()
-            repo_url = fetch_util.make_androidx_maven_url(version)
-            data = data.replace('// <ANDROIDX_REPO>',
-                                f'maven {{ url = "{repo_url}" }}')
+        data = _SubstituteAndroidxRepo(src_path.read_text())
         dst_path = pathlib.Path(build_android_deps_dir) / build_gradle
         dst_path.parent.mkdir(exist_ok=using_build_dir)
         dst_path.write_text(data)
@@ -505,48 +520,9 @@ def _FixArchiveNames(android_deps_dir):
         shutil.move(src_path, dst_path)
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        '--android-deps-dir',
-        help='Path to directory containing build.gradle from chromium-dir.',
-        default=_PRIMARY_ANDROID_DEPS_DIR)
-    parser.add_argument(
-        '--output-subdir',
-        help='Path to subdirectory under --android-deps-dir to output to '
-        'instead.')
-    parser.add_argument(
-        '--build-dir',
-        help='Path to build directory (default is temporary directory).')
-    parser.add_argument('--ignore-licenses',
-                        help='Ignores licenses for these deps.',
-                        action='store_true')
-    parser.add_argument('--override-artifact',
-                        action='append',
-                        help='lib_subpath:url of .aar / .jar to override.')
-    parser.add_argument(
-        '--local',
-        help='Mark this as a local (non-bot) run; silences the bot warning.',
-        action='store_true')
-    parser.add_argument('-v',
-                        '--verbose',
-                        dest='verbose_count',
-                        default=0,
-                        action='count',
-                        help='Verbose level (multiple times for more)')
-    args = parser.parse_args()
-
-    logging.basicConfig(
-        level=logging.WARNING - 10 * args.verbose_count,
-        format='%(levelname).1s %(relativeCreated)6d %(message)s')
+def _RunEngine(args):
+    """Resolves and downloads the deps of one project and writes its outputs."""
     debug = args.verbose_count >= 2
-
-    if 'SWARMING_TASK_ID' not in os.environ and not (args.local
-                                                     or args.output_subdir):
-        logging.warning(
-            'Detected not running on a bot. You probably want to use --local')
 
     if not os.path.isfile(os.path.join(args.android_deps_dir, _BUILD_GRADLE)):
         raise Exception('--android-deps-dir {} does not contain {}.'.format(
@@ -672,6 +648,139 @@ def main():
             PrintPackageList(updated_packages, 'updated')
         if deleted_packages:
             PrintPackageList(deleted_packages, 'deleted')
+
+
+def _RunFullRoll(args):
+    """Rolls the project in args.android_deps_dir into its cipd/ directory."""
+    project_dir = pathlib.Path(args.android_deps_dir)
+    cipd_path = project_dir / 'cipd'
+    project_relpath = pathlib.Path(os.path.relpath(project_dir,
+                                                   _CHROMIUM_SRC)).as_posix()
+
+    if args.use_bom:
+        version_map_str = fetch_util.generate_version_map_str(project_dir /
+                                                              _BOM_NAME)
+    else:
+        version_map_str = ''
+
+    fetch_util.fill_template(project_dir / 'build.gradle.template',
+                             project_dir / _BUILD_GRADLE,
+                             version_overrides=version_map_str)
+
+    os.makedirs(cipd_path, exist_ok=True)
+    # cipd/gclient extract files as read only, allow writing before running
+    # the engine.
+    subprocess.run(['chmod', '-R', '+w', str(cipd_path)], check=True)
+
+    args.output_subdir = 'cipd'
+    _RunEngine(args)
+
+    version_map_str, bom_hash = fetch_util.generate_version_map_str(
+        cipd_path / _BOM_NAME, with_hash=True)
+
+    # Regenerate the build.gradle file filling in the version map so that
+    # consumers of the package do not have to re-resolve versions.
+    fetch_util.fill_template(project_dir / 'build.gradle.template',
+                             cipd_path / _BUILD_GRADLE,
+                             version_overrides=version_map_str)
+
+    # Generated files that the roll commits back into the tree.
+    generated_files = [
+        _BUILD_GN,
+        _BOM_NAME,
+        _ADDITIONAL_README_PATHS,
+        _BUILD_GRADLE,
+    ]
+    # TODO(mheikal): probably need to hash all text files, including licenses
+    # and readmes.
+    content_hash = fetch_util.hash_files(
+        [cipd_path / filename for filename in generated_files])
+
+    version_string = f'{bom_hash}.{content_hash}'
+    (cipd_path / 'VERSION.txt').write_text(version_string)
+    generated_files.append('VERSION.txt')
+
+    file_map = {f: f'{project_relpath}/{f}' for f in generated_files}
+    fetch_util.create_to_commit_zip(output_path=cipd_path / 'to_commit.zip',
+                                    package_root=cipd_path,
+                                    dirnames=['libs'],
+                                    absolute_file_map=file_map)
+
+    if args.local:
+        cmd = [
+            str(project_dir / 'extract_and_commit_extras.py'),
+            '--cipd-package-path',
+            str(cipd_path),
+            '--no-git-add',
+        ]
+        logging.info('Running: %s', shlex.join(cmd))
+        subprocess.run(cmd, cwd=_CHROMIUM_SRC, check=True)
+
+    fetch_util.write_cipd_yaml(package_root=cipd_path,
+                               package_name=_ROLL_CIPD_PACKAGE,
+                               version=version_string,
+                               output_path=cipd_path / 'cipd.yaml')
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        '--android-deps-dir',
+        help='Path to directory containing build.gradle from chromium-dir.',
+        default=_PRIMARY_ANDROID_DEPS_DIR)
+    parser.add_argument(
+        '--output-subdir',
+        help='Path to subdirectory under --android-deps-dir to output to '
+        'instead.')
+    parser.add_argument(
+        '--build-dir',
+        help='Path to build directory (default is temporary directory).')
+    parser.add_argument('--ignore-licenses',
+                        help='Ignores licenses for these deps.',
+                        action='store_true')
+    parser.add_argument('--override-artifact',
+                        action='append',
+                        help='lib_subpath:url of .aar / .jar to override.')
+    parser.add_argument(
+        '--local',
+        help='Local (non-bot) run: silences the bot warning and, for a full '
+        'roll, runs extract_and_commit_extras.py to update the committed '
+        'files.',
+        action='store_true')
+    parser.add_argument('-v',
+                        '--verbose',
+                        dest='verbose_count',
+                        default=0,
+                        action='count',
+                        help='Verbose level (multiple times for more)')
+    parser.add_argument(
+        '--use-bom',
+        action='store_true',
+        help='Full roll only: use the existing bill_of_materials.json '
+        'instead of resolving the latest versions.')
+    args = parser.parse_args()
+    # Paths below are passed to subprocesses run with cwd=_CHROMIUM_SRC.
+    args.android_deps_dir = os.path.abspath(args.android_deps_dir)
+
+    logging.basicConfig(
+        level=logging.WARNING - 10 * args.verbose_count,
+        format='%(levelname).1s %(relativeCreated)6d %(message)s')
+
+    if 'SWARMING_TASK_ID' not in os.environ and not (args.local
+                                                     or args.output_subdir):
+        logging.warning(
+            'Detected not running on a bot. You probably want to use --local')
+
+    has_template = os.path.isfile(
+        os.path.join(args.android_deps_dir, 'build.gradle.template'))
+    if has_template and not args.output_subdir:
+        _RunFullRoll(args)
+        return
+    if args.use_bom:
+        parser.error('--use-bom is only supported for a full roll')
+    _RunEngine(args)
 
 
 if __name__ == "__main__":
