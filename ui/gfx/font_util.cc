@@ -9,7 +9,11 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fontconfig/fontconfig.h>
+
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "ui/gfx/linux/fontconfig_util.h"
+#include "ui/gfx/switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -26,11 +30,16 @@ void InitializeFonts() {
   // the long delay the user would have seen on first rendering.
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Ensures the config is created on this thread. It's generally safe to send
-  // concurrent match requests to fontconfig, but it's unsafe to send match
-  // requests concurrently to fontconfig initialization.
-  FcConfig* config = GetGlobalFontConfig();
-  DCHECK(config);
+  if (base::FeatureList::IsEnabled(features::kAsyncFontconfigInitialization)) {
+    // Early initialize FontConfig.
+    InitializeGlobalFontConfigAsync();
+  } else {
+    // Ensures the config is created on this thread. It's generally safe to send
+    // concurrent match requests to fontconfig, but it's unsafe to send match
+    // requests concurrently to fontconfig initialization.
+    FcConfig* config = GetGlobalFontConfig();
+    DCHECK(config);
+  }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

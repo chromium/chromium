@@ -6,7 +6,9 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/switches.h"
 
 namespace gfx {
 
@@ -135,6 +137,13 @@ TEST(FontConfigUtilTest, GetFontRenderParamsFromFcPatternWithValues) {
   expected_params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_RGB;
 
   EXPECT_EQ(params, expected_params);
+}
+
+TEST(FontConfigUtilTest, InitializeGlobalFontConfigAsync) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAsyncFontconfigInitialization);
+  InitializeGlobalFontConfigAsync();
+  EXPECT_NE(GetGlobalFontConfig(), nullptr);
 }
 
 }  // namespace gfx

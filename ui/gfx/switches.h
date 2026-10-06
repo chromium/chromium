@@ -43,6 +43,12 @@ GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kTransparentIconWorkaround);
 // data.
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kHarfBuzzZeroCopyFontTable);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// When enabled, fontconfig initialization is done asynchronously on a worker
+// thread to prevent blocking browser startup. See https://crbug.com/41496758.
+GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kAsyncFontconfigInitialization);
+#endif
+
 }  // namespace features
 
 #endif  // UI_GFX_SWITCHES_H_

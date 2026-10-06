@@ -76,4 +76,8 @@ BASE_FEATURE(kTransparentIconWorkaround,
 #endif  // BUILDFLAG(IS_WIN)
 
 BASE_FEATURE(kHarfBuzzZeroCopyFontTable, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kAsyncFontconfigInitialization, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 }  // namespace features
