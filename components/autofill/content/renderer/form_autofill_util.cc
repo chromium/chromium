@@ -1711,7 +1711,7 @@ bool IsRelevantChildFrame(const WebElement& element) {
           IsVisibleIframe(element));
 }
 
-// Returns the <iframe> elements that are associated with `form_element`.
+// Returns the <iframe> elements that are owned by `form_element`.
 //
 // An iframe is owned by `form_element` iff it is in the light DOM and
 // - if `form_element` is non-null:
@@ -1721,6 +1721,7 @@ bool IsRelevantChildFrame(const WebElement& element) {
 //
 // The restriction to the light DOM is only because Blink currently does not
 // provide a shadow-including way of listing iframes.
+// See crbug.com/569934654#comment9 for possible fixes.
 std::vector<WebElement> GetIframeElements(const WebDocument& document,
                                           const WebFormElement& form_element) {
   std::vector<WebElement> relevant_iframes;
