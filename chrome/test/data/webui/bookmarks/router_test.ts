@@ -241,7 +241,20 @@ suite('URL preload', function() {
     assertEquals('folder-uuid-12', state.selectedFolder);
     assertDeepEquals(['121'], getDisplayedList(state));
     await microtasksFinished();
-    assertEquals('chrome://bookmarks/?id=folder-uuid-12', window.location.href);
+    // The URL keeps the numeric id, which is part of the public interface.
+    assertEquals('chrome://bookmarks/?id=12', window.location.href);
+  });
+
+  test('loading a UUID folder URL selects that folder', async function() {
+    // Some releases put the UUID-based id in the URL, and users may have
+    // saved those URLs, so they must keep working.
+    await setupWithUrl('/?id=folder-uuid-12');
+    const state = Store.getInstance().data;
+    assertEquals('folder-uuid-12', state.selectedFolder);
+    assertDeepEquals(['121'], getDisplayedList(state));
+    await microtasksFinished();
+    // The URL is rewritten to the numeric id.
+    assertEquals('chrome://bookmarks/?id=12', window.location.href);
   });
 
   test(

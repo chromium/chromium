@@ -192,16 +192,24 @@ IN_PROC_BROWSER_TEST_F(BookmarksUIBrowserTest,
             base::UTF16ToUTF8(model()->bookmark_bar_node()->GetTitle()));
 }
 
-// Opening a folder rewrites the URL to the folder's current id. Users bookmark
-// that URL (e.g. with the star in the omnibox), so it has to keep working,
-// both in the same session and after a restart.
-IN_PROC_BROWSER_TEST_F(BookmarksUIBrowserTest, UuidUrlSelectsFolder) {
+// Opening a folder puts its numeric id in the URL. This is a public
+// interface: users bookmark and share that URL, and automation reads the id
+// from it and passes it to the chrome.bookmarks extension API, which uses the
+// same ids as BookmarkNode::id(). Do not change the format. The URL must also
+// keep working, both in the same session and after a restart.
+IN_PROC_BROWSER_TEST_F(BookmarksUIBrowserTest, FolderUrlUsesNumericId) {
   const BookmarkNode* folder =
       AddFolder(model()->bookmark_bar_node(), kSavedFolderTitle);
 
-  const GURL legacy_url = BookmarksUrlWithId(folder->id());
-  OpenBookmarksPage(legacy_url);
-  const GURL folder_url = WaitForUrlToChangeFrom(legacy_url);
+  // We want to check the URL the page writes for the folder, but opening
+  // ?id=<id> directly gives us nothing to wait for if the page (correctly)
+  // keeps it. The page drops query parameters it doesn't use, so add one to
+  // force a rewrite we can wait for.
+  const GURL opened_url(base::StrCat(
+      {BookmarksUrlWithId(folder->id()).spec(), "&ignored-by-the-page=1"}));
+  OpenBookmarksPage(opened_url);
+  const GURL folder_url = WaitForUrlToChangeFrom(opened_url);
+  EXPECT_EQ(folder_url, BookmarksUrlWithId(folder->id()));
 
   OpenBookmarksPage(GURL("chrome://bookmarks"));
   ASSERT_NE(GetSelectedFolderTitle(), kSavedFolderTitle);
@@ -227,12 +235,9 @@ IN_PROC_BROWSER_TEST_F(BookmarksUIBrowserTest,
   const BookmarkNode* folder =
       AddFolder(model()->bookmark_bar_node(), kSavedFolderTitle);
 
-  const GURL legacy_url = BookmarksUrlWithId(folder->id());
-  OpenBookmarksPage(legacy_url);
-  const GURL folder_url = WaitForUrlToChangeFrom(legacy_url);
-
   model()->AddURL(model()->bookmark_bar_node(), 1,
-                  base::UTF8ToUTF16(kShortcutTitle), folder_url);
+                  base::UTF8ToUTF16(kShortcutTitle),
+                  BookmarksUrlWithId(folder->id()));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarksUIBrowserTest,
@@ -255,11 +260,10 @@ IN_PROC_BROWSER_TEST_F(BookmarksUIBrowserTest,
   const BookmarkNode* child = AddFolder(parent, kChildTitle);
 
   // Selecting the child expands everything above it.
-  const GURL child_url = BookmarksUrlWithId(child->id());
-  OpenBookmarksPage(child_url);
-  WaitForUrlToChangeFrom(child_url);
+  OpenBookmarksPage(BookmarksUrlWithId(child->id()));
 
-  ASSERT_EQ(GetFolderState(kParentTitle), "expanded");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetFolderState(kParentTitle) == "expanded"; }));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarksUIBrowserTest,
