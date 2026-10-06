@@ -76,8 +76,8 @@ permission-dashboard {
   flex: 0 0 auto;
   height: auto;
   justify-content: center;
+  margin: 0;
   margin-inline-end: 12px;
-  margin-right: 0;
   width: auto;
 }
 

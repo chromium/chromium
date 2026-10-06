@@ -465,6 +465,24 @@ suite('TopToolbarTest', () => {
       logo.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
       await proxy.handler.whenCalled('showPageInfoBubble');
     });
+
+    test('logo container has inline-end margin when flag enabled', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+      });
+      topToolbar = document.createElement('top-toolbar');
+      topToolbar.title = 'Sample Thread Title';
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+
+      const logoContainer = topToolbar.shadowRoot.querySelector<HTMLElement>(
+          '.top-toolbar-logo-container');
+      assertHTMLElement(logoContainer);
+      const computedStyle = getComputedStyle(logoContainer);
+      assertEquals('12px', computedStyle.marginInlineEnd);
+      assertEquals('12px', computedStyle.marginRight);
+    });
   });
 
   suite('Pinning', () => {

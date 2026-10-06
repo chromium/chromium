@@ -806,11 +806,11 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, menu, menu_screenshot_name,
-                              /*baseline_cl=*/"7620222")),
+                              /*baseline_cl=*/"8509523")),
          Else(WaitForWebContentsPainted(kActiveTab),
               SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, toolbar, toolbar_screenshot_name,
-                              /*baseline_cl=*/"7620222"))));
+                              /*baseline_cl=*/"8509523"))));
 }
