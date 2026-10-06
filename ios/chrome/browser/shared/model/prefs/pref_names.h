@@ -979,6 +979,13 @@ inline constexpr char kSceneSessionIdentifierMap[] =
 inline constexpr char kLastConnectedSceneIdentifier[] =
     "ios.multiwindow.last_connect_scene_identifier";
 
+// Timestamp tracking the last time the geolocation system settings prompt was
+// displayed when iOS app-level location authorization is denied. Stored in
+// LocalState since iOS location permission is an app-level setting shared
+// across all profiles.
+inline constexpr char kIosGeolocationSystemPromptLastShownTime[] =
+    "ios.geolocation.system_prompt_last_shown_time";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

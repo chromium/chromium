@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
+#import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -157,7 +159,9 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ScopedBlockSwizzler> application_state_swizzler_;
   std::unique_ptr<TestProfileIOS> profile_;
   StubAppLauncherTabHelperDelegate app_launcher_delegate_;
@@ -610,4 +614,116 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   histogram_tester.ExpectUniqueSample(
       kPermissionRequestResolutionCameraHistogram,
       IOSPermissionRequestResolution::kPromptShown, 1);
+}
+
+// Tests that RequestGeolocationPermission returns
+// PermissionDecisionShowDefaultPrompt without presenting a dialog when system
+// location authorization is authorized.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermissionAuthorizedShowsDefaultPrompt) {
+  ScopedBlockSwizzler auth_status_swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusAuthorizedWhenInUse;
+      });
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  OverlayRequestQueue::CreateForWebState(web_state.get());
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->RequestGeolocationPermission(
+      web_state.get(), GURL(kURL1),
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionShowDefaultPrompt, decision_future.Get());
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state.get(), OverlayModality::kWebContentArea);
+  EXPECT_EQ(0U, queue->size());
+}
+
+// Tests that RequestGeolocationPermission returns
+// PermissionDecisionShowDefaultPrompt without presenting a dialog when system
+// location authorization is not determined.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermissionNotDeterminedShowsDefaultPrompt) {
+  ScopedBlockSwizzler auth_status_swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusNotDetermined;
+      });
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  OverlayRequestQueue::CreateForWebState(web_state.get());
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->RequestGeolocationPermission(
+      web_state.get(), GURL(kURL1),
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionShowDefaultPrompt, decision_future.Get());
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state.get(), OverlayModality::kWebContentArea);
+  EXPECT_EQ(0U, queue->size());
+}
+
+// Tests that RequestGeolocationPermission presents a dialog only once when
+// system location authorization is denied, and denies immediately on subsequent
+// requests.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermissionDeniedPresentsDialogOnce) {
+  ScopedBlockSwizzler auth_status_swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusDenied;
+      });
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  OverlayRequestQueue::CreateForWebState(web_state.get());
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state.get(), OverlayModality::kWebContentArea);
+
+  // First request should present the dialog.
+  delegate()->RequestGeolocationPermission(web_state.get(), GURL(kURL1),
+                                           ^(web::PermissionDecision decision){
+                                           });
+  EXPECT_EQ(1U, queue->size());
+  queue->CancelAllRequests();
+  EXPECT_EQ(0U, queue->size());
+
+  // A subsequent request should immediately deny without presenting a dialog.
+  base::test::TestFuture<web::PermissionDecision> second_decision;
+  delegate()->RequestGeolocationPermission(
+      web_state.get(), GURL(kURL1),
+      base::CallbackToBlock(second_decision.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, second_decision.Get());
+  EXPECT_EQ(0U, queue->size());
+
+  // Even after 24 hours, the dialog should not be presented again.
+  task_environment_.FastForwardBy(base::Days(1));
+  base::test::TestFuture<web::PermissionDecision> later_decision;
+  delegate()->RequestGeolocationPermission(
+      web_state.get(), GURL(kURL1),
+      base::CallbackToBlock(later_decision.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, later_decision.Get());
+  EXPECT_EQ(0U, queue->size());
+}
+
+// Tests that RequestGeolocationPermission denies immediately without presenting
+// a dialog when system location authorization is restricted.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermissionRestrictedDeniesPermission) {
+  ScopedBlockSwizzler auth_status_swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusRestricted;
+      });
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  OverlayRequestQueue::CreateForWebState(web_state.get());
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->RequestGeolocationPermission(
+      web_state.get(), GURL(kURL1),
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state.get(), OverlayModality::kWebContentArea);
+  EXPECT_EQ(0U, queue->size());
 }

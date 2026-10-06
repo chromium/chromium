@@ -79,6 +79,10 @@ class WebStateDelegateBrowserAgent
       web::WebState* source,
       NSArray<NSNumber*>* permissions,
       web::WebStatePermissionDecisionHandler handler) override;
+  void RequestGeolocationPermission(
+      web::WebState* source,
+      const GURL& origin,
+      web::WebStatePermissionDecisionHandler handler) override;
   void OnProxyAuthChallenge(web::WebState* source,
                             NSURLProtectionSpace* protection_space,
                             NSURLCredential* proposed_credential,

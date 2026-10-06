@@ -473,6 +473,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kWidgetsForMultiProfile, false);
 
+  registry->RegisterTimePref(prefs::kIosGeolocationSystemPromptLastShownTime,
+                             base::Time());
+
   // Deprecated 01/2026.
   registry->RegisterListPref(kMagicStackSafetyCheckNotificationsShown);
   registry->RegisterListPref(kBottomOmniboxByDefault);
