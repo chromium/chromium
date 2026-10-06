@@ -67,6 +67,31 @@ suite('TopToolbarTest', () => {
     assertEquals('Example', topToolbar.contextInfos[0]!.tab!.title);
   });
 
+  test(
+      'updates expand button visibility when setExpandButtonEnabled fires',
+      async () => {
+        loadTimeData.overrideValues({expandButtonEnabled: false});
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        topToolbar = document.createElement('top-toolbar');
+        document.body.appendChild(topToolbar);
+        await microtasksFinished();
+
+        assertFalse(
+            !!topToolbar.shadowRoot.querySelector('#openInNewTabButton'));
+
+        toolbarProxy.callbackRouterRemote.setExpandButtonEnabled(true);
+        await microtasksFinished();
+
+        assertTrue(
+            !!topToolbar.shadowRoot.querySelector('#openInNewTabButton'));
+
+        toolbarProxy.callbackRouterRemote.setExpandButtonEnabled(false);
+        await microtasksFinished();
+
+        assertFalse(
+            !!topToolbar.shadowRoot.querySelector('#openInNewTabButton'));
+      });
+
   (loadTimeData.getBoolean('isSmallDeviceFormFactor') ?
        suite.skip :
        suite)('Expand button enabled', () => {
@@ -155,7 +180,7 @@ suite('TopToolbarTest', () => {
       const closeButton = topToolbar.$.closeButton;
       assertTrue(!!closeButton);
       closeButton.click();
-      await proxy.handler.whenCalled('closeSidePanel');
+      await toolbarProxy.handler.whenCalled('closeSidePanel');
     });
 
     test('toggles sources button visibility', async () => {
@@ -403,33 +428,47 @@ suite('TopToolbarTest', () => {
       assertTrue(!!moreItems);
     });
 
-    test('logo click does not trigger page info when flag disabled', () => {
-      const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
-          '.top-toolbar-logo-button');
-      assertHTMLElement(logo);
-      assertFalse(logo.classList.contains('clickable'));
+    test(
+        'logo click does not trigger page info when flag disabled',
+        async () => {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          loadTimeData.overrideValues({
+            contextualTasksSidePanelRearchitectureEnabled: false,
+          });
+          topToolbar = document.createElement('top-toolbar');
+          document.body.appendChild(topToolbar);
+          await microtasksFinished();
 
-      logo.click();
-      assertEquals(0, proxy.handler.getCallCount('showPageInfoBubble'));
-    });
+          const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+              '.top-toolbar-logo-button');
+          assertHTMLElement(logo);
+          assertFalse(logo.classList.contains('clickable'));
 
-    test('logo click triggers page info when flag enabled', async () => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      loadTimeData.overrideValues({
-        contextualTasksSidePanelRearchitectureEnabled: true,
-      });
-      topToolbar = document.createElement('top-toolbar');
-      document.body.appendChild(topToolbar);
-      await microtasksFinished();
+          logo.click();
+          assertEquals(
+              0, toolbarProxy.handler.getCallCount('showPageInfoBubble'));
+        });
 
-      const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
-          '.top-toolbar-logo-button');
-      assertHTMLElement(logo);
-      assertTrue(logo.classList.contains('clickable'));
+    test(
+        'logo pointer click triggers page info when flag enabled', async () => {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          loadTimeData.overrideValues({
+            contextualTasksSidePanelRearchitectureEnabled: true,
+          });
+          topToolbar = document.createElement('top-toolbar');
+          document.body.appendChild(topToolbar);
+          await microtasksFinished();
 
-      logo.click();
-      await proxy.handler.whenCalled('showPageInfoBubble');
-    });
+          const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+              '.top-toolbar-logo-button');
+          assertHTMLElement(logo);
+          assertTrue(logo.classList.contains('clickable'));
+
+          logo.dispatchEvent(new PointerEvent('click', {pointerType: 'mouse'}));
+          const isPointer =
+              await toolbarProxy.handler.whenCalled('showPageInfoBubble');
+          assertTrue(isPointer);
+        });
 
     test('logo enter key triggers page info when flag enabled', async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -445,7 +484,9 @@ suite('TopToolbarTest', () => {
       assertHTMLElement(logo);
 
       logo.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-      await proxy.handler.whenCalled('showPageInfoBubble');
+      const isPointer =
+          await toolbarProxy.handler.whenCalled('showPageInfoBubble');
+      assertFalse(isPointer);
     });
 
     test('logo space key triggers page info when flag enabled', async () => {
@@ -463,8 +504,50 @@ suite('TopToolbarTest', () => {
 
       logo.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
       logo.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
-      await proxy.handler.whenCalled('showPageInfoBubble');
+      const isPointer =
+          await toolbarProxy.handler.whenCalled('showPageInfoBubble');
+      assertFalse(isPointer);
     });
+
+    test(
+        'logo pointerdown triggers onLogoPointerDown when flag enabled',
+        async () => {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          loadTimeData.overrideValues({
+            contextualTasksSidePanelRearchitectureEnabled: true,
+          });
+          topToolbar = document.createElement('top-toolbar');
+          document.body.appendChild(topToolbar);
+          await microtasksFinished();
+
+          const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+              '.top-toolbar-logo-button');
+          assertHTMLElement(logo);
+
+          logo.dispatchEvent(new PointerEvent('pointerdown'));
+          await toolbarProxy.handler.whenCalled('onLogoPointerDown');
+        });
+
+    test(
+        'logo pointerdown does not trigger onLogoPointerDown when flag ' +
+            'disabled',
+        async () => {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          loadTimeData.overrideValues({
+            contextualTasksSidePanelRearchitectureEnabled: false,
+          });
+          topToolbar = document.createElement('top-toolbar');
+          document.body.appendChild(topToolbar);
+          await microtasksFinished();
+
+          const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+              '.top-toolbar-logo-button');
+          assertHTMLElement(logo);
+
+          logo.dispatchEvent(new PointerEvent('pointerdown'));
+          assertEquals(
+              0, toolbarProxy.handler.getCallCount('onLogoPointerDown'));
+        });
 
     test('logo container has inline-end margin when flag enabled', async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;

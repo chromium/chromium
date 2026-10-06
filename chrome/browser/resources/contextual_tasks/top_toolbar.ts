@@ -171,9 +171,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
       callbackRouter.setShowReopenTabs.addListener(show => {
         this.showReopenTabs_ = show;
       }),
-      callbackRouter.setExpandButtonEnabled.addListener((enabled: boolean) => {
-        this.isExpandButtonEnabled = enabled;
-      }),
     ];
     this.toolbarListenerIds_ = [
       this.toolbarBrowserProxy_.callbackRouter.onSidePanelPinStateChanged
@@ -183,6 +180,10 @@ export class TopToolbarElement extends TopToolbarElementBase {
       this.toolbarBrowserProxy_.callbackRouter.onContextUpdated.addListener(
           (contextInfos: ContextInfo[]) => {
             this.contextInfos = contextInfos;
+          }),
+      this.toolbarBrowserProxy_.callbackRouter.setExpandButtonEnabled
+          .addListener((enabled: boolean) => {
+            this.isExpandButtonEnabled = enabled;
           }),
     ];
     window.addEventListener('blur', this.boundOnWindowBlur_);
@@ -317,7 +318,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   protected onCloseButtonClick_() {
     recordAction('ContextualTasks.WebUI.UserAction.CloseSidePanel');
-    this.browserProxy_.handler.closeSidePanel();
+    this.toolbarBrowserProxy_.handler.closeSidePanel();
   }
 
   protected onNewThreadClick_() {
@@ -360,7 +361,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
     if (!this.isSidePanelRearchitectureEnabled_) {
       return;
     }
-    this.browserProxy_.handler.onLogoPointerDown();
+    this.toolbarBrowserProxy_.handler.onLogoPointerDown();
   }
 
   protected onLogoClick_(e: Event) {
@@ -370,7 +371,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
     // Keyboard synthetic clicks generate PointerEvents with an empty
     // pointerType in WebUI, whereas natural pointer clicks have a valid
     // pointerType (e.g., 'mouse', 'touch', 'pen').
-    this.browserProxy_.handler.showPageInfoBubble(
+    this.toolbarBrowserProxy_.handler.showPageInfoBubble(
         e instanceof PointerEvent && e.pointerType !== '');
   }
 }

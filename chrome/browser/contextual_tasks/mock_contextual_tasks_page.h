@@ -63,7 +63,6 @@ class MockContextualTasksPage : public mojom::Page {
   MOCK_METHOD(void, LockInput, (), (override));
   MOCK_METHOD(void, UnlockInput, (), (override));
   MOCK_METHOD(void, SetShowReopenTabs, (bool show), (override));
-  MOCK_METHOD(void, SetExpandButtonEnabled, (bool enabled), (override));
   MOCK_METHOD(void, TurnOnSmartTabSharing, (), (override));
   MOCK_METHOD(void, ShowSmartTabSharingTryItIph, (), (override));
   MOCK_METHOD(void, ShowSmartTabSharingDefaultOnIph, (), (override));
@@ -129,6 +128,7 @@ class MockContextualTasksToolbarPage
       OnContextUpdated,
       (std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr> context),
       (override));
+  MOCK_METHOD(void, SetExpandButtonEnabled, (bool enabled), (override));
 
  private:
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};

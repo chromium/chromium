@@ -681,12 +681,6 @@ TEST_F(ContextualTasksPageHandlerTest, IsShownInTab) {
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksPageHandlerTest, CloseSidePanel) {
-  EXPECT_CALL(*mock_panel_controller_, Close()).Times(1);
-  page_handler_->CloseSidePanel();
-}
-
-
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextualTasksPageHandlerTest, MaybeTriggerPinningPromo_PanelClosed) {
   // If the side panel is not open for Contextual Tasks, we should not attempt

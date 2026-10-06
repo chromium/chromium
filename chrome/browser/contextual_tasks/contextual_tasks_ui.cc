@@ -1021,12 +1021,7 @@ content::WebContents* ContextualTasksUI::GetWebUIWebContents() {
 }
 
 void ContextualTasksUI::CloseSidePanel() {
-  auto* controller = GetPanelController();
-  if (!controller) {
-    return;
-  }
-
-  controller->Close();
+  ContextualTasksUIBase::CloseSidePanel();
 }
 
 void ContextualTasksUI::BindInterface(
@@ -2102,8 +2097,9 @@ void ContextualTasksUI::OnTaskChanged() {
 
 void ContextualTasksUI::UpdateExpandButtonEnabled(bool enabled) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (page_) {
-    page_->SetExpandButtonEnabled(enabled);
+  if (contextual_tasks_toolbar::mojom::Page* toolbar_page =
+          GetToolbarPageRemote()) {
+    toolbar_page->SetExpandButtonEnabled(enabled);
   }
 #endif
 }

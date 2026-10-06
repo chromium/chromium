@@ -390,15 +390,6 @@ void ContextualTasksPageHandler::IsEmbeddedPageErrorDocument(
   std::move(callback).Run(is_error);
 }
 
-void ContextualTasksPageHandler::CloseSidePanel() {
-  if (panel_controller_) {
-    panel_controller_->Close();
-  } else {
-    web_ui_controller_->CloseSidePanel();
-  }
-}
-
-
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
   std::move(callback).Run(web_ui_controller_->IsShownInTab());
 }
@@ -927,25 +918,6 @@ void ContextualTasksPageHandler::MaybeTriggerPinningPromo() {
       ->MaybeShowFeaturePromo(
               feature_engagement::kIPHSidePanelContextualTasksPinnableFeature);
 #endif
-}
-
-void ContextualTasksPageHandler::ShowPageInfoBubble(
-    bool is_pointer_interaction) {
-  if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
-    return;
-  }
-  if (panel_controller_) {
-    panel_controller_->ShowPageInfoBubble(is_pointer_interaction);
-  }
-}
-
-void ContextualTasksPageHandler::OnLogoPointerDown() {
-  if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
-    return;
-  }
-  if (panel_controller_) {
-    panel_controller_->OnLogoPointerDown();
-  }
 }
 
 void ContextualTasksPageHandler::CreateNewThread() {

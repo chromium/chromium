@@ -72,7 +72,6 @@ class ContextualTasksPageHandler
                           IsPendingErrorPageCallback callback) override;
   void IsEmbeddedPageErrorDocument(
       IsEmbeddedPageErrorDocumentCallback callback) override;
-  void CloseSidePanel() override;
   void IsShownInTab(IsShownInTabCallback callback) override;
   void OpenOnboardingHelpUi() override;
   void OpenAskGHelpUi() override;
@@ -93,8 +92,6 @@ class ContextualTasksPageHandler
   void CloseWindow(
       const contextual_tasks::ContextualWindowId& window_id) override;
   void MaybeTriggerPinningPromo() override;
-  void ShowPageInfoBubble(bool is_pointer_interaction) override;
-  void OnLogoPointerDown() override;
   void CreateNewThread() override;
   void PostAimMessage(const lens::ClientToAimMessage& message);
 

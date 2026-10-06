@@ -2657,6 +2657,7 @@ class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
       OnContextUpdated,
       (std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr> context),
       (override));
+  MOCK_METHOD(void, SetExpandButtonEnabled, (bool enabled), (override));
 
  private:
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};
@@ -3150,4 +3151,136 @@ TEST_F(ContextualTasksUiTest, OnImageClickedFromSourcesMenu_Legacy) {
   legacy_ui->OnImageClickedFromSourcesMenu(url);
 }
 
+TEST_F(ContextualTasksUiTest, CloseSidePanel_PostRearchitecture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto post_rearch_ui =
+      std::make_unique<ContextualTasksUIPostRearchitecture>(&web_ui);
+  ASSERT_NE(post_rearch_ui, nullptr);
+  // With no panel controller, CloseSidePanel is a safe no-op.
+  post_rearch_ui->CloseSidePanel();
+}
+
+TEST_F(ContextualTasksUiTest, CloseSidePanel_Legacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+
+  ASSERT_TRUE(controller);
+  auto* legacy_ui = controller->GetAs<ContextualTasksUI>();
+  ASSERT_NE(legacy_ui, nullptr);
+  // With no panel controller, CloseSidePanel is a safe no-op.
+  legacy_ui->CloseSidePanel();
+}
+
+TEST_F(ContextualTasksUiTest, ShowPageInfoBubble_PostRearchitecture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto post_rearch_ui =
+      std::make_unique<ContextualTasksUIPostRearchitecture>(&web_ui);
+  ASSERT_NE(post_rearch_ui, nullptr);
+  // With no panel controller, ShowPageInfoBubble is a safe no-op.
+  post_rearch_ui->ShowPageInfoBubble(/*is_pointer_interaction=*/true);
+  post_rearch_ui->ShowPageInfoBubble(/*is_pointer_interaction=*/false);
+}
+
+TEST_F(ContextualTasksUiTest, ShowPageInfoBubble_Legacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+
+  ASSERT_TRUE(controller);
+  auto* legacy_ui = controller->GetAs<ContextualTasksUI>();
+  ASSERT_NE(legacy_ui, nullptr);
+  // With no panel controller, ShowPageInfoBubble is a safe no-op.
+  legacy_ui->ShowPageInfoBubble(/*is_pointer_interaction=*/true);
+  legacy_ui->ShowPageInfoBubble(/*is_pointer_interaction=*/false);
+}
+
+TEST_F(ContextualTasksUiTest, OnLogoPointerDown_PostRearchitecture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto post_rearch_ui =
+      std::make_unique<ContextualTasksUIPostRearchitecture>(&web_ui);
+  ASSERT_NE(post_rearch_ui, nullptr);
+  // With no panel controller, OnLogoPointerDown is a safe no-op.
+  post_rearch_ui->OnLogoPointerDown();
+}
+
+TEST_F(ContextualTasksUiTest, OnLogoPointerDown_Legacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+
+  ASSERT_TRUE(controller);
+  auto* legacy_ui = controller->GetAs<ContextualTasksUI>();
+  ASSERT_NE(legacy_ui, nullptr);
+  // With no panel controller, OnLogoPointerDown is a safe no-op.
+  legacy_ui->OnLogoPointerDown();
+}
+
+// ContextualTasksUI::UpdateExpandButtonEnabled() only forwards to the toolbar
+// page on desktop, so this test would hang waiting on the mock on Android.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUiTest, UpdateExpandButtonEnabled) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto contextual_tasks_ui = std::make_unique<ContextualTasksUI>(&web_ui);
+
+  MockContextualTasksToolbarPage toolbar_page;
+  mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver{&toolbar_page};
+  mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> remote =
+      receiver.BindNewPipeAndPassRemote();
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  contextual_tasks_ui->CreatePageHandler(
+      std::move(remote), page_handler.BindNewPipeAndPassReceiver());
+
+  ContextualTasksUIInterface* ui_interface = contextual_tasks_ui.get();
+
+  base::RunLoop run_loop_true;
+  EXPECT_CALL(toolbar_page, SetExpandButtonEnabled(true))
+      .WillOnce(
+          testing::InvokeWithoutArgs(&run_loop_true, &base::RunLoop::Quit));
+  ui_interface->UpdateExpandButtonEnabled(true);
+  run_loop_true.Run();
+
+  base::RunLoop run_loop_false;
+  EXPECT_CALL(toolbar_page, SetExpandButtonEnabled(false))
+      .WillOnce(
+          testing::InvokeWithoutArgs(&run_loop_false, &base::RunLoop::Quit));
+  ui_interface->UpdateExpandButtonEnabled(false);
+  run_loop_false.Run();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace contextual_tasks

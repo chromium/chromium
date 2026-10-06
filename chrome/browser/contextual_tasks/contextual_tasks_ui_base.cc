@@ -417,6 +417,30 @@ void ContextualTasksUIBase::OnImageClickedFromSourcesMenu(const GURL& url) {
   }
 }
 
+void ContextualTasksUIBase::CloseSidePanel() {
+  auto* controller = GetPanelController();
+  if (!controller) {
+    return;
+  }
+  controller->Close();
+}
+
+void ContextualTasksUIBase::ShowPageInfoBubble(bool is_pointer_interaction) {
+  auto* controller = GetPanelController();
+  if (!controller) {
+    return;
+  }
+  controller->ShowPageInfoBubble(is_pointer_interaction);
+}
+
+void ContextualTasksUIBase::OnLogoPointerDown() {
+  auto* controller = GetPanelController();
+  if (!controller) {
+    return;
+  }
+  controller->OnLogoPointerDown();
+}
+
 void ContextualTasksUIBase::BindInterface(
     mojo::PendingReceiver<contextual_tasks_toolbar::mojom::PageHandlerFactory>
         pending_receiver) {
