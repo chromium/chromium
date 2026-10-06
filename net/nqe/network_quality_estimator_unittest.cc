@@ -13,12 +13,12 @@
 #include <limits>
 #include <map>
 #include <optional>
-#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -169,7 +169,7 @@ class TestRTTObserver : public NetworkQualityEstimator::RTTObserver {
 
   // Returns the last received RTT observation that has source set to `source`.
   base::TimeDelta last_rtt(NetworkQualityObservationSource source) {
-    for (const auto& observation : std::views::reverse(observations_)) {
+    for (const auto& observation : base::Reversed(observations_)) {
       if (observation.source == source)
         return base::Milliseconds(observation.rtt_ms);
     }

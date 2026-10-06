@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/values_equivalent.h"
 #include "base/types/strong_alias.h"
@@ -104,7 +103,7 @@ class CORE_EXPORT CascadeResolver {
 
   // Returns the property we're currently applying.
   const CSSProperty* CurrentProperty() const {
-    for (const CycleNode& node : std::views::reverse(stack_)) {
+    for (const CycleNode& node : base::Reversed(stack_)) {
       if (node.type == CycleNode::Type::kProperty) {
         return node.property;
       }

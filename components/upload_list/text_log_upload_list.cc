@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <optional>
-#include <ranges>
 #include <sstream>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
@@ -247,7 +247,7 @@ std::unique_ptr<UploadList::UploadInfo> TextLogUploadList::TryParseJsonLogEntry(
 void TextLogUploadList::ParseLogEntries(
     const std::vector<std::string>& log_entries,
     std::vector<std::unique_ptr<UploadList::UploadInfo>>* uploads) {
-  for (const std::string& line : std::views::reverse(log_entries)) {
+  for (const std::string& line : base::Reversed(log_entries)) {
     std::unique_ptr<UploadList::UploadInfo> info;
     std::optional<base::Value> json =
         base::JSONReader::Read(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);

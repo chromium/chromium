@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 
 #include <memory>
-#include <ranges>
 
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -833,7 +833,7 @@ void InlineLayoutAlgorithm::PlaceOutOfFlowObjects(
 
   if (has_rtl_block_level_out_of_flow_objects) [[unlikely]] {
     has_preceding_inline_level_content = false;
-    for (LogicalLineItem& child : std::views::reverse(*line_box)) {
+    for (LogicalLineItem& child : base::Reversed(*line_box)) {
       const LayoutObject* box = child.out_of_flow_positioned_box;
       if (!box) {
         has_preceding_inline_level_content |=
@@ -1578,7 +1578,7 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
     // ellipsis. So we set `current` to the end of the last result that doesn't
     // hang (if any), or the start of the first result otherwise.
     current = line_info.Results()[0].Start();
-    for (auto& item_result : std::views::reverse(line_info.Results())) {
+    for (auto& item_result : base::Reversed(line_info.Results())) {
       if (item_result.item->EndCollapseType() !=
               InlineItem::kOpaqueToCollapsing &&
           !item_result.has_only_pre_wrap_trailing_spaces) {

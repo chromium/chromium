@@ -36,10 +36,10 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 
 #include <algorithm>
-#include <ranges>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -3109,7 +3109,7 @@ void NavigationControllerImpl::DeleteNavigationEntries(
     PruneAllButLastCommitted();
   } else {
     // Do the deletion in reverse to preserve indices.
-    for (const auto& index : std::views::reverse(delete_indices)) {
+    for (const auto& index : base::Reversed(delete_indices)) {
       RemoveEntryAtIndex(index);
     }
     BroadcastHistoryIndexAndLength();

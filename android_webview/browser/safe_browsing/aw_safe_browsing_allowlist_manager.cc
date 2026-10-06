@@ -6,10 +6,10 @@
 
 #include <map>
 #include <memory>
-#include <ranges>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -66,7 +66,7 @@ void InsertRuleToTrie(const std::vector<std::string_view>& components,
                       TrieNode* root,
                       bool match_prefix) {
   TrieNode* node = root;
-  for (const auto& hostcomp : std::views::reverse(components)) {
+  for (const auto& hostcomp : base::Reversed(components)) {
     DCHECK(!node->match_prefix);
     std::string component(hostcomp);
     auto child_node = node->children.find(component);
@@ -157,7 +157,7 @@ bool AddRules(const std::vector<std::string>& rules, TrieNode* root) {
 
 bool IsAllowed(const GURL& url, const TrieNode* node) {
   std::vector<std::string_view> components = SplitHost(url);
-  for (std::string_view component : std::views::reverse(components)) {
+  for (std::string_view component : base::Reversed(components)) {
     if (node->match_prefix) {
       return true;
     }

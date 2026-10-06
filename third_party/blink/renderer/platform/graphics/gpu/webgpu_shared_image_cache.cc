@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_cache.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -275,7 +274,7 @@ void WebGpuSharedImageCache::ReleaseStaleResources() {
 
   // Loop from LRU to MRU
   int stale_resource_count = 0;
-  for (const auto& unused_resource : std::views::reverse(unused_resources_)) {
+  for (const auto& unused_resource : base::Reversed(unused_resources_)) {
     if ((current_timer_id_ - unused_resource.timer_id_) <
         kTimerIdDeltaForDeletion) {
       // These are the resources which are recycled and stay in the cache for

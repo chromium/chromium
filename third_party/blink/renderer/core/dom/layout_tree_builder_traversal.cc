@@ -27,8 +27,8 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 
 #include <algorithm>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -304,8 +304,7 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
     return FlatTreeTraversal::LastChild(node);
   }
 
-  for (PseudoId pseudo_id :
-       std::views::reverse(Node::kElementChildPseudoOrder)) {
+  for (PseudoId pseudo_id : base::Reversed(Node::kElementChildPseudoOrder)) {
     switch (pseudo_id) {
       case kPseudoIdColumn:
         // kPseudoIdColumn is an array of indexed pseudo-elements.  Return its

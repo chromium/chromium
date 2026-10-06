@@ -12,13 +12,13 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -906,7 +906,7 @@ Status StorageQueue::RestoreMetadata(
   // latest to earilest) and use generation from there (last record digest is
   // useless in that case).
   for (const auto& [sequencing_id, path_and_size] :
-       std::views::reverse(meta_files)) {
+       base::Reversed(meta_files)) {
     const auto& [path, size] = path_and_size;
     const auto status = ReadMetadata(path, size, sequencing_id, used_files_set);
     if (status.ok()) {

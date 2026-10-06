@@ -5,9 +5,9 @@
 #include "net/tools/content_decoder_tool/content_decoder_tool.h"
 
 #include <memory>
-#include <ranges>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "net/base/completion_once_callback.h"
@@ -68,7 +68,7 @@ bool ContentDecoderToolProcessInput(std::vector<std::string> content_encodings,
                                     std::ostream* output_stream) {
   std::unique_ptr<SourceStream> upstream(
       std::make_unique<StdinSourceStream>(input_stream));
-  for (const auto& content_encoding : std::views::reverse(content_encodings)) {
+  for (const auto& content_encoding : base::Reversed(content_encodings)) {
     std::unique_ptr<SourceStream> downstream;
     if (base::EqualsCaseInsensitiveASCII(content_encoding, kBrotli)) {
       downstream = CreateBrotliSourceStream(std::move(upstream));

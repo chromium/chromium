@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
 #include <algorithm>
-#include <ranges>
 
 #include "base/auto_reset.h"
+#include "base/containers/adapters.h"
 #include "base/functional/function_ref.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
@@ -348,7 +348,7 @@ void StyleEngine::RemoveInjectedSheet(const StyleSheetKey& key,
                                         : injected_author_style_sheets_;
   // Remove the last sheet that matches.
   const auto& it = std::ranges::find(
-      std::views::reverse(injected_style_sheets), key,
+      base::Reversed(injected_style_sheets), key,
       &std::pair<StyleSheetKey, Member<CSSStyleSheet>>::first);
   if (it != injected_style_sheets.rend()) {
     injected_style_sheets.erase(std::next(it).base());

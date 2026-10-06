@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <map>
-#include <ranges>
 #include <tuple>
 
 #include "base/containers/span.h"
@@ -59,7 +58,7 @@ const VectorIconRep* GetRepForPxSize(const VectorIcon& icon, int icon_size_px) {
   // return the smallest rep that is larger than the target. If none exists,
   // use the largest rep. The rep array is sorted by size in descending order,
   // so start at the back and work towards the front.
-  for (const VectorIconRep& rep : std::views::reverse(icon.reps)) {
+  for (const VectorIconRep& rep : base::Reversed(icon.reps)) {
     int rep_size = GetCanvasDimensions(rep.path);
     if (rep_size == icon_size_px)
       return &rep;

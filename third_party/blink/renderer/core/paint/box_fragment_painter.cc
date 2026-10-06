@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <numeric>
-#include <ranges>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -2721,7 +2721,7 @@ bool BoxFragmentPainter::HitTestBlockChildren(
   if (phase == HitTestPhase::kDescendantBlockBackgrounds)
     phase = HitTestPhase::kSelfBlockBackground;
   auto children = box_fragment_.Children();
-  for (const PhysicalFragmentLink& child : std::views::reverse(children)) {
+  for (const PhysicalFragmentLink& child : base::Reversed(children)) {
     const auto& block_child = To<PhysicalBoxFragment>(*child);
     if (block_child.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
@@ -2893,7 +2893,7 @@ bool BoxFragmentPainter::HitTestFloatingChildren(
   }
 
   auto children = container.Children();
-  for (const PhysicalFragmentLink& child : std::views::reverse(children)) {
+  for (const PhysicalFragmentLink& child : base::Reversed(children)) {
     const PhysicalFragment& child_fragment = *child.fragment;
     if (child_fragment.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;

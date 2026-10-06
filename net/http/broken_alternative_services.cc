@@ -4,8 +4,7 @@
 
 #include "net/http/broken_alternative_services.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
@@ -262,7 +261,7 @@ void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
   // Add back all existing recently broken alt svcs to cache so they're at
   // front of recency list (LRUCache::Get() does this automatically).
   for (const auto& [service, broken_count] :
-       std::views::reverse(*recently_broken_alternative_services)) {
+       base::Reversed(*recently_broken_alternative_services)) {
     if (recently_broken_alternative_services_.Get(service) ==
         recently_broken_alternative_services_.end()) {
       recently_broken_alternative_services_.Put(service, broken_count);

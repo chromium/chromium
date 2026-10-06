@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/score_line_breaker.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
@@ -202,7 +201,7 @@ bool ScoreLineBreaker::Optimize(const LineInfoList& line_info_list,
     const float orphans_penalty = kOrphansPenalty * zoom_;
     const auto candidates_span =
         base::span(candidates).first(candidates.size() - 1);
-    for (LineBreakCandidate& candidate : std::views::reverse(candidates_span)) {
+    for (LineBreakCandidate& candidate : base::Reversed(candidates_span)) {
       candidate.penalty += orphans_penalty;
       if (!candidate.is_hyphenated) {
         break;

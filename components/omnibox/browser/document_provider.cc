@@ -11,12 +11,12 @@
 #include <memory>
 #include <numeric>
 #include <optional>
-#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/lru_cache.h"
@@ -649,9 +649,8 @@ bool DocumentProvider::UpdateResults(const std::string& json_data) {
   CopyCachedMatchesToMatches();
   // 5) Push the new matches to the cache. Keep their scores so that later
   // inputs continue showing them until the new doc response returns.
-  for (const AutocompleteMatch& match : std::views::reverse(matches_)) {
+  for (const AutocompleteMatch& match : base::Reversed(matches_))
     matches_cache_.Put(match.stripped_destination_url, match);
-  }
 
   return !matches_.empty();
 }

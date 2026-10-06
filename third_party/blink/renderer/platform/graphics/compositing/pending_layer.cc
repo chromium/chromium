@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "cc/base/features.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "cc/layers/solid_color_layer.h"
@@ -901,7 +900,7 @@ SkColor4f PendingLayer::ComputeBackgroundColor() const {
   SkColor4f background_color = background_colors.back();
   background_colors.pop_back();
 
-  for (const SkColor4f& color : std::views::reverse(background_colors)) {
+  for (const SkColor4f& color : base::Reversed(background_colors)) {
     background_color = SkColor4f::FromColor(color_utils::GetResultingPaintColor(
         color.toSkColor(), background_color.toSkColor()));
   }

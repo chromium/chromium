@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <iterator>
-#include <ranges>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -691,7 +691,7 @@ void PageContentAnnotationsService::OnURLQueried(
   }
 
   bool did_store_content_annotations = false;
-  for (const auto& visit_for_url : std::views::reverse(url_result.visits)) {
+  for (const auto& visit_for_url : base::Reversed(url_result.visits)) {
     if (navigation_timestamp != visit_for_url.visit_time) {
       continue;
     }

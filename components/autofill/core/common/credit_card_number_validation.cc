@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
-#include <ranges>
 #include <string>
 #include <string_view>
 
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
@@ -103,7 +103,7 @@ bool PassesLuhnCheck(std::u16string_view number) {
   // [3] http://en.wikipedia.org/wiki/Luhn_algorithm
   int sum = 0;
   bool odd = false;
-  for (char16_t c : std::views::reverse(number)) {
+  for (char16_t c : base::Reversed(number)) {
     if (!base::IsAsciiDigit(c))
       return false;
 

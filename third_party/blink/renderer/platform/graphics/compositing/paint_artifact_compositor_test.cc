@@ -6,8 +6,8 @@
 
 #include <array>
 #include <memory>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -893,7 +893,7 @@ TEST_P(PaintArtifactCompositorTest, DeeplyNestedClips) {
   // Check the clip nodes.
   const cc::ClipNode* clip_node =
       &GetPropertyTrees().clip_tree().Node(drawing_layer->clip_tree_index());
-  for (const auto& paint_clip_node : std::views::reverse(clips)) {
+  for (const auto& paint_clip_node : base::Reversed(clips)) {
     EXPECT_TRUE(clip_node->AppliesLocalClip());
     EXPECT_EQ(paint_clip_node->PaintClipRect().Rect(), clip_node->clip);
     clip_node = &GetPropertyTrees().clip_tree().Node(clip_node->parent_id);

@@ -5,11 +5,11 @@
 #include "components/affiliations/core/browser/sql_table_builder.h"
 
 #include <algorithm>
-#include <ranges>
 #include <set>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -531,12 +531,12 @@ bool SQLTableBuilder::MigrateIndicesToNextFrom(unsigned old_version,
 
 std::vector<SQLTableBuilder::Column>::reverse_iterator
 SQLTableBuilder::FindLastColumnByName(const std::string& name) {
-  return std::ranges::find(std::views::reverse(columns_), name, &Column::name);
+  return std::ranges::find(base::Reversed(columns_), name, &Column::name);
 }
 
 std::vector<SQLTableBuilder::Index>::reverse_iterator
 SQLTableBuilder::FindLastIndexByName(const std::string& name) {
-  return std::ranges::find(std::views::reverse(indices_), name, &Index::name);
+  return std::ranges::find(base::Reversed(indices_), name, &Index::name);
 }
 
 bool SQLTableBuilder::IsVersionLastAndSealed(unsigned version) const {

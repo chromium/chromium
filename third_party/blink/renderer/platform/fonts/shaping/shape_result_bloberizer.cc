@@ -7,7 +7,6 @@
 #include <hb.h>
 
 #include <algorithm>
-#include <ranges>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -483,7 +482,7 @@ void ShapeResultBloberizer::FillGlyphs::FillGlyphsSlow(StringView text,
   float advance = 0;
   if (IsRtl(direction)) {
     wtf_size_t word_offset = text.length();
-    for (const auto& item : std::views::reverse(list)) {
+    for (const auto& item : base::Reversed(list)) {
       const ShapeResult* word_result = GetShapeResult(item);
       wtf_size_t word_characters = word_result->NumCharacters();
       word_offset -= word_characters;

@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <memory>
-#include <ranges>
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -68,7 +68,7 @@ class AudioFocusManagerTest
 
   AudioFocusManager::RequestId GetAudioFocusedSession() {
     const auto audio_focus_requests = GetRequests();
-    for (const auto& request : std::views::reverse(audio_focus_requests)) {
+    for (const auto& request : base::Reversed(audio_focus_requests)) {
       if (request->audio_focus_type == mojom::AudioFocusType::kGain)
         return request->request_id.value();
     }

@@ -28,9 +28,8 @@
 
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 
-#include <ranges>
-
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -275,7 +274,7 @@ bool IsUnobscured(const FocusCandidate& candidate) {
                         HitTestRequest::kAllowChildFrameContent);
 
   const HitTestResult::NodeSet& nodes = result.ListBasedTestResult();
-  for (const auto& hit_node : std::views::reverse(nodes)) {
+  for (const auto& hit_node : base::Reversed(nodes)) {
     if (candidate.visible_node->ContainsIncludingHostElements(*hit_node))
       return true;
 

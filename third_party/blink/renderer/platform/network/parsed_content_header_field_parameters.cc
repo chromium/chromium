@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -73,7 +72,7 @@ String ParsedContentHeaderFieldParameters::ParameterValueForName(
     return String();
   }
 
-  for (const NameValue& param : std::views::reverse(*this)) {
+  for (const NameValue& param : base::Reversed(*this)) {
     if (EqualIgnoringAsciiCase(param.name, name)) {
       return param.value;
     }

@@ -8,7 +8,6 @@
 #include <complex>
 #include <limits>
 #include <numbers>
-#include <ranges>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -34,7 +33,7 @@ std::complex<double> EvaluatePolynomial(base::span<const double> coef,
   // 0, order);
   std::complex<double> result = 0;
   if (coef.size()) {
-    for (double c : std::views::reverse(coef)) {
+    for (double c : base::Reversed(coef)) {
       result = result * z + std::complex<double>(c);
     }
   }

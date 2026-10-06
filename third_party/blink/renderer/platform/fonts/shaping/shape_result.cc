@@ -36,9 +36,9 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
-#include <ranges>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/to_address.h"
@@ -1120,7 +1120,7 @@ void ShapeResult::ApplyTrailingExpansion(LayoutUnit expansion) {
   if (expansion <= LayoutUnit()) {
     return;
   }
-  for (auto& run : std::views::reverse(runs_)) {
+  for (auto& run : base::Reversed(runs_)) {
     if (!run) {
       continue;
     }
@@ -1310,8 +1310,7 @@ const ShapeResult* ShapeResult::UnapplyAutoSpacing(
   ShapeResult* sub_range = SubRange(start_offset, break_offset);
 
   // Remove the auto-spacing from the last glyph.
-  for (const Member<ShapeResultRun>& run :
-       std::views::reverse(sub_range->runs_)) {
+  for (const Member<ShapeResultRun>& run : base::Reversed(sub_range->runs_)) {
     if (!run->NumGlyphs()) [[unlikely]] {
       continue;
     }
@@ -1903,7 +1902,7 @@ void ShapeResult::CheckConsistency() const {
   } else {
     // RTL on Mac may not have runs for the all characters. crbug.com/774034
     index = runs_.back()->start_index_;
-    for (const auto& run : std::views::reverse(runs_)) {
+    for (const auto& run : base::Reversed(runs_)) {
       DCHECK_GE(run->start_index_, index);
       index = run->start_index_ + run->num_characters_;
     }
@@ -2475,7 +2474,7 @@ Vector<CharacterRange> ShapeResult::IndividualCharacterRanges() const {
   float current_x = 0u;
 
   if (IsRtl()) {
-    for (const auto& run : std::views::reverse(runs_)) {
+    for (const auto& run : base::Reversed(runs_)) {
       current_x -= run->width_;
       AddRunInfoRanges(*run, current_x, &ranges);
     }

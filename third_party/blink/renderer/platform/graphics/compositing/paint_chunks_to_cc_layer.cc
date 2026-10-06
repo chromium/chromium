@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -670,7 +669,7 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToEffect(
   }
 
   // Step 3: Now apply the list of effects in top-down order.
-  for (const auto& sub_effect : std::views::reverse(pending_effects)) {
+  for (const auto& sub_effect : base::Reversed(pending_effects)) {
 #if DCHECK_IS_ON()
     if (!has_effect_hierarchy_issue)
       DCHECK_EQ(current_effect_, sub_effect->UnaliasedParent());
@@ -1544,8 +1543,7 @@ void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
     // intersecting with the new chunk will need main thread hit test.
     gfx::Rect chunk_hit_test_rect =
         chunk_to_layer_mapper_.MapVisualRect(chunk.bounds);
-    for (auto& previous_scroll :
-         std::views::reverse(top_non_composited_scrolls_)) {
+    for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
       if (previous_scroll.layer_hit_test_rect.Intersects(chunk_hit_test_rect)) {
         previous_scroll.hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
       }
@@ -1567,8 +1565,7 @@ void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
   // Find the scroller. Normally the loop runs only one iteration, unless the
   // scrolling contents of the scroller interlace with other scrollers.
   NonCompositedScroll* non_composited_scroll = nullptr;
-  for (auto& previous_scroll :
-       std::views::reverse(top_non_composited_scrolls_)) {
+  for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
     if (previous_scroll.scroll_translation == scroll_translation) {
       non_composited_scroll = &previous_scroll;
       break;
@@ -1601,8 +1598,7 @@ void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
   // stops at scroll_translation. Normally this loop is no-op, unless the
   // scrolling contents of the scroller interlace with other scrollers
   // (which will be tested overlap with the hit_test_rect).
-  for (auto& previous_scroll :
-       std::views::reverse(top_non_composited_scrolls_)) {
+  for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
     if (previous_scroll.scroll_translation == scroll_translation) {
       break;
     }

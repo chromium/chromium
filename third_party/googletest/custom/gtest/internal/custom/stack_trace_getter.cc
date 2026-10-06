@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <iterator>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 
 std::string StackTraceGetter::CurrentStackTrace(int max_depth, int skip_count) {
@@ -27,10 +27,10 @@ std::string StackTraceGetter::CurrentStackTrace(int max_depth, int skip_count) {
   // within the GTest function that called UponLeavingGTest, and is irrelevant
   // as well.
   {
-    const auto r_current = std::views::reverse(current);
+    const auto r_current = base::Reversed(current);
     const size_t remaining =
         r_current.end() -
-        std::ranges::mismatch(std::views::reverse(departure), r_current).in2;
+        std::ranges::mismatch(base::Reversed(departure), r_current).in2;
     if (remaining) {
       current = current.first(remaining - 1);
     }

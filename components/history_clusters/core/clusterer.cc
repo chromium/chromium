@@ -4,9 +4,9 @@
 
 #include "components/history_clusters/core/clusterer.h"
 
-#include <ranges>
 #include <unordered_map>
 
+#include "base/containers/adapters.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
@@ -29,7 +29,7 @@ bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
     // visit, only add the visit to the cluster if the last search visit was
     // also a search visit with the same terms. Also break the cluster if there
     // was not already a search visit already.
-    for (const auto& existing_visit : std::views::reverse(cluster.visits)) {
+    for (const auto& existing_visit : base::Reversed(cluster.visits)) {
       if (!existing_visit.annotated_visit.content_annotations.search_terms
                .empty()) {
         return existing_visit.annotated_visit.content_annotations

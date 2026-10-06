@@ -6,9 +6,9 @@
 #define CC_PAINT_DRAW_LOOPER_H_
 
 #include <memory>
-#include <ranges>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "cc/paint/paint_export.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -54,7 +54,7 @@ class CC_PAINT_EXPORT DrawLooper : public SkRefCnt {
     //  Each time through the loop, we make a copy of the draw's paint, modify
     //  it as indicated by the layer info, modify the canvas' translate, and
     //  then call back to issue the actual draw.
-    for (const Layer& layer : std::views::reverse(layers_)) {
+    for (const Layer& layer : base::Reversed(layers_)) {
       SkAutoCanvasRestore acr(canvas, true);
       SkPaint p(paint);
       layer.Apply(canvas, &p);

@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <map>
-#include <ranges>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -173,7 +173,7 @@ void WindowReorderer::ReorderChildWindows() {
   // |view_with_layer_order| backwards and stack windows at the bottom so that
   // windows not associated to a view are stacked above windows with an
   // associated view.
-  for (View* view : std::views::reverse(view_with_layer_order)) {
+  for (View* view : base::Reversed(view_with_layer_order)) {
     std::vector<ui::Layer*> layers;
     aura::Window* window = nullptr;
 

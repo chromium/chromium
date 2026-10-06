@@ -4,11 +4,11 @@
 
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 
-#include <ranges>
 #include <utility>
 #include <variant>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
@@ -109,7 +109,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane), context);
 
-  for (const auto* quad : std::views::reverse(quad_list)) {
+  for (const auto* quad : base::Reversed(quad_list)) {
     if (OverlayCandidate::IsInvisibleQuad(quad))
       continue;
 

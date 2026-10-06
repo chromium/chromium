@@ -4,9 +4,8 @@
 
 #include "content/browser/devtools/devtools_instrumentation.h"
 
-#include <ranges>
-
 #include "base/byte_size.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -1865,7 +1864,7 @@ bool MaybeCreateProxyForInterception(
   }
   bool had_interceptors = false;
   const auto& handlers = HandlerType::ForAgentHost(agent_host);
-  for (const auto& handler : std::views::reverse(handlers)) {
+  for (const auto& handler : base::Reversed(handlers)) {
     had_interceptors |= handler->MaybeCreateProxyForInterception(
         process_id, storage_partition, frame_token, is_navigation, is_download,
         agent_override, header_client);

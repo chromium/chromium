@@ -21,10 +21,10 @@
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <ranges>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 
 #if defined(ANDROID)
@@ -1055,7 +1055,7 @@ class EqualityStressTest {
     // Now, iterate over all the test cases that we want to compare against.
     // This builds a chain of SandboxBPF::Cond() tests
     // (aka "if ... elif ... elif ... elif ... fi")
-    for (auto& test : std::views::reverse(arg_value->tests)) {
+    for (auto& test : base::Reversed(arg_value->tests)) {
       // Again, we distinguish between leaf nodes and subtrees.
       ResultExpr matched =
           test.err ? Error(test.err) : ToErrorCode(test.arg_value.get());
@@ -1074,7 +1074,7 @@ class EqualityStressTest {
     // Iterate over all the k_values in arg_value.tests[] and verify that
     // we see the expected return values from system calls, when we pass
     // the k_value as a parameter in a system call.
-    for (auto& test : std::views::reverse(arg_value.tests)) {
+    for (auto& test : base::Reversed(arg_value.tests)) {
       mismatched += test.k_value;
       args[arg_value.argno] = test.k_value;
       if (test.err) {

@@ -5,10 +5,10 @@
 #include "services/media_session/audio_focus_manager.h"
 
 #include <iterator>
-#include <ranges>
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/power_monitor/power_monitor.h"
@@ -376,7 +376,7 @@ void AudioFocusManager::EnforceAudioFocus() {
 
   EnforcementState state;
 
-  for (auto& session : std::views::reverse(audio_focus_stack_)) {
+  for (auto& session : base::Reversed(audio_focus_stack_)) {
     EnforceSingleSession(session.get(), state);
 
     // Update the flags based on the audio focus type of this session. If the
@@ -403,7 +403,7 @@ void AudioFocusManager::EnforceAudioFocus() {
 void AudioFocusManager::MaybeUpdateActiveSession() {
   AudioFocusRequest* active = nullptr;
 
-  for (auto& row : std::views::reverse(audio_focus_stack_)) {
+  for (auto& row : base::Reversed(audio_focus_stack_)) {
     if (!row->info()->is_controllable ||
         row->info()->ignore_for_active_session) {
       continue;

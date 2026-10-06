@@ -4,9 +4,9 @@
 
 #include "content/browser/preloading/preconnect/preconnect_manager_impl.h"
 
-#include <ranges>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -197,7 +197,7 @@ void PreconnectManagerImpl::StartPreresolveHosts(
     return;
   }
   // Push jobs in front of the queue due to higher priority.
-  for (const GURL& url : std::views::reverse(urls)) {
+  for (const GURL& url : base::Reversed(urls)) {
     if (!url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }

@@ -4,8 +4,7 @@
 
 #include "net/base/scheme_host_port_matcher.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -80,7 +79,7 @@ SchemeHostPortMatcherResult SchemeHostPortMatcher::Evaluate(
   //
   // However when mixing positive and negative rules, evaluation order makes a
   // difference.
-  for (const auto& rule : std::views::reverse(rules_)) {
+  for (const auto& rule : base::Reversed(rules_)) {
     SchemeHostPortMatcherResult result = rule->Evaluate(url);
     if (result != SchemeHostPortMatcherResult::kNoMatch)
       return result;

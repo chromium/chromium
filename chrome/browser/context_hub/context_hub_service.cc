@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <optional>
-#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -16,6 +15,7 @@
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -958,8 +958,7 @@ std::vector<optimization_guide::proto::ChatHistoryTurn>
 ContextHubService::GetTabGroupChatHistory() const {
   std::vector<optimization_guide::proto::ChatHistoryTurn> history;
   history.reserve(tab_group_chat_history_cache_.size());
-  for (const auto& [id, turn] :
-       std::views::reverse(tab_group_chat_history_cache_)) {
+  for (const auto& [id, turn] : base::Reversed(tab_group_chat_history_cache_)) {
     history.push_back(turn);
   }
   return history;
@@ -986,7 +985,7 @@ ContextHubService::GetMemoryBankChatHistory() const {
   std::vector<optimization_guide::proto::ChatHistoryTurn> history;
   history.reserve(memory_bank_chat_history_cache_.size());
   for (const auto& [id, turn] :
-       std::views::reverse(memory_bank_chat_history_cache_)) {
+       base::Reversed(memory_bank_chat_history_cache_)) {
     history.push_back(turn);
   }
   return history;

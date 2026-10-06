@@ -5,12 +5,12 @@
 #include "services/accessibility/android/ax_tree_source_android.h"
 
 #include <memory>
-#include <ranges>
 #include <stack>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
@@ -313,7 +313,7 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
   // Updates from Android event first as this contains the entire tree
   // information, including focus.
   std::vector<ui::AXTreeUpdate> updates;
-  for (const int32_t update_id : std::views::reverse(update_ids)) {
+  for (const int32_t update_id : base::Reversed(update_ids)) {
     AccessibilityInfoDataWrapper* update_root = GetFromId(update_id);
     if (!update_root) {
       LOG(ERROR) << "Update root node doesn't exist, id=" << update_id;

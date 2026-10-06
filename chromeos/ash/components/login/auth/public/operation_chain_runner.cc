@@ -5,9 +5,9 @@
 #include "chromeos/ash/components/login/auth/public/operation_chain_runner.h"
 
 #include <memory>
-#include <ranges>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
@@ -47,9 +47,8 @@ void RunOperationChain(std::unique_ptr<UserContext> context,
     return;
   }
   base::stack<AuthOperation> reversed_ops;
-  for (auto& operation : std::views::reverse(operations)) {
+  for (auto& operation : base::Reversed(operations))
     reversed_ops.push(std::move(operation));
-  }
 
   AuthOperation first = std::move(reversed_ops.top());
   reversed_ops.pop();

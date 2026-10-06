@@ -4,9 +4,9 @@
 
 #include "net/url_request/referrer_policy.h"
 
-#include <ranges>
 #include <string>
 
+#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -38,7 +38,7 @@ std::optional<ReferrerPolicy> ReferrerPolicyFromHeader(
 
   // Per https://w3c.github.io/webappsec-referrer-policy/#unknown-policy-values,
   // use the last recognized policy value, and ignore unknown policies.
-  for (const auto& token : std::views::reverse(policy_tokens)) {
+  for (const auto& token : base::Reversed(policy_tokens)) {
     const std::string lowered_token = base::ToLowerASCII(token);
     const auto it = kTokenToReferrerPolicy.find(lowered_token);
     if (it != kTokenToReferrerPolicy.end()) {

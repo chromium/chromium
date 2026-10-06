@@ -5,7 +5,6 @@
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
 #include <memory>
-#include <ranges>
 
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
@@ -591,7 +590,7 @@ struct NSEdgeAndCornerThicknesses {
   }
 
   for (remote_cocoa::NativeWidgetNSWindowBridge* child_bridge :
-       std::views::reverse(_bridge->child_windows())) {
+       base::Reversed(_bridge->child_windows())) {
     if (child_bridge->modal_type() == ui::mojom::ModalType::kNone) {
       continue;
     }

@@ -30,6 +30,7 @@
 #include <optional>
 #include <ranges>
 
+#include "base/containers/adapters.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -219,7 +220,7 @@ Element* GetNextInCarouselOrder(const Element& scroller,
 Element* GetPrevInCarouselOrder(const Element& scroller,
                                 PseudoId current_pseudo_id) {
   return GetInCarouselOrder</*forward=*/false>(
-      scroller, current_pseudo_id, std::views::reverse(carousel_focus_order));
+      scroller, current_pseudo_id, base::Reversed(carousel_focus_order));
 }
 
 // Tries to do carousel pseudos -> scroller step,

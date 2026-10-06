@@ -45,8 +45,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 #include <limits>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "cc/input/scroll_snap_data.h"
 #include "partition_alloc/partition_alloc.h"
@@ -2023,8 +2023,8 @@ PaintLayer* PaintLayer::HitTestChildren(
               stacking_node_->LayersPaintingOverlayOverflowControlsAfter(
                   child_layer)) {
         bool break_loop = false;
-        for (auto& reparent_overflow_controls_layer : std::views::reverse(
-                 *layers_painting_overlay_overflow_controls_after)) {
+        for (auto& reparent_overflow_controls_layer :
+             base::Reversed(*layers_painting_overlay_overflow_controls_after)) {
           DCHECK(reparent_overflow_controls_layer
                      ->NeedsReorderOverlayOverflowControls());
           if (hit_test_child(reparent_overflow_controls_layer, true,

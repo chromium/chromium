@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -358,7 +357,7 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
   // of the same name within the document.
   bool is_page_counter = false;
 
-  for (const CounterEntry* entry : std::views::reverse(counter_stack)) {
+  for (const CounterEntry* entry : base::Reversed(counter_stack)) {
     // counter() and counters() can cross style containment boundaries.
     if (!entry) {
       if (is_page_counter) {

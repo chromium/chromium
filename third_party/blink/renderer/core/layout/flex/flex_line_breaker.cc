@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/flex/flex_line_breaker.h"
 
-#include <ranges>
-
 #include "base/numerics/clamped_math.h"
 
 namespace blink {
@@ -245,7 +243,7 @@ wtf_size_t ApplyMinLineCount(const wtf_size_t min_line_count,
   //
   // Each time we do this we need to check how many lines we have and
   // potentially break (so as we don't create *too many* lines).
-  for (wtf_size_t index : std::views::reverse(perfect_fit_indices)) {
+  for (wtf_size_t index : base::Reversed(perfect_fit_indices)) {
     for (wtf_size_t i = index; i < ctx.sums.size(); ++i) {
       ++ctx.sums[i];
     }

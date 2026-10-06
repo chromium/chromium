@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/string_matching/acronym_matcher.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +28,7 @@ std::u16string MatchHit(const std::u16string& text,
   std::u16string marked = text;
 
   const AcronymMatcher::Hits& hits = match.hits();
-  for (const gfx::Range& hit : std::views::reverse(hits)) {
+  for (const gfx::Range& hit : base::Reversed(hits)) {
     marked.insert(hit.end(), 1, u']');
     marked.insert(hit.start(), 1, u'[');
   }

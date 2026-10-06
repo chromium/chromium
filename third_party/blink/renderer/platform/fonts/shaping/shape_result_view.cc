@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
@@ -307,9 +307,8 @@ ShapeResultView* ShapeResultView::Create(base::span<const Segment> segments) {
     for (auto& segment : segments)
       out->PopulateRunInfoParts(segment);
   } else {
-    for (auto& segment : std::views::reverse(segments)) {
+    for (auto& segment : base::Reversed(segments))
       out->PopulateRunInfoParts(segment);
-    }
   }
   DCHECK_EQ(data.num_parts, out->parts_.size());
   return out;

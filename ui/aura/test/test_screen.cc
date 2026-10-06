@@ -6,9 +6,8 @@
 
 #include <stdint.h>
 
-#include <ranges>
-
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -166,7 +165,7 @@ gfx::NativeWindow TestScreen::GetWindowForPoint(Window* window,
     return nullptr;
   }
 
-  for (Window* child : std::views::reverse(window->children())) {
+  for (Window* child : base::Reversed(window->children())) {
     if (child->is_destroying()) {
       continue;
     }

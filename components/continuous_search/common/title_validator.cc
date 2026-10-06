@@ -5,9 +5,9 @@
 #include "components/continuous_search/common/title_validator.h"
 
 #include <algorithm>
-#include <ranges>
 #include <string_view>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 
@@ -31,7 +31,7 @@ template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> ValidateTitleT(T input) {
   auto begin_it =
       std::ranges::find_if_not(input, &IsUnicodeWhitespaceOrControl);
-  auto end_it = std::ranges::find_if_not(std::views::reverse(input),
+  auto end_it = std::ranges::find_if_not(base::Reversed(input),
                                          &IsUnicodeWhitespaceOrControl);
 
   std::basic_string<CharT> output;

@@ -28,9 +28,9 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
-#include <ranges>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
@@ -532,7 +532,7 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
   scoped_refptr<SharedFontFamily> next;
   bool has_value = false;
 
-  for (auto& family : std::views::reverse(To<CSSValueList>(value))) {
+  for (auto& family : base::Reversed(To<CSSValueList>(value))) {
     AtomicString next_family_name;
     FontDescription::GenericFamilyType generic_family =
         FontDescription::kNoFamily;

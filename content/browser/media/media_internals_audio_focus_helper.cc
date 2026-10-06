@@ -5,10 +5,10 @@
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 
 #include <algorithm>
-#include <ranges>
 #include <string>
 #include <string_view>
 
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
@@ -156,7 +156,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusRequestList(
   // We should go backwards through the stack so the top of the stack is
   // always shown first in the list.
   base::ListValue stack_data;
-  for (const auto& session : std::views::reverse(stack)) {
+  for (const auto& session : base::Reversed(stack)) {
     if (!session->request_id.has_value())
       continue;
 

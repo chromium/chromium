@@ -8,12 +8,12 @@
 #include <cstddef>
 #include <list>
 #include <optional>
-#include <ranges>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
@@ -212,7 +212,7 @@ void LocalBookmarkToAccountMerger::RemoveChildrenAt(
   // lead to quadratic behavior. However, A/B experiments via variations led to
   // the conclusion that this simple implementation isn't slower than more
   // sophisticated variants, even at high percentiles.
-  for (size_t index : std::views::reverse(indices_to_remove)) {
+  for (size_t index : base::Reversed(indices_to_remove)) {
     const bookmarks::BookmarkNode* child = parent->children().at(index).get();
     model_->Remove(child, kEditSourceForMetrics, location);
   }

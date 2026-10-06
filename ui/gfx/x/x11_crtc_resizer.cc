@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <iterator>
-#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -535,8 +535,7 @@ x11::Window X11CrtcResizer::FindAppWindow(
     return x11::Window::None;
   }
 
-  for (const auto& child_window :
-       std::views::reverse(query_response->children)) {
+  for (const auto& child_window : base::Reversed(query_response->children)) {
     auto attributes_response =
         connection_->GetWindowAttributes({child_window}).Sync();
     if (!attributes_response) {

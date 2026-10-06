@@ -4,9 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 
-#include <ranges>
-
 #include "base/auto_reset.h"
+#include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_close_watcher_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -169,7 +168,7 @@ void CloseWatcher::WatcherStack::Signal() {
   auto& group = watcher_groups_.back();
 
   HeapVector<Member<CloseWatcher>> group_copy(group);
-  for (auto& watcher : std::views::reverse(group_copy)) {
+  for (auto& watcher : base::Reversed(group_copy)) {
     if (!watcher->RequestClose(AllowCancel::kWithUserActivation)) {
       break;
     }

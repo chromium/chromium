@@ -5,8 +5,8 @@
 #include <stddef.h>
 
 #include <array>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -202,7 +202,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
         sessions::SessionTabHelper::IdForTab(active_web_contents());
     const std::u16string tab_prefix =
         l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX, u"");
-    for (const Task* task : std::views::reverse(task_manager.tasks())) {
+    for (const Task* task : base::Reversed(task_manager.tasks())) {
       if (task->GetTabId() == tab_id && task->title().starts_with(tab_prefix)) {
         return task;
       }

@@ -5,11 +5,11 @@
 #include "components/sync/test/mock_data_type_worker.h"
 
 #include <map>
-#include <ranges>
 #include <set>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -133,8 +133,7 @@ const CommitRequestData* MockDataTypeWorker::GetLatestPendingCommitForHash(
     const ClientTagHash& tag_hash) const {
   // Iterate backward through the sets of commit requests to find the most
   // recent one that applies to the specified tag_hash.
-  for (const CommitRequestDataList& commit :
-       std::views::reverse(pending_commits_)) {
+  for (const CommitRequestDataList& commit : base::Reversed(pending_commits_)) {
     for (const std::unique_ptr<CommitRequestData>& data : commit) {
       if (data && data->entity->client_tag_hash == tag_hash) {
         return data.get();

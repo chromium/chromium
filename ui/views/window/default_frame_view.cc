@@ -5,10 +5,10 @@
 #include "ui/views/window/default_frame_view.h"
 
 #include <algorithm>
-#include <ranges>
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -513,7 +513,7 @@ void DefaultFrameView::LayoutWindowControls() {
 
   // Trailing buttions are laid out in a RTL fashion
   next_button_x = width() - FrameBorderThickness();
-  for (auto frame_button : std::views::reverse(trailing_buttons)) {
+  for (auto frame_button : base::Reversed(trailing_buttons)) {
     button = GetImageButton(frame_button);
     if (!button) {
       continue;

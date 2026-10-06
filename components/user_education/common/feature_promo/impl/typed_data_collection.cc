@@ -4,8 +4,7 @@
 
 #include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "ui/base/identifier/typed_identifier.h"
 
@@ -30,7 +29,7 @@ OwnedTypedDataCollection& OwnedTypedDataCollection::operator=(
 }
 
 void OwnedTypedDataCollection::FreeAll() {
-  for (auto& entry : std::views::reverse(data_)) {
+  for (auto& entry : base::Reversed(data_)) {
     entry.reset();
   }
   data_.clear();

@@ -5,10 +5,10 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_history.h"
 
 #include <memory>
-#include <ranges>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
@@ -39,7 +39,7 @@ base::ListValue NoStatePrefetchHistory::CopyEntriesAsValue() const {
   base::ListValue return_list;
   // Javascript needs times in terms of milliseconds since Jan 1, 1970.
   base::Time epoch_start = base::Time::UnixEpoch();
-  for (const Entry& entry : std::views::reverse(entries_)) {
+  for (const Entry& entry : base::Reversed(entries_)) {
     base::DictValue entry_dict;
     entry_dict.Set("url", entry.url.spec());
     entry_dict.Set("final_status", NameFromFinalStatus(entry.final_status));

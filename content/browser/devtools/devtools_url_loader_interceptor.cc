@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <optional>
-#include <ranges>
 #include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/byte_size.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -998,7 +998,7 @@ void DevToolsURLLoaderInterceptor::HandleAuthRequest(
     // received the HTTP 401/407 challenge, so it takes precedence to handle
     // authentication. If it did not opt into handling auth, the challenge
     // bubbles outward.
-    for (InterceptionJob* job : std::views::reverse(it->second)) {
+    for (InterceptionJob* job : base::Reversed(it->second)) {
       if (job->CanHandleAuth()) {
         job->OnAuthRequest(auth_info, std::move(callback));
         return;

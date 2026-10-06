@@ -4,9 +4,9 @@
 
 #include "chrome/services/reading_mode_metrics/reading_mode_metrics_service.h"
 
-#include <ranges>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
@@ -112,7 +112,7 @@ void ExtractOriginalStructure(ui::AXNode* root,
     // Push children in reverse order to ensure leftmost child is popped and
     // processed first (matches canonical DFS left-to-right preorder
     // traversal).
-    for (const auto& it : std::views::reverse(children)) {
+    for (const auto& it : base::Reversed(children)) {
       stack.push_back(
           {it.get(), current_is_code, current_is_link, current_is_list});
     }

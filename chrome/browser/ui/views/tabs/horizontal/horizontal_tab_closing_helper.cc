@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 
 #include <algorithm>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -55,7 +55,7 @@ std::optional<int> FindInactiveTabWidth(
 
 const TabCollectionNode* GetLastVisibleTabInNode(
     const TabCollectionNode& parent) {
-  for (const auto& child : std::views::reverse(parent.children())) {
+  for (const auto& child : base::Reversed(parent.children())) {
     if (!child->view()->GetVisible()) {
       continue;
     }

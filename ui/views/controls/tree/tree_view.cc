@@ -5,9 +5,9 @@
 #include "ui/views/controls/tree/tree_view.h"
 
 #include <algorithm>
-#include <ranges>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -336,7 +336,7 @@ void TreeView::ExpandAll(TreeModelNode* node) {
   bool expanded_at_least_one = ExpandImpl(node);
   // And recursively expand all the children.
   const auto& children = model_->GetChildren(node);
-  for (TreeModelNode* child : std::views::reverse(children)) {
+  for (TreeModelNode* child : base::Reversed(children)) {
     if (ExpandImpl(child)) {
       expanded_at_least_one = true;
     }

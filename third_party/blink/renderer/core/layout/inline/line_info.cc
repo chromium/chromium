@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
@@ -219,7 +218,7 @@ unsigned LineInfo::EndTextOffset() const {
 }
 
 unsigned LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
-  for (const auto& item_result : std::views::reverse(Results())) {
+  for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
     if (skip_forced_break) {
@@ -258,7 +257,7 @@ bool LineInfo::GlyphCountIsGreaterThan(wtf_size_t limit) const {
 }
 
 bool LineInfo::IsHyphenated() const {
-  for (const InlineItemResult& item_result : std::views::reverse(Results())) {
+  for (const InlineItemResult& item_result : base::Reversed(Results())) {
     if (item_result.Length()) {
       return item_result.is_hyphenated;
     }
@@ -297,7 +296,7 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
   }
 
   LayoutUnit trailing_spaces_width;
-  for (const auto& item_result : std::views::reverse(Results())) {
+  for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
 

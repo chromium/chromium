@@ -9,10 +9,10 @@
 #include <array>
 #include <cmath>
 #include <list>
-#include <ranges>
 #include <set>
 #include <string_view>
 
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
@@ -413,7 +413,7 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
       // determine the first entry to include.
       size_t shown_events = 0;
       size_t num_entries = 0;
-      for (const LogEntry& entry : std::views::reverse(entries_)) {
+      for (const LogEntry& entry : base::Reversed(entries_)) {
         ++num_entries;
         if (!LogEntryMatchesTypes(entry, include_types, exclude_types))
           continue;
@@ -444,7 +444,7 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
   } else {
     size_t nlines = 0;
     // Iterate backwards through the list to show the most recent entries first.
-    for (const LogEntry& entry : std::views::reverse(entries_)) {
+    for (const LogEntry& entry : base::Reversed(entries_)) {
       if (!LogEntryMatchesTypes(entry, include_types, exclude_types))
         continue;
       if (entry.log_level > max_level)

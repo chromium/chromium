@@ -4,10 +4,10 @@
 
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 
-#include <ranges>
 #include <string_view>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
@@ -212,7 +212,7 @@ InclusionResult SessionInclusionRules::EvaluateRequestUrl(
   }
 
   // Evaluate against specific rules, most-recently-added first.
-  for (const UrlRule& rule : std::views::reverse(url_rules_)) {
+  for (const UrlRule& rule : base::Reversed(url_rules_)) {
     // The rule covers host and path, and scheme is checked too. We don't check
     // port here, because in the !may_include_site_ case that's already covered
     // by being same-origin, and in the may_include_site_ case it's ok for the

@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <optional>
-#include <ranges>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -103,7 +103,7 @@ ProcessCheckResult GetProcessState(base::ProcessId shell_pid) {
   // If long-running processes are launched in the background, multiple child
   // PIDs may be present. We iterate in reverse so the most recently spawned
   // child is inspected first.
-  for (std::string_view child_pid_str : std::views::reverse(child_pids)) {
+  for (std::string_view child_pid_str : base::Reversed(child_pids)) {
     base::ProcessId child_pid = 0;
     if (!base::StringToInt(child_pid_str, &child_pid) || child_pid <= 0) {
       continue;

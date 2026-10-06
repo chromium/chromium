@@ -25,10 +25,10 @@
 
 #include "third_party/blink/renderer/core/html/media/media_fragment_uri_parser.h"
 
-#include <ranges>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -371,7 +371,7 @@ void MediaFragmentURIParser::ParseSpatialFragment() {
 
   // When a fragment dimension occurs multiple times, only the last
   // valid occurrence of that dimension is used. Iterate in reverse to find it.
-  for (const auto& fragment : std::views::reverse(fragments_)) {
+  for (const auto& fragment : base::Reversed(fragments_)) {
     // https://www.w3.org/TR/media-frags/#naming-space
     // Spatial clipping is denoted by the name xywh.
     if (fragment.first != "xywh") {

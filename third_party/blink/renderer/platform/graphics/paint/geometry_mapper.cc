@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -470,7 +469,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
 
   // Iterate down from the top intermediate node found in the previous loop,
   // computing and memoizing clip rects as we go.
-  for (const auto& node : std::views::reverse(intermediate_nodes)) {
+  for (const auto& node : base::Reversed(intermediate_nodes)) {
     ExtraProjectionResult extra_result;
     bool success = false;
     gfx::Transform projection = SourceToDestinationProjectionInternal(

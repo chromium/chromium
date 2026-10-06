@@ -25,8 +25,7 @@
  */
 #include "third_party/blink/renderer/core/editing/serializers/markup_accumulator.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
@@ -557,7 +556,7 @@ AtomicString MarkupAccumulator::RetrievePreferredPrefixString(
   // <el1 xmlns="U1">
   //  el1.setAttributeNS(U1, 'n', 'v');
   // We should not get '' for attributes.
-  for (const auto& candidate_prefix : std::views::reverse(candidate_list)) {
+  for (const auto& candidate_prefix : base::Reversed(candidate_list)) {
     DCHECK(!candidate_prefix.empty());
     AtomicString ns_for_candidate = LookupNamespaceUri(candidate_prefix);
     if (EqualIgnoringNullity(ns_for_candidate, ns)) {

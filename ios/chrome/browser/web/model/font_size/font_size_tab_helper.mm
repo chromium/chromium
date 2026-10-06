@@ -6,9 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <ranges>
-
 #import "base/check.h"
+#import "base/containers/adapters.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -127,7 +126,7 @@ std::optional<double> FontSizeTabHelper::NewMultiplierAfterZoom(
     case ZOOM_OUT: {
       double current_multiplier = GetCurrentUserZoomMultiplier();
       // Find first multiplier less than current.
-      for (double multiplier : std::views::reverse(kZoomMultipliers)) {
+      for (double multiplier : base::Reversed(kZoomMultipliers)) {
         if (multiplier < current_multiplier) {
           return multiplier;
         }

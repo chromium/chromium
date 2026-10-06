@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request.h"
@@ -592,11 +593,10 @@ void IDBCursor::SetPrefetchData(Vector<std::unique_ptr<IDBKey>> keys,
                                 Vector<std::unique_ptr<IDBValue>> values) {
   // Keys and values are stored in reverse order so that a cache'd continue can
   // pop a value off of the back and prevent new memory allocations.
-  prefetch_keys_.append_range(std::views::reverse(std::views::as_rvalue(keys)));
+  prefetch_keys_.append_range(base::Reversed(std::views::as_rvalue(keys)));
   prefetch_primary_keys_.append_range(
-      std::views::reverse(std::views::as_rvalue(primary_keys)));
-  prefetch_values_.append_range(
-      std::views::reverse(std::views::as_rvalue(values)));
+      base::Reversed(std::views::as_rvalue(primary_keys)));
+  prefetch_values_.append_range(base::Reversed(std::views::as_rvalue(values)));
 
   used_prefetches_ = 0;
   pending_onsuccess_callbacks_ = 0;

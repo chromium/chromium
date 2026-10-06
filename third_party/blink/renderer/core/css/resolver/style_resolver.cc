@@ -31,8 +31,8 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 
 #include <optional>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -837,7 +837,7 @@ void MatchSlottedRules(const Element& element,
     }
   }
 
-  for (const auto& [slot, resolver] : std::views::reverse(resolvers)) {
+  for (const auto& [slot, resolver] : base::Reversed(resolvers)) {
     collector.ClearMatchedRules();
     collector.BeginAddingAuthorRulesForTreeScope(slot->GetTreeScope());
     resolver->CollectMatchingSlottedRules(collector);

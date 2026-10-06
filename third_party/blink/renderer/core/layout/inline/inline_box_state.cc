@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -815,7 +814,7 @@ void InlineLayoutStateStack::UpdateFragmentedBoxDataEdges(
               DCHECK_NE(a.fragment_start, b.fragment_start);
               return a.fragment_start < b.fragment_start;
             });
-  for (BoxData& fragmented_box : std::views::reverse(*fragmented_boxes)) {
+  for (BoxData& fragmented_box : base::Reversed(*fragmented_boxes)) {
     // Insert the fragmented box to right after the box it was fragmented from.
     // The order in the |box_data_list_| is critical when propagating child
     // fragment data such as OOF to ancestors.

@@ -7,12 +7,12 @@
 #include <stddef.h>
 
 #include <optional>
-#include <ranges>
 #include <set>
 #include <variant>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "pdf/pdf_ink_ids.h"
@@ -80,7 +80,7 @@ bool PdfInkUndoRedoModel::Add(IdType id) {
 
   // Check the last add in the commands stack to ensure IDs are added in
   // strictly increasing order.
-  for (const Commands& commands : std::views::reverse(commands_stack_)) {
+  for (const Commands& commands : base::Reversed(commands_stack_)) {
     if (!commands.adds.empty()) {
       // Checking the last ID in the set is sufficient because IDs are added in
       // strictly increasing order.

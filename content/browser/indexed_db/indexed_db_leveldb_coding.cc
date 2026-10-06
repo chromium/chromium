@@ -9,7 +9,6 @@
 #include <limits>
 #include <list>
 #include <optional>
-#include <ranges>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -18,6 +17,7 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
@@ -587,7 +587,7 @@ std::string EncodeSortableIDBKey(const IndexedDBKey& value) {
 
         // Used to indicate that a sentinel should be inserted later.
         keys.push_back(nullptr);
-        for (const IndexedDBKey& subkey : std::views::reverse(key->array())) {
+        for (const IndexedDBKey& subkey : base::Reversed(key->array())) {
           keys.push_back(&subkey);
         }
 

@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <limits>
 #include <optional>
-#include <ranges>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/condition_variable.h"
@@ -340,7 +340,7 @@ size_t WaitableEvent::EnqueueMany(base::span<WaiterAndIndex> waitables,
 
   // Unlock in reverse order and possibly clear the chosen winner's signal
   // before returning its index.
-  for (auto& w : std::views::reverse(waitables)) {
+  for (auto& w : base::Reversed(waitables)) {
     auto& kernel = w.first->kernel_;
     if (w.second == winner) {
       if (!kernel->manual_reset_) {

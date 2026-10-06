@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue_task_list.h"
 
-#include <ranges>
 #include <utility>
+
+#include "base/containers/adapters.h"
 
 namespace blink {
 
@@ -16,7 +17,7 @@ MainThreadEventQueueTaskList::~MainThreadEventQueueTaskList() {}
 MainThreadEventQueueTaskList::EnqueueResult
 MainThreadEventQueueTaskList::Enqueue(
     std::unique_ptr<MainThreadEventQueueTask> event) {
-  for (const auto& last_event : std::views::reverse(queue_)) {
+  for (const auto& last_event : base::Reversed(queue_)) {
     switch (last_event->FilterNewEvent(event.get())) {
       case MainThreadEventQueueTask::FilterResult::CoalescedEvent:
         return EnqueueResult::kCoalesced;

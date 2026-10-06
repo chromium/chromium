@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 
 #include <algorithm>
-#include <ranges>
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
@@ -252,8 +252,7 @@ void Subscriber::CloseSubscription(ScriptState* script_state,
   // cannot be modified anymore. If any of these callbacks below invoke
   // `addTeardown()` with a *new* callback, it will be invoked synchronously
   // instead of added to this vector.
-  for (Member<V8VoidFunction>& teardown :
-       std::views::reverse(teardown_callbacks_)) {
+  for (Member<V8VoidFunction>& teardown : base::Reversed(teardown_callbacks_)) {
     teardown->InvokeAndReportException(nullptr);
   }
   teardown_callbacks_.clear();

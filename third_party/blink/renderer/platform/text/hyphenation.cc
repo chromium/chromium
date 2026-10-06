@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -44,7 +43,7 @@ wtf_size_t Hyphenation::FirstHyphenLocation(const StringView& text,
   after_index =
       std::max(after_index, static_cast<wtf_size_t>(MinPrefixLength() - 1));
   const Vector<wtf_size_t, 8> hyphen_locations = HyphenLocations(text);
-  for (const wtf_size_t index : std::views::reverse(hyphen_locations)) {
+  for (const wtf_size_t index : base::Reversed(hyphen_locations)) {
     if (index > after_index)
       return index;
   }

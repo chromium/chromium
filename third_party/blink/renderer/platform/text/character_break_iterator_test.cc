@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 
-#include <ranges>
-
+#include "base/containers/adapters.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -42,7 +41,7 @@ TEST_F(CharacterBreakIteratorTest, Offsets16) {
     EXPECT_EQ(length, iter.Next());
 
     int offset = length;
-    for (int expected_offset : std::views::reverse(test_case.offsets)) {
+    for (int expected_offset : base::Reversed(test_case.offsets)) {
       offset = iter.Preceding(offset);
       EXPECT_EQ(expected_offset, offset);
     }

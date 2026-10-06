@@ -9,10 +9,10 @@
 
 #include <array>
 #include <memory>
-#include <ranges>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -706,7 +706,7 @@ void EventGenerator::PressModifierKeys(int flags, int source_device_id) {
 
 void EventGenerator::ReleaseModifierKeys(int flags, int source_device_id) {
   EventFlags current_flags = flags;
-  for (const auto& modifier_key : std::views::reverse(kModifierKeys)) {
+  for (const auto& modifier_key : base::Reversed(kModifierKeys)) {
     if (flags & modifier_key.flag) {
       current_flags &= ~modifier_key.flag;
       ReleaseKey(modifier_key.key, current_flags, source_device_id);

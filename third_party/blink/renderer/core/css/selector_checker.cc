@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
 #include <algorithm>
-#include <ranges>
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
@@ -1059,7 +1058,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForScopeActivation(
   // for this element). We want to the most proximate match, hence traverse
   // activations in reverse order.
   for (const StyleScopeActivation& activation :
-       std::views::reverse(activations.vector)) {
+       base::Reversed(activations.vector)) {
     next_context.match_visited = context.match_visited;
     next_context.impact = context.impact;
     next_context.style_scope = nullptr;

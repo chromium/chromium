@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/inline/line_break_candidate.h"
 
-#include <ranges>
-
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
@@ -17,7 +15,7 @@ namespace {
 
 const InlineItemResult* LastNonOutOfFlowPositionedItemResult(
     const LineInfo& line_info) {
-  for (const auto& item_result : std::views::reverse(line_info.Results())) {
+  for (const auto& item_result : base::Reversed(line_info.Results())) {
     if (item_result.item->Type() != InlineItem::kOutOfFlowPositioned) {
       return &item_result;
     }
