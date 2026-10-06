@@ -287,6 +287,8 @@ TEST_F(SeaPenFetcherTest, TemplateRequestsFourImages) {
 
   EXPECT_EQ(manta::MantaStatusCode::kOk,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
+  histogram_tester().ExpectUniqueSample(kThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kOk, 1);
 }
 
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
@@ -344,6 +346,8 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
               testing::UnorderedElementsAreArray(matchers));
 
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
                                         1);
   histogram_tester().ExpectUniqueSample(
@@ -383,6 +387,8 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kThumbnailsCountMetric, 0, 1);
+  histogram_tester().ExpectUniqueSample(
+      kThumbnailsStatusCodeMetric, manta::MantaStatusCode::kGenericError, 1);
   histogram_tester().ExpectTotalCount(kThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kThumbnailsTimeoutMetric, false, 1);
 }
@@ -424,6 +430,9 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kBlockedOutputs,
+                                        1);
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
                                         1);
@@ -466,6 +475,9 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kImageHasPerson,
+                                        1);
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
                                         1);
@@ -507,12 +519,13 @@ TEST_F(SeaPenFetcherTest, ThumbnailsTimeoutHandled) {
             fetch_thumbnails_future
                 .Get<std::optional<std::vector<ash::SeaPenImage>>>());
 
-  // Recorded 1 timeout.
+  // Recorded 1 timeout and generic error status code.
   histogram_tester().ExpectUniqueSample(kThumbnailsTimeoutMetric, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kThumbnailsStatusCodeMetric, manta::MantaStatusCode::kGenericError, 1);
 
   // Does not record following metrics on timeout.
   histogram_tester().ExpectTotalCount(kThumbnailsLatencyMetric, 0);
-  histogram_tester().ExpectTotalCount(kThumbnailsStatusCodeMetric, 0);
   histogram_tester().ExpectTotalCount(kThumbnailsCountMetric, 0);
 }
 
@@ -552,13 +565,15 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsTimeoutHandled) {
             fetch_thumbnails_future
                 .Get<std::optional<std::vector<ash::SeaPenImage>>>());
 
-  // Recorded 1 timeout.
+  // Recorded 1 timeout and generic error status code.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, true,
+                                        1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kGenericError,
                                         1);
 
   // Does not record following metrics on timeout.
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 0);
-  histogram_tester().ExpectTotalCount(kFreeformThumbnailsStatusCodeMetric, 0);
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsCountMetric, 0);
 }
 

@@ -242,6 +242,17 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       manta::proto::FeatureName feature_name,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchThumbnailsComplete callback) override {
+    callback = base::BindOnce(
+        [](ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+           OnFetchThumbnailsComplete callback,
+           std::optional<std::vector<ash::SeaPenImage>> images,
+           manta::MantaStatusCode status_code) {
+          RecordSeaPenMantaStatusCode(query_tag, status_code,
+                                      SeaPenApiType::kThumbnails);
+          std::move(callback).Run(std::move(images), status_code);
+        },
+        query->which(), std::move(callback));
+
     if (!snapper_provider_) {
       LOG(WARNING) << "SnapperProvider not available";
       std::move(callback).Run(std::nullopt,

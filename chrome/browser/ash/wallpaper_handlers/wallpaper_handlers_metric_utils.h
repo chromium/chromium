@@ -25,9 +25,7 @@ void RecordSeaPenLatency(
     base::TimeDelta elapsed_time,
     SeaPenApiType sea_pen_sea_pen_api_type);
 
-// Records the status code of an API request before any client side modification
-// (e.g. client changes status code to kGenericError if the response is missing
-// images).
+// Records the status code of a SeaPen API request.
 void RecordSeaPenMantaStatusCode(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
     manta::MantaStatusCode status_code,

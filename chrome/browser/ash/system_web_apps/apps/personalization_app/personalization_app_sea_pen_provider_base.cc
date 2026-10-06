@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
-#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -271,8 +270,6 @@ void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
     const mojom::SeaPenQueryPtr& query,
     std::optional<std::vector<SeaPenImage>> images,
     manta::MantaStatusCode status_code) {
-  RecordSeaPenMantaStatusCode(query->which(), status_code,
-                              wallpaper_handlers::SeaPenApiType::kThumbnails);
   if (!images) {
     std::move(callback).Run(std::nullopt, status_code);
     return;

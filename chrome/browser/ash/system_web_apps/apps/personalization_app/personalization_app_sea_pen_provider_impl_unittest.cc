@@ -33,7 +33,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
@@ -373,8 +372,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
             });
   }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
   ash::test::UserSessionTestEnvironment* user_session_test_environment() {
     return user_session_test_environment_.get();
   }
@@ -419,7 +416,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
       sea_pen_provider_remote_;
   std::unique_ptr<PersonalizationAppSeaPenProviderImpl> sea_pen_provider_;
   TestSeaPenObserver test_sea_pen_observer_;
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsThumbnails) {
@@ -442,9 +438,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsThumbnails) {
                            MatchesSeaPenImage("fake_sea_pen_image_3", 3),
                            MatchesSeaPenImage("fake_sea_pen_image_4", 4)));
   EXPECT_EQ(search_wallpaper_future.Get<1>(), manta::MantaStatusCode::kOk);
-  histogram_tester().ExpectUniqueSample(
-      "Ash.SeaPen.Freeform.Api.Thumbnails.MantaStatusCode",
-      manta::MantaStatusCode::kOk, 1);
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
@@ -477,9 +470,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
                            MatchesSeaPenImage("fake_sea_pen_image_4", 4)));
   EXPECT_THAT(search_wallpaper_future.Get<1>(),
               testing::Eq(manta::MantaStatusCode::kOk));
-  histogram_tester().ExpectUniqueSample(
-      "Ash.SeaPen.Api.Thumbnails.MantaStatusCode", manta::MantaStatusCode::kOk,
-      1);
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsErrors) {
@@ -496,9 +486,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsErrors) {
       query->Clone(), search_wallpaper_future.GetCallback());
   EXPECT_EQ(search_wallpaper_future.Get<1>(),
             manta::MantaStatusCode::kImageHasPerson);
-  histogram_tester().ExpectUniqueSample(
-      "Ash.SeaPen.Freeform.Api.Thumbnails.MantaStatusCode",
-      manta::MantaStatusCode::kImageHasPerson, 1);
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
