@@ -14,6 +14,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -93,8 +94,13 @@ public class DataSharingTabGroupUtils {
             return destroyedGroups;
         }
 
+        Profile profile = tabModel.getProfile();
+        if (profile == null || isProfileInvalid(profile)) {
+            return destroyedGroups;
+        }
+
         @Nullable TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(assumeNonNull(tabModel.getProfile()));
+                TabGroupSyncServiceFactory.getForProfile(profile);
         if (tabGroupSyncService == null || !tabGroupSyncService.isObservingLocalChanges()) {
             return destroyedGroups;
         }
@@ -161,6 +167,11 @@ public class DataSharingTabGroupUtils {
             return Collections.emptyList();
         }
 
+        Profile profile = tabModel.getProfile();
+        if (profile == null || isProfileInvalid(profile)) {
+            return Collections.emptyList();
+        }
+
         Set<Token> tabGroupIds = new HashSet<>();
         for (LocalTabGroupId localTabGroupId : localTabGroupIds) {
             tabGroupIds.add(localTabGroupId.tabGroupId);
@@ -180,10 +191,9 @@ public class DataSharingTabGroupUtils {
         }
 
         TabCreator tabCreator = tabModel.getTabCreator();
+        UrlConstantResolver urlConstantResolver = UrlConstantResolverFactory.getForProfile(profile);
         List<Tab> newTabs = new ArrayList<>();
         for (Tab parentTab : parentTabMap.values()) {
-            UrlConstantResolver urlConstantResolver =
-                    UrlConstantResolverFactory.getForProfile(tabModel.getProfile());
             // The tab will automatically be placed immediately after the parent and this launch
             // type ensures the tab is added to the tab group.
             Tab newTab =
@@ -258,6 +268,14 @@ public class DataSharingTabGroupUtils {
             if (tab.getId() == tabId) return true;
         }
         return false;
+    }
+
+    /**
+     * Returns whether the profile is invalid (shutting down or off-the-record). Note: Nullness is
+     * checked explicitly at call sites to satisfy NullAway flow analysis.
+     */
+    private static boolean isProfileInvalid(Profile profile) {
+        return profile.shutdownStarted() || profile.isOffTheRecord();
     }
 
     /**

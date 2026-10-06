@@ -28,8 +28,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.ComprehensiveTabList;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -64,6 +66,7 @@ public class DataSharingTabGroupUtilsUnitTest {
     @Mock private Profile mOtrProfile;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabCreator mTabCreator;
+    @Mock private Tab mTab;
 
     @Before
     public void setUp() {
@@ -75,11 +78,7 @@ public class DataSharingTabGroupUtilsUnitTest {
 
     @Test
     public void testGetSyncedGroupsDestroyedByTabRemoval_NullList() {
-        List<TabGroupData> tabGroups = new ArrayList<>();
-        tabGroups.add(
-                new TabGroupData(
-                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
-        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        var tabModel = createCollaborationTabModel();
 
         GroupsPendingDestroy result =
                 DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
@@ -89,11 +88,7 @@ public class DataSharingTabGroupUtilsUnitTest {
 
     @Test
     public void testGetSyncedGroupsDestroyedByTabRemoval_EmptyList() {
-        List<TabGroupData> tabGroups = new ArrayList<>();
-        tabGroups.add(
-                new TabGroupData(
-                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
-        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        var tabModel = createCollaborationTabModel();
 
         GroupsPendingDestroy result =
                 DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
@@ -112,6 +107,17 @@ public class DataSharingTabGroupUtilsUnitTest {
         GroupsPendingDestroy result =
                 DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
                         tabModel, List.of(tabModel.getTabById(TAB_ID_1)));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetSyncedGroupsDestroyedByTabRemoval_NullProfile() {
+        TabGroupSyncServiceFactory.setForTesting(null);
+        TabModel tabModel = EmptyTabModel.getInstance(/* isIncognito= */ false);
+
+        GroupsPendingDestroy result =
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
+                        tabModel, List.of(mTab));
         assertTrue(result.isEmpty());
     }
 
@@ -233,11 +239,7 @@ public class DataSharingTabGroupUtilsUnitTest {
 
     @Test
     public void testGetSyncedGroupsDestroyedByTabRemoval_AllClosing_1Tab() {
-        List<TabGroupData> tabGroups = new ArrayList<>();
-        tabGroups.add(
-                new TabGroupData(
-                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
-        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        var tabModel = createCollaborationTabModel();
 
         GroupsPendingDestroy result =
                 DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
@@ -268,11 +270,7 @@ public class DataSharingTabGroupUtilsUnitTest {
 
     @Test
     public void testGetSyncedGroupsDestroyedByTabClosure_NoTabs() {
-        List<TabGroupData> tabGroups = new ArrayList<>();
-        tabGroups.add(
-                new TabGroupData(
-                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
-        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        var tabModel = createCollaborationTabModel();
         var params = TabClosureParams.closeTabs(Collections.emptyList()).build();
 
         GroupsPendingDestroy result =
@@ -283,11 +281,7 @@ public class DataSharingTabGroupUtilsUnitTest {
 
     @Test
     public void testGetSyncedGroupsDestroyedByTabClosure_SomeTabs_NotHiding() {
-        List<TabGroupData> tabGroups = new ArrayList<>();
-        tabGroups.add(
-                new TabGroupData(
-                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
-        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        var tabModel = createCollaborationTabModel();
         var params = TabClosureParams.closeTabs(List.of(tabModel.getTabById(TAB_ID_1))).build();
 
         GroupsPendingDestroy result =
@@ -300,11 +294,7 @@ public class DataSharingTabGroupUtilsUnitTest {
 
     @Test
     public void testGetSyncedGroupsDestroyedByTabClosure_SomeTabs_Hiding() {
-        List<TabGroupData> tabGroups = new ArrayList<>();
-        tabGroups.add(
-                new TabGroupData(
-                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
-        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        var tabModel = createCollaborationTabModel();
         var params =
                 TabClosureParams.closeTabs(List.of(tabModel.getTabById(TAB_ID_1)))
                         .hideTabGroups(true)
@@ -344,6 +334,72 @@ public class DataSharingTabGroupUtilsUnitTest {
     }
 
     @Test
+    public void testGetSyncedGroupsDestroyedByTabClosure_NullProfile() {
+        TabGroupSyncServiceFactory.setForTesting(null);
+        TabModel tabModel = EmptyTabModel.getInstance(/* isIncognito= */ false);
+        TabClosureParams params = TabClosureParams.closeTabs(List.of(mTab)).build();
+
+        GroupsPendingDestroy result =
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabClosure(tabModel, params);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetSyncedGroupsDestroyedByTabClosure_ShutdownStarted() {
+        var tabModel = createCollaborationTabModel();
+        when(mRegularProfile.shutdownStarted()).thenReturn(true);
+        TabClosureParams params =
+                TabClosureParams.closeTabs(List.of(tabModel.getTabById(TAB_ID_1))).build();
+
+        GroupsPendingDestroy result =
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabClosure(tabModel, params);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetSyncedGroupsDestroyedByTabClosure_ProfileOffTheRecord() {
+        var tabModel = createCollaborationTabModel();
+        when(mRegularProfile.isOffTheRecord()).thenReturn(true);
+        TabClosureParams params =
+                TabClosureParams.closeTabs(List.of(tabModel.getTabById(TAB_ID_1))).build();
+
+        GroupsPendingDestroy result =
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabClosure(tabModel, params);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testCreatePlaceholderTabInGroups_NullProfile() {
+        TabModel tabModel = EmptyTabModel.getInstance(/* isIncognito= */ false);
+        List<Tab> result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel, List.of(LOCAL_TAB_GROUP_ID_1));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testCreatePlaceholderTabInGroups_ShutdownStarted() {
+        var tabModel = createCollaborationTabModel();
+        when(mRegularProfile.shutdownStarted()).thenReturn(true);
+
+        List<Tab> result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel, List.of(LOCAL_TAB_GROUP_ID_1));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testCreatePlaceholderTabInGroups_ProfileOffTheRecord() {
+        var tabModel = createCollaborationTabModel();
+        when(mRegularProfile.isOffTheRecord()).thenReturn(true);
+
+        List<Tab> result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel, List.of(LOCAL_TAB_GROUP_ID_1));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     public void testCreatePlaceholderTabInGroups_Incognito() {
         List<TabGroupData> tabGroups = new ArrayList<>();
         tabGroups.add(
@@ -358,11 +414,7 @@ public class DataSharingTabGroupUtilsUnitTest {
 
     @Test
     public void testCreatePlaceholderTabInGroups_EmptyOrNullOrMismatch() {
-        List<TabGroupData> tabGroups = new ArrayList<>();
-        tabGroups.add(
-                new TabGroupData(
-                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
-        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        var tabModel = createCollaborationTabModel();
         List<Tab> result =
                 DataSharingTabGroupUtils.createPlaceholderTabInGroups(
                         tabModel, /* localTabGroupIds= */ null);
@@ -424,6 +476,14 @@ public class DataSharingTabGroupUtilsUnitTest {
             this.tabIds = tabIds;
             this.isCollaboration = isCollaboration;
         }
+    }
+
+    private MockTabModel createCollaborationTabModel() {
+        List<TabGroupData> tabGroups = new ArrayList<>();
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
+        return createTabGroups(tabGroups, /* isIncognito= */ false);
     }
 
     private MockTabModel createTabGroups(List<TabGroupData> groups, boolean isIncognito) {
