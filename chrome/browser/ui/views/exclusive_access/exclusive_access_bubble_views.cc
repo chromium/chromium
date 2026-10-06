@@ -46,6 +46,8 @@
 
 bool ExclusiveAccessBubbleViews::skip_presentation_delay_for_testing_ = false;
 bool ExclusiveAccessBubbleViews::simulate_gpu_hang_for_testing_ = false;
+bool ExclusiveAccessBubbleViews::
+    simulate_unpresented_browser_window_for_testing_ = false;
 
 namespace {
 
@@ -471,12 +473,62 @@ void ExclusiveAccessBubbleViews::Show() {
   // always fire and spuriously exit fullscreen (e.g. reverting the
   // --start-fullscreen switch shortly after startup).
   if (!headless::IsHeadlessMode()) {
-    presentation_watchdog_timer_.Start(
-        FROM_HERE, base::Milliseconds(1500),
-        base::BindOnce(&ExclusiveAccessBubbleViews::OnPresentationTimeout,
-                       weak_ptr_factory_.GetWeakPtr()));
+    ArmPresentationWatchdog();
   }
 #endif
+}
+
+void ExclusiveAccessBubbleViews::ArmPresentationWatchdog() {
+  waiting_for_bubble_presentation_ = true;
+
+  // The watchdog protects against the browser window's (fullscreen) contents
+  // being on screen while the bubble is not. However, a compositor may
+  // legitimately withhold presentation from a window that isn't visible to the
+  // user, e.g. a window in an inactive tab of a tiling Wayland compositor such
+  // as niri. In that case neither the bubble nor the contents are on screen,
+  // so there is nothing to protect against, and exiting fullscreen would be
+  // wrong. Only start the watchdog once the browser window has actually
+  // presented a frame. See crbug.com/541504510.
+  //
+  // The popup is not parented on Windows, so look up the browser widget via
+  // the bubble's parent view instead of `popup_->parent()`.
+  views::Widget* browser_widget = views::Widget::GetTopLevelWidgetForNativeView(
+      bubble_view_context_->GetBubbleParentView());
+  ui::Compositor* compositor =
+      browser_widget ? browser_widget->GetCompositor() : nullptr;
+  if (!compositor) {
+    StartPresentationWatchdogTimer();
+    return;
+  }
+  if (simulate_unpresented_browser_window_for_testing_) {
+    return;
+  }
+  compositor->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindOnce(&ExclusiveAccessBubbleViews::OnBrowserWindowPresented,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Make sure the browser window produces a frame to receive presentation
+  // feedback for, even if it otherwise has nothing new to draw.
+  compositor->ScheduleDraw();
+}
+
+void ExclusiveAccessBubbleViews::OnBrowserWindowPresented(
+    const viz::FrameTimingDetails& details) {
+  if (!waiting_for_bubble_presentation_ ||
+      presentation_watchdog_timer_.IsRunning()) {
+    return;
+  }
+  StartPresentationWatchdogTimer();
+}
+
+void ExclusiveAccessBubbleViews::StartPresentationWatchdogTimer() {
+  presentation_watchdog_timer_.Start(
+      FROM_HERE, base::Milliseconds(1500),
+      base::BindOnce(&ExclusiveAccessBubbleViews::OnPresentationTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ExclusiveAccessBubbleViews::SimulateBrowserWindowPresentedForTesting() {
+  OnBrowserWindowPresented(viz::FrameTimingDetails());
 }
 
 void ExclusiveAccessBubbleViews::ShowAndStartTimers() {
@@ -506,6 +558,7 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
 
 void ExclusiveAccessBubbleViews::OnFirstPresentation(
     const viz::FrameTimingDetails& details) {
+  waiting_for_bubble_presentation_ = false;
   presentation_watchdog_timer_.Stop();
   StartHideTimer();
 }

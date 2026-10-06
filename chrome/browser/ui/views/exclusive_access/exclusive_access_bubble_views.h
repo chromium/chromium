@@ -73,6 +73,16 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
     simulate_gpu_hang_for_testing_ = simulate;
   }
 
+  // Simulates the browser window never being presented, e.g. because the
+  // system compositor considers it hidden.
+  static void set_simulate_unpresented_browser_window_for_testing(
+      bool simulate) {
+    simulate_unpresented_browser_window_for_testing_ = simulate;
+  }
+
+  // Simulates the browser window being presented for the first time.
+  void SimulateBrowserWindowPresentedForTesting();
+
  private:
   // Updates |popup|'s bounds given |animation_| and |animated_attribute_|.
   void UpdateBounds();
@@ -98,6 +108,12 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   void OnFirstPresentation(const viz::FrameTimingDetails& details);
 
+  // Arms `presentation_watchdog_timer_` once the browser window is presented.
+  void ArmPresentationWatchdog();
+  void OnBrowserWindowPresented(const viz::FrameTimingDetails& details);
+  void StartPresentationWatchdogTimer();
+  void OnPresentationTimeout();
+
   const raw_ptr<ExclusiveAccessBubbleViewsContext> bubble_view_context_;
 
   raw_ptr<views::Widget> popup_;
@@ -122,10 +138,14 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   // If set, simulates a GPU hang by never running the presentation callback.
   static bool simulate_gpu_hang_for_testing_;
 
+  // If set, never request presentation feedback for the browser window.
+  static bool simulate_unpresented_browser_window_for_testing_;
+
   // If set, will be called during the 'show' animation.
   base::OnceCallback<void(const viz::FrameTimingDetails&)> presentation_cb_;
 
-  void OnPresentationTimeout();
+  // True from when the bubble is shown until it is first presented.
+  bool waiting_for_bubble_presentation_ = false;
 
   base::OneShotTimer presentation_watchdog_timer_;
 

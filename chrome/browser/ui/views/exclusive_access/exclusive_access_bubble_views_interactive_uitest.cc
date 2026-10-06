@@ -18,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -270,8 +271,11 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
   EXPECT_TRUE(GetExclusiveAccessBubbleView());
   EXPECT_TRUE(IsFullscreenForBrowser() || IsWindowFullscreenForTabOrPending());
 
-  // Wait for the watchdog to fire (timeout is 1.5s).
-  Wait(base::Milliseconds(2000));
+  // Wait for the watchdog to fire (timeout is 1.5s after the browser window is
+  // presented).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !IsFullscreenForBrowser() && !IsWindowFullscreenForTabOrPending();
+  }));
 
   // The watchdog should have fired, and we should have exited fullscreen.
   EXPECT_FALSE(IsFullscreenForBrowser() || IsWindowFullscreenForTabOrPending());
@@ -279,6 +283,48 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
 
   // Clean up.
   ExclusiveAccessBubbleViews::set_simulate_gpu_hang_for_testing(false);
+}
+
+// TODO(crbug.com/528276492): Reenable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PresentationWatchdogWaitsForBrowserWindow \
+  DISABLED_PresentationWatchdogWaitsForBrowserWindow
+#else
+#define MAYBE_PresentationWatchdogWaitsForBrowserWindow \
+  PresentationWatchdogWaitsForBrowserWindow
+#endif
+// The watchdog must not exit fullscreen while the browser window itself isn't
+// being presented, e.g. because the system compositor considers it hidden. In
+// that case the fullscreen contents aren't visible either. See
+// crbug.com/541504510.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       MAYBE_PresentationWatchdogWaitsForBrowserWindow) {
+  ExclusiveAccessBubbleViews::set_simulate_gpu_hang_for_testing(true);
+  ExclusiveAccessBubbleViews::
+      set_simulate_unpresented_browser_window_for_testing(true);
+  absl::Cleanup reset_test_hooks = [] {
+    ExclusiveAccessBubbleViews::
+        set_simulate_unpresented_browser_window_for_testing(false);
+    ExclusiveAccessBubbleViews::set_simulate_gpu_hang_for_testing(false);
+  };
+
+  EnterActiveTabFullscreen();
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+  EXPECT_TRUE(IsFullscreenForBrowser() || IsWindowFullscreenForTabOrPending());
+
+  // Wait longer than the watchdog timeout. Fullscreen should be retained since
+  // the browser window was never presented.
+  Wait(base::Milliseconds(2000));
+  EXPECT_TRUE(IsFullscreenForBrowser() || IsWindowFullscreenForTabOrPending());
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+
+  // Once the browser window is presented without the bubble, the watchdog
+  // should exit fullscreen.
+  GetExclusiveAccessBubbleView()->SimulateBrowserWindowPresentedForTesting();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !IsFullscreenForBrowser() && !IsWindowFullscreenForTabOrPending();
+  }));
+  EXPECT_FALSE(GetExclusiveAccessBubbleView());
 }
 
 // This test is Windows-only because it tests Win32-specific pointer-lock
