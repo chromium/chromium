@@ -8,14 +8,14 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/sequence_checker.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 
 NSString* const kTTCAudioSessionManagerErrorDomain =
     @"org.chromium.ttc.audio_session";
@@ -176,6 +176,10 @@ TTCAudioOutputDestination DestinationForPort(
   uint64_t _destinationChangeGeneration;
   uint64_t _preferredInputChangeGeneration;
 
+  // Used to store the handle for registered notification with the
+  // NSNotificationCenter.
+  NSMutableArray* _notificationHandles;
+
   // Cached description of the most recently connected external output port,
   // preserved while output is temporarily overridden to the built-in speaker.
   AVAudioSessionPortDescription* _cachedExternalOutputPort;
@@ -206,6 +210,11 @@ TTCAudioOutputDestination DestinationForPort(
     [self registerNotificationObserversWithAudioEngine:nil];
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self unregisterNotificationObservers];
 }
 
 - (void)disconnect {
@@ -281,35 +290,67 @@ TTCAudioOutputDestination DestinationForPort(
   }
   [self unregisterNotificationObservers];
 
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self
-             selector:@selector(handleRouteChangeNotification:)
-                 name:AVAudioSessionRouteChangeNotification
-               object:nil];
-  [center addObserver:self
-             selector:@selector(handleInterruptionNotification:)
-                 name:AVAudioSessionInterruptionNotification
-               object:nil];
+  [self registerSelector:@selector(handleRouteChangeNotification:)
+         forNotification:AVAudioSessionRouteChangeNotification
+                  object:nil];
+  [self registerSelector:@selector(handleInterruptionNotification:)
+         forNotification:AVAudioSessionInterruptionNotification
+                  object:nil];
   if (engine) {
-    [center addObserver:self
-               selector:@selector(handleEngineConfigurationChangeNotification:)
-                   name:AVAudioEngineConfigurationChangeNotification
-                 object:engine];
+    [self
+        registerSelector:@selector(handleEngineConfigurationChangeNotification:)
+         forNotification:AVAudioEngineConfigurationChangeNotification
+                  object:nil];
   }
 }
 
 - (void)unregisterNotificationObservers {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center removeObserver:self
-                    name:AVAudioSessionRouteChangeNotification
-                  object:nil];
-  [center removeObserver:self
-                    name:AVAudioSessionInterruptionNotification
-                  object:nil];
-  [center removeObserver:self
-                    name:AVAudioEngineConfigurationChangeNotification
-                  object:nil];
+  if (_notificationHandles) {
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    for (id handle in std::exchange(_notificationHandles, nil)) {
+      [center removeObserver:handle];
+    }
+  }
+}
+
+// Registers `selector` on `self` to be invoked when notification `name`
+// is posted. This wrapper around the -addObserver:selector:name:object:
+// ensure that the selector is called on the correct sequence (because
+// AVAudioEngine may post the notification on a background thread).
+- (void)registerSelector:(SEL)selector
+         forNotification:(NSNotificationName)name
+                  object:(id)object {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  CHECK([self respondsToSelector:selector]);
+
+  // This callback will invoke `selector` on `self` (weakly captured) after
+  // first doing a thread hop to the sequence where `self` belongs.
+  __weak __typeof(self) weakSelf = self;
+  base::RepeatingCallback<void(NSNotification*)> callback = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindRepeating(
+          [](id target, SEL selector, NSNotification* notification) {
+            if (target) {
+              if (IMP method = [target methodForSelector:selector]) {
+                using Function = void (*)(id, SEL, NSNotification*);
+                Function function = reinterpret_cast<Function>(method);
+                function(target, selector, notification);
+              }
+            }
+          },
+          weakSelf, selector));
+
+  if (id handle = [[NSNotificationCenter defaultCenter]
+          addObserverForName:name
+                      object:object
+                       queue:nil
+                  usingBlock:base::CallbackToBlock(std::move(callback))]) {
+    if (!_notificationHandles) {
+      _notificationHandles = [[NSMutableArray alloc] init];
+    }
+    [_notificationHandles addObject:handle];
+  }
 }
 
 - (NSError*)configureAudioSession {
@@ -566,6 +607,7 @@ TTCAudioOutputDestination DestinationForPort(
 // Returns destination based on speaker override state and connected devices.
 // @param forceSpeaker YES if speaker output is explicitly requested.
 - (TTCAudioOutputDestination)destinationForSpeakerOverride:(BOOL)forceSpeaker {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   return forceSpeaker ? TTCAudioOutputDestination::kSpeaker
                       : (self.isExternalOutputConnected
                              ? TTCAudioOutputDestination::kExternal
@@ -590,6 +632,7 @@ TTCAudioOutputDestination DestinationForPort(
 // @param destination Target audio output destination.
 - (AVAudioSessionMode)modeForDestination:
     (TTCAudioOutputDestination)destination {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   switch (destination) {
     case TTCAudioOutputDestination::kSpeaker:
       return AVAudioSessionModeVideoChat;
@@ -603,6 +646,7 @@ TTCAudioOutputDestination DestinationForPort(
 // @param destination Target audio output destination.
 - (AVAudioSessionCategoryOptions)categoryOptionsForDestination:
     (TTCAudioOutputDestination)destination {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   switch (destination) {
     case TTCAudioOutputDestination::kSpeaker:
       return AVAudioSessionCategoryOptionAllowAirPlay |
@@ -856,14 +900,11 @@ TTCAudioOutputDestination DestinationForPort(
 
 #pragma mark - Notifications
 
-// Handles AVAudioSessionRouteChangeNotification received from AVFoundation on
-// arbitrary CoreAudio notification threads, validating the payload and
-// dispatching to the UI thread.
+// Handles AVAudioSessionRouteChangeNotification received from AVFoundation,
+// validating the payload and handling the change.
 // @param notification The route change notification posted by AVFoundation.
 - (void)handleRouteChangeNotification:(NSNotification*)notification {
-  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
-    return;
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   NSDictionary* userInfo = notification.userInfo;
   NSNumber* reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey];
@@ -873,12 +914,7 @@ TTCAudioOutputDestination DestinationForPort(
   AVAudioSessionRouteChangeReason reason =
       static_cast<AVAudioSessionRouteChangeReason>(
           [reasonValue unsignedIntegerValue]);
-
-  __weak TTCAudioSessionManager* weakSelf = self;
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf handleRouteChangeWithReason:reason];
-      }));
+  [self handleRouteChangeWithReason:reason];
 }
 
 // Handles an audio route change on the UI thread for the specified reason.
@@ -962,26 +998,15 @@ TTCAudioOutputDestination DestinationForPort(
 // AVAudioEngine.
 - (void)handleEngineConfigurationChangeNotification:
     (NSNotification*)notification {
-  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
-    return;
-  }
-
-  __weak TTCAudioSessionManager* weakSelf = self;
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf handleEngineConfigurationChange];
-      }));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self handleEngineConfigurationChange];
 }
 
-// Handles AVAudioSessionInterruptionNotification received from AVFoundation on
-// arbitrary CoreAudio notification threads, validating the payload and
-// dispatching to the UI thread.
+// Handles AVAudioSessionInterruptionNotification received from AVFoundation,
+// validating the payload and handling the notification.
 // @param notification The interruption notification posted by AVFoundation.
 - (void)handleInterruptionNotification:(NSNotification*)notification {
-  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
-    return;
-  }
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSDictionary* userInfo = notification.userInfo;
   NSNumber* typeValue = userInfo[AVAudioSessionInterruptionTypeKey];
   if (!typeValue) {
@@ -998,11 +1023,7 @@ TTCAudioOutputDestination DestinationForPort(
   BOOL shouldResume =
       (options & AVAudioSessionInterruptionOptionShouldResume) != 0;
 
-  __weak TTCAudioSessionManager* weakSelf = self;
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf handleInterruptionWithType:type shouldResume:shouldResume];
-      }));
+  [self handleInterruptionWithType:type shouldResume:shouldResume];
 }
 
 @end

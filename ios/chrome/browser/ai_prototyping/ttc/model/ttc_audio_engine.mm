@@ -14,15 +14,17 @@
 #import "base/compiler_specific.h"
 #import "base/containers/span.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/sequence_checker.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 
 // Domain for errors originated by TTCAudioEngine.
 NSString* const kTTCAudioEngineErrorDomain = @"org.chromium.ttc.audio";
@@ -233,15 +235,21 @@ constexpr double kTestToneAmplitude = 8000.0;
     return;
   }
 
-  [AVAudioApplication
-      requestRecordPermissionWithCompletionHandler:^(BOOL granted) {
-        if (!completion) {
-          return;
-        }
-        web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
-                                                   completion(granted);
-                                                 }));
-      }];
+  // If completion is not nil, then wraps it in base::BindPostTask(...) to
+  // ensure it will execute on the current sequence even if CoreAudio call
+  // the completion from a background thread. Otherwise create a block that
+  // does nothing (no need to perform a thread hop in that case).
+  if (completion) {
+    completion = base::CallbackToBlock(
+        base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                           base::BindOnce(completion)));
+  } else {
+    completion = ^(BOOL) {
+    };
+  }
+
+  DCHECK(completion);
+  [AVAudioApplication requestRecordPermissionWithCompletionHandler:completion];
 }
 
 - (void)proceedWithStartCaptureWithCompletion:

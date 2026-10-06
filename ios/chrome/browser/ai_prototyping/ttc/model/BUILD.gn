@@ -12,6 +12,7 @@ source_set("model") {
     "ttc_audio_player.h",
     "ttc_audio_player.mm",
     "ttc_audio_player_delegate.h",
+    "ttc_audio_recorder+testing.h",
     "ttc_audio_recorder.h",
     "ttc_audio_recorder.mm",
     "ttc_audio_recorder_delegate.h",
@@ -40,7 +41,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/web/public/thread",
     "//url",
   ]
   frameworks = [

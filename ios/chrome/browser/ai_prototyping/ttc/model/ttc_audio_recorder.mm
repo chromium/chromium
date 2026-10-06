@@ -9,15 +9,17 @@
 #import <cmath>
 
 #import "base/check.h"
-#import "base/compiler_specific.h"
 #import "base/containers/span.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_metrics.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder+testing.h"
 
 namespace {
 
@@ -52,9 +54,10 @@ struct ProcessedAudioBuffer {
 // maps it to perceptual energy [0.0, 1.0].
 // Safe to execute on the real-time audio thread without touching any shared
 // Objective-C instance state.
-ProcessedAudioBuffer ProcessInputBuffer(AVAudioPCMBuffer* buffer,
-                                        AVAudioFormat* target_format,
-                                        AVAudioConverter* converter) {
+ProcessedAudioBuffer ProcessInputBuffer(AVAudioFormat* target_format,
+                                        AVAudioConverter* converter,
+                                        AVAudioPCMBuffer* buffer,
+                                        AVAudioTime* when) {
   if (!buffer || buffer.frameLength == 0 || buffer.format.sampleRate <= 0.0) {
     return {};
   }
@@ -124,6 +127,13 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioPCMBuffer* buffer,
   // using the modular ttc audio metrics utility.
   float rms = ttc::CalculateRMS(samples);
   float perceptualEnergy = ttc::LinearRmsToPerceptualLevel(rms);
+
+  // If buffer was not resampled, clone the hardware tap buffer before returning
+  // since CoreAudio recycles tap buffer (and TTCAudioRecorder will dispatch the
+  // result to another thread).
+  if (resampled_buffer == buffer) {
+    resampled_buffer = [buffer copy];
+  }
 
   return {
       .perceptual_energy = perceptualEnergy,
@@ -208,17 +218,24 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioPCMBuffer* buffer,
     }
     _inputConverter = inputConverter;
 
+    // Create a block that process the input buffer on the CoreAudio thread
+    // and then hop to the current sequence (which is likely different) to
+    // invoke -bufferWasProcessed: to ensure the TTCAudioRecorder is never
+    // accessed from a CoreAudio background thread.
     __weak TTCAudioRecorder* weakSelf = self;
+    void (^block)(AVAudioPCMBuffer*, AVAudioTime*) = base::CallbackToBlock(
+        base::BindRepeating(&ProcessInputBuffer, _micTapFormat, _inputConverter)
+            .Then(base::BindPostTask(
+                base::SequencedTaskRunner::GetCurrentDefault(),
+                base::BindRepeating(^(ProcessedAudioBuffer processed) {
+                  [weakSelf bufferWasProcessed:std::move(processed)];
+                }))));
+
     @try {
-      [inputNode
-          installTapOnBus:kAudioInputBus
-               bufferSize:kMicTapBufferSize
-                   format:inputFormat
-                    block:^(AVAudioPCMBuffer* buffer, AVAudioTime* when) {
-                      [weakSelf handleInputBuffer:buffer
-                                     targetFormat:micTapFormat
-                                        converter:inputConverter];
-                    }];
+      [inputNode installTapOnBus:kAudioInputBus
+                      bufferSize:kMicTapBufferSize
+                          format:inputFormat
+                           block:block];
       _hasInstalledTap = YES;
     } @catch (NSException* exception) {
       if (error) {
@@ -268,61 +285,31 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioPCMBuffer* buffer,
 
 #pragma mark - Private
 
-// Processes incoming audio buffers from unit tests on the UI thread,
-// forwarding with current instance formats.
 - (void)handleInputBuffer:(AVAudioPCMBuffer*)buffer {
-  [self handleInputBuffer:buffer
-             targetFormat:_micTapFormat
-                converter:_inputConverter];
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self bufferWasProcessed:ProcessInputBuffer(_micTapFormat, _inputConverter,
+                                              buffer, /*when=*/nil)];
 }
 
-// Processes incoming audio buffers from the microphone tap (or unit tests),
-// resamples to 16kHz mono Float32 via AVAudioConverter if needed, computes
-// perceptual energy, and dispatches to the delegate on the UI thread.
-// Operates strictly on passed parameters without reading instance variables,
-// ensuring thread safety when invoked from the CoreAudio thread.
-- (void)handleInputBuffer:(AVAudioPCMBuffer*)buffer
-             targetFormat:(AVAudioFormat*)targetFormat
-                converter:(AVAudioConverter*)converter {
-  @autoreleasepool {
-    if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
-      return;
-    }
-
-    ProcessedAudioBuffer processed =
-        ProcessInputBuffer(buffer, targetFormat, converter);
-    if (!processed.resampled_buffer ||
-        processed.resampled_buffer.frameLength == 0) {
-      return;
-    }
-
-    // If buffer was not resampled, clone the hardware tap buffer before
-    // dispatching across threads since CoreAudio recycles tap buffers.
-    AVAudioPCMBuffer* capturedBuffer = (processed.resampled_buffer == buffer)
-                                           ? [buffer copy]
-                                           : processed.resampled_buffer;
-
-    __weak TTCAudioRecorder* weakSelf = self;
-    web::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSelf deliverCapturedEnergy:processed.perceptual_energy
-                                   buffer:capturedBuffer];
-        }));
-  }
-}
-
+// Invoked asynchronously on the TTCAudioRecorder's sequence after the input
+// buffer has been processed on the CoreAudio thread (by ProcessInputBuffer).
 // Dispatches the computed perceptual energy and resampled buffer to the
 // delegate on the main thread.
-- (void)deliverCapturedEnergy:(float)energy buffer:(AVAudioPCMBuffer*)buffer {
+- (void)bufferWasProcessed:(ProcessedAudioBuffer)processed {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if ([self.delegate
-          respondsToSelector:@selector(audioRecorder:didUpdateInputEnergy:)]) {
-    [self.delegate audioRecorder:self didUpdateInputEnergy:energy];
+  if (processed.resampled_buffer.frameLength == 0) {
+    return;
   }
-  if (buffer &&
-      [self.delegate
+
+  if ([_delegate
+          respondsToSelector:@selector(audioRecorder:didUpdateInputEnergy:)]) {
+    [_delegate audioRecorder:self
+        didUpdateInputEnergy:processed.perceptual_energy];
+  }
+
+  if ([_delegate
           respondsToSelector:@selector(audioRecorder:didCaptureBuffer:)]) {
-    [self.delegate audioRecorder:self didCaptureBuffer:buffer];
+    [_delegate audioRecorder:self didCaptureBuffer:processed.resampled_buffer];
   }
 }
 

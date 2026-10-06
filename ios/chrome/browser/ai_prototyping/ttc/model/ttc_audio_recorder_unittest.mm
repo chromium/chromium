@@ -13,15 +13,11 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_metrics.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder+testing.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-
-// Expose handleInputBuffer: for unit testing.
-@interface TTCAudioRecorder (Testing)
-- (void)handleInputBuffer:(AVAudioPCMBuffer*)buffer;
-@end
 
 // Fake delegate to verify TTCAudioRecorder delegate notifications.
 @interface FakeTTCAudioRecorderDelegate : NSObject <TTCAudioRecorderDelegate>

@@ -204,7 +204,7 @@ TEST_F(TTCAudioEngineTest,
   OCMStub(ClassMethod([mock_audio_app_
               requestRecordPermissionWithCompletionHandler:[OCMArg any]]))
       .andDo(^(NSInvocation* invocation) {
-        void (^handler)(BOOL);
+        __unsafe_unretained void (^handler)(BOOL);
         [invocation getArgument:&handler atIndex:2];
         handler(NO);
       });
@@ -236,7 +236,7 @@ TEST_F(TTCAudioEngineTest,
   OCMStub(ClassMethod([mock_audio_app_
               requestRecordPermissionWithCompletionHandler:[OCMArg any]]))
       .andDo(^(NSInvocation* invocation) {
-        void (^handler)(BOOL);
+        __unsafe_unretained void (^handler)(BOOL);
         [invocation getArgument:&handler atIndex:2];
         savedHandler = [handler copy];
       });

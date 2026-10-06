@@ -13,10 +13,13 @@
 #import "base/apple/foundation_util.h"
 #import "base/compiler_specific.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
+#import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 
 namespace {
 
@@ -79,13 +82,18 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
   // Number of audio buffers currently scheduled on the player node and
   // awaiting playback completion on the UI thread.
   NSInteger _pendingBuffersCount;
+
+  // Used to ensure the object is accessed from the correct sequence.
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (BOOL)isPlaying {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   return _isPlaying;
 }
 
 - (NSInteger)pendingBuffersCount {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   return _pendingBuffersCount;
 }
 
@@ -113,6 +121,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 #pragma mark - Public
 
 - (BOOL)attachToAudioEngine:(AVAudioEngine*)audioEngine error:(NSError**)error {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!audioEngine) {
     if (error) {
       *error =
@@ -151,6 +160,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 }
 
 - (void)detachFromAudioEngine:(AVAudioEngine*)audioEngine {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self stopPlaybackImmediately];
   if (!audioEngine) {
     return;
@@ -164,7 +174,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 }
 
 - (void)playStreamingAudioChunk:(NSData*)pcm24kData {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   base::span<const uint8_t> byteSpan = base::apple::NSDataToSpan(pcm24kData);
   size_t sampleCount = byteSpan.size() / sizeof(int16_t);
   if (sampleCount == 0) {
@@ -193,7 +203,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 }
 
 - (void)playPCMBuffer:(AVAudioPCMBuffer*)buffer {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!buffer || buffer.frameLength == 0 || buffer.format.sampleRate <= 0.0) {
     return;
   }
@@ -265,9 +275,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 }
 
 - (void)stopPlaybackImmediately {
-  if (web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
-    DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   BOOL wasPlaying = _isPlaying || (_playerNode.engine && _playerNode.isPlaying);
   _isPlaying = NO;
   [self purgePendingBuffers];
@@ -280,7 +288,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 }
 
 - (void)resumePlaybackAfterEngineRestart {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_isPlaying && _playerNode.engine && _playerNode.engine.isRunning &&
       !_playerNode.isPlaying) {
     @try {
@@ -294,9 +302,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 }
 
 - (void)reset {
-  if (web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
-    DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isPlaying = NO;
   [self purgePendingBuffers];
   _converter = nil;
@@ -305,6 +311,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 // Purges pending audio buffers from the player node, invalidating any queued
 // completion callbacks and resetting the pending buffer count.
 - (void)purgePendingBuffers {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _playbackSessionId++;
   _pendingBuffersCount = 0;
   if (_playerNode.engine) {
@@ -327,6 +334,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 }
 
 - (void)setIsPlayingForTesting:(BOOL)isPlaying {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isPlaying = isPlaying;
 }
 
@@ -335,33 +343,26 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 // Schedules `buffer` on the internal player node, starts node playback if
 // needed, and notifies the delegate when buffer drain occurs on the UI thread.
 - (void)scheduleBuffer:(AVAudioPCMBuffer*)buffer {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!buffer || buffer.frameLength == 0 || !_playerNode.engine) {
     return;
   }
 
   uint64_t currentSessionId = _playbackSessionId;
 
+  // Create a block that hop to the correct sequence and invoke the method
+  // -handleScheduledBufferCompletionForSession:.
   __weak TTCAudioPlayer* weakSelf = self;
+  void (^completion)(void) = base::CallbackToBlock(base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(), base::BindOnce(^{
+        [weakSelf handleScheduledBufferCompletionForSession:currentSessionId];
+      })));
+
   @try {
-    [_playerNode
-           scheduleBuffer:buffer
-                   atTime:nil
-                  options:0
-        completionHandler:^{
-          if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
-            return;
-          }
-          TTCAudioPlayer* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-          web::GetUIThreadTaskRunner({})->PostTask(
-              FROM_HERE, base::BindOnce(^{
-                [strongSelf
-                    handleScheduledBufferCompletionForSession:currentSessionId];
-              }));
-        }];
+    [_playerNode scheduleBuffer:buffer
+                         atTime:nil
+                        options:0
+              completionHandler:completion];
   } @catch (NSException* exception) {
     DLOG(WARNING) << "Failed to schedule buffer on player node: "
                   << base::SysNSStringToUTF8(exception.reason ?: @"Unknown");
@@ -397,7 +398,7 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 // Handles buffer completion on the main thread, updating the pending buffer
 // count and notifying the delegate when all queued buffers finish.
 - (void)handleScheduledBufferCompletionForSession:(uint64_t)sessionId {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (sessionId != _playbackSessionId) {
     return;
   }
