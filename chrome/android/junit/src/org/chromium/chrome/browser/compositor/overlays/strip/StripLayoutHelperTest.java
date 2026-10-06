@@ -283,7 +283,6 @@ public class StripLayoutHelperTest {
     private static final float PADDING_LEFT = 10.f;
     private static final float PADDING_RIGHT = 20.f;
     private static final float PADDING_TOP = 20.f;
-    private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final float LONG_PRESS_X = 150.f;
     private static final float LONG_PRESS_Y = 0.f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
@@ -2792,6 +2791,35 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testStartReorder_DragDrop_LastTabInGroup_ReordersGroupInstead() {
+        initializeTest(/* tabIndex= */ 0);
+        ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
+        mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
+        // Tab 0 is the sole member of its group, so dragging it out would dissolve the group.
+        groupTabs(0, 1, TAB_GROUP_ID_1);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
+
+        verify(mockDelegate)
+                .startReorderMode(
+                        any(),
+                        any(),
+                        any(),
+                        mStripLayoutViewCaptor.capture(),
+                        any(),
+                        eq(ReorderType.START_DRAG_DROP));
+        StripLayoutView interactingView = mStripLayoutViewCaptor.getValue();
+        assertTrue(
+                "Dragging the last tab in a group via drag and drop should drag the group.",
+                interactingView instanceof StripLayoutGroupTitle);
+        assertEquals(
+                "Should drag the group that the dragged tab belongs to.",
+                TAB_GROUP_ID_1,
+                ((StripLayoutGroupTitle) interactingView).getTabGroupId());
+    }
+
+    @Test
     public void testStartReorder_LastTabInGroup_MultiSelected_ReordersTab() {
         initializeTest(/* tabIndex= */ 0);
         ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
@@ -3746,24 +3774,8 @@ public class StripLayoutHelperTest {
     // Note that the testTabGroupDeleteDialog_* tests only cover the behaviors relevant to the
     // tab strip. Tests for much of the internals and dialog flows themselves are in
     // StripTabModelActionListenerUnitTest, TabRemoverImplUnitTest, and TabUngrouperImplUnitTest.
-    @Test
-    public void testTabGroupDeleteDialog_Reorder_LastTabInGroup_ReordersGroupInstead() {
-        // Dragging a lone tab within the strip used to pull it out of its group, deleting the
-        // group and prompting the user to confirm. The drag is now treated as a group reorder, so
-        // the group stays intact and no confirmation is needed.
-        setupTabGroup(0, 1, TAB_GROUP_ID_1);
-        setupDragDropState();
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-
-        startDraggingTab(tabs, false, 0);
-
-        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
-
-        // The group is intact, so its title stays on the strip.
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
-    }
-
+    // Dragging the last tab in a group is treated as a group drag, which is covered by the
+    // testStartReorder_* tests.
     @Test
     public void testTabGroupDeleteDialog_DragOffStrip_NotLastTab() {
         // Set up resources for testing tab group delete dialog.
@@ -3773,34 +3785,12 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
-        // Start dragging tab out of group.
-        startDraggingTab(tabs, true, 0);
+        // Drag onto the strip, then off of it.
+        mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
+        mStripLayoutHelper.handleDragExit(true, false);
 
         // No ungroup should start.
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
-    }
-
-    @Test
-    public void testTabGroupDeleteDialog_DragOffStrip_LastTabInGroup_DragsGroupInstead() {
-        // A lone tab used to be ungrouped when dragged off the strip, deleting its group and
-        // prompting the user to confirm. It is now dragged as a group, so the group travels with
-        // it and the ungroup is never attempted -- note there is no need to set up the sync or
-        // confirmation state that the dialog used to depend on. Sync/collaboration variants of the
-        // confirmation flow are still covered by the testTabGroupDeleteDialog_Close_* tests below.
-        setupTabGroup(0, 1, TAB_GROUP_ID_1);
-        setTabStripDragHandlerMock();
-        setupDragDropState();
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        assertNotNull(mModel.getTabAt(0).getTabGroupId());
-
-        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
-        startDraggingTab(tabs, true, 0);
-
-        verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
-
-        // The group is intact, so its title stays on the strip.
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
     }
 
     @Test
@@ -4311,28 +4301,6 @@ public class StripLayoutHelperTest {
                     "Avatar resource for shared group should be cleared",
                     groupTitle.getAvatarResourceForTesting());
         }
-    }
-
-    private void startDraggingTab(
-            StripLayoutTab[] tabs, boolean draggingTabOffStrip, int tabIndexToDrag) {
-        // Start drag tab out of group or drag off strip.
-        if (draggingTabOffStrip) {
-            // Drag onto strip before dragged off.
-            mStripLayoutHelper.handleDragEnter(0f, 0f, true, false);
-            mStripLayoutHelper.handleDragExit(true, false);
-        } else {
-            float dragDistance =
-                    ((tabs[0].getWidth() - TAB_OVERLAP_WIDTH_DP) / 2)
-                            * REORDER_OVERLAP_SWITCH_PERCENTAGE;
-            startDragTabOutOfTabGroup(tabIndexToDrag, dragDistance + 1);
-        }
-    }
-
-    private void startDragTabOutOfTabGroup(int index, float dragDistance) {
-        // Start reorder and drag tab out of the tab group through group end.
-        mStripLayoutHelper.startReorderModeAtIndexForTesting(index);
-        float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(startX + dragDistance, 0f, dragDistance);
     }
 
     @Test
