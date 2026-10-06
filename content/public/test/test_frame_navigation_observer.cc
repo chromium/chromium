@@ -65,8 +65,8 @@ void TestFrameNavigationObserver::WaitForCommit() {
 
 void TestFrameNavigationObserver::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  last_navigation_succeeded_ = false;
   if (navigation_handle->GetFrameTreeNodeId() == frame_tree_node_id_) {
+    last_navigation_succeeded_ = false;
     navigation_started_ = true;
     has_committed_ = false;
   }
@@ -74,14 +74,14 @@ void TestFrameNavigationObserver::DidStartNavigation(
 
 void TestFrameNavigationObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  if (!navigation_started_)
+  if (!navigation_started_ ||
+      navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {
     return;
+  }
 
   last_navigation_succeeded_ = !navigation_handle->IsErrorPage();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsErrorPage() ||
-      navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {
+  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     return;
   }
 
