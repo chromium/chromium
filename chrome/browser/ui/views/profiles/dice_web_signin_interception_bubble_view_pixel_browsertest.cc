@@ -383,7 +383,7 @@ class DiceWebSigninInterceptionBubblePixelTest
         views::test::AnyWidgetTestPasskey{},
         "DiceWebSigninInterceptionBubbleView");
 
-    bubble_handle_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
+    DiceWebSigninInterceptionBubbleView::CreateBubble(
         browser(),
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider()
@@ -472,7 +472,6 @@ class DiceWebSigninInterceptionBubblePixelTest
             show_managed_disclaimer};
   }
 
-  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
   std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

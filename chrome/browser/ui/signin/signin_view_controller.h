@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #endif
 
@@ -56,6 +57,7 @@ enum class SourceForRefreshTokenOperation;
 }  // namespace signin_metrics
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class DiceWebSigninInterceptionBubbleView;
 namespace {
 class NewTabWebContentsObserver;
 }
@@ -166,6 +168,14 @@ class SigninViewController {
       GURL qr_code_url,
       base::OnceClosure closing_callback,
       CrossDeviceSigninPromoEntryPoint entry_point);
+
+  // Shows the Dice web sign-in interception bubble and returns a handle that
+  // closes the bubble when destroyed. Replaces any existing interception
+  // bubble currently shown by this controller.
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+  ShowSigninInterceptionBubble(
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+      base::OnceCallback<void(SigninInterceptionResult)> callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top
@@ -305,6 +315,7 @@ class SigninViewController {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
+  base::WeakPtr<DiceWebSigninInterceptionBubbleView> intercept_bubble_;
 #endif
 
   base::ObserverList<Observer> observer_list_;

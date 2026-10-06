@@ -23,6 +23,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -229,7 +233,18 @@ bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupported(
   if (!browser) {
     return false;
   }
-  return IsSigninInterceptionSupportedInternal(*browser);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  // WebUI Browser does not use BrowserView.
+  // TODO(webium): make a framework-agnostic way to get the avatar button.
+  if (!browser_view) {
+    return false;
+  }
+  // Some browsers, such as web apps, don't have an avatar toolbar button to
+  // anchor the bubble. Even if a web app has an avatar toolbar button, we
+  // still don't support signin interception.
+  return browser_view->toolbar_button_provider()
+                 ->GetAvatarToolbarButtonInterface() != nullptr &&
+         !web_app::AppBrowserController::IsWebApp(browser);
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
@@ -272,8 +287,8 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
     std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
     return nullptr;
   }
-  return ShowSigninInterceptionBubbleInternal(browser, bubble_parameters,
-                                              std::move(callback));
+  return SigninViewController::From(browser)->ShowSigninInterceptionBubble(
+      bubble_parameters, std::move(callback));
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>

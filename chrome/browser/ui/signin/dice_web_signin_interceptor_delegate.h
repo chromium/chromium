@@ -55,17 +55,6 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       Profile* profile,
       SigninInterceptionResult result);
-
- private:
-  // Implemented in dice_web_signin_interception_bubble_view.cc
-  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
-  ShowSigninInterceptionBubbleInternal(
-      BrowserWindowInterface* browser,
-      const BubbleParameters& bubble_parameters,
-      base::OnceCallback<void(SigninInterceptionResult)> callback);
-
-  static bool IsSigninInterceptionSupportedInternal(
-      const BrowserWindowInterface& browser);
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_

@@ -80,6 +80,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -1315,6 +1316,84 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowSigninInterceptionBubble) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account,
+      /*primary_account=*/AccountInfo());
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, future.GetCallback());
+  ASSERT_TRUE(handle);
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(future.IsReady());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  handle.reset();
+  destroyed_waiter.Wait();
+  EXPECT_EQ(future.Get(), SigninInterceptionResult::kIgnored);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowSigninInterceptionBubble_ReplacedBySecondBubble) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account,
+      /*primary_account=*/AccountInfo());
+
+  views::NamedWidgetShownWaiter widget_waiter1(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> future1;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle1 =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, future1.GetCallback());
+  ASSERT_TRUE(handle1);
+  views::Widget* widget1 = widget_waiter1.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget1);
+
+  // Showing a second bubble while the first is open should close the first
+  // bubble and invoke its callback with kIgnored.
+  views::test::WidgetDestroyedWaiter destroyed_waiter1(widget1);
+  views::NamedWidgetShownWaiter widget_waiter2(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> future2;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle2 =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, future2.GetCallback());
+  ASSERT_TRUE(handle2);
+
+  destroyed_waiter1.Wait();
+  EXPECT_EQ(future1.Get(), SigninInterceptionResult::kIgnored);
+
+  views::Widget* widget2 = widget_waiter2.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget2);
+  EXPECT_TRUE(widget2->IsVisible());
+
+  // Destroying the stale first handle must not close the second bubble.
+  handle1.reset();
+  EXPECT_FALSE(widget2->IsClosed());
+  EXPECT_FALSE(future2.IsReady());
+
+  // Destroying the second handle closes the second bubble.
+  views::test::WidgetDestroyedWaiter destroyed_waiter2(widget2);
+  handle2.reset();
+  destroyed_waiter2.Wait();
+  EXPECT_EQ(future2.Get(), SigninInterceptionResult::kIgnored);
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

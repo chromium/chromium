@@ -78,6 +78,10 @@
 #include "chrome/browser/ui/signin/signin_qrcode_infobar_delegate.h"  // nogncheck
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -358,6 +362,23 @@ ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
   return ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks;
 }
 
+class ScopedInterceptBubbleHandle
+    : public ScopedWebSigninInterceptionBubbleHandle {
+ public:
+  explicit ScopedInterceptBubbleHandle(
+      base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble)
+      : bubble_(std::move(bubble)) {}
+
+  ~ScopedInterceptBubbleHandle() override {
+    if (bubble_) {
+      bubble_->Close();
+    }
+  }
+
+ private:
+  base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble_;
+};
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
@@ -390,6 +411,12 @@ SigninViewController::~SigninViewController() = default;
 
 void SigninViewController::TearDownPreBrowserWindowDestruction() {
   CloseModalSignin();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (intercept_bubble_) {
+    intercept_bubble_->Close();
+    intercept_bubble_.reset();
+  }
+#endif
 }
 
 void SigninViewController::AddObserver(
@@ -403,6 +430,7 @@ void SigninViewController::RemoveObserver(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // static
 bool SigninViewController::IsNTPTab(content::WebContents* contents) {
   if (!contents) {
@@ -543,9 +571,7 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
           std::move(callback)),
       GetOnModalDialogClosedCallback());
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SigninViewController::ShowCrossDeviceSigninQrBubble(
     GURL qr_code_url,
     base::OnceClosure closing_callback,
@@ -558,6 +584,25 @@ void SigninViewController::ShowCrossDeviceSigninQrBubble(
       delegate.release(),
       base::BindOnce(&SigninViewController::OnBubbleClosed, AsWeakPtr()));
 }
+
+std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+SigninViewController::ShowSigninInterceptionBubble(
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+    base::OnceCallback<void(SigninInterceptionResult)> callback) {
+  if (intercept_bubble_) {
+    intercept_bubble_->Close();
+  }
+
+  views::BubbleAnchor anchor =
+      BrowserView::GetBrowserViewForBrowser(&browser_.get())
+          ->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface()
+          ->GetBubbleAnchor(*browser_);
+  intercept_bubble_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
+      &browser_.get(), anchor, bubble_parameters, std::move(callback));
+  return std::make_unique<ScopedInterceptBubbleHandle>(intercept_bubble_);
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SigninViewController::OnBubbleClosed(views::Widget::ClosedReason reason) {
