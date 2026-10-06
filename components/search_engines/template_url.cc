@@ -2357,6 +2357,7 @@ void TemplateURL::ResetKeywordIfNecessary(
 }
 
 void TemplateURL::InvalidateCachedValues() const {
+  engine_type_ = SEARCH_ENGINE_UNKNOWN;
   for (const TemplateURLRef& ref : url_refs_) {
     ref.InvalidateCachedValues();
   }

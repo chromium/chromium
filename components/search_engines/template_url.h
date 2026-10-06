@@ -1028,9 +1028,11 @@ class TemplateURL {
   // Returns an empty GURL if this template URL has no suggestions_url().
   GURL GenerateSuggestionURL(const SearchTermsData& search_terms_data) const;
 
-  // TemplateURL internally caches values derived from a passed SearchTermsData
-  // to make its functions quick. This method invalidates any cached values and
-  // it should be called after SearchTermsData has been changed.
+  // TemplateURL caches values derived from its TemplateURLData (e.g. the
+  // engine type, which is derived from the search URL) and from a passed
+  // SearchTermsData, so that its functions stay fast. This method clears all
+  // cached values. Call it after either the TemplateURLData or the
+  // SearchTermsData changes.
   void InvalidateCachedValues() const;
 
   // Estimates dynamic memory usage.

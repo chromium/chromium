@@ -20,6 +20,7 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -113,6 +114,30 @@ TEST_F(TemplateURLServiceUnitTest, UpdateUserSelectedDefaultSearchEnginePref) {
   const std::string* pref_url = dict.FindString(DefaultSearchManager::kURL);
   ASSERT_TRUE(pref_url);
   EXPECT_EQ("https://custom2.com/search2?q={searchTerms}", *pref_url);
+}
+
+// Regression test: the engine type cached by TemplateURL::GetEngineType() must
+// be invalidated when the engine's URL is changed through Update().
+TEST_F(TemplateURLServiceUnitTest, EngineTypeUpdatedAfterResetTemplateURL) {
+  template_url_service().Load();
+  TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
+
+  TemplateURLData data;
+  data.SetShortName(u"custom");
+  data.SetKeyword(u"custom");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  TemplateURL* turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(SEARCH_ENGINE_GOOGLE,
+            turl->GetEngineType(template_url_service().search_terms_data()));
+
+  template_url_service().ResetTemplateURL(
+      turl, u"custom", u"custom", "https://example.com/search?q={searchTerms}");
+
+  EXPECT_EQ("https://example.com/search?q={searchTerms}", turl->url());
+  EXPECT_EQ(SEARCH_ENGINE_OTHER,
+            turl->GetEngineType(template_url_service().search_terms_data()));
 }
 
 TEST_F(TemplateURLServiceUnitTest, UpdateRecommendedDefaultSearchEnginePref) {
