@@ -1,11 +1,6 @@
 This is a testharness.js-based test.
-Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Concatenating two ISO-2022-JP outputs is not always valid
-  assert_equals: expected "¥\\ufffd¥" but got "\\ufffd¥\\ufffd¥"
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Replacement, push back ASCII characters: iso-2022-jp
   assert_equals: expected "\\ufffd\\ufffd" but got "\\ufffd$"
-[FAIL] Sticky multibyte state: iso-2022-jp
-  assert_equals: expected "@" but got "\\ufffd@"
-[FAIL] Sticky multibyte state: euc-jp
-  assert_equals: expected "　" but got "\\ufffd"
 Harness: the test ran to completion.
+

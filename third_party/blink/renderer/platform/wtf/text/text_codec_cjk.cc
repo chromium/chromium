@@ -541,6 +541,13 @@ class EucJpDecoder : public TextCodecCjk::Decoder {
   EucJpDecoder() = default;
 
  protected:
+  void Finalize(bool flush, StringBuilder&) override {
+    if (flush) {
+      // Do not carry the JIS0212 selection into the next decoding session.
+      jis0212_ = false;
+    }
+  }
+
   SawError ParseByte(uint8_t byte, StringBuilder& result) override {
     if (uint8_t lead = std::exchange(lead_, 0x00)) {
       if (lead == 0x8E && byte >= 0xA1 && byte <= 0xDF) {
@@ -669,6 +676,13 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
           }
           break;
       }
+      // Reset only after handling pending input at the end of the session.
+      lead_ = 0x00;
+      prepended_byte_.reset();
+      second_prepended_byte_.reset();
+      decoder_state_ = State::kAscii;
+      decoder_output_state_ = State::kAscii;
+      output_ = false;
     }
 
     return result.ToString();

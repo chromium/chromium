@@ -102,11 +102,8 @@ String TextDecoder::Decode(base::span<const uint8_t> input,
   DCHECK(options);
   if (!do_not_flush_) {
     if (!codec_) {
-      // In the spec, a new decoder is created unconditionally here, but that
-      // requires an extra allocation. Since the TextCodec would be flushed
-      // here by the previous call if `!do_not_flush` (sorry about the double
-      // negatives), then we don't need a new TextCodec to match the spec
-      // behavior.
+      // Reuse the codec after a full flush instead of allocating a new one
+      // for each session. Fatal errors while flushing discard the codec below.
       // https://encoding.spec.whatwg.org/#dom-textdecoder-decode
       codec_ = NewTextCodec(encoding_);
       CHECK(codec_) << encoding_.GetName();
