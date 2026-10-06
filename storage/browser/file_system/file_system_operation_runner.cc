@@ -30,6 +30,14 @@ namespace storage {
 
 using OperationID = FileSystemOperationRunner::OperationID;
 
+FileSystemOperationRunner::OperationState::OperationState() = default;
+FileSystemOperationRunner::OperationState::OperationState(OperationState&&) =
+    default;
+FileSystemOperationRunner::OperationState&
+FileSystemOperationRunner::OperationState::operator=(OperationState&&) =
+    default;
+FileSystemOperationRunner::OperationState::~OperationState() = default;
+
 FileSystemOperationRunner::FileSystemOperationRunner(
     base::PassKey<FileSystemContext>,
     const scoped_refptr<FileSystemContext>& file_system_context)
@@ -355,19 +363,25 @@ OperationID FileSystemOperationRunner::Truncate(const FileSystemURL& url,
 
 void FileSystemOperationRunner::Cancel(OperationID id,
                                        StatusCallback callback) {
-  if (finished_operations_.contains(id)) {
-    DCHECK(!stray_cancel_callbacks_.contains(id));
-    stray_cancel_callbacks_[id] = std::move(callback);
-    return;
-  }
-
   auto found = operations_.find(id);
-  if (found == operations_.end() || !found->second) {
+  if (found == operations_.end()) {
     // There is no operation with |id|.
     std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }
-  found->second->Cancel(std::move(callback));
+
+  if (found->second.is_finished) {
+    DCHECK(!found->second.stray_cancel_callback);
+    found->second.stray_cancel_callback = std::move(callback);
+    return;
+  }
+
+  if (!found->second.operation) {
+    // There is no operation with |id|.
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+  found->second.operation->Cancel(std::move(callback));
 }
 
 OperationID FileSystemOperationRunner::TouchFile(
@@ -592,7 +606,7 @@ void FileSystemOperationRunner::DidFinish(const OperationID id,
   scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
-    finished_operations_.insert(id);
+    operations_[id].is_finished = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FileSystemOperationRunner::DidFinish,
                                   weak_ptr_, id, std::move(callback), rv));
@@ -613,7 +627,7 @@ void FileSystemOperationRunner::DidGetMetadata(
   scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
-    finished_operations_.insert(id);
+    operations_[id].is_finished = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FileSystemOperationRunner::DidGetMetadata, weak_ptr_,
@@ -636,7 +650,7 @@ void FileSystemOperationRunner::DidReadDirectory(
   scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
-    finished_operations_.insert(id);
+    operations_[id].is_finished = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FileSystemOperationRunner::DidReadDirectory, weak_ptr_,
@@ -659,7 +673,7 @@ void FileSystemOperationRunner::DidWrite(const OperationID id,
   scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
-    finished_operations_.insert(id);
+    operations_[id].is_finished = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FileSystemOperationRunner::DidWrite, weak_ptr_, id,
@@ -682,7 +696,7 @@ void FileSystemOperationRunner::DidOpenFile(
   scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
-    finished_operations_.insert(id);
+    operations_[id].is_finished = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FileSystemOperationRunner::DidOpenFile, weak_ptr_, id,
@@ -714,7 +728,7 @@ void FileSystemOperationRunner::DidCreateSnapshot(
   scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
-    finished_operations_.insert(id);
+    operations_[id].is_finished = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FileSystemOperationRunner::DidCreateSnapshot, weak_ptr_,
@@ -732,7 +746,7 @@ void FileSystemOperationRunner::PrepareForWrite(OperationID id,
     file_system_context_->GetUpdateObservers(url.type())
         ->Notify(&FileUpdateObserver::OnStartUpdate, url);
   }
-  write_target_urls_[id].insert(url);
+  operations_[id].write_target_urls.insert(url);
 }
 
 void FileSystemOperationRunner::PrepareForRead(OperationID id,
@@ -748,34 +762,37 @@ OperationID FileSystemOperationRunner::BeginOperation(
   OperationID id = next_operation_id_++;
 
   DCHECK(!operations_.contains(id));
-  operations_[id] = std::move(operation);
+  operations_[id].operation = std::move(operation);
   return id;
 }
 
 void FileSystemOperationRunner::FinishOperation(OperationID id) {
-  auto found = write_target_urls_.find(id);
-  if (found != write_target_urls_.end()) {
-    const FileSystemURLSet& urls = found->second;
-    for (const FileSystemURL& url : urls) {
-      if (file_system_context_->GetUpdateObservers(url.type())) {
-        file_system_context_->GetUpdateObservers(url.type())
-            ->Notify(&FileUpdateObserver::OnEndUpdate, url);
-      }
-    }
-    write_target_urls_.erase(found);
+  auto found = operations_.find(id);
+  if (found == operations_.end()) {
+    return;
   }
 
-  operations_.erase(id);
-  finished_operations_.erase(id);
+  for (const FileSystemURL& url : found->second.write_target_urls) {
+    if (file_system_context_->GetUpdateObservers(url.type())) {
+      file_system_context_->GetUpdateObservers(url.type())
+          ->Notify(&FileUpdateObserver::OnEndUpdate, url);
+    }
+  }
 
-  // Dispatch stray cancel callback if exists.
-  auto found_cancel = stray_cancel_callbacks_.find(id);
-  if (found_cancel != stray_cancel_callbacks_.end()) {
+  // Keep the entry in |operations_| while destroying |operation| so that any
+  // re-entrant Cancel() call sees |is_finished| and records its callback.
+  found->second.is_finished = true;
+  found->second.operation.reset();
+
+  StatusCallback stray_cancel_callback =
+      std::move(found->second.stray_cancel_callback);
+  operations_.erase(found);
+
+  if (stray_cancel_callback) {
     // This cancel has been requested after the operation has finished,
     // so report that we failed to stop it.
-    std::move(found_cancel->second)
+    std::move(stray_cancel_callback)
         .Run(base::File::FILE_ERROR_INVALID_OPERATION);
-    stray_cancel_callbacks_.erase(found_cancel);
   }
 }
 

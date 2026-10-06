@@ -303,26 +303,30 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   // Not owned; whatever owns this has to make sure context outlives this.
   raw_ptr<FileSystemContext, AcrossTasksDanglingUntriaged> file_system_context_;
 
-  using Operations =
-      std::map<OperationID, std::unique_ptr<FileSystemOperation>>;
+  struct OperationState {
+    OperationState();
+    OperationState(OperationState&&);
+    OperationState& operator=(OperationState&&);
+    ~OperationState();
+
+    std::unique_ptr<FileSystemOperation> operation;
+    // We keep track of the file to be modified by each operation so that
+    // we can notify observers when we're done.
+    FileSystemURLSet write_target_urls;
+    // Callback for stray cancel whose target operation is already finished.
+    StatusCallback stray_cancel_callback;
+    // Whether the operation has finished but not yet fired its callbacks.
+    bool is_finished = false;
+  };
+
   OperationID next_operation_id_ = 1;
-  Operations operations_;
+  std::map<OperationID, OperationState> operations_;
 
   // Used to detect synchronous invocation of completion callbacks by the
   // back-end, to re-post them to be notified asynchronously. Note that some
   // operations are recursive, so this may already be true when BeginOperation
   // is called.
   bool is_beginning_operation_ = false;
-
-  // We keep track of the file to be modified by each operation so that
-  // we can notify observers when we're done.
-  std::map<OperationID, FileSystemURLSet> write_target_urls_;
-
-  // Operations that are finished but not yet fire their callbacks.
-  std::set<OperationID> finished_operations_;
-
-  // Callbacks for stray cancels whose target operation is already finished.
-  std::map<OperationID, StatusCallback> stray_cancel_callbacks_;
 
   base::WeakPtr<FileSystemOperationRunner> weak_ptr_;
   base::WeakPtrFactory<FileSystemOperationRunner> weak_factory_{this};
