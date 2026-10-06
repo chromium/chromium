@@ -36,6 +36,8 @@ component("service") {
     "gpu_config.h",
     "gpu_init.cc",
     "gpu_init.h",
+    "gpu_init_2.cc",
+    "gpu_init_2.h",
     "gpu_watchdog_thread.cc",
     "gpu_watchdog_thread.h",
     "image_transport_surface.h",
