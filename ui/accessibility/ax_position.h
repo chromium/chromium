@@ -3364,8 +3364,14 @@ class AXPosition {
           AXBoundaryBehavior::kStopAtAnchorBoundary) {
         return CreateNextPositionAtAnchorWithText();
       }
-      // With kStopAtAnchorBoundary, follow the same steps as for any other
-      // character boundary so that the result stays on this position's anchor.
+      // With kStopAtAnchorBoundary and kCheckInitialPosition, keep this
+      // position, which is already at a character boundary before the newline.
+      if (IsTextPosition() && options.boundary_detection ==
+                                  AXBoundaryDetection::kCheckInitialPosition) {
+        return Clone();
+      }
+      // Otherwise, follow the same steps as for any other character boundary so
+      // that the result stays on this position's anchor.
       text_position = CreateNextPositionAtAnchorWithText();
     } else {
       // Calling "AsLeafTextPositionBeforeCharacter" should have created a text
@@ -3455,6 +3461,15 @@ class AXPosition {
     // position that is either at the start of an anchor that is preceded by a
     // generated newline, at a grapheme boundary or a null position.
     if (text_position->IsPrecededByGeneratedNewline()) {
+      // With kStopAtAnchorBoundary and kCheckInitialPosition, keep this
+      // position, which is already at a character boundary after the newline.
+      if (IsTextPosition() &&
+          options.boundary_behavior ==
+              AXBoundaryBehavior::kStopAtAnchorBoundary &&
+          options.boundary_detection ==
+              AXBoundaryDetection::kCheckInitialPosition) {
+        return Clone();
+      }
       // When `text_position` is right after a generated newline, the preceding
       // character boundary is at the end of the previous anchor with text or,
       // if there isn't one before the newline, at the start of content.

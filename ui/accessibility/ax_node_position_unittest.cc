@@ -4818,6 +4818,62 @@ TEST_F(AXPositionTest,
   EXPECT_EQ(&anchor, result->GetAnchor());
   EXPECT_EQ(3, result->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result->affinity());
+
+  // With kCheckInitialPosition, keep the position before the generated newline.
+  const AXMovementOptions check_options{
+      AXBoundaryBehavior::kStopAtAnchorBoundary,
+      AXBoundaryDetection::kCheckInitialPosition};
+  for (int offset : {1, 2}) {
+    position =
+        CreateTextPosition(anchor, offset, ax::mojom::TextAffinity::kUpstream);
+    result = position->CreatePositionAtTextBoundary(
+        ax::mojom::TextBoundary::kCharacter, ax::mojom::MoveDirection::kForward,
+        check_options);
+    EXPECT_EQ(&anchor, result->GetAnchor());
+    EXPECT_EQ(offset, result->text_offset());
+    EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, result->affinity());
+  }
+}
+
+TEST_F(AXPositionTest,
+       CreatePreviousCharacterBoundaryStaysAfterGeneratedNewline) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
+
+  // ++kRootWebArea
+  // ++++kParagraph "Z"
+  // ++++kGenericContainer (anchor)
+  // ++++++kIframe (empty)  offset 0
+  // ++++++kParagraph "A"   offset 1, right after a generated newline
+  // ++++++kIframe (empty)  offset 2
+  // ++++++kParagraph "B"   offset 3, right after a generated newline
+  TestAXTreeUpdateNode paragraph1(ax::mojom::Role::kParagraph,
+                                  {TestAXTreeUpdateNode("Z")});
+  paragraph1.data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  TestAXTreeUpdateNode paragraph2 = paragraph1;
+  paragraph2.children[0].data.SetName("A");
+  TestAXTreeUpdateNode paragraph3 = paragraph1;
+  paragraph3.children[0].data.SetName("B");
+  TestAXTreeUpdateNode iframe(ax::mojom::Role::kIframe, {});
+  Init(TestAXTreeUpdate({ax::mojom::Role::kRootWebArea,
+                         {paragraph1,
+                          {ax::mojom::Role::kGenericContainer,
+                           {iframe, paragraph2, iframe, paragraph3}}}}));
+  const AXNode& anchor = *GetTree()->root()->children()[1];
+  const AXMovementOptions options{AXBoundaryBehavior::kStopAtAnchorBoundary,
+                                  AXBoundaryDetection::kCheckInitialPosition};
+
+  // With kCheckInitialPosition, keep the position after the generated newline.
+  for (int offset : {1, 3}) {
+    auto position = CreateTextPosition(anchor, offset,
+                                       ax::mojom::TextAffinity::kDownstream);
+    auto result = position->CreatePositionAtTextBoundary(
+        ax::mojom::TextBoundary::kCharacter,
+        ax::mojom::MoveDirection::kBackward, options);
+    EXPECT_EQ(&anchor, result->GetAnchor());
+    EXPECT_EQ(offset, result->text_offset());
+  }
 }
 
 TEST_F(AXPositionTest, CreatePositionAtInvalidGraphemeBoundary) {
