@@ -369,11 +369,8 @@ struct AudioBuffer {
   // Format of the audio.
   SampleFormat sample_format;
 
-  // How the channels are laid out.
-  ChannelLayout channel_layout;
-
-  // Number of channels.
-  int32 channel_count;
+  // How the channels are laid out, and the number of channels.
+  ChannelLayoutConfig channel_layout_config;
 
   // Sample rate of the buffer.
   int32 sample_rate;

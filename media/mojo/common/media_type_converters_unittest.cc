@@ -390,8 +390,7 @@ TEST(MediaTypeConvertersTest, ConvertDecryptConfig_RejectsUnboundedSubsamples) {
 TEST(MediaTypeConvertersTest, ConvertAudioBuffer_BitstreamEmptyData) {
   auto ptr = mojom::AudioBuffer::New();
   ptr->sample_format = SampleFormat::kSampleFormatAc3;
-  ptr->channel_layout = CHANNEL_LAYOUT_STEREO;
-  ptr->channel_count = 2;
+  ptr->channel_layout_config = ChannelLayoutConfig::Stereo();
   ptr->sample_rate = 48000;
   ptr->frame_count = 100;
   // Explicitly provide empty data for a bitstream buffer.

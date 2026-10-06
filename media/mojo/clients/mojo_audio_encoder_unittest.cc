@@ -528,8 +528,7 @@ TEST(MojoAudioEncoderServiceTest, ServiceRejectsInvalidInputs) {
   // Test bitstream format input.
   auto bitstream_buffer = mojom::AudioBuffer::New();
   bitstream_buffer->sample_format = SampleFormat::kSampleFormatAc3;
-  bitstream_buffer->channel_layout = CHANNEL_LAYOUT_STEREO;
-  bitstream_buffer->channel_count = 2;
+  bitstream_buffer->channel_layout_config = ChannelLayoutConfig::Stereo();
   bitstream_buffer->sample_rate = 44000;
   bitstream_buffer->frame_count = 100;
   bitstream_buffer->data = std::vector<uint8_t>(10);
