@@ -214,7 +214,7 @@ class SynchronousCompositorProxyRegistry
       proxy_->SetLayerTreeFrameSink(sink_);
   }
 
-  SynchronousCompositorProxy* proxy() { return proxy_.get(); }
+  SynchronousCompositorProxy* Proxy() { return proxy_.get(); }
 
   void RegisterLayerTreeFrameSink(
       SynchronousLayerTreeFrameSink* layer_tree_frame_sink) override {
@@ -576,8 +576,8 @@ void WidgetInputHandlerManager::AttachSynchronousCompositor(
     mojo::PendingAssociatedReceiver<mojom::blink::SynchronousCompositor>
         compositor_request) {
   DCHECK(synchronous_compositor_registry_);
-  if (synchronous_compositor_registry_->proxy()) {
-    synchronous_compositor_registry_->proxy()->BindChannel(
+  if (synchronous_compositor_registry_->Proxy()) {
+    synchronous_compositor_registry_->Proxy()->BindChannel(
         std::move(control_host), std::move(host),
         std::move(compositor_request));
   }

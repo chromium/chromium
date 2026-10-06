@@ -220,7 +220,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
         base::BindOnce(&QueuedWebInputEvent::HandledEvent,
                        base::Unretained(this), base::RetainedRef(queue));
     if (!queue->HandleEventOnMainThread(
-            *event_, attribution(), std::move(metrics_), std::move(callback))) {
+            *event_, Attribution(), std::move(metrics_), std::move(callback))) {
       // The |callback| won't be run, so our stored |callback_| should run
       // indicating error.
       HandledEvent(queue, mojom::blink::InputEventResultState::kNotConsumed,
@@ -283,13 +283,13 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
     return CallbackInfo(std::move(callback_), event_->latency_info());
   }
 
-  bool originally_cancelable() const { return originally_cancelable_; }
+  bool OriginallyCancelable() const { return originally_cancelable_; }
 
-  const WebInputEventAttribution& attribution() const { return attribution_; }
+  const WebInputEventAttribution& Attribution() const { return attribution_; }
 
   const WebInputEvent& Event() const { return event_->Event(); }
 
-  WebCoalescedInputEvent* mutable_coalesced_event() { return event_.get(); }
+  WebCoalescedInputEvent* MutableCoalescedEvent() { return event_.get(); }
 
   void SetQueuedTimeStamp(base::TimeTicks queued_time) {
     event_->EventPointer()->SetQueuedTimeStamp(queued_time);
@@ -718,8 +718,7 @@ static bool IsAsyncTouchMove(
     return false;
   const WebTouchEvent& touch_event =
       static_cast<const WebTouchEvent&>(event->Event());
-  return touch_event.moved_beyond_slop_region &&
-         !event->originally_cancelable();
+  return touch_event.moved_beyond_slop_region && !event->OriginallyCancelable();
 }
 
 void MainThreadEventQueue::RafFallbackTimerFired() {
@@ -804,7 +803,7 @@ void MainThreadEventQueue::QueueEvent(
   if (is_input_event) {
     auto* queued_input_event = static_cast<QueuedWebInputEvent*>(event.get());
     input_event_type = queued_input_event->Event().GetType();
-    attribution = queued_input_event->attribution();
+    attribution = queued_input_event->Attribution();
     queued_input_event->SetQueuedTimeStamp(base::TimeTicks::Now());
   }
 
@@ -914,8 +913,7 @@ void MainThreadEventQueue::HandleEventResampling(
     base::TimeTicks frame_time) {
   if (item->IsWebInputEvent() && allow_raf_aligned_input_ && event_predictor_) {
     QueuedWebInputEvent* event = static_cast<QueuedWebInputEvent*>(item.get());
-    event_predictor_->HandleEvents(*event->mutable_coalesced_event(),
-                                   frame_time);
+    event_predictor_->HandleEvents(*event->MutableCoalescedEvent(), frame_time);
   }
 }
 
@@ -1057,7 +1055,7 @@ void MainThreadEventQueue::UnblockQueuedBlockingTouchEventsIfNeeded(
       }
       auto* queued_event = static_cast<QueuedWebInputEvent*>(task);
       WebInputEvent* event =
-          queued_event->mutable_coalesced_event()->EventPointer();
+          queued_event->MutableCoalescedEvent()->EventPointer();
       if (event->GetType() == WebInputEvent::Type::kTouchStart) {
         break;
       }

@@ -77,29 +77,29 @@ class ElasticOverscrollControllerBezierTest : public testing::Test {
 
   void SetUp() override {}
 
-  void SendGestureScrollBegin(PhaseState inertialPhase) {
+  void SendGestureScrollBegin(PhaseState inertial_phase) {
     WebGestureEvent event(WebInputEvent::Type::kGestureScrollBegin,
                           WebInputEvent::kNoModifiers, base::TimeTicks(),
                           WebGestureDevice::kTouchpad);
-    event.data.scroll_begin.inertial_phase = inertialPhase;
+    event.data.scroll_begin.inertial_phase = inertial_phase;
 
     controller_.ObserveGestureEventAndResult(cc::ElementId(), event,
                                              cc::InputHandlerScrollResult());
   }
 
-  void SendGestureScrollUpdate(PhaseState inertialPhase,
+  void SendGestureScrollUpdate(PhaseState inertial_phase,
                                const Vector2dF& unused_scroll_delta) {
-    SendGestureScrollUpdate(inertialPhase, unused_scroll_delta,
+    SendGestureScrollUpdate(inertial_phase, unused_scroll_delta,
                             unused_scroll_delta);
   }
 
-  void SendGestureScrollUpdate(PhaseState inertialPhase,
+  void SendGestureScrollUpdate(PhaseState inertial_phase,
                                const Vector2dF& unused_scroll_delta,
                                const Vector2dF& event_delta) {
     blink::WebGestureEvent event(WebInputEvent::Type::kGestureScrollUpdate,
                                  WebInputEvent::kNoModifiers, base::TimeTicks(),
                                  blink::WebGestureDevice::kTouchpad);
-    event.data.scroll_update.inertial_phase = inertialPhase;
+    event.data.scroll_update.inertial_phase = inertial_phase;
     event.data.scroll_update.delta_x = -event_delta.x();
     event.data.scroll_update.delta_y = -event_delta.y();
     cc::InputHandlerScrollResult scroll_result;
@@ -358,13 +358,13 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
   const base::TimeTicks now = base::TimeTicks::Now();
   SendGestureScrollEnd(now);
 
-  const int TOTAL_FRAMES = 28;
-  const std::array<int, TOTAL_FRAMES> stretch_amount_y = {
+  constexpr int kTotalFrames = 28;
+  const std::array<int, kTotalFrames> stretch_amount_y = {
       -19, -41, -55, -65, -72, -78, -82, -85, -88, -89, -78, -64, -53, -44,
       -37, -30, -25, -20, -16, -13, -10, -7,  -5,  -4,  -2,  -1,  -1,  0,
   };
 
-  for (int i = 0; i < TOTAL_FRAMES; i++) {
+  for (int i = 0; i < kTotalFrames; ++i) {
     controller_.Animate(now + base::Milliseconds(i * 16));
     EXPECT_EQ(controller_.EnsureEntry(cc::ElementId()).state,
               (stretch_amount_y[i] == 0
@@ -381,12 +381,12 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
       gfx::Vector2dF(-3000.f, 0.f);
   SendGestureScrollEnd(now);
 
-  const std::array<int, TOTAL_FRAMES> stretch_amount_x = {
+  const std::array<int, kTotalFrames> stretch_amount_x = {
       -9,  -24, -34, -42, -48, -54, -58, -62, -66, -69, -62, -52, -43, -36,
       -30, -25, -20, -17, -13, -10, -8,  -6,  -4,  -3,  -2,  -1,  0,   0,
   };
 
-  for (int i = 0; i < TOTAL_FRAMES; i++) {
+  for (int i = 0; i < kTotalFrames; ++i) {
     controller_.Animate(now + base::Milliseconds(i * 16));
     EXPECT_EQ(controller_.EnsureEntry(cc::ElementId()).state,
               (stretch_amount_x[i] == 0

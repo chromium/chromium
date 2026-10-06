@@ -148,7 +148,7 @@ class ScrollPredictorTest : public testing::Test {
     return scroll_predictor_->should_resample_scroll_events_;
   }
 
-  bool isFilteringEnabled() { return scroll_predictor_->filtering_enabled_; }
+  bool IsFilteringEnabled() { return scroll_predictor_->filtering_enabled_; }
 
   void ConfigurePredictorFieldTrialAndInitialize(
       const base::Feature& feature,
@@ -654,17 +654,17 @@ TEST_F(ScrollPredictorTest, DefaultFilter) {
   ConfigureFilterFieldTrialAndInitialize(features::kFilteringScrollPrediction,
                                          "");
   VerifyFilterType(::features::kFilterNameEmpty);
-  EXPECT_TRUE(isFilteringEnabled());
+  EXPECT_TRUE(IsFilteringEnabled());
 
   ConfigureFilterFieldTrialAndInitialize(features::kFilteringScrollPrediction,
                                          ::features::kFilterNameEmpty);
   VerifyFilterType(::features::kFilterNameEmpty);
-  EXPECT_TRUE(isFilteringEnabled());
+  EXPECT_TRUE(IsFilteringEnabled());
 
   ConfigureFilterFieldTrialAndInitialize(features::kFilteringScrollPrediction,
                                          ::features::kFilterNameOneEuro);
   VerifyFilterType(::features::kFilterNameOneEuro);
-  EXPECT_TRUE(isFilteringEnabled());
+  EXPECT_TRUE(IsFilteringEnabled());
 }
 
 // We first send 100 events to the scroll predictor with kalman predictor
@@ -683,7 +683,7 @@ TEST_F(ScrollPredictorTest, FilteringPrediction) {
     gesture_update = CreateGestureScrollUpdate(0, 3 * i, 8 * i /* ms */);
     // Handle the event 5 ms later
     HandleResampleScrollEvents(gesture_update, 8 * i + 5 /* ms */);
-    EXPECT_FALSE(isFilteringEnabled());
+    EXPECT_FALSE(IsFilteringEnabled());
     accumulated_deltas.push_back(GetLastAccumulatedDelta().y());
   }
   EXPECT_EQ(accumulated_deltas.size(), 100u);
@@ -699,7 +699,7 @@ TEST_F(ScrollPredictorTest, FilteringPrediction) {
     gesture_update = CreateGestureScrollUpdate(0, 3 * i, 8 * i /* ms */);
     // Handle the event 5 ms later
     HandleResampleScrollEvents(gesture_update, 8 * i + 5 /* ms */);
-    EXPECT_TRUE(isFilteringEnabled());
+    EXPECT_TRUE(IsFilteringEnabled());
     EXPECT_NEAR(accumulated_deltas[i], GetLastAccumulatedDelta().y(), 0.00001);
   }
 }
@@ -725,7 +725,7 @@ TEST_F(ScrollPredictorTest, ResampleLatencyFixedMs) {
   scroll_predictor_ = std::make_unique<ScrollPredictor>();
 
   VerifyPredictorType(::features::kPredictorNameLinearResampling);
-  EXPECT_FALSE(isFilteringEnabled());  // Ensure filtering is off
+  EXPECT_FALSE(IsFilteringEnabled());  // Ensure filtering is off
   SendGestureScrollBegin();
 
   // Send 1st GSU, no prediction available.

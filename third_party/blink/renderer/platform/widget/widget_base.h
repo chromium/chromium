@@ -387,7 +387,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   gfx::Point BlinkSpaceToFlooredDIPs(const gfx::Point& point);
   gfx::Size BlinkSpaceToFlooredDIPs(const gfx::Size& size);
   gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect);
-  gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rectF);
+  gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rect);
 
   void BindWidgetCompositor(
       mojo::PendingReceiver<mojom::blink::WidgetCompositor> receiver);

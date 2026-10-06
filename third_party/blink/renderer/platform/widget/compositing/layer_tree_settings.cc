@@ -264,11 +264,13 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       gfx::ScaleToFlooredSize(initial_screen_size, initial_device_scale_factor);
   int display_width = screen_size.width();
   int display_height = screen_size.height();
-  int numTiles = (display_width * display_height) / (256 * 256);
-  if (numTiles > 16)
+  int num_tiles = (display_width * display_height) / (256 * 256);
+  if (num_tiles > 16) {
     default_tile_size = 384;
-  if (numTiles >= 40)
+  }
+  if (num_tiles >= 40) {
     default_tile_size = 512;
+  }
 
   // Adjust for some resolutions that barely straddle an extra
   // tile when in portrait mode. This helps worst case scroll/raster

@@ -130,34 +130,34 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
                       base::Microseconds(INT64_C(100000000))) {}
   ~ElasticOverscrollControllerExponentialTest() override {}
 
-  void SendGestureScrollBegin(InertialPhaseState inertialPhase,
+  void SendGestureScrollBegin(InertialPhaseState inertial_phase,
                               cc::ElementId element_id = cc::ElementId()) {
     TickCurrentTime();
     WebGestureEvent event(WebInputEvent::Type::kGestureScrollBegin,
                           WebInputEvent::kNoModifiers, current_time_,
                           WebGestureDevice::kTouchpad);
     event.data.scroll_begin.inertial_phase =
-        static_cast<WebGestureEvent::InertialPhaseState>(inertialPhase);
+        static_cast<WebGestureEvent::InertialPhaseState>(inertial_phase);
 
     controller_.ObserveGestureEventAndResult(element_id, event,
                                              cc::InputHandlerScrollResult());
   }
 
   void SendGestureScrollUpdate(
-      InertialPhaseState inertialPhase,
+      InertialPhaseState inertial_phase,
       const Vector2dF& event_delta = Vector2dF(),
       const Vector2dF& overscroll_delta = Vector2dF(),
       const cc::OverscrollBehavior& overscroll_behavior =
           cc::OverscrollBehavior(),
       cc::ElementId element_id = cc::ElementId(),
-      base::TimeDelta timeDelta =
+      base::TimeDelta time_delta =
           MockScrollElasticityHelper::kDefaultTimeDelta) {
-    TickCurrentTime(timeDelta);
+    TickCurrentTime(time_delta);
     WebGestureEvent event(WebInputEvent::Type::kGestureScrollUpdate,
                           WebInputEvent::kNoModifiers, current_time_,
                           WebGestureDevice::kTouchpad);
     event.data.scroll_update.inertial_phase =
-        static_cast<WebGestureEvent::InertialPhaseState>(inertialPhase);
+        static_cast<WebGestureEvent::InertialPhaseState>(inertial_phase);
     event.data.scroll_update.delta_x = -event_delta.x();
     event.data.scroll_update.delta_y = -event_delta.y();
 
