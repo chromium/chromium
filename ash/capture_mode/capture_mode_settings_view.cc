@@ -367,7 +367,9 @@ void CaptureModeSettingsView::OnOptionSelected(int option_id) const {
           CaptureModeSwitchToDefaultReason::kUserSelectedFromSettingsMenu);
       break;
     case kCustomFolder:
-      controller->SetUsesDefaultCaptureFolder(false);
+      if (!controller->IsCustomFolderManagedByPolicy()) {
+        controller->SetUsesDefaultCaptureFolder(false);
+      }
       break;
     case kCameraOff:
       camera_controller->SetSelectedCamera(CameraId(), /*by_user=*/true);

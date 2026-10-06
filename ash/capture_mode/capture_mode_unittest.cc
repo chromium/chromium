@@ -7474,7 +7474,14 @@ TEST_P(CaptureModeSettingsTest, FolderSetByPolicy) {
   CaptureModeMenuGroup* save_to_menu_group = test_api->GetSaveToMenuGroup();
   EXPECT_TRUE(save_to_menu_group->IsManagedByPolicy());
 
-  EXPECT_TRUE(test_api->GetCustomFolderOptionIfAny()->GetEnabled());
+  views::View* custom_option = test_api->GetCustomFolderOptionIfAny();
+  ASSERT_TRUE(custom_option);
+  EXPECT_TRUE(custom_option->GetEnabled());
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+
+  // Clicking on the custom folder option when managed by policy should be a
+  // no-op and not crash.
+  ClickOnView(custom_option, event_generator);
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
 
   EXPECT_FALSE(test_api->GetDefaultDownloadsOption()->GetEnabled());
