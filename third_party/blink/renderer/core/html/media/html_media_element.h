@@ -198,6 +198,9 @@ class CORE_EXPORT HTMLMediaElement
       std::variant<MediaStreamDescriptor*, MediaSourceHandle*>;
   void SetSrcObjectVariant(SrcObjectVariant src_object_variant);
   SrcObjectVariant GetSrcObjectVariant() const;
+  bool HasSrcObject() const {
+    return src_object_stream_descriptor_ || src_object_media_source_handle_;
+  }
 
   enum NetworkState {
     kNetworkEmpty,
