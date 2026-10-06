@@ -1628,6 +1628,54 @@ TEST_F(PaymentsDataManagerTest, LogStoredCreditCardMetrics) {
       "Autofill.StoredCreditCardCount.Server.WithCardArtImage", 1, 1);
 }
 
+// Tests that the number of stored promo codes, in total and split by valid and
+// expired, is logged when payments data is loaded and Wallet direct offers are
+// enabled.
+TEST_F(PaymentsDataManagerTest,
+       LogStoredPaymentsDataMetrics_PromoCodes_WalletDirectOffersEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+  profile_autofill_table_->SetAutofillOffers(
+      {test::GetPromoCodeOfferData(GURL("https://www.example.com"),
+                                   /*is_expired=*/false, /*offer_id=*/"333"),
+       test::GetPromoCodeOfferData(GURL("https://www.example.com"),
+                                   /*is_expired=*/true, /*offer_id=*/"444")});
+
+  // Reload the database, which will log the stored promo code counts.
+  base::HistogramTester histogram_tester;
+  ResetPaymentsDataManager();
+
+  ASSERT_EQ(payments_data_manager().GetAutofillOffers().size(), 2U);
+  histogram_tester.ExpectUniqueSample("Autofill.StoredPromoCodeCount", 2, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.StoredPromoCodeCount.ValidCode",
+                                      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredPromoCodeCount.ExpiredCode", 1, 1);
+}
+
+// Tests that the number of stored promo codes is not logged when Wallet direct
+// offers are disabled.
+TEST_F(PaymentsDataManagerTest,
+       LogStoredPaymentsDataMetrics_PromoCodes_WalletDirectOffersDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletDirectOffers);
+  profile_autofill_table_->SetAutofillOffers(
+      {test::GetPromoCodeOfferData(GURL("https://www.example.com"))});
+
+  // Reload the database, which would log the stored promo code counts if Wallet
+  // direct offers were enabled.
+  base::HistogramTester histogram_tester;
+  ResetPaymentsDataManager();
+
+  ASSERT_EQ(payments_data_manager().GetAutofillOffers().size(), 1U);
+  histogram_tester.ExpectTotalCount("Autofill.StoredPromoCodeCount", 0);
+  histogram_tester.ExpectTotalCount("Autofill.StoredPromoCodeCount.ValidCode",
+                                    0);
+  histogram_tester.ExpectTotalCount("Autofill.StoredPromoCodeCount.ExpiredCode",
+                                    0);
+}
+
 // Test that setting a null sync service returns only local credit cards.
 TEST_F(PaymentsDataManagerTest, GetCreditCards_NoSyncService) {
   SetUpTwoCardTypes();

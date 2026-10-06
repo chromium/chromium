@@ -5,7 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_PROMO_CODE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_PROMO_CODE_METRICS_H_
 
-namespace autofill::autofill_metrics {
+#include <vector>
+
+namespace autofill {
+
+class AutofillOfferData;
+
+namespace autofill_metrics {
 
 // Metrics to track user events related to merchant promo code fields.
 //
@@ -32,6 +38,15 @@ enum class PromoCodeFormEvent {
 // Logs a promo code form event to Autofill.FormEvents.PromoCode.
 void LogPromoCodeFormEvent(PromoCodeFormEvent event);
 
-}  // namespace autofill::autofill_metrics
+// Logs the number of promo codes stored for the user's account, in total and
+// split by whether each promo code is valid or expired, measured at Chrome
+// profile launch time. This is used to understand how many promo codes users
+// have available to autofill.
+void LogStoredPromoCodeMetrics(
+    const std::vector<const AutofillOfferData*>& promo_codes);
+
+}  // namespace autofill_metrics
+
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_PROMO_CODE_METRICS_H_

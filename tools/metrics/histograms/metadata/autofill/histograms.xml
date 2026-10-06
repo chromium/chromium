@@ -967,6 +967,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="Upload" summary="Server IBAN save"/>
 </variants>
 
+<variants name="PromoCodeExpirationStatus">
+  <variant name="ExpiredCode" summary="expired promo codes"/>
+  <variant name="ValidCode" summary="valid (not expired) promo codes"/>
+</variants>
+
 <variants name="StoredProfileCategories">
   <variant name="AccountChrome"
       summary="kAccount profiles originating from Chrome"/>
@@ -9271,6 +9276,33 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     that category.
   </summary>
   <token key="Category" variants="StoredProfileCategories"/>
+</histogram>
+
+<histogram name="Autofill.StoredPromoCodeCount" units="promo codes"
+    expires_after="2027-04-30">
+  <owner>vinnypersky@google.com</owner>
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of promo codes stored for the user's account, measured at Chrome
+    profile launch time. This is used to understand how many promo codes users
+    have available to autofill. Includes promo codes that expired after being
+    synced; see Autofill.StoredPromoCodeCount.ValidCode and
+    Autofill.StoredPromoCodeCount.ExpiredCode for the breakdown.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.StoredPromoCodeCount.{PromoCodeExpirationStatus}"
+    units="promo codes" expires_after="2027-04-30">
+  <owner>vinnypersky@google.com</owner>
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of {PromoCodeExpirationStatus} stored for the user's account,
+    measured at Chrome profile launch time. This is used to differentiate promo
+    codes users can autofill from promo codes that expired after being synced.
+  </summary>
+  <token key="PromoCodeExpirationStatus" variants="PromoCodeExpirationStatus"/>
 </histogram>
 
 <histogram

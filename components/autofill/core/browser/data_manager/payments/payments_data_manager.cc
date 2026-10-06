@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/metrics/payments/cvc_storage_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -2051,6 +2052,10 @@ void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {
   autofill_metrics::LogStoredVirtualCardUsageCount(
       autofill_virtual_card_usage_data_.size());
   LogBnplIssuersSyncedCountAtStartup(GetBnplIssuers().size());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDirectOffers)) {
+    autofill_metrics::LogStoredPromoCodeMetrics(GetAutofillOffers());
+  }
 }
 
 void PaymentsDataManager::LogServerCardLinkClicked() const {
