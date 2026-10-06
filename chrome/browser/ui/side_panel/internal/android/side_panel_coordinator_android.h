@@ -221,9 +221,12 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Immediately completes any pending content replacement on the Java side.
   void CompletePendingContentReplacement();
 
-  // Immediately completes any pending content replacement on the Java side if
-  // the pending replaced entry belongs to `tab`.
-  void CompletePendingContentReplacementForTab(TabAndroid* tab);
+  // Calls `CompletePendingUiChanges()` if pending UI changes involve an entry
+  // that belongs to `tab`, i.e. if:
+  // - The current entry belongs to `tab` and the side panel is opening/closing
+  //   with an animation, or
+  // - The pending replaced entry belongs to `tab`.
+  void CompletePendingUiChangesForTab(TabAndroid* tab);
 
   // The current state of the Side Panel.
   //

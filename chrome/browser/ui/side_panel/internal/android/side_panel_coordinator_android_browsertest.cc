@@ -899,6 +899,36 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
+    CloseTab_WhileClosingWithAnimation_TabScopedEntry_FinishesClosing) {
+  // Arrange: Open 2 tabs and show a tab-scoped entry on the 2nd tab.
+  tabs::TabInterface* second_tab =
+      tab_list_->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_TRUE(second_tab->IsActivated());
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  SidePanelRegistry::From(second_tab)
+      ->Register(CreateSidePanelEntry(entry_key, browser_));
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Arrange: Start an animated close and leave it in progress.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  ASSERT_EQ(SidePanelState::kClosing, coordinator_->GetStateForTesting());
+
+  // Act: Close the 2nd tab, which destroys its SidePanelRegistry and the
+  // entry being closed.
+  tab_list_->CloseTab(second_tab->GetHandle());
+
+  // Assert: The side panel finishes closing.
+  WaitUntilClosed(coordinator_);
+  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
     Close_ClearsCachedEntryViewForInactiveEntriesInContextualRegistries) {
   // Arrange: Register two tab-scoped entries.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
