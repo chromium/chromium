@@ -131,10 +131,10 @@ double WebSourceBufferImpl::HighestPresentationTimestamp() {
   return demuxer_->GetHighestPresentationTimestamp(id_).InSecondsF();
 }
 
-bool WebSourceBufferImpl::EvictCodedFrames(double currentPlaybackTime,
-                                           size_t newDataSize) {
-  return demuxer_->EvictCodedFrames(id_, base::Seconds(currentPlaybackTime),
-                                    newDataSize);
+bool WebSourceBufferImpl::EvictCodedFrames(double current_playback_time,
+                                           size_t new_data_size) {
+  return demuxer_->EvictCodedFrames(id_, base::Seconds(current_playback_time),
+                                    new_data_size);
 }
 
 bool WebSourceBufferImpl::AppendToParseBuffer(
@@ -269,20 +269,20 @@ void WebSourceBufferImpl::InitSegmentReceived(
   DCHECK(tracks.get());
   DVLOG(1) << __func__ << " tracks=" << tracks->tracks().size();
 
-  std::vector<WebSourceBufferClient::MediaTrackInfo> trackInfoVector;
+  std::vector<WebSourceBufferClient::MediaTrackInfo> track_info_vector;
   for (const auto& track : tracks->tracks()) {
-    WebSourceBufferClient::MediaTrackInfo trackInfo;
-    trackInfo.track_type = mediaTrackTypeToBlink(track->type());
-    trackInfo.id = WebString::FromUtf8(track->track_id().value());
-    trackInfo.byte_stream_track_id =
+    WebSourceBufferClient::MediaTrackInfo track_info;
+    track_info.track_type = mediaTrackTypeToBlink(track->type());
+    track_info.id = WebString::FromUtf8(track->track_id().value());
+    track_info.byte_stream_track_id =
         WebString::FromUtf8(base::NumberToString(track->stream_id()));
-    trackInfo.kind = WebString::FromUtf8(track->kind().value());
-    trackInfo.label = WebString::FromUtf8(track->label().value());
-    trackInfo.language = WebString::FromUtf8(track->language().value());
-    trackInfoVector.push_back(trackInfo);
+    track_info.kind = WebString::FromUtf8(track->kind().value());
+    track_info.label = WebString::FromUtf8(track->label().value());
+    track_info.language = WebString::FromUtf8(track->language().value());
+    track_info_vector.push_back(track_info);
   }
 
-  client_->InitializationSegmentReceived(trackInfoVector);
+  client_->InitializationSegmentReceived(track_info_vector);
 }
 
 void WebSourceBufferImpl::NotifyParseWarning(

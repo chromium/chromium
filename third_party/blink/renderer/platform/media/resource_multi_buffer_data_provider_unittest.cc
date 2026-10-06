@@ -476,7 +476,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, NoCrossOriginMediaLeaks) {
   ASSERT_TRUE(loader_->WillFollowRedirect(url_b, response_b));
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  auto SetUrlDataAndCreateReader =
+  auto set_url_data_and_create_reader =
       [&](const scoped_refptr<UrlData>& new_url_data) {
         reader.reset();
         url_data_ = new_url_data;
@@ -484,7 +484,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, NoCrossOriginMediaLeaks) {
       };
 
   EXPECT_CALL(*this, RedirectCallback(_))
-      .WillRepeatedly(SetUrlDataAndCreateReader);
+      .WillRepeatedly(set_url_data_and_create_reader);
   loader_->DidReceiveResponse(response_b);
   ASSERT_TRUE(loader_);
   task_environment_.FastForwardUntilNoTasksRemain();

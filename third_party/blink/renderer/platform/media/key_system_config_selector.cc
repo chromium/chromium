@@ -126,8 +126,8 @@ EmeConfig::Rule GetPersistentStateConfigRule(
   return EmeConfig{.persistence = EmeConfigRuleState::kRequired};
 }
 
-bool IsPersistentSessionType(WebEncryptedMediaSessionType sessionType) {
-  switch (sessionType) {
+bool IsPersistentSessionType(WebEncryptedMediaSessionType session_type) {
+  switch (session_type) {
     case WebEncryptedMediaSessionType::kTemporary:
       return false;
     case WebEncryptedMediaSessionType::kPersistentLicense:

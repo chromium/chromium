@@ -247,7 +247,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool DidLoadingProgress() override;
   bool WouldTaintOrigin() const override;
 
-  double MediaTimeForTimeValue(double timeValue) const override;
+  double MediaTimeForTimeValue(double time_value) const override;
 
   unsigned DecodedFrameCount() const override;
   unsigned DroppedFrameCount() const override;
@@ -398,9 +398,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // so we won't even compile in strings such as "Media.TimeToPlayReady.All"
   // if it's not specified.
   template <uint32_t Flags, typename... T>
-  void WriteSplitHistogram(void (*UmaFunction)(std::string_view, T...),
+  void WriteSplitHistogram(void (*uma_function)(std::string_view, T...),
                            SplitHistogramName key,
-                           const T&... value);
+                           const T&... values);
 
   void EnableOverlay();
   void DisableOverlay();

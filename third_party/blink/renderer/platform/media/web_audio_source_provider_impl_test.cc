@@ -138,7 +138,7 @@ class WebAudioSourceProviderImplTest : public testing::Test,
   MOCK_METHOD0(OnClientSet, void());
 
   // WebAudioSourceProviderClient implementation.
-  MOCK_METHOD2(SetFormat, void(uint32_t numberOfChannels, float sampleRate));
+  MOCK_METHOD2(SetFormat, void(uint32_t number_of_channels, float sample_rate));
   MOCK_METHOD3(DoCopyAudioCB,
                void(std::unique_ptr<media::AudioBus> bus,
                     uint32_t frames_delayed,

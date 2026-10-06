@@ -1638,8 +1638,8 @@ bool WebMediaPlayerImpl::WouldTaintOrigin() const {
   return is_origin_tainted_ || demuxer_manager_->WouldTaintOrigin();
 }
 
-double WebMediaPlayerImpl::MediaTimeForTimeValue(double timeValue) const {
-  return base::Seconds(timeValue).InSecondsF();
+double WebMediaPlayerImpl::MediaTimeForTimeValue(double time_value) const {
+  return base::Seconds(time_value).InSecondsF();
 }
 
 unsigned WebMediaPlayerImpl::DecodedFrameCount() const {
@@ -3981,25 +3981,25 @@ void WebMediaPlayerImpl::SwitchToLocalRenderer(
 
 template <uint32_t Flags, typename... T>
 void WebMediaPlayerImpl::WriteSplitHistogram(
-    void (*UmaFunction)(std::string_view, T...),
+    void (*uma_function)(std::string_view, T...),
     SplitHistogramName key,
     const T&... values) {
   const char* strkey = GetHistogramName(key);
 
   if constexpr (Flags & kEncrypted) {
     if (is_encrypted_) {
-      UmaFunction(base::StrCat({strkey, ".EME"}), values...);
+      uma_function(base::StrCat({strkey, ".EME"}), values...);
     }
 #if BUILDFLAG(IS_WIN)
     if (renderer_type_ == media::RendererType::kMediaFoundation) {
-      UmaFunction(base::StrCat({strkey, ".MediaFoundationRenderer"}),
-                  values...);
+      uma_function(base::StrCat({strkey, ".MediaFoundationRenderer"}),
+                   values...);
     }
 #endif  // BUILDFLAG(IS_WIN)
   }
 
   if constexpr (Flags & kTotal) {
-    UmaFunction(base::StrCat({strkey, ".All"}), values...);
+    uma_function(base::StrCat({strkey, ".All"}), values...);
   }
 
   if constexpr (Flags & kPlaybackType) {
@@ -4009,13 +4009,13 @@ void WebMediaPlayerImpl::WriteSplitHistogram(
     }
     switch (*demuxer_type) {
       case media::DemuxerType::kChunkDemuxer:
-        UmaFunction(base::StrCat({strkey, ".MSE"}), values...);
+        uma_function(base::StrCat({strkey, ".MSE"}), values...);
         break;
       case media::DemuxerType::kManifestDemuxer:
-        UmaFunction(base::StrCat({strkey, ".HLS"}), values...);
+        uma_function(base::StrCat({strkey, ".HLS"}), values...);
         break;
       default:
-        UmaFunction(base::StrCat({strkey, ".SRC"}), values...);
+        uma_function(base::StrCat({strkey, ".SRC"}), values...);
         break;
     }
   }
