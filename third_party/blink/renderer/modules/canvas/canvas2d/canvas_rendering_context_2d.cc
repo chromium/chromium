@@ -1275,20 +1275,22 @@ void CanvasRenderingContext2D::RecreateResourceProvider() {
     canvas()->UpdateMemoryUsage();
   }
 
+  if (!HasResourceProvider()) {
+    did_fail_to_create_resource_provider_ = true;
+    ResetRecorder();
+    return;
+  }
+
   if (shared_image_provider_) {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               shared_image_provider_->IsAccelerated());
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                   CanvasResourceProviderType::kSharedImage);
-  } else if (HasResourceProvider()) {
+  } else {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               false);
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                   CanvasResourceProviderType::kBitmap);
-  } else {
-    did_fail_to_create_resource_provider_ = true;
-    ResetRecorder();
-    return;
   }
 
   if (GetHibernationHandler()->IsHibernating()) {
