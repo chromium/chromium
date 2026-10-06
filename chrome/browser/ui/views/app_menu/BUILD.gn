@@ -42,6 +42,7 @@ source_set("app_menu") {
     "//chrome/browser/ui/tabs:tab_model",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views",
+    "//components/bookmarks/browser",
     "//components/favicon_base",
     "//components/send_tab_to_self",
     "//components/sync_device_info",

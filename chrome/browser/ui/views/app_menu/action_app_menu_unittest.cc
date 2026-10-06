@@ -3113,4 +3113,135 @@ TEST_F(ActionAppMenuTest, BookmarksDynamicMenuUpdatesOnModelChange) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, BookmarksDynamicMenuDragAndDrop) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkModelFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  ASSERT_TRUE(bookmark_model);
+  bookmark_model->LoadEmptyForTest();
+
+  BookmarkMergedSurfaceService* bookmark_service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(bookmark_service);
+  bookmark_service->LoadForTesting({});
+
+  const bookmarks::BookmarkNode* bar_node = bookmark_model->bookmark_bar_node();
+  const bookmarks::BookmarkNode* node_a = bookmark_model->AddURL(
+      bar_node, 0, u"Bookmark A", GURL("https://a.example.com"));
+  const bookmarks::BookmarkNode* node_b = bookmark_model->AddURL(
+      bar_node, 1, u"Bookmark B", GURL("https://b.example.com"));
+  const bookmarks::BookmarkNode* folder_c =
+      bookmark_model->AddFolder(bar_node, 2, u"Folder C");
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuItemView* bookmarks_item =
+      root->GetMenuItemByID(kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_item);
+  menu.WillShowMenu(bookmarks_item);
+
+  // Static items inside the Bookmarks submenu cannot be dragged or dropped on.
+  views::MenuItemView* bookmark_this_tab =
+      root->GetMenuItemByID(kActionBookmarkThisTab);
+  ASSERT_TRUE(bookmark_this_tab);
+  EXPECT_FALSE(menu.CanDrag(bookmark_this_tab));
+
+  auto find_item = [](views::MenuItemView* parent,
+                      const std::u16string& title) -> views::MenuItemView* {
+    if (!parent || !parent->HasSubmenu()) {
+      return nullptr;
+    }
+    for (views::MenuItemView* item : parent->GetSubmenu()->GetMenuItems()) {
+      if (item->title() == title) {
+        return item;
+      }
+    }
+    return nullptr;
+  };
+
+  views::MenuItemView* item_a = find_item(bookmarks_item, u"Bookmark A");
+  views::MenuItemView* item_b = find_item(bookmarks_item, u"Bookmark B");
+  ASSERT_TRUE(item_a);
+  ASSERT_TRUE(item_b);
+
+  // Drag Bookmark B before Bookmark A.
+  ASSERT_TRUE(menu.CanDrag(item_b));
+  EXPECT_NE(menu.GetDragOperations(item_b), ui::DragDropTypes::DRAG_NONE);
+
+  ui::OSExchangeData drag_data;
+  menu.WriteDragData(item_b, &drag_data);
+
+  int formats = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+  EXPECT_TRUE(menu.GetDropFormats(bookmarks_item, &formats, &format_types));
+  EXPECT_TRUE(menu.AreDropTypesRequired(bookmarks_item));
+  ASSERT_TRUE(menu.CanDrop(bookmarks_item, drag_data));
+
+  ui::DropTargetEvent target_event(drag_data, gfx::PointF(), gfx::PointF(),
+                                   ui::DragDropTypes::DRAG_MOVE);
+  views::MenuDelegate::DropPosition drop_position =
+      views::MenuDelegate::DropPosition::kBefore;
+  EXPECT_EQ(menu.GetDropOperation(item_a, target_event, &drop_position),
+            ui::mojom::DragOperation::kMove);
+
+  views::View::DropCallback drop_cb =
+      menu.GetDropCallback(item_a, drop_position, target_event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(target_event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
+
+  EXPECT_EQ(bar_node->children()[0].get(), node_b);
+  EXPECT_EQ(bar_node->children()[1].get(), node_a);
+
+  // Verify the Bookmarks submenu repopulated in place with Bookmark B before
+  // Bookmark A, while preserving static items.
+  EXPECT_NE(root->GetMenuItemByID(kActionBookmarkThisTab), nullptr);
+  views::MenuItemView* updated_b = find_item(bookmarks_item, u"Bookmark B");
+  views::MenuItemView* updated_a = find_item(bookmarks_item, u"Bookmark A");
+  views::MenuItemView* updated_c = find_item(bookmarks_item, u"Folder C");
+  ASSERT_TRUE(updated_b);
+  ASSERT_TRUE(updated_a);
+  ASSERT_TRUE(updated_c);
+  EXPECT_LT(bookmarks_item->GetSubmenu()->GetIndexOf(updated_b),
+            bookmarks_item->GetSubmenu()->GetIndexOf(updated_a));
+
+  // Drop Bookmark A onto Folder C.
+  ui::OSExchangeData drag_data_a;
+  menu.WriteDragData(updated_a, &drag_data_a);
+  ASSERT_TRUE(menu.CanDrop(bookmarks_item, drag_data_a));
+
+  ui::DropTargetEvent target_event_c(drag_data_a, gfx::PointF(), gfx::PointF(),
+                                     ui::DragDropTypes::DRAG_MOVE);
+  views::MenuDelegate::DropPosition drop_on =
+      views::MenuDelegate::DropPosition::kOn;
+  EXPECT_EQ(menu.GetDropOperation(updated_c, target_event_c, &drop_on),
+            ui::mojom::DragOperation::kMove);
+  views::View::DropCallback drop_cb_c =
+      menu.GetDropCallback(updated_c, drop_on, target_event_c);
+  output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb_c).Run(target_event_c, output_drag_op,
+                           /*drag_image_layer_owner=*/nullptr);
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
+  ASSERT_EQ(folder_c->children().size(), 1u);
+  EXPECT_EQ(folder_c->children()[0].get(), node_a);
+
+  views::MenuItemView* repopulated_c = find_item(bookmarks_item, u"Folder C");
+  ASSERT_TRUE(repopulated_c);
+  views::MenuItemView* a_in_c = find_item(repopulated_c, u"Bookmark A");
+  ASSERT_TRUE(a_in_c);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 }  // namespace
