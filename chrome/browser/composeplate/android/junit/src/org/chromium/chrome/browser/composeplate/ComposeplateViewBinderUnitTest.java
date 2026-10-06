@@ -53,7 +53,7 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ComposeplateViewBinderUnitTest {
-    private static final String OPTIONAL_BUTTON_DESCRIPTION = "Optional button";
+    private static final String OPTIONAL_BUTTON_LABEL = "Create image";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ComposeplateView mViewMock;
@@ -246,25 +246,24 @@ public class ComposeplateViewBinderUnitTest {
     }
 
     @Test
-    public void testSetOptionalButtonContentDescription_withMockView() {
-        mPropertyModel.set(
-                ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
-                OPTIONAL_BUTTON_DESCRIPTION);
-        verify(mViewMock).setOptionalButtonContentDescription(eq(OPTIONAL_BUTTON_DESCRIPTION));
+    public void testSetOptionalButtonText_withMockView() {
+        mPropertyModel.set(ComposeplateProperties.OPTIONAL_BUTTON_TEXT, OPTIONAL_BUTTON_LABEL);
+        verify(mViewMock).setOptionalButtonText(eq(OPTIONAL_BUTTON_LABEL));
     }
 
     @Test
-    public void testSetOptionalButtonContentDescription() {
+    public void testSetOptionalButtonText() {
         // Bind PropertyModel with mView.
         PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
         View optionalButton = mView.findViewById(R.id.optional_button);
+        TextView optionalButtonText = mView.findViewById(R.id.optional_button_text);
 
-        mPropertyModel.set(
-                ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
-                OPTIONAL_BUTTON_DESCRIPTION);
-        assertEquals(OPTIONAL_BUTTON_DESCRIPTION, optionalButton.getContentDescription());
+        mPropertyModel.set(ComposeplateProperties.OPTIONAL_BUTTON_TEXT, OPTIONAL_BUTTON_LABEL);
+        assertEquals(OPTIONAL_BUTTON_LABEL, optionalButtonText.getText().toString());
+        assertEquals(OPTIONAL_BUTTON_LABEL, optionalButton.getContentDescription());
 
-        mPropertyModel.set(ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION, null);
+        mPropertyModel.set(ComposeplateProperties.OPTIONAL_BUTTON_TEXT, null);
+        assertEquals("", optionalButtonText.getText().toString());
         assertNull(optionalButton.getContentDescription());
     }
 
@@ -278,13 +277,45 @@ public class ComposeplateViewBinderUnitTest {
     }
 
     @Test
-    public void testSetOptionalButtonVisibility_Visible() {
-        testSetOptionalButtonVisibilityImpl(/* visible= */ true);
+    public void testSetIsLff_withMockView() {
+        PropertyModel model =
+                new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS)
+                        .with(ComposeplateProperties.IS_LFF, true)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mViewMock, ComposeplateViewBinder::bind);
+        verify(mViewMock).setIsLff(eq(true));
     }
 
     @Test
-    public void testSetOptionalButtonVisibility_Hidden() {
-        testSetOptionalButtonVisibilityImpl(/* visible= */ false);
+    public void testSetOptionalButtonVisibility_phone() {
+        testSetOptionalButtonVisibilityImpl(/* isLff= */ false);
+    }
+
+    @Test
+    public void testSetOptionalButtonVisibility_lff() {
+        testSetOptionalButtonVisibilityImpl(/* isLff= */ true);
+    }
+
+    @Test
+    public void testSetIncognitoButtonTextVisibility_withMockView() {
+        mPropertyModel.set(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE, true);
+        verify(mViewMock).setIncognitoButtonTextVisibility(eq(true));
+
+        mPropertyModel.set(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE, false);
+        verify(mViewMock).setIncognitoButtonTextVisibility(eq(false));
+    }
+
+    @Test
+    public void testSetIncognitoButtonTextVisibility() {
+        // Bind PropertyModel with mView.
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+        View incognitoButtonText = mView.findViewById(R.id.incognito_button_text);
+
+        mPropertyModel.set(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE, false);
+        assertEquals(View.GONE, incognitoButtonText.getVisibility());
+
+        mPropertyModel.set(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE, true);
+        assertEquals(View.VISIBLE, incognitoButtonText.getVisibility());
     }
 
     @Test
@@ -359,31 +390,6 @@ public class ComposeplateViewBinderUnitTest {
         assertEquals(incognitoMarginEnd, getMarginEnd(incognitoButton));
     }
 
-    private void testSetOptionalButtonVisibilityImpl(boolean visible) {
-        // Bind PropertyModel with mView.
-        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
-        View optionalButton = mView.findViewById(R.id.optional_button);
-        View incognitoButton = mView.findViewById(R.id.incognito_button);
-        View incognitoButtonText = mView.findViewById(R.id.incognito_button_text);
-
-        // Sets the opposite state first to verify the transition.
-        mPropertyModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE, !visible);
-        mPropertyModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE, visible);
-
-        assertEquals(visible ? View.VISIBLE : View.GONE, optionalButton.getVisibility());
-        assertEquals(visible ? View.GONE : View.VISIBLE, incognitoButtonText.getVisibility());
-
-        LinearLayout.LayoutParams incognitoLayoutParams =
-                (LinearLayout.LayoutParams) incognitoButton.getLayoutParams();
-        assertEquals(
-                visible ? ViewGroup.LayoutParams.WRAP_CONTENT : 0, incognitoLayoutParams.width);
-        assertEquals(visible ? 0f : 1f, incognitoLayoutParams.weight, 0f);
-    }
-
-    private static int getMarginEnd(View view) {
-        return ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).getMarginEnd();
-    }
-
     private void testSetAiModeButtonIconImpl(boolean shouldTint) {
         // Bind PropertyModel with mView.
         PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
@@ -409,6 +415,44 @@ public class ComposeplateViewBinderUnitTest {
                 ComposeplateProperties.AI_MODE_BUTTON_ICON,
                 new ComposeplateProperties.AiModeButtonIcon(drawable, shouldTint));
         return drawable;
+    }
+
+    private void testSetOptionalButtonVisibilityImpl(boolean isLff) {
+        mPropertyModel =
+                new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS)
+                        .with(ComposeplateProperties.IS_LFF, isLff)
+                        .build();
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+        View optionalButton = mView.findViewById(R.id.optional_button);
+        View optionalButtonText = mView.findViewById(R.id.optional_button_text);
+        View incognitoButton = mView.findViewById(R.id.incognito_button);
+        View composeplateButton = mView.findViewById(R.id.composeplate_button);
+
+        // On phones, the optional and incognito buttons wrap their content. On LFF, all buttons
+        // show their text and share the width equally.
+        mPropertyModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, optionalButton.getVisibility());
+        assertEquals(isLff ? View.VISIBLE : View.GONE, optionalButtonText.getVisibility());
+        verifyButtonWidth(composeplateButton, /* isWeighted= */ true);
+        verifyButtonWidth(optionalButton, /* isWeighted= */ isLff);
+        verifyButtonWidth(incognitoButton, /* isWeighted= */ isLff);
+
+        // Hiding the optional button restores the default layout.
+        mPropertyModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, optionalButton.getVisibility());
+        verifyButtonWidth(composeplateButton, /* isWeighted= */ true);
+        verifyButtonWidth(incognitoButton, /* isWeighted= */ true);
+    }
+
+    private void verifyButtonWidth(View button, boolean isWeighted) {
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) button.getLayoutParams();
+        assertEquals(isWeighted ? 0 : ViewGroup.LayoutParams.WRAP_CONTENT, layoutParams.width);
+        assertEquals(isWeighted ? 1f : 0f, layoutParams.weight, /* delta= */ 0f);
+    }
+
+    private static int getMarginEnd(View view) {
+        return ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).getMarginEnd();
     }
 
     private static AiModeButtonUiConfig createAiModeButtonUiConfig() {

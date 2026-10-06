@@ -63,15 +63,25 @@ found in the LICENSE file.
         android:paddingEnd="@dimen/composeplate_view_button_margin"
         style="@style/ComposeplateViewButton"
         android:visibility="gone"
-        tools:ignore="UselessParent">
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:id="@+id/optional_button_icon"
             android:layout_width="@dimen/composeplate_view_icon_size"
             android:layout_height="@dimen/composeplate_view_icon_size"
-            android:src="@drawable/image_create_24dp"
+            android:src="@drawable/add_photo_alternate_24dp"
             android:tint="@macro/default_icon_color"
             android:importantForAccessibility="no"/>
+
+        <TextView
+            android:id="@+id/optional_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/composeplate_view_button_margin"
+            android:singleLine="true"
+            android:visibility="gone"
+            android:text="@string/omnibox_navattach_gallery"
+            android:textAppearance="@style/TextAppearance.ComposeplateTextMediumDarkOnSurface" />
     </LinearLayout>
 
     <LinearLayout

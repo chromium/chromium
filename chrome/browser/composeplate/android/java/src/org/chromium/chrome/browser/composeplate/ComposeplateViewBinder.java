@@ -10,13 +10,15 @@ import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.AP
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COLOR_STATE_LIST;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.INCOGNITO_CLICK_LISTENER;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_LFF;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_ICON_RES_ID;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_MARGIN_END;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_TEXT;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TEXT_STYLE_RES_ID;
 
 import android.view.View;
@@ -56,13 +58,16 @@ public class ComposeplateViewBinder {
             view.setOptionalButtonIcon(model.get(OPTIONAL_BUTTON_ICON_RES_ID));
         } else if (OPTIONAL_BUTTON_CLICK_LISTENER == propertyKey) {
             view.setOptionalButtonClickListener(model.get(OPTIONAL_BUTTON_CLICK_LISTENER));
-        } else if (OPTIONAL_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            view.setOptionalButtonContentDescription(
-                    model.get(OPTIONAL_BUTTON_CONTENT_DESCRIPTION));
+        } else if (OPTIONAL_BUTTON_TEXT == propertyKey) {
+            view.setOptionalButtonText(model.get(OPTIONAL_BUTTON_TEXT));
         } else if (OPTIONAL_BUTTON_LATERAL_PADDING == propertyKey) {
             view.setButtonLateralPadding(model.get(OPTIONAL_BUTTON_LATERAL_PADDING));
         } else if (OPTIONAL_BUTTON_MARGIN_END == propertyKey) {
             view.setButtonMarginEnd(model.get(OPTIONAL_BUTTON_MARGIN_END));
+        } else if (IS_INCOGNITO_BUTTON_TEXT_VISIBLE == propertyKey) {
+            view.setIncognitoButtonTextVisibility(model.get(IS_INCOGNITO_BUTTON_TEXT_VISIBLE));
+        } else if (IS_LFF == propertyKey) {
+            view.setIsLff(model.get(IS_LFF));
         } else {
             assert false : "Unhandled property detected in ComposeplateViewBinder!";
         }

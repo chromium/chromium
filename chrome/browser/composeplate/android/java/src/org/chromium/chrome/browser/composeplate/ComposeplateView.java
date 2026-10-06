@@ -30,12 +30,17 @@ public class ComposeplateView extends LinearLayout {
     private @Nullable View mIncognitoButton;
     private @Nullable ImageView mComposeplateButtonIcon;
     private @Nullable ImageView mOptionalButtonIcon;
+    private @Nullable TextView mOptionalButtonText;
+    private @Nullable TextView mIncognitoButtonText;
 
     /** The tint of the icons, initially the one declared in the layout. */
     private @Nullable ColorStateList mIconTint;
 
     /** Whether the AI Mode button icon should be tinted, see {@link #setAiModeButtonIcon}. */
     private boolean mShouldTintAiModeButtonIcon = true;
+
+    /** Whether the device is a large form factor. */
+    private boolean mIsLff;
 
     public ComposeplateView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,6 +55,8 @@ public class ComposeplateView extends LinearLayout {
         mIncognitoButton = findViewById(R.id.incognito_button);
         mComposeplateButtonIcon = findViewById(R.id.composeplate_button_icon);
         mOptionalButtonIcon = findViewById(R.id.optional_button_icon);
+        mOptionalButtonText = findViewById(R.id.optional_button_text);
+        mIncognitoButtonText = findViewById(R.id.incognito_button_text);
         if (mComposeplateButtonIcon != null) {
             mIconTint = mComposeplateButtonIcon.getImageTintList();
         }
@@ -107,9 +114,8 @@ public class ComposeplateView extends LinearLayout {
                     textStyleResId);
         }
 
-        if (mIncognitoButton != null) {
-            setTextStyle(mIncognitoButton.findViewById(R.id.incognito_button_text), textStyleResId);
-        }
+        setTextStyle(mIncognitoButtonText, textStyleResId);
+        setTextStyle(mOptionalButtonText, textStyleResId);
     }
 
     /**
@@ -165,20 +171,43 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
-     * Sets the content description of the optional button.
+     * Updates the text of the optional button. The text is also used as the content description of
+     * the button, since the text is only shown on large form factors.
      *
-     * @param contentDescription The content description to set on the optional button.
+     * @param text The text of the optional button.
      */
-    void setOptionalButtonContentDescription(@Nullable String contentDescription) {
+    void setOptionalButtonText(@Nullable String text) {
         if (mOptionalButton == null) return;
 
-        mOptionalButton.setContentDescription(contentDescription);
+        mOptionalButton.setContentDescription(text);
+        mOptionalButton.setTooltipText(text);
+        if (mOptionalButtonText != null) {
+            mOptionalButtonText.setText(text);
+        }
     }
 
     /**
-     * Updates the visibility of the optional button. When the optional button is visible, the
-     * incognito button's text is hidden and the incognito button wraps its content, so that the
-     * composeplate button takes the rest of the width. Otherwise, the default layout is restored.
+     * Sets whether the device is a large form factor, which changes the layout of the buttons when
+     * the optional button is visible.
+     *
+     * @param isLff Whether the device is a large form factor.
+     */
+    void setIsLff(boolean isLff) {
+        mIsLff = isLff;
+    }
+
+    /**
+     * Updates the visibility of the optional button. When the optional button is visible:
+     *
+     * <ul>
+     *   <li>On large form factors, the optional button shows its text and all three buttons share
+     *       the width equally.
+     *   <li>Otherwise, the optional button is icon-only, and the optional and incognito buttons
+     *       wrap their content, so that the composeplate button takes the rest of the width. The
+     *       incognito button's text is hidden via {@link #setIncognitoButtonTextVisibility}.
+     * </ul>
+     *
+     * When the optional button is hidden, the default layout is restored.
      *
      * @param visible Whether the optional button is visible.
      */
@@ -187,18 +216,59 @@ public class ComposeplateView extends LinearLayout {
             mOptionalButton.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
 
-        if (mIncognitoButton != null) {
-            View incognitoButtonText = mIncognitoButton.findViewById(R.id.incognito_button_text);
-            if (incognitoButtonText != null) {
-                incognitoButtonText.setVisibility(visible ? View.GONE : View.VISIBLE);
-            }
+        if (mOptionalButtonText != null) {
+            mOptionalButtonText.setVisibility(mIsLff ? View.VISIBLE : View.GONE);
         }
 
-        // The composeplate button always keeps width 0 and weight 1 as declared in the layout, so
-        // it fills the remaining space.
-        int width = visible ? LayoutParams.WRAP_CONTENT : 0;
-        float weight = visible ? 0f : 1f;
-        updateButtonLayoutParams(mIncognitoButton, width, weight);
+        // The incognito and optional buttons wrap their content only on mobiles.
+        // If the width of the button is WRAP_CONTENT, its weight is set to 0; If its width is set
+        // to 0dp, the weight is set to 1, i.e., shares the width equally with the other buttons.
+        boolean isIncognitoButtonWrapContent = visible && !mIsLff;
+        updateButtonLayoutParams(
+                mIncognitoButton,
+                getWidth(isIncognitoButtonWrapContent),
+                getWeight(isIncognitoButtonWrapContent));
+
+        boolean isOptionalButtonWrapContent = !mIsLff;
+        updateButtonLayoutParams(
+                mOptionalButton,
+                getWidth(isOptionalButtonWrapContent),
+                getWeight(isOptionalButtonWrapContent));
+    }
+
+    /**
+     * Returns the layout width of a button.
+     *
+     * @param wrapContent Whether the button wraps its content instead of sharing the remaining
+     *     width by weight.
+     * @return {@link LayoutParams#WRAP_CONTENT} if wrapping content, otherwise 0 so the width is
+     *     determined by the weight.
+     */
+    private int getWidth(boolean wrapContent) {
+        return wrapContent ? LayoutParams.WRAP_CONTENT : 0;
+    }
+
+    /**
+     * Returns the layout weight of a button.
+     *
+     * @param wrapContent Whether the button wraps its content instead of sharing the remaining
+     *     width by weight.
+     * @return 0 if wrapping content, otherwise 1 so the button shares the remaining width equally
+     *     with the other weighted buttons.
+     */
+    private float getWeight(boolean wrapContent) {
+        return wrapContent ? 0f : 1f;
+    }
+
+    /**
+     * Updates the visibility of the incognito button's text.
+     *
+     * @param visible Whether the incognito button's text is visible.
+     */
+    void setIncognitoButtonTextVisibility(boolean visible) {
+        if (mIncognitoButtonText == null) return;
+
+        mIncognitoButtonText.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**

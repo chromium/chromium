@@ -26,14 +26,20 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ComposeplateCoordinator {
     private final PropertyModel mModel;
     private final ComposeplateView mView;
+    private final boolean mIsLff;
 
     /**
      * Constructs a new ComposeplateCoordinator.
      *
      * @param parentView The parent {@link ViewGroup} for the composeplate.
+     * @param isLff Whether the device is a large form factor.
      */
-    public ComposeplateCoordinator(ViewGroup parentView) {
-        mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
+    public ComposeplateCoordinator(ViewGroup parentView, boolean isLff) {
+        mIsLff = isLff;
+        mModel =
+                new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS)
+                        .with(ComposeplateProperties.IS_LFF, isLff)
+                        .build();
         mView = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
         maybeRevertToLegacyLayout();
@@ -179,6 +185,8 @@ public class ComposeplateCoordinator {
      */
     public void setOptionalButtonVisibility(boolean visible) {
         mModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE, visible);
+        // On mobiles, the incognito button is icon-only when the optional button is visible.
+        mModel.set(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE, !visible || mIsLff);
         updateButtonSpacing(visible);
     }
 
@@ -239,12 +247,13 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Sets the content description of the optional button.
+     * Sets the text of the optional button. It is shown on large form factors, and is always used
+     * as the content description of the button.
      *
-     * @param contentDescription The content description for the optional button.
+     * @param text The text of the optional button.
      */
-    public void setOptionalButtonContentDescription(@Nullable String contentDescription) {
-        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION, contentDescription);
+    public void setOptionalButtonText(@Nullable String text) {
+        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_TEXT, text);
     }
 
     public void applyWhiteBackground(boolean apply) {

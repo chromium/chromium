@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -85,7 +86,9 @@ public class ComposeplateCoordinatorUnitTest {
         when(mComposeplateView.findViewById(R.id.composeplate_button))
                 .thenReturn(mComposeplateButton);
 
-        mCoordinator = new ComposeplateCoordinator(mParentView);
+        mCoordinator =
+                new ComposeplateCoordinator(
+                        mParentView, DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
         mPropertyModel = mCoordinator.getModelForTesting();
     }
 
@@ -241,6 +244,27 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    public void testSetOptionalButtonVisibility_visible_tablet() {
+        testSetOptionalButtonVisibilityImpl(/* visible= */ true);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testSetOptionalButtonVisibility_hidden_tablet() {
+        testSetOptionalButtonVisibilityImpl(/* visible= */ false);
+    }
+
+    @Test
+    public void testSetOptionalButtonText() {
+        String text = "Create image";
+        mCoordinator.setOptionalButtonText(text);
+
+        assertEquals(text, mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_TEXT));
+        verify(mComposeplateView).setOptionalButtonText(eq(text));
+    }
+
+    @Test
     public void testOnDisplayStyleChanged_optionalButtonVisible() {
         Resources res = mContext.getResources();
         mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
@@ -279,24 +303,34 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     private void testSetOptionalButtonVisibilityImpl(boolean visible) {
+        boolean isLff = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+        assertEquals(isLff, mPropertyModel.get(ComposeplateProperties.IS_LFF));
+        verify(mComposeplateView).setIsLff(eq(isLff));
         mCoordinator.setOptionalButtonVisibility(visible);
 
         assertEquals(
                 visible, mPropertyModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE));
         verify(mComposeplateView).setOptionalButtonVisibility(eq(visible));
 
+        // The incognito button's text is hidden only when the optional button is visible on
+        // phones.
+        boolean expectedIncognitoButtonTextVisible = !visible || isLff;
+        assertEquals(
+                expectedIncognitoButtonTextVisible,
+                mPropertyModel.get(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE));
+        verify(mComposeplateView)
+                .setIncognitoButtonTextVisibility(eq(expectedIncognitoButtonTextVisible));
+
         Resources res = mContext.getResources();
         int defaultSpacing = res.getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
-        int expectedOptionalButtonPadding =
-                visible
-                        ? res.getDimensionPixelSize(
-                                R.dimen.composeplate_view_optional_button_padding)
-                        : defaultSpacing;
-        int expectedOptionalButtonMarginEnd =
-                visible
-                        ? res.getDimensionPixelSize(
-                                R.dimen.composeplate_view_optional_button_margin)
-                        : defaultSpacing;
+        int expectedOptionalButtonPadding = defaultSpacing;
+        int expectedOptionalButtonMarginEnd = defaultSpacing;
+        if (visible) {
+            expectedOptionalButtonPadding =
+                    res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+            expectedOptionalButtonMarginEnd =
+                    res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin);
+        }
         verifyButtonSpacing(expectedOptionalButtonPadding, expectedOptionalButtonMarginEnd);
         verify(mComposeplateView).setButtonLateralPadding(eq(expectedOptionalButtonPadding));
         verify(mComposeplateView).setButtonMarginEnd(eq(expectedOptionalButtonMarginEnd));

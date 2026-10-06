@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -70,8 +71,11 @@ interface ComposeplateProperties {
     WritableObjectPropertyKey<View.@Nullable OnClickListener> OPTIONAL_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** The content description of the optional button. */
-    WritableObjectPropertyKey<@Nullable String> OPTIONAL_BUTTON_CONTENT_DESCRIPTION =
+    /**
+     * The text of the optional button. It is shown on large form factors, and is always used as the
+     * content description of the button.
+     */
+    WritableObjectPropertyKey<@Nullable String> OPTIONAL_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
     /** The lateral (start and end) padding of the optional and incognito buttons, in pixels. */
@@ -79,6 +83,15 @@ interface ComposeplateProperties {
 
     /** The end margin of the composeplate and optional buttons, in pixels. */
     WritableIntPropertyKey OPTIONAL_BUTTON_MARGIN_END = new WritableIntPropertyKey();
+
+    /** Whether the text of the incognito button is visible. */
+    WritableBooleanPropertyKey IS_INCOGNITO_BUTTON_TEXT_VISIBLE = new WritableBooleanPropertyKey();
+
+    /**
+     * Whether the device is a large form factor, which changes the layout of the buttons when the
+     * optional button is visible.
+     */
+    ReadableBooleanPropertyKey IS_LFF = new ReadableBooleanPropertyKey();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -93,8 +106,10 @@ interface ComposeplateProperties {
                 IS_OPTIONAL_BUTTON_VISIBLE,
                 OPTIONAL_BUTTON_ICON_RES_ID,
                 OPTIONAL_BUTTON_CLICK_LISTENER,
-                OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
+                OPTIONAL_BUTTON_TEXT,
                 OPTIONAL_BUTTON_LATERAL_PADDING,
                 OPTIONAL_BUTTON_MARGIN_END,
+                IS_INCOGNITO_BUTTON_TEXT_VISIBLE,
+                IS_LFF,
             };
 }
