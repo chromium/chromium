@@ -109,9 +109,9 @@ class RandomizedEncoder {
 
  private:
   struct EncodingInfo {
-    size_t chunk_length_in_bytes;
-    size_t bit_offset;
-    size_t bit_stride;
+    size_t chunk_length_in_bytes = 0;
+    size_t bit_offset = 0;
+    size_t bit_stride = 0;
   };
 
   const EncodingInfo& encoding_info() const;
