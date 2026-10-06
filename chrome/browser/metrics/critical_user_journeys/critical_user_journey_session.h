@@ -35,7 +35,11 @@ class CriticalUserJourneySession {
     kCompleted = 0,
     kAborted = 1,
     kTimeout = 2,
-    kMaxValue = kTimeout,
+    // The journey ended through an exit branch (see Branch::SetExitBranch()).
+    kAbandoned = 3,
+    // The journey reached an exit branch sooner than its minimum dwell time.
+    kAbandonedBelowDwell = 4,
+    kMaxValue = kAbandonedBelowDwell,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:CriticalUserJourneyResult)
 
@@ -70,7 +74,10 @@ class CriticalUserJourneySession {
       ui::TrackedElement* initial_element);
 
   // Callbacks for InteractionSequence events.
-  void OnStepStarted(int metric_id, base::TimeDelta timeout);
+  void OnStepStarted(int metric_id,
+                     base::TimeDelta timeout,
+                     bool is_exit_branch,
+                     base::TimeDelta min_dwell_duration);
   void OnTimeout();
   void OnAborted(const ui::InteractionSequence::AbortedData& data);
   void OnCompleted();
@@ -86,6 +93,8 @@ class CriticalUserJourneySession {
   base::TimeTicks last_step_time_;
   base::OneShotTimer timeout_timer_;
   bool was_timeout_ = false;
+  bool completed_via_exit_branch_ = false;
+  bool aborted_by_dwell_guardrail_ = false;
 
   base::WeakPtrFactory<CriticalUserJourneySession> weak_factory_{this};
 };

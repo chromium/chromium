@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
@@ -127,7 +128,11 @@ void CriticalUserJourneyService::OnJourneyStarted(
 void CriticalUserJourneyService::OnJourneyEnded(
     CriticalUserJourneySession* session,
     CriticalUserJourneySession::JourneyResult result) {
-  if (result == CriticalUserJourneySession::JourneyResult::kCompleted &&
+  const bool is_completed =
+      result == CriticalUserJourneySession::JourneyResult::kCompleted;
+  const bool is_abandoned =
+      result == CriticalUserJourneySession::JourneyResult::kAbandoned;
+  if ((is_completed || is_abandoned) &&
       session->journey()->hats_params().has_value()) {
     const auto& params = *session->journey()->hats_params();
     if (auto* hats_service = HatsServiceFactory::GetForProfile(
@@ -146,10 +151,15 @@ void CriticalUserJourneyService::OnJourneyEnded(
           base::Unretained(this), session->journey()->name(),
           CriticalUserJourneyHaTSEvent::kFailed, params.failure_callback);
 
+      auto product_specific_string_data = params.product_specific_string_data;
+      product_specific_string_data[kCujTerminalStateKey] =
+          is_abandoned ? kCujTerminalStateAbandoned
+                       : kCujTerminalStateCompleted;
+
       hats_service->LaunchSurvey(
           params.trigger, std::move(success_callback),
           std::move(failure_callback), params.product_specific_bits_data,
-          params.product_specific_string_data, params.supplied_trigger_id,
+          product_specific_string_data, params.supplied_trigger_id,
           HatsService::SurveyOptions());
     }
   }

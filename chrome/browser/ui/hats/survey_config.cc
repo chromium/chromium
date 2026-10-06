@@ -32,6 +32,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_cueing/features.h"  // nogncheck
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"  // nogncheck
@@ -652,35 +653,48 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       DownloadWarningHatsProductSpecificData::GetStringDataFields(
           DownloadWarningHatsType::kDownloadsPageIgnore));
 
+  std::vector<std::string> cuj_string_psd_fields{metrics::kCujTerminalStateKey};
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForDownloadJourney,
       metrics::kHatsSurveyTriggerDownloadJourney,
-      /*presupplied_trigger_id=*/"mL46CjHkE0ugnJ3q1cK0NsAQJpTP");
+      /*presupplied_trigger_id=*/"mL46CjHkE0ugnJ3q1cK0NsAQJpTP",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/cuj_string_psd_fields);
 
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForPinExtensionJourney,
       metrics::kHatsSurveyTriggerPinExtensionJourney,
-      /*presupplied_trigger_id=*/"8RJXcn5t20ugnJ3q1cK0VLDGHPAz");
+      /*presupplied_trigger_id=*/"8RJXcn5t20ugnJ3q1cK0VLDGHPAz",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/cuj_string_psd_fields);
 
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForClearBrowsingHistory,
       metrics::kHatsSurveyTriggerClearBrowsingHistory,
-      /*presupplied_trigger_id=*/"R8iDTcjjT0ugnJ3q1cK0TiRRjjy4");
+      /*presupplied_trigger_id=*/"R8iDTcjjT0ugnJ3q1cK0TiRRjjy4",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/cuj_string_psd_fields);
 
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForCustomizeChromeJourney,
       metrics::kHatsSurveyTriggerCustomizeChromeJourney,
-      /*presupplied_trigger_id=*/"nJLJ12m7C0ugnJ3q1cK0VCq4ZXpB");
+      /*presupplied_trigger_id=*/"nJLJ12m7C0ugnJ3q1cK0VCq4ZXpB",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/cuj_string_psd_fields);
 
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForReadAnythingJourney,
       metrics::kHatsSurveyTriggerReadAnythingJourney,
-      /*presupplied_trigger_id=*/"rmkq5NvrA0ugnJ3q1cK0SNirMLq1");
+      /*presupplied_trigger_id=*/"rmkq5NvrA0ugnJ3q1cK0SNirMLq1",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/cuj_string_psd_fields);
 
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForTabSearchJourney,
       metrics::kHatsSurveyTriggerTabSearchJourney,
-      /*presupplied_trigger_id=*/"AD85aHvUu0ugnJ3q1cK0UCSRt6XZ");
+      /*presupplied_trigger_id=*/"AD85aHvUu0ugnJ3q1cK0UCSRt6XZ",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/cuj_string_psd_fields);
 
   // Lens overlay surveys.
   survey_configs.emplace_back(
@@ -948,7 +962,6 @@ std::optional<uint64_t> SurveyConfig::ValidateHatsSurveyUkmId(
              ? hats_survey_ukm_id
              : std::nullopt;
 }
-
 
 void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_) {
   auto surveys = GetAllSurveyConfigs();

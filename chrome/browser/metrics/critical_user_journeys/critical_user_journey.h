@@ -23,6 +23,13 @@
 
 namespace metrics {
 
+// HaTS product-specific string data (PSD) key and values that report how a
+// journey ended. Shared by CriticalUserJourneyService and the HaTS survey
+// configs so the allowlisted field name cannot drift.
+inline constexpr char kCujTerminalStateKey[] = "cuj_terminal_state";
+inline constexpr char kCujTerminalStateCompleted[] = "completed";
+inline constexpr char kCujTerminalStateAbandoned[] = "abandoned";
+
 // Helper used to define alternative paths (branches) within a journey step.
 struct Branch {
   Branch(ui::ElementIdentifier id,
@@ -40,12 +47,32 @@ struct Branch {
   Branch(ui::CustomElementEventType event_type, T metric_id)
       : Branch(event_type, static_cast<int>(metric_id)) {}
 
+  // Marks this branch as an exit branch: reaching it ends the journey with
+  // JourneyResult::kAbandoned instead of kCompleted, and any HaTS survey is
+  // launched with `kCujTerminalStateKey` set to `kCujTerminalStateAbandoned`.
+  //
+  // If `min_dwell` is non-zero and the branch is reached sooner than
+  // that after the previous step, the journey ends with
+  // JourneyResult::kAbandonedBelowDwell and no survey is launched.
+  //
+  // Exit branches are only valid in the final step of a journey (enforced by
+  // CriticalUserJourney::Builder::Build()). The underlying InteractionSequence
+  // cannot be reset from within a step callback, so an exit branch in an
+  // earlier step could not stop the remaining steps from running.
+  Branch& SetExitBranch(base::TimeDelta min_dwell = base::TimeDelta()) {
+    is_exit_branch = true;
+    min_dwell_duration = min_dwell;
+    return *this;
+  }
+
   ~Branch();
 
   ui::ElementIdentifier id;
   ui::InteractionSequence::StepType type;
   ui::CustomElementEventType custom_event_type;
   int metric_id;
+  bool is_exit_branch = false;
+  base::TimeDelta min_dwell_duration = base::TimeDelta();
 };
 
 // Configuration parameters for triggering a HaTS survey upon journey

@@ -43,6 +43,8 @@ This file defines enums used in Critical User Journey histograms.
   <int value="0" label="Completed"/>
   <int value="1" label="Aborted"/>
   <int value="2" label="Timed Out"/>
+  <int value="3" label="Abandoned via exit branch"/>
+  <int value="4" label="Exit branch reached below minimum dwell time"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h:JourneyResult) -->

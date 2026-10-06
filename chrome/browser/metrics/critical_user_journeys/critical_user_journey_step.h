@@ -27,6 +27,12 @@ class CriticalUserJourneyStep : public ui::InteractionSequence::Step {
   int metric_id = 0;
   std::vector<std::unique_ptr<CriticalUserJourney>> branches;
   base::TimeDelta time_out_duration = base::TimeDelta();
+  base::TimeDelta min_dwell_duration = base::TimeDelta();
+  bool is_exit_branch = false;
+  // True for every branch step of an AddAnyOf() that contains an exit branch.
+  // Such steps do not require their element to be visible when the branches
+  // start (see CriticalUserJourneySession::BuildSequence()).
+  bool in_exit_branch_group = false;
   ui::InteractionSequence::SubsequenceMode mode =
       ui::InteractionSequence::SubsequenceMode::kExactlyOne;
 };
