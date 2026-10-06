@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
 #include "chrome/browser/actor/actor_tab_data.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -124,6 +127,8 @@
 #include "components/search/search.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -497,6 +502,21 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     auto_picture_in_picture_tab_helper_ =
         GetUserDataFactory().CreateInstance<AutoPictureInPictureTabHelper>(
             *tab, *tab, web_contents);
+  }
+
+  if (webapps::InstallableManager::FromWebContents(web_contents)) {
+    // Create AppBannerManagerAndroid; remove trace after
+    // https://crbug.com/41426655
+    TRACE_EVENT0("browser", "AppBannerManagerAndroid::AppBannerManagerAndroid");
+    app_banner_manager_ =
+        GetUserDataFactory().CreateInstance<webapps::AppBannerManagerAndroid>(
+            *tab, *tab, web_contents,
+            std::make_unique<webapps::ChromeAppBannerManagerAndroid>(
+                *web_contents));
+  } else {
+    // Unit tests using `TabAndroid::CreateForTesting` construct `TabFeatures`
+    // without running `TabHelpers::AttachTabHelpers`.
+    CHECK_IS_TEST();
   }
 
   ml_installability_promoter_ =

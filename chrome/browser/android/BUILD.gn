@@ -163,6 +163,7 @@ source_set("tabs_impl") {
     "//chrome/browser:chained_back_navigation_tracker",
     "//chrome/browser/actor",
     "//chrome/browser/actor/android",
+    "//chrome/browser/banners",
     "//chrome/browser/commerce",
     "//chrome/browser/complex_tasks",
     "//chrome/browser/content_settings",

@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -19,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -42,7 +44,6 @@
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "net/base/url_util.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -74,24 +75,38 @@ std::string ExtractQueryValueForName(const GURL& url, const std::string& name) {
 
 }  // anonymous namespace
 
+DEFINE_USER_DATA(AppBannerManagerAndroid);
+
 // static
-void AppBannerManagerAndroid::CreateForWebContents(
-    content::WebContents* web_contents,
-    std::unique_ptr<ChromeDelegate> delegate) {
-  if (FromWebContents(web_contents)) {
-    return;
+AppBannerManagerAndroid* AppBannerManagerAndroid::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+AppBannerManagerAndroid* AppBannerManagerAndroid::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
   }
-  web_contents->SetUserData(UserDataKey(),
-                            base::WrapUnique(new AppBannerManagerAndroid(
-                                web_contents, std::move(delegate))));
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
+
+AppBannerManagerAndroid::AppBannerManagerAndroid(
+    tabs::TabInterface& tab,
+    content::WebContents* web_contents,
+    std::unique_ptr<ChromeDelegate> delegate)
+    : AppBannerManagerAndroid(web_contents, std::move(delegate)) {
+  scoped_unowned_user_data_.emplace(tab.GetUnownedUserDataHost(), *this);
 }
 
 AppBannerManagerAndroid::AppBannerManagerAndroid(
     content::WebContents* web_contents,
     std::unique_ptr<ChromeDelegate> delegate)
-    : content::WebContentsUserData<AppBannerManagerAndroid>(*web_contents),
-      app_banner_manager_(AppBannerManager::Create(this, web_contents)),
+    : app_banner_manager_(AppBannerManager::Create(this, web_contents)),
       delegate_(std::move(delegate)) {
+  CHECK(web_contents);
+  CHECK(delegate_);
   CreateJavaBannerManager(web_contents);
 }
 
@@ -166,7 +181,7 @@ void AppBannerManagerAndroid::OnAppDetailsRetrieved(
   }
 
   bool icon_download_initiated = content::ManifestIconDownloader::Download(
-      &GetWebContents(), primary_icon_url,
+      app_banner_manager_->web_contents(), primary_icon_url,
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx(),
       WebappsIconUtils::GetMinimumHomescreenIconSizeInPx(),
       /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
@@ -226,7 +241,8 @@ bool AppBannerManagerAndroid::CanRequestAppBanner() const {
   // Note: This check is actually for "A2HS" aka add shortcuts. It doesn't
   // really belongs here.
   if (!Java_AppBannerManager_isSupported(env) ||
-      !WebappsClient::Get()->CanShowAppBanners(&GetWebContents())) {
+      !WebappsClient::Get()->CanShowAppBanners(
+          app_banner_manager_->web_contents())) {
     return false;
   }
   return true;
@@ -340,14 +356,16 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge(
   }
 
   ambient_badge_manager_ = std::make_unique<AmbientBadgeManager>(
-      GetWebContents(), delegate_->GetSegmentationPlatformService(),
+      *app_banner_manager_->web_contents(),
+      delegate_->GetSegmentationPlatformService(),
       *delegate_->GetPrefService());
 
   std::unique_ptr<AddToHomescreenParams> a2hs_params =
       AppBannerManagerAndroid::CreateAddToHomescreenParams(
           install_config, native_java_app_data_,
-          InstallableMetrics::GetInstallSource(&GetWebContents(),
-                                               InstallTrigger::AMBIENT_BADGE));
+          InstallableMetrics::GetInstallSource(
+              app_banner_manager_->web_contents(),
+              InstallTrigger::AMBIENT_BADGE));
 
   ambient_badge_manager_->MaybeShow(
       install_config.validated_url, install_config.GetWebOrNativeAppName(),
@@ -655,10 +673,11 @@ bool AppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
   const WebAppBannerData& web_app_data = config.web_app_data;
 
   // Do not show the peeked bottom sheet if it was recently dismissed.
-  if (!expand_sheet && AppBannerSettingsHelper::WasBannerRecentlyBlocked(
-                           &GetWebContents(), config.validated_url,
-                           web_app_data.manifest_id.spec(),
-                           AppBannerManager::GetCurrentTime())) {
+  if (!expand_sheet &&
+      AppBannerSettingsHelper::WasBannerRecentlyBlocked(
+          app_banner_manager_->web_contents(), config.validated_url,
+          web_app_data.manifest_id.spec(),
+          AppBannerManager::GetCurrentTime())) {
     return false;
   }
 
@@ -685,8 +704,6 @@ AppBannerManagerAndroid::GetAndroidWeakPtr() {
 void AppBannerManagerAndroid::InvalidateWeakPtrsForThisNavigation() {
   weak_factory_.InvalidateWeakPtrs();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerAndroid);
 
 // static
 static base::android::ScopedJavaLocalRef<jobject>

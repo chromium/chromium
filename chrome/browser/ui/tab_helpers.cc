@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
@@ -106,14 +105,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "components/sensitive_content/android/android_sensitive_content_client.h"
 #include "components/sensitive_content/features.h"
-#include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
@@ -326,13 +323,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // --- Section 2: Platform-specific tab helpers ---
 
 #if BUILDFLAG(IS_ANDROID)
-  {
-    // Remove after fixing https://crbug.com/41426655
-    TRACE_EVENT0("browser", "AppBannerManagerAndroid::CreateForWebContents");
-    webapps::AppBannerManagerAndroid::CreateForWebContents(
-        web_contents, std::make_unique<webapps::ChromeAppBannerManagerAndroid>(
-                          *web_contents));
-  }
   ContextMenuHelper::CreateForWebContents(web_contents);
 
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(

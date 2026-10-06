@@ -122,7 +122,8 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
         AppBannerManagerAndroid::CreateAddToHomescreenParams(
             install_config, native_java_app_data_for_testing(),
             InstallableMetrics::GetInstallSource(
-                &GetWebContents(), InstallTrigger::AMBIENT_BADGE));
+                app_banner_manager()->web_contents(),
+                InstallTrigger::AMBIENT_BADGE));
 
     ambient_badge_test_->MaybeShow(
         install_config.validated_url, install_config.GetWebOrNativeAppName(),

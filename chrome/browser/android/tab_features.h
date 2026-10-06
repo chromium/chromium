@@ -146,6 +146,7 @@ class VrTabHelper;
 }  // namespace vr
 
 namespace webapps {
+class AppBannerManagerAndroid;
 class MLInstallabilityPromoter;
 }  // namespace webapps
 
@@ -324,6 +325,7 @@ class TabFeatures {
   std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
   std::unique_ptr<AutoPictureInPictureTabHelper>
       auto_picture_in_picture_tab_helper_;
+  std::unique_ptr<webapps::AppBannerManagerAndroid> app_banner_manager_;
   std::unique_ptr<webapps::MLInstallabilityPromoter>
       ml_installability_promoter_;
   std::unique_ptr<ChromeFacilitatedPaymentsClient>

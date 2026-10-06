@@ -21,7 +21,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/pwa_install_path_tracker.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 class SkBitmap;
@@ -29,6 +29,10 @@ class PrefService;
 
 namespace segmentation_platform {
 class SegmentationPlatformService;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace webapps {
@@ -59,10 +63,10 @@ struct InstallBannerConfig;
 //
 // TODO(crbug.com/40730613): remove remaining Chrome-specific functionality and
 // move to //components/webapps.
-class AppBannerManagerAndroid
-    : public AppBannerManager::Delegate,
-      public content::WebContentsUserData<AppBannerManagerAndroid> {
+class AppBannerManagerAndroid : public AppBannerManager::Delegate {
  public:
+  DECLARE_USER_DATA(AppBannerManagerAndroid);
+
   class ChromeDelegate {
    public:
     virtual ~ChromeDelegate() = default;
@@ -85,13 +89,16 @@ class AppBannerManagerAndroid
         const AddToHomescreenParams& a2hs_params) = 0;
   };
 
-  static void CreateForWebContents(content::WebContents* web_contents,
-                                   std::unique_ptr<ChromeDelegate> delegate);
-  using content::WebContentsUserData<AppBannerManagerAndroid>::FromWebContents;
+  static AppBannerManagerAndroid* From(tabs::TabInterface* tab);
+  static AppBannerManagerAndroid* FromWebContents(
+      content::WebContents* web_contents);
 
+  AppBannerManagerAndroid(tabs::TabInterface& tab,
+                          content::WebContents* web_contents,
+                          std::unique_ptr<ChromeDelegate> delegate);
   AppBannerManagerAndroid(const AppBannerManagerAndroid&) = delete;
   AppBannerManagerAndroid& operator=(const AppBannerManagerAndroid&) = delete;
-  ~AppBannerManagerAndroid() override;
+  virtual ~AppBannerManagerAndroid();
 
   // TODO(b/323192242): Remove this in favor of an optional getter in
   // AppBannerManager later in the refactor.
@@ -147,8 +154,6 @@ class AppBannerManagerAndroid
   }
 
  protected:
-  friend class content::WebContentsUserData<AppBannerManagerAndroid>;
-
   // Creates the AddToHomescreenParams for a given install source and
   // configuration.
   // TODO(b/320681613): Wrap this configuration in a struct.
@@ -157,6 +162,12 @@ class AppBannerManagerAndroid
       const base::android::ScopedJavaGlobalRef<jobject>& native_java_app_data,
       WebappInstallSource install_source);
 
+  // For testing only (TestAppBannerManager in
+  // ambient_badge_manager_browsertest.cc), which creates a standalone test
+  // instance alongside the tab's production manager without registering on
+  // UnownedUserDataHost.
+  // TODO(crbug.com/570628166): Migrate AmbientBadgeManagerBrowserTest to
+  // TabFeatures factory overrides and remove this constructor.
   AppBannerManagerAndroid(content::WebContents* web_contents,
                           std::unique_ptr<ChromeDelegate> delegate);
 
@@ -200,8 +211,6 @@ class AppBannerManagerAndroid
   }
 
  private:
-  friend class content::WebContentsUserData<AppBannerManagerAndroid>;
-
   struct QueryNativeAppConfig {
     QueryNativeAppConfig(const std::string& url,
                          const std::string& package,
@@ -254,9 +263,16 @@ class AppBannerManagerAndroid
 
   std::unique_ptr<AmbientBadgeManager> ambient_badge_manager_;
 
-  base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
+  // This is std::optional for testing only (TestAppBannerManager in
+  // ambient_badge_manager_browsertest.cc), which creates a standalone test
+  // instance alongside the tab's production manager without registering on
+  // UnownedUserDataHost.
+  // TODO(crbug.com/570628166): Migrate AmbientBadgeManagerBrowserTest to
+  // TabFeatures factory overrides.
+  std::optional<ui::ScopedUnownedUserData<AppBannerManagerAndroid>>
+      scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 };
 
 }  // namespace webapps
