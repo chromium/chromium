@@ -174,6 +174,7 @@ public class LongScreenshotsMediator
         }
     }
 
+    @SuppressWarnings("checkstyle:FullscreenDialogs")
     public void showAreaSelectionDialog(Bitmap bitmap) {
         mFullBitmap = bitmap;
         mDialogView =
@@ -191,6 +192,11 @@ public class LongScreenshotsMediator
         PropertyModelChangeProcessor.create(
                 mModel, mDialogView, LongScreenshotsAreaSelectionDialogViewBinder::bind);
 
+        // Suppress FullscreenDialogs checkstyle warning on this method: the regex check triggers
+        // unconditionally on any reference to R.style.ThemeOverlay_BrowserUI_Fullscreen without
+        // inspecting the dialog type. Here we already use ChromeDialog with
+        // EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled(), which properly handles automotive
+        // back-button toolbars and edge-to-edge window insets.
         mDialog =
                 new ChromeDialog(
                         mActivity,
