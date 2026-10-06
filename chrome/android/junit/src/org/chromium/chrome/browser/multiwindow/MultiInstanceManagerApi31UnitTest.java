@@ -97,6 +97,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
+import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
+import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -365,7 +367,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
         mProfileProviderSupplier.set(mProfileProvider);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
-        MultiWindowTestUtils.ensureInitialized();
 
         mActivityPool =
                 new Activity[] {
@@ -1662,7 +1663,7 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeMultiInstancePersistentStore.writeCustomTitle(index, /* title= */ "title");
         ChromeMultiInstancePersistentStore.writeTabCount(
                 index, /* normalTabCount= */ 1, /* incognitoTabCount= */ 1);
-        ChromeMultiInstancePersistentStore.writeTabCountForRelaunch(index, /* tabCount= */ 2);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(index, /* tabCount= */ 2);
         ChromeMultiInstancePersistentStore.writeIncognitoSelected(
                 index, /* incognitoSelected= */ true);
         ChromeMultiInstancePersistentStore.writeClosureTime(index);
@@ -2203,8 +2204,12 @@ public class MultiInstanceManagerApi31UnitTest {
                 -1,
                 ChromeMultiInstancePersistentStore.readTaskId(0));
         assertFalse(
-                "Persisted state for tracking downgrade should not be updated.",
-                ChromeMultiInstancePersistentStore.readInstanceLimitDowngradeTriggered());
+                "SharedPref for tracking downgrade should not be updated.",
+                MultiInstanceSharedPreferences.getInstance()
+                        .readBoolean(
+                                MultiInstancePreferenceKeys
+                                        .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
+                                false));
     }
 
     private List<AppTask> setupActivityManagerAppTasks(Activity... activities) {

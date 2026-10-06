@@ -12,6 +12,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/preferences/ChromeSharedPreferences.java",
     "android/java/src/org/chromium/chrome/browser/preferences/DeprecatedChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/LegacyChromePreferenceKeys.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/MultiInstancePreferenceKeys.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/MultiInstanceSharedPreferences.java",
   ]
 
   public_deps = [ "//base:base_shared_preferences_java" ]

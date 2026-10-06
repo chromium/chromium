@@ -136,7 +136,6 @@ public class MultiWindowUtilsUnitTest {
     @Before
     public void setUp() {
         MultiInstancePersistentStore.resetForTesting();
-        MultiInstancePersistentStore.ensureInitialized();
         mTabModelSupplier = ObservableSuppliers.createMonotonic(mNormalTabModel);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
@@ -1439,8 +1438,10 @@ public class MultiWindowUtilsUnitTest {
         int windowId2 = 1;
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId1);
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId2);
-        ChromeMultiInstancePersistentStore.writeTabCountForRelaunch(windowId1, /* tabCount= */ 10);
-        ChromeMultiInstancePersistentStore.writeTabCountForRelaunch(windowId2, /* tabCount= */ 15);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(
+                windowId1, /* tabCount= */ 10);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(
+                windowId2, /* tabCount= */ 15);
         assertEquals(
                 10, MultiWindowUtils.getTabCountForRelaunchFromPersistentStore(windowId1), 0.01);
         assertEquals(

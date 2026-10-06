@@ -80,7 +80,7 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
         ChromeMultiInstancePersistentStore.writeCustomTitle(INSTANCE_ID_0, WINDOW_TITLE);
         ChromeMultiInstancePersistentStore.writeTaskId(INSTANCE_ID_0, TASK_ID_0);
         ChromeMultiInstancePersistentStore.writeTabCount(INSTANCE_ID_0, 1, 1);
-        ChromeMultiInstancePersistentStore.writeTabCountForRelaunch(INSTANCE_ID_0, 1);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(INSTANCE_ID_0, 1);
         ChromeMultiInstancePersistentStore.writeProfileType(
                 INSTANCE_ID_0, SupportedProfileType.REGULAR);
         ChromeMultiInstancePersistentStore.writeIncognitoSelected(INSTANCE_ID_0, true);
@@ -127,7 +127,7 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
         assertEquals(0, ChromeMultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_0));
         assertEquals(0, ChromeMultiInstancePersistentStore.readIncognitoTabCount(INSTANCE_ID_0));
 
-        ChromeMultiInstancePersistentStore.writeTabCountForRelaunch(INSTANCE_ID_0, 7);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(INSTANCE_ID_0, 7);
         assertEquals(0, ChromeMultiInstancePersistentStore.readTabCountForRelaunch(INSTANCE_ID_0));
 
         ChromeMultiInstancePersistentStore.writeLatestPersistentStateId(INSTANCE_ID_0, 1);
@@ -237,7 +237,7 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
 
         // Verify that the value is successfully written to the store.
         int tabCount = 7;
-        ChromeMultiInstancePersistentStore.writeTabCountForRelaunch(INSTANCE_ID_0, tabCount);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(INSTANCE_ID_0, tabCount);
         assertEquals(
                 tabCount,
                 ChromeMultiInstancePersistentStore.readTabCountForRelaunch(INSTANCE_ID_0));

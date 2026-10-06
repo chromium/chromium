@@ -23,7 +23,9 @@ public class AllPreferenceKeyRegistries {
     static final @Nullable Set<PreferenceKeyRegistry> KNOWN_REGISTRIES =
             BuildConfig.ENABLE_ASSERTS
                     ? Set.of(
-                            ChromeSharedPreferences.REGISTRY, CachedFlagsSharedPreferences.REGISTRY)
+                            ChromeSharedPreferences.REGISTRY,
+                            CachedFlagsSharedPreferences.REGISTRY,
+                            MultiInstanceSharedPreferences.REGISTRY)
                     : null;
 
     public static void initializeKnownRegistries() {

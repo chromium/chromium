@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -20,6 +21,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.MultiInstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.WindowModeData;
+import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
+import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +59,10 @@ public class MultiInstancePersistentStore {
 
     protected MultiInstancePersistentStore() {}
 
+    static SharedPreferencesManager getManager() {
+        return MultiInstanceSharedPreferences.getInstance();
+    }
+
     @VisibleForTesting
     static void ensureInitialized() {
         if (sData != null) return;
@@ -71,7 +78,8 @@ public class MultiInstancePersistentStore {
         return sAtomicFile;
     }
 
-    protected static MultiInstanceData loadProtoFromFile() {
+    protected static @Nullable MultiInstanceData loadProtoFromFile() {
+        if (sData != null) return sData;
         AtomicFile atomicFile = getAtomicFile();
         if (!atomicFile.getBaseFile().exists()) return MultiInstanceData.getDefaultInstance();
 
@@ -128,216 +136,346 @@ public class MultiInstancePersistentStore {
     }
 
     static boolean containsMultiWindowModeCycleStartTime() {
-        assert sData != null;
-        return sData.hasMultiWindowModeCycleStartTime();
+        if (sData != null) {
+            return sData.hasMultiWindowModeCycleStartTime();
+        }
+        return getManager()
+                .contains(MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME);
     }
 
     static boolean containsMultiWindowModeStartTime(int modeIndex) {
-        assert sData != null;
-        WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
-        return windowModeData != null && windowModeData.hasStartTime();
+        if (sData != null) {
+            WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
+            return windowModeData != null && windowModeData.hasStartTime();
+        } else {
+            String key =
+                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                            String.valueOf(modeIndex));
+            return getManager().contains(key);
+        }
     }
 
     @VisibleForTesting
     static boolean containsMultiWindowModeDurationMs(int modeIndex) {
-        assert sData != null;
-        WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
-        return windowModeData != null && windowModeData.hasDurationMs();
+        if (sData != null) {
+            WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
+            return windowModeData != null && windowModeData.hasDurationMs();
+        }
+        String durationKey =
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(modeIndex);
+        return getManager().contains(durationKey);
     }
 
     static long readMultiWindowStartTime() {
-        assert sData != null;
-        return sData.getMultiWindowStartTime();
+        if (sData != null) return sData.getMultiWindowStartTime();
+        return getManager().readLong(MultiInstancePreferenceKeys.MULTI_WINDOW_START_TIME, 0);
     }
 
     static void writeMultiWindowStartTime(long startTime) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiWindowStartTime(startTime).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiWindowStartTime(startTime).build();
+            saveProto();
+        } else {
+            getManager().writeLong(MultiInstancePreferenceKeys.MULTI_WINDOW_START_TIME, startTime);
+        }
     }
 
     static boolean readCloseWindowSkipConfirm() {
-        assert sData != null;
-        return sData.getMultiInstanceCloseWindowSkipConfirm();
+        if (sData != null) return sData.getMultiInstanceCloseWindowSkipConfirm();
+        return getManager()
+                .readBoolean(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM,
+                        false);
     }
 
     static void writeCloseWindowSkipConfirm(boolean skipConfirm) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiInstanceCloseWindowSkipConfirm(skipConfirm).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiInstanceCloseWindowSkipConfirm(skipConfirm).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeBoolean(
+                            MultiInstancePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM,
+                            skipConfirm);
+        }
     }
 
     static int readMaxInstanceLimit(int maxInstance) {
-        assert sData != null;
-        return sData.hasMultiInstanceMaxInstanceLimit()
-                ? sData.getMultiInstanceMaxInstanceLimit()
-                : maxInstance;
+        if (sData != null) {
+            return sData.hasMultiInstanceMaxInstanceLimit()
+                    ? sData.getMultiInstanceMaxInstanceLimit()
+                    : maxInstance;
+        }
+        return getManager()
+                .readInt(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, maxInstance);
     }
 
     static void writeMaxInstanceLimit(int maxInstance) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiInstanceMaxInstanceLimit(maxInstance).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiInstanceMaxInstanceLimit(maxInstance).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeInt(
+                            MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT,
+                            maxInstance);
+        }
     }
 
     static boolean readInstanceLimitDowngradeTriggered() {
-        assert sData != null;
-        return sData.getMultiInstanceInstanceLimitDowngradeTriggered();
+        if (sData != null) {
+            return sData.getMultiInstanceInstanceLimitDowngradeTriggered();
+        }
+        return getManager()
+                .readBoolean(
+                        MultiInstancePreferenceKeys
+                                .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
+                        false);
     }
 
     static void writeInstanceLimitDowngradeTriggered(boolean triggered) {
-        assert sData != null;
-        sData =
-                sData.toBuilder()
-                        .setMultiInstanceInstanceLimitDowngradeTriggered(triggered)
-                        .build();
-        saveProto();
+        if (sData != null) {
+            sData =
+                    sData.toBuilder()
+                            .setMultiInstanceInstanceLimitDowngradeTriggered(triggered)
+                            .build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeBoolean(
+                            MultiInstancePreferenceKeys
+                                    .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
+                            triggered);
+        }
     }
 
     static long readMaxCountHistogramStartTime() {
-        assert sData != null;
-        return sData.getMultiInstanceMaxCountTime();
+        if (sData != null) {
+            return sData.getMultiInstanceMaxCountTime();
+        }
+        return getManager().readLong(MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, 0);
     }
 
     static void writeMaxCountHistogramStartTime(long maxCountTime) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiInstanceMaxCountTime(maxCountTime).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiInstanceMaxCountTime(maxCountTime).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeLong(
+                            MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME,
+                            maxCountTime);
+        }
     }
 
     static int readDailyMaxActiveInstanceCount() {
-        assert sData != null;
-        return sData.getMultiInstanceMaxActiveInstanceCount();
+        if (sData != null) {
+            return sData.getMultiInstanceMaxActiveInstanceCount();
+        }
+        return getManager()
+                .readInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT, 0);
     }
 
     static void writeDailyMaxActiveInstanceCount(int count) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiInstanceMaxActiveInstanceCount(count).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiInstanceMaxActiveInstanceCount(count).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeInt(
+                            MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT,
+                            count);
+        }
     }
 
     static int readDailyMaxInstanceCount() {
-        assert sData != null;
-        return sData.getMultiInstanceMaxInstanceCount();
+        if (sData != null) {
+            return sData.getMultiInstanceMaxInstanceCount();
+        }
+        return getManager()
+                .readInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, 0);
     }
 
     static void writeDailyMaxInstanceCount(int count) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiInstanceMaxInstanceCount(count).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiInstanceMaxInstanceCount(count).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, count);
+        }
     }
 
     static int readDailyMaxIncognitoInstanceCount() {
-        assert sData != null;
-        return sData.getMultiInstanceMaxInstanceCountIncognito();
+        if (sData != null) return sData.getMultiInstanceMaxInstanceCountIncognito();
+        return getManager()
+                .readInt(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO, 0);
     }
 
     static void writeDailyMaxIncognitoInstanceCount(int count) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiInstanceMaxInstanceCountIncognito(count).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiInstanceMaxInstanceCountIncognito(count).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeInt(
+                            MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO,
+                            count);
+        }
     }
 
     static long readMultiInstanceStartTime() {
-        assert sData != null;
-        return sData.getMultiInstanceStartTime();
+        if (sData != null) return sData.getMultiInstanceStartTime();
+        return getManager().readLong(MultiInstancePreferenceKeys.MULTI_INSTANCE_START_TIME, 0);
     }
 
     static void writeMultiInstanceStartTime(long startTime) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiInstanceStartTime(startTime).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiInstanceStartTime(startTime).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeLong(MultiInstancePreferenceKeys.MULTI_INSTANCE_START_TIME, startTime);
+        }
     }
 
     static long readMultiWindowModeCycleStartTime() {
-        assert sData != null;
-        return sData.getMultiWindowModeCycleStartTime();
+        if (sData != null) {
+            return sData.getMultiWindowModeCycleStartTime();
+        }
+        return getManager()
+                .readLong(MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, 0);
     }
 
     static void writeMultiWindowModeCycleStartTime(long startTime) {
-        assert sData != null;
-        sData = sData.toBuilder().setMultiWindowModeCycleStartTime(startTime).build();
-        saveProto();
+        if (sData != null) {
+            sData = sData.toBuilder().setMultiWindowModeCycleStartTime(startTime).build();
+            saveProto();
+        } else {
+            getManager()
+                    .writeLong(
+                            MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME,
+                            startTime);
+        }
     }
 
     static long readMultiWindowModeStartTime(int modeIndex, long currentTime) {
-        assert sData != null;
-        WindowModeData wm = sData.getWindowModesMap().get(modeIndex);
-        return (wm != null && wm.hasStartTime()) ? wm.getStartTime() : currentTime;
+        if (sData != null) {
+            WindowModeData wm = sData.getWindowModesMap().get(modeIndex);
+            return (wm != null && wm.hasStartTime()) ? wm.getStartTime() : currentTime;
+        }
+        String startTimeKey =
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(modeIndex);
+        return getManager().readLong(startTimeKey, currentTime);
     }
 
     static void writeMultiWindowModeStartTime(int modeIndex, long startTime) {
-        assert sData != null;
-        WindowModeData wm =
-                sData
-                        .getWindowModesOrDefault(modeIndex, WindowModeData.getDefaultInstance())
-                        .toBuilder()
-                        .setStartTime(startTime)
-                        .build();
-        sData = sData.toBuilder().putWindowModes(modeIndex, wm).build();
-        saveProto();
+        if (sData != null) {
+            WindowModeData wm =
+                    sData
+                            .getWindowModesOrDefault(modeIndex, WindowModeData.getDefaultInstance())
+                            .toBuilder()
+                            .setStartTime(startTime)
+                            .build();
+            sData = sData.toBuilder().putWindowModes(modeIndex, wm).build();
+            saveProto();
+        } else {
+            String startTimeKey =
+                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(modeIndex);
+            getManager().writeLong(startTimeKey, startTime);
+        }
     }
 
     static long readMultiWindowModeDurationMs(int modeIndex) {
-        assert sData != null;
-        WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
-        return windowModeData != null ? windowModeData.getDurationMs() : 0;
+        if (sData != null) {
+            WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
+            return windowModeData != null ? windowModeData.getDurationMs() : 0;
+        }
+        String durationKey =
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(modeIndex);
+        return getManager().readLong(durationKey, 0);
     }
 
     static void writeMultiWindowModeDurationMs(int modeIndex, long duration) {
-        assert sData != null;
-        WindowModeData windowModeData =
-                sData
-                        .getWindowModesOrDefault(modeIndex, WindowModeData.getDefaultInstance())
-                        .toBuilder()
-                        .setDurationMs(duration)
-                        .build();
-        sData = sData.toBuilder().putWindowModes(modeIndex, windowModeData).build();
-        saveProto();
+        if (sData != null) {
+            WindowModeData windowModeData =
+                    sData
+                            .getWindowModesOrDefault(modeIndex, WindowModeData.getDefaultInstance())
+                            .toBuilder()
+                            .setDurationMs(duration)
+                            .build();
+            sData = sData.toBuilder().putWindowModes(modeIndex, windowModeData).build();
+            saveProto();
+        } else {
+            String durationKey =
+                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(modeIndex);
+            getManager().writeLong(durationKey, duration);
+        }
     }
 
     static Set<String> readMultiWindowModeActivities(int modeIndex) {
-        assert sData != null;
-        WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
-        return (windowModeData != null && windowModeData.getActivitiesCount() > 0)
-                ? Collections.unmodifiableSet(new HashSet<>(windowModeData.getActivitiesList()))
-                : Collections.emptySet();
+        if (sData != null) {
+            WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
+            return (windowModeData != null && windowModeData.getActivitiesCount() > 0)
+                    ? Collections.unmodifiableSet(new HashSet<>(windowModeData.getActivitiesList()))
+                    : Collections.emptySet();
+        }
+        String activitiesKey =
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(modeIndex);
+        return getManager().readStringSet(activitiesKey, Collections.emptySet());
     }
 
     static void writeMultiWindowModeActivities(int modeIndex, Set<String> activities) {
-        assert sData != null;
-        WindowModeData windowModeData =
-                sData
-                        .getWindowModesOrDefault(modeIndex, WindowModeData.getDefaultInstance())
-                        .toBuilder()
-                        .clearActivities()
-                        .addAllActivities(activities)
-                        .build();
-        sData = sData.toBuilder().putWindowModes(modeIndex, windowModeData).build();
-        saveProto();
+        if (sData != null) {
+            WindowModeData windowModeData =
+                    sData
+                            .getWindowModesOrDefault(modeIndex, WindowModeData.getDefaultInstance())
+                            .toBuilder()
+                            .clearActivities()
+                            .addAllActivities(activities)
+                            .build();
+            sData = sData.toBuilder().putWindowModes(modeIndex, windowModeData).build();
+            saveProto();
+        } else {
+            String activitiesKey =
+                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(modeIndex);
+            getManager().writeStringSet(activitiesKey, activities);
+        }
     }
 
     static void removeMultiWindowModeStartTime(int modeIndex) {
-        assert sData != null;
-        WindowModeData wm = sData.getWindowModesMap().get(modeIndex);
-        if (wm != null) {
-            sData =
-                    sData.toBuilder()
-                            .putWindowModes(modeIndex, wm.toBuilder().clearStartTime().build())
-                            .build();
-            saveProto();
+        if (sData != null) {
+            WindowModeData wm = sData.getWindowModesMap().get(modeIndex);
+            if (wm != null) {
+                sData =
+                        sData.toBuilder()
+                                .putWindowModes(modeIndex, wm.toBuilder().clearStartTime().build())
+                                .build();
+                saveProto();
+            }
+        } else {
+            String startTimeKey =
+                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(modeIndex);
+            getManager().removeKey(startTimeKey);
         }
     }
 
     static void removeMultiWindowModeDurationMs(int modeIndex) {
-        assert sData != null;
-        WindowModeData wm = sData.getWindowModesMap().get(modeIndex);
-        if (wm != null) {
-            sData =
-                    sData.toBuilder()
-                            .putWindowModes(modeIndex, wm.toBuilder().clearDurationMs().build())
-                            .build();
-            saveProto();
+        if (sData != null) {
+            WindowModeData wm = sData.getWindowModesMap().get(modeIndex);
+            if (wm != null) {
+                sData =
+                        sData.toBuilder()
+                                .putWindowModes(modeIndex, wm.toBuilder().clearDurationMs().build())
+                                .build();
+                saveProto();
+            }
+        } else {
+            String durationKey =
+                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(modeIndex);
+            getManager().removeKey(durationKey);
         }
     }
 
@@ -350,5 +488,6 @@ public class MultiInstancePersistentStore {
             sAtomicFile.delete();
             sAtomicFile = null;
         }
+        getManager().getEditor().clear().commit();
     }
 }

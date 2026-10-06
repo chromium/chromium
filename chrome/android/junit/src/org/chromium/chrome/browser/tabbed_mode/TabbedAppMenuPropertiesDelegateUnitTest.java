@@ -2727,7 +2727,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
     public void nameWindowMenuVisible_Api31Enabled() {
-        MultiWindowTestUtils.ensureInitialized();
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
