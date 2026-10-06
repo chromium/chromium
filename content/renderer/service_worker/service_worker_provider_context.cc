@@ -119,7 +119,21 @@ ServiceWorkerProviderContext::~ServiceWorkerProviderContext() {
 blink::mojom::ServiceWorkerObjectInfoPtr
 ServiceWorkerProviderContext::TakeController() {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  if (controller_receiver_.is_bound()) {
+    CHECK(controller_);
+    controller_->receiver = controller_receiver_.Unbind();
+  }
   return std::move(controller_);
+}
+
+void ServiceWorkerProviderContext::StateChanged(
+    blink::mojom::ServiceWorkerState state) {
+  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(controller_);
+  // Cache the latest state for the eventual Blink ServiceWorker. Updates
+  // handled here are not dispatched or replayed as statechange events; the
+  // Blink object will initialize its state from the object info.
+  controller_->state = state;
 }
 
 bool ServiceWorkerProviderContext::container_is_blob_url_shared_worker() const {
@@ -434,7 +448,11 @@ void ServiceWorkerProviderContext::SetController(
     bool should_notify_controllerchange) {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
+  controller_receiver_.reset();
   controller_ = std::move(controller_info->object_info);
+  if (controller_ && controller_->receiver.is_valid()) {
+    controller_receiver_.Bind(std::move(controller_->receiver));
+  }
   controller_version_id_ = controller_
                                ? controller_->version_id
                                : blink::mojom::kInvalidServiceWorkerVersionId;
@@ -502,18 +520,19 @@ void ServiceWorkerProviderContext::SetController(
     remote_cache_storage_.reset();
   }
 
-  // Propagate the controller to workers related to this provider.
   if (controller_) {
     CHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
              controller_->version_id);
-    for (const auto& worker : worker_clients_) {
-      // This is a Mojo interface call to the (dedicated or shared) worker
-      // thread.
-      worker->OnControllerChanged(controller_mode_);
-    }
   }
-  for (blink::mojom::WebFeature feature : controller_info->used_features)
+  // Propagate controller changes, including loss of control, to related
+  // workers.
+  for (const auto& worker : worker_clients_) {
+    // This is a Mojo interface call to the (dedicated or shared) worker thread.
+    worker->OnControllerChanged(controller_mode_);
+  }
+  for (blink::mojom::WebFeature feature : controller_info->used_features) {
     used_features_.insert(feature);
+  }
 
   // Reset connector state for subresource loader factory if necessary.
   if (CanCreateSubresourceLoaderFactory()) {
@@ -544,7 +563,7 @@ void ServiceWorkerProviderContext::SetController(
   // the controller from |this| via WebServiceWorkerProviderImpl::SetClient().
   if (web_service_worker_provider_) {
     web_service_worker_provider_->SetController(
-        std::move(controller_), used_features_, should_notify_controllerchange);
+        TakeController(), used_features_, should_notify_controllerchange);
   }
 }
 

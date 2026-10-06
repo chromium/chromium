@@ -15,10 +15,12 @@
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/web_service_worker_provider_impl.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -36,6 +38,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -74,6 +77,12 @@ class MockServiceWorkerObjectHost
   }
 
   int GetReceiverCount() const { return receivers_.size(); }
+
+  void StateChanged(blink::mojom::ServiceWorkerState state) {
+    remote_object_->StateChanged(state);
+  }
+
+  void FlushForTesting() { remote_object_.FlushForTesting(); }
 
  private:
   // Implements blink::mojom::ServiceWorkerObjectHost.
@@ -126,6 +135,57 @@ class MockWebServiceWorkerProviderClientImpl
   bool was_set_controller_called_ = false;
   bool was_receive_message_called_ = false;
   std::set<blink::mojom::WebFeature> used_features_;
+};
+
+class FakeServiceWorkerObject : public blink::mojom::ServiceWorkerObject {
+ public:
+  explicit FakeServiceWorkerObject(
+      mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerObject>
+          receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  void StateChanged(blink::mojom::ServiceWorkerState state) override {
+    states_.push_back(state);
+    state_changed_.SetValue();
+  }
+
+  bool WaitForStateChange() { return state_changed_.WaitAndClear(); }
+
+  const std::vector<blink::mojom::ServiceWorkerState>& states() const {
+    return states_;
+  }
+
+ private:
+  std::vector<blink::mojom::ServiceWorkerState> states_;
+  base::test::TestFuture<void> state_changed_;
+  mojo::AssociatedReceiver<blink::mojom::ServiceWorkerObject> receiver_;
+};
+
+class FakeServiceWorkerWorkerClient
+    : public blink::mojom::ServiceWorkerWorkerClient {
+ public:
+  mojo::PendingRemote<blink::mojom::ServiceWorkerWorkerClient>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void OnControllerChanged(
+      blink::mojom::ControllerServiceWorkerMode mode) override {
+    controller_modes_.push_back(mode);
+    controller_changed_.SetValue();
+  }
+
+  bool WaitForControllerChange() { return controller_changed_.WaitAndClear(); }
+
+  const std::vector<blink::mojom::ControllerServiceWorkerMode>&
+  controller_modes() const {
+    return controller_modes_;
+  }
+
+ private:
+  std::vector<blink::mojom::ControllerServiceWorkerMode> controller_modes_;
+  base::test::TestFuture<void> controller_changed_;
+  mojo::Receiver<blink::mojom::ServiceWorkerWorkerClient> receiver_{this};
 };
 
 // A fake URLLoaderFactory implementation that basically does nothing but
@@ -446,6 +506,167 @@ TEST_F(ServiceWorkerProviderContextTest, SetController_Null) {
 
   EXPECT_FALSE(provider_context->TakeController());
   EXPECT_TRUE(client->was_set_controller_called());
+}
+
+TEST_F(ServiceWorkerProviderContextTest,
+       SetControllerNotifiesWorkersWhenCleared) {
+  using ControllerMode = blink::mojom::ControllerServiceWorkerMode;
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_remote;
+  auto provider_context = base::MakeRefCounted<ServiceWorkerProviderContext>(
+      blink::mojom::ServiceWorkerContainerType::kForWindow,
+      container_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      mojo::NullAssociatedRemote(), nullptr, nullptr);
+
+  FakeServiceWorkerWorkerClient first_worker;
+  FakeServiceWorkerWorkerClient second_worker;
+  provider_context->RegisterWorkerClient(
+      first_worker.BindNewPipeAndPassRemote());
+  provider_context->RegisterWorkerClient(
+      second_worker.BindNewPipeAndPassRemote());
+
+  MockServiceWorkerObjectHost original_controller(200);
+  auto info = blink::mojom::ControllerServiceWorkerInfo::New();
+  info->mode = ControllerMode::kControlled;
+  info->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  info->object_info = original_controller.CreateObjectInfo();
+  container_remote->SetController(std::move(info), true);
+  ASSERT_TRUE(first_worker.WaitForControllerChange());
+  ASSERT_TRUE(second_worker.WaitForControllerChange());
+
+  std::vector<ControllerMode> expected_modes{ControllerMode::kControlled};
+  EXPECT_EQ(expected_modes, first_worker.controller_modes());
+  EXPECT_EQ(expected_modes, second_worker.controller_modes());
+
+  container_remote->SetController(
+      blink::mojom::ControllerServiceWorkerInfo::New(), true);
+  ASSERT_TRUE(first_worker.WaitForControllerChange());
+  ASSERT_TRUE(second_worker.WaitForControllerChange());
+
+  expected_modes.push_back(ControllerMode::kNoController);
+  EXPECT_EQ(expected_modes, first_worker.controller_modes());
+  EXPECT_EQ(expected_modes, second_worker.controller_modes());
+
+  MockServiceWorkerObjectHost replacement_controller(201);
+  info = blink::mojom::ControllerServiceWorkerInfo::New();
+  info->mode = ControllerMode::kControlled;
+  info->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  info->object_info = replacement_controller.CreateObjectInfo();
+  container_remote->SetController(std::move(info), true);
+  ASSERT_TRUE(first_worker.WaitForControllerChange());
+  ASSERT_TRUE(second_worker.WaitForControllerChange());
+
+  expected_modes.push_back(ControllerMode::kControlled);
+  EXPECT_EQ(expected_modes, first_worker.controller_modes());
+  EXPECT_EQ(expected_modes, second_worker.controller_modes());
+}
+
+// Pending object state messages must not block later container IPCs.
+TEST_F(ServiceWorkerProviderContextTest,
+       ControllerStateChangeDoesNotBlockControllerUpdates) {
+  using ControllerMode = blink::mojom::ControllerServiceWorkerMode;
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_remote;
+  auto provider_context = base::MakeRefCounted<ServiceWorkerProviderContext>(
+      blink::mojom::ServiceWorkerContainerType::kForDedicatedWorker,
+      container_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      mojo::NullAssociatedRemote(), nullptr, nullptr);
+
+  FakeServiceWorkerWorkerClient worker;
+  provider_context->RegisterWorkerClient(worker.BindNewPipeAndPassRemote());
+
+  MockServiceWorkerObjectHost controller(200);
+  auto info = blink::mojom::ControllerServiceWorkerInfo::New();
+  info->mode = ControllerMode::kControlled;
+  info->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  info->object_info = controller.CreateObjectInfo();
+  container_remote->SetController(std::move(info), true);
+  ASSERT_TRUE(worker.WaitForControllerChange());
+  ASSERT_EQ(std::vector<ControllerMode>{ControllerMode::kControlled},
+            worker.controller_modes());
+
+  controller.StateChanged(blink::mojom::ServiceWorkerState::kRedundant);
+  container_remote->SetController(
+      blink::mojom::ControllerServiceWorkerInfo::New(), true);
+  ASSERT_TRUE(worker.WaitForControllerChange());
+
+  EXPECT_EQ((std::vector<ControllerMode>{ControllerMode::kControlled,
+                                         ControllerMode::kNoController}),
+            worker.controller_modes());
+  EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
+            provider_context->GetControllerVersionId());
+}
+
+TEST_F(ServiceWorkerProviderContextTest,
+       ControllerStateIsPreservedWhenObjectIsTaken) {
+  using State = blink::mojom::ServiceWorkerState;
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_remote;
+  auto provider_context = base::MakeRefCounted<ServiceWorkerProviderContext>(
+      blink::mojom::ServiceWorkerContainerType::kForDedicatedWorker,
+      container_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      mojo::NullAssociatedRemote(), nullptr, nullptr);
+
+  MockServiceWorkerObjectHost controller(200);
+  auto info = blink::mojom::ControllerServiceWorkerInfo::New();
+  info->mode = blink::mojom::ControllerServiceWorkerMode::kControlled;
+  info->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  info->object_info = controller.CreateObjectInfo();
+  container_remote->SetController(std::move(info), true);
+  container_remote.FlushForTesting();
+
+  controller.StateChanged(State::kActivating);
+  controller.StateChanged(State::kActivated);
+  controller.FlushForTesting();
+
+  auto object_info = provider_context->TakeController();
+  ASSERT_TRUE(object_info);
+  EXPECT_EQ(State::kActivated, object_info->state);
+  EXPECT_TRUE(object_info->receiver.is_valid());
+  FakeServiceWorkerObject object(std::move(object_info->receiver));
+
+  controller.FlushForTesting();
+  EXPECT_TRUE(object.states().empty());
+
+  controller.StateChanged(State::kRedundant);
+  ASSERT_TRUE(object.WaitForStateChange());
+  EXPECT_EQ(std::vector<State>{State::kRedundant}, object.states());
+}
+
+TEST_F(ServiceWorkerProviderContextTest,
+       ControllerStateChangeDoesNotBlockReplacement) {
+  using ControllerMode = blink::mojom::ControllerServiceWorkerMode;
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_remote;
+  auto provider_context = base::MakeRefCounted<ServiceWorkerProviderContext>(
+      blink::mojom::ServiceWorkerContainerType::kForDedicatedWorker,
+      container_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      mojo::NullAssociatedRemote(), nullptr, nullptr);
+  FakeServiceWorkerWorkerClient worker;
+  provider_context->RegisterWorkerClient(worker.BindNewPipeAndPassRemote());
+
+  MockServiceWorkerObjectHost original(200);
+  MockServiceWorkerObjectHost replacement(201);
+  auto info = blink::mojom::ControllerServiceWorkerInfo::New();
+  info->mode = ControllerMode::kControlled;
+  info->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  info->object_info = original.CreateObjectInfo();
+  container_remote->SetController(std::move(info), true);
+  ASSERT_TRUE(worker.WaitForControllerChange());
+
+  original.StateChanged(blink::mojom::ServiceWorkerState::kRedundant);
+  info = blink::mojom::ControllerServiceWorkerInfo::New();
+  info->mode = ControllerMode::kControlled;
+  info->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  info->object_info = replacement.CreateObjectInfo();
+  container_remote->SetController(std::move(info), true);
+  ASSERT_TRUE(worker.WaitForControllerChange());
+  EXPECT_EQ(201, provider_context->GetControllerVersionId());
+  EXPECT_EQ((std::vector<ControllerMode>{ControllerMode::kControlled,
+                                         ControllerMode::kControlled}),
+            worker.controller_modes());
 }
 
 // Test that SetController correctly sets (or resets) the controller service

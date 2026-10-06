@@ -30,7 +30,7 @@
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom-forward.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client_registry.mojom.h"
@@ -68,18 +68,17 @@ class WebServiceWorkerProviderImpl;
 // entity hold strong references to a shared instance of this class.
 //
 // ServiceWorkerProviderContext is also a
-// blink::mojom::ServiceWorkerWorkerClientRegistry. If it's a provider for a
-// document, then it tracks all the dedicated workers created from the document
-// (including nested workers), as dedicated workers don't yet have their own
-// providers. If it's a provider for a shared worker, then it tracks only the
-// shared worker itself.
+// blink::mojom::ServiceWorkerWorkerClientRegistry. It tracks the worker fetch
+// contexts associated with this service worker client so they can update their
+// URL loader factories when its controller changes.
 //
 // Created and destructed on the main thread. Unless otherwise noted, all
 // methods are called on the main thread.
 class CONTENT_EXPORT ServiceWorkerProviderContext
     : public blink::WebServiceWorkerProviderContext,
       public blink::mojom::ServiceWorkerContainer,
-      public blink::mojom::ServiceWorkerWorkerClientRegistry {
+      public blink::mojom::ServiceWorkerWorkerClientRegistry,
+      private blink::mojom::ServiceWorkerObject {
  public:
   // |receiver| is connected to the content::ServiceWorkerContainerHost that
   // notifies of changes to the registration's and workers' status.
@@ -121,7 +120,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   int64_t GetControllerVersionId() const;
 
   // Takes the controller service worker object info set by SetController() if
-  // any, otherwise returns nullptr.
+  // any, otherwise returns nullptr. Restores its associated receiver so the new
+  // owner can receive subsequent state notifications.
   blink::mojom::ServiceWorkerObjectInfoPtr TakeController();
 
   // Returns the factory for loading subresources with the controller
@@ -256,6 +256,10 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
                            blink::TransferableMessage message) override;
   void CountFeature(blink::mojom::WebFeature feature) override;
 
+  // Implementation of blink::mojom::ServiceWorkerObject while holding the
+  // controller's object info for a future WebServiceWorkerProviderImpl.
+  void StateChanged(blink::mojom::ServiceWorkerState state) override;
+
   // A convenient utility method to tell if a subresource loader factory
   // can be created for this context.
   bool CanCreateSubresourceLoaderFactory() const;
@@ -297,8 +301,14 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost>
       container_host_;
 
-  // |controller_| will be set by SetController() and taken by TakeController().
+  // Set by SetController(). Move out only via TakeController(), which unbinds
+  // controller_receiver_ back into the object info. A direct move would leave
+  // the state-change receiver bound here instead of transferring it to Blink.
   blink::mojom::ServiceWorkerObjectInfoPtr controller_;
+  // An unbound associated receiver would block subsequent container messages.
+  // Keep the cached state current until the endpoint is handed to Blink.
+  mojo::AssociatedReceiver<blink::mojom::ServiceWorkerObject>
+      controller_receiver_{this};
   // Keeps version id of the current controller service worker object.
   int64_t controller_version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 

@@ -11,8 +11,7 @@ import "third_party/blink/public/mojom/service_worker/controller_service_worker_
 // the renderer process uses this interface to tell the worker thread
 // when the controller service worker changes.
 interface ServiceWorkerWorkerClient {
-  // Called when the worker is controlled by a new service worker. This is only
-  // used to let the worker know that we now have a service worker (while there
-  // may or may not have been one previously), but not the other way around.
+  // Called when the worker's controlling service worker changes, including when
+  // it loses its controller.
   OnControllerChanged(ControllerServiceWorkerMode mode);
 };
