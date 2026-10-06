@@ -221,7 +221,7 @@ void RenderWidgetHostViewIOS::Focus() {
 }
 
 bool RenderWidgetHostViewIOS::HasFocus() {
-  return is_first_responder_;
+  return has_focus_for_testing_.value_or(is_first_responder_);
 }
 
 gfx::Rect RenderWidgetHostViewIOS::GetViewBounds() {

@@ -251,6 +251,9 @@ void RenderWidgetHostViewChildFrame::Focus() {
 }
 
 bool RenderWidgetHostViewChildFrame::HasFocus() {
+  if (has_focus_for_testing_.has_value()) {
+    return *has_focus_for_testing_;
+  }
   if (!frame_connector_) {
     return false;
   }

@@ -1382,22 +1382,22 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
   ASSERT_TRUE(popup);
   const base::TimeTicks exit = base::TimeTicks::Now();
   ExitFullscreen(popup->GetTabStripModel()->GetActiveWebContents());
-  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
-  EXPECT_FALSE(RequestFullscreen());
-  ui_test_utils::BrowserDestroyedObserver observer(popup);
-  popup->GetWindow()->Close();
-  observer.Wait();
-  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
-  EXPECT_FALSE(RequestFullscreen());
 
   // Closing the popup does not necessarily return focus to the opener window
   // (e.g. on Wayland), and fullscreen requests from unfocused views are
-  // rejected. Explicitly focus the opener before requesting with a gesture.
-  BrowserWindowInterface* opener_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
-  opener_browser->GetWindow()->Activate();
-  ui_test_utils::WaitUntilBrowserBecomeActive(opener_browser);
-  web_contents_->Focus();
+  // rejected even with user activation in the last `RequestFullscreen` call
+  // below. We are setting the focus a bit early here so that all 3 requests
+  // below run under the same focus condition.
+  web_contents_->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
+  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
+  EXPECT_FALSE(RequestFullscreen());
+
+  ui_test_utils::BrowserDestroyedObserver observer(popup);
+  popup->GetWindow()->Close();
+  observer.Wait();
+
+  EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
+  EXPECT_FALSE(RequestFullscreen());
   EXPECT_TRUE(RequestFullscreen(/*gesture=*/true));
 }
 

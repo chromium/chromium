@@ -677,7 +677,7 @@ void RenderWidgetHostViewAura::Focus() {
 }
 
 bool RenderWidgetHostViewAura::HasFocus() {
-  return window_->HasFocus();
+  return has_focus_for_testing_.value_or(window_->HasFocus());
 }
 
 bool RenderWidgetHostViewAura::IsSurfaceAvailableForCopy() {

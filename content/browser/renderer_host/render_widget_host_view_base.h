@@ -129,6 +129,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   ui::TextInputClient* GetTextInputClient() override;
   std::u16string GetSelectedText() override;
   bool GetIsPointerLockedUnadjustedMovementForTesting() override;
+  void SetHasFocusForTesting(std::optional<bool> has_focus) override;
   bool CanBePointerLocked() override;
   bool AccessibilityHasFocus() override;
   bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes) override;
@@ -743,6 +744,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   std::optional<SkColor> default_background_color_;
 
   raw_ptr<TooltipObserver> tooltip_observer_for_testing_ = nullptr;
+
+  std::optional<bool> has_focus_for_testing_;
 
   // Cursor size in logical pixels, obtained from the OS. This value is general
   // to all displays.

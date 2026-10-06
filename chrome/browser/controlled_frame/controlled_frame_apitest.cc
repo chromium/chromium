@@ -32,6 +32,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -139,6 +140,7 @@ const content::EvalJsResult VerifyBackgroundColorIsRed(
 
 const content::EvalJsResult ExecuteScriptRequestFullScreen(
     content::RenderFrameHost* app_frame) {
+  app_frame->GetView()->SetHasFocusForTesting(true);
   return content::EvalJs(app_frame, R"(
     (async function() {
       const frame = document.getElementsByTagName('controlledframe')[0];

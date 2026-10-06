@@ -9868,6 +9868,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(opener_contents,
             popup_contents->GetFirstWebContentsInLiveOriginalOpenerChain());
 
+  opener_contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
   FullscreenWebContentsObserver observer(
       opener_contents, opener_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(ExecJs(opener_contents->GetPrimaryMainFrame(),
@@ -9950,6 +9951,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(opener_contents,
             popup_contents->GetFirstWebContentsInLiveOriginalOpenerChain());
 
+  opener_contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
   FullscreenWebContentsObserver observer(
       opener_contents, opener_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(ExecJs(opener_contents->GetPrimaryMainFrame(),
@@ -10006,6 +10008,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(opener_contents,
             popup_contents->GetFirstWebContentsInLiveOriginalOpenerChain());
 
+  opener_contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
   FullscreenWebContentsObserver observer(
       opener_contents, opener_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(ExecJs(opener_contents->GetPrimaryMainFrame(),
@@ -10082,6 +10085,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(opener_contents,
             popup_contents->GetFirstWebContentsInLiveOriginalOpenerChain());
 
+  opener_contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
   FullscreenWebContentsObserver observer(
       opener_contents, opener_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(ExecJs(opener_contents->GetPrimaryMainFrame(),

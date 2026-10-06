@@ -72,6 +72,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, FullscreenSize) {
                   return !!document.fullscreenElement;
                 });
   )JS";
+  tab->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
   ASSERT_TRUE(EvalJs(tab, kEnterFullscreenAndResizeScript).ExtractBool());
   DevToolsWindowTesting::OpenDevToolsWindowSync(tab, true);
   ASSERT_TRUE(EvalJs(tab, "window.nextResize").is_ok());

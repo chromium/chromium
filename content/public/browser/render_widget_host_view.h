@@ -144,6 +144,9 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void Focus() = 0;
   // Returns true if the View currently has the focus.
   virtual bool HasFocus() = 0;
+  // Overrides the return value of HasFocus() for testing. Passing
+  // `std::nullopt` clears the override.
+  virtual void SetHasFocusForTesting(std::optional<bool> has_focus) {}
 
   // Whether the view is showing.
   virtual bool IsShowing() = 0;

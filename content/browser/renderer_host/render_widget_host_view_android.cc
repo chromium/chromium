@@ -1267,7 +1267,7 @@ void RenderWidgetHostViewAndroid::LostFocusInternal() {
 }
 
 bool RenderWidgetHostViewAndroid::HasFocus() {
-  return view_.HasFocus();
+  return has_focus_for_testing_.value_or(view_.HasFocus());
 }
 
 bool RenderWidgetHostViewAndroid::IsSurfaceAvailableForCopy() {

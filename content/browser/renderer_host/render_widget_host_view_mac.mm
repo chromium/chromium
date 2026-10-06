@@ -688,6 +688,9 @@ void RenderWidgetHostViewMac::Focus() {
 }
 
 bool RenderWidgetHostViewMac::HasFocus() {
+  if (has_focus_for_testing_.has_value()) {
+    return *has_focus_for_testing_;
+  }
   if (base::FeatureList::IsEnabled(
           kRWHVMacHasFocusReturnsFalseForNonKeyWindow)) {
     // In headless mode the NSView is not in a NSWindow.

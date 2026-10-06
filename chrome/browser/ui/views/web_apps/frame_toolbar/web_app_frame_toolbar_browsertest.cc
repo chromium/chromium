@@ -118,6 +118,7 @@
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_zoom.h"
@@ -2705,10 +2706,12 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
   }
 
   void EnterTabFullscreenThroughWebAPI() {
+    auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+    web_contents->GetRenderWidgetHostView()->SetHasFocusForTesting(true);
     ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
                                            {.tab_fullscreen = true});
-    EXPECT_TRUE(ExecJs(helper()->browser_view()->GetActiveWebContents(),
-                       "document.documentElement.requestFullscreen();"));
+    EXPECT_TRUE(
+        ExecJs(web_contents, "document.documentElement.requestFullscreen();"));
     waiter.Wait();
   }
 

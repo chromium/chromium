@@ -437,6 +437,11 @@ bool RenderWidgetHostViewBase::
   return false;
 }
 
+void RenderWidgetHostViewBase::SetHasFocusForTesting(
+    std::optional<bool> has_focus) {
+  has_focus_for_testing_ = has_focus;
+}
+
 bool RenderWidgetHostViewBase::CanBePointerLocked() {
   return HasFocus();
 }
