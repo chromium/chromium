@@ -1252,6 +1252,28 @@ TEST_F(ReadAnythingReadAloudAppModelTest, ResetAndLogSingleSampleMetrics) {
                                      /*expected_count=*/2);
 }
 
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       ResetAndLogSingleSampleMetrics_PlayFromLineFocus) {
+  const std::string lineFocusCountName =
+      "Accessibility.ReadAnything.ReadAloudPlayFromLineFocusSessionCount";
+
+  model().IncrementMetric(lineFocusCountName);
+
+  base::HistogramTester histogram_tester;
+  model().ResetAndLogSingleSampleMetrics();
+
+  histogram_tester.ExpectUniqueSample(lineFocusCountName, /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
+
+  // In the new session with no increment, it should log a sample of 0.
+  model().ResetAndLogSingleSampleMetrics();
+  histogram_tester.ExpectTotalCount(lineFocusCountName, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(lineFocusCountName, /*sample=*/0,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(lineFocusCountName, /*sample=*/1,
+                                     /*expected_count=*/1);
+}
+
 TEST_F(ReadAnythingReadAloudAppModelTest, LogPlaybackContext) {
   base::HistogramTester histograms;
   const char* histogram_name =
