@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,7 +20,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -387,3 +392,67 @@ INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
                          testing::ValuesIn(kSignoutSources));
 
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+TEST(ChromeSigninClientTest, ClearSigninPrefsForIsolatedProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+  profile->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+
+  const std::string parent_list_accounts_data = "parent_list_accounts_data";
+  const std::string parent_account_id = "parent_account_id";
+  const std::string parent_device_id = "parent_device_id";
+  base::ListValue parent_account_info;
+  parent_account_info.Append(
+      base::DictValue().Set("account_id", parent_account_id));
+
+  profile->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+  profile->GetPrefs()->SetString(prefs::kGaiaCookieLastListAccountsBinaryData,
+                                 parent_list_accounts_data);
+  profile->GetPrefs()->SetString(prefs::kGoogleServicesAccountId,
+                                 parent_account_id);
+  profile->GetPrefs()->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+  profile->GetPrefs()->SetString(prefs::kGoogleServicesSigninScopedDeviceId,
+                                 parent_device_id);
+  profile->GetPrefs()->SetList(prefs::kAccountInfo,
+                               parent_account_info.Clone());
+
+  Profile* isolated_profile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  ChromeSigninClient client(isolated_profile);
+  EXPECT_FALSE(isolated_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+  EXPECT_THAT(isolated_profile->GetPrefs()->GetString(
+                  prefs::kGaiaCookieLastListAccountsBinaryData),
+              testing::IsEmpty());
+  EXPECT_THAT(
+      isolated_profile->GetPrefs()->GetString(prefs::kGoogleServicesAccountId),
+      testing::IsEmpty());
+  EXPECT_FALSE(isolated_profile->GetPrefs()->GetBoolean(
+      prefs::kGoogleServicesConsentedToSync));
+  EXPECT_THAT(isolated_profile->GetPrefs()->GetString(
+                  prefs::kGoogleServicesSigninScopedDeviceId),
+              testing::IsEmpty());
+  EXPECT_THAT(isolated_profile->GetPrefs()->GetList(prefs::kAccountInfo),
+              testing::IsEmpty());
+
+  EXPECT_TRUE(profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+  EXPECT_EQ(profile->GetPrefs()->GetString(
+                prefs::kGaiaCookieLastListAccountsBinaryData),
+            parent_list_accounts_data);
+  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kGoogleServicesAccountId),
+            parent_account_id);
+  EXPECT_TRUE(
+      profile->GetPrefs()->GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  EXPECT_EQ(
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesSigninScopedDeviceId),
+      parent_device_id);
+  EXPECT_EQ(profile->GetPrefs()->GetList(prefs::kAccountInfo),
+            parent_account_info);
+}

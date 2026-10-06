@@ -65,6 +65,7 @@ IdentityManagerFactory::IdentityManagerFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .Build()) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DependsOn(WebDataServiceFactory::GetInstance());
@@ -125,42 +126,42 @@ IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
   params.local_state = g_browser_process->local_state();
   params.network_connection_tracker = content::GetNetworkConnectionTracker();
   params.pref_service = profile->GetPrefs();
-  params.profile_path = profile->GetPath();
   params.signin_client = ChromeSigninClientFactory::GetForProfile(profile);
 
+  // Omit the following parameters for off-the-record profiles (such as Isolated
+  // Mode profiles) to avoid leaking data between the off-the-record profile and
+  // its parent profile.
+  if (!profile->IsOffTheRecord()) {
+    params.profile_path = profile->GetPath();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  {
     scoped_refptr<content_settings::CookieSettings> cookie_settings =
         CookieSettingsFactory::GetForProfile(profile);
     params.delete_signin_cookies_on_exit =
         signin::SettingsDeleteSigninCookiesOnExit(cookie_settings.get());
-  }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  params.token_web_data = WebDataServiceFactory::GetTokenWebDataForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
+    params.token_web_data = WebDataServiceFactory::GetTokenWebDataForProfile(
+        profile, ServiceAccessType::EXPLICIT_ACCESS);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  params.unexportable_key_service =
-      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
-          profile, unexportable_keys::KeyPurpose::kRefreshTokenBinding);
+    params.unexportable_key_service =
+        UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+            profile, unexportable_keys::KeyPurpose::kRefreshTokenBinding);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::ProfileHelper::IsUserProfile(profile)) {
-    params.account_manager_facade =
-        ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
-            profile->GetPath().value());
-    params.is_regular_profile = true;
-  }
+    if (ash::ProfileHelper::IsUserProfile(profile)) {
+      params.account_manager_facade =
+          ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+              profile->GetPath().value());
+      params.is_regular_profile = true;
+    }
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  params.reauth_callback =
-      base::BindRepeating(&signin_util::ReauthWithCredentialProviderIfPossible,
-                          base::Unretained(profile));
+    params.reauth_callback = base::BindRepeating(
+        &signin_util::ReauthWithCredentialProviderIfPossible,
+        base::Unretained(profile));
 #endif
+  }
 
   params.profile_metrics_service =
       ProfileMetricsServiceFactory::GetForProfile(profile);

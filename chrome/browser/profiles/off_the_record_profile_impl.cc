@@ -48,6 +48,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/reduce_accept_language/reduce_accept_language_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
@@ -254,6 +255,10 @@ void OffTheRecordProfileImpl::Init() {
 
   key_->SetProtoDatabaseProvider(
       GetDefaultStoragePartition()->GetProtoDatabaseProvider());
+
+  if (IsEnterpriseIsolatedModeProfile()) {
+    IdentityManagerFactory::GetForProfile(this)->OnNetworkInitialized();
+  }
 
   if (IsIncognitoProfile())
     base::RecordAction(base::UserMetricsAction("IncognitoMode_Started"));

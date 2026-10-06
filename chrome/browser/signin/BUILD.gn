@@ -619,6 +619,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support_unit",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
+    "//components/enterprise/isolated_mode",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
@@ -779,7 +780,10 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "remove_local_account_browsertest.cc" ]
+    sources = [
+      "identity_manager_factory_browsertest.cc",
+      "remove_local_account_browsertest.cc",
+    ]
     deps = [
       ":signin",
       ":test_support",
@@ -790,6 +794,7 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//chrome/test/base:profile_lifecycle_test_utils",
       "//chrome/test/base:testing_browser_process",
+      "//components/enterprise/isolated_mode",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//content/test:test_support",
