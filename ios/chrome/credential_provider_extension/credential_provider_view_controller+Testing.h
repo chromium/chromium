@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/credential_provider_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
@@ -20,6 +21,7 @@
 @interface CredentialProviderViewController (Testing) <
     CredentialResponseHandler,
     PasskeyKeychainProviderBridgeDelegate,
+    PasskeyWelcomeScreenViewControllerDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 // Interface for the persistent credential store.

@@ -81,7 +81,6 @@ enum class PasskeyCreationEligibility {
 
 }  // namespace
 
-// TODO(crbug.com/454307667): Add unit tests for the whole file.
 @interface CredentialProviderViewController () <
     ConfirmationAlertActionHandler,
     CredentialResponseHandler,

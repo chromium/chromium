@@ -36,6 +36,7 @@
 #import "ios/chrome/common/credential_provider/multi_store_credential_store.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -47,6 +48,7 @@
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/generic_error_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/multi_profile_passkey_creation_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
@@ -135,6 +137,7 @@ using ::base::Time;
 using ::base::apple::ObjCCast;
 using ::base::test::TestFuture;
 using ::password_manager::metrics_util::BrowserAssistedLoginType;
+using ::webauthn::PasskeyWelcomeScreenPurpose;
 using ::webauthn::SharedKeyList;
 
 constexpr int kPasskeyBucket = static_cast<int>(
@@ -344,10 +347,15 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
   ~FakePasskeyKeychainProvider() override = default;
 
   void SetKeys(SharedKeyList keys) { keys_ = std::move(keys); }
+  void SetIsEnrolled(bool is_enrolled) { is_enrolled_ = is_enrolled; }
+  void SetHoldCheckEnrolled(bool hold) { hold_check_enrolled_ = hold; }
 
   // `PasskeyKeychainProvider`:
   void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback) override {
-    std::move(callback).Run(/*is_enrolled=*/YES, /*error=*/nil);
+    if (hold_check_enrolled_) {
+      return;
+    }
+    std::move(callback).Run(is_enrolled_, /*error=*/nil);
   }
 
   void FetchKeys(NSString* gaia,
@@ -365,6 +373,8 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
 
  private:
   SharedKeyList keys_;
+  bool is_enrolled_ = true;
+  bool hold_check_enrolled_ = false;
 };
 
 class CredentialProviderViewControllerTest : public PlatformTest {
@@ -458,6 +468,22 @@ class CredentialProviderViewControllerTest : public PlatformTest {
     [controller_ loadViewIfNeeded];
   }
 
+  // Starts a passkey assertion requiring user verification with `CheckEnrolled`
+  // held, leaving `controller_` with `userVerificationStatus` set to
+  // `kRequired`.
+  void SetUserVerificationRequired() {
+    fake_keychain_provider_->SetHoldCheckEnrolled(true);
+    ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
+    ASPasskeyCredentialRequest* request = CreatePasskeyRequest(
+        passkey,
+        ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired);
+    PasskeyRequestDetails* details =
+        [[PasskeyRequestDetails alloc] initWithRequest:request
+                      isBiometricAuthenticationEnabled:YES
+                                   isConditionalCreate:NO];
+    [controller_ userSelectedPasskey:passkey passkeyRequestDetails:details];
+  }
+
   // Creates a `MultiStoreCredentialStore` populated with `credentials` and
   // assigns it to `controller_.credentialStore`.
   void CreateStoreWithCredentials(NSArray<id<Credential>>* credentials) {
@@ -499,6 +525,7 @@ class CredentialProviderViewControllerTest : public PlatformTest {
   TestFuture<ASPasskeyRegistrationCredential*> completed_registration_future_;
   TestFuture<bool> completed_configuration_future_;
   TestFuture<UIViewController*> presented_vc_future_;
+  TestFuture<BOOL> uv_future_;
 };
 
 // Test that reporting an unknown public key credential marks the matching
@@ -1557,6 +1584,241 @@ TEST_F(
                                                    uv_future.GetCallback())];
   ASSERT_TRUE(uv_future.Wait());
   EXPECT_TRUE(uv_future.Get());
+}
+
+// Test that `prepareInterfaceForExtensionConfiguration` immediately presents
+// `ConsentViewController` when there are no saved passkey credentials.
+TEST_F(CredentialProviderViewControllerTest,
+       PrepareInterfaceForExtensionConfigurationWithoutPasskeysStartsConsent) {
+  AttachControllerToWindow();
+  CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
+
+  [controller_ prepareInterfaceForExtensionConfiguration];
+
+  EXPECT_TRUE([controller_.presentedViewController
+      isKindOfClass:[ConsentViewController class]]);
+}
+
+// Test that `prepareInterfaceForExtensionConfiguration` fetches trusted vault
+// keys and presents `ConsentViewController` when there are saved passkeys and
+// no bootstrapping UI was presented.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForExtensionConfigurationWithBootstrappedPasskeysStartsConsent) {
+  AttachControllerToWindow();
+  [GetGroupUserDefaults()
+      setObject:kTestGaia
+         forKey:AppGroupUserDefaultsCredentialProviderUserID()];
+  CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
+
+  [controller_ prepareInterfaceForExtensionConfiguration];
+
+  EXPECT_TRUE([controller_.presentedViewController
+      isKindOfClass:[ConsentViewController class]]);
+}
+
+// Test that `prepareInterfaceForExtensionConfiguration` dismisses the
+// bootstrapping UI and completes the configuration request when
+// `passkeyNavigationController` presented a view controller during key
+// fetching.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForExtensionConfigurationDismissesBootstrappingUIAndCompletes) {
+  AttachControllerToWindow();
+  [GetGroupUserDefaults()
+      setObject:kTestGaia
+         forKey:AppGroupUserDefaultsCredentialProviderUserID()];
+  [GetGroupUserDefaults()
+      setObject:kTestEmail
+         forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
+  fake_keychain_provider_->SetIsEnrolled(false);
+
+  [controller_ prepareInterfaceForExtensionConfiguration];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyWelcomeScreenViewController* welcome_vc =
+      ObjCCast<PasskeyWelcomeScreenViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(welcome_vc);
+  [welcome_vc loadViewIfNeeded];
+
+  [(id<PromoStyleViewControllerDelegate>)welcome_vc didTapPrimaryActionButton];
+
+  ASSERT_TRUE(completed_configuration_future_.Wait());
+  EXPECT_TRUE(completed_configuration_future_.Get());
+  EXPECT_FALSE([controller_.presentedViewController
+      isKindOfClass:[ConsentViewController class]]);
+}
+
+// Test that `performUserVerificationIfNeeded:` immediately succeeds without
+// invoking reauthentication when `userVerificationStatus` is not `kRequired`.
+TEST_F(CredentialProviderViewControllerTest,
+       PerformUserVerificationWhenNotRequiredCallsCompletionWithYes) {
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+
+  [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
+                                                   uv_future_.GetCallback())];
+
+  ASSERT_TRUE(uv_future_.Wait());
+  EXPECT_TRUE(uv_future_.Get());
+}
+
+// Test that `performUserVerificationIfNeeded:` reauthenticates and exits with
+// `ASExtensionErrorCodeFailed` when `userVerificationStatus` is `kRequired` and
+// reauthentication fails.
+TEST_F(CredentialProviderViewControllerTest,
+       PerformUserVerificationWhenRequiredAndReauthFailsExitsWithFailedError) {
+  SetUserVerificationRequired();
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+
+  [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
+                                                   uv_future_.GetCallback())];
+
+  ASSERT_TRUE(uv_future_.Wait());
+  EXPECT_FALSE(uv_future_.Get());
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `providerDidCompleteReauthentication` updates
+// `userVerificationStatus` to `kCompleted` so subsequent user verification
+// checks succeed without reauthenticating.
+TEST_F(CredentialProviderViewControllerTest,
+       ProviderDidCompleteReauthenticationUpdatesUserVerificationStatus) {
+  SetUserVerificationRequired();
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+
+  [controller_ providerDidCompleteReauthentication];
+
+  [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
+                                                   uv_future_.GetCallback())];
+  ASSERT_TRUE(uv_future_.Wait());
+  EXPECT_TRUE(uv_future_.Get());
+}
+
+// Test that `showWelcomeScreenWithPurpose:completion:` exits with
+// `ASExtensionErrorCodeUserInteractionRequired` when the view has no window.
+TEST_F(CredentialProviderViewControllerTest,
+       ShowWelcomeScreenWithoutWindowExitsWithUserInteractionRequired) {
+  [controller_ showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::kEnroll
+                                 completion:^(UINavigationController*){
+                                 }];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeUserInteractionRequired);
+}
+
+// Test that `showWelcomeScreenWithPurpose:completion:` presents
+// `GenericErrorViewController` when the purpose is `kEnroll` and no user email
+// is available.
+TEST_F(CredentialProviderViewControllerTest,
+       ShowWelcomeScreenForEnrollWithoutEmailShowsGenericErrorAlert) {
+  AttachControllerToWindow();
+
+  [controller_ showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::kEnroll
+                                 completion:^(UINavigationController*){
+                                 }];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  EXPECT_TRUE([nav_controller.topViewController
+      isKindOfClass:[GenericErrorViewController class]]);
+}
+
+// Test that `showWelcomeScreenWithPurpose:completion:` presents
+// `PasskeyWelcomeScreenViewController`, ignores duplicate presentation requests
+// while already visible, performs reauthentication on primary button tap when
+// user verification is required, and pops/cancels on dismissal.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ShowWelcomeScreenForEnrollPresentsWelcomeScreenAndHandlesActionsAndDismissal) {
+  AttachControllerToWindow();
+  [GetGroupUserDefaults()
+      setObject:kTestEmail
+         forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  SetUserVerificationRequired();
+
+  TestFuture<UINavigationController*> primary_action_future;
+  [controller_
+      showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::kEnroll
+                        completion:base::CallbackToBlock(
+                                       primary_action_future.GetCallback())];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  ASSERT_EQ(nav_controller.viewControllers.count, 1u);
+  PasskeyWelcomeScreenViewController* welcome_vc =
+      ObjCCast<PasskeyWelcomeScreenViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(welcome_vc);
+  [welcome_vc loadViewIfNeeded];
+
+  // Calling `showWelcomeScreenWithPurpose:completion:` again while
+  // `passkeyNavigationController` has a `visibleViewController` should be a
+  // no-op.
+  [controller_ showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::kEnroll
+                                 completion:^(UINavigationController*){
+                                 }];
+  EXPECT_EQ(nav_controller.viewControllers.count, 1u);
+
+  // Tapping the primary action button when UV is required should reauthenticate
+  // and then invoke the completion block.
+  [(id<PromoStyleViewControllerDelegate>)welcome_vc didTapPrimaryActionButton];
+  ASSERT_TRUE(primary_action_future.Wait());
+  EXPECT_EQ(primary_action_future.Get(), nav_controller);
+
+  // Verify user verification was marked as completed by checking that
+  // `performUserVerificationIfNeeded:` immediately succeeds without invoking
+  // `mock_reauth_module_`.
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
+                                                   uv_future_.GetCallback())];
+  ASSERT_TRUE(uv_future_.Wait());
+  EXPECT_TRUE(uv_future_.Get());
+
+  // Dismissing the welcome screen should pop it and exit with
+  // `ASExtensionErrorCodeUserCanceled`.
+  [controller_ passkeyWelcomeScreenViewControllerShouldBeDismissed:welcome_vc];
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
+}
+
+// Test that tapping the primary action button on
+// `PasskeyWelcomeScreenViewController` when user verification is required and
+// reauthentication fails exits with `ASExtensionErrorCodeFailed`.
+TEST_F(CredentialProviderViewControllerTest,
+       ShowWelcomeScreenPrimaryActionWithReauthFailureExitsWithFailedError) {
+  AttachControllerToWindow();
+  [GetGroupUserDefaults()
+      setObject:kTestEmail
+         forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  SetUserVerificationRequired();
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+
+  [controller_ showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::
+                                                kFixDegradedRecoverability
+                                 completion:^(UINavigationController*){
+                                 }];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyWelcomeScreenViewController* welcome_vc =
+      ObjCCast<PasskeyWelcomeScreenViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(welcome_vc);
+  [welcome_vc loadViewIfNeeded];
+
+  [(id<PromoStyleViewControllerDelegate>)welcome_vc didTapPrimaryActionButton];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
 }
 
 }  // namespace
