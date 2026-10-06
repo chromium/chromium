@@ -6,14 +6,44 @@
 <script src="../../webrtc/getusermedia.js"></script>
 </head>
 <body>
+  <div id="video-container">
+    <video id="local-view" autoplay muted playsinline></video>
+  </div>
+
+  <button id="select-document-pip">Use Document PiP</button>
+  <button id="select-video-pip">Use Video PiP</button>
 </body>
 <script>
+const video = $('local-view');
+const selectDocumentPipButton = $('select-document-pip');
+const selectVideoPipButton = $('select-video-pip');
+
+let selectedPipType = 'document';
+let isVideoMetadataLoaded = false;
+
+video.addEventListener('loadedmetadata', () => {
+  isVideoMetadataLoaded = true;
+  document.title = 'VIDEO_PIP_READY';
+});
+
 function openPip() {
   // Delay opening PiP, but still within the user gesture window.
   setTimeout(() => {
-    documentPictureInPicture.requestWindow();
+    if (selectedPipType === 'document') {
+      documentPictureInPicture.requestWindow();
+    } else if (isVideoMetadataLoaded) {
+      video.requestPictureInPicture();
+    }
   }, 100);
 }
+
+selectDocumentPipButton.addEventListener('click', () => {
+  selectedPipType = 'document';
+});
+
+selectVideoPipButton.addEventListener('click', () => {
+  selectedPipType = 'video';
+});
 
 navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);
 </script>

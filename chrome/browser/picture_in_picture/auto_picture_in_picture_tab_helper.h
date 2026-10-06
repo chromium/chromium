@@ -254,6 +254,10 @@ class AutoPictureInPictureTabHelper
 
   void MaybeExitAutoPictureInPicture();
 
+  void MaybeExitAutoPictureInPictureIfTabIsActiveAndVisible();
+
+  bool IsTabActiveAndVisible() const;
+
   void MaybeStartOrStopObservers();
 
   bool IsEligibleForAutoPictureInPicture(bool should_record_blocking_metrics);
@@ -505,6 +509,8 @@ class AutoPictureInPictureTabHelper
   // is invalidated during calls to `StopAndResetAsyncTasks`.
   base::WeakPtrFactory<AutoPictureInPictureTabHelper> async_tasks_weak_factory_{
       this};
+
+  base::WeakPtrFactory<AutoPictureInPictureTabHelper> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PICTURE_IN_PICTURE_TAB_HELPER_H_

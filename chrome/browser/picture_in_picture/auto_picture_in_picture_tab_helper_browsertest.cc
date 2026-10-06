@@ -2729,6 +2729,62 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       ImmediatelyClosesVideoAutopipIfTabIsAlreadyFocused) {
+  // Load a page that is registered for autopip (delayed).
+  LoadAutopipDelayPage(browser());
+  auto* original_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAccept(original_web_contents);
+  SetPiPTypeToVideo(original_web_contents);
+
+  const std::u16string pip_ready_title = u"VIDEO_PIP_READY";
+  content::TitleWatcher title_watcher(original_web_contents, pip_ready_title);
+  EXPECT_EQ(title_watcher.WaitAndGetTitle(), pip_ready_title);
+
+  // Listen for `leavepictureinpicture` in the renderer so we can verify that
+  // the renderer also exits picture-in-picture cleanly and doesn't get stuck
+  // thinking the video is still in picture-in-picture.
+  ASSERT_TRUE(content::ExecJs(original_web_contents, R"(
+    window.leftPipPromise = new Promise(resolve => {
+      document.getElementById('local-view').addEventListener(
+          'leavepictureinpicture',
+          () => resolve(document.pictureInPictureElement === null),
+          {once: true});
+    });
+    true;
+  )"));
+
+  // There should not currently be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  content::MediaStartStopObserver enter_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  content::MediaStartStopObserver exit_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kExitPictureInPicture);
+
+  // Open and switch to a new tab.
+  OpenNewTab(browser());
+
+  // Immediately switch back to the original tab.
+  SwitchToExistingTab(original_web_contents);
+
+  // When the page enters autopip after its delay it should immediately be
+  // exited.
+  enter_pip_observer.Wait();
+  exit_pip_observer.Wait();
+
+  // The page should no longer be in picture-in-picture in either the browser or
+  // the renderer.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+  EXPECT_EQ(true,
+            content::EvalJs(original_web_contents, "window.leftPipPromise"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        HasEverBeenRegistered) {
   // Load a page that can register and unregister for autopip.
   LoadAutopipToggleRegistrationPage(browser());

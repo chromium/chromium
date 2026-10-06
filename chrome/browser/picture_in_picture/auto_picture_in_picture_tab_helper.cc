@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -429,17 +430,22 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
 
     MaybeRecordPictureInPictureChanged(true);
 
-    // If the tab is activated and unoccluded by the time auto
-    // picture-in-picture fires, we should immediately close the auto
-    // picture-in-picture.
-    if (tab_observer_helper_->IsTabActivated() &&
-        (!window_occlusion_helper_ ||
-         window_occlusion_helper_->GetOcclusionState() ==
-             OcclusionState::kVisible)) {
-      MaybeExitAutoPictureInPicture();
-    } else if (is_playing_) {
+    if (is_playing_) {
       // Media is playing, start the watch time timer.
       playing_start_time_ = clock_->NowTicks();
+    }
+
+    // If the tab is activated and unoccluded by the time auto
+    // picture-in-picture fires, we should immediately close the auto
+    // picture-in-picture. Exit asynchronously so we don't close the window
+    // while it is still in the middle of opening.
+    if (IsTabActiveAndVisible()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &AutoPictureInPictureTabHelper::
+                  MaybeExitAutoPictureInPictureIfTabIsActiveAndVisible,
+              weak_factory_.GetWeakPtr()));
     }
   }
 }
@@ -673,6 +679,21 @@ void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
   is_in_auto_picture_in_picture_ = false;
 
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+}
+
+void AutoPictureInPictureTabHelper::
+    MaybeExitAutoPictureInPictureIfTabIsActiveAndVisible() {
+  if (!is_in_auto_picture_in_picture_ || !IsTabActiveAndVisible()) {
+    return;
+  }
+  MaybeExitAutoPictureInPicture();
+}
+
+bool AutoPictureInPictureTabHelper::IsTabActiveAndVisible() const {
+  return tab_observer_helper_->IsTabActivated() &&
+         (!window_occlusion_helper_ ||
+          window_occlusion_helper_->GetOcclusionState() ==
+              OcclusionState::kVisible);
 }
 
 void AutoPictureInPictureTabHelper::MaybeStartOrStopObservers() {
