@@ -34,6 +34,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -91,6 +92,7 @@ import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -812,40 +814,31 @@ public class TabSearchOverlayCoordinator
     }
 
     /**
-     * Calculates the top margin for the panel when in a conventional app state (outside desktop
-     * windowing, such as fullscreen or multi-window).
+     * Returns the panel's top margin outside desktop windowing (e.g. fullscreen or multi-window).
      *
-     * <p>With horizontal tabs, the tab strip sits above the toolbar, so we subtract {@code
-     * tabStripHeight} from {@code toolbarTop} to align the panel below the status bar. When
-     * vertical tabs is active, there is no horizontal tab strip above the toolbar; the toolbar is
-     * already at the top of the browser UI, so {@code tabStripHeight} is 0.
+     * <p>The overlay {@link PopupWindow} covers the full window, including any area under the
+     * status bar or an OS-drawn caption bar, so the panel is offset by their top inset to keep the
+     * header and close button visible (0 if the window overlaps neither, e.g. the bottom window in
+     * split-screen). A caption bar can be present even when {@link
+     * AppHeaderState#isInDesktopWindow()} is false, e.g. when the desktop windowing heuristics
+     * decline to draw the app header on an external display.
+     *
+     * <p>Window insets are used rather than toolbar / tab strip view positions because the latter
+     * depend on toolbar-internal layout details (e.g. which view the tab strip height is applied to
+     * as a top margin), which previously yielded a margin of 0 with the horizontal tab strip and
+     * placed the close button under the status bar.
      */
     private int getTopMarginForConventionalState() {
-        View controlContainer = mActivity.findViewById(R.id.control_container);
-        View toolbarContainer =
-                controlContainer != null
-                        ? controlContainer.findViewById(R.id.toolbar_container)
-                        : null;
-        if (toolbarContainer == null) {
+        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+        WindowInsetsCompat windowInsets =
+                insetObserver != null ? insetObserver.getLastRawWindowInsets() : null;
+        if (windowInsets == null) {
             return 0;
         }
-
-        int[] location = new int[2];
-        toolbarContainer.getLocationInWindow(location);
-        int toolbarTop = location[1] > 0 ? location[1] : toolbarContainer.getTop();
-
-        // When vertical tabs is active, there is no horizontal tab strip above the toolbar.
-        // The toolbar itself is already positioned directly below the system status bar, so the
-        // effective horizontal strip height is 0. Subtracting the static tab_strip_height dimension
-        // here would underflow toolbarTop and clamp to 0, pushing the panel into the OS status bar.
-        View verticalRail = mActivity.findViewById(R.id.vertical_tab_rail_container);
-        boolean hasVerticalTabs = verticalRail != null && verticalRail.isShown();
-        int tabStripHeight =
-                hasVerticalTabs
-                        ? 0
-                        : mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
-
-        return Math.max(0, toolbarTop - tabStripHeight);
+        // Insets of multiple types are combined per side by taking the max, not the sum.
+        return windowInsets.getInsets(
+                        WindowInsetsCompat.Type.statusBars() | WindowInsetsCompat.Type.captionBar())
+                .top;
     }
 
     /**
