@@ -202,9 +202,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   bool IsAccelerated() const { return is_accelerated_; }
   bool IsSoftware() const { return is_software_; }
-  void SetDelegate(CanvasResourceProviderDelegate* delegate) {
-    delegate_ = delegate;
-  }
 
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
@@ -372,7 +369,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
 
-  WeakPersistent<CanvasResourceProviderDelegate> delegate_ = nullptr;
+  const WeakPersistent<CanvasResourceProviderDelegate> delegate_;
   mutable sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   const cc::PaintImage::Id snapshot_paint_image_id_;
