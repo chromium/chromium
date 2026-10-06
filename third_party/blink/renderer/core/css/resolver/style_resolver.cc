@@ -1636,6 +1636,63 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
   }
 }
 
+bool CanReapplyPropertySet(const CSSPropertyValueSet* property_set,
+                           bool incremental_properties_only,
+                           bool is_svg) {
+  if (!property_set) {
+    return true;
+  }
+  for (const CSSPropertyValue& property : property_set->Properties()) {
+    const CSSProperty& css_property = CSSProperty::Get(property.PropertyID());
+    // If a script mutated inline style properties that are not idempotent,
+    // we would not normally even reach this path (we wouldn't get a changed
+    // signal saying "inline incremental style modified", just "style
+    // modified"). However, we could have such properties set on inline style
+    // before this calculation, and their continued existence blocks us from
+    // reusing the style (because e.g. the StyleAdjuster is not necessarily
+    // idempotent in such cases).
+    // This also applies to presentation-attribute values retained in the clone:
+    // adjustment reruns even for properties that are not reapplied.
+    if (!css_property.IsIdempotent()) {
+      return false;
+    }
+
+    // Loss tracking cannot detect cross-property suppression handled by
+    // StyleCascade::ApplyWideOverlapping(). baseline-source participates in
+    // that suppression without being marked kOverlapping.
+    if (is_svg && ((css_property.GetFlags() & CSSProperty::kOverlapping) ||
+                   property.PropertyID() == CSSPropertyID::kBaselineSource)) {
+      return false;
+    }
+
+    // All properties in a style attribute are reapplied, regardless of whether
+    // they support incremental styling. Only presentation-attribute values for
+    // supported properties are reapplied; the others remain in the cloned style
+    // and do not need the value-resolution checks below.
+    if (incremental_properties_only &&
+        !css_property.SupportsIncrementalStyle()) {
+      continue;
+    }
+
+    // Variables and reverts are resolved in StyleCascade, which we don't run
+    // in this path; thus, we cannot support them.
+    if (property.Value().IsUnparsedDeclaration() ||
+        property.Value().IsPendingSubstitutionValue() ||
+        property.Value().IsCascadeDependentKeyword()) {
+      return false;
+    }
+    // Even though they are not substitution functions (and therefore not
+    // covered by the unparsed/pending-substitution value check above),
+    // anchor() and anchor-size() functions can still become IACVT,
+    // which must be handled by the StyleCascade.
+    if (auto* math_function = DynamicTo<CSSMathFunctionValue>(property.Value());
+        math_function && math_function->HasAnchorFunctions()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool CanApplyStyleIncrementally(Element* element,
                                 const StyleResolverState& state,
                                 const StyleRequest& style_request) {
@@ -1683,8 +1740,14 @@ bool CanApplyStyleIncrementally(Element* element,
     return false;
   }
 
+  auto* svg_element = DynamicTo<SVGElement>(element);
+  if (svg_element && !RuntimeEnabledFeatures::SvgIncrementalStyleEnabled()) {
+    return false;
+  }
+
   // Custom style callbacks can do style adjustment after style resolution.
-  if (element->HasCustomStyleCallbacks()) {
+  // SVGElement's callback only invalidates its cached SMIL base style.
+  if (element->HasCustomStyleCallbacks() && !svg_element) {
     return false;
   }
 
@@ -1717,40 +1780,32 @@ bool CanApplyStyleIncrementally(Element* element,
     return false;
   }
 
-  const CSSPropertyValueSet* inline_style = element->InlineStyle();
-  if (inline_style) {
-    for (const CSSPropertyValue& property : inline_style->Properties()) {
-      // If a script mutated inline style properties that are not idempotent,
-      // we would not normally even reach this path (we wouldn't get a changed
-      // signal saying “inline incremental style modified”, just “style
-      // modified”). However, we could have such properties set on inline style
-      // _before_ this calculation, and their continued existence blocks us from
-      // reusing the style (because e.g. the StyleAdjuster is not necessarily
-      // idempotent in such cases).
-      if (!CSSProperty::Get(property.PropertyID()).IsIdempotent()) {
-        return false;
-      }
-
-      // Variables and reverts are resolved in StyleCascade, which we don't run
-      // in this path; thus, we cannot support them.
-      if (property.Value().IsUnparsedDeclaration() ||
-          property.Value().IsPendingSubstitutionValue() ||
-          property.Value().IsCascadeDependentKeyword()) {
-        return false;
-      }
-      // Even though they are not substitution functions (and therefore not
-      // covered by the unparsed/pending-substitution value check above),
-      // anchor() and anchor-size() functions can still become IACVT,
-      // which must be handled by the StyleCascade.
-      if (auto* math_function =
-              DynamicTo<CSSMathFunctionValue>(property.Value());
-          math_function && math_function->HasAnchorFunctions()) {
-        return false;
-      }
+  if (svg_element) {
+    // Theme adjustment still runs after decoration propagation and can
+    // override SVG display even when the effective appearance is none.
+    if (StyleAdjuster::MayAdjustStyleForTheme(*element->GetComputedStyle())) {
+      return false;
+    }
+    // Attribute invalidation does not upgrade an already pending independent
+    // change for attr() dependencies. Recompute those values through the
+    // cascade.
+    if (element->GetComputedStyle()->HasAttrFunction() ||
+        element->PseudoElementStylesDependOnAttr()) {
+      return false;
+    }
+    // SMIL override values need the full cascade. Otherwise, presentation-
+    // attribute values must be safe to retain or reapply without that cascade.
+    if (svg_element->HasSMILAnimations() ||
+        !CanReapplyPropertySet(element->PresentationAttributeStyle(),
+                               /*incremental_properties_only=*/true,
+                               /*is_svg=*/true)) {
+      return false;
     }
   }
 
-  return true;
+  return CanReapplyPropertySet(element->InlineStyle(),
+                               /*incremental_properties_only=*/false,
+                               /*is_svg=*/svg_element != nullptr);
 }
 
 // This is the core of computing base style for a given element, ie., the style
@@ -2064,6 +2119,27 @@ void StyleResolver::ApplyBaseStyle(
 
     CSSProperty::Flags author_flags = 0;
 
+    bool applied_svg_presentation_attribute_style = false;
+    if (IsA<SVGElement>(*element)) {
+      const CSSPropertyValueSet* presentation_style =
+          element->PresentationAttributeStyle();
+      if (presentation_style) {
+        for (const CSSPropertyValue& property :
+             presentation_style->Properties()) {
+          if (!CSSProperty::Get(property.PropertyID())
+                   .SupportsIncrementalStyle()) {
+            continue;
+          }
+          // Match the full cascade's document scope for presentation hints,
+          // unlike inline style, which uses the element's tree scope.
+          StyleBuilder::ApplyProperty(
+              property.Name(), state,
+              property.Value().EnsureScopedValue(&element->GetDocument()));
+          applied_svg_presentation_attribute_style = true;
+        }
+      }
+    }
+
     const CSSPropertyValueSet* inline_style = element->InlineStyle();
     if (inline_style) {
       for (const CSSPropertyValue& property : inline_style->Properties()) {
@@ -2084,6 +2160,10 @@ void StyleResolver::ApplyBaseStyle(
     // Thus, we do not need to reset the author flags; they can only go
     // from unset to set or from set to set.
     state.SetComputedStyleFlagsFromAuthorFlags(author_flags);
+    if (applied_svg_presentation_attribute_style) {
+      INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
+                                    svg_presentation_attribute_styles_used, 1);
+    }
 
     // Sets flags related to length unit conversions which may have taken
     // place during StyleBuilder::ApplyProperty.

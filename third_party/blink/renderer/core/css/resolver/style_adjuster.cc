@@ -1398,6 +1398,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   }
 }
 
+bool StyleAdjuster::MayAdjustStyleForTheme(const ComputedStyle& style) {
+  return style.HasAppearance();
+}
+
 void StyleAdjuster::RunUncacheableStyleAdjustment(
     ComputedStyleBuilder& builder,
     Element& element,

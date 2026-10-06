@@ -50,6 +50,7 @@ class StyleAdjuster {
                                     const ComputedStyle& layout_parent_style,
                                     const Element*,
                                     Document*);
+  static bool MayAdjustStyleForTheme(const ComputedStyle&);
   static void AdjustOverscrollInertness(const StyleResolverState&,
                                         std::optional<bool>& html_inert,
                                         bool& can_escape_overscroll_inertness);
