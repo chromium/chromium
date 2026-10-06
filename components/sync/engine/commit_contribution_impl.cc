@@ -185,7 +185,6 @@ SyncerError CommitContributionImpl::ProcessCommitResponse(
         has_conflicting_commits = true;
         break;
       case sync_pb::CommitResponse::OVER_QUOTA:
-      case sync_pb::CommitResponse::RETRY:
       case sync_pb::CommitResponse::TRANSIENT_ERROR:
         DLOG(WARNING) << "Entity commit blocked by transient error.";
         has_transient_error_commits = true;

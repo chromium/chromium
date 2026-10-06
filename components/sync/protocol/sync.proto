@@ -331,8 +331,8 @@ message CommitResponse {
   enum ResponseType {
     SUCCESS = 1;
     CONFLICT = 2;  // You're out of date; update and check your data
-    // TODO(ncarter): What's the difference between RETRY and TRANSIENT_ERROR?
-    RETRY = 3;            // Someone has a conflicting, non-expired session open
+    reserved 3;
+    reserved "RETRY";
     INVALID_MESSAGE = 4;  // What the client sent was invalid, and trying again
                           // won't help.
     OVER_QUOTA = 5;  // This operation would put you, or you are, over quota
