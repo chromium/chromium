@@ -42,6 +42,7 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/browser/worker_host/worker_util.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_util.h"
@@ -227,8 +228,8 @@ void DedicatedWorkerHost::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   GetStoragePartitionImpl()->BindLockManager(
       GetWorkerStorageKey(), GetToken().value(), std::move(receiver));
-  GetStoragePartitionImpl()->GetLockManager()->AddLockObserver(GetToken().value(),
-                                                            this);
+  GetStoragePartitionImpl()->GetLockManager()->AddLockObserver(
+      GetToken().value(), this);
 }
 
 bool DedicatedWorkerHost::OnLockContention() {
@@ -546,7 +547,6 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     worker_client_security_state_->cross_origin_embedder_policy =
         result->main_script_load_params->response_head->parsed_headers
             ->cross_origin_embedder_policy;
-
   }
 
   // The worker global scope's document isolation policy is the same as its
@@ -608,6 +608,18 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   auto policy_container_host = base::MakeRefCounted<PolicyContainerHost>(
       std::move(result->policy_container_policies));
+
+  // A worker sandboxed without `allow-same-origin` has an opaque origin and
+  // is not eligible to use service workers (mirroring
+  // `NavigationRequest::CommitNavigation()`).
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerDropHandleForCSPSandboxedWorker) &&
+      service_worker_handle_ &&
+      (policy_container_host->policies().sandbox_flags &
+       network::mojom::WebSandboxFlags::kOrigin) ==
+          network::mojom::WebSandboxFlags::kOrigin) {
+    service_worker_handle_.reset();
+  }
 
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;

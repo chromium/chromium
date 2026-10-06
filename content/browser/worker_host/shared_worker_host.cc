@@ -317,12 +317,18 @@ void SharedWorkerHost::Start(
           /*frame_tree_node=*/std::nullopt);
     }
 
-    // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
-    // This does not parse the referrer policy, which will be
-    // updated in `SharedWorkerGlobalScope::Initialize()`.
-    PolicyContainerPolicies policies(
-        result.final_response_url,
-        result.main_script_load_params->response_head.get(), nullptr);
+    PolicyContainerPolicies policies;
+    if (base::FeatureList::IsEnabled(
+            features::kServiceWorkerDropHandleForCSPSandboxedWorker)) {
+      policies = std::move(result.policy_container_policies);
+    } else {
+      // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
+      // This does not parse the referrer policy, which will be updated in
+      // `SharedWorkerGlobalScope::Initialize()`.
+      policies = PolicyContainerPolicies(
+          result.final_response_url,
+          result.main_script_load_params->response_head.get(), nullptr);
+    }
 
     // A worker context can only be secure if its creator also is.
     if (!creator_policy_container_host_->policies().is_web_secure_context) {
@@ -433,9 +439,22 @@ void SharedWorkerHost::Start(
   result.subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
+  // A worker sandboxed without `allow-same-origin` has an opaque origin and
+  // is not eligible to use service workers (mirroring
+  // `NavigationRequest::CommitNavigation()`).
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerDropHandleForCSPSandboxedWorker) &&
+      service_worker_handle_ &&
+      (policy_container_host->policies().sandbox_flags &
+       network::mojom::WebSandboxFlags::kOrigin) ==
+          network::mojom::WebSandboxFlags::kOrigin) {
+    service_worker_handle_.reset();
+  }
+
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
-  if (service_worker_handle_->service_worker_client()) {
+  if (service_worker_handle_ &&
+      service_worker_handle_->service_worker_client()) {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter;
     if (coep_reporter_) {
@@ -450,7 +469,10 @@ void SharedWorkerHost::Start(
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
                 /*rfh_id=*/std::nullopt,
-                std::move(result.policy_container_policies),
+                base::FeatureList::IsEnabled(
+                    features::kServiceWorkerDropHandleForCSPSandboxedWorker)
+                    ? policy_container_host->policies()
+                    : result.policy_container_policies,
                 std::move(coep_reporter), std::move(dip_reporter),
                 ukm_source_id());
   }
@@ -502,7 +524,8 @@ void SharedWorkerHost::Start(
       instance_.DoesRequireCrossSiteRequestForCookies(),
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
       cross_origin_isolated);
-  if (service_worker_handle_->service_worker_client()) {
+  if (service_worker_handle_ &&
+      service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
   }
 

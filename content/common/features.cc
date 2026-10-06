@@ -755,6 +755,10 @@ const base::FeatureParam<std::string>
         &kServiceWorkerBypassFetchHandlerHashStrings,
         "script_checksum_to_bypass", ""};
 
+// Killswitch for crbug.com/563194341
+BASE_FEATURE(kServiceWorkerDropHandleForCSPSandboxedWorker,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // (crbug.com/41411856): When enabled, the srcdoc iframes are controlled by the
 // same service worker that controls their parent.
 BASE_FEATURE(kServiceWorkerSrcdocSupport, base::FEATURE_ENABLED_BY_DEFAULT);

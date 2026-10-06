@@ -31,6 +31,7 @@
 #include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/browser/worker_host/worker_script_loader_factory.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -127,6 +128,28 @@ void AddAdditionalRequestHeaders(network::ResourceRequest* resource_request,
       /*is_for_worker_script=*/true);
 }
 
+// Build `PolicyContainerPolicies` from the worker script response headers or
+// inherit from the creator for local schemes.
+PolicyContainerPolicies ComputePolicyContainerPoliciesForWorker(
+    const GURL& final_response_url,
+    network::mojom::URLResponseHead* response_head,
+    const PolicyContainerPolicies* creator_policies) {
+  PolicyContainerPolicies policies;
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerDropHandleForCSPSandboxedWorker)) {
+    if (final_response_url.SchemeIsLocal() && creator_policies) {
+      policies = creator_policies->Clone();
+    } else if (response_head && response_head->parsed_headers) {
+      policies =
+          PolicyContainerPolicies(final_response_url, response_head, nullptr);
+    }
+  }
+  policies.connection_allowlists = GetConnectionAllowlistsForWorker(
+      final_response_url, response_head, creator_policies,
+      final_response_url.SchemeIsLocal());
+  return policies;
+}
+
 void DidCreateScriptLoader(
     WorkerScriptFetcher::CompletionCallback callback,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -176,14 +199,12 @@ void DidCreateScriptLoader(
 
   // The load succeeded iff `main_script_load_params` is not nullptr.
   if (main_script_load_params) {
-    // TODO(crbug.com/41478971): Pass the PolicyContainerPolicies. It can
-    // be built from the
-    // `main_script_load_params.response_head->parsed_headers`.
-    PolicyContainerPolicies policies;
-    policies.connection_allowlists = GetConnectionAllowlistsForWorker(
+    // Note: Unlike in the spec, the referrer policy will be lazily calculated
+    // by the renderer in `(Shared/Dedicated)WorkerGlobalScope::Initialize()`.
+    // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
+    PolicyContainerPolicies policies = ComputePolicyContainerPoliciesForWorker(
         final_response_url, main_script_load_params->response_head.get(),
-        base::OptionalToPtr(creator_policies),
-        final_response_url.SchemeIsLocal());
+        base::OptionalToPtr(creator_policies));
 
     std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(
         std::move(subresource_loader_factories),
@@ -711,6 +732,16 @@ GURL WorkerScriptFetcher::DetermineFinalResponseUrl(
 
   // No redirection happened. The initial request URL was used for the response.
   return initial_request_url;
+}
+
+// static
+PolicyContainerPolicies
+WorkerScriptFetcher::ComputePolicyContainerPoliciesForTesting(
+    const GURL& final_response_url,
+    network::mojom::URLResponseHead* response_head,
+    const PolicyContainerPolicies* creator_policies) {
+  return ComputePolicyContainerPoliciesForWorker(
+      final_response_url, response_head, creator_policies);
 }
 
 WorkerScriptFetcher::WorkerScriptFetcher(

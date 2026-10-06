@@ -176,6 +176,12 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       const GURL& initial_request_url,
       blink::mojom::WorkerMainScriptLoadParams* main_script_load_params);
 
+  CONTENT_EXPORT static PolicyContainerPolicies
+  ComputePolicyContainerPoliciesForTesting(
+      const GURL& final_response_url,
+      network::mojom::URLResponseHead* response_head,
+      const PolicyContainerPolicies* creator_policies);
+
  private:
   // Callback invoked by this instance when the load ends, successfully or not.
   //

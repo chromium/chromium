@@ -169,22 +169,25 @@ class SharedWorkerHostTest : public testing::Test {
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
     TestContentBrowserClient client;
-    host->Start(std::move(factory),
-                blink::mojom::FetchClientSettingsObject::New(
-                    []() {
-                      auto policies =
-                          blink::mojom::PolicyContainerPolicies::New();
-                      policies->referrer_policy =
-                          network::mojom::ReferrerPolicy::kDefault;
-                      return policies;
-                    }(),
-                    /*outgoing_referrer=*/GURL(),
-                    blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
-                &client,
-                WorkerScriptFetcherResult(
-                    std::move(subresource_loader_factories),
-                    std::move(main_script_load_params),
-                    PolicyContainerPolicies(), final_response_url));
+    PolicyContainerPolicies policies =
+        WorkerScriptFetcher::ComputePolicyContainerPoliciesForTesting(
+            final_response_url, main_script_load_params->response_head.get(),
+            /*creator_policies=*/nullptr);
+    host->Start(
+        std::move(factory),
+        blink::mojom::FetchClientSettingsObject::New(
+            []() {
+              auto policies = blink::mojom::PolicyContainerPolicies::New();
+              policies->referrer_policy =
+                  network::mojom::ReferrerPolicy::kDefault;
+              return policies;
+            }(),
+            /*outgoing_referrer=*/GURL(),
+            blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+        &client,
+        WorkerScriptFetcherResult(std::move(subresource_loader_factories),
+                                  std::move(main_script_load_params),
+                                  std::move(policies), final_response_url));
   }
 
   MessagePortChannel AddClient(
@@ -199,6 +202,10 @@ class SharedWorkerHostTest : public testing::Test {
     host->AddClient(std::move(client), dummy_render_frame_host_id,
                     std::move(remote_port));
     return local_port;
+  }
+
+  bool HasServiceWorkerHandle(SharedWorkerHost* host) const {
+    return host->service_worker_handle_ != nullptr;
   }
 
   void RunNormalTest(bool extended_lifetime) {
@@ -769,6 +776,26 @@ TEST_F(SharedWorkerHostTest, NetworkIsolationPartitionForSameSiteCookies) {
       net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
   EXPECT_NE(host_all->GetNetworkAnonymizationKey(),
             host_none->GetNetworkAnonymizationKey());
+}
+
+TEST_F(SharedWorkerHostTest, ServiceWorkerHandleDroppedWhenCSPSandboxed) {
+  base::WeakPtr<SharedWorkerHost> host = CreateHost();
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+  auto csp = network::mojom::ContentSecurityPolicy::New();
+  csp->self_origin = network::mojom::CSPSource::New();
+  csp->header = network::mojom::ContentSecurityPolicyHeader::New();
+  csp->sandbox = network::mojom::WebSandboxFlags::kOrigin;
+  response_head->parsed_headers->content_security_policy.push_back(
+      std::move(csp));
+
+  StartWorker(host.get(), std::move(factory),
+              GURL("https://www.example.com/w.js"), std::move(response_head));
+  EXPECT_FALSE(HasServiceWorkerHandle(host.get()));
 }
 
 }  // namespace content

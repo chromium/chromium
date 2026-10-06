@@ -301,6 +301,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   }
 
  private:
+  friend class DedicatedWorkerServiceImplTest;
+
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* render_process_host,
                            const ChildProcessTerminationInfo& info) override;
