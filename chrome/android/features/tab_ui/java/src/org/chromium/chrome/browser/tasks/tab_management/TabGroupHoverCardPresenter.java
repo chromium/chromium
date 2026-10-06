@@ -40,44 +40,34 @@ public class TabGroupHoverCardPresenter {
      * Resolves group metadata and binds the data to the hover card view.
      *
      * @param hoverCardView The {@link TabGroupHoverCardView} to populate.
-     * @param groupHeaderTabId The tab ID of the group header.
      * @param tabGroupId The stable tab group ID (Token).
      * @return True if data was successfully bound, false if group is invalid.
      */
-    public boolean bindData(
-            TabGroupHoverCardView hoverCardView, int groupHeaderTabId, @Nullable Token tabGroupId) {
+    public boolean bindData(TabGroupHoverCardView hoverCardView, @Nullable Token tabGroupId) {
+        if (tabGroupId == null) {
+            return false;
+        }
         TabModel currentModel = mTabModelSelector.getCurrentModel();
         boolean isIncognito = currentModel.isIncognitoBranded();
 
-        Token resolvedGroupId = tabGroupId;
-        if (resolvedGroupId == null && groupHeaderTabId != Tab.INVALID_TAB_ID) {
-            Tab headerTab = currentModel.getTabById(groupHeaderTabId);
-            if (headerTab != null) {
-                resolvedGroupId = headerTab.getTabGroupId();
-            }
-        }
-        if (resolvedGroupId == null) {
-            return false;
-        }
-
-        List<Tab> rawTabs = currentModel.getTabsInGroup(resolvedGroupId);
+        List<Tab> rawTabs = currentModel.getTabsInGroup(tabGroupId);
         if (rawTabs.isEmpty()) {
             return false;
         }
 
-        List<Tab> relatedTabs = new ArrayList<>(rawTabs.size());
+        List<Tab> tabsInGroup = new ArrayList<>(rawTabs.size());
         for (Tab tab : rawTabs) {
             if (!tab.isClosing() && !tab.isDestroyed()) {
-                relatedTabs.add(tab);
+                tabsInGroup.add(tab);
             }
         }
-        if (relatedTabs.isEmpty()) {
+        if (tabsInGroup.isEmpty()) {
             return false;
         }
-        int totalTabsCount = relatedTabs.size();
+        int totalTabsCount = tabsInGroup.size();
 
         // Group Title.
-        String title = currentModel.getTabGroupTitle(resolvedGroupId);
+        String title = currentModel.getTabGroupTitle(tabGroupId);
         if (TextUtils.isEmpty(title)) {
             title = TabGroupTitleUtils.getDefaultTitle(hoverCardView.getContext(), totalTabsCount);
         }
@@ -86,7 +76,7 @@ public class TabGroupHoverCardPresenter {
         int previewCount = Math.min(totalTabsCount, TabGroupHoverCardView.MAX_PREVIEW_TABS);
         List<String> childTabTitles = new ArrayList<>(previewCount);
         for (int i = 0; i < previewCount; i++) {
-            Tab childTab = relatedTabs.get(i);
+            Tab childTab = tabsInGroup.get(i);
             childTabTitles.add(BULLET_PREFIX + childTab.getTitle());
         }
 

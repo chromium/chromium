@@ -72,8 +72,6 @@ public class VerticalTabItemHoverControllerUnitTest {
     private static final int TAB_ID_2 = 2;
     private static final int TAB_ID_3 = 3;
     private static final int PINNED_TAB_ID = 4;
-    private static final int GROUP_HEADER_TAB_ID_1 = 10;
-    private static final int GROUP_HEADER_TAB_ID_2 = 20;
     private static final int ROOT_VIEW_HEIGHT_PX = 1000;
     private static final int EXPANDED_CONTAINER_WIDTH_PX = 240;
     private static final int COLLAPSED_CONTAINER_WIDTH_PX = 76;
@@ -721,8 +719,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
 
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabGroupHoverCardViewStub).inflate();
@@ -730,8 +727,7 @@ public class VerticalTabItemHoverControllerUnitTest {
                 .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
         verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
 
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
         verify(mTabGroupHoverCardView).hide();
     }
 
@@ -743,47 +739,29 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
 
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, emptyGroupId, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(emptyGroupId, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabGroupHoverCardView, never()).show(anyFloat(), anyFloat());
     }
 
     @Test
-    public void testTabGroup_NullGroupId_ResolvesAndShows() {
-        when(mTabModel.getTabById(GROUP_HEADER_TAB_ID_1)).thenReturn(mTab1);
-        when(mTab1.getTabGroupId()).thenReturn(GROUP_ID_1);
-
+    public void testTabGroup_NullGroupId_DoesNotShowHoverCard() {
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
 
         listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1,
-                /* tabGroupId= */ null,
-                mGroupHeaderView,
-                /* isHovered= */ true);
+                /* tabGroupId= */ null, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabGroupHoverCardViewStub).inflate();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
-
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1,
-                /* tabGroupId= */ null,
-                mGroupHeaderView,
-                /* isHovered= */ false);
-        verify(mTabGroupHoverCardView).hide();
+        verify(mTabGroupHoverCardView, never()).show(anyFloat(), anyFloat());
     }
 
     @Test
     public void testTabGroup_DelayedShow() {
         TabHoverListener listener = mController.getTabHoverListener();
 
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
 
         // Before delay elapses (200 ms), show should not be called yet.
         ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
@@ -800,13 +778,11 @@ public class VerticalTabItemHoverControllerUnitTest {
     public void testTabGroup_ExitBeforeDelay_CancelsShow() {
         TabHoverListener listener = mController.getTabHoverListener();
 
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
 
         // Hover exit before delay expires.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
 
         // Running remaining delayed tasks should not trigger show().
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -820,20 +796,17 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = mController.getTabHoverListener();
 
         // Hover group 1 and wait for delay.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mTabGroupHoverCardView)
                 .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
         verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
 
         // Exit group 1 hover (records exit time).
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
 
         // Hover group 2 within 300 ms buffer.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_2, GROUP_ID_2, mGroupHeaderView2, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_2, mGroupHeaderView2, /* isHovered= */ true);
 
         // Should show group 2 immediately without needing ShadowLooper delay task flush.
         verify(mTabGroupHoverCardView)
@@ -856,8 +829,7 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         // Scrubbing to group 1: hover group 1 within buffer.
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
 
         // Tab hover card should be hidden, and group hover card shown immediately.
         verify(mTabHoverCardView, atLeastOnce()).hide();
@@ -874,13 +846,11 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = mController.getTabHoverListener();
 
         // Hover group 1 and wait for delay.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         // Scrubbing to tab 1: hover tab 1 within buffer.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
         // Group hover card should be hidden, and tab hover card shown immediately.
@@ -896,13 +866,11 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = mController.getTabHoverListener();
 
         // Group 1 is currently hovered and showing.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         // Scrubbing: Group 2 enters BEFORE Group 1 exits.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_2, GROUP_ID_2, mGroupHeaderView2, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_2, mGroupHeaderView2, /* isHovered= */ true);
         verify(mTabGroupHoverCardView)
                 .bindData(eq("Group 2"), eq(List.of("• Tab 1")), eq(0), eq(false));
         verify(mTabGroupHoverCardView, times(2)).show(anyFloat(), anyFloat());
@@ -911,8 +879,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         clearInvocations(mTabGroupHoverCardView);
 
         // Group 1 exits subsequently.
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
 
         // Group 2 should still be showing and hide() should NOT be called.
         verify(mTabGroupHoverCardView, never()).hide();
@@ -932,8 +899,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = controller.getTabHoverListener();
         assertNotNull(listener);
 
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabGroupHoverCardViewStub, never()).inflate();
@@ -946,8 +912,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
 
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
 
         verify(mTabGroupHoverCardViewStub).inflate();
         verify(mTabGroupHoverCardView)
@@ -961,8 +926,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         when(mTabGroupHoverCardView.isShown()).thenReturn(true);
 
         TabHoverListener listener = mController.getTabHoverListener();
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
 
@@ -975,31 +939,13 @@ public class VerticalTabItemHoverControllerUnitTest {
     }
 
     @Test
-    public void testTabGroup_ExitWithOnlyGroupId_HidesCard() {
-        when(mTabGroupHoverCardView.isShown()).thenReturn(true);
-
-        TabHoverListener listener = mController.getTabHoverListener();
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
-
-        // Exit with invalid header tab ID but matching Token.
-        listener.onTabGroupHoverStateChanged(
-                Tab.INVALID_TAB_ID, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
-
-        verify(mTabGroupHoverCardView, atLeastOnce()).hide();
-    }
-
-    @Test
     public void testDestroy_CleansUpBothCards() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
 
         TabHoverListener listener = mController.getTabHoverListener();
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        listener.onTabGroupHoverStateChanged(
-                GROUP_HEADER_TAB_ID_1, GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
+        listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         mController.destroy();
@@ -1283,12 +1229,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         TabHoverListener listener = mController.getTabHoverListener();
 
         VerticalTabItemHoverController.setupTabGroupHeaderHover(
-                listener,
-                GROUP_HEADER_TAB_ID_1,
-                GROUP_ID_1,
-                groupView1,
-                menuButton,
-                v -> group1Hovered[0] = v);
+                listener, GROUP_ID_1, groupView1, menuButton, v -> group1Hovered[0] = v);
         VerticalTabItemHoverController.setupTabHover(
                 listener, TAB_ID_1, tabView1, /* actionButton= */ null, v -> tab1Hovered[0] = v);
 
@@ -1359,14 +1300,12 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 controller.getTabHoverListener(),
-                GROUP_HEADER_TAB_ID_1,
                 GROUP_ID_1,
                 groupView1,
                 /* menuButton= */ null,
                 v -> group1Hovered[0] = v);
         VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 controller.getTabHoverListener(),
-                GROUP_HEADER_TAB_ID_2,
                 GROUP_ID_2,
                 groupView2,
                 /* menuButton= */ null,
@@ -1483,7 +1422,6 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 mController.getTabHoverListener(),
-                GROUP_HEADER_TAB_ID_1,
                 GROUP_ID_1,
                 groupView1,
                 /* menuButton= */ null,
@@ -1652,10 +1590,7 @@ public class VerticalTabItemHoverControllerUnitTest {
     }
 
     @Test
-    public void testSetupTabGroupHeaderHover_NullTabGroupId_RoutesToGroupHoverListener() {
-        when(mTabModel.getTabById(GROUP_HEADER_TAB_ID_1)).thenReturn(mTab1);
-        when(mTab1.getTabGroupId()).thenReturn(GROUP_ID_1);
-
+    public void testSetupTabGroupHeaderHover_RoutesToGroupHoverListener() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         FrameLayout groupView1 = new FrameLayout(activity);
         groupView1.layout(0, 0, 100, 48);
@@ -1663,8 +1598,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         boolean[] group1Hovered = new boolean[] {false};
         VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 mController.getTabHoverListener(),
-                GROUP_HEADER_TAB_ID_1,
-                /* tabGroupId= */ null,
+                GROUP_ID_1,
                 groupView1,
                 /* menuButton= */ null,
                 v -> group1Hovered[0] = v);

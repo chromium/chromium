@@ -961,16 +961,11 @@ class TabVerticalViewBinder {
      */
     private static void setupTabGroupHeaderHoverListener(PropertyModel model, ViewGroup view) {
         @Nullable View menuButton = view.findViewById(R.id.menu_button);
-        int tabId = model.get(TabProperties.TAB_ID);
         @Nullable Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
-        if (tabGroupId == null) {
-            tabGroupId = model.get(TabProperties.TAB_GROUP_ID);
-        }
         @Nullable TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
 
         VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 listener,
-                tabId,
                 tabGroupId,
                 view,
                 menuButton,

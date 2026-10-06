@@ -1444,7 +1444,6 @@ public class TabVerticalViewBinderUnitTest {
     public void testBindTabGroupHeader_HoverListener() {
         ViewGroup headerView = inflateGroupHeaderView();
         View menuButton = headerView.findViewById(R.id.menu_button);
-        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
         mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         TabActionButtonData actionButtonData =
@@ -1466,8 +1465,7 @@ public class TabVerticalViewBinderUnitTest {
         enterEvent.setSource(InputDevice.SOURCE_MOUSE);
         headerView.dispatchGenericMotionEvent(enterEvent);
         verify(mTabHoverListener)
-                .onTabGroupHoverStateChanged(
-                        TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
+                .onTabGroupHoverStateChanged(TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
 
         @SuppressWarnings("unchecked")
         Callback<Boolean> visualCallback =
@@ -1489,8 +1487,7 @@ public class TabVerticalViewBinderUnitTest {
         exitEvent.setSource(InputDevice.SOURCE_MOUSE);
         headerView.dispatchGenericMotionEvent(exitEvent);
         verify(mTabHoverListener)
-                .onTabGroupHoverStateChanged(
-                        TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
+                .onTabGroupHoverStateChanged(TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
         visualCallback.onResult(false);
         assertEquals(View.GONE, menuButton.getVisibility());
         exitEvent.recycle();
@@ -1500,7 +1497,6 @@ public class TabVerticalViewBinderUnitTest {
     public void testBindTabGroupHeader_Hover_RailCollapsed_MenuButtonStaysHidden() {
         ViewGroup headerView = inflateGroupHeaderView();
         View menuButton = headerView.findViewById(R.id.menu_button);
-        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
         mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
         TabActionButtonData actionButtonData =
@@ -1558,7 +1554,6 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     public void testBindTabGroupHeader_Focus_NotifiesHoverListener() {
         ViewGroup headerView = inflateGroupHeaderView();
-        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
         mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         TabActionButtonData actionButtonData =
@@ -1570,14 +1565,12 @@ public class TabVerticalViewBinderUnitTest {
         // Focus gain
         headerView.getOnFocusChangeListener().onFocusChange(headerView, true);
         verify(mTabHoverListener)
-                .onTabGroupHoverStateChanged(
-                        TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
+                .onTabGroupHoverStateChanged(TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
 
         // Focus loss
         headerView.getOnFocusChangeListener().onFocusChange(headerView, false);
         verify(mTabHoverListener)
-                .onTabGroupHoverStateChanged(
-                        TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
+                .onTabGroupHoverStateChanged(TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
     }
 
     @Test

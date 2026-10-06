@@ -38,7 +38,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGroupHoverCardPresenterUnitTest {
-    private static final int HEADER_TAB_ID = 100;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -83,7 +82,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Custom Group");
 
-        assertTrue(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, TAB_GROUP_ID));
+        assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
         verify(mHoverCardView)
                 .bindData(
@@ -103,7 +102,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
 
-        assertTrue(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, TAB_GROUP_ID));
+        assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
         verify(mHoverCardView)
                 .bindData(
@@ -120,7 +119,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Big Group");
 
-        assertTrue(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, TAB_GROUP_ID));
+        assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
         verify(mHoverCardView)
                 .bindData(
@@ -138,30 +137,12 @@ public class TabGroupHoverCardPresenterUnitTest {
     public void testBindData_emptyGroupReturnsFalse() {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
 
-        assertFalse(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, TAB_GROUP_ID));
+        assertFalse(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
     }
 
     @Test
-    public void testBindData_nullGroupId_resolvesFromHeaderTabId() {
-        when(mTabModel.getTabById(HEADER_TAB_ID)).thenReturn(mTab1);
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Resolved Group");
-
-        assertTrue(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, /* tabGroupId= */ null));
-
-        verify(mHoverCardView)
-                .bindData(
-                        eq("Resolved Group"),
-                        /* childTabTitles= */ anyList(),
-                        /* excessCount= */ eq(0),
-                        /* isIncognito= */ eq(false));
-    }
-
-    @Test
-    public void testBindData_nullGroupIdAndInvalidHeaderId_returnsFalse() {
-        assertFalse(
-                mPresenter.bindData(mHoverCardView, Tab.INVALID_TAB_ID, /* tabGroupId= */ null));
+    public void testBindData_nullGroupId_returnsFalse() {
+        assertFalse(mPresenter.bindData(mHoverCardView, /* tabGroupId= */ null));
     }
 
     @Test
@@ -170,7 +151,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Incognito Group");
 
-        assertTrue(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, TAB_GROUP_ID));
+        assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
         verify(mHoverCardView)
                 .bindData(
@@ -188,7 +169,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
 
-        assertTrue(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, TAB_GROUP_ID));
+        assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
         verify(mHoverCardView)
                 .bindData(
@@ -208,6 +189,6 @@ public class TabGroupHoverCardPresenterUnitTest {
         List<Tab> tabs = List.of(mTab1, mTab2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
 
-        assertFalse(mPresenter.bindData(mHoverCardView, HEADER_TAB_ID, TAB_GROUP_ID));
+        assertFalse(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
     }
 }

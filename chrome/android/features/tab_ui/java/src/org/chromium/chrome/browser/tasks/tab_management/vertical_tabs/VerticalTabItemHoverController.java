@@ -59,16 +59,11 @@ public class VerticalTabItemHoverController {
         /**
          * Called when a tab group header view hover or keyboard focus state changes.
          *
-         * @param groupHeaderTabId The tab ID of the group header (or {@link Tab#INVALID_TAB_ID}).
          * @param tabGroupId The stable ID (Token) of the group being hovered/focused.
          * @param view The tab group header view being hovered or focused.
          * @param isHovered True if hover or keyboard focus became active, false if both exited.
          */
-        void onTabGroupHoverStateChanged(
-                @TabId int groupHeaderTabId,
-                @Nullable Token tabGroupId,
-                View view,
-                boolean isHovered);
+        void onTabGroupHoverStateChanged(@Nullable Token tabGroupId, View view, boolean isHovered);
 
         /**
          * @return Whether any context menu is currently showing.
@@ -103,12 +98,10 @@ public class VerticalTabItemHoverController {
 
                 @Override
                 public void onTabGroupHoverStateChanged(
-                        @TabId int groupHeaderTabId,
-                        @Nullable Token tabGroupId,
-                        View view,
-                        boolean isHovered) {
+                        @Nullable Token tabGroupId, View view, boolean isHovered) {
+                    // Tab group headers are identified by their group Token rather than a tab ID.
                     handleHoverStateChanged(
-                            groupHeaderTabId,
+                            /* tabId= */ Tab.INVALID_TAB_ID,
                             tabGroupId,
                             /* isGroupHeader= */ true,
                             view,
@@ -218,7 +211,6 @@ public class VerticalTabItemHoverController {
      * optional menu button, orchestrating hover state transitions and visual updates.
      *
      * @param listener The {@link TabHoverListener} to notify of state changes, or null.
-     * @param groupHeaderTabId The representative tab ID of the tab group header.
      * @param tabGroupId The {@link Token} ID of the tab group.
      * @param view The root ViewGroup representing the tab group header row item.
      * @param menuButton The optional menu button within the row.
@@ -226,14 +218,14 @@ public class VerticalTabItemHoverController {
      */
     public static void setupTabGroupHeaderHover(
             @Nullable TabHoverListener listener,
-            @TabId int groupHeaderTabId,
             @Nullable Token tabGroupId,
             ViewGroup view,
             @Nullable View menuButton,
             Callback<Boolean> onHoverVisualStateChanged) {
+        // Tab group headers are identified by their group Token rather than a tab ID.
         setupItemHover(
                 listener,
-                groupHeaderTabId,
+                /* tabId= */ Tab.INVALID_TAB_ID,
                 tabGroupId,
                 /* isGroupHeader= */ true,
                 view,
@@ -357,7 +349,7 @@ public class VerticalTabItemHoverController {
             View view,
             boolean isHovered) {
         if (isGroupHeader) {
-            listener.onTabGroupHoverStateChanged(tabId, tabGroupId, view, isHovered);
+            listener.onTabGroupHoverStateChanged(tabGroupId, view, isHovered);
         } else {
             listener.onTabHoverStateChanged(tabId, view, isHovered);
         }
@@ -439,7 +431,7 @@ public class VerticalTabItemHoverController {
      * Handles hover and keyboard focus state changes on vertical tab items and tab group headers.
      */
     private void handleHoverStateChanged(
-            @TabId int id,
+            @TabId int tabId,
             @Nullable Token tabGroupId,
             boolean isGroupHeader,
             View view,
@@ -473,10 +465,10 @@ public class VerticalTabItemHoverController {
                 }
             }
         }
-        mCurrentHoveredTabId = isGroupHeader ? Tab.INVALID_TAB_ID : id;
+        mCurrentHoveredTabId = tabId;
 
         // Skip showing hover card for the currently selected tab.
-        if (!isGroupHeader && mTabModelSelector.getCurrentTabId() == id) {
+        if (!isGroupHeader && mTabModelSelector.getCurrentTabId() == tabId) {
             hideHoverCard();
             return;
         }
@@ -485,8 +477,8 @@ public class VerticalTabItemHoverController {
             scheduleOrShowHoverCard(
                     view,
                     isGroupHeader
-                            ? () -> showGroupHoverCard(id, tabGroupId, view)
-                            : () -> showHoverCard(id, view));
+                            ? () -> showGroupHoverCard(tabGroupId, view)
+                            : () -> showHoverCard(tabId, view));
         }
     }
 
@@ -568,8 +560,7 @@ public class VerticalTabItemHoverController {
         mTabHoverCardView.show(position[0], position[1]);
     }
 
-    private void showGroupHoverCard(
-            @TabId int groupHeaderTabId, @Nullable Token tabGroupId, View view) {
+    private void showGroupHoverCard(@Nullable Token tabGroupId, View view) {
         if (isContextMenuShowing()) {
             return;
         }
@@ -579,8 +570,7 @@ public class VerticalTabItemHoverController {
         if (mTabGroupHoverCardView == null) return;
 
         // Bind group content first so child views are populated before measuring height.
-        if (!mTabGroupHoverCardPresenter.bindData(
-                mTabGroupHoverCardView, groupHeaderTabId, tabGroupId)) {
+        if (!mTabGroupHoverCardPresenter.bindData(mTabGroupHoverCardView, tabGroupId)) {
             return;
         }
 
