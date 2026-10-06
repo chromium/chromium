@@ -1731,10 +1731,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 ExtensionsUrlOverrideRegistry.resetRegistry();
             }
 
-            if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
-                initiateArchivedTabsAutoDeletePromoManager();
-            }
-
             if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()
                     && FindsFeatures.sChromeFinds.isEnabled()) {
                 initFindsManager(originalProfile);
@@ -4161,7 +4157,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 initGroupSuggestionsPromotionCoordinator();
             }
-            initiateArchivedTabsAutoDeletePromoManager();
         }
     }
 
@@ -5949,8 +5944,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             ChromeTabbedActivity.this,
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),
                             orchestrator.getTabArchiveSettings(),
-                            orchestrator.getTabCountSupplier(),
-                            mTabModelSelector.getModel(/* incognito= */ false));
+                            orchestrator.getTabCountSupplier());
         }
     }
 

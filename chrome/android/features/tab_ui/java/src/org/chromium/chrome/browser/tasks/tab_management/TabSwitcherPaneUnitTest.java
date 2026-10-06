@@ -285,8 +285,7 @@ public class TabSwitcherPaneUnitTest {
                         mContext,
                         mMockBottomSheetController,
                         mMockTabArchiveSettings,
-                        mMockArchivedTabCountSupplier,
-                        mTabModel);
+                        mMockArchivedTabCountSupplier);
 
         mTabSwitcherPane =
                 new TabSwitcherPane(
