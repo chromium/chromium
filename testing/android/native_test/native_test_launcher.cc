@@ -11,9 +11,12 @@
 
 #include <android/log.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <array>
 #include <iterator>
@@ -29,6 +32,7 @@
 #include "base/debug/debugger.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread_restrictions.h"
@@ -116,12 +120,25 @@ static void JNI_NativeTest_RunTests(
 
   // A few options, such "--gtest_list_tests", will just use printf directly
   // Always redirect stdout to a known file.
-  if (freopen(stdout_file_path.value().c_str(), "a+", stdout) == NULL) {
+  //
+  // Do not use freopen() here: it closes `STDOUT_FILENO` before dup'ing the
+  // new file onto it, and other threads that are already running (e.g. in
+  // browser tests) can open a file and get fd 1 in that window. fdsan then
+  // aborts when stdio takes ownership of fd 1. dup2() replaces fd 1
+  // atomically, so it is never free.
+  fflush(stdout);
+  int stdout_fd =
+      HANDLE_EINTR(open(stdout_file_path.value().c_str(),
+                        O_RDWR | O_CREAT | O_APPEND | O_CLOEXEC, 0666));
+  if (stdout_fd < 0 || HANDLE_EINTR(dup2(stdout_fd, STDOUT_FILENO)) < 0) {
     AndroidLog(
         ANDROID_LOG_ERROR,
         base::StringPrintf("Failed to redirect stream to file: %s: %s\n",
                            stdout_file_path.value().c_str(), strerror(errno)));
     exit(EXIT_FAILURE);
+  }
+  if (stdout_fd != STDOUT_FILENO) {
+    close(stdout_fd);
   }
   // TODO(jbudorick): Remove this after resolving crbug.com/726880
   AndroidLog(ANDROID_LOG_INFO,
