@@ -21,8 +21,8 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace {
 void OnAuthComplete(base::OnceCallback<void(bool)> callback,
@@ -108,10 +108,11 @@ BiometricsStatusChromeOS AuthenticatorChromeOS::CheckIfBiometricsAvailable() {
 
 void AuthenticatorChromeOS::CheckIfPinIsAvailable(
     base::OnceCallback<void(bool)> callback) {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
 
-  if (!user) {
+  if (!active_session) {
     // Post the callback to ensure it runs asynchronously, avoiding the risks
     // of mixing sync and async execution paths.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -122,7 +123,8 @@ void AuthenticatorChromeOS::CheckIfPinIsAvailable(
   user_data_auth::ListAuthFactorsRequest request;
 
   *request.mutable_account_id() =
-      cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId());
+      cryptohome::CreateAccountIdentifierFromAccountId(
+          active_session->account_id());
 
   ash::UserDataAuthClient::Get()->ListAuthFactors(
       request,

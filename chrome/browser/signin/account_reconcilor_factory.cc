@@ -22,9 +22,12 @@
 #include "components/signin/public/base/signin_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/check_deref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #endif
@@ -65,11 +68,10 @@ class ChromeOSChildAccountReconcilorDelegate
     }
 
     // Mark the account to require an online sign in.
-    const user_manager::User* primary_user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-    DCHECK(primary_user);
     user_manager::UserManager::Get()->SaveForceOnlineSignin(
-        primary_user->GetAccountId(), true /* force_online_signin */);
+        CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+            .account_id(),
+        true /* force_online_signin */);
 
     UMA_HISTOGRAM_BOOLEAN(
         "ChildAccountReconcilor.ForcedUserExitOnReconcileError", true);

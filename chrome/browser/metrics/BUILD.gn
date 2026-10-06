@@ -442,6 +442,7 @@ source_set("impl") {
       "//chrome/browser/ui/webui/ash/settings/services/metrics",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/demo_mode",
+      "//chromeos/ash/components/signin:identity_manager_provider",
       "//chromeos/ash/components/system",
       "//chromeos/ash/services/cros_healthd/public/cpp",
       "//chromeos/ash/services/multidevice_setup/public/cpp",

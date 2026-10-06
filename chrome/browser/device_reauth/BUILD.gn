@@ -97,6 +97,7 @@ source_set("impl") {
       "//chromeos/ash/components/dbus/userdataauth",
       "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
       "//chromeos/ash/components/osauth/public",
+      "//components/session_manager/core",
     ]
   }
 

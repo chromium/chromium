@@ -115,8 +115,8 @@
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -196,7 +196,8 @@ bool ShouldUseQuietUI(content::WebContents* web_contents,
 std::optional<url::Origin> GetCurrentKioskOrigin() {
   if (chromeos::IsWebKioskSession()) {
     const AccountId& account_id =
-        user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+        CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+            .account_id();
     DCHECK(ash::KioskWebAppManager::IsInitialized());
     const ash::KioskWebAppData* app_data =
         ash::KioskWebAppManager::Get()->GetAppByAccountId(account_id);
@@ -206,7 +207,8 @@ std::optional<url::Origin> GetCurrentKioskOrigin() {
 
   if (chromeos::IsIwaKioskSession()) {
     const AccountId& account_id =
-        user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+        CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+            .account_id();
     const ash::KioskIwaData* iwa_data =
         CHECK_DEREF(ash::KioskIwaManager::Get()).GetApp(account_id);
     return CHECK_DEREF(iwa_data).origin();
