@@ -1949,6 +1949,10 @@ inline constexpr char kGlicNoWebviewName[] = "Glic No Webview";
 inline constexpr char kGlicNoWebviewDescription[] =
     "Runs the Glic client in a PrivilegedWebContents instead of a webview.";
 
+inline constexpr char kGlicReuseCookiesName[] = "Glic Reuse Cookies";
+inline constexpr char kGlicReuseCookiesDescription[] =
+    "Reuses existing cookies if possible when synchronizing cookies in Glic.";
+
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledName[] =
     "Enable EnterprisePublishedSkills policy";
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledDescription[] =

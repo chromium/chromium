@@ -11158,6 +11158,9 @@ const FeatureEntry kFeatureEntries[] = {
                                          "GlicNoWebview,PrivilegedWebContents",
                                          switches::kDisableFeatures,
                                          "GlicNoWebview")},
+    {"glic-reuse-cookies", flag_descriptions::kGlicReuseCookiesName,
+     flag_descriptions::kGlicReuseCookiesDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kGlicReuseCookies)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enterprise-published-skills-policy-enabled",

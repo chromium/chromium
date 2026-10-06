@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -150,14 +151,16 @@ class GlicCookieSynchronizerTest : public testing::Test {
 
   // Sets the network response to the given result. Applies to all subsequent
   // network requests.
-  void SetResponseForResult(signin::SetAccountsInCookieResult result) {
+  void SetResponseForResult(signin::SetAccountsInCookieResult result,
+                            bool reuse_cookies = false) {
     test_signin_client_.GetTestURLLoaderFactory()->AddResponse(
-        RequestURL().spec(), GetResponseFromResult(result));
+        RequestURL(reuse_cookies).spec(), GetResponseFromResult(result));
   }
 
-  GURL RequestURL() const {
+  GURL RequestURL(bool reuse_cookies = false) const {
     return GaiaUrls::GetInstance()->oauth_multilogin_url().Resolve(
-        base::StringPrintf("?source=%s&reuseCookies=0", "ChromiumGlic"));
+        base::StringPrintf("?source=%s&reuseCookies=%d", "ChromiumGlic",
+                           reuse_cookies ? 1 : 0));
   }
 
   void SetUp() override {
@@ -197,6 +200,23 @@ TEST_F(GlicCookieSynchronizerTest, AuthSuccess) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> result;
   SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
+
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.CookieSynchronization.Latency.Success", 1);
+  histogram_tester.ExpectTotalCount("Glic.CookieSynchronization.Latency.Error",
+                                    0);
+}
+
+TEST_F(GlicCookieSynchronizerTest, AuthSuccessReuseCookies) {
+  base::test::ScopedFeatureList feature_list(features::kGlicReuseCookies);
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<bool> result;
+  SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess,
+                       /*reuse_cookies=*/true);
 
   cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
       result.GetCallback());

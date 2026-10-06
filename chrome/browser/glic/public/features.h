@@ -171,6 +171,7 @@ extern const base::FeatureParam<base::TimeDelta>
     kGlicCookieSyncOnErrorMinInterval;
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnOpenEvenIfNoSyncNeeded);
 BASE_DECLARE_FEATURE(kGlicCookieSyncEarlyNoStartup);
+BASE_DECLARE_FEATURE(kGlicReuseCookies);
 
 BASE_DECLARE_FEATURE(kGlicWebClientLoadTimes);
 extern const base::FeatureParam<int> kGlicPreLoadingTimeMs;
