@@ -1409,6 +1409,7 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   if (page_) {
     page_->OnSidePanelStateChanged();
   }
+  NotifySidePanelStateChanged();
 
   lens::ClientToAimMessage message;
   auto* display_mode_msg = message.mutable_set_cobrowsing_display_mode();

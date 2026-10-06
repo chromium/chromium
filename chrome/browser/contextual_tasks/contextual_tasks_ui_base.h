@@ -79,7 +79,8 @@ class ContextualTasksUIBase
   Profile* GetProfile();
   content::WebContents* GetWebUIWebContents();
   BrowserWindowInterface* GetBrowser();
-  contextual_tasks::ContextualTasksPanelController* GetPanelController();
+  virtual contextual_tasks::ContextualTasksPanelController*
+  GetPanelController();
   contextual_tasks::ContextualTasksUiService* GetUiService();
 
   static content::WebUIDataSource* RegisterWebUIDataSource(Profile* profile);
@@ -105,6 +106,7 @@ class ContextualTasksUIBase
   void CloseSidePanel() override;
   void ShowPageInfoBubble(bool is_pointer_interaction) override;
   void OnLogoPointerDown() override;
+  void CreateNewThread() override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // PinnedToolbarActionsModel::Observer:
@@ -194,9 +196,11 @@ class ContextualTasksUIBase
   // - Reset to nullopt when navigating to AI zero-state, non-AI pages, error
   //   pages, or when `SetWebContents` receives null/non-AI contents.
   // - Calling `SetThreadTitle` forwards the title to subscribed WebUI clients
-  //   (`page_`) to update the header title displayed in the toolbar.
+  //   (`toolbar_page_`) to update the header title displayed in the toolbar.
   virtual const std::optional<std::string>& GetThreadTitle();
   virtual void SetThreadTitle(std::optional<std::string> title);
+
+  void NotifySidePanelStateChanged();
 
  protected:
   // Helper to dynamically resolve the active tab's permission controller.

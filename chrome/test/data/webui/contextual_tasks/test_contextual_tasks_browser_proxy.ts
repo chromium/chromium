@@ -227,7 +227,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'onWindowClosed',
       'closeWindow',
       'maybeTriggerPinningPromo',
-      'createNewThread',
     ]);
 
     this.url_ = url;
@@ -412,10 +411,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   maybeTriggerPinningPromo() {
     this.methodCalled('maybeTriggerPinningPromo');
   }
-
-  createNewThread() {
-    this.methodCalled('createNewThread');
-  }
 }
 
 /**
@@ -541,6 +536,7 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
       'closeSidePanel',
       'showPageInfoBubble',
       'onLogoPointerDown',
+      'createNewThread',
     ]);
   }
 
@@ -594,6 +590,10 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 
   onLogoPointerDown() {
     this.methodCalled('onLogoPointerDown');
+  }
+
+  createNewThread() {
+    this.methodCalled('createNewThread');
   }
 }
 

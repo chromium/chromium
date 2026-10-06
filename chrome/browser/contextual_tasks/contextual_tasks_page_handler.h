@@ -92,7 +92,6 @@ class ContextualTasksPageHandler
   void CloseWindow(
       const contextual_tasks::ContextualWindowId& window_id) override;
   void MaybeTriggerPinningPromo() override;
-  void CreateNewThread() override;
   void PostAimMessage(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:

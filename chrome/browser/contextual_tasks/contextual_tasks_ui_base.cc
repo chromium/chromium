@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -26,11 +27,13 @@
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -296,6 +299,9 @@ void ContextualTasksUIBase::CreatePageHandler(
   if (IsAiPage()) {
     NotifyAiPageStatusChanged(true);
   }
+  if (GetThreadTitle().has_value() && toolbar_page_) {
+    toolbar_page_->SetThreadTitle(*GetThreadTitle());
+  }
 }
 
 void ContextualTasksUIBase::PinSidePanel() {
@@ -441,6 +447,42 @@ void ContextualTasksUIBase::OnLogoPointerDown() {
   controller->OnLogoPointerDown();
 }
 
+void ContextualTasksUIBase::CreateNewThread() {
+  auto* panel_controller = GetPanelController();
+  if (!panel_controller) {
+    return;
+  }
+  content::WebContents* target_contents =
+      panel_controller->GetActiveWebContents();
+  if (!target_contents) {
+    return;
+  }
+
+  std::optional<base::Uuid> task_id;
+  if (auto current_task = panel_controller->GetCurrentTask()) {
+    task_id = current_task->GetTaskId();
+  } else if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+                 target_contents)) {
+    task_id = helper->task_id();
+  }
+
+  auto* ui_service = GetUiService();
+  if (!ui_service) {
+    return;
+  }
+
+  GURL url = task_id.has_value()
+                 ? ui_service->GetDefaultAiPageUrlForTask(task_id.value())
+                 : ui_service->GetDefaultAiPageUrl();
+  url = ui_service->AddRequiredSidePanelUrlChanges(url, target_contents);
+
+  content::NavigationController::LoadURLParams params(url);
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  target_contents->GetController().LoadURLWithParams(params);
+
+  SetThreadTitle(std::nullopt);
+}
+
 void ContextualTasksUIBase::BindInterface(
     mojo::PendingReceiver<contextual_tasks_toolbar::mojom::PageHandlerFactory>
         pending_receiver) {
@@ -540,6 +582,15 @@ const std::optional<std::string>& ContextualTasksUIBase::GetThreadTitle() {
 
 void ContextualTasksUIBase::SetThreadTitle(std::optional<std::string> title) {
   thread_title_ = std::move(title);
+  if (auto* toolbar_page = GetToolbarPageRemote()) {
+    toolbar_page->SetThreadTitle(thread_title_.value_or(std::string()));
+  }
+}
+
+void ContextualTasksUIBase::NotifySidePanelStateChanged() {
+  if (auto* toolbar_page = GetToolbarPageRemote()) {
+    toolbar_page->OnSidePanelStateChanged();
+  }
 }
 
 void ContextualTasksUIBase::GetInitialState(GetInitialStateCallback callback) {

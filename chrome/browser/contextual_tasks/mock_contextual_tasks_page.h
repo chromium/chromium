@@ -129,6 +129,8 @@ class MockContextualTasksToolbarPage
       (std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr> context),
       (override));
   MOCK_METHOD(void, SetExpandButtonEnabled, (bool enabled), (override));
+  MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
+  MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
 
  private:
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};

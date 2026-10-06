@@ -149,8 +149,6 @@ interface PageHandler {
   // Triggers the pinning promo IPH if eligible.
   MaybeTriggerPinningPromo();
 
-  // Requests the browser to load a new thread URL in the guest WebContents.
-  CreateNewThread();
 };
 
 // WebUI-side handler for requests from the browser.
