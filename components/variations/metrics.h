@@ -118,7 +118,9 @@ enum class PrepareRuntimeMutableChangesResult {
   kSuccess = 1,
   kSimulatedGroupIsNull = 2,
   kSimulatedGroupNotFound = 3,
-  kNotStrictKillswitch = 4,
+  // Deprecated: runtime mutability now allows enabling features as well as
+  // killswitches, so this will no longer be recorded.
+  // kNotStrictKillswitch = 4,
   kNotStartsActive = 5,
   kNotPermanentConsistency = 6,
   kAlreadyApplied = 7,
@@ -133,8 +135,11 @@ enum class PrepareRuntimeMutableChangesResult {
   // kPrepareFeatureStateUpdateFailed = 14,
   kRuntimeExperimentHasGoogleWebId = 15,
   kOverriddenTrialHasGoogleWebId = 16,
-  kRuntimeExperimentHasParams = 17,
-  kMaxValue = kRuntimeExperimentHasParams,
+  // Deprecated: runtime mutability now supports experiment params, so this will
+  // no longer be recorded.
+  // kRuntimeExperimentHasParams = 17,
+  kFeatureBothEnabledAndDisabled = 18,
+  kMaxValue = kFeatureBothEnabledAndDisabled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsPrepareRuntimeMutableChangesResult)
 

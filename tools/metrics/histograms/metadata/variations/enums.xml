@@ -242,8 +242,9 @@ chromium-metrics-reviews@google.com.
     The selected group does not exist in the given seed (e.g., if the group was
     forced from the command line).
   </int>
-  <int value="4" label="Not Strict Killswitch">
-    The experiment is not a strict killswitch (e.g., it enables features).
+  <int value="4" label="Not Strict Killswitch (Deprecated 09/2026)">
+    The experiment is not a strict killswitch (e.g., it enables features). No
+    longer recorded: runtime mutability now supports enabling features.
   </int>
   <int value="5" label="Not starts_active">
     The study is not activated on startup (starts_active).
@@ -287,8 +288,13 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Overridden Trial Has Google Web ID">
     The trial being overridden has a Google web experiment ID.
   </int>
-  <int value="17" label="Runtime Experiment Has Params">
-    The runtime mutable experiment has params.
+  <int value="17" label="Runtime Experiment Has Params (Deprecated 09/2026)">
+    The runtime mutable experiment has params. No longer recorded: runtime
+    mutability now supports experiment params.
+  </int>
+  <int value="18" label="Feature Both Enabled And Disabled">
+    The experiment specifies the same feature in both enable_feature and
+    disable_feature.
   </int>
 </enum>
 

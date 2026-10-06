@@ -427,10 +427,35 @@ void AddOKResponseWithIM(
 BASE_FEATURE(kTestRegularFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeFeatureA,
                              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kTestRuntimeFeatureAParam,
+                   &kTestRuntimeFeatureA,
+                   "default_value");
+
+enum class TestRuntimeEnum {
+  kValue0 = 0,
+  kValue1 = 1,
+  kValue2 = 2,
+  kMaxValue = kValue2,
+};
+constexpr base::FeatureParam<TestRuntimeEnum>::Option
+    kTestRuntimeEnumOptions[] = {
+        {TestRuntimeEnum::kValue0, "value_0"},
+        {TestRuntimeEnum::kValue1, "value_1"},
+        {TestRuntimeEnum::kValue2, "value_2"},
+};
+BASE_FEATURE_ENUM_PARAM(TestRuntimeEnum,
+                        kTestRuntimeFeatureAEnumParam,
+                        &kTestRuntimeFeatureA,
+                        TestRuntimeEnum::kValue0,
+                        &kTestRuntimeEnumOptions);
+
 BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeFeatureB,
                              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeFeatureC,
                              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeFeatureD,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class VariationsServiceTest : public ::testing::Test {
  public:
@@ -455,6 +480,7 @@ class VariationsServiceTest : public ::testing::Test {
     base::FeatureList::ClearFeatureCachedValueForTesting(kTestRuntimeFeatureA);
     base::FeatureList::ClearFeatureCachedValueForTesting(kTestRuntimeFeatureB);
     base::FeatureList::ClearFeatureCachedValueForTesting(kTestRuntimeFeatureC);
+    base::FeatureList::ClearFeatureCachedValueForTesting(kTestRuntimeFeatureD);
     base::RuntimeFieldTrialOverrides::GetInstance()->ResetForTesting();
   }
 
@@ -1669,8 +1695,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotNull) {
   }
 }
 
-// Verifies that only killswitches can be applied.
-TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
+// Verifies that features can be enabled and disabled at runtime.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_EnablementAndKillswitch) {
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
@@ -1679,85 +1706,101 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
   base::test::ScopedFeatureList scoped_feature_list;
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
-      kTestRuntimeFeatureA,
+      kTestRuntimeFeatureB,
       /*pre_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
       /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
-      kTestRuntimeFeatureB,
+      kTestRuntimeFeatureD,
       /*pre_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
       /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
-  {
-    // Case 1: Only specifies features to enable.
-    base::HistogramTester histogram_tester;
-    VariationsSeed seed = CreateTestRuntimeMutableSeed(
-        "MyStudy1", "Group1", {kTestRuntimeFeatureA.name}, {});
-    service.SimulateAndApplyRuntimeMutableChanges(seed);
-    histogram_tester.ExpectUniqueSample(
-        kPrepareRuntimeMutableChangesResultMetric,
-        PrepareRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
-    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
-    EXPECT_FALSE(
-        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
-            "MyStudy1"));
-  }
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
 
   {
-    // Case 2: Specifies a mix of features to enable and disable.
+    // Case 1: Specifies a mix of features to enable and disable.
     base::HistogramTester histogram_tester;
     VariationsSeed seed = CreateTestRuntimeMutableSeed(
-        "MyStudy2", "Group1", {kTestRuntimeFeatureA.name},
+        "MyStudy", "Group1", {kTestRuntimeFeatureD.name},
         {kTestRuntimeFeatureB.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
         kPrepareRuntimeMutableChangesResultMetric,
-        PrepareRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
-    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
-    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
-    EXPECT_FALSE(
-        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
-            "MyStudy2"));
-  }
-
-  {
-    // Case 3: Specifies no features. This should work.
-    base::HistogramTester histogram_tester;
-    VariationsSeed seed =
-        CreateTestRuntimeMutableSeed("MyStudy3", "Group1", {}, {});
-    service.SimulateAndApplyRuntimeMutableChanges(seed);
-    histogram_tester.ExpectUniqueSample(
-        kPrepareRuntimeMutableChangesResultMetric,
         PrepareRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     auto* override =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
-            "MyStudy3");
+            "MyStudy");
     ASSERT_TRUE(override);
     EXPECT_EQ(override->group_name(), "Group1");
     EXPECT_FALSE(override->overridden_trial());
   }
 
   {
-    // Case 4: Specifies a feature to disable. This should work.
+    // Case 2: Only specifies features to enable. This re-enables the feature
+    // disabled by case 1.
     base::HistogramTester histogram_tester;
     VariationsSeed seed = CreateTestRuntimeMutableSeed(
-        "MyStudy4", "Group1", {}, {kTestRuntimeFeatureA.name});
+        "MyStudy", "Group2",
+        {kTestRuntimeFeatureB.name, kTestRuntimeFeatureD.name}, {});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
         kPrepareRuntimeMutableChangesResultMetric,
         PrepareRuntimeMutableChangesResult::kSuccess, 1);
-    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
     auto* override =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
-            "MyStudy4");
+            "MyStudy");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name(), "Group1");
+    EXPECT_EQ(override->group_name(), "Group2");
+    EXPECT_FALSE(override->overridden_trial());
+  }
+
+  {
+    // Case 3: Only specifies features to disable. This killswitches both
+    // features previously enabled by case 2.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group3", {},
+        {kTestRuntimeFeatureB.name, kTestRuntimeFeatureD.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
+    auto* override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override);
+    EXPECT_EQ(override->group_name(), "Group3");
     // This is not overriding any specific trial since the feature was simply
-    // ENABLED_BY_DEFAULT and not controlled by any field trial.
+    // ENABLED_BY_DEFAULT / DISABLED_BY_DEFAULT and not controlled by any field
+    // trial.
+    EXPECT_FALSE(override->overridden_trial());
+  }
+
+  {
+    // Case 4: Specifies no features. This should work.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed =
+        CreateTestRuntimeMutableSeed("MyStudyNoFeatures", "Group4", {}, {});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+    auto* override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudyNoFeatures");
+    ASSERT_TRUE(override);
+    EXPECT_EQ(override->group_name(), "Group4");
     EXPECT_FALSE(override->overridden_trial());
   }
 }
@@ -2165,7 +2208,9 @@ TEST_F(VariationsServiceTest,
   }
 }
 
-// Verifies that runtime experiments with params are not applied.
+// Verifies that runtime experiments with params are applied when disabling
+// features. The params are saved, but FeatureParam::Get() returns the default
+// value while the feature is disabled.
 TEST_F(VariationsServiceTest,
        ApplyRuntimeMutableChanges_RuntimeExperimentHasParams) {
   TestVariationsService service(
@@ -2188,16 +2233,147 @@ TEST_F(VariationsServiceTest,
       "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
   Study::Experiment::Param* param =
       seed.mutable_study(0)->mutable_experiment(0)->add_param();
-  param->set_name("param_name");
+  param->set_name(kTestRuntimeFeatureAParam.name);
   param->set_value("param_value");
+  Study::Experiment::Param* enum_param =
+      seed.mutable_study(0)->mutable_experiment(0)->add_param();
+  enum_param->set_name(kTestRuntimeFeatureAEnumParam.name);
+  enum_param->set_value("value_1");
   service.SimulateAndApplyRuntimeMutableChanges(seed);
   histogram_tester.ExpectUniqueSample(
       kPrepareRuntimeMutableChangesResultMetric,
-      PrepareRuntimeMutableChangesResult::kRuntimeExperimentHasParams, 1);
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
-  EXPECT_FALSE(
+      PrepareRuntimeMutableChangesResult::kSuccess, 1);
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_EQ("default_value", kTestRuntimeFeatureAParam.Get());
+  EXPECT_EQ(TestRuntimeEnum::kValue0, kTestRuntimeFeatureAEnumParam.Get());
+  auto* override_info =
       base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
-          "MyStudy") != nullptr);
+          "MyStudy");
+  ASSERT_TRUE(override_info);
+  EXPECT_EQ(override_info->params().size(), 2u);
+  EXPECT_EQ(override_info->params().at(kTestRuntimeFeatureAParam.name),
+            "param_value");
+  EXPECT_EQ(override_info->params().at(kTestRuntimeFeatureAEnumParam.name),
+            "value_1");
+}
+
+// Verifies that the params of runtime experiments that enable features are
+// saved and reflected in FeatureParam::Get() across successive runtime
+// mutations.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_EnableWithParams) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  EXPECT_EQ("default_value", kTestRuntimeFeatureAParam.Get());
+  EXPECT_EQ(TestRuntimeEnum::kValue0, kTestRuntimeFeatureAEnumParam.Get());
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {kTestRuntimeFeatureA.name}, {});
+    Study::Experiment::Param* param =
+        seed.mutable_study(0)->mutable_experiment(0)->add_param();
+    param->set_name(kTestRuntimeFeatureAParam.name);
+    param->set_value("param_value_1");
+    Study::Experiment::Param* enum_param =
+        seed.mutable_study(0)->mutable_experiment(0)->add_param();
+    enum_param->set_name(kTestRuntimeFeatureAEnumParam.name);
+    enum_param->set_value("value_1");
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_EQ("param_value_1", kTestRuntimeFeatureAParam.Get());
+    EXPECT_EQ(TestRuntimeEnum::kValue1, kTestRuntimeFeatureAEnumParam.Get());
+    EXPECT_EQ("param_value_1",
+              base::GetFieldTrialParamValueByFeature(
+                  kTestRuntimeFeatureA, kTestRuntimeFeatureAParam.name));
+    EXPECT_EQ("value_1",
+              base::GetFieldTrialParamValueByFeature(
+                  kTestRuntimeFeatureA, kTestRuntimeFeatureAEnumParam.name));
+    auto* override_info =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override_info);
+    EXPECT_EQ(override_info->group_name(), "Group1");
+    EXPECT_EQ(override_info->params().size(), 2u);
+    EXPECT_EQ(override_info->params().at(kTestRuntimeFeatureAParam.name),
+              "param_value_1");
+    EXPECT_EQ(override_info->params().at(kTestRuntimeFeatureAEnumParam.name),
+              "value_1");
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group2", {kTestRuntimeFeatureA.name}, {});
+    Study::Experiment::Param* param =
+        seed.mutable_study(0)->mutable_experiment(0)->add_param();
+    param->set_name(kTestRuntimeFeatureAParam.name);
+    param->set_value("param_value_2");
+    Study::Experiment::Param* enum_param =
+        seed.mutable_study(0)->mutable_experiment(0)->add_param();
+    enum_param->set_name(kTestRuntimeFeatureAEnumParam.name);
+    enum_param->set_value("value_2");
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_EQ("param_value_2", kTestRuntimeFeatureAParam.Get());
+    EXPECT_EQ(TestRuntimeEnum::kValue2, kTestRuntimeFeatureAEnumParam.Get());
+    EXPECT_EQ("param_value_2",
+              base::GetFieldTrialParamValueByFeature(
+                  kTestRuntimeFeatureA, kTestRuntimeFeatureAParam.name));
+    EXPECT_EQ("value_2",
+              base::GetFieldTrialParamValueByFeature(
+                  kTestRuntimeFeatureA, kTestRuntimeFeatureAEnumParam.name));
+    auto* override_info =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override_info);
+    EXPECT_EQ(override_info->group_name(), "Group2");
+    EXPECT_EQ(override_info->params().size(), 2u);
+    EXPECT_EQ(override_info->params().at(kTestRuntimeFeatureAParam.name),
+              "param_value_2");
+    EXPECT_EQ(override_info->params().at(kTestRuntimeFeatureAEnumParam.name),
+              "value_2");
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group3", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_EQ("default_value", kTestRuntimeFeatureAParam.Get());
+    EXPECT_EQ(TestRuntimeEnum::kValue0, kTestRuntimeFeatureAEnumParam.Get());
+    auto* override_info =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override_info);
+    EXPECT_EQ(override_info->group_name(), "Group3");
+    EXPECT_EQ(override_info->params().size(), 0u);
+  }
 }
 
 // Verifies that overriding a trial with Google web experiment IDs is not
@@ -2242,6 +2418,39 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "MyStudy"));
   }
+}
+
+// Verifies that experiments that specify the same feature in both
+// enable_feature and disable_feature are rejected.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_FeatureBothEnabledAndDisabled) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed seed = CreateTestRuntimeMutableSeed(
+      "MyStudy", "Group1", {kTestRuntimeFeatureA.name},
+      {kTestRuntimeFeatureA.name});
+  service.SimulateAndApplyRuntimeMutableChanges(seed);
+  histogram_tester.ExpectUniqueSample(
+      kPrepareRuntimeMutableChangesResultMetric,
+      PrepareRuntimeMutableChangesResult::kFeatureBothEnabledAndDisabled, 1);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_FALSE(
+      base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+          "MyStudy"));
 }
 
 // Verifies that non-runtime mutable features should not work.
