@@ -613,13 +613,44 @@ void WebUIReadOnlyOmnibox::OnBlur() {
   // If focus is transferring to a WebUI popup widget (e.g., Full Popup or AIM
   // Popup), treat this as a logical focus transfer rather than a true blur.
   // Keep the edit model's focus state active, and skip all reversion/blurring.
-  if (controller()->popup_state_manager()->popup_state() ==
-          OmniboxPopupState::kFull ||
-      controller()->popup_state_manager()->popup_state() ==
-          OmniboxPopupState::kAim) {
+  const OmniboxPopupState popup_state =
+      controller()->popup_state_manager()->popup_state();
+  if (popup_state == OmniboxPopupState::kFull ||
+      popup_state == OmniboxPopupState::kAim) {
     ClearAccessibilityLabel();
     RequestUpdateWebUI();
     return;
+  }
+
+  // If the view is showing text that's not user-text, revert the text to the
+  // permanent display text. This usually occurs if Steady State Elisions is on
+  // and the user has unelided, but not edited the URL.
+  //
+  // Because merely Alt-Tabbing to another window and back should not change the
+  // Omnibox state, we only revert the text if the Omnibox is blurred in favor
+  // of some other View in the same Widget.
+  //
+  // Also revert if the text has been edited but currently exactly matches the
+  // permanent text. An example of this scenario is someone typing on the new
+  // tab page and then deleting everything using backspace/delete.
+  //
+  // This should never exit keyword mode.
+  views::Widget* widget = (toolbar_delegate_ && toolbar_delegate_->GetView())
+                              ? toolbar_delegate_->GetView()->GetWidget()
+                              : nullptr;
+  if (widget && widget->IsActive() &&
+      !controller()->edit_model()->is_keyword_selected()) {
+    const bool user_input_in_progress =
+        controller()->edit_model()->user_input_in_progress();
+    const bool text_matches_permanent_text =
+        GetText() == controller()->edit_model()->GetPermanentDisplayText();
+    const bool showing_non_user_text =
+        !user_input_in_progress && !text_matches_permanent_text;
+    const bool edited_back_to_permanent_text =
+        user_input_in_progress && text_matches_permanent_text;
+    if (showing_non_user_text || edited_back_to_permanent_text) {
+      RevertAll();
+    }
   }
 
   controller()->edit_model()->OnWillKillFocus();

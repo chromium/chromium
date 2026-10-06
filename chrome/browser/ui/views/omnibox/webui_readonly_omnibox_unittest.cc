@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -12,15 +13,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace {
@@ -66,21 +72,54 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
   toolbar_ui_api::mojom::OmniboxViewStatePtr state_;
 };
 
-class WebUIReadOnlyOmniboxTest : public testing::Test {
+class WebUIReadOnlyOmniboxTest : public ChromeViewsTestBase {
  protected:
   TestLocationBarModel* location_bar_model() {
     return omnibox_client_->location_bar_model();
   }
 
-  // testing::Test:
+  void FocusOmnibox(uint32_t browser_version = 0) {
+    widget_->GetContentsView()->RequestFocus();
+    EXPECT_TRUE(
+        omnibox_view_
+            ->OnOmniboxAction(
+                toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
+                    toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
+                        /*has_focus=*/true,
+                        /*request_clear_keyword=*/false,
+                        /*activate_default_search=*/false,
+                        /*start_zero_suggest=*/false,
+                        /*browser_version=*/browser_version,
+                        /*selection=*/gfx::Range(0))))
+            .has_value());
+  }
+
+  void BlurOmnibox(uint32_t browser_version = 0) {
+    widget_->GetFocusManager()->ClearFocus();
+    EXPECT_TRUE(
+        omnibox_view_
+            ->OnOmniboxAction(
+                toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
+                    toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
+                        /*has_focus=*/false,
+                        /*request_clear_keyword=*/false,
+                        /*activate_default_search=*/false,
+                        /*start_zero_suggest=*/false,
+                        /*browser_version=*/browser_version,
+                        /*selection=*/gfx::Range(0))))
+            .has_value());
+  }
+
+  // ChromeViewsTestBase:
   void SetUp() override;
   void TearDown() override;
 
-  content::BrowserTaskEnvironment browser_threads_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
   TestUpdatePropagator update_propagator_;
+  std::unique_ptr<views::Widget> widget_;
+  testing::NiceMock<MockWebUIToolbarControlDelegate> mock_toolbar_delegate_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
 
   content::TestWebContentsFactory web_contents_factory_;
@@ -89,6 +128,8 @@ class WebUIReadOnlyOmniboxTest : public testing::Test {
 };
 
 void WebUIReadOnlyOmniboxTest::SetUp() {
+  ChromeViewsTestBase::SetUp();
+
   profile_ = TestingProfile::Builder().Build();
 
   auto omnibox_client = std::make_unique<TestOmniboxClient>();
@@ -106,8 +147,20 @@ void WebUIReadOnlyOmniboxTest::SetUp() {
               ->GetPrefs())
           ->registry());
 
+  widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto contents_view = std::make_unique<views::View>();
+  contents_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  widget_->SetContentsView(std::move(contents_view));
+  widget_->Show();
+  widget_->Activate();
+
+  ON_CALL(mock_toolbar_delegate_, GetView())
+      .WillByDefault(testing::Return(widget_->GetContentsView()));
+  ON_CALL(mock_toolbar_delegate_, GetInternalWebView())
+      .WillByDefault(testing::Return(widget_->GetContentsView()));
+
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
-      /*location_bar=*/nullptr, /*toolbar_delegate=*/nullptr,
+      /*location_bar=*/nullptr, &mock_toolbar_delegate_,
       omnibox_controller_.get(), update_propagator_);
 
   wc1_ = web_contents_factory_.CreateWebContents(profile_.get());
@@ -117,6 +170,8 @@ void WebUIReadOnlyOmniboxTest::SetUp() {
 void WebUIReadOnlyOmniboxTest::TearDown() {
   web_contents_factory_.DestroyWebContents(wc1_.ExtractAsDangling());
   web_contents_factory_.DestroyWebContents(wc2_.ExtractAsDangling());
+  widget_.reset();
+  ChromeViewsTestBase::TearDown();
 }
 
 TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
@@ -463,17 +518,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
   }
 
   // Focus the omnibox.
-  EXPECT_TRUE(omnibox_view_
-                  ->OnOmniboxAction(
-                      toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
-                          toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
-                              /*has_focus=*/true,
-                              /*request_clear_keyword=*/false,
-                              /*activate_default_search=*/false,
-                              /*start_zero_suggest=*/false,
-                              /*browser_version=*/mojo_state->browser_version,
-                              /*selection=*/gfx::Range(0))))
-                  .has_value());
+  FocusOmnibox(mojo_state->browser_version);
 
   // Should still show display URL, and user input is NOT in progress.
   EXPECT_EQ(display_url, omnibox_view_->GetText());
@@ -484,17 +529,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
   }
 
   // Blur the omnibox.
-  EXPECT_TRUE(omnibox_view_
-                  ->OnOmniboxAction(
-                      toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
-                          toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
-                              /*has_focus=*/false,
-                              /*request_clear_keyword=*/false,
-                              /*activate_default_search=*/false,
-                              /*start_zero_suggest=*/false,
-                              /*browser_version=*/mojo_state->browser_version,
-                              /*selection=*/gfx::Range(0))))
-                  .has_value());
+  BlurOmnibox(mojo_state->browser_version);
 
   // Should still show display URL, and user input is NOT in progress again.
   EXPECT_EQ(display_url, omnibox_view_->GetText());
@@ -557,6 +592,91 @@ TEST_F(WebUIReadOnlyOmniboxTest, SetUserTextBumpsBrowserVersion) {
           .has_value());
   EXPECT_FALSE(update_propagator_.TakeState());
   EXPECT_EQ(u"Typing in the Omnibox...", omnibox_view_->GetText());
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, RevertOnBlur) {
+  location_bar_model()->set_url(GURL("https://example.com/"));
+  location_bar_model()->set_url_for_display(u"example.com");
+  omnibox_view_->Update();
+
+  EXPECT_EQ(u"example.com", omnibox_view_->GetText());
+  EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
+
+  FocusOmnibox();
+
+  // Unelide the URL. This changes the view text to the full URL without
+  // putting the model into user input mode.
+  EXPECT_TRUE(omnibox_controller_->edit_model()->Unelide());
+  EXPECT_EQ(u"https://example.com/", omnibox_view_->GetText());
+  EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
+
+  // Expect that on blur, we revert to the elided display text.
+  BlurOmnibox();
+  EXPECT_EQ(u"example.com", omnibox_view_->GetText());
+  EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
+
+  // Now focus and set user text that matches permanent display text.
+  FocusOmnibox();
+  omnibox_view_->SetUserText(u"example.com");
+  EXPECT_EQ(u"example.com", omnibox_view_->GetText());
+  EXPECT_TRUE(omnibox_controller_->edit_model()->user_input_in_progress());
+
+  // On blur, since text matches permanent text, user input mode is reset via
+  // RevertAll().
+  BlurOmnibox();
+  EXPECT_EQ(u"example.com", omnibox_view_->GetText());
+  EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, OnBlurPreservesSelection) {
+  location_bar_model()->set_url(GURL("https://example.com/"));
+  location_bar_model()->set_url_for_display(u"example.com");
+  omnibox_view_->Update();
+
+  FocusOmnibox();
+
+  std::u16string url = u"about:blank";
+  omnibox_view_->SetUserText(url);
+  omnibox_view_->SelectAll(/*reversed=*/false);
+  EXPECT_TRUE(omnibox_view_->IsSelectAll());
+  EXPECT_EQ(gfx::Range(0, url.size()), omnibox_view_->GetSelectionBounds());
+  EXPECT_TRUE(omnibox_controller_->edit_model()->user_input_in_progress());
+
+  // Blur the omnibox. Since user input is in progress and differs from
+  // permanent text, RevertAll() is not called and selection is preserved.
+  BlurOmnibox();
+  EXPECT_TRUE(omnibox_view_->IsSelectAll());
+  EXPECT_EQ(gfx::Range(0, url.size()), omnibox_view_->GetSelectionBounds());
+  EXPECT_EQ(url, omnibox_view_->GetText());
+  EXPECT_TRUE(omnibox_controller_->edit_model()->user_input_in_progress());
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, SaveStateToTabFocusState) {
+  // If focus state is OMNIBOX_FOCUS_INVISIBLE (e.g. fakebox focus on NTP),
+  // saving state to tab should preserve OMNIBOX_FOCUS_INVISIBLE.
+  omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
+  omnibox_controller_->edit_model()->SetCaretVisibility(false);
+  EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+
+  omnibox_view_->SaveStateToTab(wc1_);
+
+  const OmniboxState* state1 = static_cast<OmniboxState*>(
+      wc1_->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state1);
+  EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE, state1->model_state.focus_state);
+
+  // If focus state is OMNIBOX_FOCUS_VISIBLE, saving state should preserve it.
+  omnibox_controller_->edit_model()->SetCaretVisibility(true);
+  EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+
+  omnibox_view_->SaveStateToTab(wc2_);
+
+  const OmniboxState* state2 = static_cast<OmniboxState*>(
+      wc2_->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state2);
+  EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE, state2->model_state.focus_state);
 }
 
 }  // namespace
