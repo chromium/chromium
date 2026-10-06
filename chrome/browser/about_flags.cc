@@ -2507,17 +2507,21 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
     {"block_draw_on_cold_start", "true"},
+    {"expand_on_hover", "true"},
     {"group_hover_card", "true"},
     {"manual_resize", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_ManualResize[] = {
     {"manual_resize", "true"}};
+const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExpandOnHover[] = {
+    {"expand_on_hover", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with all experimental features", kAndroidVerticalTabs_All, nullptr},
     {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},
     {"with manual resize", kAndroidVerticalTabs_ManualResize, nullptr},
+    {"with expand on hover", kAndroidVerticalTabs_ExpandOnHover, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
