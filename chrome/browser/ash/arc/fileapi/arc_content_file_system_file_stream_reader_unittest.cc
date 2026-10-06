@@ -98,6 +98,10 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
     ArcFileSystemOperationRunner::GetFactory()->SetTestingFactoryAndUse(
         profile_.get(),
         base::BindRepeating(&CreateFileSystemOperationRunnerForTesting));
+    auto* runner =
+        ArcFileSystemOperationRunner::GetForBrowserContext(profile_.get());
+    runner->GrantAccessToContentUrl(GURL(kArcUrlFile));
+    runner->GrantAccessToContentUrl(GURL(kArcUrlPipe));
     arc_service_manager_->arc_bridge_service()->file_system()->SetInstance(
         &fake_file_system_);
     WaitForInstanceReady(
