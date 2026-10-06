@@ -21,8 +21,8 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/reading/mojo_web_bundle_parser.h"
 #include "net/base/net_errors.h"
-#include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -71,7 +71,7 @@ class COMPONENT_EXPORT(ISOLATED_WEB_APPS) SignedWebBundleReader {
       web_package::SignedWebBundleSignatureVerifier*);
 
   using WebBundleParserFactoryBinder =
-      data_decoder::SafeWebBundleParser::WebBundleParserFactoryBinder;
+      MojoWebBundleParser::WebBundleParserFactoryBinder;
 
   // Makes `SignedWebBundleReader` and `UnsecureReader` bind their
   // `web_package::mojom::WebBundleParserFactory` with `binder` instead of
@@ -172,7 +172,7 @@ class COMPONENT_EXPORT(ISOLATED_WEB_APPS) UnsecureReader {
   void OnFileOpened(base::File file);
 
   base::FilePath web_bundle_path_;
-  std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
+  std::unique_ptr<MojoWebBundleParser> parser_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -46,14 +46,8 @@ source_set("cpp") {
     # NEVER depend on this target.
     deps += [ "//services/data_decoder:lib" ]
   } else {
-    public += [
-      "decode_image.h",
-      "safe_web_bundle_parser.h",
-    ]
-    sources += [
-      "decode_image.cc",
-      "safe_web_bundle_parser.cc",
-    ]
+    public += [ "decode_image.h" ]
+    sources += [ "decode_image.cc" ]
     deps += [ "//skia" ]
   }
 

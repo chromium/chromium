@@ -59,15 +59,5 @@ void InProcessDataDecoder::BindImageDecoder(
   GetForwardingInterface()->BindImageDecoder(std::move(receiver));
 }
 
-void InProcessDataDecoder::BindWebBundleParserFactory(
-    mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
-        receiver) {
-  if (web_bundle_parser_factory_binder_) {
-    web_bundle_parser_factory_binder_.Run(std::move(receiver));
-  } else {
-    GetForwardingInterface()->BindWebBundleParserFactory(std::move(receiver));
-  }
-}
-
 }  // namespace test
 }  // namespace data_decoder

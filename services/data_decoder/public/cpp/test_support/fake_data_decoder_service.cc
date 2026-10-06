@@ -28,12 +28,6 @@ void FakeDataDecoderService::BindXmlParser(
   FAIL();
 }
 
-void FakeDataDecoderService::BindWebBundleParserFactory(
-    mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
-        receiver) {
-  FAIL();
-}
-
 void FakeDataDecoderService::BindGzipper(
     mojo::PendingReceiver<data_decoder::mojom::Gzipper> receiver) {
   FAIL();

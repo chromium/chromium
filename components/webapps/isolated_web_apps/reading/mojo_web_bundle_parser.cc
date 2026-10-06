@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
+#include "components/webapps/isolated_web_apps/reading/mojo_web_bundle_parser.h"
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "url/gurl.h"
 
-namespace data_decoder {
+namespace web_app {
 
 namespace {
 constexpr char kConnectionError[] =
@@ -101,25 +104,26 @@ void ReplyWithInternalError(
 
 // static
 std::unique_ptr<DataSourceCreatingStrategy>
-SafeWebBundleParser::GetFileStrategy(base::File file) {
-  return std::make_unique<data_decoder::FileDataSourceStrategy>(
-      std::move(file));
+MojoWebBundleParser::GetFileStrategy(base::File file) {
+  return std::make_unique<FileDataSourceStrategy>(std::move(file));
 }
 
-SafeWebBundleParser::Connection::Connection() = default;
-SafeWebBundleParser::Connection::~Connection() = default;
+MojoWebBundleParser::Connection::Connection() = default;
+MojoWebBundleParser::Connection::~Connection() = default;
 
-SafeWebBundleParser::SafeWebBundleParser(
+MojoWebBundleParser::MojoWebBundleParser(
     std::optional<GURL> base_url,
     std::unique_ptr<DataSourceCreatingStrategy> data_source_creator,
     WebBundleParserFactoryBinder factory_binder)
     : data_source_creator_(std::move(data_source_creator)),
       base_url_(std::move(base_url)),
-      factory_binder_(std::move(factory_binder)) {}
+      factory_binder_(std::move(factory_binder)) {
+  CHECK(factory_binder_);
+}
 
-SafeWebBundleParser::~SafeWebBundleParser() = default;
+MojoWebBundleParser::~MojoWebBundleParser() = default;
 
-void SafeWebBundleParser::ParseIntegrityBlock(
+void MojoWebBundleParser::ParseIntegrityBlock(
     web_package::mojom::WebBundleParser::ParseIntegrityBlockCallback callback) {
   // This method is designed to be called once. So, allowing only once
   // simultaneous request is fine enough.
@@ -136,10 +140,10 @@ void SafeWebBundleParser::ParseIntegrityBlock(
 
   integrity_block_callback_ = std::move(callback);
   connection_->parser_->ParseIntegrityBlock(base::BindOnce(
-      &SafeWebBundleParser::OnIntegrityBlockParsed, base::Unretained(this)));
+      &MojoWebBundleParser::OnIntegrityBlockParsed, base::Unretained(this)));
 }
 
-void SafeWebBundleParser::ParseMetadata(
+void MojoWebBundleParser::ParseMetadata(
     std::optional<uint64_t> offset,
     web_package::mojom::WebBundleParser::ParseMetadataCallback callback) {
   // This method is designed to be called once. So, allowing only once
@@ -157,11 +161,11 @@ void SafeWebBundleParser::ParseMetadata(
 
   metadata_callback_ = std::move(callback);
   connection_->parser_->ParseMetadata(
-      std::move(offset), base::BindOnce(&SafeWebBundleParser::OnMetadataParsed,
+      std::move(offset), base::BindOnce(&MojoWebBundleParser::OnMetadataParsed,
                                         base::Unretained(this)));
 }
 
-void SafeWebBundleParser::ParseResponse(
+void MojoWebBundleParser::ParseResponse(
     uint64_t response_offset,
     uint64_t response_length,
     web_package::mojom::WebBundleParser::ParseResponseCallback callback) {
@@ -183,36 +187,30 @@ void SafeWebBundleParser::ParseResponse(
   response_callbacks_[callback_id] = std::move(callback);
   connection_->parser_->ParseResponse(
       response_offset, response_length,
-      base::BindOnce(&SafeWebBundleParser::OnResponseParsed,
+      base::BindOnce(&MojoWebBundleParser::OnResponseParsed,
                      base::Unretained(this), callback_id));
 }
 
-void SafeWebBundleParser::Close(base::OnceClosure callback) {
+void MojoWebBundleParser::Close(base::OnceClosure callback) {
   close_callback_ = std::move(callback);
   if (is_connected()) {
     connection_->parser_->Close(base::BindOnce(
-        &SafeWebBundleParser::CloseDataSourceCreator, base::Unretained(this)));
+        &MojoWebBundleParser::CloseDataSourceCreator, base::Unretained(this)));
   } else {
     CloseDataSourceCreator();
   }
 }
 
-web_package::mojom::WebBundleParserFactory* SafeWebBundleParser::GetFactory() {
+web_package::mojom::WebBundleParserFactory* MojoWebBundleParser::GetFactory() {
   CHECK(is_connected());
   if (!connection_->factory_) {
-    auto receiver = connection_->factory_.BindNewPipeAndPassReceiver();
-    if (factory_binder_) {
-      factory_binder_.Run(std::move(receiver));
-    } else {
-      connection_->data_decoder_.GetService()->BindWebBundleParserFactory(
-          std::move(receiver));
-    }
+    factory_binder_.Run(connection_->factory_.BindNewPipeAndPassReceiver());
     connection_->factory_.reset_on_disconnect();
   }
   return connection_->factory_.get();
 }
 
-base::expected<void, std::string> SafeWebBundleParser::ConnectIfNecessary() {
+base::expected<void, std::string> MojoWebBundleParser::ConnectIfNecessary() {
   if (is_connected()) {
     return base::ok();
   }
@@ -226,12 +224,12 @@ base::expected<void, std::string> SafeWebBundleParser::ConnectIfNecessary() {
       connection_->parser_.BindNewPipeAndPassReceiver(), base_url_,
       std::move(data_source));
   connection_->parser_.set_disconnect_handler(base::BindOnce(
-      &SafeWebBundleParser::OnDisconnect, base::Unretained(this)));
+      &MojoWebBundleParser::OnDisconnect, base::Unretained(this)));
 
   return base::ok();
 }
 
-void SafeWebBundleParser::OnDisconnect() {
+void MojoWebBundleParser::OnDisconnect() {
   CHECK(connection_);
   connection_.reset();
 
@@ -257,7 +255,7 @@ void SafeWebBundleParser::OnDisconnect() {
   }
 }
 
-void SafeWebBundleParser::OnIntegrityBlockParsed(
+void MojoWebBundleParser::OnIntegrityBlockParsed(
     web_package::mojom::BundleIntegrityBlockPtr integrity_block,
     web_package::mojom::BundleIntegrityBlockParseErrorPtr error) {
   DCHECK(!integrity_block_callback_.is_null());
@@ -265,14 +263,14 @@ void SafeWebBundleParser::OnIntegrityBlockParsed(
       .Run(std::move(integrity_block), std::move(error));
 }
 
-void SafeWebBundleParser::OnMetadataParsed(
+void MojoWebBundleParser::OnMetadataParsed(
     web_package::mojom::BundleMetadataPtr metadata,
     web_package::mojom::BundleMetadataParseErrorPtr error) {
   DCHECK(!metadata_callback_.is_null());
   std::move(metadata_callback_).Run(std::move(metadata), std::move(error));
 }
 
-void SafeWebBundleParser::OnResponseParsed(
+void MojoWebBundleParser::OnResponseParsed(
     size_t callback_id,
     web_package::mojom::BundleResponsePtr response,
     web_package::mojom::BundleResponseParseErrorPtr error) {
@@ -283,14 +281,14 @@ void SafeWebBundleParser::OnResponseParsed(
   std::move(callback).Run(std::move(response), std::move(error));
 }
 
-void SafeWebBundleParser::CloseDataSourceCreator() {
-  data_source_creator_->Close(base::BindOnce(&SafeWebBundleParser::ReplyClosed,
+void MojoWebBundleParser::CloseDataSourceCreator() {
+  data_source_creator_->Close(base::BindOnce(&MojoWebBundleParser::ReplyClosed,
                                              weak_factory_.GetWeakPtr()));
 }
 
-void SafeWebBundleParser::ReplyClosed() {
+void MojoWebBundleParser::ReplyClosed() {
   CHECK(!close_callback_.is_null());
   std::move(close_callback_).Run();
 }
 
-}  // namespace data_decoder
+}  // namespace web_app

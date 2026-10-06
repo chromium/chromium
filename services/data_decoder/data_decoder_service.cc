@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "components/web_package/web_bundle_parser_factory.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/gzipper.h"
@@ -58,14 +57,6 @@ void DataDecoderService::BindXmlParser(
     mojo::PendingReceiver<mojom::XmlParser> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<XmlParser>(),
                               std::move(receiver));
-}
-
-void DataDecoderService::BindWebBundleParserFactory(
-    mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
-        receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<web_package::WebBundleParserFactory>(),
-      std::move(receiver));
 }
 
 void DataDecoderService::BindGzipper(

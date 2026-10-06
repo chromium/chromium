@@ -3,8 +3,8 @@
 **Parent:** [WebApps Guidelines](/components/webapps/AGENTS.md)
 
 Shared implementation for parsing, serializing, and verifying Web Bundles
-(`.wbn`) and Signed Web Bundles (`.swbn`), used across the `data_decoder`
-utility service, Blink, and Isolated Web Apps.
+(`.wbn`) and Signed Web Bundles (`.swbn`), used from the browser process by
+Isolated Web Apps and from the network service.
 
 ## Canonical Docs
 

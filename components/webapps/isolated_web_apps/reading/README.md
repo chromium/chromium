@@ -6,10 +6,10 @@ for Signed Web Bundles (`.swbn`).
 ## Key Components
 
 - `SignedWebBundleReader` & `UnsecureSignedWebBundleIdReader`
-  (`signed_web_bundle_reader.{h,cc}`): Coordinates with
-  `data_decoder::SafeWebBundleParser` to read integrity blocks, verify
-  signatures via `SignedWebBundleSignatureVerifier`, parse metadata, and read
-  individual HTTP responses from a `.swbn` file (or extract an unverified
+  (`signed_web_bundle_reader.{h,cc}`): Coordinates with `MojoWebBundleParser`
+  (`mojo_web_bundle_parser.{h,cc}`) to read integrity blocks, verify signatures
+  via `SignedWebBundleSignatureVerifier`, parse metadata, and read individual
+  HTTP responses from a `.swbn` file (or extract an unverified
   `SignedWebBundleId` via `UnsecureSignedWebBundleIdReader`).
 - `IsolatedWebAppValidator` (`validator.{h,cc}`): Validates that a bundle's
   integrity block matches the expected `SignedWebBundleId` and trusted keys (via

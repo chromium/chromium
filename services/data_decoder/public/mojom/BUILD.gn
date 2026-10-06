@@ -14,7 +14,6 @@ mojom("mojom") {
 
   public_deps = [
     ":mojom_xml_parser",
-    "//components/web_package/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/network/public/mojom:mojom_structured_headers",

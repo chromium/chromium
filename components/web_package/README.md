@@ -3,8 +3,8 @@
 This directory contains shared code for parsing, validating, and building
 [Web Bundles](https://github.com/WICG/webpackage) (`.wbn`) and
 [Signed Web Bundles](signed_web_bundles/README.md) (`.swbn`), used from the
-sandboxed `data_decoder` utility process, the Blink renderer process, and the
-Isolated Web Apps (IWA) platform.
+browser process by the Isolated Web Apps (IWA) platform and from the network
+service.
 
 ## Companion Documentation
 
@@ -31,8 +31,8 @@ Isolated Web Apps (IWA) platform.
   Memory-safe Rust crate (`web_package_rust`) implementing low-level Web Bundle
   format parsing exposed to C++ via `cpp_api_from_rust` bindings.
 - **`mojom/`:**
-  Mojo interface definitions (`web_bundle_parser.mojom`) and Mojom traits for
-  communicating with the sandboxed `data_decoder` utility service.
+  Mojo interface definitions (`web_bundle_parser.mojom`) for the parser, its
+  factory and its data source, and the Mojom traits they use.
 - **`test_support/`:**
   Bundle signing utilities (`WebBundleSigner`), key-pair wrappers
   (`Ed25519KeyPair`, `EcdsaP256KeyPair`), and mock parser factories

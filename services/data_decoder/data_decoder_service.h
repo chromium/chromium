@@ -5,7 +5,6 @@
 #ifndef SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 #define SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 
-#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
@@ -39,9 +38,6 @@ class DataDecoderService : public mojom::DataDecoderService {
   void BindStructuredHeadersParser(
       mojo::PendingReceiver<mojom::StructuredHeadersParser> receiver) override;
   void BindXmlParser(mojo::PendingReceiver<mojom::XmlParser> receiver) override;
-  void BindWebBundleParserFactory(
-      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
-          receiver) override;
   void BindGzipper(mojo::PendingReceiver<mojom::Gzipper> receiver) override;
 
   // In-process instances (e.g. on iOS or in tests) may have multiple concurrent

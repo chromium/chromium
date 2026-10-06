@@ -64,22 +64,21 @@ generic code for Signed Web Bundles, and the code for Isolated Web Apps built on
 top of it:
 
 - **Signed Web Bundles**: Parsing and verification of Signed (and unsigned) Web
-  Bundles is implemented in `//components/web_package` and
-  `//services/data_decoder`.
+  Bundles is implemented in `//components/web_package`.
 - **Isolated Web Apps**: Isolated Web Apps are implemented on top of Signed Web
-  Bundles. Most code is located in
-  `//chrome/browser/web_applications/isolated_web_apps`, but there are also
-  other bits and pieces throughout `//content`.
+  Bundles. Most code is located in `//components/webapps/isolated_web_apps` and
+  `//chrome/browser/web_applications/isolated_web_apps`, with other bits and
+  pieces in `//content`.
 
 ### `web_app::SignedWebBundleReader`
 
 `web_package::WebBundleParser` can be used from the browser process: the CBOR,
 Integrity Block and Web Bundle parsing it delegates to is implemented in
 `#![forbid(unsafe_code)]` Rust, which satisfies the
-[rule of 2](../security/rule-of-2.md) without a sandboxed utility process.
+[rule of 2](/docs/security/rule-of-2.md) without a sandboxed utility process.
 
 `web_app::SignedWebBundleReader` talks to the parser through
-`data_decoder::SafeWebBundleParser`, and hosts the parser's
+`web_app::MojoWebBundleParser`, and hosts the parser's
 `web_package::WebBundleParserFactory` in the browser process on a dedicated
 `base::MayBlock()` sequence, so that neither parsing nor file I/O happens on the
 UI thread.

@@ -7,11 +7,9 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
@@ -44,16 +42,6 @@ class InProcessDataDecoder
   // them. Useful for tests simulating service failures.
   void SimulateImageDecoderCrash(bool drop) { drop_image_decoders_ = drop; }
 
-  // Configures the service to use |binder| to bind
-  // WebBundleParserFactory in subsequent
-  // BindWebBundleParserFactory() calls.
-  void SetWebBundleParserFactoryBinder(
-      base::RepeatingCallback<void(
-          mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>)>
-          binder) {
-    web_bundle_parser_factory_binder_ = binder;
-  }
-
  private:
   // ServiceProvider implementation:
   void BindDataDecoderService(
@@ -63,9 +51,6 @@ class InProcessDataDecoder
   mojom::DataDecoderService* GetForwardingInterface() override;
   void BindImageDecoder(
       mojo::PendingReceiver<mojom::ImageDecoder> receiver) override;
-  void BindWebBundleParserFactory(
-      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
-          receiver) override;
 
   // Optionally allows subclasses to specify a custom `ImageDecoder`
   // implementation. If not overridden, the image decoder implementation in
@@ -77,9 +62,6 @@ class InProcessDataDecoder
   ::data_decoder::DataDecoderService service_;
   mojo::ReceiverSet<mojom::DataDecoderService> receivers_;
   bool drop_image_decoders_ = false;
-  base::RepeatingCallback<void(
-      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>)>
-      web_bundle_parser_factory_binder_;
   base::WeakPtrFactory<InProcessDataDecoder> weak_ptr_factory_{this};
 };
 

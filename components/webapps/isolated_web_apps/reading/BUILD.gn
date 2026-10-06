@@ -6,6 +6,8 @@ source_set("reading") {
   defines = [ "IS_ISOLATED_WEB_APPS_IMPL" ]
   visibility = [ "//components/webapps/isolated_web_apps/*" ]
   sources = [
+    "mojo_web_bundle_parser.cc",
+    "mojo_web_bundle_parser.h",
     "response_reader.cc",
     "response_reader.h",
     "response_reader_factory.cc",
@@ -34,8 +36,8 @@ source_set("reading") {
     "//components/webapps/isolated_web_apps/error",
     "//components/webapps/isolated_web_apps/public",
     "//components/webapps/isolated_web_apps/service",
+    "//mojo/public/cpp/bindings",
     "//net",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -44,6 +46,7 @@ source_set("reading") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "mojo_web_bundle_parser_unittest.cc",
     "reader_registry_unittest.cc",
     "response_reader_factory_unittest.cc",
     "response_reader_unittest.cc",
@@ -58,6 +61,7 @@ source_set("unit_tests") {
     "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps/test_support",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
     "//testing/gmock",

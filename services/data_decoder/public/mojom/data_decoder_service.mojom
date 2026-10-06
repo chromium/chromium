@@ -4,7 +4,6 @@
 
 module data_decoder.mojom;
 
-import "components/web_package/mojom/web_bundle_parser.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/data_decoder/public/mojom/gzipper.mojom";
 import "services/data_decoder/public/mojom/image_decoder.mojom";
@@ -24,10 +23,6 @@ interface DataDecoderService {
 
   // Binds an interface which can be used to parse XML data.
   BindXmlParser(pending_receiver<XmlParser> reciever);
-
-  // Binds an interface which can be used to parse Web Bundles.
-  BindWebBundleParserFactory(
-      pending_receiver<web_package.mojom.WebBundleParserFactory> receiver);
 
   // Binds an interface which can be used to compress and decompress data using
   // gzip.

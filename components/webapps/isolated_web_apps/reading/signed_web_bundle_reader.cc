@@ -331,9 +331,8 @@ class SignedWebBundleReaderImpl : public SignedWebBundleReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK_EQ(state_, State::kInitializing);
 
-    parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(
-        base_url_,
-        data_decoder::SafeWebBundleParser::GetFileStrategy(file.Duplicate()),
+    parser_ = std::make_unique<MojoWebBundleParser>(
+        base_url_, MojoWebBundleParser::GetFileStrategy(file.Duplicate()),
         base::BindRepeating(&BindWebBundleParserFactory));
 
     file_ = std::move(file);
@@ -532,7 +531,7 @@ class SignedWebBundleReaderImpl : public SignedWebBundleReader {
 
   base::FilePath web_bundle_path_;
   std::optional<GURL> base_url_;
-  std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
+  std::unique_ptr<MojoWebBundleParser> parser_;
   base::flat_set<std::unique_ptr<mojo::DataPipeProducer>,
                  base::UniquePtrComparator>
       active_response_body_producers_;
@@ -637,9 +636,9 @@ void UnsecureReader::StartReading() {
 void UnsecureReader::OnFileOpened(base::File file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(
+  parser_ = std::make_unique<MojoWebBundleParser>(
       /*base_url=*/std::nullopt,
-      data_decoder::SafeWebBundleParser::GetFileStrategy(std::move(file)),
+      MojoWebBundleParser::GetFileStrategy(std::move(file)),
       base::BindRepeating(&BindWebBundleParserFactory));
 
   DoReading();

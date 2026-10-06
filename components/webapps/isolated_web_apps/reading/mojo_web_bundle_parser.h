@@ -2,29 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_SAFE_WEB_BUNDLE_PARSER_H_
-#define SERVICES_DATA_DECODER_PUBLIC_CPP_SAFE_WEB_BUNDLE_PARSER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_MOJO_WEB_BUNDLE_PARSER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_MOJO_WEB_BUNDLE_PARSER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
-namespace data_decoder {
+namespace web_app {
 
 // This interface specifies the requirements how a
 // `web_package::mojom::BundleDataSource` should be created.
 class DataSourceCreatingStrategy {
  public:
-  virtual ~DataSourceCreatingStrategy() {}
+  virtual ~DataSourceCreatingStrategy() = default;
 
   // Checks if the connection can be established. E.g. if the source of the
   // data is readable, etc.
@@ -41,18 +46,18 @@ class DataSourceCreatingStrategy {
   virtual void Close(base::OnceClosure callback) = 0;
 };
 
-// This class is used for safe parsing of the Web Bundles. By default, it
-// internally uses parsing in the data decoder process by means of mojo and
-// IPC; a `WebBundleParserFactoryBinder` can host the parser elsewhere instead.
-// Either way, the aim of this class is to isolate users from any knowledge
-// about mojo and IPC.
+// Parses (Signed) Web Bundles with a `web_package::mojom::WebBundleParser`
+// created by the `web_package::mojom::WebBundleParserFactory` that a
+// `WebBundleParserFactoryBinder` binds. Going through Mojo even when the
+// parser lives in this process lets the binder keep parsing and file reads
+// off the caller's sequence.
 //
-// Every parsing method will try to reestablish the IPC connection (if
-// necessary) before returning an error.
+// Every parsing method will try to reestablish the connection to the parser
+// (if necessary) before returning an error.
 //
 // It is safe to delete this object from within the callbacks passed to its
 // methods.
-class SafeWebBundleParser {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) MojoWebBundleParser {
  public:
   // Binds `receiver` to the factory that creates the parser and its data
   // source.
@@ -65,22 +70,21 @@ class SafeWebBundleParser {
   static std::unique_ptr<DataSourceCreatingStrategy> GetFileStrategy(
       base::File file);
 
-  // If `factory_binder` is null, the factory is bound in a data decoder
-  // process. Otherwise, `factory_binder` is run every time a connection has to
-  // be (re)established, and the parser runs wherever it binds the factory. The
-  // caller must make sure that is acceptable for untrusted input: hosting it in
-  // the browser process relies on `web_package::WebBundleParser` parsing the
-  // bundle bytes in `#![forbid(unsafe_code)]` Rust (rule of 2).
-  SafeWebBundleParser(
+  // `factory_binder` is run every time a connection has to be (re)established,
+  // and the parser runs wherever it binds the factory. The caller must make
+  // sure that is acceptable for untrusted input: hosting it in the browser
+  // process relies on `web_package::WebBundleParser` parsing the bundle bytes
+  // in `#![forbid(unsafe_code)]` Rust (rule of 2).
+  MojoWebBundleParser(
       std::optional<GURL> base_url,
       std::unique_ptr<DataSourceCreatingStrategy> data_source_creator,
-      WebBundleParserFactoryBinder factory_binder = {});
+      WebBundleParserFactoryBinder factory_binder);
 
-  SafeWebBundleParser(const SafeWebBundleParser&) = delete;
-  SafeWebBundleParser& operator=(const SafeWebBundleParser&) = delete;
+  MojoWebBundleParser(const MojoWebBundleParser&) = delete;
+  MojoWebBundleParser& operator=(const MojoWebBundleParser&) = delete;
 
   // Remaining callbacks on flight will be dropped.
-  ~SafeWebBundleParser();
+  ~MojoWebBundleParser();
 
   // Parses the integrity block of a Signed Web Bundle. See
   // `web_package::mojom::WebBundleParser::ParseIntegrityBlock` for
@@ -137,7 +141,6 @@ class SafeWebBundleParser {
   struct Connection {
     Connection();
     ~Connection();
-    DataDecoder data_decoder_;
     mojo::Remote<web_package::mojom::WebBundleParserFactory> factory_;
     mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   };
@@ -159,9 +162,9 @@ class SafeWebBundleParser {
   std::optional<GURL> base_url_;
   WebBundleParserFactoryBinder factory_binder_;
 
-  base::WeakPtrFactory<SafeWebBundleParser> weak_factory_{this};
+  base::WeakPtrFactory<MojoWebBundleParser> weak_factory_{this};
 };
 
-}  // namespace data_decoder
+}  // namespace web_app
 
-#endif  // SERVICES_DATA_DECODER_PUBLIC_CPP_SAFE_WEB_BUNDLE_PARSER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_MOJO_WEB_BUNDLE_PARSER_H_

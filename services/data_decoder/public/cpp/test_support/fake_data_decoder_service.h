@@ -5,7 +5,6 @@
 #ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_TEST_SUPPORT_FAKE_DATA_DECODER_SERVICE_H_
 #define SERVICES_DATA_DECODER_PUBLIC_CPP_TEST_SUPPORT_FAKE_DATA_DECODER_SERVICE_H_
 
-#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
@@ -32,9 +31,6 @@ class FakeDataDecoderService : public mojom::DataDecoderService {
           receiver) override;
   void BindXmlParser(
       mojo::PendingReceiver<data_decoder::mojom::XmlParser> receiver) override;
-  void BindWebBundleParserFactory(
-      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
-          receiver) override;
   void BindGzipper(
       mojo::PendingReceiver<data_decoder::mojom::Gzipper> receiver) override;
 };

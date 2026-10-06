@@ -29,9 +29,9 @@ identity verification, IWA key distribution, and core domain types.
 - **Rule of 2 & Memory-Safe Parsing:** Never parse untrusted CBOR or Web Bundle
   bytes in C++ or on the browser UI/IO thread. `SignedWebBundleReader` hosts
   `web_package::WebBundleParser` in the browser process on a `MayBlock()`
-  thread-pool sequence and drives it through
-  `data_decoder::SafeWebBundleParser`; the untrusted bytes are decoded by the
-  memory-safe Rust parsers in `//components/web_package`.
+  thread-pool sequence and drives it through `MojoWebBundleParser`; the
+  untrusted bytes are decoded by the memory-safe Rust parsers in
+  `//components/web_package`.
 - **Strong Domain Types & `base::expected`:** Always represent IWA identifiers
   and versions with validated strong types (`IwaOrigin`,
   `web_package::SignedWebBundleId`, `IwaVersion`, `IwaSource`,
