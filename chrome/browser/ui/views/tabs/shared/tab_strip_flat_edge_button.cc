@@ -196,6 +196,13 @@ void TabStripFlatEdgeButton::OnThemeChanged() {
   if (should_show_label_) {
     UpdateLabelColor();
   }
+  const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
+  ConfigureToolbarInkdropForRefresh2023(
+      this,
+      frame_active ? kColorTabStripControlButtonInkDrop
+                   : kColorTabStripControlButtonInkDropFrameInactive,
+      frame_active ? kColorTabStripControlButtonInkDropRipple
+                   : kColorTabStripControlButtonInkDropRippleFrameInactive);
 }
 
 bool TabStripFlatEdgeButton::GetHitTestMask(SkPath* mask) const {

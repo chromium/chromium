@@ -307,7 +307,9 @@
   E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
   E_CPONLY(kColorTabStripComboButtonSeparator) \
   E_CPONLY(kColorTabStripControlButtonInkDrop) \
+  E_CPONLY(kColorTabStripControlButtonInkDropFrameInactive) \
   E_CPONLY(kColorTabStripControlButtonInkDropRipple) \
+  E_CPONLY(kColorTabStripControlButtonInkDropRippleFrameInactive) \
   E_CPONLY(kColorTabStripScrollButtonBackground) \
   E_CPONLY(kColorTabStripScrollButtonIcon) \
   /* New tab button colors for ChromeRefresh.*/ \

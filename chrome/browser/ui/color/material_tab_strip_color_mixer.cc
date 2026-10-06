@@ -37,7 +37,11 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHeaderHover};
   mixer[kColorTabStripComboButtonSeparator] = {ui::kColorSysDivider};
   mixer[kColorTabStripControlButtonInkDrop] = {ui::kColorSysStateHeaderHover};
+  mixer[kColorTabStripControlButtonInkDropFrameInactive] = {
+      ui::kColorSysStateHeaderHoverInactive};
   mixer[kColorTabStripControlButtonInkDropRipple] = {
+      ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorTabStripControlButtonInkDropRippleFrameInactive] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
 
   // TODO(tbergquist): Use kColorSysStateHeaderHoverInactive, once it exists.
