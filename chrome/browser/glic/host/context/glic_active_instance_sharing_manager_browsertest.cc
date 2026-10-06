@@ -34,17 +34,15 @@ class GlicActiveInstanceSharingManagerBrowserTest : public GlicBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
                        DelegatesToActiveInstance) {
-  // TODO(crbug.com/543550224): Flaky on non-desktop Android bots.
-  SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
-
   // 1. Initial state: no instance, so no delegate.
   // GlicActiveInstanceSharingManager delegates to nothing if no active
   // instance. We can verify this by checking if it seems empty.
   auto& manager = active_instance_sharing_manager();
   EXPECT_TRUE(manager.GetPinnedTabs().empty());
 
-  // 2. Open a tab.
+  // 2. Open a tab in the initial browser.
   tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  BrowserWindowInterface* browser1 = tab->GetBrowserWindowInterface();
 
   // 3. Toggle Glic to create an instance.
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
@@ -90,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   ASSERT_OK(WaitForPinnedTabs({tab2}));
 
   // Switch back to browser1.
-  GetBrowser()->GetWindow()->Activate();
-  ASSERT_OK(WaitForWindowActive(GetBrowser()));
+  browser1->GetWindow()->Activate();
+  ASSERT_OK(WaitForWindowActive(browser1));
 
   // Verify delegation to instance1: tab1 pinned, tab2 NOT pinned.
   ASSERT_OK(WaitForPinnedTabs({tab}));
