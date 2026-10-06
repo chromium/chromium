@@ -24,6 +24,9 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 
+MockAppMenuDragAndDropHost::MockAppMenuDragAndDropHost() = default;
+MockAppMenuDragAndDropHost::~MockAppMenuDragAndDropHost() = default;
+
 ActionAppMenuTestBase::ActionAppMenuTestBase() = default;
 ActionAppMenuTestBase::~ActionAppMenuTestBase() = default;
 

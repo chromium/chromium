@@ -400,12 +400,14 @@ class AppMenuBuilder {
 }  // namespace
 
 ActionAppMenuManager::ActionAppMenuManager(
-    BrowserWindowInterface* browser_window_interface)
+    BrowserWindowInterface* browser_window_interface,
+    AppMenuDragAndDropDelegate::Host* drag_and_drop_host)
     : browser_window_interface_(browser_window_interface),
       recent_tabs_menu_(
           std::make_unique<RecentTabsDynamicMenu>(browser_window_interface)),
       bookmarks_menu_(
-          std::make_unique<BookmarksDynamicMenu>(browser_window_interface)),
+          std::make_unique<BookmarksDynamicMenu>(browser_window_interface,
+                                                 drag_and_drop_host)),
       tab_groups_menu_(
           std::make_unique<TabGroupDynamicMenu>(browser_window_interface)),
       send_tab_to_self_menu_(
@@ -413,7 +415,11 @@ ActionAppMenuManager::ActionAppMenuManager(
       profile_menu_(
           std::make_unique<ProfileDynamicMenu>(browser_window_interface)) {}
 
-ActionAppMenuManager::~ActionAppMenuManager() = default;
+ActionAppMenuManager::~ActionAppMenuManager() {
+  if (actions::ActionItem* root = GetAppMenuRoot()) {
+    root->ResetActionList();
+  }
+}
 
 actions::ActionItem* ActionAppMenuManager::GetAppMenuRoot() const {
   return actions::ActionManager::Get().FindAction(

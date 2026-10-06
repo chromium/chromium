@@ -13,6 +13,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -34,8 +35,8 @@ class ActionAppMenuManager {
  public:
   using DisplayType = AppMenuActionItem::DisplayType;
 
-  explicit ActionAppMenuManager(
-      BrowserWindowInterface* browser_window_interface);
+  ActionAppMenuManager(BrowserWindowInterface* browser_window_interface,
+                       AppMenuDragAndDropDelegate::Host* drag_and_drop_host);
   ActionAppMenuManager(const ActionAppMenuManager&) = delete;
   ActionAppMenuManager& operator=(const ActionAppMenuManager&) = delete;
   ~ActionAppMenuManager();

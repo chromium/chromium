@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/action_id.h"
@@ -21,6 +22,20 @@
 
 class BrowserActions;
 class TestingProfile;
+
+class MockAppMenuDragAndDropHost : public AppMenuDragAndDropDelegate::Host {
+ public:
+  MockAppMenuDragAndDropHost();
+  ~MockAppMenuDragAndDropHost() override;
+
+  MOCK_METHOD(void,
+              UpdateMenuItem,
+              (actions::BaseAction*,
+               actions::BaseAction*,
+               actions::BaseAction*),
+              (override));
+  MOCK_METHOD(void, CloseMenu, (), (override));
+};
 
 class ActionAppMenuTestBase : public ChromeViewsTestBase {
  public:
@@ -38,6 +53,7 @@ class ActionAppMenuTestBase : public ChromeViewsTestBase {
 
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockBrowserWindowInterface> mock_window_interface_;
+  testing::NiceMock<MockAppMenuDragAndDropHost> mock_drag_and_drop_host_;
   testing::NiceMock<ui::MockBaseWindow> mock_base_window_;
   std::unique_ptr<views::Widget> widget_;
   TestTabStripModelDelegate test_tab_strip_model_delegate_;

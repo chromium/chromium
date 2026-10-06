@@ -2791,7 +2791,8 @@ TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
 TEST_F(ActionAppMenuTest, SendTabToSelfMetrics) {
   base::HistogramTester histogram_tester;
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   // TargetDeviceCount should not be logged when the menu hierarchy is
@@ -3013,6 +3014,94 @@ TEST_F(ActionAppMenuTest, UpdateMenuItem) {
   menu.UpdateMenuItem(item_b_action, /*target_parent_action=*/nullptr);
   ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 1u);
   EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(0)->title(), u"Item A");
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, BookmarksDynamicMenuUpdatesOnModelChange) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkModelFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  ASSERT_TRUE(model);
+  model->LoadEmptyForTest();
+
+  BookmarkMergedSurfaceService* bookmark_service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(bookmark_service);
+  bookmark_service->LoadForTesting({});
+
+  const bookmarks::BookmarkNode* first_node =
+      model->AddURL(model->bookmark_bar_node(), 0, u"First Bookmark",
+                    GURL("https://first.com"));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* bookmarks_submenu_item =
+      root->GetMenuItemByID(kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_submenu_item);
+  menu.WillShowMenu(bookmarks_submenu_item);
+
+  auto find_item_by_title =
+      [](views::MenuItemView* parent,
+         const std::u16string& title) -> views::MenuItemView* {
+    for (views::MenuItemView* item : parent->GetSubmenu()->GetMenuItems()) {
+      if (item->title() == title) {
+        return item;
+      }
+    }
+    return nullptr;
+  };
+
+  EXPECT_TRUE(find_item_by_title(bookmarks_submenu_item, u"First Bookmark"));
+  EXPECT_FALSE(find_item_by_title(bookmarks_submenu_item, u"Second Bookmark"));
+
+  // Add a second bookmark while the menu is open.
+  const bookmarks::BookmarkNode* second_node =
+      model->AddURL(model->bookmark_bar_node(), 1, u"Second Bookmark",
+                    GURL("https://second.com"));
+
+  views::MenuItemView* first_item =
+      find_item_by_title(bookmarks_submenu_item, u"First Bookmark");
+  views::MenuItemView* second_item =
+      find_item_by_title(bookmarks_submenu_item, u"Second Bookmark");
+  ASSERT_TRUE(first_item);
+  ASSERT_TRUE(second_item);
+  EXPECT_LT(bookmarks_submenu_item->GetSubmenu()->GetIndexOf(first_item),
+            bookmarks_submenu_item->GetSubmenu()->GetIndexOf(second_item));
+
+  // Move Second Bookmark before First Bookmark.
+  model->Move(second_node, model->bookmark_bar_node(), 0);
+  first_item = find_item_by_title(bookmarks_submenu_item, u"First Bookmark");
+  second_item = find_item_by_title(bookmarks_submenu_item, u"Second Bookmark");
+  ASSERT_TRUE(first_item);
+  ASSERT_TRUE(second_item);
+  EXPECT_LT(bookmarks_submenu_item->GetSubmenu()->GetIndexOf(second_item),
+            bookmarks_submenu_item->GetSubmenu()->GetIndexOf(first_item));
+
+  // Rename First Bookmark.
+  model->SetTitle(first_node, u"Renamed First Bookmark",
+                  bookmarks::metrics::BookmarkEditSource::kOther);
+  EXPECT_FALSE(find_item_by_title(bookmarks_submenu_item, u"First Bookmark"));
+  EXPECT_TRUE(
+      find_item_by_title(bookmarks_submenu_item, u"Renamed First Bookmark"));
+
+  // Remove Second Bookmark.
+  model->Remove(second_node, bookmarks::metrics::BookmarkEditSource::kOther,
+                FROM_HERE);
+  EXPECT_FALSE(find_item_by_title(bookmarks_submenu_item, u"Second Bookmark"));
+  EXPECT_TRUE(
+      find_item_by_title(bookmarks_submenu_item, u"Renamed First Bookmark"));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

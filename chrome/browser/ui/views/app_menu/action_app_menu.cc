@@ -168,14 +168,15 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
     : browser_window_interface_(browser_window_interface),
       on_menu_closed_callback_(std::move(on_menu_closed_callback)),
       menu_manager_(
-          std::make_unique<ActionAppMenuManager>(browser_window_interface)) {
+          std::make_unique<ActionAppMenuManager>(browser_window_interface,
+                                                 /*drag_and_drop_host=*/this)) {
   menu_manager_->CreateMenuHierarchy();
 }
 
 ActionAppMenu::~ActionAppMenu() {
   search_bar_ = nullptr;
   command_to_action_map_.clear();
-  menu_manager_->GetAppMenuRoot()->ResetActionList();
+  menu_manager_.reset();
 }
 
 void ActionAppMenu::RunMenu(views::MenuButtonController* host) {

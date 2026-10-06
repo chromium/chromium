@@ -69,7 +69,8 @@ class ActionAppMenuManagerTest : public ActionAppMenuTestBase {
 };
 
 TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* delegate =
@@ -115,7 +116,8 @@ TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
 TEST_F(ActionAppMenuManagerTest, BlockActionsGuestSessionExcludesIncognito) {
   profile_->SetGuestSession(true);
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -160,7 +162,8 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
                                       signin::ConsentLevel::kSignin);
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -276,7 +279,8 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenuSingleProfile) {
   ON_CALL(mock_window_interface_, GetProfile())
       .WillByDefault(testing::Return(profile1));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -338,7 +342,8 @@ TEST_F(ActionAppMenuManagerTest,
       static_cast<int>(
           enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -374,7 +379,8 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
   ON_CALL(mock_window_interface_, GetProfile())
       .WillByDefault(testing::Return(otr_profile));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -424,7 +430,8 @@ TEST_F(ActionAppMenuManagerTest,
   ON_CALL(mock_window_interface_, GetProfile())
       .WillByDefault(testing::Return(isolated_profile));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -455,7 +462,8 @@ TEST_F(ActionAppMenuManagerTest, BookmarkBarSubmenuCheckItems) {
       bookmarks::prefs::kBookmarkBarVisibilityState,
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -504,7 +512,8 @@ TEST_F(ActionAppMenuManagerTest, BookmarkBarSubmenuCheckItems) {
 }
 
 TEST_F(ActionAppMenuManagerTest, NotificationHeaderNoNotification) {
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -528,7 +537,8 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
   ASSERT_NE(upgrade_action, nullptr);
   upgrade_action->SetVisible(true);
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -585,7 +595,8 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
         return service;
       }));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -626,7 +637,8 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderGlobalError) {
   ASSERT_NE(global_error_action, nullptr);
   global_error_action->SetVisible(true);
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -662,7 +674,8 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderGlobalError) {
 }
 
 TEST_F(ActionAppMenuManagerTest, ZoomSubmenuHasExpandedHeightProperty) {
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -681,7 +694,8 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderDefaultBrowserPrompt) {
   ASSERT_NE(default_browser_action, nullptr);
   default_browser_action->SetVisible(true);
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -724,7 +738,8 @@ TEST_F(ActionAppMenuManagerTest, VerticalTabsNewBadgeProperty) {
   EXPECT_CALL(vertical_tabs_controller, ShouldDisplayVerticalTabs())
       .WillOnce(testing::Return(false));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -773,7 +788,8 @@ TEST_F(ActionAppMenuManagerTest, AlertedElementPropagatesToSubmenu) {
   user_ed_service->tutorial_service()->StartTutorial(
       "TestTutorial", ui::ElementContext::CreateFakeContextForTesting(1));
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
