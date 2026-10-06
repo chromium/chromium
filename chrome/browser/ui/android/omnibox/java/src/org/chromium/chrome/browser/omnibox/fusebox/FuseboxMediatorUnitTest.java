@@ -42,7 +42,6 @@ import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.core.app.ApplicationProvider;
@@ -131,7 +130,6 @@ import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -277,7 +275,6 @@ public class FuseboxMediatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Tracker mTracker;
     @Mock private ScrimManager mScrimManager;
-    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private BackPressManager mBackPressManager;
     @Mock private Runnable mOnFirstPickerInteractionCanceledCallback;
     @Mock private KeyEvent mKeyEvent;
@@ -324,7 +321,6 @@ public class FuseboxMediatorUnitTest {
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         TrackerFactory.setTrackerForTests(mTracker);
-        lenient().doReturn(mKeyboardVisibilityDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
         mContext =
                 new ContextThemeWrapper(
@@ -966,54 +962,11 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onPlusButtonClicked_bottomSheet_hidesKeyboard() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
-        recreateMediator();
-        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
-        assertNotNull(runnable);
-
-        // Show popup.
-        runnable.run();
-        verify(mKeyboardVisibilityDelegate).hideKeyboard(mViewHolder.parentView);
-    }
-
-    @Test
     public void onPlusButtonClicked_updatesPopupStateSupplier() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         assertEquals(PopupState.HIDDEN, mPopupStateSupplier.get().intValue());
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertEquals(PopupState.FLOATING, mPopupStateSupplier.get().intValue());
-    }
-
-    @Test
-    public void onHidePopup_bottomSheet_showsKeyboardIfFocused() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
-        recreateMediator();
-
-        mViewHolder.plusButton.setVisibility(View.VISIBLE);
-        mViewHolder.plusButton.setFocusableInTouchMode(true);
-        assertTrue(mViewHolder.plusButton.requestFocus());
-        assertEquals(mViewHolder.plusButton, mViewHolder.parentView.findFocus());
-
-        // Show popup first
-        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
-
-        // Hide popup
-        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
-
-        verify(mKeyboardVisibilityDelegate).showKeyboard(mViewHolder.plusButton);
-    }
-
-    @Test
-    public void onPlusButtonClicked_floatingPopup_doesNotHideKeyboard() {
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
-        recreateMediator();
-        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
-        assertNotNull(runnable);
-
-        // Show popup.
-        runnable.run();
-        verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
     }
 
     @Test

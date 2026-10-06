@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
@@ -84,6 +83,7 @@ class FuseboxPopup {
     /* package */ final Set<View> mDynamicThemedButtons = new HashSet<>();
     /* package */ final List<View> mDividers;
     /* package */ final List<TextView> mHeaders;
+    /* package */ final WindowAndroid mWindowAndroid;
 
     private final Activity mActivity;
     private final DynamicRectProvider mDynamicRectProvider;
@@ -129,6 +129,7 @@ class FuseboxPopup {
             boolean useScrollableCarousel,
             @CurrentTabPlacement int currentTabPlacement) {
         mActivity = activity;
+        mWindowAndroid = windowAndroid;
         mPopupWindow = popupWindow;
         mPopupWindow.setClippingEnabled(false);
         mPopupWindow.addOnDismissListener(this::restoreBackgroundAccessibility);
@@ -435,9 +436,10 @@ class FuseboxPopup {
         return mPopupWindow.isShowing();
     }
 
-    /** Add a listener for when the popup is dismissed. */
-    void addOnDismissListener(OnDismissListener listener) {
-        mPopupWindow.addOnDismissListener(listener);
+    /** Returns the current {@link PopupState} of the popup. */
+    @PopupState
+    int getPopupState() {
+        return mCurrentState;
     }
 
     private boolean shouldApplyBottomInsets(WindowInsetsCompat insets) {

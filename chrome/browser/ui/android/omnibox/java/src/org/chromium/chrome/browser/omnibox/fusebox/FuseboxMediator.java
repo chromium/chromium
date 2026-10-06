@@ -184,7 +184,6 @@ import java.util.function.Supplier;
         mModel = model;
         mViewHolder = viewHolder;
         mResourceProvider = resourceProvider;
-        mViewHolder.popup.addOnDismissListener(this::hidePopup);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mPopupStateSupplier = popupStateSupplier;
@@ -333,7 +332,6 @@ import java.util.function.Supplier;
 
         if (mModelList != null) {
             var adapter = mModelList.createAdapter(mResourceProvider);
-            mViewHolder.attachmentsView.setAdapter(adapter);
             mModel.set(FuseboxProperties.ADAPTER, adapter);
             mModelList.setAttachmentUploadFailedListener(this::onAttachmentUploadFailed);
             mModelList.updateVisualsForState(mBrandedColorScheme);
@@ -343,7 +341,6 @@ import java.util.function.Supplier;
             onAttachmentsChanged();
         } else {
             // Need a safe fallback.
-            mViewHolder.attachmentsView.setAdapter(null);
             mModel.set(FuseboxProperties.ADAPTER, null);
             mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, false);
             mHasAttachmentsSupplier.set(false);
@@ -610,9 +607,6 @@ import java.util.function.Supplier;
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) return;
 
         boolean shouldShowBottomSheetPopup = OmniboxFeatures.shouldShowBottomSheetPopup();
-        if (shouldShowBottomSheetPopup) {
-            mWindowAndroid.getKeyboardDelegate().hideKeyboard(mViewHolder.parentView);
-        }
         updateModelForCurrentTab();
         updateModelForRecentTabs();
         if (mComposeboxQueryControllerBridge != null) {
@@ -661,18 +655,11 @@ import java.util.function.Supplier;
         if (OmniboxFeatures.hasAccordion()) {
             mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, false);
         }
-        boolean wasBottomSheet = mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM;
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         mPopupStateSupplier.set(PopupState.HIDDEN);
         if (mScrimModel != null) {
             mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
             mScrimModel = null;
-        }
-        if (wasBottomSheet) {
-            View focusedView = mViewHolder.parentView.findFocus();
-            if (focusedView != null) {
-                mWindowAndroid.getKeyboardDelegate().showKeyboard(focusedView);
-            }
         }
         mBackPressStateSupplier.set(false);
     }

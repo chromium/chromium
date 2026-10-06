@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
@@ -65,6 +67,7 @@ import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -96,6 +99,7 @@ public class FuseboxViewBinderUnitTest {
     @Mock private AnchoredPopupWindow mPopupWindow;
     @Mock private DynamicRectProvider mDynamicRectProvider;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private Runnable mRunnable;
     @Mock private Callback<PopupButtonData> mOnClickCallback;
     @Mock private SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
@@ -124,6 +128,7 @@ public class FuseboxViewBinderUnitTest {
         lenient().doReturn(popupView).when(mPopupWindow).getContentView();
 
         lenient().doReturn(null).when(mWindowAndroid).getInsetObserver();
+        lenient().doReturn(mKeyboardVisibilityDelegate).when(mWindowAndroid).getKeyboardDelegate();
         mPopup =
                 new FuseboxPopup(
                         activity,
@@ -1380,5 +1385,30 @@ public class FuseboxViewBinderUnitTest {
         mBinder.bind(
                 carouselModel, mViewHolder, FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE);
         assertEquals(expectedCarouselPadding, mPopup.mAttachmentsContainer.getPaddingTop());
+    }
+
+    @Test
+    public void popupState_bottomSheet_hidesKeyboard() {
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.BOTTOM);
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mViewHolder.parentView);
+    }
+
+    @Test
+    public void popupState_hideBottomSheet_showsKeyboardIfFocused() {
+        mViewHolder.plusButton.setVisibility(View.VISIBLE);
+        mViewHolder.plusButton.setFocusableInTouchMode(true);
+        assertTrue(mViewHolder.plusButton.requestFocus());
+        assertEquals(mViewHolder.plusButton, mViewHolder.parentView.findFocus());
+
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.BOTTOM);
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
+
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mViewHolder.plusButton);
+    }
+
+    @Test
+    public void popupState_floatingPopup_doesNotHideKeyboard() {
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.FLOATING);
+        verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
     }
 }

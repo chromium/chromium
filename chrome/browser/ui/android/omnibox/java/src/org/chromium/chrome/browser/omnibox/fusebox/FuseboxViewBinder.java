@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -224,7 +226,7 @@ class FuseboxViewBinder {
                             ? View.VISIBLE
                             : View.GONE);
         } else if (propertyKey == FuseboxProperties.POPUP_STATE) {
-            view.popup.setPopupState(model.get(FuseboxProperties.POPUP_STATE));
+            updatePopupState(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST) {
             updateToolButtons(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE) {
@@ -254,6 +256,25 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, view.requestType);
+        }
+    }
+
+    private static void updatePopupState(PropertyModel model, FuseboxViewHolder view) {
+        @PopupState int previousState = view.popup.getPopupState();
+        @PopupState int targetState = model.get(FuseboxProperties.POPUP_STATE);
+        view.popup.setPopupState(targetState);
+
+        KeyboardVisibilityDelegate keyboardDelegate =
+                view.popup.mWindowAndroid.getKeyboardDelegate();
+        if (keyboardDelegate == null) return;
+
+        if (targetState == PopupState.BOTTOM) {
+            keyboardDelegate.hideKeyboard(view.parentView);
+        } else if (targetState == PopupState.HIDDEN && previousState == PopupState.BOTTOM) {
+            View focusedView = view.parentView.findFocus();
+            if (focusedView != null) {
+                keyboardDelegate.showKeyboard(focusedView);
+            }
         }
     }
 

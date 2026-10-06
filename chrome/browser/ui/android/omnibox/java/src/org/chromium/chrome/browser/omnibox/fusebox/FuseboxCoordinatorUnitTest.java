@@ -446,6 +446,7 @@ public class FuseboxCoordinatorUnitTest {
         viewHolder.plusButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
 
+        verify(mMediator).handleHidePopup();
         assertTrue(viewHolder.plusButton.isFocused());
         verify(mOnInteractionCompletedCallback).onResult(false);
     }
@@ -464,6 +465,7 @@ public class FuseboxCoordinatorUnitTest {
         viewHolder.plusButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
 
+        verify(mMediator).handleHidePopup();
         assertFalse(viewHolder.plusButton.isFocused());
         verify(mOnInteractionCompletedCallback).onResult(true);
     }
