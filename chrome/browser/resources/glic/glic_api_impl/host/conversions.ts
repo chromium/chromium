@@ -779,6 +779,16 @@ export function invocationPayloadToClient(
       skillsPayload: skillsPayloadToClient(payload.skillsPayload),
     };
   }
+  if (payload.experimentalTriggering) {
+    const buffer =
+        new Uint8Array(payload.experimentalTriggering.paymentMetadata).buffer;
+    extras.addTransfer(buffer);
+    return {
+      experimentalTriggering: {
+        paymentMetadata: buffer,
+      },
+    };
+  }
   throw new Error('Unknown payload type');
 }
 

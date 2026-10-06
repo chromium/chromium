@@ -79,6 +79,9 @@ struct TaskUpdate {
 // Payload for triggering a new actuation session.
 struct TriggerActuationRequest {
   std::string initial_prompt;
+  // Opaque payment metadata, passed through verbatim to the invocation
+  // payload. May be empty.
+  std::vector<uint8_t> payment_metadata;
 };
 
 // Payload for continuing an active actuation session.

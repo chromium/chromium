@@ -356,6 +356,11 @@ void LogGlicInvokeOptions(const GlicInvokeOptions& options,
               ss << "UniversalCartPayload { serialized_metadata size: "
                  << payload->get_universal_cart()->serialized_metadata.size()
                  << " }";
+            } else if (payload->is_experimental_triggering()) {
+              ss << "ExperimentalTriggeringPayload { payment_metadata size: "
+                 << payload->get_experimental_triggering()
+                        ->payment_metadata.size()
+                 << " }";
             } else {
               ss << "Unknown Payload";
             }

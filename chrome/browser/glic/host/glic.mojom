@@ -1609,11 +1609,24 @@ struct UniversalCartPayload {
   array<uint8> serialized_metadata;
 };
 
+// @generate glic_api
+// Payload for Experimental Triggering invocation.
+struct ExperimentalTriggeringPayload {
+  // Opaque payment metadata received from the server as part of the request
+  // that triggered this invocation. Passed through verbatim; opaque to the
+  // browser. May be empty.
+  // @glic_type ArrayBuffer
+  array<uint8> payment_metadata;
+};
+
 union InvocationPayload {
   UniversalCartPayload universal_cart;
 
   [MinVersion=3]
   SkillsPayload skills_payload;
+
+  [MinVersion=4]
+  ExperimentalTriggeringPayload experimental_triggering;
 };
 
 // @generate glic_api

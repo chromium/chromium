@@ -1190,6 +1190,14 @@ export declare interface UniversalCartPayload {
   serializedMetadata: ArrayBuffer;
 }
 
+// Payload for Experimental Triggering invocation.
+export declare interface ExperimentalTriggeringPayload {
+  // Opaque payment metadata received from the server as part of the request
+  // that triggered this invocation. Passed through verbatim; opaque to the
+  // browser. May be empty.
+  paymentMetadata: ArrayBuffer;
+}
+
 // Options for invoking Glic.
 export declare interface InvokeOptions {
   // Source that triggered this invocation.

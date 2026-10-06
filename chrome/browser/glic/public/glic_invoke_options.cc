@@ -114,6 +114,9 @@ glic::mojom::InvocationSource GlicInvokeOptions::GetInvocationSource() const {
             if (payload->is_skills_payload()) {
               return glic::mojom::InvocationSource::kSkills;
             }
+            if (payload->is_experimental_triggering()) {
+              return glic::mojom::InvocationSource::kExperimentalTriggering;
+            }
             NOTREACHED();
           }},
       source_or_payload);

@@ -98,6 +98,11 @@ GlicInvokeOptions CreateInvokeOptions(
     if (!trigger_req.initial_prompt.empty()) {
       options.prompts.push_back(trigger_req.initial_prompt);
     }
+    auto et_payload = mojom::ExperimentalTriggeringPayload::New();
+    et_payload->payment_metadata = trigger_req.payment_metadata;
+    options.source_or_payload =
+        mojom::InvocationPayload::NewExperimentalTriggering(
+            std::move(et_payload));
   } else if (std::holds_alternative<ContinueActuationRequest>(
                  request.payload)) {
     options.feature_mode = mojom::FeatureMode::kActuation;

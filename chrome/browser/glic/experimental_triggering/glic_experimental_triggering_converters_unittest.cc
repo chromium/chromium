@@ -49,6 +49,36 @@ TEST(GlicExperimentalTriggeringConvertersTest, TriggerActuationRequest) {
   ASSERT_TRUE(std::holds_alternative<TriggerActuationRequest>(request.payload));
   EXPECT_EQ(std::get<TriggerActuationRequest>(request.payload).initial_prompt,
             "hello world");
+  EXPECT_TRUE(std::get<TriggerActuationRequest>(request.payload)
+                  .payment_metadata.empty());
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest,
+     TriggerActuationRequest_PaymentMetadata) {
+  components_sharing_message::GlicExperimentalTriggering proto;
+  auto* trigger = proto.mutable_request()->mutable_trigger_actuation_request();
+  trigger->set_initial_prompt("buy it");
+  trigger->set_payment_metadata(std::string("\x01\x00\xff", 3));
+
+  auto request = ProtoToRequest(proto);
+  ASSERT_TRUE(std::holds_alternative<TriggerActuationRequest>(request.payload));
+  const auto& trigger_req = std::get<TriggerActuationRequest>(request.payload);
+  EXPECT_EQ(trigger_req.initial_prompt, "buy it");
+  EXPECT_EQ(trigger_req.payment_metadata,
+            (std::vector<uint8_t>{0x01, 0x00, 0xff}));
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest,
+     TriggerActuationRequest_EmptyPaymentMetadata) {
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.mutable_request()
+      ->mutable_trigger_actuation_request()
+      ->set_payment_metadata("");
+
+  auto request = ProtoToRequest(proto);
+  ASSERT_TRUE(std::holds_alternative<TriggerActuationRequest>(request.payload));
+  EXPECT_TRUE(std::get<TriggerActuationRequest>(request.payload)
+                  .payment_metadata.empty());
 }
 
 TEST(GlicExperimentalTriggeringConvertersTest,

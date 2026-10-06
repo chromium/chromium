@@ -1339,6 +1339,75 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       TriggerActuation_AttachesPaymentMetadataPayload) {
+  auto* service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  std::optional<std::vector<uint8_t>> captured_metadata;
+  std::optional<mojom::InvocationSource> captured_source;
+  EXPECT_CALL(*service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        captured_source = options.GetInvocationSource();
+        auto* payload = std::get_if<mojom::InvocationPayloadPtr>(
+            &options.source_or_payload);
+        if (payload && *payload && (*payload)->is_experimental_triggering()) {
+          captured_metadata =
+              (*payload)->get_experimental_triggering()->payment_metadata;
+        }
+        return mock_glic_instance_.GetWeakPtr();
+      });
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = TriggerActuationRequest{
+      .initial_prompt = "test", .payment_metadata = {0x01, 0x02, 0x03}};
+
+  SendRequest(request);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return captured_metadata.has_value(); }));
+  EXPECT_EQ(captured_source, mojom::InvocationSource::kExperimentalTriggering);
+  EXPECT_EQ(*captured_metadata, (std::vector<uint8_t>{0x01, 0x02, 0x03}));
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       TriggerActuation_AttachesPayloadWithEmptyPaymentMetadata) {
+  auto* service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  std::optional<std::vector<uint8_t>> captured_metadata;
+  EXPECT_CALL(*service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        auto* payload = std::get_if<mojom::InvocationPayloadPtr>(
+            &options.source_or_payload);
+        if (payload && *payload && (*payload)->is_experimental_triggering()) {
+          captured_metadata =
+              (*payload)->get_experimental_triggering()->payment_metadata;
+        }
+        return mock_glic_instance_.GetWeakPtr();
+      });
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = TriggerActuationRequest{.initial_prompt = "test"};
+
+  SendRequest(request);
+
+  // The payload is always attached for trigger requests, even when empty.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return captured_metadata.has_value(); }));
+  EXPECT_TRUE(captured_metadata->empty());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
        ActuationTimeoutWaitingForClient_RecordsFalseMilestones) {
   base::HistogramTester histogram_tester;
 

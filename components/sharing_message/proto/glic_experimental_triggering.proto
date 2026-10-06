@@ -58,6 +58,10 @@ message GlicExperimentalTriggering {
     message TriggerActuationRequest {
       // The actual prompt that should be triggered.
       optional string initial_prompt = 1;
+
+      // Opaque payment metadata, passed through verbatim to the Glic web
+      // client in the invocation payload.
+      optional bytes payment_metadata = 2;
     }
 
     message ContinueActuationRequest {

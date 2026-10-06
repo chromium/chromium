@@ -48,6 +48,8 @@ export import CreateSkillRequest = generated.CreateSkillRequest;
 export import CreateTabOptions = generated.CreateTabOptions;
 export import Credential = generated.Credential;
 export import DocumentData = generated.DocumentData;
+export import ExperimentalTriggeringPayload =
+    generated.ExperimentalTriggeringPayload;
 export import ExperimentalTriggeringUpdate =
     generated.ExperimentalTriggeringUpdate;
 export import FormFillingRequest = generated.FormFillingRequest;
@@ -215,6 +217,7 @@ export declare interface AdditionalContextPart {
 export declare interface InvocationPayload {
   universalCart?: UniversalCartPayload;
   skillsPayload?: SkillsPayload;
+  experimentalTriggering?: ExperimentalTriggeringPayload;
 }
 
 /**

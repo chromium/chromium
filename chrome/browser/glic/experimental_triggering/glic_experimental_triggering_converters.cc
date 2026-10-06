@@ -8,6 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+
 namespace glic {
 
 namespace {
@@ -110,9 +113,13 @@ ExperimentalTriggeringRequest ProtoToRequest(
       case components_sharing_message::GlicExperimentalTriggering::
           ExperimentalTriggeringRequest::kTriggerActuationRequest: {
         TriggerActuationRequest trigger_req;
-        if (req_proto.trigger_actuation_request().has_initial_prompt()) {
-          trigger_req.initial_prompt =
-              req_proto.trigger_actuation_request().initial_prompt();
+        const auto& trigger_proto = req_proto.trigger_actuation_request();
+        if (trigger_proto.has_initial_prompt()) {
+          trigger_req.initial_prompt = trigger_proto.initial_prompt();
+        }
+        if (trigger_proto.has_payment_metadata()) {
+          trigger_req.payment_metadata = base::ToVector(
+              base::as_byte_span(trigger_proto.payment_metadata()));
         }
         request.payload = std::move(trigger_req);
         break;
