@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_POLICY_CONVERSIONS_CLIENT_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_POLICY_CONVERSIONS_CLIENT_H_
 
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
@@ -171,6 +173,23 @@ class POLICY_EXPORT PolicyConversionsClient {
  private:
   friend class PolicyConversionsClientTest;
 
+  // Chrome policies along with the data needed to describe them, see
+  // `GetChromePoliciesForDisplay()`.
+  struct ChromePoliciesForDisplay {
+    PolicyMap map;
+    std::unique_ptr<PolicyErrorMap> errors;
+    PoliciesSet deprecated_policies;
+    PoliciesSet future_policies;
+    std::optional<PolicyConversions::PolicyToSchemaMap> known_policy_schemas;
+  };
+
+  // Returns the Chrome policies prepared for display, or `std::nullopt` if
+  // there is no schema registry.
+  std::optional<ChromePoliciesForDisplay> GetChromePoliciesForDisplay();
+
+  // Returns the ordered precedence string ids.
+  std::vector<int> GetPrecedenceOrderIds() const;
+
   // Returns the policy scope to be used for UI. The |policy_scope| from the
   // input is the generic scope: device or user policy. But in Lacros case we
   // need to filter the user policies based on per_profile flag.
@@ -183,6 +202,13 @@ class POLICY_EXPORT PolicyConversionsClient {
       PolicyMap::MessageType message_type,
       PolicyErrorMap* errors,
       std::optional<Schema> known_policy_schema) const;
+
+  // Returns true if `policy` has changed since startup and doesn't support
+  // dynamic refresh, i.e. a restart is required for the change to apply.
+  bool IsRestartRequired(
+      const std::string& policy_name,
+      const PolicyMap::Entry& policy,
+      const std::optional<Schema>& known_policy_schema) const;
 
   bool convert_types_enabled_ = true;
   bool convert_values_enabled_ = false;

@@ -4,14 +4,16 @@
 
 #include "components/policy/core/browser/policy_conversions_client.h"
 
+#include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -39,6 +41,31 @@ const char* DEVICE_SCOPE = "machine";
 // Return true if machine policy information needs to be hidden.
 bool IsMachineInfoHidden(PolicyScope scope, bool show_machine_values) {
   return !show_machine_values && scope == PolicyScope::POLICY_SCOPE_MACHINE;
+}
+
+// Returns the name of the source of `policy`. The name is also the key of the
+// localized source string in the chrome://policy UI.
+const char* GetPolicySourceName(const PolicyMap::Entry& policy) {
+  return policy.IsDefaultValue() ? "sourceDefault"
+                                 : kPolicySources[policy.source].name;
+}
+
+// Policies that have at least one source that could not be merged will still
+// be treated as conflicted policies while policies that had all of their
+// sources merged will not be considered conflicted anymore. Returns
+// `std::nullopt` if `policy` is not the result of merging.
+std::optional<bool> GetAllSourcesMerged(const PolicyMap::Entry& policy) {
+  if (policy.source != POLICY_SOURCE_MERGED) {
+    return std::nullopt;
+  }
+  for (const auto& conflict : policy.conflicts) {
+    if (!PolicyMerger::EntriesCanBeMerged(
+            conflict.entry(), policy,
+            /*is_user_cloud_merging_enabled=*/false)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -88,37 +115,50 @@ std::string PolicyConversionsClient::ConvertValueToJSON(
   return json_string;
 }
 
-base::DictValue PolicyConversionsClient::GetChromePolicies() {
-  DCHECK(HasUserPolicies());
-
+std::optional<PolicyConversionsClient::ChromePoliciesForDisplay>
+PolicyConversionsClient::GetChromePoliciesForDisplay() {
   PolicyService* policy_service = GetPolicyService();
 
   auto* schema_registry = GetPolicySchemaRegistry();
   if (!schema_registry) {
-    return base::DictValue();
+    return std::nullopt;
   }
 
   const scoped_refptr<SchemaMap> schema_map = schema_registry->schema_map();
   PolicyNamespace policy_namespace =
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
 
+  ChromePoliciesForDisplay policies;
   // Make a copy that can be modified, since some policy values are modified
   // before being displayed.
-  PolicyMap map = policy_service->GetPolicies(policy_namespace).Clone();
+  policies.map = policy_service->GetPolicies(policy_namespace).Clone();
 
   // Get a list of all the errors in the policy values.
   const ConfigurationPolicyHandlerList* handler_list = GetHandlerList();
-  PolicyErrorMap errors;
-  PoliciesSet deprecated_policies;
-  PoliciesSet future_policies;
-  handler_list->ApplyPolicySettings(map, nullptr, &errors, &deprecated_policies,
-                                    &future_policies);
+  policies.errors = std::make_unique<PolicyErrorMap>();
+  handler_list->ApplyPolicySettings(
+      policies.map, nullptr, policies.errors.get(),
+      &policies.deprecated_policies, &policies.future_policies);
 
   // Convert dictionary values to strings for display.
-  handler_list->PrepareForDisplaying(&map);
+  handler_list->PrepareForDisplaying(&policies.map);
 
-  return GetPolicyValues(map, &errors, deprecated_policies, future_policies,
-                         GetKnownPolicies(schema_map, policy_namespace));
+  policies.known_policy_schemas =
+      GetKnownPolicies(schema_map, policy_namespace);
+  return policies;
+}
+
+base::DictValue PolicyConversionsClient::GetChromePolicies() {
+  DCHECK(HasUserPolicies());
+
+  std::optional<ChromePoliciesForDisplay> policies =
+      GetChromePoliciesForDisplay();
+  if (!policies) {
+    return base::DictValue();
+  }
+  return GetPolicyValues(
+      policies->map, policies->errors.get(), policies->deprecated_policies,
+      policies->future_policies, policies->known_policy_schemas);
 }
 
 base::DictValue PolicyConversionsClient::GetPrecedencePolicies() {
@@ -159,6 +199,15 @@ base::DictValue PolicyConversionsClient::GetPrecedencePolicies() {
 base::ListValue PolicyConversionsClient::GetPrecedenceOrder() {
   DCHECK(HasUserPolicies());
 
+  base::ListValue precedence_order_localized;
+  for (int label_id : GetPrecedenceOrderIds()) {
+    precedence_order_localized.Append(l10n_util::GetStringUTF16(label_id));
+  }
+
+  return precedence_order_localized;
+}
+
+std::vector<int> PolicyConversionsClient::GetPrecedenceOrderIds() const {
 #if !BUILDFLAG(IS_CHROMEOS)
   PolicyNamespace policy_namespace =
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
@@ -181,45 +230,37 @@ base::ListValue PolicyConversionsClient::GetPrecedenceOrder() {
                     base::Value::Type::BOOLEAN)
           ->GetBool();
 
-  std::vector<int> precedence_order(4);
   if (cloud_user_precedence) {
     if (cloud_machine_precedence) {
-      precedence_order = {IDS_POLICY_PRECEDENCE_CLOUD_USER,
-                          IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
-                          IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
-                          IDS_POLICY_PRECEDENCE_PLATFORM_USER};
+      return {IDS_POLICY_PRECEDENCE_CLOUD_USER,
+              IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+              IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+              IDS_POLICY_PRECEDENCE_PLATFORM_USER};
     } else {
-      precedence_order = {IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
-                          IDS_POLICY_PRECEDENCE_CLOUD_USER,
-                          IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
-                          IDS_POLICY_PRECEDENCE_PLATFORM_USER};
+      return {IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+              IDS_POLICY_PRECEDENCE_CLOUD_USER,
+              IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+              IDS_POLICY_PRECEDENCE_PLATFORM_USER};
     }
   } else {
     if (cloud_machine_precedence) {
-      precedence_order = {IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
-                          IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
-                          IDS_POLICY_PRECEDENCE_PLATFORM_USER,
-                          IDS_POLICY_PRECEDENCE_CLOUD_USER};
+      return {IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+              IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+              IDS_POLICY_PRECEDENCE_PLATFORM_USER,
+              IDS_POLICY_PRECEDENCE_CLOUD_USER};
     } else {
-      precedence_order = {IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
-                          IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
-                          IDS_POLICY_PRECEDENCE_PLATFORM_USER,
-                          IDS_POLICY_PRECEDENCE_CLOUD_USER};
+      return {IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+              IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+              IDS_POLICY_PRECEDENCE_PLATFORM_USER,
+              IDS_POLICY_PRECEDENCE_CLOUD_USER};
     }
   }
-#else
-  std::vector<int> precedence_order{IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
-                                    IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
-                                    IDS_POLICY_PRECEDENCE_PLATFORM_USER,
-                                    IDS_POLICY_PRECEDENCE_CLOUD_USER};
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  return {IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+          IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+          IDS_POLICY_PRECEDENCE_PLATFORM_USER,
+          IDS_POLICY_PRECEDENCE_CLOUD_USER};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  base::ListValue precedence_order_localized;
-  for (int label_id : precedence_order) {
-    precedence_order_localized.Append(l10n_util::GetStringUTF16(label_id));
-  }
-
-  return precedence_order_localized;
 }
 
 base::Value PolicyConversionsClient::CopyAndMaybeConvert(
@@ -235,10 +276,12 @@ base::Value PolicyConversionsClient::CopyAndMaybeConvert(
     schema->MaskSensitiveValues(&value_copy);
   }
 
-  if (!convert_values_enabled_)
+  if (!convert_values_enabled_) {
     return value_copy;
-  if (value_copy.is_dict())
+  }
+  if (value_copy.is_dict()) {
     return base::Value(ConvertValueToJSON(value_copy));
+  }
 
   if (!value_copy.is_list()) {
     return value_copy;
@@ -273,29 +316,15 @@ base::DictValue PolicyConversionsClient::GetPolicyValue(
     value.Set("level", (policy.level == POLICY_LEVEL_RECOMMENDED)
                            ? "recommended"
                            : "mandatory");
-    value.Set("source", policy.IsDefaultValue()
-                            ? "sourceDefault"
-                            : kPolicySources[policy.source].name);
+    value.Set("source", GetPolicySourceName(policy));
   } else {
     value.Set("scope", policy.scope);
     value.Set("level", policy.level);
     value.Set("source", policy.source);
   }
 
-  // Policies that have at least one source that could not be merged will
-  // still be treated as conflicted policies while policies that had all of
-  // their sources merged will not be considered conflicted anymore.
-  if (policy.source == POLICY_SOURCE_MERGED) {
-    bool policy_has_unmerged_source = false;
-    for (const auto& conflict : policy.conflicts) {
-      if (PolicyMerger::EntriesCanBeMerged(
-              conflict.entry(), policy,
-              /*is_user_cloud_merging_enabled=*/false))
-        continue;
-      policy_has_unmerged_source = true;
-      break;
-    }
-    value.Set("allSourcesMerged", !policy_has_unmerged_source);
+  if (std::optional<bool> all_sources_merged = GetAllSourcesMerged(policy)) {
+    value.Set("allSourcesMerged", *all_sources_merged);
   }
 
   if (std::u16string error =
@@ -321,44 +350,20 @@ base::DictValue PolicyConversionsClient::GetPolicyValue(
     value.Set("info", info);
   }
 
-  if (policy.ignored())
+  if (policy.ignored()) {
     value.Set("ignored", true);
+  }
 
-  if (deprecated_policies.find(policy_name) != deprecated_policies.end())
+  if (deprecated_policies.find(policy_name) != deprecated_policies.end()) {
     value.Set("deprecated", true);
+  }
 
-  if (future_policies.find(policy_name) != future_policies.end())
+  if (future_policies.find(policy_name) != future_policies.end()) {
     value.Set("future", true);
+  }
 
-  // Check dynamic refresh and policy change to set restartRequired status
-  if (known_policy_schema) {
-    const policy::PolicyDetails* policy_details =
-        GetChromePolicyDetails(policy_name);
-    PolicyService* policy_service = GetPolicyService();
-
-    if (policy_details && !policy_details->supports_dynamic_refresh) {
-      bool policy_changed = false;
-      // Check if value has changed or policy is newly set
-      if (policy_service &&
-          policy_service->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME)) {
-        const base::Value* policy_value = policy.value_unsafe();
-        std::optional<size_t> current_value_hash;
-        if (policy_value) {
-          current_value_hash = PolicyValueHash(*policy_value);
-        }
-
-        std::optional<size_t> startup_value_hash =
-            policy_service->GetInitialChromePolicyValueHash(policy_name);
-
-        // A policy is considered changed if its current hash differs from its
-        // hash at startup. This covers cases where the policy was added,
-        // removed, or its value was modified.
-        policy_changed = (current_value_hash != startup_value_hash);
-      }
-      if (policy_changed) {
-        value.Set("restartRequired", true);
-      }
-    }
+  if (IsRestartRequired(policy_name, policy, known_policy_schema)) {
+    value.Set("restartRequired", true);
   }
 
   if (!policy.conflicts.empty()) {
@@ -408,10 +413,12 @@ base::DictValue PolicyConversionsClient::GetPolicyValues(
   for (const auto& entry : map) {
     const std::string& policy_name = entry.first;
     const PolicyMap::Entry& policy = entry.second;
-    if (policy.scope == POLICY_SCOPE_USER && !user_policies_enabled_)
+    if (policy.scope == POLICY_SCOPE_USER && !user_policies_enabled_) {
       continue;
-    if (policy.IsDefaultValue() && drop_default_values_enabled_)
+    }
+    if (policy.IsDefaultValue() && drop_default_values_enabled_) {
       continue;
+    }
     base::DictValue value =
         GetPolicyValue(policy_name, policy, deprecated_policies,
                        future_policies, errors, known_policy_schemas);
@@ -420,15 +427,51 @@ base::DictValue PolicyConversionsClient::GetPolicyValues(
   return values;
 }
 
+bool PolicyConversionsClient::IsRestartRequired(
+    const std::string& policy_name,
+    const PolicyMap::Entry& policy,
+    const std::optional<Schema>& known_policy_schema) const {
+  // Check dynamic refresh and policy change to set restartRequired status
+  if (!known_policy_schema) {
+    return false;
+  }
+  const policy::PolicyDetails* policy_details =
+      GetChromePolicyDetails(policy_name);
+  if (!policy_details || policy_details->supports_dynamic_refresh) {
+    return false;
+  }
+  // Check if value has changed or policy is newly set
+  PolicyService* policy_service = GetPolicyService();
+  if (!policy_service ||
+      !policy_service->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME)) {
+    return false;
+  }
+  const base::Value* policy_value = policy.value_unsafe();
+  std::optional<size_t> current_value_hash;
+  if (policy_value) {
+    current_value_hash = PolicyValueHash(*policy_value);
+  }
+
+  std::optional<size_t> startup_value_hash =
+      policy_service->GetInitialChromePolicyValueHash(policy_name);
+
+  // A policy is considered changed if its current hash differs from its
+  // hash at startup. This covers cases where the policy was added,
+  // removed, or its value was modified.
+  return current_value_hash != startup_value_hash;
+}
+
 std::optional<Schema> PolicyConversionsClient::GetKnownPolicySchema(
     const std::optional<PolicyConversions::PolicyToSchemaMap>&
         known_policy_schemas,
     const std::string& policy_name) const {
-  if (!known_policy_schemas.has_value())
+  if (!known_policy_schemas.has_value()) {
     return std::nullopt;
+  }
   auto known_policy_iterator = known_policy_schemas->find(policy_name);
-  if (known_policy_iterator == known_policy_schemas->end())
+  if (known_policy_iterator == known_policy_schemas->end()) {
     return std::nullopt;
+  }
   return known_policy_iterator->second;
 }
 
@@ -438,8 +481,9 @@ PolicyConversionsClient::GetKnownPolicies(
     const PolicyNamespace& policy_namespace) const {
   const Schema* schema = schema_map->GetSchema(policy_namespace);
   // There is no policy name verification without valid schema.
-  if (!schema || !schema->valid())
+  if (!schema || !schema->valid()) {
     return std::nullopt;
+  }
 
   // Build a vector first and construct the PolicyToSchemaMap (which is a
   // |flat_map|) from that. The reason is that insertion into a |flat_map| is
