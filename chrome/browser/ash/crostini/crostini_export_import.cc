@@ -497,6 +497,15 @@ void CrostiniExportImport::AfterDiskImageOperation(
                   CrostiniExportImportStatusTracker::Status::CANCELLING,
           base::NotFatalUntil::M160);
     RemoveTracker(it)->SetStatusFailedBadImage();
+  } else if (result == CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE &&
+             (it->second->type() == ExportImportType::IMPORT ||
+              it->second->type() == ExportImportType::IMPORT_DISK_IMAGE)) {
+    CHECK(it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::RUNNING ||
+              it->second->status() ==
+                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+          base::NotFatalUntil::M160);
+    RemoveTracker(it)->SetStatusFailedInsufficientSpaceUnknownAmount();
   } else {
     LOG(ERROR) << "Error exporting " << static_cast<int>(result);
     base::ThreadPool::PostTask(
@@ -817,7 +826,7 @@ void CrostiniExportImport::OnDiskImageProgress(
       it->second->SetStatusRunning(progress);
       break;
     case DiskImageProgressStatus::FAILURE_SPACE:
-      RemoveTracker(it)->SetStatusFailedInsufficientSpaceUnknownAmount();
+      // Handled in AfterDiskImageOperation.
       break;
     default:
       LOG(WARNING) << "Unknown disk image progress status: " << int(status);

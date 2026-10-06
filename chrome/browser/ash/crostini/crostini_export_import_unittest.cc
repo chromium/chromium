@@ -13,6 +13,8 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/run_until.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -394,6 +396,49 @@ TEST_F(CrostiniExportImportTest, TestExportDiskImageFail) {
   }
 }
 
+TEST_F(CrostiniExportImportTest, TestExportDiskImageFailSpace) {
+  crostini_export_import_->FillOperationData(
+      ExportImportType::EXPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return ash::FakeConciergeClient::Get()->export_disk_image_call_count() == 1;
+  }));
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification* notification =
+        GetNotification(default_container_id_);
+    ASSERT_NE(notification, nullptr);
+    notification_id = notification->id();
+    EXPECT_EQ(notification->progress(), 0);
+    EXPECT_TRUE(notification->pinned());
+  }
+
+  // Fails due to insufficient space.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_NOT_ENOUGH_SPACE, 0);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const message_center::Notification* ui_notification =
+        GetUiNotification(notification_id);
+    ASSERT_NE(ui_notification, nullptr);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Backup couldn't be completed due to an error");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_FALSE(base::PathExists(zipfile.path()));
+}
+
 TEST_F(CrostiniExportImportTest, TestExportDiskImageCancelled) {
   base::ScopedTempFile zipfile;
   EXPECT_TRUE(zipfile.Create());
@@ -639,6 +684,50 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageFail) {
     std::string msg("Restoring couldn't be completed due to an error");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
   }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageFailSpace) {
+  SetImportResponse();
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return ash::FakeConciergeClient::Get()->import_disk_image_call_count() == 1;
+  }));
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification* notification =
+        GetNotification(default_container_id_);
+    ASSERT_NE(notification, nullptr);
+    notification_id = notification->id();
+    EXPECT_EQ(notification->progress(), 0);
+    EXPECT_TRUE(notification->pinned());
+  }
+
+  // Fails due to insufficient space.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_NOT_ENOUGH_SPACE, 0);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const message_center::Notification* ui_notification =
+        GetUiNotification(notification_id);
+    ASSERT_NE(ui_notification, nullptr);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Cannot restore due to lack of storage space.");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::PathExists(zipfile.path()));
 }
 
 TEST_F(CrostiniExportImportTest, TestImportDiskImageCancelled) {

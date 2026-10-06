@@ -218,10 +218,14 @@ class CrostiniExportImport : public KeyedService,
                            TestExportDiskImageSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportDiskImageFail);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestExportDiskImageFailSpace);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestExportDiskImageCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportDiskImageFail);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportDiskImageFailSpace);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageCancelled);
 
