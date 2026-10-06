@@ -50,6 +50,14 @@ const char kImageFetcherUmaClient[] = "AccountFetcherService";
 const char AccountFetcherService::kLastUpdatePref[] =
     "account_tracker_service_last_update";
 
+AccountFetcherService::AccountFetchState::AccountFetchState() = default;
+AccountFetcherService::AccountFetchState::AccountFetchState(
+    AccountFetchState&&) = default;
+AccountFetcherService::AccountFetchState&
+AccountFetcherService::AccountFetchState::operator=(AccountFetchState&&) =
+    default;
+AccountFetcherService::AccountFetchState::~AccountFetchState() = default;
+
 // AccountFetcherService implementation
 AccountFetcherService::AccountFetcherService() = default;
 
@@ -96,11 +104,21 @@ void AccountFetcherService::Initialize(
 }
 
 bool AccountFetcherService::IsAllUserInfoFetched() const {
-  return user_info_requests_.empty();
+  for (const auto& [_, state] : account_fetches_) {
+    if (state.user_info_request) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool AccountFetcherService::AreAllAccountCapabilitiesFetched() const {
-  return account_capabilities_requests_.empty();
+  for (const auto& [_, state] : account_fetches_) {
+    if (state.capabilities_request) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void AccountFetcherService::OnNetworkInitialized() {
@@ -194,23 +212,21 @@ void AccountFetcherService::StartFetchingUserInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_fetches_enabled_);
 
-  if (!user_info_requests_.contains(account_id)) {
+  AccountFetchState& state = account_fetches_[account_id];
+  if (!state.user_info_request) {
     DVLOG(1) << "StartFetching " << account_id;
-    user_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
-    auto [it, inserted] = user_info_requests_.emplace(
-        account_id,
+    state.user_info_fetch_start_time = base::TimeTicks::Now();
+    state.user_info_request =
         account_fetcher_factory_->CreateAccountInfoFetcher(
             account_id,
             base::BindOnce(&AccountFetcherService::OnUserInfoFetchCompleted,
-                           base::Unretained(this), account_id)));
-    CHECK(inserted);
-    it->second->Start();
+                           base::Unretained(this), account_id));
+    state.user_info_request->Start();
   }
 }
 
 void AccountFetcherService::DestroyFetchers(const CoreAccountId& account_id) {
-  user_info_requests_.erase(account_id);
-  account_capabilities_requests_.erase(account_id);
+  account_fetches_.erase(account_id);
 }
 
 void AccountFetcherService::PrepareForFetchingAccountCapabilities() {
@@ -223,7 +239,7 @@ void AccountFetcherService::StartFetchingAccountCapabilities(
   DCHECK(network_fetches_enabled_);
 
   std::unique_ptr<AccountCapabilitiesFetcher>& request =
-      account_capabilities_requests_[core_account_info.account_id];
+      account_fetches_[core_account_info.account_id].capabilities_request;
   if (!request) {
     AccountInfo account_info =
         account_tracker_service_->GetAccountInfo(core_account_info.account_id);
@@ -287,23 +303,27 @@ void AccountFetcherService::OnUserInfoFetchCompleted(
                             fetched_account_info.has_value());
   if (!fetched_account_info) {
     LOG(WARNING) << "Failed to get UserInfo for " << account_id;
-    user_info_fetch_start_times_.erase(account_id);
-    // |account_id| is owned by the request. Cannot be used after this line.
-    user_info_requests_.erase(account_id);
+    if (auto it = account_fetches_.find(account_id);
+        it != account_fetches_.end()) {
+      it->second.user_info_fetch_start_time = base::TimeTicks();
+      it->second.user_info_request.reset();
+    }
     return;
   }
 
   account_tracker_service_->SetAccountInfoFromUserInfo(account_id,
                                                        *fetched_account_info);
-  auto it = user_info_fetch_start_times_.find(account_id);
-  if (it != user_info_fetch_start_times_.end()) {
-    base::UmaHistogramMediumTimes(
-        "Signin.AccountFetcher.AccountUserInfoFetchTime",
-        base::TimeTicks::Now() - it->second);
-    user_info_fetch_start_times_.erase(it);
+  if (auto it = account_fetches_.find(account_id);
+      it != account_fetches_.end()) {
+    if (!it->second.user_info_fetch_start_time.is_null()) {
+      base::UmaHistogramMediumTimes(
+          "Signin.AccountFetcher.AccountUserInfoFetchTime",
+          base::TimeTicks::Now() - it->second.user_info_fetch_start_time);
+      it->second.user_info_fetch_start_time = base::TimeTicks();
+    }
+    it->second.user_info_request.reset();
   }
   FetchAccountImage(account_id);
-  user_info_requests_.erase(account_id);
 }
 
 image_fetcher::ImageFetcherImpl*
@@ -380,8 +400,11 @@ void AccountFetcherService::OnSomeAccountCapabilitiesFetched(
 
 void AccountFetcherService::OnAccountCapabilitiesFetchComplete(
     const CoreAccountId& account_id) {
-  // |account_id| is owned by the request. Cannot be used after this line.
-  account_capabilities_requests_.erase(account_id);
+  if (auto it = account_fetches_.find(account_id);
+      it != account_fetches_.end()) {
+    // |account_id| is owned by the request. Cannot be used after this line.
+    it->second.capabilities_request.reset();
+  }
 }
 
 void AccountFetcherService::OnRefreshTokenAvailable(

@@ -7,11 +7,9 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -169,17 +167,22 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool enable_account_removal_for_test_ = false;
   std::unique_ptr<signin::PersistentRepeatingTimer> persistent_repeating_timer_;
 
-  // Holds references to account info fetchers keyed by account_id.
-  std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>
-      user_info_requests_;
+  struct AccountFetchState {
+    AccountFetchState();
+    AccountFetchState(AccountFetchState&&);
+    AccountFetchState& operator=(AccountFetchState&&);
+    ~AccountFetchState();
+
+    std::unique_ptr<AccountInfoFetcher> user_info_request;
+    std::unique_ptr<AccountCapabilitiesFetcher> capabilities_request;
+    base::TimeTicks user_info_fetch_start_time;
+  };
 
   std::unique_ptr<AccountFetcherFactory> account_fetcher_factory_;
-  std::map<CoreAccountId, std::unique_ptr<AccountCapabilitiesFetcher>>
-      account_capabilities_requests_;
 
-  // CoreAccountId and the corresponding fetch start time. These two member
-  // variables are only used to record account information fetch duration.
-  base::flat_map<CoreAccountId, base::TimeTicks> user_info_fetch_start_times_;
+  // Holds per-account info/capabilities fetchers and user info fetch start
+  // time keyed by account_id.
+  base::flat_map<CoreAccountId, AccountFetchState> account_fetches_;
 
   // Used for fetching the account images.
   std::unique_ptr<image_fetcher::ImageFetcherImpl> image_fetcher_;
