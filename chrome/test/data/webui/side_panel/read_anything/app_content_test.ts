@@ -291,6 +291,173 @@ suite('AppContent', () => {
     });
   });
 
+  suite('on links toggle', () => {
+    const linkId = 44;
+    const textId = 45;
+    const linkText = 'Try to keep it hidden';
+    const url = 'www.mountainview.gov';
+
+    setup(() => {
+      contentBrowserProxy.rootId = linkId;
+      contentBrowserProxy.htmlTagMap = {[linkId]: 'a'};
+      contentBrowserProxy.textContentMap = {[textId]: linkText};
+      contentBrowserProxy.childrenMap = {[linkId]: [textId]};
+      contentBrowserProxy.urlMap = {[linkId]: url};
+    });
+
+    test('shows links when enabled', async () => {
+      const expectedHtml = '<a href="' + url + '">' + linkText + '</a>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.linksEnabled = true;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+
+      assertEquals(
+          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
+    });
+
+    test('hides links when disabled', async () => {
+      const expectedHtml =
+          '<span data-link="' + url + '">' + linkText + '</span>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.linksEnabled = false;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+
+      assertEquals(
+          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
+    });
+  });
+
+  suite('on image toggle', () => {
+    const altText = 'No man is worth the aggravation';
+    const textNodeContent = 'Some text';
+
+    setup(() => {
+      contentBrowserProxy.rootId = 1;
+      contentBrowserProxy.htmlTagMap = {1: 'div', 2: 'img'};
+      contentBrowserProxy.altText = altText;
+      contentBrowserProxy.childrenMap = {1: [2, 3]};
+      contentBrowserProxy.textContentMap = {3: textNodeContent};
+    });
+
+    test('shows images when enabled', async () => {
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.imagesEnabled = true;
+      const expectedHtmlWithImage = '<div><canvas alt="' + altText +
+          '" class="downloaded-image"></canvas>' + textNodeContent + '</div>';
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+
+      assertEquals(expectedHtmlWithImage, app.$.container.innerHTML);
+    });
+
+    test('hides images when disabled', async () => {
+      const expectedHtml = '<div><canvas alt="' + altText +
+          '" class="downloaded-image" style="display: none;"></canvas>' +
+          textNodeContent + '</div>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.imagesEnabled = false;
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+
+      assertEquals(expectedHtml, app.$.container.innerHTML);
+    });
+
+    test(
+        'toggles between empty state and figure caption with screen2x',
+        async () => {
+          const captionText = 'The Cave of Zeus located on Mount Ida in Crete';
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeScreen2x;
+          contentBrowserProxy.hasValidSelectionVal = false;
+          contentBrowserProxy.rootId = 1;
+          contentBrowserProxy.htmlTagMap = {
+            1: 'article',
+            2: 'figure',
+            3: 'img',
+            4: 'figcaption',
+          };
+          contentBrowserProxy.childrenMap = {1: [2], 2: [3, 4], 4: [5]};
+          contentBrowserProxy.textContentMap = {5: captionText};
+          visualBrowserProxy.imagesEnabled = false;
+
+          app.updateContent();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+          await microtasksFinished();
+
+          assertTrue(contentController.isEmpty());
+          assertTrue(app.$.containerParent.hidden);
+          assertStringContains(emptyState.imagePath, 'empty_state.svg');
+
+          visualBrowserProxy.imagesEnabled = true;
+          emitEvent(app, ToolbarEvent.IMAGES);
+          await new Promise(resolve => requestAnimationFrame(resolve));
+          await microtasksFinished();
+
+          assertTrue(contentController.hasContent());
+          assertFalse(app.$.containerParent.hidden);
+          assertEquals(captionText, app.$.container.textContent);
+
+          visualBrowserProxy.imagesEnabled = false;
+          emitEvent(app, ToolbarEvent.IMAGES);
+          await microtasksFinished();
+
+          assertTrue(contentController.isEmpty());
+          assertTrue(app.$.containerParent.hidden);
+        });
+
+    test(
+        'toggles between empty state and figure caption with readability',
+        async () => {
+          const captionText = 'The Cave of Zeus located on Mount Ida in Crete';
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
+          contentBrowserProxy.hasValidSelectionVal = false;
+          contentBrowserProxy.htmlContent =
+              '<article class="article-content"><figure>' +
+              '<img src="zeus.jpg" alt="Zeus Sanctuary">' +
+              `<figcaption>${captionText}</figcaption></figure></article>`;
+          visualBrowserProxy.imagesEnabled = false;
+
+          app.updateContent();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+          await microtasksFinished();
+
+          assertTrue(contentController.isEmpty());
+          assertTrue(app.$.containerParent.hidden);
+          assertStringContains(emptyState.imagePath, 'empty_state.svg');
+
+          visualBrowserProxy.imagesEnabled = true;
+          emitEvent(app, ToolbarEvent.IMAGES);
+          await new Promise(resolve => requestAnimationFrame(resolve));
+          await microtasksFinished();
+
+          assertTrue(contentController.hasContent());
+          assertFalse(app.$.containerParent.hidden);
+          assertEquals(captionText, app.$.container.textContent);
+
+          visualBrowserProxy.imagesEnabled = false;
+          emitEvent(app, ToolbarEvent.IMAGES);
+          await microtasksFinished();
+
+          assertTrue(contentController.isEmpty());
+          assertTrue(app.$.containerParent.hidden);
+        });
+  });
+
   suite('on speech active change', () => {
     test('selection allowed by default', () => {
       assertEquals(

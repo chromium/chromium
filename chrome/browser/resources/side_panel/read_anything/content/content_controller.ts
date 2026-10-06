@@ -856,6 +856,13 @@ export class ContentController {
   }
 
   onRenderedTextBlocksAvailable(container: HTMLElement) {
+    const renderedTextNodes = getReadingModeTextNodes(container);
+
+    // Final check to ensure there are actually visible text nodes.
+    // Otherwise, a blank screen may be shown instead of the empty state
+    // page.
+    this.setEmptyIfNoTextNodesAvailable(renderedTextNodes);
+
     if (!isDistilledByReadability() ||
         !this.contentBrowserProxy_.isReadabilitySelectTextEnabled()) {
       return;
@@ -864,13 +871,31 @@ export class ContentController {
     // Capture the specific node instances currently rendered in the UI.
     // We store them in an array so that the index becomes the identifier that
     // links this node to its AXTree mapping in the renderer.
-    this.renderedTextNodes_ = getReadingModeTextNodes(container);
+    this.renderedTextNodes_ = renderedTextNodes;
 
     // Extract the raw text content from each node to send to the mapping
     // algorithm in the renderer.
     const blocks = this.renderedTextNodes_.map(n => n.textContent || '');
 
     this.contentBrowserProxy_.onRenderedTextBlocksAvailable(blocks);
+  }
+
+  setEmptyIfNoTextNodesAvailable(nodes: Node[]) {
+    if (!nodes || nodes.length === 0) {
+      this.setEmpty();
+    }
+  }
+
+  onImagesVisibilityChanged(container: HTMLElement, shadowRoot?: ShadowRoot) {
+    this.updateImages(shadowRoot);
+
+    // Toggling the images toggle may mean that reading mode is going from
+    // no content to content or from content to no content (e.g. on pages
+    // with no text outside of image captions), so recompute if there's
+    // distillable content each time Images are toggled. This is called in
+    // a wrapper for updateImages instead of in updateImages directly to
+    // avoid creating new tree walkers each time updateImages is called.
+    this.setEmptyIfNoTextNodesAvailable(getReadingModeTextNodes(container));
   }
 
   updateImages(shadowRoot?: ShadowRoot) {

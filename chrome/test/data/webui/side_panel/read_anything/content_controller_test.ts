@@ -1715,6 +1715,17 @@ suite('ContentController', () => {
 
         assertEquals(expectedHtml, shadowRoot.innerHTML);
       });
+
+      test('onImagesVisibilityChanged sets empty when caption hidden', () => {
+        const container = document.createElement('div');
+        container.appendChild(shadowRoot.firstElementChild!);
+        shadowRoot.appendChild(container);
+
+        visualBrowserProxy.imagesEnabled = false;
+        contentController.onImagesVisibilityChanged(container, shadowRoot);
+
+        assertTrue(contentController.isEmpty());
+      });
     });
 
     suite('with readability', () => {
@@ -1766,6 +1777,22 @@ suite('ContentController', () => {
         contentController.updateImages(shadowRoot);
         await microtasksFinished();
         assertEquals('none', figure.style.display);
+      });
+
+      test('onImagesVisibilityChanged sets empty when caption hidden', () => {
+        contentBrowserProxy.htmlContent =
+            '<figure><img src="foo.png"><figcaption>Caption</figcaption>' +
+            '</figure>';
+        const root = contentController.updateContent();
+        assertTrue(!!root);
+        const container = document.createElement('div');
+        container.appendChild(root);
+        shadowRoot.appendChild(container);
+
+        visualBrowserProxy.imagesEnabled = false;
+        contentController.onImagesVisibilityChanged(container, shadowRoot);
+
+        assertTrue(contentController.isEmpty());
       });
     });
   });
@@ -1834,6 +1861,20 @@ suite('ContentController', () => {
                        'onRenderedTextBlocksAvailable')[1] as string[];
       assertEquals(1, sentBlocks.length);
       assertEquals('Second call', sentBlocks[0]);
+    });
+
+    test('sets empty when container has no visible text nodes', () => {
+      const container = document.createElement('div');
+      const hidden = document.createElement('figure');
+      hidden.style.display = 'none';
+      hidden.textContent = 'Hidden caption';
+      container.appendChild(hidden);
+      document.body.appendChild(container);
+      contentController.setState(ContentType.HAS_CONTENT);
+
+      contentController.onRenderedTextBlocksAvailable(container);
+
+      assertTrue(contentController.isEmpty());
     });
   });
 

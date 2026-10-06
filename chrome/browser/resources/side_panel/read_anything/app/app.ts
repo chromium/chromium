@@ -426,7 +426,20 @@ export class AppElement extends AppElementBase implements SpeechListener,
       ...this.settingsPrefs_,
       imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
     };
-    this.updateImages_();
+    // Toggling the images toggle may mean that reading mode is going from
+    // no content to content or from content to no content (e.g. on pages
+    // with no text outside of image captions), so recompute if there's
+    // distillable content each time Images are toggled.
+    if (!this.computeHasContent()) {
+      this.updateContent();
+    } else {
+      this.onImagesVisibilityChanged_();
+    }
+  }
+
+  private onImagesVisibilityChanged_() {
+    this.contentController_.onImagesVisibilityChanged(
+        this.$.container, this.shadowRoot);
   }
 
   private updateImages_() {
