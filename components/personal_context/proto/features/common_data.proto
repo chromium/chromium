@@ -144,9 +144,19 @@ message SourceReference {
   }
 }
 
+// Surface-specific URL formats for accessing a Gmail message
+// across desktop and mobile browser/webview environments.
+message MessageUrls {
+  // Desktop web URL linking to the email message in Gmail.
+  string desktop_web_url = 1;
+
+  // Mobile web URL linking to the email message in Gmail.
+  string mobile_web_url = 2;
+}
+
 // Represents a reference to a Gmail message.
 message GmailReference {
-  // URL to the email message.
+  // URL to the email message. Prefer using message_urls if populated.
   string message_url = 1;
 
   // Subject of the email message.
@@ -154,6 +164,15 @@ message GmailReference {
 
   // Timestamp of the email message.
   DateTime timestamp = 3;
+
+  // URLs for desktop and mobile web environments.
+  MessageUrls message_urls = 4;
+
+  // Gmail storage id.
+  int64 message_id = 5;
+
+  // Gmail thread id.
+  int64 thread_id = 6;
 }
 
 // Represents a reference to a Photos item.
@@ -388,7 +407,7 @@ message DecryptedReference {
 }
 
 message DecryptedGmailMessage {
-  reserved 1, 3, 4, 7 to 13;
+  reserved 1, 3, 4, 9 to 12;
 
   // Subject of the message.
   string subject = 2;
@@ -396,8 +415,17 @@ message DecryptedGmailMessage {
   // Timestamp of the message.
   Timestamp timestamp = 5;
 
-  // URL to the email message.
+  // URL to the email message. Prefer using message_urls if populated.
   string message_url = 6;
+
+  // Gmail storage id.
+  int64 message_id = 7;
+
+  // Gmail thread id.
+  int64 thread_id = 8;
+
+  // URLs for desktop and mobile web environments.
+  MessageUrls message_urls = 13;
 }
 
 message DecryptedPhotosPhoto {
