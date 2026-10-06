@@ -3378,6 +3378,65 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       });
 
   test(
+      'updateInputForSelection clears inline autocompletion when advancing ' +
+          'focus to AIM button',
+      async () => {
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'test');
+
+        const matches = [
+          createSearchMatchForTesting({
+            fillIntoEdit: 'test default',
+            inlineAutocompletion: ' default',
+            allowedToBeDefaultMatch: true,
+          }),
+        ];
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'test',
+          matches: matches,
+        }));
+        await microtasksFinished();
+
+        // Default match has inline autocompletion.
+        element.setSelection(
+            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
+        await element.updateComplete;
+        (element as unknown as {
+          updateInputForSelection_: (s: unknown, k: string) => void,
+        })
+            .updateInputForSelection_(
+                {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+                'ArrowDown');
+        await microtasksFinished();
+        assertEquals('test default', mockInput.inputElement.value);
+        assertEquals(' default', mockInput.lastInput()?.inline);
+
+        // Advancing focus to AIM button clears inline autocompletion and
+        // restores the typed input text.
+        element.setSelection({
+          line: 0,
+          state: SelectionLineState.kFocusedButtonAim,
+          actionIndex: 0,
+        });
+        await element.updateComplete;
+        (element as unknown as {
+          updateInputForSelection_: (s: unknown, k: string) => void,
+        })
+            .updateInputForSelection_(
+                {
+                  line: 0,
+                  state: SelectionLineState.kFocusedButtonAim,
+                  actionIndex: 0,
+                },
+                'Tab');
+        await microtasksFinished();
+        assertEquals('test', mockInput.inputElement.value);
+        assertEquals('', mockInput.lastInput()?.inline);
+      });
+
+  test(
       'handleKeyNavigation allows native Tab focus from ' +
           'contextual-entrypoint slot',
       async () => {
