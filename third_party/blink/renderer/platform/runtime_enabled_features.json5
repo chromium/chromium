@@ -2379,8 +2379,7 @@
       copied_from_base_feature_if: "overridden",
       implied_by: [
         "WebMCPDeclarativeFileInput",
-        "WebMCPFormAssociatedCustomElements",
-        "WebMCPTesting"
+        "WebMCPFormAssociatedCustomElements"
       ],
       status: "experimental",
     },
@@ -7384,8 +7383,7 @@
       // Note that `depends_on` isn't supported by origin trials.
       implied_by: [
         "WebMCPDeclarativeFileInput",
-        "WebMCPFormAssociatedCustomElements",
-        "WebMCPTesting"
+        "WebMCPFormAssociatedCustomElements"
       ],
       status: "experimental",
     },
@@ -7397,10 +7395,6 @@
       // Support for form-associated custom elements in declarative
       // WebMCP tools.
       name: "WebMCPFormAssociatedCustomElements",
-      status: "experimental",
-    },
-    {
-      name: "WebMCPTesting",
       status: "experimental",
     },
     {

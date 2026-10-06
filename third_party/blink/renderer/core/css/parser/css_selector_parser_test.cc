@@ -1966,7 +1966,6 @@ TEST_P(LangParsingFlagDependentTest, ExtendedLangRangesParsing) {
 TEST(CSSSelectorParserTest, ToolFormSubmitActive_Disabled) {
   ScopedWebMCPForTest scoped_webmcp_feature(false);
   ScopedDeclarativeWebMCPForTest scoped_declarative_webmcp_feature(false);
-  ScopedWebMCPTestingForTest scoped_webmcp_testing_feature(false);
   ScopedWebMCPDeclarativeFileInputForTest scoped_webmcp_file_input_feature(
       false);
   ScopedWebMCPFormAssociatedCustomElementsForTest scoped_webmcp_face_feature(
