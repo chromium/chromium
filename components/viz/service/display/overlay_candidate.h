@@ -208,6 +208,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // |display_rect| before |clip_rect| was applied. Valid only for surface
   // control.
   gfx::RectF unclipped_display_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
+  // The `desiredRatio` to pass to
+  // ASurfaceTransaction_setExtendedRangeBrightness for this candidate, which is
+  // the HDR headroom that the system compositor should provide. A value of 1
+  // indicates that no HDR headroom is requested.
+  float desired_brightness_ratio = 1.f;
 #endif
 
   // Stacking order of the overlay plane relative to the main surface,

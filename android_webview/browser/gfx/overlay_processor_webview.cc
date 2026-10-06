@@ -595,7 +595,8 @@ class OverlayProcessorWebView::Manager
       transaction.SetScale(surface, scale_x, scale_y);
       transaction.SetCrop(surface, crop_rect);
       transaction.SetColorSpace(surface, resource->color_space(),
-                                gfx::HDRMetadata());
+                                gfx::HDRMetadata(),
+                                /*desired_brightness_ratio=*/1.f);
       transaction.SetBuffer(surface, buffer, resource->TakeBeginReadFence());
 
       if (gfx::SurfaceControl::SupportsSetFrameRate()) {

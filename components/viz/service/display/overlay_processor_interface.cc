@@ -223,13 +223,14 @@ OverlayCandidate OverlayProcessorInterface::CreatePrimaryPlane(
   overlay_plane.mailbox = params.overlay_testing_mailbox;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
   if (params.supports_hdr) {
-    overlay_plane.hdr_metadata.extended_range.emplace();
     // TODO(crbug.com/40263227): Track the actual brightness of the
     // content. For now, assume that all HDR content is 1,000 nits.
-    overlay_plane.hdr_metadata.extended_range->desired_headroom =
+    overlay_plane.desired_brightness_ratio =
         gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
   }
+#endif
 
   return overlay_plane;
 }

@@ -165,9 +165,14 @@ class COMPONENT_EXPORT(GFX) SurfaceControl {
                      gfx::OverlayTransform transform);
     void SetOpaque(const Surface& surface, bool opaque);
     void SetDamageRect(const Surface& surface, const gfx::Rect& rect);
+    // Sets the data space and HDR metadata for `surface`. If supported,
+    // `desired_brightness_ratio` is passed as the `desiredRatio` argument to
+    // ASurfaceTransaction_setExtendedRangeBrightness, and a value greater
+    // than 1 will also select an extended range data space.
     void SetColorSpace(const Surface& surface,
                        const ColorSpace& color_space,
-                       const HDRMetadata& metadata);
+                       const HDRMetadata& metadata,
+                       float desired_brightness_ratio);
     void SetFrameRate(const Surface& surface,
                       SurfaceControlFrameRate frame_rate);
     void SetParent(const Surface& surface, Surface* new_parent);

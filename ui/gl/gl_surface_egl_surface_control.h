@@ -100,6 +100,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
     bool opaque = true;
     gfx::ColorSpace color_space;
     gfx::HDRMetadata hdr_metadata;
+    float desired_brightness_ratio = 1.f;
     gfx::Rect damage_rect;
     bool is_root_overlay = false;
 

@@ -444,11 +444,16 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   }
 
   if (uninitialized || surface_state.color_space != image_color_space ||
-      surface_state.hdr_metadata != overlay_plane_data.hdr_metadata) {
+      surface_state.hdr_metadata != overlay_plane_data.hdr_metadata ||
+      surface_state.desired_brightness_ratio !=
+          overlay_plane_data.desired_brightness_ratio) {
     surface_state.color_space = image_color_space;
     surface_state.hdr_metadata = overlay_plane_data.hdr_metadata;
+    surface_state.desired_brightness_ratio =
+        overlay_plane_data.desired_brightness_ratio;
     pending_transaction_->SetColorSpace(
-        *surface_state.surface, image_color_space, surface_state.hdr_metadata);
+        *surface_state.surface, image_color_space, surface_state.hdr_metadata,
+        surface_state.desired_brightness_ratio);
   }
 
   if (frame_rate_update_pending_)

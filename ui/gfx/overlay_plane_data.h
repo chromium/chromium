@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -84,6 +85,14 @@ struct COMPONENT_EXPORT(GFX) OverlayPlaneData {
 
   // Optional HDR meta data required to display this overlay.
   HDRMetadata hdr_metadata;
+
+#if BUILDFLAG(IS_ANDROID)
+  // The `desiredRatio` to pass to
+  // ASurfaceTransaction_setExtendedRangeBrightness for this overlay, which is
+  // the HDR headroom that the system compositor should provide. A value of 1
+  // indicates that no HDR headroom is requested.
+  float desired_brightness_ratio = 1.f;
+#endif
 
   // Represents either a background of this overlay or a color of a solid color
   // quad, which can be checked via the |is_solid_color|.

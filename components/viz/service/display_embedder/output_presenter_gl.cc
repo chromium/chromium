@@ -134,23 +134,24 @@ void OutputPresenterGL::ScheduleOverlayPlane(
     acquire_fence = access->TakeAcquireFence();
   }
 
-  presenter_->ScheduleOverlayPlane(
-      std::move(overlay_image), std::move(acquire_fence),
-      gfx::OverlayPlaneData(
-          overlay_plane_candidate.plane_z_order,
-          overlay_plane_candidate.transform,
-          overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
-          !overlay_plane_candidate.is_opaque,
-          ToEnclosingRect(overlay_plane_candidate.damage_rect),
-          overlay_plane_candidate.opacity,
-          overlay_plane_candidate.priority_hint,
-          overlay_plane_candidate.rounded_corners,
-          overlay_plane_candidate.color_space,
-          overlay_plane_candidate.hdr_metadata, overlay_plane_candidate.color,
-          overlay_plane_candidate.is_solid_color,
-          overlay_plane_candidate.is_root_render_pass,
-          overlay_plane_candidate.clip_rect,
-          overlay_plane_candidate.overlay_type));
+  gfx::OverlayPlaneData overlay_plane_data(
+      overlay_plane_candidate.plane_z_order, overlay_plane_candidate.transform,
+      overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
+      !overlay_plane_candidate.is_opaque,
+      ToEnclosingRect(overlay_plane_candidate.damage_rect),
+      overlay_plane_candidate.opacity, overlay_plane_candidate.priority_hint,
+      overlay_plane_candidate.rounded_corners,
+      overlay_plane_candidate.color_space, overlay_plane_candidate.hdr_metadata,
+      overlay_plane_candidate.color, overlay_plane_candidate.is_solid_color,
+      overlay_plane_candidate.is_root_render_pass,
+      overlay_plane_candidate.clip_rect, overlay_plane_candidate.overlay_type);
+#if BUILDFLAG(IS_ANDROID)
+  overlay_plane_data.desired_brightness_ratio =
+      overlay_plane_candidate.desired_brightness_ratio;
+#endif
+  presenter_->ScheduleOverlayPlane(std::move(overlay_image),
+                                   std::move(acquire_fence),
+                                   std::move(overlay_plane_data));
 #elif BUILDFLAG(IS_APPLE)
   gfx::ScopedIOSurface io_surface;
   gfx::ColorSpace io_surface_color_space;
