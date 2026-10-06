@@ -46,22 +46,6 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
      * @param tab The live in-memory {@link Tab} instance.
      * @param placeholderTabId The placeholder tab ID associated with this background tab.
      * @param taskId The task ID associated with the background session, or null if none.
-     */
-    public LiveBackgroundTab(
-            BackgroundTabPool pool,
-            Tab tab,
-            @TabId int placeholderTabId,
-            @Nullable Integer taskId) {
-        this(pool, tab, placeholderTabId, taskId, TabModel.INVALID_TAB_INDEX);
-    }
-
-    /**
-     * Constructs a {@link LiveBackgroundTab} with an original tab index.
-     *
-     * @param pool The {@link BackgroundTabPool} that owns this tab.
-     * @param tab The live in-memory {@link Tab} instance.
-     * @param placeholderTabId The placeholder tab ID associated with this background tab.
-     * @param taskId The task ID associated with the background session, or null if none.
      * @param originalTabIndex The original tab model index before detachment, or {@link
      *     TabModel#INVALID_TAB_INDEX}.
      */

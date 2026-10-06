@@ -273,7 +273,12 @@ public class ActorTabStateHelperIntegrationTest {
                     BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
                     try {
                         LiveBackgroundTab liveTab =
-                                new LiveBackgroundTab(pool, mTab, placeholder.getId(), 100);
+                                new LiveBackgroundTab(
+                                        pool,
+                                        mTab,
+                                        placeholder.getId(),
+                                        100,
+                                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
                         pool.addLiveTab(liveTab);
 
                         // Execute restoration
@@ -340,7 +345,12 @@ public class ActorTabStateHelperIntegrationTest {
                     BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
                     try {
                         LiveBackgroundTab liveTab =
-                                new LiveBackgroundTab(pool, mTab, placeholder.getId(), 100);
+                                new LiveBackgroundTab(
+                                        pool,
+                                        mTab,
+                                        placeholder.getId(),
+                                        100,
+                                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
                         pool.addLiveTab(liveTab);
 
                         // Execute restoration
