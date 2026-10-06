@@ -60,6 +60,15 @@ Chromium builds, add `--enable-chrome-browser-cloud-management`:
   --device-management-url=http://127.0.0.1:6112/device_management"
 ```
 
+### Step 4: Test Your Feature
+
+Use server logs for debugging. `policies.json` should auto-reload without
+needing to restart the server. Use chrome://policy to load and reload policies
+after every change.
+
+Browser and profile reports are saved in human-readable .textproto files in
+`$HOME/dmserver_data`.
+
 ## 2. How to Set Valid Policies (`policies.json`)
 
 The `policies.json` file has a simple structure. The top-level keys are used to
