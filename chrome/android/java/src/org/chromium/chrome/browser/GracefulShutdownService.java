@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
@@ -16,7 +14,6 @@ import org.chromium.base.SplitCompatService;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -89,25 +86,6 @@ public class GracefulShutdownService extends SplitCompatService {
                         + finishingCount
                         + ")");
         return result;
-    }
-
-    /** Starts the GracefulShutdownService ONLY if the last open activity is dying. */
-    public static void maybeStartGracefulShutdown(Context context) {
-        if (!ChromeFeatureList.sTabAndroidGracefulShutdown.isEnabled()) {
-            return;
-        }
-        if (!isLastActivityDying()) {
-            return;
-        }
-        Log.i(TAG, "Starting GracefulShutdownService.");
-        try {
-            Intent intent = new Intent(context, GracefulShutdownService.class);
-            context.startForegroundService(intent);
-            recordStatus(Status.LAUNCH_ATTEMPTED);
-        } catch (Throwable e) {
-            recordStatus(Status.LAUNCH_FAILED);
-            Log.e(TAG, "Failed to start GracefulShutdownService", e);
-        }
     }
 
     public static void recordStatus(@Status int status) {

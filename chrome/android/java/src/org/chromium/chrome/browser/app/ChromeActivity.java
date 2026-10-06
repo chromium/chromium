@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.ConfirmQuitHelper;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.GracefulShutdownService;
+import org.chromium.chrome.browser.GracefulShutdownServiceImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.PlayServicesVersionInfo;
@@ -2068,7 +2069,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (ChromeFeatureList.sTabAndroidGracefulShutdown.isEnabled()
                 && status == TabDestroyStatus.SLOW_SHUTDOWN
                 && GracefulShutdownService.isLastActivityDying()) {
-            GracefulShutdownService.maybeStartGracefulShutdown(
+            GracefulShutdownServiceImpl.maybeStartGracefulShutdown(
                     ContextUtils.getApplicationContext());
         }
 
