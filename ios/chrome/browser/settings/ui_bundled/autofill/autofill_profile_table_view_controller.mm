@@ -85,7 +85,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
@@ -294,7 +294,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   TableViewTextItem* _walletPromoButtonItem;
 
   // Reauthentication module.
-  ReauthenticationModule* _reauthenticationModule;
+  id<ReauthenticationProtocol> _reauthenticationModule;
 
   // Coordinator to view/edit entity details.
   AutofillAIEntityEditCoordinator* _autofillAiEntityEditCoordinator;

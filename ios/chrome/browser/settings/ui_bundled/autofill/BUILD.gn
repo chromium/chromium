@@ -139,6 +139,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/autofill/ui_bundled/util",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/personal_context/model",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",

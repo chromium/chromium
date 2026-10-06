@@ -22,6 +22,8 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/settings/autofill/payments/ui/autofill_add_credit_card_view_controller.h"
 #import "ios/chrome/browser/settings/autofill/payments/ui/autofill_add_credit_card_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_edit_table_view_controller.h"
@@ -35,7 +37,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -111,9 +113,10 @@ class AutofillCreditCardTableViewControllerTest
 
   // Checks whether device reauth is supported.
   bool CheckCanAttemptReauth() {
-    ReauthenticationModule* reauthModule =
-        [[ReauthenticationModule alloc] init];
-    return [reauthModule canAttemptReauth];
+    id<ReauthenticationProtocol> reauth_module =
+        ReauthenticationServiceFactory::GetForProfile(profile_.get())
+            ->GetReauthModule();
+    return [reauth_module canAttemptReauth];
   }
 
   PrefService* local_state() {
