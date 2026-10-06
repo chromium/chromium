@@ -26,8 +26,6 @@ public class ContextualSearchFieldTrial {
     // ==========================================================================================
     // Params used elsewhere but gathered here since they may be present in FieldTrial configs.
     // A comma-separated list of lower-case ISO 639 language codes.
-    static final String RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST = "en";
-    private static final String RELATED_SEARCHES_CONFIG_DEFAULT_STAMP = "1Rs";
     private static final String RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP = "1Rsa";
 
     static final String CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME =
@@ -47,13 +45,12 @@ public class ContextualSearchFieldTrial {
 
     /**
      * Gets the "stamp" parameter from the RelatedSearches FieldTrial feature.
+     *
      * @return The stamp parameter from the feature. If no stamp param is present then an empty
-     *         string is returned.
+     *     string is returned.
      */
     static String getRelatedSearchesExperimentConfigurationStamp() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)
-                ? RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP
-                : RELATED_SEARCHES_CONFIG_DEFAULT_STAMP;
+        return RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP;
     }
 
     /** Return The minimum height dp for the contextual search page. */

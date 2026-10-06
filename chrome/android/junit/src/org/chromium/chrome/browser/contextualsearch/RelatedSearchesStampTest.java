@@ -31,15 +31,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 /** Tests the {@link RelatedSearchesStamp} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class RelatedSearchesStampTest {
-    /** The "stamp" encodes the experiment and its processing history, and is built from these. */
-    private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
-
     /**
-     * The stamps to use for various experiment configurations. Note that users still may need
-     * the ability to send everything in order to keep the experiment populations balanced.
+     * The stamps to use for various experiment configurations. Note that users still may need the
+     * ability to send everything in order to keep the experiment populations balanced.
      */
     private static final String EXPECTED_DEFAULT_STAMP = "1Rs";
-    private static final String EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED = "1Rsl";
+
     private static final String EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE = "1Rsa";
 
     /** The stamp CGI parameter. */
@@ -84,29 +81,13 @@ public class RelatedSearchesStampTest {
         mPolicy.overrideAllowSendingPageUrlForTesting(canSend);
     }
 
-    /**
-     * Sets whether the config specifies if the content can be any language to get any Related
-     * Searches.
-     */
-    private void setSupportAllLanguage(boolean support) {
-        FeatureOverrides.overrideFlag(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE, support);
-    }
-
     /** Sets whether the Related Searches switch is enabled. */
     private void setRelatedSearchesSwitch(boolean enable) {
         FeatureOverrides.overrideFlag(ChromeFeatureList.RELATED_SEARCHES_SWITCH, enable);
     }
 
-    /** Sets the standard config setup that we're using for Related Searches experiments. */
-    private void setStandardExperimentRequirements() {
-        // For experimentation we currently require all users have all the permissions
-        // for all experiment arms, and we restrict the language to English-only.
-        setSupportAllLanguage(false);
-    }
-
     /** Sets a standard config setup for the default Related Searches launch configuration. */
     private void setStandardDefaultLaunchConfiguration() {
-        setStandardExperimentRequirements();
         setCanSendUrl(true);
         setCanSendContent(true);
         setRelatedSearchesSwitch(true);
@@ -115,24 +96,6 @@ public class RelatedSearchesStampTest {
     // ====================================================================================
     // TESTS
     // ====================================================================================
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetRelatedSearchesStampForUnspecifiedExperiments() {
-        setStandardDefaultLaunchConfiguration();
-        // When there's no stamp in the config we expect to build a version-1 stamp.
-        // This can happen when flags are flipped manually.
-        assertThat(
-                "A config without any stamp should default to language restricted, but German is "
-                        + "still generating suggestions!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(""));
-        assertThat(
-                "A config without any stamp should default to language restricted with both kinds "
-                        + "of suggestions, but is not!",
-                mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(EXPECTED_DEFAULT_STAMP + RELATED_SEARCHES_LANGUAGE_RESTRICTION));
-    }
 
     @Test
     @Feature({"RelatedSearches", "RelatedSearchesStamp"})
@@ -158,39 +121,8 @@ public class RelatedSearchesStampTest {
 
     @Test
     @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampNotLanguageQualified() {
-        setStandardDefaultLaunchConfiguration();
-        assertFalse(
-                "A standard experiment with both inputs is not generating Related Searches for "
-                        + "English, but should!",
-                TextUtils.isEmpty(mStamp.getRelatedSearchesStamp(ENGLISH)));
-        assertTrue(
-                "A standard experiment with both inputs is generating Related Searches for German, "
-                        + "but should not!",
-                TextUtils.isEmpty(mStamp.getRelatedSearchesStamp(GERMAN)));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampLanguageRestricted() {
-        setStandardDefaultLaunchConfiguration();
-        assertThat(
-                "A launch configuration with multiple languages is not generating the expected "
-                        + "processing stamp for English!",
-                mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED));
-        assertThat(
-                "A launch configuration with multiple languages is generating Related Searches "
-                        + "when it should be language restricted for German!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(""));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
     public void testGetStampLanguageRestrictedForAllLanguages() {
         setStandardDefaultLaunchConfiguration();
-        setSupportAllLanguage(true);
         assertThat(
                 "A launch configuration with all languages support is not generating the expected "
                         + "processing stamp for English!",

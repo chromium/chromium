@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import android.net.Uri;
-import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,7 +30,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 class RelatedSearchesStamp {
     // Related Searches "stamp" building and accessing details.
     static final String STAMP_PARAMETER = "ctxsl_rs";
-    private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
 
@@ -102,21 +100,18 @@ class RelatedSearchesStamp {
             return "";
         }
 
-        boolean isLanguageRestricted = !TextUtils.isEmpty(getAllowedLanguages());
-        return buildRelatedSearchesStamp(isLanguageRestricted);
+        return ContextualSearchFieldTrial.getRelatedSearchesExperimentConfigurationStamp();
     }
 
     /**
-     * Determines if the current user is qualified for Related Searches. There may be language
-     * and privacy restrictions on whether users can activate Related Searches, and some of these
-     * requirements are determined at runtime based on Variations params.
+     * Determines if the current user is qualified for Related Searches. There may be privacy
+     * restrictions on whether users can activate Related Searches.
+     *
      * @param basePageLanguage The language of the page, to check for server support.
      * @return Whether the user could do a Related Searches request if Feature-enabled.
      */
     boolean isQualifiedForRelatedSearches(String basePageLanguage) {
-        return isLanguageQualified(basePageLanguage)
-                && mPolicy.hasSendUrlPermissions()
-                && mPolicy.isContextualSearchFullyEnabled();
+        return mPolicy.hasSendUrlPermissions() && mPolicy.isContextualSearchFullyEnabled();
     }
 
     /**
@@ -135,52 +130,5 @@ class RelatedSearchesStamp {
                         + RELATED_SEARCHES_SELECTED_POSITION
                         + suggestionIndex;
         return replaceQueryParam(searchUri, STAMP_PARAMETER, currentStamp + chosenPositionCode);
-    }
-
-    /**
-     * Checks if the language of the page qualifies for Related Searches.
-     * We check the Variations config for a parameter that lists allowed languages so we can know
-     * what the server currently supports. If there's no allow list then any language will work.
-     * @param basePageLanguage The language of the page, to check for server support.
-     * @return whether the supplied parameter satisfies the current language requirement.
-     */
-    private boolean isLanguageQualified(String basePageLanguage) {
-        String allowedLanguages = getAllowedLanguages();
-        return TextUtils.isEmpty(allowedLanguages) || allowedLanguages.contains(basePageLanguage);
-    }
-
-    /**
-     * Builds the "stamp" that tracks the processing of Related Searches and describes what was done
-     * at each stage using a shorthand notation. The notation is described in go/rsearches-dd here:
-     * http://doc/1DryD8NAP5LQAo326LnxbqkIDCNfiCOB7ak3gAYaNWAM#bookmark=id.nx7ivu2upqw
-     *
-     * <p>The first stage is built here: "1" for schema version one, "R" for the configuration
-     * Recipe which has a character describing how we'll formulate the search. Typically all of this
-     * comes from the Variations config at runtime. We programmatically append an "l" that indicates
-     * a language restriction (when present).
-     *
-     * @param isLanguageRestricted Whether there are any language restrictions needed by the server.
-     * @return A string that represents and encoded description of the current request processing.
-     */
-    private String buildRelatedSearchesStamp(boolean isLanguageRestricted) {
-        String ret = ContextualSearchFieldTrial.getRelatedSearchesExperimentConfigurationStamp();
-        if (isLanguageRestricted) {
-            ret += RELATED_SEARCHES_LANGUAGE_RESTRICTION;
-        }
-
-        return ret;
-    }
-
-    /**
-     * get the allowed languages for the related searches.
-     * @return A string that contains the allowed languages, or empty string which means all the
-     *         languages are allowed.
-     */
-    private String getAllowedLanguages() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)) {
-            return "";
-        }
-
-        return ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST;
     }
 }

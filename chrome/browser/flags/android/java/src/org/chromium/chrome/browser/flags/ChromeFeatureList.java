@@ -750,7 +750,6 @@ public abstract class ChromeFeatureList {
             "ReadAloudIPHMenuButtonHighlightCCT";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
-    public static final String RELATED_SEARCHES_ALL_LANGUAGE = "RelatedSearchesAllLanguage";
     public static final String RELATED_SEARCHES_SWITCH = "RelatedSearchesSwitch";
     public static final String RELATED_WEBSITE_SETS_UI = "RelatedWebsiteSetsUi";
     public static final String REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT =

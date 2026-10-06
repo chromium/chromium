@@ -6438,11 +6438,6 @@ inline constexpr char kReengagementNotificationDescription[] =
     "Enables Chrome to use the in-product help system to decide when "
     "to show re-engagement notifications.";
 
-inline constexpr char kRelatedSearchesAllLanguageName[] =
-    "Enables all the languages for Related Searches on Android";
-inline constexpr char kRelatedSearchesAllLanguageDescription[] =
-    "Enables requesting related searches suggestions for all the languages.";
-
 inline constexpr char kRelatedSearchesSwitchName[] =
     "Enables an experiment for Related Searches on Android";
 inline constexpr char kRelatedSearchesSwitchDescription[] =
