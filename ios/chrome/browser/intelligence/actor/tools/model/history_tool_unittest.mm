@@ -359,5 +359,134 @@ TEST_F(HistoryToolTest, Cancel_DuringNavigation_DoesNotRunCallback) {
   EXPECT_FALSE(future.IsReady());
 }
 
+// Test that HistoryTool ignores null navigation contexts while waiting for the
+// history navigation to finish.
+TEST_F(HistoryToolTest, Execute_IgnoresNullNavigationContext) {
+  CompletingFakeNavigationManager* nav_manager =
+      InsertWebStateWithNavigationManager(/*first_item_active=*/false);
+  nav_manager->set_auto_complete(false);
+  auto* web_state = static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetWebStateAt(0));
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
+      CreateToolAndValidate(action.back(), web_state);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web_state->OnNavigationStarted(nullptr);
+  web_state->OnNavigationFinished(nullptr);
+  EXPECT_FALSE(future.IsReady());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetHasCommitted(true);
+  web_state->OnNavigationStarted(&valid_context);
+  web_state->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that HistoryTool ignores same-document navigations while waiting for the
+// history navigation to finish.
+TEST_F(HistoryToolTest, Execute_IgnoresSameDocumentNavigation) {
+  CompletingFakeNavigationManager* nav_manager =
+      InsertWebStateWithNavigationManager(/*first_item_active=*/false);
+  nav_manager->set_auto_complete(false);
+  auto* web_state = static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetWebStateAt(0));
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
+      CreateToolAndValidate(action.back(), web_state);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web::FakeNavigationContext same_doc_context;
+  same_doc_context.SetIsSameDocument(true);
+  same_doc_context.SetHasCommitted(true);
+  web_state->OnNavigationStarted(&same_doc_context);
+  web_state->OnNavigationFinished(&same_doc_context);
+  EXPECT_FALSE(future.IsReady());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetHasCommitted(true);
+  web_state->OnNavigationStarted(&valid_context);
+  web_state->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that HistoryTool ignores renderer-initiated navigations while waiting
+// for the history navigation to finish.
+TEST_F(HistoryToolTest, Execute_IgnoresRendererInitiatedNavigation) {
+  CompletingFakeNavigationManager* nav_manager =
+      InsertWebStateWithNavigationManager(/*first_item_active=*/false);
+  nav_manager->set_auto_complete(false);
+  auto* web_state = static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetWebStateAt(0));
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
+      CreateToolAndValidate(action.back(), web_state);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web::FakeNavigationContext renderer_context;
+  renderer_context.SetIsRendererInitiated(true);
+  renderer_context.SetHasCommitted(true);
+  web_state->OnNavigationStarted(&renderer_context);
+  web_state->OnNavigationFinished(&renderer_context);
+  EXPECT_FALSE(future.IsReady());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetHasCommitted(true);
+  web_state->OnNavigationStarted(&valid_context);
+  web_state->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that HistoryTool ignores a concurrent navigation starting while the
+// tracked history navigation is already pending.
+TEST_F(HistoryToolTest, Execute_IgnoresConcurrentNavigation) {
+  CompletingFakeNavigationManager* nav_manager =
+      InsertWebStateWithNavigationManager(/*first_item_active=*/false);
+  nav_manager->set_auto_complete(false);
+  auto* web_state = static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetWebStateAt(0));
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
+      CreateToolAndValidate(action.back(), web_state);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetHasCommitted(true);
+  web_state->OnNavigationStarted(&valid_context);
+
+  web::FakeNavigationContext concurrent_context;
+  concurrent_context.SetHasCommitted(true);
+  web_state->OnNavigationStarted(&concurrent_context);
+  web_state->OnNavigationFinished(&concurrent_context);
+  EXPECT_FALSE(future.IsReady());
+
+  web_state->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
 }  // namespace
 }  // namespace actor

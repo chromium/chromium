@@ -185,9 +185,14 @@ std::string NavigateTool::DebugString() const {
 void NavigateTool::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!pending_navigation_id_.has_value() && navigation_context) {
-    pending_navigation_id_ = navigation_context->GetNavigationId();
+  if (pending_navigation_id_.has_value() || !navigation_context ||
+      navigation_context->IsSameDocument() ||
+      navigation_context->IsRendererInitiated() ||
+      navigation_context->GetUrl() != GURL(url_.value_or(""))) {
+    return;
   }
+
+  pending_navigation_id_ = navigation_context->GetNavigationId();
 }
 
 void NavigateTool::DidFinishNavigation(

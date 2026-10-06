@@ -628,4 +628,224 @@ TEST_F(NavigateToolTest, Cancel_BeforeGatingDecision_DoesNotLoadUrl) {
   EXPECT_TRUE(url_loading_observer_.last_url_.is_empty());
   EXPECT_FALSE(future.IsReady());
 }
+
+// Test that NavigateTool ignores null navigation contexts while waiting for the
+// target navigation to finish.
+TEST_F(NavigateToolTest, Execute_IgnoresNullNavigationContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kActorOriginGating);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  const GURL kTargetUrl("https://www.example.com/");
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kTargetUrl.spec());
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web_state_ptr->OnNavigationStarted(nullptr);
+  web_state_ptr->OnNavigationFinished(nullptr);
+  EXPECT_FALSE(future.IsReady());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetUrl(kTargetUrl);
+  valid_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&valid_context);
+  web_state_ptr->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that NavigateTool ignores same-document navigations while waiting for
+// the target navigation to finish.
+TEST_F(NavigateToolTest, Execute_IgnoresSameDocumentNavigation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kActorOriginGating);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  const GURL kTargetUrl("https://www.example.com/");
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kTargetUrl.spec());
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web::FakeNavigationContext same_doc_context;
+  same_doc_context.SetUrl(kTargetUrl);
+  same_doc_context.SetIsSameDocument(true);
+  same_doc_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&same_doc_context);
+  web_state_ptr->OnNavigationFinished(&same_doc_context);
+  EXPECT_FALSE(future.IsReady());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetUrl(kTargetUrl);
+  valid_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&valid_context);
+  web_state_ptr->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that NavigateTool ignores renderer-initiated navigations while waiting
+// for the target navigation to finish.
+TEST_F(NavigateToolTest, Execute_IgnoresRendererInitiatedNavigation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kActorOriginGating);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  const GURL kTargetUrl("https://www.example.com/");
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kTargetUrl.spec());
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web::FakeNavigationContext renderer_context;
+  renderer_context.SetUrl(kTargetUrl);
+  renderer_context.SetIsRendererInitiated(true);
+  renderer_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&renderer_context);
+  web_state_ptr->OnNavigationFinished(&renderer_context);
+  EXPECT_FALSE(future.IsReady());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetUrl(kTargetUrl);
+  valid_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&valid_context);
+  web_state_ptr->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that NavigateTool ignores navigations to a different URL while waiting
+// for the target navigation to finish.
+TEST_F(NavigateToolTest, Execute_IgnoresDifferentUrlNavigation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kActorOriginGating);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  const GURL kTargetUrl("https://www.example.com/");
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kTargetUrl.spec());
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web::FakeNavigationContext other_url_context;
+  other_url_context.SetUrl(GURL("https://www.other.com/"));
+  other_url_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&other_url_context);
+  web_state_ptr->OnNavigationFinished(&other_url_context);
+  EXPECT_FALSE(future.IsReady());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetUrl(kTargetUrl);
+  valid_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&valid_context);
+  web_state_ptr->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that NavigateTool ignores a concurrent navigation starting while the
+// target navigation is already pending.
+TEST_F(NavigateToolTest, Execute_IgnoresConcurrentNavigation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kActorOriginGating);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  const GURL kTargetUrl("https://www.example.com/");
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kTargetUrl.spec());
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  web::FakeNavigationContext valid_context;
+  valid_context.SetUrl(kTargetUrl);
+  valid_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&valid_context);
+
+  web::FakeNavigationContext concurrent_context;
+  concurrent_context.SetUrl(kTargetUrl);
+  concurrent_context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&concurrent_context);
+  web_state_ptr->OnNavigationFinished(&concurrent_context);
+  EXPECT_FALSE(future.IsReady());
+
+  web_state_ptr->OnNavigationFinished(&valid_context);
+  EXPECT_TRUE(future.Get().IsOk());
+}
 }  // namespace actor
