@@ -99,7 +99,7 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor filteredEntries_: MemoryBankEntry[] = [];
   protected accessor viewMode_: 'card'|'table' = 'table';
   protected accessor currentPage_: number = 0;
-  protected pageSize_: number = 7;
+  protected pageSize_: number = 10;
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
