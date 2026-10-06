@@ -10148,6 +10148,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_ACCENT_MENU_LABEL" desc="Dialog title label for a dialog with options for managing accent preferences for Read Aloud.">
         Change voice accent
       </message>
+      <message name="IDS_READING_MODE_MENU_ITEM_OPENS_DIALOG" desc="Visible text for a menu item in the Reading mode Audio menu that opens a dialog. Uses the existing title (MENU_ITEM) and appends an ellipsis.">
+        <ph name="MENU_ITEM">$1<ex>Change voice accent</ex></ph>...
+      </message>
       <message name="IDS_READING_MODE_SIDE_PANEL_PROMO"
                desc="Text for the in-product-help bubble shown for the reading mode bubble.">
         To show a simplified view of this page, open the side panel and select Reading mode

@@ -124,6 +124,14 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
     return item.opensDialog ? 'dialog' : nothing;
   }
 
+  // Returns the visible text for the item title. Items that open a dialog get a
+  // localized trailing ellipsis to indicate action.
+  protected getItemDisplayTitle_(item: MenuStateItem<unknown>): string {
+    return item.opensDialog ?
+        loadTimeData.getStringF('menuItemOpensDialogLabel', item.title) :
+        item.title;
+  }
+
   protected getItemIcon_(item: MenuStateItem<unknown>): string|null {
     if (item.itemType === SettingsItemType.ACTION) {
       return null;

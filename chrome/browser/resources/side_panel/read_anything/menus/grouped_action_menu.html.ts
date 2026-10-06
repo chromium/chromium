@@ -53,7 +53,7 @@ export function getHtml(this: GroupedActionMenuElement) {
               class="button-image has-icon-${!!item.icon}"
               icon="${item.icon || ''}">
           </cr-icon>
-          ${item.title}
+          ${this.getItemDisplayTitle_(item)}
         </button>
       `)}
     `)}

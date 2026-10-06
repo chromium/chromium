@@ -104,8 +104,6 @@ export class AudioMenuElement extends AudioMenuElementBase implements
       items:
           [
             {
-              // TODO (crbug.com/562064993): Include trailing ellipsis for
-              // ACTION menu items.
               title: loadTimeData.getString('voiceSelectionLabel'),
               icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled')?
               'read-anything:voice-selection':

@@ -308,4 +308,50 @@ suite('AudioMenuElement', () => {
     // Highlight options act immediately, so they have no popup.
     assertFalse(buttons[2]!.hasAttribute('aria-haspopup'));
   });
+
+  test('voice and accent items show a trailing ellipsis', async () => {
+    createAudioMenu();
+    await microtasksFinished();
+
+    const buttons = getItemsInMenu(audioMenu.$.menu.$.lazyMenu);
+    assertTrue(buttons.length >= 3);
+
+    const voiceTitle = loadTimeData.getString('voiceSelectionLabel');
+    assertEquals(
+        loadTimeData.getStringF('menuItemOpensDialogLabel', voiceTitle),
+        buttons[0]!.textContent.trim());
+    assertEquals(voiceTitle, buttons[0]!.getAttribute('aria-label'));
+    assertEquals(voiceTitle, buttons[0]!.getAttribute('title'));
+
+    const accentTitle = loadTimeData.getString('accentMenuLabel');
+    assertEquals(
+        loadTimeData.getStringF('menuItemOpensDialogLabel', accentTitle),
+        buttons[1]!.textContent.trim());
+    assertEquals(accentTitle, buttons[1]!.getAttribute('aria-label'));
+    assertEquals(accentTitle, buttons[1]!.getAttribute('title'));
+
+    // Highlight options act immediately, so they have no ellipsis.
+    const highlightTitle = audioMenu.$.menu.menuGroups[1]!.items[0]!.title;
+    assertEquals(highlightTitle, buttons[2]!.textContent.trim());
+  });
+
+  test('voice item ellipsis follows selectedVoice', async () => {
+    createAudioMenu();
+    await microtasksFinished();
+    // Stamp the lazy menu before the voice changes so the re-render path is
+    // exercised, not just the initial render.
+    getItemsInMenu(audioMenu.$.menu.$.lazyMenu);
+
+    const voice = createSpeechSynthesisVoice(
+        {name: 'Google US English (Natural)', lang: 'en-US'});
+    audioMenu.selectedVoice = voice;
+    await microtasksFinished();
+
+    const voiceButton = getItemsInMenu(audioMenu.$.menu.$.lazyMenu)[0]!;
+    assertEquals(
+        loadTimeData.getStringF('menuItemOpensDialogLabel', voice.name),
+        voiceButton.textContent.trim());
+    assertEquals(voice.name, voiceButton.getAttribute('aria-label'));
+    assertEquals(voice.name, voiceButton.getAttribute('title'));
+  });
 });

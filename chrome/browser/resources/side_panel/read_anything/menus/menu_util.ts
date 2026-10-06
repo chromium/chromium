@@ -49,7 +49,7 @@ export interface SettingsItem {
 // Represents a single menu item in a dropown menu in the toolbar.
 export interface MenuStateItem<T> {
   data: T;        // The value that is propagated when this item is selected.
-  title: string;  // The visible text for this item.
+  title: string;  // The undecorated name of this item.
   selected?: boolean;  // Whether this item is currently selected.
   icon?: string;   // An optional icon that is displayed next to the title.
   style?: string;  // An optional string for styling each item.
@@ -61,8 +61,10 @@ export interface MenuStateItem<T> {
   // Optional event name override. If omitted, falls back to group.eventName.
   eventName?: string;
   // Set when activating this item opens a dialog instead of taking immediate
-  // action. This is surfaced as aria-haspopup="dialog" so assistive technology
-  // announces that the item opens another surface.
+  // action. grouped-action-menu surfaces this as aria-haspopup="dialog" so
+  // assistive technology announces that the item opens another surface, and
+  // has a localized trailing ellipsis on the visible text only (aria-label and
+  // title are not decorated).
   opensDialog?: boolean;
 }
 

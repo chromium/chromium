@@ -215,6 +215,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"voiceLabel", IDS_READING_MODE_VOICE_LABEL},
       {"accentMenuLabel", IDS_READING_MODE_ACCENT_MENU_LABEL},
       {"accentMenuClose", IDS_READING_MODE_ACCENT_MENU_CLOSE},
+      {"menuItemOpensDialogLabel", IDS_READING_MODE_MENU_ITEM_OPENS_DIALOG},
       {"cancel", IDS_CANCEL},
       {"save", IDS_SAVE},
   };
