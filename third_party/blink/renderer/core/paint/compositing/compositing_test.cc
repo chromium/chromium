@@ -4390,16 +4390,16 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
   EXPECT_GT(GetPictureLayerTotalOpCount(child_b_layer), 0u);
   EXPECT_GT(GetPictureLayerTotalOpCount(child_c_layer), 0u);
 
-  // Ensure canvas_child_id is set correctly.
+  // Ensure canvas_drawable_id is set correctly.
   auto* child_a = GetElementById("child_a");
   auto child_a_id = CompositorElementIdFromDOMNodeId(child_a->GetDomNodeId());
-  EXPECT_EQ(child_a_layer->canvas_child_id(), child_a_id);
+  EXPECT_EQ(child_a_layer->canvas_drawable_id(), child_a_id);
   auto* child_b = GetElementById("child_b");
   auto child_b_id = CompositorElementIdFromDOMNodeId(child_b->GetDomNodeId());
-  EXPECT_EQ(child_b_layer->canvas_child_id(), child_b_id);
+  EXPECT_EQ(child_b_layer->canvas_drawable_id(), child_b_id);
   auto* child_c = GetElementById("child_c");
   auto child_c_id = CompositorElementIdFromDOMNodeId(child_c->GetDomNodeId());
-  EXPECT_EQ(child_c_layer->canvas_child_id(), child_c_id);
+  EXPECT_EQ(child_c_layer->canvas_drawable_id(), child_c_id);
 
   // Move #child_a out of the canvas and ensure the layers update.
   GetDocument().body()->appendChild(child_a);
@@ -4415,7 +4415,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
   child_a_layer = CcLayerByDOMElementId("child_a");
   EXPECT_TRUE(child_a_layer);
   EXPECT_GT(GetPictureLayerTotalOpCount(child_a_layer), 0u);
-  EXPECT_EQ(child_a_layer->canvas_child_id(), child_a_id);
+  EXPECT_EQ(child_a_layer->canvas_drawable_id(), child_a_id);
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_wct"));
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
 
@@ -4477,41 +4477,41 @@ TEST_P(CompositingSimTest, CanvasDrawDescendantsLayers) {
   EXPECT_FALSE(CcLayerByDOMElementId("aac"));
   EXPECT_FALSE(CcLayerByDOMElementId("ab"));
 
-  // Ensure canvas_child_id is set correctly for all layers.
+  // Ensure canvas_drawable_id is set correctly for all layers.
   Element* el = GetElementById("aa");
   auto el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
-  EXPECT_EQ(aa_layer->canvas_child_id(), el_id);
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_EQ(aa_layer->canvas_drawable_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       el->GetDomNodeId()));
 
   el = GetElementById("aab");
   el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
-  EXPECT_EQ(aab_layer->canvas_child_id(), el_id);
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_EQ(aab_layer->canvas_drawable_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       el->GetDomNodeId()));
 
   el = GetElementById("b");
   el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
-  EXPECT_EQ(b_layer->canvas_child_id(), el_id);
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_EQ(b_layer->canvas_drawable_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       el->GetDomNodeId()));
 
   el = GetElementById("ba");
   el_id = CompositorElementIdFromDOMNodeId(el->GetDomNodeId());
-  EXPECT_EQ(ba_layer->canvas_child_id(), el_id);
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_EQ(ba_layer->canvas_drawable_id(), el_id);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       el->GetDomNodeId()));
 
   // Verify non-drawable elements do not have paint records of their own.
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("a")->GetDomNodeId()));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("aaa")->GetDomNodeId()));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("aaba")->GetDomNodeId()));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("aac")->GetDomNodeId()));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("ab")->GetDomNodeId()));
 
   // Remove drawable attribute and re-verify
@@ -4520,7 +4520,7 @@ TEST_P(CompositingSimTest, CanvasDrawDescendantsLayers) {
                       ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(CcLayerByDOMElementId("aab"));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       el->GetDomNodeId()));
 }
 
@@ -4538,10 +4538,11 @@ TEST_P(CompositingSimTest, NestedDrawableOverlapPaintRecordLoss) {
   )HTML");
   Compositor().BeginFrame();
 
-  auto parent_record = paint_artifact_compositor()->GetCanvasChildPaintRecord(
-      GetElementById("parent")->GetDomNodeId());
+  auto parent_record =
+      paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
+          GetElementById("parent")->GetDomNodeId());
   ASSERT_TRUE(parent_record);
-  auto child_record = paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  auto child_record = paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("child")->GetDomNodeId());
   ASSERT_TRUE(child_record);
 
@@ -4614,23 +4615,23 @@ TEST_P(CompositingSimTest, NestedCanvasDrawElementLayers) {
   EXPECT_GT(GetPictureLayerTotalOpCount(nested_canvas_target_a_layer), 0u);
   EXPECT_GT(GetPictureLayerTotalOpCount(nested_canvas_target_b_layer), 0u);
 
-  // Ensure canvas_child_id is set correctly.
+  // Ensure canvas_drawable_id is set correctly.
   auto* target = GetElementById("target");
   auto target_id = CompositorElementIdFromDOMNodeId(target->GetDomNodeId());
-  EXPECT_EQ(target_layer->canvas_child_id(), target_id);
+  EXPECT_EQ(target_layer->canvas_drawable_id(), target_id);
   auto* nested_canvas_target_a = GetElementById("nested_canvas_target_a");
   auto nested_canvas_target_a_id =
       CompositorElementIdFromDOMNodeId(nested_canvas_target_a->GetDomNodeId());
-  EXPECT_EQ(nested_canvas_target_a_layer->canvas_child_id(),
+  EXPECT_EQ(nested_canvas_target_a_layer->canvas_drawable_id(),
             nested_canvas_target_a_id);
   auto* nested_canvas_target_b = GetElementById("nested_canvas_target_b");
   auto nested_canvas_target_b_id =
       CompositorElementIdFromDOMNodeId(nested_canvas_target_b->GetDomNodeId());
-  EXPECT_EQ(nested_canvas_target_b_layer->canvas_child_id(),
+  EXPECT_EQ(nested_canvas_target_b_layer->canvas_drawable_id(),
             nested_canvas_target_b_id);
 }
 
-TEST_P(CompositingSimTest, CanvasChildPaintRecordWithNestedCanvas) {
+TEST_P(CompositingSimTest, CanvasDrawablePaintRecordWithNestedCanvas) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
 
   InitializeWithHTML(R"HTML(
@@ -4657,14 +4658,14 @@ TEST_P(CompositingSimTest, CanvasChildPaintRecordWithNestedCanvas) {
 
   // Direct children of the nested canvas should get a layer.
   EXPECT_TRUE(CcLayerByDOMElementId("nested_child"));
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("nested_child")->GetDomNodeId()));
 
   // The parent canvas child's paint record should contain the rendering of the
   // nested canvas (e.g., as a DrawImage, DrawImageRect, or DrawRecord op)
   // replacing the placeholder.
   auto parent_child_record =
-      paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
           GetElementById("parent_child")->GetDomNodeId());
   EXPECT_TRUE(parent_child_record);
   EXPECT_FALSE(parent_child_record->record.empty());
@@ -4702,13 +4703,13 @@ TEST_P(CompositingSimTest, DirectChildNestedCanvasDrawElementLayers) {
 
   // The nested canvas paint record should be retrievable for parent_canvas.
   auto nested_canvas_record =
-      paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
           GetElementById("nested_canvas")->GetDomNodeId());
   EXPECT_TRUE(nested_canvas_record);
 
   // The nested child paint record should be retrievable for nested_canvas.
   auto nested_child_record =
-      paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
           GetElementById("nested_child")->GetDomNodeId());
   EXPECT_TRUE(nested_child_record);
 }
@@ -4741,12 +4742,12 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithWillChange) {
 
   // Direct children of canvas get a layer.
   EXPECT_TRUE(CcLayerByDOMElementId("target"));
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("target")->GetDomNodeId()));
 
   // Composited content under canvas, other than direct children, is disabled.
   EXPECT_FALSE(CcLayerByDOMElementId("willchange"));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("willchange")->GetDomNodeId()));
 }
 
@@ -4786,16 +4787,16 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrolling) {
   // Direct children of canvas get a layer.
   auto* target_layer = CcLayerByDOMElementId("target");
   EXPECT_TRUE(target_layer);
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("target")->GetDomNodeId()));
 
   // Composited content under canvas, other than direct children, is disabled.
   EXPECT_FALSE(CcLayerByDOMElementId("scroller"));
   auto* scroller_element = GetElementById("scroller");
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       scroller_element->GetDomNodeId()));
   EXPECT_FALSE(CcLayerByDOMElementId("scrolled"));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("scrolled")->GetDomNodeId()));
 
   // The scroller should have a main-thread scroll hit test region in the
@@ -4813,15 +4814,15 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrolling) {
   // Direct children of canvas get a layer.
   target_layer = CcLayerByDOMElementId("target");
   EXPECT_TRUE(target_layer);
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("target")->GetDomNodeId()));
 
   // Composited content under canvas, other than direct children, is disabled.
   EXPECT_FALSE(CcLayerByDOMElementId("scroller"));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       scroller_element->GetDomNodeId()));
   EXPECT_FALSE(CcLayerByDOMElementId("scrolled"));
-  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("scrolled")->GetDomNodeId()));
 
   // The scroller should have a main-thread scroll hit test region in the
@@ -4947,7 +4948,7 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrollableDrawnElement) {
   // Direct children of canvas get a layer.
   auto* scroller_layer = CcLayerByDOMElementId("scroller");
   EXPECT_TRUE(scroller_layer);
-  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
       GetElementById("scroller")->GetDomNodeId()));
 
   // Main thread hit test regions should be emitted for scrollable content

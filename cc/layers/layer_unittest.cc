@@ -1859,7 +1859,7 @@ TEST_F(LayerTest, UpdatingCaptureBounds) {
   EXPECT_TRUE(layer->subtree_property_changed());
 }
 
-TEST_F(LayerTest, PushCanvasChildId) {
+TEST_F(LayerTest, PushCanvasDrawableId) {
   scoped_refptr<Layer> layer = Layer::Create();
   std::unique_ptr<LayerImpl> layer_impl =
       LayerImpl::Create(host_impl_.active_tree(), layer->id());
@@ -1872,19 +1872,19 @@ TEST_F(LayerTest, PushCanvasChildId) {
   layer->SetLayerTreeHost(layer_tree_host_.get());
 
   ElementId id(123);
-  layer->SetCanvasChildId(id);
-  EXPECT_EQ(id, layer->canvas_child_id());
-  EXPECT_EQ(ElementId(), layer_impl->canvas_child_id());
+  layer->SetCanvasDrawableId(id);
+  EXPECT_EQ(id, layer->canvas_drawable_id());
+  EXPECT_EQ(ElementId(), layer_impl->canvas_drawable_id());
 
   CommitAndPushProperties(layer.get(), layer_impl.get());
-  EXPECT_EQ(id, layer_impl->canvas_child_id());
+  EXPECT_EQ(id, layer_impl->canvas_drawable_id());
 
   // Reset to invalid
-  layer->SetCanvasChildId(ElementId());
-  EXPECT_EQ(ElementId(), layer->canvas_child_id());
+  layer->SetCanvasDrawableId(ElementId());
+  EXPECT_EQ(ElementId(), layer->canvas_drawable_id());
 
   CommitAndPushProperties(layer.get(), layer_impl.get());
-  EXPECT_EQ(ElementId(), layer_impl->canvas_child_id());
+  EXPECT_EQ(ElementId(), layer_impl->canvas_drawable_id());
 
   layer->SetLayerTreeHost(nullptr);
 }

@@ -58,7 +58,7 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
     BoxDrawingRecorder recorder(context, layout_html_canvas_, paint_info.phase,
                                 paint_offset);
     // For nested canvases in a canvas subtree, record a placeholder
-    // CustomDataOp with the DOMNodeId. When GetCanvasChildPaintRecord() is
+    // CustomDataOp with the DOMNodeId. When GetCanvasDrawablePaintRecord() is
     // called, this placeholder is replaced with the nested canvas's actual
     // unaccelerated snapshot.
     context.Canvas()->recordCustomData(

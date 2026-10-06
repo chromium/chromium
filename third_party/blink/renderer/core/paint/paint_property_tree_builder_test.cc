@@ -8376,7 +8376,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasClipPropertyTree) {
   ASSERT_TRUE(canvas_clip);
   EXPECT_TRUE(canvas_clip->LayoutClipRect().IsInfinite());
   ASSERT_TRUE(properties->Effect());
-  EXPECT_EQ(canvas_clip, &properties->Effect()->CanvasChildContentClip());
+  EXPECT_EQ(canvas_clip, &properties->Effect()->CanvasDrawableContentClip());
 
   target_element->SetCanvasClip(FloatClipRect(gfx::RectF(10, 20, 30, 40)));
   UpdateAllLifecyclePhasesExceptPaint();

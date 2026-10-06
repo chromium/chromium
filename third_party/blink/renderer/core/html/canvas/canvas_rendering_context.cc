@@ -191,9 +191,9 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
   return true;
 }
 
-std::optional<CanvasChildPaintRecord>
-CanvasRenderingContext::GetChildPaintRecord(Element* element) {
-  return Host()->GetCanvasChildPaintRecord(element->GetDomNodeId());
+std::optional<CanvasDrawablePaintRecord>
+CanvasRenderingContext::GetDrawablePaintRecord(Element* element) {
+  return Host()->GetCanvasDrawablePaintRecord(element->GetDomNodeId());
 }
 
 scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
@@ -211,16 +211,16 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     return nullptr;
   }
 
-  std::optional<CanvasChildPaintRecord> child_paint_record;
+  std::optional<CanvasDrawablePaintRecord> drawable_paint_record;
   if (element->IsElement()) {
-    child_paint_record = GetChildPaintRecord(element->GetAsElement());
+    drawable_paint_record = GetDrawablePaintRecord(element->GetAsElement());
   } else {
     if (const auto& record = element->GetAsElementImage()->PaintRecord()) {
-      child_paint_record = *record;
+      drawable_paint_record = *record;
     }
   }
 
-  if (!child_paint_record) {
+  if (!drawable_paint_record) {
     if (element->IsElementImage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "The ElementImage has been closed.");
@@ -232,9 +232,9 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   }
 
   // Element size in physical coordinates.
-  gfx::RectF src_rect(child_paint_record->paint_state.box_size);
+  gfx::RectF src_rect(drawable_paint_record->paint_state.box_size);
   if (sx && sy && swidth && sheight) {
-    float dpr = child_paint_record->paint_state.effective_zoom;
+    float dpr = drawable_paint_record->paint_state.effective_zoom;
     AdjustRectForCanvas(*sx, *sy, *swidth, *sheight);
     src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
@@ -244,8 +244,8 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   // the same proportions when appearing inside the canvas as it would have
   // were it painted outside the canvas.
   gfx::SizeF intrinsic_size(src_rect.size());
-  gfx::Vector2dF canvas_scale =
-      GetCanvasGridScaleFactor(child_paint_record->paint_state, Host()->Size());
+  gfx::Vector2dF canvas_scale = GetCanvasGridScaleFactor(
+      drawable_paint_record->paint_state, Host()->Size());
   intrinsic_size.Scale(canvas_scale.x(), canvas_scale.y());
   gfx::Size intrinsic_dest_size = gfx::ToCeiledSize(intrinsic_size);
   gfx::Size dest_size(intrinsic_dest_size);
@@ -262,7 +262,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   auto draw_to_canvas = [&](cc::PaintCanvas& canvas) {
     canvas.scale(canvas_scale.x(), canvas_scale.y());
     canvas.translate(-src_rect.x(), -src_rect.y());
-    canvas.drawPicture(child_paint_record->record);
+    canvas.drawPicture(drawable_paint_record->record);
   };
 
   if (base::FeatureList::IsEnabled(kAllowAcceleratedTexElement) &&
@@ -272,13 +272,13 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
           dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage, draw_to_canvas,
-          child_paint_record->paint_state.animated_image_frame_index_map);
+          drawable_paint_record->paint_state.animated_image_frame_index_map);
     }
   }
 
   return UnacceleratedStaticBitmapImage::CreateFromRaster(
       dest_size, draw_to_canvas,
-      child_paint_record->paint_state.animated_image_frame_index_map);
+      drawable_paint_record->paint_state.animated_image_frame_index_map);
 }
 
 void CanvasRenderingContext::DidDraw(

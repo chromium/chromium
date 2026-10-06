@@ -10756,7 +10756,7 @@ void Element::RequestCanvasPaintOnDrawableRemoved() {
   if (DOMNodeId dom_node_id = DOMNodeIds::ExistingIdForNode(this)) {
     if (auto* view = GetDocument().View()) {
       if (auto* pac = view->GetPaintArtifactCompositor()) {
-        if (const auto* state = pac->GetCanvasChildPaintState(dom_node_id)) {
+        if (const auto* state = pac->GetCanvasDrawablePaintState(dom_node_id)) {
           if (auto* canvas = DynamicTo<HTMLCanvasElement>(
                   DOMNodeIds::NodeForId(state->canvas_node_id));
               canvas && canvas->IsContentDrawable()) {

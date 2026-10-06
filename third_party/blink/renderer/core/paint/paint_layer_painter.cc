@@ -344,7 +344,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   bool is_canvas_drawable_element = false;
   if (const auto* properties = object.FirstFragment().PaintProperties()) {
     if (const auto* effect = properties->Effect()) {
-      if (effect->HasCanvasChildState()) {
+      if (effect->HasCanvasDrawableState()) {
         is_canvas_drawable_element = true;
       }
     }
@@ -554,7 +554,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       paint_layer_.SelfOrDescendantNeedsRepaint()) {
     auto* element = To<Element>(object.GetNode());
     if (auto* canvas = element->CanvasForDrawing()) {
-      object.GetFrameView()->DidPaintCanvasChild(*canvas, *element);
+      object.GetFrameView()->DidPaintCanvasDrawable(*canvas, *element);
     }
   }
 

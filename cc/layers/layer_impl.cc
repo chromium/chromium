@@ -425,9 +425,9 @@ void LayerImpl::SetTrackedElementRects(viz::TrackedElementRects rects) {
   }
 }
 
-void LayerImpl::SetCanvasChildId(ElementId id) {
+void LayerImpl::SetCanvasDrawableId(ElementId id) {
   if (rare_properties_ || id) {
-    EnsureRareProperties().canvas_child_id = id;
+    EnsureRareProperties().canvas_drawable_id = id;
     SetNeedsPushProperties();
   }
 }

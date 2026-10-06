@@ -1252,16 +1252,16 @@ void Layer::SetXrHitTestOrder(std::vector<ElementId> xr_hit_test_order) {
 }
 #endif
 
-void Layer::SetCanvasChildId(ElementId id) {
+void Layer::SetCanvasDrawableId(ElementId id) {
   DCHECK(IsPropertyChangeAllowed());
   const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
   if (!rare_inputs && !id) {
     return;
   }
-  if (rare_inputs && rare_inputs->canvas_child_id == id) {
+  if (rare_inputs && rare_inputs->canvas_drawable_id == id) {
     return;
   }
-  EnsureRareInputs().canvas_child_id = id;
+  EnsureRareInputs().canvas_drawable_id = id;
   SetNeedsPushProperties();
 }
 
@@ -1535,9 +1535,9 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     layer->SetBounds(inputs.bounds);
 
     layer->SetOffsetToTransformParent(offset_to_transform_parent_.Read(*this));
-    bool has_canvas_child_id =
-        inputs.rare_inputs && inputs.rare_inputs->canvas_child_id;
-    layer->SetDrawsContent(draws_content() && !has_canvas_child_id);
+    bool has_canvas_drawable_id =
+        inputs.rare_inputs && inputs.rare_inputs->canvas_drawable_id;
+    layer->SetDrawsContent(draws_content() && !has_canvas_drawable_id);
     layer->SetHitTestOpaqueness(inputs.hit_test_opaqueness);
     // subtree_property_changed_ is propagated to all descendants while building
     // property trees. So, it is enough to check it only for the current layer.
@@ -1571,7 +1571,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
       layer->SetCaptureBounds(inputs.rare_inputs->capture_bounds);
       layer->SetTrackedElementRects(inputs.rare_inputs->tracked_element_rects);
       layer->SetWheelEventHandlerRegion(inputs.rare_inputs->wheel_event_region);
-      layer->SetCanvasChildId(inputs.rare_inputs->canvas_child_id);
+      layer->SetCanvasDrawableId(inputs.rare_inputs->canvas_drawable_id);
     } else {
       layer->ResetRareProperties();
     }

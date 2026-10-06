@@ -2766,7 +2766,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // `LayoutHTMLCanvas` for its element's `CanvasForDrawing()`.
   // Warning: This delegates to `Element::CanvasForDrawing()` and can be
   // non-null for elements that escape their canvas into the top layer. See
-  // also `EffectPaintPropertyNode::HasCanvasChildState()` and
+  // also `EffectPaintPropertyNode::HasCanvasDrawableState()` and
   // `EffectPaintPropertyNode::IsInDrawableCanvasSubtree()`.
   LayoutHTMLCanvas* CanvasForDrawingLayoutObject() const;
 

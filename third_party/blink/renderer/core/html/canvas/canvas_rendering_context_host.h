@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_child_paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_drawable_paint_record.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/gfx/geometry/rect.h"
@@ -161,8 +161,8 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   virtual void DiscardResources() = 0;
 
-  virtual std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord(
-      DOMNodeId child_id) const {
+  virtual std::optional<CanvasDrawablePaintRecord> GetCanvasDrawablePaintRecord(
+      DOMNodeId drawable_id) const {
     return std::nullopt;
   }
 

@@ -64,7 +64,8 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
       view_transition_element_resource_id !=
           other.view_transition_element_resource_id ||
       restriction_target_id != other.restriction_target_id ||
-      !base::ValuesEquivalent(canvas_child_state, other.canvas_child_state) ||
+      !base::ValuesEquivalent(canvas_drawable_state,
+                              other.canvas_drawable_state) ||
       self_or_ancestor_participates_in_view_transition !=
           other.self_or_ancestor_participates_in_view_transition ||
       needs_effect_for_2d_scale_transform !=
@@ -125,10 +126,11 @@ bool EffectPaintPropertyNode::State::IsOpacityChangeSimple(
 void EffectPaintPropertyNode::State::Trace(Visitor* visitor) const {
   visitor->Trace(local_transform_space);
   visitor->Trace(output_clip);
-  visitor->Trace(canvas_child_state);
+  visitor->Trace(canvas_drawable_state);
 }
 
-void EffectPaintPropertyNode::CanvasChildState::Trace(Visitor* visitor) const {
+void EffectPaintPropertyNode::CanvasDrawableState::Trace(
+    Visitor* visitor) const {
   visitor->Trace(content_effect);
   visitor->Trace(content_clip);
   visitor->Trace(content_transform);
@@ -237,21 +239,21 @@ gfx::Rect EffectPaintPropertyNode::MapRect(const gfx::Rect& input_rect) const {
 }
 
 const EffectPaintPropertyNode&
-EffectPaintPropertyNode::CanvasChildContentEffect() const {
-  CHECK(HasCanvasChildState());
-  return state_.canvas_child_state->content_effect->Unalias();
+EffectPaintPropertyNode::CanvasDrawableContentEffect() const {
+  CHECK(HasCanvasDrawableState());
+  return state_.canvas_drawable_state->content_effect->Unalias();
 }
 
-const ClipPaintPropertyNode& EffectPaintPropertyNode::CanvasChildContentClip()
-    const {
-  CHECK(HasCanvasChildState());
-  return state_.canvas_child_state->content_clip->Unalias();
+const ClipPaintPropertyNode&
+EffectPaintPropertyNode::CanvasDrawableContentClip() const {
+  CHECK(HasCanvasDrawableState());
+  return state_.canvas_drawable_state->content_clip->Unalias();
 }
 
 const TransformPaintPropertyNode&
-EffectPaintPropertyNode::CanvasChildContentTransform() const {
-  CHECK(HasCanvasChildState());
-  return state_.canvas_child_state->content_transform->Unalias();
+EffectPaintPropertyNode::CanvasDrawableContentTransform() const {
+  CHECK(HasCanvasDrawableState());
+  return state_.canvas_drawable_state->content_transform->Unalias();
 }
 
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {

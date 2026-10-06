@@ -616,7 +616,7 @@ information.
     `CompositingReason::kCanvasDrawableElement` in
     `CompositingReasonFinder::DirectReasonsForPaintProperties`. This forces the
     creation of an `EffectPaintPropertyNode` for the element (see
-    `EffectPaintPropertyNode::RequiresCompositingForCanvasChild()`), and
+    `EffectPaintPropertyNode::RequiresCompositingForCanvasDrawable()`), and
     ultimately forces a `cc::Layer` to be created for each drawable element. This
     cc::Layer has `DrawsContent()` set to false so that it participates in hit
     testing but does not render.
@@ -626,7 +626,7 @@ information.
     canvases, are composited; see below).
     This ensures the full content is available in the drawable element's
     `cc::Layer`, which is used via
-    `ContentLayerClientImpl::GetCanvasChildPaintRecord`. This also ensures the
+    `ContentLayerClientImpl::GetCanvasDrawablePaintRecord`. This also ensures the
     content does not create additional layers which could render.
 
 ### Nested HTML-in-Canvas
@@ -649,7 +649,7 @@ painting, and event dispatch:
     nested `content=drawable` canvas, it records a `cc::CustomDataOp` containing
     the nested canvas's `DOMNodeId` as a placeholder.
 *   **Snapshot placeholder swapping**: During layerization,
-    `PaintArtifactCompositor::GetCanvasChildPaintRecord` uses a callback
+    `PaintArtifactCompositor::GetCanvasDrawablePaintRecord` uses a callback
     (`GetCanvasSnapshotCallback`, initialized in
     `LocalFrameView::PushPaintArtifactToCompositor`) to retrieve the
     unaccelerated snapshot of each nested canvas. It then calls

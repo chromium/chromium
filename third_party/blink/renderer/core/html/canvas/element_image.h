@@ -9,7 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_child_paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_drawable_paint_record.h"
 
 namespace blink {
 
@@ -17,7 +17,7 @@ class CORE_EXPORT ElementImage final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit ElementImage(std::unique_ptr<CanvasChildPaintRecord> record);
+  explicit ElementImage(std::unique_ptr<CanvasDrawablePaintRecord> record);
 
   double width(ScriptState*) const;
   double height(ScriptState*) const;
@@ -25,13 +25,13 @@ class CORE_EXPORT ElementImage final : public ScriptWrappable {
 
   DOMNodeId GetNodeId() const;
   DOMNodeId GetCanvasNodeId() const;
-  const std::unique_ptr<CanvasChildPaintRecord>& PaintRecord() const {
+  const std::unique_ptr<CanvasDrawablePaintRecord>& PaintRecord() const {
     return record_;
   }
-  std::unique_ptr<CanvasChildPaintRecord> TransferPaintRecord();
+  std::unique_ptr<CanvasDrawablePaintRecord> TransferPaintRecord();
 
  private:
-  std::unique_ptr<CanvasChildPaintRecord> record_;
+  std::unique_ptr<CanvasDrawablePaintRecord> record_;
 };
 
 }  // namespace blink

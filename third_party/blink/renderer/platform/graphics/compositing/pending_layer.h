@@ -39,7 +39,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   PendingLayer(const PaintArtifact&,
                const PaintChunk& first_chunk,
-               DOMNodeId canvas_child_id = kInvalidDOMNodeId,
+               DOMNodeId canvas_drawable_id = kInvalidDOMNodeId,
                CompositingType = kOther);
 
   void Trace(Visitor*) const;
@@ -82,18 +82,19 @@ class PLATFORM_EXPORT PendingLayer {
     chunks_.SetPaintArtifact(paint_artifact);
   }
 
-  std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord() const {
+  std::optional<CanvasDrawablePaintRecord> GetCanvasDrawablePaintRecord()
+      const {
     return content_layer_client_
-               ? content_layer_client_->GetCanvasChildPaintRecord()
+               ? content_layer_client_->GetCanvasDrawablePaintRecord()
                : std::nullopt;
   }
-  const CanvasChildPaintState* canvas_child_paint_state() const {
+  const CanvasDrawablePaintState* canvas_drawable_paint_state() const {
     return content_layer_client_
-               ? content_layer_client_->canvas_child_paint_state()
+               ? content_layer_client_->canvas_drawable_paint_state()
                : nullptr;
   }
 
-  DOMNodeId CanvasChildId() const { return canvas_child_id_; }
+  DOMNodeId CanvasDrawableId() const { return canvas_drawable_id_; }
 
   using IsCompositedScrollFunction =
       PropertyTreeState::IsCompositedScrollFunction;
@@ -270,7 +271,7 @@ class PLATFORM_EXPORT PendingLayer {
   cc::HitTestOpaqueness hit_test_opaqueness_ =
       cc::HitTestOpaqueness::kTransparent;
 
-  DOMNodeId canvas_child_id_ = kInvalidDOMNodeId;
+  DOMNodeId canvas_drawable_id_ = kInvalidDOMNodeId;
   bool has_text_ = false;
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;

@@ -871,7 +871,7 @@ class CORE_EXPORT LocalFrameView final
   void NotifyVideoIsDominantVisibleStatus(HTMLVideoElement* element,
                                           bool is_dominant);
 
-  void DidPaintCanvasChild(HTMLCanvasElement& canvas, Element& child);
+  void DidPaintCanvasDrawable(HTMLCanvasElement& canvas, Element& drawable);
   void RequestCanvasOnpaint(HTMLCanvasElement&, Element* child = nullptr);
 
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>

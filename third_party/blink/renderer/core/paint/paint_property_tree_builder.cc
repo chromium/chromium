@@ -1167,13 +1167,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
     // ancestor's effect, or the canvas's contents effect, skipping any
     // effects from intermediate non-drawable ancestors. Note that a nested
     // drawable still paints with the canvas's contents effect (via
-    // `CanvasChildState::content_effect`), not the ancestor drawable's effect;
-    // parenting to the ancestor drawable's effect keeps the nested drawable as
-    // a subgroup in `PaintArtifactCompositor::Layerizer::LayerizeGroup()` so
-    // the ancestor drawable's effect group is not exited early.
+    // `CanvasDrawableState::content_effect`), not the ancestor drawable's
+    // effect; parenting to the ancestor drawable's effect keeps the nested
+    // drawable as a subgroup in
+    // `PaintArtifactCompositor::Layerizer::LayerizeGroup()` so the ancestor
+    // drawable's effect group is not exited early.
     const auto* effect = &context_.current_effect->Unalias();
     while (effect && effect != &canvas_contents.Effect() &&
-           !effect->HasCanvasChildState()) {
+           !effect->HasCanvasDrawableState()) {
       effect = effect->UnaliasedParent();
     }
     context_.current_effect = effect ? effect : &canvas_contents.Effect();
@@ -2069,9 +2070,10 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
   return scope_vt_effect->Parent();
 }
 
-static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
-                                          Element* canvas_child,
-                                          CanvasChildPaintState& paint_state) {
+static void PopulateCanvasDrawablePaintState(
+    HTMLCanvasElement* canvas,
+    Element* canvas_drawable,
+    CanvasDrawablePaintState& paint_state) {
   const LayoutReplaced* replaced = To<LayoutReplaced>(canvas->GetLayoutBox());
   const ComputedStyle& style = replaced->StyleRef();
 
@@ -2083,12 +2085,12 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
                         style.GetWritingMode()),
           *replaced, style);
   paint_state.canvas_node_id = canvas->GetDomNodeId();
-  paint_state.canvas_child_node_id = canvas_child->GetDomNodeId();
+  paint_state.canvas_drawable_node_id = canvas_drawable->GetDomNodeId();
   paint_state.animated_image_frame_index_map =
       canvas->GetDocument().View()->GetAnimatedImageFrameIndexes();
 }
 
-static void PopulateCanvasChildState(
+static void PopulateCanvasDrawableState(
     const LayoutObject& object,
     EffectPaintPropertyNode::State& state,
     const TransformPaintPropertyNodeOrAlias& current_transform) {
@@ -2103,23 +2105,24 @@ static void PopulateCanvasChildState(
   gfx::RectF reference_box = layer->BackdropFilterReferenceBox();
   gfx::SizeF box_size = reference_box.size();
   gfx::Vector2dF reference_box_offset = reference_box.OffsetFromOrigin();
-  state.canvas_child_state =
-      MakeGarbageCollected<EffectPaintPropertyNode::CanvasChildState>();
-  state.canvas_child_state->id = object.GetNode()->GetDomNodeId();
-  state.canvas_child_state->paint_state.effective_zoom =
+  state.canvas_drawable_state =
+      MakeGarbageCollected<EffectPaintPropertyNode::CanvasDrawableState>();
+  state.canvas_drawable_state->id = object.GetNode()->GetDomNodeId();
+  state.canvas_drawable_state->paint_state.effective_zoom =
       object.StyleRef().EffectiveZoom();
-  state.canvas_child_state->paint_state.box_size = box_size;
-  state.canvas_child_state->paint_state.reference_box_offset =
+  state.canvas_drawable_state->paint_state.box_size = box_size;
+  state.canvas_drawable_state->paint_state.reference_box_offset =
       reference_box_offset;
-  PopulateCanvasChildPaintState(canvas, To<Element>(object.GetNode()),
-                                state.canvas_child_state->paint_state);
-  state.canvas_child_state->content_effect = canvas_fragment.ContentsEffect();
+  PopulateCanvasDrawablePaintState(canvas, To<Element>(object.GetNode()),
+                                   state.canvas_drawable_state->paint_state);
+  state.canvas_drawable_state->content_effect =
+      canvas_fragment.ContentsEffect();
   const auto* properties = object.FirstFragment().PaintProperties();
   DCHECK(properties);
-  state.canvas_child_state->content_clip =
+  state.canvas_drawable_state->content_clip =
       properties->ElementCanvasClip() ? properties->ElementCanvasClip()
                                       : &canvas_fragment.ContentsClip();
-  state.canvas_child_state->content_transform =
+  state.canvas_drawable_state->content_transform =
       properties->ElementCanvasTransform()
           ? properties->ElementCanvasTransform()
           : &current_transform;
@@ -2314,7 +2317,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
         if (state.direct_compositing_reasons.Has(
                 CompositingReason::kCanvasDrawableElement)) {
-          PopulateCanvasChildState(object_, state, *context_.current.transform);
+          PopulateCanvasDrawableState(object_, state,
+                                      *context_.current.transform);
         }
       } else {
         // The effect node CompositorElementId is used to uniquely identify
@@ -4236,7 +4240,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     const auto* canvas = DynamicTo<HTMLCanvasElement>(object_.GetNode());
     if (canvas && canvas->IsContentDrawable()) {
       // Invalidate the canvas descendants' paint properties so that their
-      // cached CanvasChildPaintState is updated with the new canvas size.
+      // cached CanvasDrawablePaintState is updated with the new canvas size.
       box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
     }
   }

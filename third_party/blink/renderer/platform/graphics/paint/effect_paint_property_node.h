@@ -8,7 +8,7 @@
 #include <algorithm>
 
 #include "components/viz/common/view_transition_element_resource_id.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_child_paint_state.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_drawable_paint_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
@@ -104,12 +104,12 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     USING_FAST_MALLOC(BackdropFilterInfo);
   };
 
-  // Used to associate this effect with a direct child of a canvas element for
-  // DrawElementImage.
-  struct PLATFORM_EXPORT CanvasChildState
-      : public GarbageCollected<CanvasChildState> {
+  // Used to associate this effect with a drawable descendant of a canvas
+  // element for DrawElementImage.
+  struct PLATFORM_EXPORT CanvasDrawableState
+      : public GarbageCollected<CanvasDrawableState> {
    public:
-    bool operator==(const CanvasChildState& other) const {
+    bool operator==(const CanvasDrawableState& other) const {
       return id == other.id && paint_state == other.paint_state &&
              content_effect == other.content_effect &&
              content_clip == other.content_clip &&
@@ -117,7 +117,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     }
 
     DOMNodeId id = kInvalidDOMNodeId;
-    CanvasChildPaintState paint_state;
+    CanvasDrawablePaintState paint_state;
     Member<const EffectPaintPropertyNodeOrAlias> content_effect;
     Member<const ClipPaintPropertyNodeOrAlias> content_clip;
     Member<const TransformPaintPropertyNodeOrAlias> content_transform;
@@ -159,7 +159,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     // Used to associate this effect node with its originating Element.
     RestrictionTargetId restriction_target_id;
 
-    Member<CanvasChildState> canvas_child_state;
+    Member<CanvasDrawableState> canvas_drawable_state;
 
     // When set, the affected elements should avoid doing clipping for
     // optimization purposes (like off-screen clipping). This is set by view
@@ -304,7 +304,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     return state_.direct_compositing_reasons.Has(
         CompositingReason::kBackdropFilterMask);
   }
-  bool RequiresCompositingForCanvasChild() const {
+  bool RequiresCompositingForCanvasDrawable() const {
     return state_.direct_compositing_reasons.Has(
         CompositingReason::kCanvasDrawableElement);
   }
@@ -407,26 +407,27 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     return state_.restriction_target_id;
   }
 
-  bool HasCanvasChildState() const {
-    if (!state_.canvas_child_state) {
+  bool HasCanvasDrawableState() const {
+    if (!state_.canvas_drawable_state) {
       return false;
     }
-    return state_.canvas_child_state->id != kInvalidDOMNodeId;
+    return state_.canvas_drawable_state->id != kInvalidDOMNodeId;
   }
 
-  DOMNodeId CanvasChildId() const {
-    return state_.canvas_child_state ? state_.canvas_child_state->id
-                                     : kInvalidDOMNodeId;
+  DOMNodeId CanvasDrawableId() const {
+    return state_.canvas_drawable_state ? state_.canvas_drawable_state->id
+                                        : kInvalidDOMNodeId;
   }
 
-  const CanvasChildPaintState* canvas_child_paint_state() const {
-    return state_.canvas_child_state ? &state_.canvas_child_state->paint_state
-                                     : nullptr;
+  const CanvasDrawablePaintState* canvas_drawable_paint_state() const {
+    return state_.canvas_drawable_state
+               ? &state_.canvas_drawable_state->paint_state
+               : nullptr;
   }
 
-  const EffectPaintPropertyNode& CanvasChildContentEffect() const;
-  const ClipPaintPropertyNode& CanvasChildContentClip() const;
-  const TransformPaintPropertyNode& CanvasChildContentTransform() const;
+  const EffectPaintPropertyNode& CanvasDrawableContentEffect() const;
+  const ClipPaintPropertyNode& CanvasDrawableContentClip() const;
+  const TransformPaintPropertyNode& CanvasDrawableContentTransform() const;
 
   bool SelfOrAncestorParticipatesInViewTransition() const {
     return state_.self_or_ancestor_participates_in_view_transition;

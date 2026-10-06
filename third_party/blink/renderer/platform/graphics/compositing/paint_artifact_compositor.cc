@@ -132,37 +132,39 @@ void PaintArtifactCompositor::SetTracksRasterInvalidations(bool should_track) {
   }
 }
 
-std::optional<CanvasChildPaintRecord>
-PaintArtifactCompositor::GetCanvasChildPaintRecord(DOMNodeId child_id) const {
-  auto it = canvas_child_layer_map_.find(child_id);
-  if (it == canvas_child_layer_map_.end()) {
+std::optional<CanvasDrawablePaintRecord>
+PaintArtifactCompositor::GetCanvasDrawablePaintRecord(
+    DOMNodeId drawable_id) const {
+  auto it = canvas_drawable_layer_map_.find(drawable_id);
+  if (it == canvas_drawable_layer_map_.end()) {
     return std::nullopt;
   }
   auto& pending_layer = pending_layers_[it->value];
-  auto child_record = pending_layer.GetCanvasChildPaintRecord();
-  if (!child_record) {
+  auto drawable_record = pending_layer.GetCanvasDrawablePaintRecord();
+  if (!drawable_record) {
     return std::nullopt;
   }
   if (get_canvas_snapshot_callback_) {
     base::flat_map<uint32_t, cc::PaintRecord> replacements;
-    FindCustomDataPlaceholders(child_record->record.buffer(),
+    FindCustomDataPlaceholders(drawable_record->record.buffer(),
                                get_canvas_snapshot_callback_, replacements);
     if (!replacements.empty()) {
-      child_record->record =
-          child_record->record.ReplaceCustomData(replacements);
+      drawable_record->record =
+          drawable_record->record.ReplaceCustomData(replacements);
     }
   }
-  return child_record;
+  return drawable_record;
 }
 
-const CanvasChildPaintState* PaintArtifactCompositor::GetCanvasChildPaintState(
-    DOMNodeId child_id) const {
-  auto it = canvas_child_layer_map_.find(child_id);
-  if (it == canvas_child_layer_map_.end()) {
+const CanvasDrawablePaintState*
+PaintArtifactCompositor::GetCanvasDrawablePaintState(
+    DOMNodeId drawable_id) const {
+  auto it = canvas_drawable_layer_map_.find(drawable_id);
+  if (it == canvas_drawable_layer_map_.end()) {
     return nullptr;
   }
   auto& pending_layer = pending_layers_[it->value];
-  return pending_layer.canvas_child_paint_state();
+  return pending_layer.canvas_drawable_paint_state();
 }
 
 void PaintArtifactCompositor::WillBeRemovedFromFrame() {
@@ -618,15 +620,16 @@ bool NeedsFullUpdateAfterPaintingChunk(
   return false;
 }
 
-// When a child element of <canvas> is rendered via drawElementImage, its paint
-// must be recorded using the canvas element's content clip and effect state.
+// When a drawable element of <canvas> is rendered via drawElementImage, its
+// paint must be recorded using the canvas element's content clip and effect
+// state.
 PropertyTreeState GetPropertyTreeStateForPaint(
     const PropertyTreeState& layer_state) {
   PropertyTreeState result = layer_state;
-  if (layer_state.Effect().HasCanvasChildState()) {
-    result.SetClip(layer_state.Effect().CanvasChildContentClip());
-    result.SetEffect(layer_state.Effect().CanvasChildContentEffect());
-    result.SetTransform(layer_state.Effect().CanvasChildContentTransform());
+  if (layer_state.Effect().HasCanvasDrawableState()) {
+    result.SetClip(layer_state.Effect().CanvasDrawableContentClip());
+    result.SetEffect(layer_state.Effect().CanvasDrawableContentEffect());
+    result.SetTransform(layer_state.Effect().CanvasDrawableContentTransform());
   }
   return result;
 }
@@ -722,7 +725,7 @@ class PaintArtifactCompositor::Layerizer {
   // overlap with other chunks in the parent group, if grouping requirement
   // can be satisfied (and the effect node has no direct reason).
   void LayerizeGroup(const EffectPaintPropertyNode&,
-                     DOMNodeId canvas_child_id,
+                     DOMNodeId canvas_drawable_id,
                      bool force_draws_content);
   bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
                          wtf_size_t first_layer_in_parent_group_index,
@@ -838,10 +841,10 @@ bool PaintArtifactCompositor::Layerizer::DecompositeEffect(
 
 void PaintArtifactCompositor::Layerizer::LayerizeGroup(
     const EffectPaintPropertyNode& current_group,
-    DOMNodeId canvas_child_id,
+    DOMNodeId canvas_drawable_id,
     bool force_draws_content) {
-  if (current_group.CanvasChildId() != kInvalidDOMNodeId) {
-    canvas_child_id = current_group.CanvasChildId();
+  if (current_group.CanvasDrawableId() != kInvalidDOMNodeId) {
+    canvas_drawable_id = current_group.CanvasDrawableId();
   }
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
   // The worst case time complexity of the algorithm is O(pqd), where
@@ -872,7 +875,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
       compositor_.UpdatePaintedScrollTranslationsBeforeLayerization(
           artifact_, chunk_cursor_);
       pending_layers_.emplace_back(
-          artifact_, *chunk_cursor_, canvas_child_id,
+          artifact_, *chunk_cursor_, canvas_drawable_id,
           compositor_.ChunkCompositingType(artifact_, *chunk_cursor_));
       UNSAFE_TODO(++chunk_cursor_);
       // force_draws_content doesn't apply to pending layers that require own
@@ -891,7 +894,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
       // Case C: The following chunks belong to a subgroup. Process them by
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
-      LayerizeGroup(*subgroup, canvas_child_id,
+      LayerizeGroup(*subgroup, canvas_drawable_id,
                     force_draws_content || subgroup->DrawsContent());
       // The above LayerizeGroup generated new layers in pending_layers_
       // [first_layer_in_subgroup .. pending_layers.size() - 1]. If it
@@ -970,7 +973,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
 std::pair<PendingLayers, StackTransformPaintPropertyNodeVector>
 PaintArtifactCompositor::Layerizer::Layerize() {
   LayerizeGroup(EffectPaintPropertyNode::Root(),
-                /*canvas_child_id=*/kInvalidDOMNodeId,
+                /*canvas_drawable_id=*/kInvalidDOMNodeId,
                 /*force_draws_content=*/false);
   DCHECK(chunk_cursor_ == artifact_.GetPaintChunks().end());
   pending_layers_.ShrinkToReasonableCapacity();
@@ -1179,7 +1182,7 @@ void PaintArtifactCompositor::Update(
 
   wtf_size_t old_size = pending_layers_.size();
   OldPendingLayerMatcher old_pending_layer_matcher(std::move(pending_layers_));
-  canvas_child_layer_map_.clear();
+  canvas_drawable_layer_map_.clear();
   CHECK(painted_scroll_translations_.empty());
   range_dependent_scrolls_.clear();
   should_always_update_on_scroll_ = false;
@@ -1235,8 +1238,8 @@ void PaintArtifactCompositor::Update(
     cc::Layer& layer = pending_layer.CcLayer();
     const auto& clip = property_state.Clip();
     const auto& effect = property_state.Effect();
-    const auto& transform = effect.CanvasChildId()
-                                ? effect.CanvasChildContentTransform()
+    const auto& transform = effect.CanvasDrawableId()
+                                ? effect.CanvasDrawableContentTransform()
                                 : property_state.Transform();
     int transform_id =
         property_tree_manager.EnsureCompositorTransformNode(transform);
@@ -1294,13 +1297,13 @@ void PaintArtifactCompositor::Update(
     layer.SetEffectTreeIndex(effect_id);
     bool backface_hidden = transform.IsBackfaceHidden();
     layer.SetShouldCheckBackfaceVisibility(backface_hidden);
-    if (effect.CanvasChildId()) {
-      canvas_child_layer_map_.Set(effect.CanvasChildId(), i);
-      layer.SetCanvasChildId(
-          CompositorElementIdFromDOMNodeId(effect.CanvasChildId()));
+    if (effect.CanvasDrawableId()) {
+      canvas_drawable_layer_map_.Set(effect.CanvasDrawableId(), i);
+      layer.SetCanvasDrawableId(
+          CompositorElementIdFromDOMNodeId(effect.CanvasDrawableId()));
     } else {
-      // All layers under canvas children should be merged into the
-      // canvas child's layer.
+      // All layers under canvas drawables should be merged into the
+      // canvas drawable's layer.
       CHECK(!effect.IsInDrawableCanvasSubtree());
     }
 

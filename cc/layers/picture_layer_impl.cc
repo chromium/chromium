@@ -456,8 +456,8 @@ void PictureLayerImpl::AnnotateAnimatedImages(
   for (const auto& data : discardable_image_map_->animated_images_metadata()) {
     auto& driver_state = driver_map[data.first];
     driver_state.first |= ShouldAnimate(data.first);
-    if (canvas_child_id()) {
-      driver_state.second.push_back(canvas_child_id());
+    if (canvas_drawable_id()) {
+      driver_state.second.push_back(canvas_drawable_id());
     }
   }
 }
@@ -958,7 +958,7 @@ bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
   //
   // An exception to the above is animated images inside a <canvas>, which we
   // animate to trigger a "paint" event when the animation advances.
-  if (!HasValidTilePriorities() && !canvas_child_id()) {
+  if (!HasValidTilePriorities() && !canvas_drawable_id()) {
     return false;
   }
 
@@ -968,7 +968,7 @@ bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
     if (it->second.repetition_count == kAnimationPaused) {
       return false;
     }
-    if (canvas_child_id()) {
+    if (canvas_drawable_id()) {
       return true;
     }
   }

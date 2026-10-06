@@ -43,7 +43,7 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 
 PendingLayer::PendingLayer(const PaintArtifact& artifact,
                            const PaintChunk& first_chunk,
-                           DOMNodeId canvas_child_id,
+                           DOMNodeId canvas_drawable_id,
                            CompositingType compositing_type)
     : chunks_(artifact, first_chunk),
       property_tree_state_(first_chunk.properties.Unalias()),
@@ -53,7 +53,7 @@ PendingLayer::PendingLayer(const PaintArtifact& artifact,
           first_chunk.background_color.is_solid_color ? 0 : kNotFound),
       compositing_type_(compositing_type),
       hit_test_opaqueness_(first_chunk.hit_test_opaqueness),
-      canvas_child_id_(canvas_child_id),
+      canvas_drawable_id_(canvas_drawable_id),
       has_text_(first_chunk.has_text),
       draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
@@ -216,15 +216,15 @@ bool PendingLayer::CanMerge(const PendingLayer& guest,
                             wtf_size_t& merged_solid_color_chunk_index,
                             cc::HitTestOpaqueness& merged_hit_test_opaqueness,
                             bool& scroll_range_dependent) const {
-  if (canvas_child_id_ != guest.canvas_child_id_) {
+  if (canvas_drawable_id_ != guest.canvas_drawable_id_) {
     return false;
   }
 
   // Force merge all content under canvas so that it can be drawn using
   // html-in-canvas APIs, and so that it is not drawn as a regular
   // cc::Layer.
-  bool force_merge = (canvas_child_id_ == guest.canvas_child_id_ &&
-                      canvas_child_id_ != kInvalidDOMNodeId);
+  bool force_merge = (canvas_drawable_id_ == guest.canvas_drawable_id_ &&
+                      canvas_drawable_id_ != kInvalidDOMNodeId);
 
   std::optional<PropertyTreeState::UpcastResult> upcast_result =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
@@ -497,7 +497,7 @@ bool PendingLayer::PropertyTreeStateChanged(
 }
 
 bool PendingLayer::MightOverlap(const PendingLayer& other) const {
-  if (canvas_child_id_ != other.canvas_child_id_) {
+  if (canvas_drawable_id_ != other.canvas_drawable_id_) {
     return false;
   }
   return GeometryMapper::MightOverlapForCompositing(
@@ -730,8 +730,8 @@ bool PendingLayer::UsesSolidColorLayer() const {
           .RequiresCompositingForBackdropFilterMask()) {
     return false;
   }
-  // We need a PictureLayer to draw canvas children with DrawElementImage.
-  if (property_tree_state_.Effect().RequiresCompositingForCanvasChild()) {
+  // We need a PictureLayer to draw canvas drawables with DrawElementImage.
+  if (property_tree_state_.Effect().RequiresCompositingForCanvasDrawable()) {
     return false;
   }
 #if BUILDFLAG(IS_MAC)

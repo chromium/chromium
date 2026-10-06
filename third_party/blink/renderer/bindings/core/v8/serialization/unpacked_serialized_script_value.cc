@@ -51,9 +51,9 @@ UnpackedSerializedScriptValue::UnpackedSerializedScriptValue(
     element_images_.Grow(element_image_contents.size());
     std::ranges::transform(
         element_image_contents, element_images_.begin(),
-        [](CanvasChildPaintRecord& contents) {
+        [](CanvasDrawablePaintRecord& contents) {
           return MakeGarbageCollected<ElementImage>(
-              std::make_unique<CanvasChildPaintRecord>(std::move(contents)));
+              std::make_unique<CanvasDrawablePaintRecord>(std::move(contents)));
         });
     element_image_contents.clear();
   }

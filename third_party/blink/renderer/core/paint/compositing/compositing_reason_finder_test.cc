@@ -700,7 +700,7 @@ TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {
                 *GetLayoutObjectByElementId("target")));
 }
 
-TEST_P(CompositingReasonFinderTest, CanvasChild) {
+TEST_P(CompositingReasonFinderTest, CanvasDrawableElement) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
@@ -735,7 +735,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChild) {
                 *grandchild_layout_object));
 }
 
-TEST_P(CompositingReasonFinderTest, CanvasChildWithWillChange) {
+TEST_P(CompositingReasonFinderTest, CanvasDrawableElementWithWillChange) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
@@ -760,7 +760,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChildWithWillChange) {
                 *grandchild_layout_object));
 }
 
-TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
+TEST_P(CompositingReasonFinderTest, CanvasDrawableElementSlotted) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(

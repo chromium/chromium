@@ -355,7 +355,8 @@ class CORE_EXPORT CanvasRenderingContext
                                   const String& func_name,
                                   ExceptionState& exception_state);
 
-  std::optional<CanvasChildPaintRecord> GetChildPaintRecord(Element* element);
+  std::optional<CanvasDrawablePaintRecord> GetDrawablePaintRecord(
+      Element* element);
 
   std::optional<cc::PaintRecord> empty_recording_;
 

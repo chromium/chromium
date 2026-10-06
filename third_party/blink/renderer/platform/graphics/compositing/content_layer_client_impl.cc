@@ -137,10 +137,11 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
             paint_chunks[0].id.client_id));
   }
 
-  if (const auto* state = layer_state.Effect().canvas_child_paint_state()) {
-    canvas_child_paint_state_ = std::make_unique<CanvasChildPaintState>(*state);
+  if (const auto* state = layer_state.Effect().canvas_drawable_paint_state()) {
+    canvas_drawable_paint_state_ =
+        std::make_unique<CanvasDrawablePaintState>(*state);
   } else {
-    canvas_child_paint_state_.reset();
+    canvas_drawable_paint_state_.reset();
   }
 
   // Note: cc::Layer API assumes the layer bounds start at (0, 0), but the
@@ -244,13 +245,13 @@ void ContentLayerClientImpl::InvalidateRect(const gfx::Rect& rect) {
   cc_picture_layer_->SetNeedsDisplayRect(rect);
 }
 
-std::optional<CanvasChildPaintRecord>
-ContentLayerClientImpl::GetCanvasChildPaintRecord() const {
-  if (!canvas_child_paint_state_) {
+std::optional<CanvasDrawablePaintRecord>
+ContentLayerClientImpl::GetCanvasDrawablePaintRecord() const {
+  if (!canvas_drawable_paint_state_) {
     return std::nullopt;
   }
   gfx::Vector2dF offset = cc_picture_layer_->offset_to_transform_parent() -
-                          canvas_child_paint_state_->reference_box_offset;
+                          canvas_drawable_paint_state_->reference_box_offset;
   cc::PaintRecord record;
   if (offset.IsZero()) {
     record = cc_display_item_list_->paint_op_buffer().DeepCopyAsRecord();
@@ -260,7 +261,8 @@ ContentLayerClientImpl::GetCanvasChildPaintRecord() const {
     *result += cc_display_item_list_->paint_op_buffer();
     record = result->ReleaseAsRecord();
   }
-  return CanvasChildPaintRecord{*canvas_child_paint_state_, std::move(record)};
+  return CanvasDrawablePaintRecord{*canvas_drawable_paint_state_,
+                                   std::move(record)};
 }
 
 size_t ContentLayerClientImpl::ApproximateUnsharedMemoryUsage() const {

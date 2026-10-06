@@ -1750,18 +1750,18 @@ void BaseRenderingContext2D::DrawElementInternal(
     return;
   }
 
-  std::optional<CanvasChildPaintRecord> child_paint_record;
+  std::optional<CanvasDrawablePaintRecord> drawable_paint_record;
   if (element->IsElement()) {
-    child_paint_record = GetChildPaintRecord(element->GetAsElement());
+    drawable_paint_record = GetDrawablePaintRecord(element->GetAsElement());
   } else if (element->IsElementImage()) {
     if (const auto& record = element->GetAsElementImage()->PaintRecord()) {
-      child_paint_record = *record;
+      drawable_paint_record = *record;
     }
   }
 
   TRACE_EVENT0("blink", "DrawElementImage");
 
-  if (!child_paint_record) {
+  if (!drawable_paint_record) {
     if (element->IsElementImage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "The ElementImage has been closed.");
@@ -1772,8 +1772,8 @@ void BaseRenderingContext2D::DrawElementInternal(
     return;
   }
 
-  float dpr = child_paint_record->paint_state.effective_zoom;
-  gfx::RectF src_rect(child_paint_record->paint_state.box_size);
+  float dpr = drawable_paint_record->paint_state.effective_zoom;
+  gfx::RectF src_rect(drawable_paint_record->paint_state.box_size);
   if (sx && sy && swidth && sheight) {
     AdjustRectForCanvas(*sx, *sy, *swidth, *sheight);
     src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
@@ -1792,8 +1792,8 @@ void BaseRenderingContext2D::DrawElementInternal(
   // appearing inside the canvas as it would have were it painted outside the
   // canvas.
   gfx::SizeF ideal_dst_size(src_rect.size());
-  gfx::Vector2dF scale_factor =
-      GetCanvasGridScaleFactor(child_paint_record->paint_state, Host()->Size());
+  gfx::Vector2dF scale_factor = GetCanvasGridScaleFactor(
+      drawable_paint_record->paint_state, Host()->Size());
   ideal_dst_size.Scale(scale_factor.x(), scale_factor.y());
 
   double dw = ideal_dst_size.width();
@@ -1809,11 +1809,11 @@ void BaseRenderingContext2D::DrawElementInternal(
     return;
   }
 
-  cc::PaintRecord paint_record = std::move(child_paint_record->record);
+  cc::PaintRecord paint_record = std::move(drawable_paint_record->record);
   uint32_t animated_image_frame_index_map_pos =
       animated_image_frame_index_maps_.size();
   animated_image_frame_index_maps_.emplace_back(
-      child_paint_record->paint_state.animated_image_frame_index_map);
+      drawable_paint_record->paint_state.animated_image_frame_index_map);
   // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
   // need a distinct paint_type: kImagePaintType seems to do the right thing
   // but maybe its treatment of anti-aliasing is incorrect. The kNonOpaqueImage
@@ -1916,7 +1916,7 @@ void BaseRenderingContext2D::DrawElementInternal(
     // convert it to a transform in CSS pixels suitable for positioning the
     // element.
     gfx::Transform result_transform = blink::GetElementTransform(
-        child_paint_record->paint_state, Host()->Size(), draw_transform);
+        drawable_paint_record->paint_state, Host()->Size(), draw_transform);
 
     FloatClipRect canvas_clip;
     if (sx && sy && swidth && sheight) {

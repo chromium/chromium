@@ -577,7 +577,7 @@ void GPUQueue::DrawElementImageToTextureInternal(
     context = CanvasRenderingContext::GetEnclosingContextForDrawElement(
         source->GetAsElement(), "drawElementImageToTexture()", exception_state);
   } else {
-    const std::unique_ptr<CanvasChildPaintRecord>& record =
+    const std::unique_ptr<CanvasDrawablePaintRecord>& record =
         source->GetAsElementImage()->PaintRecord();
     if (record) {
       DOMNodeId canvas_node_id = record->paint_state.canvas_node_id;

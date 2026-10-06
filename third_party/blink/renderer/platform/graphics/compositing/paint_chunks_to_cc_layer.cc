@@ -38,13 +38,13 @@ namespace blink {
 
 namespace {
 
-bool IsInCanvasChild(const EffectPaintPropertyNodeOrAlias& starting_effect) {
+bool IsInCanvasDrawable(const EffectPaintPropertyNodeOrAlias& starting_effect) {
   for (const auto* effect = &starting_effect.Unalias(); effect;
        effect = effect->UnaliasedParent()) {
-    // Compositing is disabled under canvas children, so we can stop once the
+    // Compositing is disabled under canvas drawables, so we can stop once the
     // first effect node with compositing reasons is found.
     if (effect->HasDirectCompositingReasons()) {
-      return effect->RequiresCompositingForCanvasChild();
+      return effect->RequiresCompositingForCanvasDrawable();
     }
   }
   return false;
@@ -1043,7 +1043,7 @@ ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
     return {};
   }
 
-  if (IsInCanvasChild(chunk_to_layer_mapper_.ChunkState().Effect()) &&
+  if (IsInCanvasDrawable(chunk_to_layer_mapper_.ChunkState().Effect()) &&
       target_scroll_translation.ScrollNode() &&
       target_scroll_translation.ScrollNode()
               ->GetCompositedScrollingPreference() ==
@@ -1450,7 +1450,7 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
 
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
       hit_test_data.scroll_translation) {
-    if (!IsInCanvasChild(chunk.properties.Effect()) ||
+    if (!IsInCanvasDrawable(chunk.properties.Effect()) ||
         hit_test_data.scroll_translation->ScrollNode()
                 ->GetCompositedScrollingPreference() !=
             CompositedScrollingPreference::kNotPreferred) {

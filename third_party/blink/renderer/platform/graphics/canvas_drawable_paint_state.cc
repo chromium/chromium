@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/canvas_child_paint_state.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_drawable_paint_state.h"
 
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
-bool CanvasChildPaintState::operator==(
-    const CanvasChildPaintState& other) const {
-  return effective_zoom == other.effective_zoom &&
-         box_size == other.box_size &&
+bool CanvasDrawablePaintState::operator==(
+    const CanvasDrawablePaintState& other) const {
+  return effective_zoom == other.effective_zoom && box_size == other.box_size &&
          reference_box_offset == other.reference_box_offset &&
          canvas_content_size == other.canvas_content_size &&
          canvas_device_pixel_content_box ==
@@ -25,7 +24,7 @@ bool CanvasChildPaintState::operator==(
               *other.animated_image_frame_index_map);
 }
 
-gfx::Transform GetElementTransform(const CanvasChildPaintState& paint_state,
+gfx::Transform GetElementTransform(const CanvasDrawablePaintState& paint_state,
                                    const gfx::Size& canvas_size,
                                    const gfx::Transform& draw_transform) {
   gfx::Vector2dF physical_to_canvas_grid =
@@ -46,7 +45,7 @@ gfx::Transform GetElementTransform(const CanvasChildPaintState& paint_state,
 }
 
 gfx::Vector2dF GetCanvasGridScaleFactor(
-    const CanvasChildPaintState& paint_state,
+    const CanvasDrawablePaintState& paint_state,
     const gfx::Size& canvas_size) {
   // As a special case, if the canvas is sized to its devicePixelContentBox,
   // make sure the element's physical pixels are mapped 1:1 to the canvas

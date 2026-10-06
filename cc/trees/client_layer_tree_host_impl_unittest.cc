@@ -708,7 +708,7 @@ TEST_P(ClientModeLayerTreeHostImplTest,
 }
 
 TEST_P(ClientModeLayerTreeHostImplTest,
-       CommitScheduledOnAnimatedImageAdvanceWithCanvasChildId) {
+       CommitScheduledOnAnimatedImageAdvanceWithCanvasDrawableId) {
   // Invalidation should never run outside the impl frame.
   auto args = viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1,
                                                   base::TimeTicks::Now());
@@ -728,13 +728,13 @@ TEST_P(ClientModeLayerTreeHostImplTest,
       recording_source->CreateRasterSource();
 
   // 2. Setup tree.
-  ElementId canvas_child_id(0x12345);
+  ElementId canvas_drawable_id(0x12345);
   if (!CommitsToActiveTree()) {
     CreatePendingTree();
   }
   FakePictureLayerImpl* sync_layer = SetupRootLayer<FakePictureLayerImpl>(
       host_impl_->sync_tree(), layer_bounds);
-  sync_layer->SetCanvasChildId(canvas_child_id);
+  sync_layer->SetCanvasDrawableId(canvas_drawable_id);
   sync_layer->SetRasterSource(raster_source, Region());
   UpdateDrawProperties(host_impl_->sync_tree());
   FakePictureLayerImpl* active_layer;
@@ -747,7 +747,7 @@ TEST_P(ClientModeLayerTreeHostImplTest,
     UpdateDrawProperties(host_impl_->active_tree());
   }
 
-  EXPECT_EQ(canvas_child_id, active_layer->canvas_child_id());
+  EXPECT_EQ(canvas_drawable_id, active_layer->canvas_drawable_id());
 
   // 3. Make the image visible so it can animate.
   gfx::Rect visible_rect(0, 0, 100, 100);
@@ -782,7 +782,7 @@ TEST_P(ClientModeLayerTreeHostImplTest,
 
   client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
 
-  // Now it should have advanced, and since it has canvas_child_id, it should
+  // Now it should have advanced, and since it has canvas_drawable_id, it should
   // have scheduled a commit.
   EXPECT_TRUE(did_request_commit_);
 

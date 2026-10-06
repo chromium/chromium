@@ -30,7 +30,7 @@ CanvasRenderingContextHost* GetHost(ScriptState* script_state, DOMNodeId id) {
 
 }  // namespace
 
-ElementImage::ElementImage(std::unique_ptr<CanvasChildPaintRecord> record)
+ElementImage::ElementImage(std::unique_ptr<CanvasDrawablePaintRecord> record)
     : record_(std::move(record)) {}
 
 double ElementImage::width(ScriptState* script_state) const {
@@ -63,12 +63,12 @@ void ElementImage::close() {
   record_.reset();
 }
 
-std::unique_ptr<CanvasChildPaintRecord> ElementImage::TransferPaintRecord() {
+std::unique_ptr<CanvasDrawablePaintRecord> ElementImage::TransferPaintRecord() {
   return std::move(record_);
 }
 
 DOMNodeId ElementImage::GetNodeId() const {
-  return record_ ? record_->paint_state.canvas_child_node_id
+  return record_ ? record_->paint_state.canvas_drawable_node_id
                  : kInvalidDOMNodeId;
 }
 
