@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PersonalContext.FetchContext.ErrorStatus.{ContextMemoryFeature}"
-    enum="ContextMemoryExecutionError" expires_after="2026-11-15">
+    enum="ContextMemoryExecutionError" expires_after="2027-11-15">
   <owner>qiaoli@google.com</owner>
   <owner>chrome-memory-context-eng@google.com</owner>
   <summary>
@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PersonalContext.FetchContext.Result.{ContextMemoryFeature}"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>qiaoli@google.com</owner>
   <owner>chrome-memory-context-eng@google.com</owner>
   <summary>
@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PersonalContext.FetchPiiEntities.ErrorStatus.{ContextMemoryFeature}"
-    enum="ContextMemoryExecutionError" expires_after="2026-11-15">
+    enum="ContextMemoryExecutionError" expires_after="2027-11-15">
   <owner>qiaoli@google.com</owner>
   <owner>chrome-memory-context-eng@google.com</owner>
   <summary>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PersonalContext.FetchPiiEntities.Result.{ContextMemoryFeature}"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>qiaoli@google.com</owner>
   <owner>chrome-memory-context-eng@google.com</owner>
   <summary>
