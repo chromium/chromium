@@ -69,6 +69,43 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 namespace blink {
 
+namespace {
+
+// Returns the activation target for an activation event dispatched to `node`.
+// https://dom.spec.whatwg.org/#concept-event-dispatch
+Node* FindActivationTarget(Node& node, Event& event) {
+  // 6.5. If isActivationEvent is true and target has activation behavior, then
+  // set activationTarget to target.
+  if (node.HasActivationBehavior()) {
+    return &node;
+  }
+
+  // A part of step 6.9 loop.
+  //
+  // 6.9.6.1. If isActivationEvent is true, event's bubbles attribute is true,
+  // activationTarget is null, and parent has activation behavior, then set
+  // activationTarget to parent.
+  if (!event.bubbles()) {
+    return nullptr;
+  }
+  const EventPath& path = event.GetEventPath();
+  // When node is a pseudo-element, CalculatePath() replaces it with its
+  // UltimateOriginatingElement() at path index 0 (pseudos are not exposed
+  // in the event path). That means path[0] is the originating element, not
+  // node itself, so we must start the search at i=0 to avoid skipping the
+  // originating element (e.g., <summary> whose ::marker was clicked).
+  const wtf_size_t start = node.IsPseudoElement() ? 0 : 1;
+  for (wtf_size_t i = start; i < path.size(); ++i) {
+    Node& target = path[i].GetNode();
+    if (target.HasActivationBehavior()) {
+      return &target;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
                "EventDispatcher::dispatchEvent");
@@ -223,32 +260,9 @@ DispatchEventResult EventDispatcher::Dispatch() {
   const bool is_activation_event =
       is_click || event_->type() == event_type_names::kTextInput;
 
-  // 6.5. If isActivationEvent is true and target has activation behavior, then
-  // set activationTarget to target.
+  // Steps 6.5 and 6.9.6.1.
   Node* activation_target =
-      is_activation_event && node_->HasActivationBehavior() ? node_ : nullptr;
-
-  // A part of step 6.9 loop.
-  //
-  // 6.9.6.1. If isActivationEvent is true, event's bubbles attribute is true,
-  // activationTarget is null, and parent has activation behavior, then set
-  // activationTarget to parent.
-  if (is_activation_event && !activation_target && event_->bubbles()) {
-    wtf_size_t size = event_->GetEventPath().size();
-    // When node_ is a pseudo-element, CalculatePath() replaces it with its
-    // UltimateOriginatingElement() at path index 0 (pseudos are not exposed
-    // in the event path). That means path[0] is the originating element, not
-    // node_ itself, so we must start the search at i=0 to avoid skipping the
-    // originating element (e.g., <summary> whose ::marker was clicked).
-    const wtf_size_t start = node_->IsPseudoElement() ? 0 : 1;
-    for (wtf_size_t i = start; i < size; ++i) {
-      Node& target = event_->GetEventPath()[i].GetNode();
-      if (target.HasActivationBehavior()) {
-        activation_target = &target;
-        break;
-      }
-    }
-  }
+      is_activation_event ? FindActivationTarget(*node_, *event_) : nullptr;
 
   event_->SetTarget(&EventPath::EventTargetRespectingTargetRules(*node_));
 #if DCHECK_IS_ON()
@@ -401,6 +415,18 @@ inline void EventDispatcher::DispatchEventPostProcess(
     if (AXObjectCache* cache = node_->GetDocument().ExistingAXObjectCache())
       cache->HandleClicked(event_->RawTarget()->ToNode());
 
+    // Non-standard: listeners may have changed which nodes have activation
+    // behavior, so find the activation target again, using the same rules as
+    // before dispatch. See the comment above the default event handler loop
+    // below. This is skipped if the activation target ran
+    // legacy-pre-activation behavior (e.g. toggling a checkbox), because the
+    // rest of that target's activation behavior has to run to commit or
+    // revert it.
+    if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+        !pre_dispatch_event_handler_result) {
+      activation_target = FindActivationTarget(*node_, *event_);
+    }
+
     // Pass the data from `Node::LegacyPreActivationBehavior()` to
     // `Node::RunActivationBehaviorBeforeDOMActivate()`, which runs the part of
     // the activation behavior that happens before the DOMActivate event is
@@ -441,47 +467,85 @@ inline void EventDispatcher::DispatchEventPostProcess(
   // internal implementation detail and not part of the DOM.
   if (!event_->defaultPrevented() && !event_->DefaultHandled() &&
       is_trusted_or_click) {
+    // Non-standard: the DOM Standard runs only the activation behavior of the
+    // activation target, which it finds before dispatch:
+    // https://dom.spec.whatwg.org/#concept-event-dispatch
+    // Browsers roughly agree on different behavior, and there is a discussion
+    // about changing the HTML Standard to match it:
+    // https://github.com/whatwg/html/issues/10032
+    // Before CleanUpActivationBehavior, activation behavior ran from default
+    // event handlers, which run in bubbling order until one of them marks the
+    // click as handled, and which check the state of their element when they
+    // run. So if the innermost element with activation behavior did nothing
+    // that marks the click as handled (e.g. a `<button type=button>`), an
+    // ancestor such as an enclosing `<a href>` also ran its activation
+    // behavior. That is preserved here: for each node in the event path, in
+    // bubbling order, its default event handler runs, and then its activation
+    // behavior runs if it is the activation target or has activation behavior,
+    // until the click is handled. Every node, including the activation target
+    // (which was found again above), is checked for activation behavior after
+    // the listeners have run.
+    const bool run_activation_behavior =
+        RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() && is_click;
+    auto is_handled = [&]() {
+      return event_->DefaultHandled() || event_->defaultPrevented();
+    };
+    auto run_activation_behavior_for = [&](Node& node) {
+      if (!run_activation_behavior || is_handled()) {
+        return;
+      }
+      if (&node == activation_target) {
+        // The part before DOMActivate already ran, above.
+        node.RunActivationBehavior(*event_, pre_dispatch_event_handler_result);
+        return;
+      }
+      if (!node.HasActivationBehavior()) {
+        return;
+      }
+      node.RunActivationBehaviorBeforeDOMActivate(*event_, nullptr);
+      if (!is_handled()) {
+        node.RunActivationBehavior(*event_, nullptr);
+      }
+    };
+
     // Non-bubbling events call only one default event handler, the one for the
     // target.
+    //
+    // `Node::DefaultEventHandler()` on the target dispatches the legacy
+    // DOMActivate event for click events, and activation behavior used to run
+    // as that event's default handler. Activation behavior therefore runs
+    // after it, and is skipped if a DOMActivate listener called
+    // `preventDefault()`, which marks the click as default-handled.
     node_->DefaultEventHandler(*event_);
+    run_activation_behavior_for(*node_);
 
     // When node_ is a pseudo-element, CalculatePath() replaces it at path
     // index 0 with its UltimateOriginatingElement() (pseudos are not exposed
     // in the event path), and EventTargetRespectingTargetRules() makes that
     // originating element the event's target unless the pseudo itself has
     // activation behavior. Since `Node::DefaultEventHandler()` returns early
-    // for anything that is not the event's target, the call above did nothing,
-    // and it is the originating element (e.g. <summary> for ::marker) whose
-    // default event handler dispatches DOMActivate. Run it before
-    // `RunActivationBehavior()` below, so that canceling DOMActivate still
-    // suppresses the activation behavior.
-    if (node_->IsPseudoElement() && event_->bubbles() &&
-        !event_->DefaultHandled() && !event_->defaultPrevented() &&
-        !event_->GetEventPath().IsEmpty()) {
-      event_->GetEventPath()[0].GetNode().DefaultEventHandler(*event_);
-    }
-
-    // `Node::DefaultEventHandler()` dispatches the legacy DOMActivate event for
-    // click events, and activation behavior used to run as that event's default
-    // handler. It therefore runs here, and is skipped if the click event was
-    // canceled or default-handled in the meantime, which is the case when a
-    // DOMActivate listener called `preventDefault()`.
-    if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
-        is_click && activation_target && !event_->defaultPrevented() &&
-        !event_->DefaultHandled()) {
-      activation_target->RunActivationBehavior(
-          *event_, pre_dispatch_event_handler_result);
+    // for anything that is not the event's target, in that case it is the
+    // originating element (e.g. <summary> for ::marker) whose default event
+    // handler dispatches DOMActivate. As for the other nodes in the event
+    // path, the originating element's activation behavior runs after its
+    // default event handler.
+    const EventPath& path = event_->GetEventPath();
+    if (node_->IsPseudoElement() && event_->bubbles() && !is_handled() &&
+        !path.IsEmpty()) {
+      Node& originating_element = path[0].GetNode();
+      originating_element.DefaultEventHandler(*event_);
+      run_activation_behavior_for(originating_element);
     }
 
     // For bubbling events, call default event handlers on the same targets in
     // the same order as the bubbling phase. Path index 0 is the target, whose
     // default event handler already ran above.
-    if (!event_->DefaultHandled() && !event_->defaultPrevented() &&
-        event_->bubbles()) {
-      wtf_size_t size = event_->GetEventPath().size();
-      for (wtf_size_t i = 1; i < size; ++i) {
-        event_->GetEventPath()[i].GetNode().DefaultEventHandler(*event_);
-        if (event_->DefaultHandled() || event_->defaultPrevented()) {
+    if (!is_handled() && event_->bubbles()) {
+      for (wtf_size_t i = 1; i < path.size(); ++i) {
+        Node& node = path[i].GetNode();
+        node.DefaultEventHandler(*event_);
+        run_activation_behavior_for(node);
+        if (is_handled()) {
           break;
         }
       }
