@@ -181,7 +181,7 @@ class MultiStepImportMerger {
     ProfileImportMetadata import_metadata;
     // Whether the profile is already imported and only stored for multi-step
     // complements.
-    bool is_imported;
+    bool is_imported = false;
   };
   TimestampedSameOriginQueue<MultiStepFormProfileCandidate>
       multistep_candidates_;
