@@ -483,6 +483,14 @@ HintsManager::HintsManager(
       base::BindOnce(&HintsManager::OnHintCacheInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
+HintsManager::OptimizationFilterState::OptimizationFilterState() = default;
+HintsManager::OptimizationFilterState::OptimizationFilterState(
+    OptimizationFilterState&&) = default;
+HintsManager::OptimizationFilterState&
+HintsManager::OptimizationFilterState::operator=(OptimizationFilterState&&) =
+    default;
+HintsManager::OptimizationFilterState::~OptimizationFilterState() = default;
+
 HintsManager::~HintsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -594,9 +602,7 @@ void HintsManager::ProcessOptimizationFilters(
         blocklist_optimization_filters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  optimization_types_with_filter_.clear();
-  allowlist_optimization_filters_.clear();
-  blocklist_optimization_filters_.clear();
+  optimization_filters_.clear();
   ProcessOptimizationFilterSet(allowlist_optimization_filters,
                                /*is_allowlist=*/true);
   ProcessOptimizationFilterSet(blocklist_optimization_filters,
@@ -605,7 +611,7 @@ void HintsManager::ProcessOptimizationFilters(
   ScopedDictPrefUpdate previous_opt_types_with_filter(
       pref_service_, prefs::kPreviousOptimizationTypesWithFilter);
   previous_opt_types_with_filter->clear();
-  for (auto optimization_type : optimization_types_with_filter_) {
+  for (const auto& [optimization_type, filter_state] : optimization_filters_) {
     previous_opt_types_with_filter->Set(
         optimization_guide::proto::OptimizationType_Name(optimization_type),
         true);
@@ -619,13 +625,14 @@ void HintsManager::ProcessOptimizationFilterSet(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& filter : filters) {
-    if (filter.optimization_type() != proto::TYPE_UNSPECIFIED) {
-      optimization_types_with_filter_.insert(filter.optimization_type());
+    if (filter.optimization_type() == proto::TYPE_UNSPECIFIED) {
+      continue;
     }
+    OptimizationFilterState& filter_state =
+        optimization_filters_[filter.optimization_type()];
 
     // Do not put anything in memory that we don't have registered.
-    if (registered_optimization_types_.find(filter.optimization_type()) ==
-        registered_optimization_types_.end()) {
+    if (!registered_optimization_types_.contains(filter.optimization_type())) {
       continue;
     }
 
@@ -634,10 +641,7 @@ void HintsManager::ProcessOptimizationFilterSet(
         OptimizationFilterStatus::kFoundServerFilterConfig);
 
     // Do not parse duplicate optimization filters.
-    if (allowlist_optimization_filters_.find(filter.optimization_type()) !=
-            allowlist_optimization_filters_.end() ||
-        blocklist_optimization_filters_.find(filter.optimization_type()) !=
-            blocklist_optimization_filters_.end()) {
+    if (filter_state.filter) {
       RecordOptimizationFilterStatus(
           filter.optimization_type(),
           OptimizationFilterStatus::kFailedServerFilterDuplicateConfig);
@@ -654,13 +658,8 @@ void HintsManager::ProcessOptimizationFilterSet(
           optimization_guide_logger_)
           << "Loaded optimization filter for "
           << GetStringNameForOptimizationType(filter.optimization_type());
-      if (is_allowlist) {
-        allowlist_optimization_filters_.insert(
-            {filter.optimization_type(), std::move(optimization_filter)});
-      } else {
-        blocklist_optimization_filters_.insert(
-            {filter.optimization_type(), std::move(optimization_filter)});
-      }
+      filter_state.filter = std::move(optimization_filter);
+      filter_state.is_allowlist = is_allowlist;
     }
     RecordOptimizationFilterStatus(filter.optimization_type(), status);
   }
@@ -1189,11 +1188,9 @@ void HintsManager::RegisterOptimizationTypes(
           proto::OptimizationType_Name(optimization_type), true);
     }
 
-    if (!should_load_new_optimization_filter) {
-      if (optimization_types_with_filter_.find(optimization_type) !=
-          optimization_types_with_filter_.end()) {
-        should_load_new_optimization_filter = true;
-      }
+    if (!should_load_new_optimization_filter &&
+        optimization_filters_.contains(optimization_type)) {
+      should_load_new_optimization_filter = true;
     }
   }
 
@@ -1225,15 +1222,17 @@ void HintsManager::RegisterOptimizationTypes(
 bool HintsManager::HasLoadedOptimizationAllowlist(
     proto::OptimizationType optimization_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return allowlist_optimization_filters_.find(optimization_type) !=
-         allowlist_optimization_filters_.end();
+  auto it = optimization_filters_.find(optimization_type);
+  return it != optimization_filters_.end() && it->second.filter &&
+         it->second.is_allowlist;
 }
 
 bool HintsManager::HasLoadedOptimizationBlocklist(
     proto::OptimizationType optimization_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return blocklist_optimization_filters_.find(optimization_type) !=
-         blocklist_optimization_filters_.end();
+  auto it = optimization_filters_.find(optimization_type);
+  return it != optimization_filters_.end() && it->second.filter &&
+         !it->second.is_allowlist;
 }
 
 base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
@@ -1362,8 +1361,8 @@ void HintsManager::CanApplyOptimization(
 
 void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
     std::unique_ptr<proto::GetHintsResponse> response,
-    const base::flat_set<GURL> requested_urls,
-    const base::flat_set<proto::OptimizationType> optimization_types,
+    const base::flat_set<GURL>& requested_urls,
+    const base::flat_set<proto::OptimizationType>& optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
   // TODO(b/266694081): Reintroduce client side in memory cache sharded by
   // context and store here.
@@ -1396,6 +1395,13 @@ void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
   }
 
   for (const auto& url : requested_urls) {
+    auto url_it = url_mapped_hints.find(url.spec());
+    const proto::Hint* url_keyed_hint =
+        url_it != url_mapped_hints.end() ? url_it->second : nullptr;
+    auto host_it = host_mapped_hints.find(url.GetHost());
+    const proto::Hint* host_keyed_hint =
+        host_it != host_mapped_hints.end() ? host_it->second : nullptr;
+
     base::flat_map<proto::OptimizationType,
                    OptimizationGuideDecisionWithMetadata>
         decisions;
@@ -1403,8 +1409,8 @@ void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
     for (const auto optimization_type : optimization_types) {
       OptimizationMetadata metadata;
       OptimizationTypeDecision type_decision = CanApplyOptimization(
-          /*is_on_demand_request=*/true, url, optimization_type,
-          url_mapped_hints[url.spec()], host_mapped_hints[url.GetHost()],
+          /*is_on_demand_request=*/true, url, optimization_type, url_keyed_hint,
+          host_keyed_hint,
           /*skip_cache=*/true, &metadata);
       OptimizationGuideDecision decision =
           GetOptimizationGuideDecisionFromOptimizationTypeDecision(
@@ -1613,35 +1619,20 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
 
   // Check if the URL should be filtered out if we have an optimization filter
   // for the type.
-
-  // Check if we have an allowlist loaded into memory for it, and if we do,
-  // see if the URL matches anything in the filter.
-  if (allowlist_optimization_filters_.find(optimization_type) !=
-      allowlist_optimization_filters_.end()) {
+  auto filter_it = optimization_filters_.find(optimization_type);
+  if (filter_it != optimization_filters_.end() && filter_it->second.filter) {
     const auto type_decision =
-        allowlist_optimization_filters_[optimization_type]->Matches(url)
+        (filter_it->second.filter->Matches(url) ==
+         filter_it->second.is_allowlist)
             ? OptimizationTypeDecision::kAllowedByOptimizationFilter
             : OptimizationTypeDecision::kNotAllowedByOptimizationFilter;
     scoped_logger.set_type_decision(type_decision);
     return type_decision;
   }
 
-  // Check if we have a blocklist loaded into memory for it, and if we do, see
-  // if the URL matches anything in the filter.
-  if (blocklist_optimization_filters_.find(optimization_type) !=
-      blocklist_optimization_filters_.end()) {
-    const auto type_decision =
-        blocklist_optimization_filters_[optimization_type]->Matches(url)
-            ? OptimizationTypeDecision::kNotAllowedByOptimizationFilter
-            : OptimizationTypeDecision::kAllowedByOptimizationFilter;
-    scoped_logger.set_type_decision(type_decision);
-    return type_decision;
-  }
-
   // Check if we had an optimization filter for it, but it was not loaded into
   // memory.
-  if (optimization_types_with_filter_.find(optimization_type) !=
-          optimization_types_with_filter_.end() ||
+  if (filter_it != optimization_filters_.end() ||
       pref_service_->GetDict(prefs::kPreviousOptimizationTypesWithFilter)
           .contains(optimization_guide::proto::OptimizationType_Name(
               optimization_type))) {
@@ -1748,13 +1739,12 @@ void HintsManager::OnReadyToInvokeRegisteredCallbacks(
     const GURL& navigation_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (registered_callbacks_.find(navigation_url) ==
-      registered_callbacks_.end()) {
+  auto callbacks_it = registered_callbacks_.find(navigation_url);
+  if (callbacks_it == registered_callbacks_.end()) {
     return;
   }
 
-  for (auto& opt_type_and_callbacks :
-       registered_callbacks_.at(navigation_url)) {
+  for (auto& opt_type_and_callbacks : callbacks_it->second) {
     proto::OptimizationType opt_type = opt_type_and_callbacks.first;
 
     for (auto& callback : opt_type_and_callbacks.second) {
@@ -1771,7 +1761,7 @@ void HintsManager::OnReadyToInvokeRegisteredCallbacks(
       std::move(callback).Run(decision, metadata);
     }
   }
-  registered_callbacks_.erase(navigation_url);
+  registered_callbacks_.erase(callbacks_it);
 }
 
 bool HintsManager::HasOptimizationTypeToFetchFor() {
@@ -1780,8 +1770,7 @@ bool HintsManager::HasOptimizationTypeToFetchFor() {
   }
 
   for (const auto& optimization_type : registered_optimization_types_) {
-    if (optimization_types_with_filter_.find(optimization_type) ==
-        optimization_types_with_filter_.end()) {
+    if (!optimization_filters_.contains(optimization_type)) {
       return true;
     }
   }

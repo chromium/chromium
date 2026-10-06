@@ -400,8 +400,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // what is contained in |response|.
   void ProcessAndInvokeOnDemandHintsCallbacks(
       std::unique_ptr<proto::GetHintsResponse> response,
-      const base::flat_set<GURL> requested_urls,
-      const base::flat_set<proto::OptimizationType> optimization_types,
+      const base::flat_set<GURL>& requested_urls,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback);
 
   // Called when the hints for a navigation have been fetched from the remote
@@ -526,19 +526,21 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // Should only be read and modified on the UI thread.
   base::flat_set<proto::OptimizationType> registered_optimization_types_;
 
-  // The set of optimization types that the component specified by
-  // |component_info_| has optimization filters for.
-  base::flat_set<proto::OptimizationType> optimization_types_with_filter_;
+  struct OptimizationFilterState {
+    OptimizationFilterState();
+    OptimizationFilterState(OptimizationFilterState&&);
+    OptimizationFilterState& operator=(OptimizationFilterState&&);
+    ~OptimizationFilterState();
 
-  // A map from optimization type to the host filter that holds the allowlist
-  // for that type.
-  base::flat_map<proto::OptimizationType, std::unique_ptr<OptimizationFilter>>
-      allowlist_optimization_filters_;
+    std::unique_ptr<OptimizationFilter> filter;
+    bool is_allowlist = false;
+  };
 
-  // A map from optimization type to the host filter that holds the blocklist
-  // for that type.
-  base::flat_map<proto::OptimizationType, std::unique_ptr<OptimizationFilter>>
-      blocklist_optimization_filters_;
+  // A map from optimization type that the component specified by
+  // |component_info_| has optimization filters for to its loaded filter state
+  // (if registered and successfully parsed).
+  base::flat_map<proto::OptimizationType, OptimizationFilterState>
+      optimization_filters_;
 
   // A map from URL to a map of callbacks keyed by their optimization type.
   base::flat_map<GURL,
