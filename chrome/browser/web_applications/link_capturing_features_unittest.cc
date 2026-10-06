@@ -19,15 +19,9 @@ TEST_F(LinkCapturingFeaturesTest, DefaultBehavior) {
       /*enabled_features=*/{::features::kPwaNavigationCapturing},
       /*disabled_features=*/{});
 
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(GetNavigationCapturingDefaultState(),
-            ::features::CapturingState::kReimplDefaultOff);
-  EXPECT_FALSE(IsNavigationCapturingOnByDefault());
-#else
   EXPECT_EQ(GetNavigationCapturingDefaultState(),
             ::features::CapturingState::kReimplDefaultOn);
   EXPECT_TRUE(IsNavigationCapturingOnByDefault());
-#endif
 }
 
 TEST_F(LinkCapturingFeaturesTest, TestingOverrideEnabled) {
