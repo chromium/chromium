@@ -635,7 +635,9 @@ void ArcSessionManager::OnProvisioningFinished(
   if (provisioning_reported_) {
     // We don't expect success ArcProvisioningResult to be reported twice
     // or reported after an error.
-    CHECK(!provisioning_successful, base::NotFatalUntil::M160);
+    // TODO(crbug.com/569778608): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!provisioning_successful);
     // TODO(khmel): Consider changing LOG to NOTREACHED once we guaranty that
     // no double message can happen in production.
     LOG(WARNING) << "Provisioning result was already reported. Ignoring "
