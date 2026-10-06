@@ -34,15 +34,8 @@ TextureSelector::TextureSelector(VideoPixelFormat pixfmt,
 
 TextureSelector::~TextureSelector() = default;
 
-bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
-                      const gpu::GpuDriverBugWorkarounds& workarounds) {
-  if (!preferences.enable_zero_copy_dxgi_video)
-    return false;
-
-  if (workarounds.disable_dxgi_zero_copy_video)
-    return false;
-
-  return true;
+bool SupportsZeroCopy(const gpu::GpuDriverBugWorkarounds& workarounds) {
+  return !workarounds.disable_dxgi_zero_copy_video;
 }
 
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
@@ -62,7 +55,6 @@ gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
 
 // static
 std::unique_ptr<TextureSelector> TextureSelector::Create(
-    const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& workarounds,
     DXGI_FORMAT decoder_output_format,
     const FormatSupportChecker* format_checker,
@@ -74,7 +66,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   VideoPixelFormat output_pixel_format;
   viz::SharedImageFormat output_si_format;
 
-  bool needs_texture_copy = !SupportsZeroCopy(gpu_preferences, workarounds);
+  bool needs_texture_copy = !SupportsZeroCopy(workarounds);
 
   auto supports_fmt = [format_checker](auto fmt) {
     return format_checker->CheckOutputFormatSupport(fmt);

@@ -62,8 +62,6 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 #if BUILDFLAG(IS_WIN)
   gpu_preferences.enable_low_latency_dxva =
       !command_line->HasSwitch(switches::kDisableLowLatencyDxva);
-  gpu_preferences.enable_zero_copy_dxgi_video =
-      !command_line->HasSwitch(switches::kDisableZeroCopyDxgiVideo);
   gpu_preferences.enable_nv12_dxgi_video =
       !command_line->HasSwitch(switches::kDisableNv12DxgiVideo);
 #endif

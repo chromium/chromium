@@ -75,7 +75,6 @@ class D3DVideoDecoderBackend {
   virtual D3DStatus::Or<std::unique_ptr<TextureSelector>> CreateTextureSelector(
       D3DDecoderConfigurator* decoder_configurator,
       const VideoDecoderConfig& config,
-      const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       bool use_shared_handle,
       MediaLog* media_log) = 0;

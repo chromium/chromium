@@ -27,8 +27,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.disable_gpu_watchdog, right.disable_gpu_watchdog);
   EXPECT_EQ(left.gpu_sandbox_start_early, right.gpu_sandbox_start_early);
   EXPECT_EQ(left.enable_low_latency_dxva, right.enable_low_latency_dxva);
-  EXPECT_EQ(left.enable_zero_copy_dxgi_video,
-            right.enable_zero_copy_dxgi_video);
   EXPECT_EQ(left.enable_nv12_dxgi_video, right.enable_nv12_dxgi_video);
   EXPECT_EQ(left.disable_software_rasterizer,
             right.disable_software_rasterizer);
@@ -131,7 +129,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(disable_gpu_watchdog, true)
     GPU_PREFERENCES_FIELD(gpu_sandbox_start_early, true)
     GPU_PREFERENCES_FIELD(enable_low_latency_dxva, false)
-    GPU_PREFERENCES_FIELD(enable_zero_copy_dxgi_video, true)
     GPU_PREFERENCES_FIELD(enable_nv12_dxgi_video, true)
     GPU_PREFERENCES_FIELD(disable_software_rasterizer, true)
     GPU_PREFERENCES_FIELD(log_gpu_control_list_decisions, true)
@@ -216,7 +213,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(disable_gpu_watchdog);
   PRINT_BOOL(gpu_sandbox_start_early);
   PRINT_BOOL(enable_low_latency_dxva);
-  PRINT_BOOL(enable_zero_copy_dxgi_video);
   PRINT_BOOL(enable_nv12_dxgi_video);
   PRINT_BOOL(disable_software_rasterizer);
   PRINT_BOOL(log_gpu_control_list_decisions);

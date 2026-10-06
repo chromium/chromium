@@ -47,23 +47,18 @@ class D3D11TextureSelectorUnittest : public ::testing::Test {
     return result;
   }
 
-  enum class ZeroCopyEnabled { kFalse = 0, kTrue = 1 };
   enum class ZeroCopyDisabledByWorkaround { kFalse = 0, kTrue = 1 };
 
   std::unique_ptr<TextureSelector> CreateWithDefaultGPUInfo(
       DXGI_FORMAT decoder_output_format,
-      ZeroCopyEnabled zero_copy_enabled = ZeroCopyEnabled::kTrue,
       ZeroCopyDisabledByWorkaround zero_copy_disabled_by_workaround =
           ZeroCopyDisabledByWorkaround::kFalse,
       gfx::ColorSpace colorspace = gfx::ColorSpace::CreateREC709()) {
-    gpu::GpuPreferences prefs;
-    prefs.enable_zero_copy_dxgi_video =
-        zero_copy_enabled == ZeroCopyEnabled::kTrue;
     gpu::GpuDriverBugWorkarounds workarounds;
     workarounds.disable_dxgi_zero_copy_video =
         zero_copy_disabled_by_workaround == ZeroCopyDisabledByWorkaround::kTrue;
     auto media_log = std::make_unique<NullMediaLog>();
-    return TextureSelector::Create(prefs, workarounds, decoder_output_format,
+    return TextureSelector::Create(workarounds, decoder_output_format,
                                    &format_checker_, nullptr, nullptr,
                                    media_log.get(), colorspace);
   }
@@ -91,21 +86,10 @@ TEST_F(D3D11TextureSelectorUnittest, NV12BindsToNV12) {
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }
 
-TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithoutSharingSupport) {
-  AllowFormatCheckerSupportExcept({});
-  auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_NV12, ZeroCopyEnabled::kFalse);
-
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kNV12);
-  EXPECT_TRUE(tex_sel->WillCopyForTesting());
-}
-
 TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithWorkaround) {
   AllowFormatCheckerSupportExcept({});
-  auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_NV12, ZeroCopyEnabled::kTrue,
-                               ZeroCopyDisabledByWorkaround::kTrue);
+  auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_NV12,
+                                          ZeroCopyDisabledByWorkaround::kTrue);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
   EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kNV12);
@@ -116,8 +100,7 @@ TEST_F(D3D11TextureSelectorUnittest, P010BindsToP010WithVideoProcessorSupport) {
   // Should bind P010 if the video processor can handle P010, in such situation
   // viz may overlay or may not.
   AllowFormatCheckerSupportExcept({});
-  auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue);
+  auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_P010);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
   EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kP010);
@@ -129,8 +112,7 @@ TEST_F(D3D11TextureSelectorUnittest,
   // Should still bind P010 if the video processor can't handle P010, we choose
   // to always disable viz overlay to avoid using video processor.
   AllowFormatCheckerSupportExcept({DXGI_FORMAT_P010});
-  auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue);
+  auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_P010);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
   EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kP010);
@@ -140,8 +122,8 @@ TEST_F(D3D11TextureSelectorUnittest,
 TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo10BitRGB) {
   // 10 bit unorm should be the second choice after p010 zero copy.
   AllowFormatCheckerSupportExcept({DXGI_FORMAT_P010});
-  auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kFalse);
+  auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_P010,
+                                          ZeroCopyDisabledByWorkaround::kTrue);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_XB30);
   EXPECT_EQ(tex_sel->OutputSharedImageFormat(),
@@ -153,8 +135,8 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo8bitRGB) {
   // 8 bit unorm should be the third and final choice.
   AllowFormatCheckerSupportExcept(
       {DXGI_FORMAT_P010, DXGI_FORMAT_R10G10B10A2_UNORM});
-  auto tex_sel =
-      CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kFalse);
+  auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_P010,
+                                          ZeroCopyDisabledByWorkaround::kTrue);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_ARGB);
   EXPECT_EQ(tex_sel->OutputSharedImageFormat(),
@@ -176,8 +158,7 @@ TEST_F(D3D11TextureSelectorUnittest,
 TEST_F(D3D11TextureSelectorUnittest, AYUVCopiesToNV12WithHDRColorSpace) {
   AllowFormatCheckerSupportExcept({});
   auto tex_sel = CreateWithDefaultGPUInfo(
-      DXGI_FORMAT_AYUV, ZeroCopyEnabled::kTrue,
-      ZeroCopyDisabledByWorkaround::kFalse,
+      DXGI_FORMAT_AYUV, ZeroCopyDisabledByWorkaround::kFalse,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::HLG,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
@@ -192,8 +173,7 @@ TEST_F(D3D11TextureSelectorUnittest,
        AYUVCopiesToNV12WithUnsupportedColorSpace) {
   AllowFormatCheckerSupportExcept({});
   auto tex_sel = CreateWithDefaultGPUInfo(
-      DXGI_FORMAT_AYUV, ZeroCopyEnabled::kTrue,
-      ZeroCopyDisabledByWorkaround::kFalse,
+      DXGI_FORMAT_AYUV, ZeroCopyDisabledByWorkaround::kFalse,
       gfx::ColorSpace(
           gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
           gfx::ColorSpace::MatrixID::YCOCG, gfx::ColorSpace::RangeID::LIMITED));
@@ -217,8 +197,7 @@ TEST_F(D3D11TextureSelectorUnittest,
 TEST_F(D3D11TextureSelectorUnittest, Y410CopiesToP010WithHDRColorSpace) {
   AllowFormatCheckerSupportExcept({});
   auto tex_sel = CreateWithDefaultGPUInfo(
-      DXGI_FORMAT_Y410, ZeroCopyEnabled::kTrue,
-      ZeroCopyDisabledByWorkaround::kFalse,
+      DXGI_FORMAT_Y410, ZeroCopyDisabledByWorkaround::kFalse,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
@@ -233,8 +212,7 @@ TEST_F(D3D11TextureSelectorUnittest,
        Y410CopiesToP010WithUnsupportedColorSpace) {
   AllowFormatCheckerSupportExcept({});
   auto tex_sel = CreateWithDefaultGPUInfo(
-      DXGI_FORMAT_Y410, ZeroCopyEnabled::kTrue,
-      ZeroCopyDisabledByWorkaround::kFalse,
+      DXGI_FORMAT_Y410, ZeroCopyDisabledByWorkaround::kFalse,
       gfx::ColorSpace(
           gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
           gfx::ColorSpace::MatrixID::GBR, gfx::ColorSpace::RangeID::LIMITED));

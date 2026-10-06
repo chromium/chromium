@@ -140,9 +140,6 @@ struct GPU_CONFIG_EXPORT GpuPreferences {
   // Enables using CODECAPI_AVLowLatencyMode. Windows only.
   bool enable_low_latency_dxva = true;
 
-  // Enables support for avoiding copying DXGI NV12 textures. Windows only.
-  bool enable_zero_copy_dxgi_video = false;
-
   // Enables support for outputting NV12 video frames. Windows only.
   bool enable_nv12_dxgi_video = false;
 

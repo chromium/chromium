@@ -54,7 +54,6 @@ class D3DVideoDecoderTest : public ::testing::Test {
 
   void SetUp() override {
     // Set up some sane defaults.
-    gpu_preferences_.enable_zero_copy_dxgi_video = true;
     gpu_preferences_.use_passthrough_cmd_decoder = false;
     gpu_workarounds_.disable_dxgi_zero_copy_video = false;
     gpu_task_runner_ = task_environment_.GetMainThreadTaskRunner();

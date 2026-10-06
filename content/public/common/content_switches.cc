@@ -276,9 +276,6 @@ const char kDisableV8IdleTasks[]            = "disable-v8-idle-tasks";
 // embedder) is also present.
 const char kDisableWebSecurity[]            = "disable-web-security";
 
-// Disable the video decoder from drawing directly to a texture.
-const char kDisableZeroCopyDxgiVideo[]      = "disable-zero-copy-dxgi-video";
-
 // Specifies if the |DOMAutomationController| needs to be bound in the
 // renderer. This binding happens on per-frame basis and hence can potentially
 // be a performance bottleneck. One should only enable it when automating dom

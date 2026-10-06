@@ -235,8 +235,8 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
   auto decoder_configurator = std::move(decoder_configurator_result).value();
 
   auto texture_selector_result = backend_->CreateTextureSelector(
-      decoder_configurator.get(), config_, gpu_preferences_, gpu_workarounds_,
-      use_shared_handle_, media_log_.get());
+      decoder_configurator.get(), config_, gpu_workarounds_, use_shared_handle_,
+      media_log_.get());
   if (!texture_selector_result.has_value()) {
     NotifyError(std::move(texture_selector_result).error().AddHere());
     return false;

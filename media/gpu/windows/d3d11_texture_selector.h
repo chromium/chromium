@@ -37,7 +37,6 @@ class MEDIA_GPU_EXPORT TextureSelector {
   virtual ~TextureSelector();
 
   static std::unique_ptr<TextureSelector> Create(
-      const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& workarounds,
       DXGI_FORMAT decoder_output_format,
       const FormatSupportChecker* format_checker,

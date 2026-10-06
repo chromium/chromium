@@ -196,7 +196,6 @@ D3DStatus::Or<std::unique_ptr<TextureSelector>>
 D3D11VideoDecoderBackend::CreateTextureSelector(
     D3DDecoderConfigurator* decoder_configurator,
     const VideoDecoderConfig& config,
-    const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     bool use_shared_handle,
     MediaLog* media_log) {
@@ -211,8 +210,8 @@ D3D11VideoDecoderBackend::CreateTextureSelector(
   }
 
   auto texture_selector = TextureSelector::Create(
-      gpu_preferences, gpu_workarounds, decoder_configurator->TextureFormat(),
-      &format_checker, video_device_, device_context_, media_log,
+      gpu_workarounds, decoder_configurator->TextureFormat(), &format_checker,
+      video_device_, device_context_, media_log,
       config.color_space_info().ToGfxColorSpace(), use_shared_handle);
   if (!texture_selector) {
     return D3DStatus::Codes::kCreateTextureSelectorFailed;

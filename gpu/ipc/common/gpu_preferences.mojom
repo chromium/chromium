@@ -63,7 +63,6 @@ struct GpuPreferences {
   // TODO(http://crbug.com/676224) Support preprocessing of mojoms. Following
   // variables should be used on Windows only.
   bool enable_low_latency_dxva;
-  bool enable_zero_copy_dxgi_video;
   bool enable_nv12_dxgi_video;
   bool disable_software_rasterizer;
   bool log_gpu_control_list_decisions;

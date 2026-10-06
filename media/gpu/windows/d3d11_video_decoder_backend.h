@@ -44,7 +44,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
   D3DStatus::Or<std::unique_ptr<TextureSelector>> CreateTextureSelector(
       D3DDecoderConfigurator* decoder_configurator,
       const VideoDecoderConfig& config,
-      const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       bool use_shared_handle,
       MediaLog* media_log) override;

@@ -92,7 +92,6 @@ CONTENT_EXPORT extern const char kDisableThreadedCompositing[];
 extern const char kDisableV8IdleTasks[];
 CONTENT_EXPORT extern const char kDisableWebRtcEncryption[];
 CONTENT_EXPORT extern const char kDisableWebSecurity[];
-CONTENT_EXPORT extern const char kDisableZeroCopyDxgiVideo[];
 CONTENT_EXPORT extern const char kDomAutomationController[];
 extern const char kDisable2dCanvasClipAntialiasing[];
 CONTENT_EXPORT extern const char kEnableAggressiveDOMStorageFlushing[];

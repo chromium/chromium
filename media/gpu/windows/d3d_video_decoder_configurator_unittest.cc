@@ -35,10 +35,8 @@ class D3DDecoderConfiguratorUnittest : public ::testing::Test {
 
   std::unique_ptr<D3DDecoderConfigurator> CreateWithDefaultGPUInfo(
       const VideoDecoderConfig& config,
-      bool zero_copy_enabled = true,
       uint8_t bit_depth = 8) {
     gpu::GpuPreferences prefs;
-    prefs.enable_zero_copy_dxgi_video = zero_copy_enabled;
     gpu::GpuDriverBugWorkarounds workarounds;
     workarounds.disable_dxgi_zero_copy_video = false;
     VideoChromaSampling chroma_sampling = VideoChromaSampling::k420;
@@ -61,7 +59,7 @@ TEST_F(D3DDecoderConfiguratorUnittest, VP9Profile0RightFormats) {
 
 TEST_F(D3DDecoderConfiguratorUnittest, VP9Profile2RightFormats) {
   auto configurator = CreateWithDefaultGPUInfo(
-      CreateDecoderConfig(VP9PROFILE_PROFILE2, {0, 0}), false, 10);
+      CreateDecoderConfig(VP9PROFILE_PROFILE2, {0, 0}), 10);
 
   EXPECT_EQ(configurator->DecoderGuid(),
             D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2);
@@ -71,13 +69,13 @@ TEST_F(D3DDecoderConfiguratorUnittest, VP9Profile2RightFormats) {
 
 TEST_F(D3DDecoderConfiguratorUnittest, AV1ProfileRightFormats) {
   auto configurator = CreateWithDefaultGPUInfo(
-      CreateDecoderConfig(AV1PROFILE_PROFILE_MAIN, {0, 0}), false, 8);
+      CreateDecoderConfig(AV1PROFILE_PROFILE_MAIN, {0, 0}), 8);
   EXPECT_EQ(configurator->DecoderGuid(), DXVA_ModeAV1_VLD_Profile0);
   EXPECT_EQ(configurator->D3D11DecoderDescriptor()->OutputFormat,
             DXGI_FORMAT_NV12);
 
   configurator = CreateWithDefaultGPUInfo(
-      CreateDecoderConfig(AV1PROFILE_PROFILE_MAIN, {0, 0}), false, 10);
+      CreateDecoderConfig(AV1PROFILE_PROFILE_MAIN, {0, 0}), 10);
   EXPECT_EQ(configurator->DecoderGuid(), DXVA_ModeAV1_VLD_Profile0);
   EXPECT_EQ(configurator->D3D11DecoderDescriptor()->OutputFormat,
             DXGI_FORMAT_P010);
