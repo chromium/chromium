@@ -444,9 +444,9 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
 
   FormData form_data = *ExtractFormData(web_form);
   ASSERT_EQ(form_data.fields().size(), 1u);
-  ASSERT_EQ(form_data.fields()[0].options().size(), 1u);
-  EXPECT_EQ(form_data.fields()[0].options()[0].value, trimmed_option);
-  EXPECT_EQ(form_data.fields()[0].options()[0].text, trimmed_option);
+  EXPECT_THAT(form_data.fields()[0].options(),
+              ElementsAre(SelectOption{.value = trimmed_option,
+                                       .text = trimmed_option}));
   EXPECT_TRUE(IsValidOption(form_data.fields()[0].options()[0]));
 }
 
@@ -1230,11 +1230,8 @@ TEST_F(FormAutofillUtilsTest,
   WebDocument doc = GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   std::vector<SelectOption> options = GetDataListOptionsForTesting(web_control);
-  ASSERT_EQ(options.size(), 2u);
-  EXPECT_EQ(options[0].value, u"1");
-  EXPECT_EQ(options[1].value, u"2");
-  EXPECT_EQ(options[0].text, u"");
-  EXPECT_EQ(options[1].text, u"");
+  EXPECT_THAT(options, ElementsAre(SelectOption{.value = u"1", .text = u""},
+                                   SelectOption{.value = u"2", .text = u""}));
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -1246,11 +1243,9 @@ TEST_F(FormAutofillUtilsTest,
   WebDocument doc = GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   std::vector<SelectOption> options = GetDataListOptionsForTesting(web_control);
-  ASSERT_EQ(options.size(), 2u);
-  EXPECT_EQ(options[0].value, u"1");
-  EXPECT_EQ(options[1].value, u"2");
-  EXPECT_EQ(options[0].text, u"one");
-  EXPECT_EQ(options[1].text, u"two");
+  EXPECT_THAT(options,
+              ElementsAre(SelectOption{.value = u"1", .text = u"one"},
+                          SelectOption{.value = u"2", .text = u"two"}));
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -1267,11 +1262,9 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
   auto& options = form.fields().back().datalist_options();
-  ASSERT_EQ(options.size(), 2u);
-  EXPECT_EQ(options[0].value, u"1");
-  EXPECT_EQ(options[1].value, u"2");
-  EXPECT_EQ(options[0].text, u"one");
-  EXPECT_EQ(options[1].text, u"two");
+  EXPECT_THAT(options,
+              ElementsAre(SelectOption{.value = u"1", .text = u"one"},
+                          SelectOption{.value = u"2", .text = u"two"}));
   EXPECT_EQ(field.datalist_options().size(), options.size());
 }
 
