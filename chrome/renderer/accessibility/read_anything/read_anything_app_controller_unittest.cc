@@ -3787,6 +3787,57 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   EXPECT_EQ(controller().EndOffset(), 2);
 }
 
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       ImmersiveMode_PdfPendingSelection_SurvivesNonActiveTreeUpdate) {
+  // Set up a PDF in immersive overlay with a completed distillation, then
+  // close it.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  ui::AXNodeData node1 = test::TextNode(/*id=*/2, u"Hello");
+  ui::AXNodeData node2 = test::TextNode(/*id=*/3, u"World");
+  SendUpdateWithNodes({std::move(node1), std::move(node2)});
+  OnAXTreeDistilled(tree_id_, {2, 3});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  ASSERT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // A PDF selection update is queued while reading mode is closed.
+  ui::AXTreeUpdate selection_update;
+  test::SetUpdateTreeID(&selection_update, tree_id_);
+  selection_update.has_tree_data = true;
+  selection_update.tree_data.sel_anchor_object_id = 2;
+  selection_update.tree_data.sel_focus_object_id = 3;
+  selection_update.tree_data.sel_anchor_offset = 0;
+  selection_update.tree_data.sel_focus_offset = 2;
+  controller().AccessibilityEventReceived(tree_id_, {selection_update}, {});
+  ASSERT_TRUE(model().has_pending_selection());
+
+  // An update for another forwarded tree (e.g. the PDF viewer's extension host
+  // frame) is applied directly and must not drop the pending selection.
+  ui::AXTreeUpdate other_tree_update;
+  ui::AXTreeID other_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&other_tree_update, other_tree_id);
+  ui::AXNodeData other_root = test::GenericContainerNode(/*id=*/1);
+  other_tree_update.root_id = other_root.id;
+  other_tree_update.nodes = {std::move(other_root)};
+  controller().AccessibilityEventReceived(other_tree_id, {other_tree_update},
+                                          {});
+  EXPECT_TRUE(model().has_pending_selection());
+
+  // Reopen immersive view and verify the selection is processed.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_FALSE(model().has_pending_selection());
+  EXPECT_EQ(controller().StartNodeId(), 2);
+  EXPECT_EQ(controller().EndNodeId(), 3);
+  EXPECT_EQ(controller().StartOffset(), 0);
+  EXPECT_EQ(controller().EndOffset(), 2);
+}
+
 TEST_F(
     ReadAnythingAppControllerScreen2xTest,
     ImmersiveMode_OnAXTreeDistilled_ProcessesPendingPdfUpdatesBeforePausing) {

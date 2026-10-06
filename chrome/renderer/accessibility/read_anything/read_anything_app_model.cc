@@ -903,15 +903,17 @@ void ReadAnythingAppModel::ApplyAccessibilityUpdates(
     UnserializePendingUpdates(tree_id);
     UnserializeUpdates(updates, tree_id);
     ProcessNonGeneratedEvents(events);
+
+    // has_pending_selection_ is used to process updates that would not have
+    // otherwise been processed if Immersive is opening and already had a good
+    // distillation. Therefore, it should be reset once updates are applied.
+    has_pending_selection_ = false;
   } else {
+    // Updates for other trees (e.g. the PDF extension host frame) don't drain
+    // the active tree's queue, so a pending selection stays pending.
     VLOG(1) << "ApplyAccessibilityUpdates- tree ID is not the active tree";
     UnserializeUpdates(updates, tree_id);
   }
-
-  // has_pending_selection_ is used to process updates that would not have
-  // otherwise been processed if Immersive is opening and already had a good
-  // distillation. Therefore, it should be reset once updates are applied.
-  has_pending_selection_ = false;
 }
 
 void ReadAnythingAppModel::QueueAccessibilityUpdates(
