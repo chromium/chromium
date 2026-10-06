@@ -55,24 +55,28 @@ class TabFootprintAggregator {
                       PageId page_id,
                       uint64_t pmf_kb);
 
- private:
-  // For a given tab, this tracks what renderer process hosts the main frame.
-  std::map<PageId, base::ProcessId> page_to_main_frame_process_;
+  struct PageState {
+    PageState();
+    ~PageState();
 
-  // This tracks the tabs who have a frame hosted by a given process.
-  std::map<base::ProcessId, std::vector<PageId>> process_to_pages_;
+    base::ProcessId main_frame_process = base::kNullProcessId;
+    ukm::SourceId source_id = ukm::kInvalidSourceId;
+    std::vector<base::ProcessId> processes;
+  };
 
-  // For a given tab, this tracks which processes host some frame in the tab.
-  std::map<PageId, std::vector<base::ProcessId>> page_to_processes_;
+  struct ProcessState {
+    ProcessState();
+    ~ProcessState();
 
-  // Tracks the pmf (in kilobytes) of a given process.
-  std::map<base::ProcessId, uint64_t> process_to_pmf_;
+    uint64_t pmf_kb = 0;
+    std::vector<PageId> pages;
+  };
 
-  // Tracks the main frame's |ukm::SourceId| for a given tab. Conceptually,
-  // distinct |ukm::SourceId|s correspond to distinct URLs. Note that, although
-  // multiple tabs can navigate to the same top-level URL, an individual tab
-  // can only be at a single URL at a time.
-  std::map<PageId, ukm::SourceId> page_to_source_id_;
+  // Tracks per-tab main frame process, UKM SourceId, and hosting processes.
+  std::map<PageId, PageState> pages_;
+
+  // Tracks per-process private memory footprint (in KB) and hosted tabs.
+  std::map<base::ProcessId, ProcessState> processes_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_TAB_FOOTPRINT_AGGREGATOR_H_

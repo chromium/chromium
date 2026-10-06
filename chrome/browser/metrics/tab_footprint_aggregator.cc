@@ -61,6 +61,12 @@ class TabStats {
 
 }  // namespace
 
+TabFootprintAggregator::PageState::PageState() = default;
+TabFootprintAggregator::PageState::~PageState() = default;
+
+TabFootprintAggregator::ProcessState::ProcessState() = default;
+TabFootprintAggregator::ProcessState::~ProcessState() = default;
+
 TabFootprintAggregator::TabFootprintAggregator() = default;
 TabFootprintAggregator::~TabFootprintAggregator() = default;
 
@@ -68,9 +74,10 @@ void TabFootprintAggregator::AssociateMainFrame(ukm::SourceId sid,
                                                 base::ProcessId pid,
                                                 PageId page_id,
                                                 uint64_t pmf_kb) {
-  bool did_insert =
-      page_to_main_frame_process_.insert(std::make_pair(page_id, pid)).second;
-  DCHECK(did_insert) << "there shouldn't be more than one main frame per page.";
+  PageState& page_state = pages_[page_id];
+  DCHECK_EQ(page_state.main_frame_process, base::kNullProcessId)
+      << "there shouldn't be more than one main frame per page.";
+  page_state.main_frame_process = pid;
 
   AssociateFrame(sid, pid, page_id, pmf_kb);
 }
@@ -86,95 +93,79 @@ void TabFootprintAggregator::AssociateFrame(ukm::SourceId sid,
                                             base::ProcessId pid,
                                             PageId page_id,
                                             uint64_t pmf_kb) {
-  std::map<PageId, ukm::SourceId>::iterator insert_position;
-  bool did_insert;
-  std::tie(insert_position, did_insert) =
-      page_to_source_id_.insert(std::make_pair(page_id, sid));
+  PageState& page_state = pages_[page_id];
   // If there was already a |SourceId| associated to the |PageId|, make sure
   // it's the same |SourceId| as |sid|. This guards against attempts to
   // associate more than one top-level-navigation to a single tab.
-  DCHECK(did_insert || insert_position->second == sid)
-      << "Can't associate multiple SourceIds to a single PageId.";
+  if (page_state.source_id == ukm::kInvalidSourceId) {
+    page_state.source_id = sid;
+  } else {
+    DCHECK_EQ(page_state.source_id, sid)
+        << "Can't associate multiple SourceIds to a single PageId.";
+  }
 
-  std::vector<PageId>& pages = process_to_pages_[pid];
+  ProcessState& process_state = processes_[pid];
+  std::vector<PageId>& pages = process_state.pages;
   DCHECK(!std::ranges::contains(pages, page_id))
       << "Can't duplicate associations between a process and a page.";
+  if (pages.empty()) {
+    process_state.pmf_kb = pmf_kb;
+  }
   pages.push_back(page_id);
 
-  std::vector<base::ProcessId>& processes = page_to_processes_[page_id];
+  std::vector<base::ProcessId>& processes = page_state.processes;
   DCHECK(!std::ranges::contains(processes, pid))
       << "Can't duplicate associations between a page and a process.";
   processes.push_back(pid);
-
-  process_to_pmf_.insert(std::make_pair(pid, pmf_kb));
 }
 
 void TabFootprintAggregator::RecordPmfs(ukm::UkmRecorder* ukm_recorder) const {
-  // A map from page identifier (1:1 with tab) to a collection of stats for
-  // that page's memory usage. Note that, if a component of a particular
-  // TabStats::tab_pmf is invalid, the whole tab_pmf is invalid.
-  std::map<PageId, TabStats> page_stats;
+  for (const auto& [page_id, page_state] : pages_) {
+    // A collection of stats for that page's memory usage. Note that, if a
+    // component of a particular TabStats::tab_pmf is invalid, the whole
+    // tab_pmf is invalid.
+    TabStats stats;
 
-  for (const auto& page_procs : page_to_processes_) {
-    PageId page_id = page_procs.first;
-
-    TabStats& sink = page_stats[page_id];
-
-    // Set |main_frame_process| to the id of the process that hosts the main
-    // frame for |page_id|.
-    base::ProcessId main_frame_process = base::kNullProcessId;
-    auto page_to_main_frame_process_iterator =
-        page_to_main_frame_process_.find(page_id);
-    if (page_to_main_frame_process_iterator !=
-        page_to_main_frame_process_.end()) {
-      main_frame_process = page_to_main_frame_process_iterator->second;
-    }
-
-    for (const auto& proc : page_procs.second) {
-      if (proc == main_frame_process) {
+    for (const auto& proc : page_state.processes) {
+      const ProcessState& process_state = processes_.at(proc);
+      if (proc == page_state.main_frame_process) {
         // Determine if the process hosting the main frame for |page_id| is only
         // concerned with frames in that tab. If the process hosts frames from
         // any other tab, we can't use the MainFrameProcessPMF.
-        const auto& all_tabs_for_proc = process_to_pages_.at(proc);
-        if (all_tabs_for_proc.size() == 1) {
-          DCHECK_EQ(sink.GetMainFramePmf(), kInvalidAmount)
+        if (process_state.pages.size() == 1) {
+          DCHECK_EQ(stats.GetMainFramePmf(), kInvalidAmount)
               << "there can't be more than one process hosting a particular "
                  "frame.";
-          sink.SetMainFramePmf(process_to_pmf_.at(proc));
+          stats.SetMainFramePmf(process_state.pmf_kb);
         }
       } else {
         // The SubFrameProcessPMF is viable iff |proc| is associated to
         // |page_id| only.
-        const auto& pages = process_to_pages_.at(proc);
-        if (pages.size() == 1) {
-          DCHECK_EQ(pages.front(), page_id);
-          sink.AddSubFramePmf(process_to_pmf_.at(proc));
+        if (process_state.pages.size() == 1) {
+          DCHECK_EQ(process_state.pages.front(), page_id);
+          stats.AddSubFramePmf(process_state.pmf_kb);
         } else {
-          sink.IgnoreSubFrame();
+          stats.IgnoreSubFrame();
         }
       }
     }
-  }
 
-  for (const auto& page_stat : page_stats) {
     // Note: fields in |Memory_TabFootprint| use MB while our accumulators use
     // KB.
-    Memory_TabFootprint sink(page_to_source_id_.at(page_stat.first));
+    Memory_TabFootprint sink(page_state.source_id);
 
     // If MainFrameProcessPMF has been marked invalid it should be skipped.
-    uint64_t main_frame_pmf = page_stat.second.GetMainFramePmf();
+    uint64_t main_frame_pmf = stats.GetMainFramePmf();
     if (main_frame_pmf != kInvalidAmount) {
       sink.SetMainFrameProcessPMF(main_frame_pmf / 1024);
     }
 
-    sink.SetSubFrameProcessPMF_Total(page_stat.second.GetSubFramePmf() / 1024);
-    sink.SetSubFrameProcessPMF_Included(
-        page_stat.second.GetSubFramesIncluded());
-    sink.SetSubFrameProcessPMF_Excluded(
-        page_stat.second.GetSubFramesExcluded());
+    sink.SetSubFrameProcessPMF_Total(stats.GetSubFramePmf() / 1024);
+    sink.SetSubFrameProcessPMF_Included(stats.GetSubFramesIncluded());
+    sink.SetSubFrameProcessPMF_Excluded(stats.GetSubFramesExcluded());
 
     // If TabPMF has been marked invalid it should be skipped.
-    uint64_t tab_pmf = page_stat.second.GetTabPmf();
+    uint64_t tab_pmf = stats.GetTabPmf();
     if (tab_pmf != kInvalidAmount) {
       sink.SetTabPMF(tab_pmf / 1024);
     }
