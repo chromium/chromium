@@ -211,6 +211,7 @@ source_set("tabs_impl") {
     "//chrome/browser/ui/tabs:page_context_eligibility_helper",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/v8_compile_hints",
+    "//chrome/browser/vr",
     "//chrome/common",
 
     # TODO(crbug.com/489548570): Remove "side_panel/internal/android:dev"

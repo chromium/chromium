@@ -140,6 +140,10 @@ namespace v8_compile_hints {
 class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
 
+namespace vr {
+class VrTabHelper;
+}  // namespace vr
+
 namespace webapps {
 class MLInstallabilityPromoter;
 }  // namespace webapps
@@ -331,6 +335,7 @@ class TabFeatures {
       page_content_annotations::PageContentAnnotationsWebContentsObserver>
       page_content_annotations_web_contents_observer_;
   std::unique_ptr<CoreTabHelper> core_tab_helper_;
+  std::unique_ptr<vr::VrTabHelper> vr_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

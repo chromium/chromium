@@ -15,11 +15,15 @@ if (is_android) {
 
 source_set("vr") {
   public = [ "vr_tab_helper.h" ]
-  public_deps = [ "//content/public/browser" ]
+  public_deps = [
+    "//base",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/base/unowned_user_data",
+  ]
 
   if (enable_vr) {
     public += [ "chrome_xr_integration_client.h" ]
-    public_deps += [ "//base" ]
   }
 }
 

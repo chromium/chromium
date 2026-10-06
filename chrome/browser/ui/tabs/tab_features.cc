@@ -208,6 +208,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
+#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/window_management_content_setting_observer.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -819,6 +820,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   new_tab_page_preload_pipeline_manager_ =
       std::make_unique<NewTabPagePreloadPipelineManager>(tab.GetContents());
+
+  vr_tab_helper_ =
+      GetUserDataFactory().CreateInstance<vr::VrTabHelper>(tab, tab);
 
   recently_audible_helper_ =
       GetUserDataFactory().CreateInstance<RecentlyAudibleHelper>(

@@ -247,6 +247,10 @@ namespace v8_compile_hints {
 class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
 
+namespace vr {
+class VrTabHelper;
+}  // namespace vr
+
 namespace webapps {
 class AppBannerManagerDesktop;
 class MLInstallabilityPromoter;
@@ -738,6 +742,8 @@ class TabFeatures {
   std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
 
   std::unique_ptr<MemorySaverChipTabHelper> memory_saver_chip_helper_;
+
+  std::unique_ptr<vr::VrTabHelper> vr_tab_helper_;
 
   std::unique_ptr<RecentlyAudibleHelper> recently_audible_helper_;
 

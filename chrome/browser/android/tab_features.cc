@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
+#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -535,6 +536,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   core_tab_helper_ = GetUserDataFactory().CreateInstance<CoreTabHelper>(
       *tab, *tab, web_contents);
+
+  vr_tab_helper_ =
+      GetUserDataFactory().CreateInstance<vr::VrTabHelper>(*tab, *tab);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

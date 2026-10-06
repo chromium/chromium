@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/xr_runtime_manager.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -25,10 +26,24 @@ using content::WebContents;
 
 namespace vr {
 
-VrTabHelper::VrTabHelper(content::WebContents* contents)
-    : content::WebContentsUserData<VrTabHelper>(*contents) {}
+DEFINE_USER_DATA(VrTabHelper);
+
+VrTabHelper::VrTabHelper(tabs::TabInterface& tab)
+    : tab_(tab),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 VrTabHelper::~VrTabHelper() = default;
+
+// static
+VrTabHelper* VrTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+VrTabHelper* VrTabHelper::FromWebContents(content::WebContents* contents) {
+  return contents ? From(tabs::TabInterface::MaybeGetFromContents(contents))
+                  : nullptr;
+}
 
 void VrTabHelper::SetIsInVr(bool is_in_vr) {
   if (is_in_vr_ == is_in_vr) {
@@ -37,10 +52,11 @@ void VrTabHelper::SetIsInVr(bool is_in_vr) {
 
   is_in_vr_ = is_in_vr;
 
+  content::WebContents* web_contents = tab_->GetContents();
   blink::web_pref::WebPreferences web_prefs =
-      GetWebContents().GetOrCreateWebPreferences();
+      web_contents->GetOrCreateWebPreferences();
   web_prefs.immersive_mode_enabled = is_in_vr_;
-  GetWebContents().SetWebPreferences(web_prefs);
+  web_contents->SetWebPreferences(web_prefs);
 }
 
 /* static */
@@ -50,9 +66,7 @@ bool VrTabHelper::IsInVr(content::WebContents* contents) {
 
   VrTabHelper* vr_tab_helper = VrTabHelper::FromWebContents(contents);
   if (!vr_tab_helper) {
-    // This can only happen for unittests.
-    VrTabHelper::CreateForWebContents(contents);
-    vr_tab_helper = VrTabHelper::FromWebContents(contents);
+    return false;
   }
   return vr_tab_helper->is_in_vr();
 }
@@ -64,8 +78,7 @@ bool VrTabHelper::IsContentDisplayedInHeadset(content::WebContents* contents) {
 
   VrTabHelper* vr_tab_helper = VrTabHelper::FromWebContents(contents);
   if (!vr_tab_helper) {
-    VrTabHelper::CreateForWebContents(contents);
-    vr_tab_helper = VrTabHelper::FromWebContents(contents);
+    return false;
   }
   return vr_tab_helper->is_content_displayed_in_headset();
 }
@@ -77,8 +90,7 @@ void VrTabHelper::SetIsContentDisplayedInHeadset(content::WebContents* contents,
     return;
   VrTabHelper* vr_tab_helper = VrTabHelper::FromWebContents(contents);
   if (!vr_tab_helper) {
-    VrTabHelper::CreateForWebContents(contents);
-    vr_tab_helper = VrTabHelper::FromWebContents(contents);
+    return;
   }
   bool old_state = vr_tab_helper->IsContentDisplayedInHeadset(contents);
   vr_tab_helper->SetIsContentDisplayedInHeadset(state);
@@ -115,7 +127,5 @@ void VrTabHelper::AddObserver(Observer* observer) {
 void VrTabHelper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VrTabHelper);
 
 }  // namespace vr

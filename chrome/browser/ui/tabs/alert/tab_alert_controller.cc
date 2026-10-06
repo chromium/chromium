@@ -98,8 +98,9 @@ TabAlertController::TabAlertController(TabInterface& tab)
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
           .get());
-  vr_tab_helper_observation_.Observe(
-      vr::VrTabHelper::FromWebContents(web_contents()));
+  if (auto* vr_tab_helper = vr::VrTabHelper::From(&tab)) {
+    vr_tab_helper_observation_.Observe(vr_tab_helper);
+  }
   if (auto* audible_helper = RecentlyAudibleHelper::From(&tab)) {
     recently_audible_subscription_ =
         audible_helper->RegisterRecentlyAudibleChangedCallback(
@@ -323,8 +324,9 @@ void TabAlertController::OnDiscardContents(TabInterface* tab_interface,
   tabs::ContentsObservingTabFeature::OnDiscardContents(
       tab_interface, old_contents, new_contents);
   vr_tab_helper_observation_.Reset();
-  vr_tab_helper_observation_.Observe(
-      vr::VrTabHelper::FromWebContents(new_contents));
+  if (auto* vr_tab_helper = vr::VrTabHelper::From(tab_interface)) {
+    vr_tab_helper_observation_.Observe(vr_tab_helper);
+  }
   if (auto* audible_helper = RecentlyAudibleHelper::From(tab_interface)) {
     recently_audible_subscription_ =
         audible_helper->RegisterRecentlyAudibleChangedCallback(
