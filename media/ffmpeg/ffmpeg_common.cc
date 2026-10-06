@@ -938,9 +938,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   config->set_aspect_ratio(aspect_ratio);
   config->set_spatial_format(spatial_format);
 
-  if (hdr_metadata.IsValid()) {
-    config->set_hdr_metadata(hdr_metadata);
-  }
+  config->set_hdr_metadata(hdr_metadata);
 
   return true;
 }

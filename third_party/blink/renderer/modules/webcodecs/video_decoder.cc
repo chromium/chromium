@@ -571,11 +571,8 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
   }
 
   if (decoder_specific_data.decoder_helper) {
-    const gfx::HDRMetadata hdr_metadata =
-        decoder_specific_data.decoder_helper->GetHdrMetadata();
-    if (!hdr_metadata.IsEmpty() && hdr_metadata.IsValid()) {
-      media_config.set_hdr_metadata(hdr_metadata);
-    }
+    media_config.set_hdr_metadata(
+        decoder_specific_data.decoder_helper->GetHdrMetadata());
   }
 
   return media_config;

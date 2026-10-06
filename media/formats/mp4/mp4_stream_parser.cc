@@ -840,9 +840,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         video_config.set_color_space_info(entry.dv_info->color_space);
       }
 
-      if (!entry.hdr_metadata.IsEmpty() && entry.hdr_metadata.IsValid()) {
-        video_config.set_hdr_metadata(entry.hdr_metadata);
-      }
+      video_config.set_hdr_metadata(entry.hdr_metadata);
 
       video_config.set_spatial_format(entry.video_spatial_format);
 

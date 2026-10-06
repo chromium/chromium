@@ -1284,6 +1284,9 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
     }
   }
 
+  // HDR metadata from the codec configuration record (e.g, hvcC).
+  gfx::HDRMetadata codec_config_hdr_metadata;
+  // HDR metadata from static metadata boxes (e.g, mdcv and clli).
   gfx::HDRMetadata hdr_static_metadata;
   const FourCC actual_format =
       format == FOURCC_ENCV ? sinf.format.format : format;
@@ -1314,7 +1317,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       RCHECK(reader->ReadChild(hevc_config.get()));
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       video_color_space = hevc_config->GetColorSpace();
-      hdr_metadata = hevc_config->GetHDRMetadata();
+      codec_config_hdr_metadata = hevc_config->GetHDRMetadata();
       alpha_mode = hevc_config->GetAlphaMode();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       video_info.codec = VideoCodec::kHEVC;
@@ -1349,7 +1352,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       RCHECK(reader->ReadChild(hevc_config.get()));
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       video_color_space = hevc_config->GetColorSpace();
-      hdr_metadata = hevc_config->GetHDRMetadata();
+      codec_config_hdr_metadata = hevc_config->GetHDRMetadata();
       alpha_mode = hevc_config->GetAlphaMode();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       video_info.codec = VideoCodec::kHEVC;
@@ -1438,9 +1441,10 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
         /*maxFALL=*/level_information.max_pic_average_light_level));
   }
 
-  if (hdr_static_metadata.IsValid()) {
-    hdr_metadata = hdr_static_metadata;
-  }
+  // Metadata from static metadata boxes takes precedence over metadata from
+  // the codec configuration record.
+  hdr_metadata = codec_config_hdr_metadata;
+  hdr_metadata.MergeMetadataFrom(hdr_static_metadata);
 
   Stereoscopic3DVideo st3d;
   if (reader->HasChild(&st3d)) {

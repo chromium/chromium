@@ -113,15 +113,6 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
            !extended_range.has_value() && !agtm_.has_value();
   }
 
-  bool IsValid() const {
-    return (clli_ && (clli_->fMaxCLL > 0 || clli_->fMaxFALL > 0)) ||
-           (mdcv_ &&
-            (mdcv_->fDisplayPrimaries != SkNamedPrimariesExt::kInvalid ||
-             mdcv_->fMaximumDisplayMasteringLuminance != 0.f ||
-             mdcv_->fMinimumDisplayMasteringLuminance != 0.f)) ||
-           extended_range;
-  }
-
   // Compute the maximum luminance for the specified HDR metadata. This will
   // - return the CTA 861.3 max content light level metadata, if present
   // - return the SMPTE ST 2086 luminance max metadata, if present

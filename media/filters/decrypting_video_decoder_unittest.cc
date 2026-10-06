@@ -584,7 +584,6 @@ TEST_F(DecryptingVideoDecoderTest, HDRMetadata) {
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsValid());
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsHDR());
   EXPECT_FALSE(decoded_video_frame_->hdr_metadata().IsEmpty());
-  EXPECT_TRUE(decoded_video_frame_->hdr_metadata().IsValid());
 }
 
 // Test the case where HDRMetadata is set on the DecoderBuffer.
