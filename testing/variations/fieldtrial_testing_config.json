@@ -3233,6 +3233,75 @@
             ]
         }
     ],
+    "BookmarkBarVisibilityIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Medium",
+                    "params": {
+                        "IPH_BookmarkBarVisibility_availability": "any",
+                        "IPH_BookmarkBarVisibility_event_1": "name:bookmark_bar_visibility_iph_triggered;comparator:<3;window:3650;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_trigger": "name:bookmark_bar_visibility_iph_triggered;comparator:==0;window:7;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_used": "name:settings_appearance_opened;comparator:==0;window:360;storage:360",
+                        "IPH_BookmarkBarVisibility_session_rate": "==0",
+                        "IPH_BookmarkBarVisibility_tracking_only": "false",
+                        "IPH_BookmarkBarVisibility_x_variant": "medium"
+                    },
+                    "enable_features": [
+                        "IPH_BookmarkBarVisibility"
+                    ]
+                },
+                {
+                    "name": "MediumTrackingOnly",
+                    "params": {
+                        "IPH_BookmarkBarVisibility_availability": "any",
+                        "IPH_BookmarkBarVisibility_event_1": "name:bookmark_bar_visibility_iph_triggered_tracking_only;comparator:<3;window:3650;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_trigger": "name:bookmark_bar_visibility_iph_triggered_tracking_only;comparator:==0;window:7;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_used": "name:settings_appearance_opened;comparator:==0;window:360;storage:360",
+                        "IPH_BookmarkBarVisibility_session_rate": "==0",
+                        "IPH_BookmarkBarVisibility_tracking_only": "true",
+                        "IPH_BookmarkBarVisibility_x_variant": "medium_tracking_only"
+                    },
+                    "enable_features": [
+                        "IPH_BookmarkBarVisibility"
+                    ]
+                },
+                {
+                    "name": "High",
+                    "params": {
+                        "IPH_BookmarkBarVisibility_availability": "any",
+                        "IPH_BookmarkBarVisibility_event_1": "name:bookmark_bar_visibility_iph_triggered;comparator:<3;window:3650;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_trigger": "name:bookmark_bar_visibility_iph_triggered;comparator:==0;window:7;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_used": "name:settings_appearance_opened;comparator:==0;window:360;storage:360",
+                        "IPH_BookmarkBarVisibility_session_rate": "==0",
+                        "IPH_BookmarkBarVisibility_tracking_only": "false",
+                        "IPH_BookmarkBarVisibility_x_variant": "high"
+                    },
+                    "enable_features": [
+                        "IPH_BookmarkBarVisibility"
+                    ]
+                },
+                {
+                    "name": "HighTrackingOnly",
+                    "params": {
+                        "IPH_BookmarkBarVisibility_availability": "any",
+                        "IPH_BookmarkBarVisibility_event_1": "name:bookmark_bar_visibility_iph_triggered_tracking_only;comparator:<3;window:3650;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_trigger": "name:bookmark_bar_visibility_iph_triggered_tracking_only;comparator:==0;window:7;storage:3650",
+                        "IPH_BookmarkBarVisibility_event_used": "name:settings_appearance_opened;comparator:==0;window:360;storage:360",
+                        "IPH_BookmarkBarVisibility_session_rate": "==0",
+                        "IPH_BookmarkBarVisibility_tracking_only": "true",
+                        "IPH_BookmarkBarVisibility_x_variant": "high_tracking_only"
+                    },
+                    "enable_features": [
+                        "IPH_BookmarkBarVisibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "BoostClosingTabs": [
         {
             "platforms": [
