@@ -233,9 +233,6 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
               gpu::kNullSurfaceHandle);
 
   gpu::SyncToken sync_token = shared_image->creation_sync_token();
-  if (sync_token.HasData()) {
-    shared_image->UpdateDestructionSyncToken(sync_token);
-  }
   MemoryManagedPaintRecorder recorder(size, /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
