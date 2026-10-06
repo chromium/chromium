@@ -9,8 +9,8 @@
 #include <map>
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/headless_web_contents_manager.h"
@@ -26,7 +26,8 @@ class ActorSurfaceImpl;
 
 // Owns every ActorSurface for a profile.
 //
-// Tab-backed surfaces are torn down automatically when their tab is deleted.
+// Every live tab in this profile has a tab-backed surface, created eagerly by
+// ActorSurfaceTabHelper and torn down when the tab is destroyed.
 // Headless surfaces are torn down by DestroySurface(), which drops the surface
 // and then asks HeadlessWebContentsManager to destroy the WebContents. Either
 // way a surface never outlives its backing, which is what lets
@@ -46,9 +47,9 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   ActorSurface* GetForTab(tabs::TabHandle tab) const;
   ActorSurface* GetForHeadless(const content::WebContents* contents) const;
 
-  // Returns the surface for `tab`, creating one if needed. Returns null if
-  // `tab` does not resolve to a live tab in this registry.
-  ActorSurface* GetOrCreateForTab(tabs::TabHandle tab);
+  // Lifecycle notifications from ActorSurfaceTabHelper.
+  void OnTabCreated(tabs::TabInterface& tab);
+  void OnTabWillBeDestroyed(tabs::TabHandle tab);
 
   // Creates a headless WebContents owned by the headless manager and returns
   // its surface.
@@ -63,8 +64,7 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   // surface itself.
   //
   // Both must be called while the tab exists: after the WebContents is inserted
-  // into a tab, and before it is detached from one. Detaching fires
-  // WillDetach(kDelete), which destroys tab-backed surfaces.
+  // into a tab, and before the tab is destroyed.
   void OnSurfacePromoted(ActorSurfaceHandle handle);
   void OnSurfaceWillBeDemoted(ActorSurfaceHandle handle);
 
@@ -76,10 +76,10 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
 
   size_t size() const { return owned_surfaces_.size(); }
 
+  base::WeakPtr<ActorSurfaceRegistry> GetWeakPtr();
+
  private:
   ActorSurfaceImpl* GetImpl(ActorSurfaceHandle handle) const;
-  void StartTrackingTab(ActorSurfaceHandle handle, tabs::TabHandle tab);
-  void StopTrackingTab(tabs::TabHandle tab);
 
   // Creates and destroys the WebContents backing headless surfaces.
   const raw_ptr<HeadlessWebContentsManager> headless_manager_;
@@ -94,8 +94,7 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   // Surface handle for each tab-backed surface's tab.
   std::map<tabs::TabHandle, ActorSurfaceHandle> tab_to_surface_;
 
-  // WillDetach subscriptions for tracked tabs.
-  std::map<tabs::TabHandle, base::CallbackListSubscription> tab_subscriptions_;
+  base::WeakPtrFactory<ActorSurfaceRegistry> weak_factory_{this};
 };
 
 }  // namespace actor

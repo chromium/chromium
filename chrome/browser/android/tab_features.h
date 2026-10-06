@@ -22,6 +22,7 @@ class QwacWebContentsObserver;
 class NewTabPagePreloadPipelineManager;
 
 namespace actor {
+class ActorSurfaceTabHelper;
 class ActorTabData;
 }  // namespace actor
 
@@ -233,6 +234,7 @@ class TabFeatures {
       ask_before_http_dialog_controller_;
 
   std::unique_ptr<actor::ActorTabData> actor_tab_data_;
+  std::unique_ptr<actor::ActorSurfaceTabHelper> actor_surface_tab_helper_;
 
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;

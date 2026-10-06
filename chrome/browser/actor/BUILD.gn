@@ -28,6 +28,7 @@ source_set("actor") {
     "actor_surface.h",
     "actor_surface_handle.h",
     "actor_surface_registry.h",
+    "actor_surface_tab_helper.h",
     "actor_tab_close_skip_beforeunload_user_data.h",
     "actor_tab_data.h",
     "actor_task.h",
@@ -137,6 +138,7 @@ source_set("impl") {
     "actor_surface_impl.cc",
     "actor_surface_impl.h",
     "actor_surface_registry.cc",
+    "actor_surface_tab_helper.cc",
     "actor_tab_close_skip_beforeunload_user_data.cc",
     "actor_task.cc",
     "actor_task_metadata.cc",
@@ -609,7 +611,10 @@ source_set("browser_tests") {
       "//chrome/browser/ui:browser_commands",
       "//chrome/test:test_support_ui",
     ]
-    sources += [ "actor_keyed_service_browsertest_desktop.cc" ]
+    sources += [
+      "actor_keyed_service_browsertest_desktop.cc",
+      "actor_surface_tab_helper_browsertest.cc",
+    ]
   }
 
   if (is_linux) {

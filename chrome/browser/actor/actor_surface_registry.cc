@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,25 +62,40 @@ ActorSurface* ActorSurfaceRegistry::GetForHeadless(
   return nullptr;
 }
 
-ActorSurface* ActorSurfaceRegistry::GetOrCreateForTab(tabs::TabHandle tab) {
-  // Exclude nonexistent or cross-profile tabs.
-  if (GetBrowserContextForTab(tab.Get()) !=
-      headless_manager_->browser_context()) {
-    return nullptr;
+void ActorSurfaceRegistry::OnTabCreated(tabs::TabInterface& tab) {
+  if (GetBrowserContextForTab(&tab) != headless_manager_->browser_context()) {
+    return;
   }
-  if (ActorSurface* existing = GetForTab(tab)) {
-    return existing;
+  const tabs::TabHandle tab_handle = tab.GetHandle();
+  if (GetForTab(tab_handle)) {
+    return;
+  }
+  if (content::WebContents* contents = tab.GetContents()) {
+    if (ActorSurface* headless = GetForHeadless(contents)) {
+      const ActorSurfaceHandle handle = headless->GetHandle();
+      GetImpl(handle)->SetTab(tab_handle);
+      CHECK(!tab_to_surface_.contains(tab_handle));
+      tab_to_surface_[tab_handle] = handle;
+      return;
+    }
   }
   ActorSurfaceHandle handle =
       base::FeatureList::IsEnabled(kUseTabHandleAsSurfaceHandle)
-          ? ActorSurfaceHandle(tab.raw_value())
+          ? ActorSurfaceHandle(tab_handle.raw_value())
           : ActorSurfaceHandle::NextHandle(
                 base::PassKey<ActorSurfaceRegistry>());
   CHECK(!owned_surfaces_.contains(handle));
-  owned_surfaces_.emplace(handle,
-                          std::make_unique<ActorSurfaceImpl>(handle, tab));
-  StartTrackingTab(handle, tab);
-  return Get(handle);
+  CHECK(!tab_to_surface_.contains(tab_handle));
+  owned_surfaces_.emplace(
+      handle, std::make_unique<ActorSurfaceImpl>(handle, tab_handle));
+  tab_to_surface_[tab_handle] = handle;
+}
+
+void ActorSurfaceRegistry::OnTabWillBeDestroyed(tabs::TabHandle tab) {
+  auto it = tab_to_surface_.find(tab);
+  if (it != tab_to_surface_.end()) {
+    DestroySurface(it->second);
+  }
 }
 
 ActorSurface* ActorSurfaceRegistry::CreateHeadlessWebContents() {
@@ -106,15 +120,20 @@ ActorSurface* ActorSurfaceRegistry::CreateForHeadless(
 void ActorSurfaceRegistry::OnSurfacePromoted(ActorSurfaceHandle handle) {
   ActorSurfaceImpl* surface = GetImpl(handle);
   CHECK(surface);
-  CHECK(!surface->IsTab());
 
   // Promotion parents the surface's existing WebContents into a tab.
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(surface->GetWebContents());
   CHECK(tab);
 
+  if (surface->IsTab()) {
+    CHECK(*surface->GetTabHandle() == tab->GetHandle());
+    return;
+  }
+
   surface->SetTab(tab->GetHandle());
-  StartTrackingTab(handle, tab->GetHandle());
+  CHECK(!tab_to_surface_.contains(tab->GetHandle()));
+  tab_to_surface_[tab->GetHandle()] = handle;
 }
 
 void ActorSurfaceRegistry::OnSurfaceWillBeDemoted(ActorSurfaceHandle handle) {
@@ -124,7 +143,7 @@ void ActorSurfaceRegistry::OnSurfaceWillBeDemoted(ActorSurfaceHandle handle) {
   CHECK(!GetForHeadless(surface->GetWebContents()));
 
   // The WebContents outlives the tab wrapper and becomes the headless backing.
-  StopTrackingTab(*surface->GetTabHandle());
+  tab_to_surface_.erase(*surface->GetTabHandle());
   surface->SetHeadless();
 }
 
@@ -134,7 +153,7 @@ void ActorSurfaceRegistry::DestroySurface(ActorSurfaceHandle handle) {
     return;
   }
   if (std::optional<tabs::TabHandle> tab = surface->GetTabHandle()) {
-    StopTrackingTab(*tab);
+    tab_to_surface_.erase(*tab);
     owned_surfaces_.erase(handle);
   } else {
     content::WebContents* contents = surface->GetWebContents();
@@ -149,30 +168,14 @@ void ActorSurfaceRegistry::OnHeadlessContentsWillBeDestroyed(
   // DestroySurface() before asking the manager to destroy the WebContents.
 }
 
+base::WeakPtr<ActorSurfaceRegistry> ActorSurfaceRegistry::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 ActorSurfaceImpl* ActorSurfaceRegistry::GetImpl(
     ActorSurfaceHandle handle) const {
   auto it = owned_surfaces_.find(handle);
   return it == owned_surfaces_.end() ? nullptr : it->second.get();
-}
-
-void ActorSurfaceRegistry::StartTrackingTab(ActorSurfaceHandle handle,
-                                            tabs::TabHandle tab) {
-  CHECK(tab.Get());
-  CHECK(!tab_to_surface_.contains(tab));
-  tab_to_surface_[tab] = handle;
-  tab_subscriptions_[tab] = tab.Get()->RegisterWillDetach(base::BindRepeating(
-      [](ActorSurfaceRegistry* registry, ActorSurfaceHandle handle,
-         tabs::TabInterface* tab, tabs::TabInterface::DetachReason reason) {
-        if (reason == tabs::TabInterface::DetachReason::kDelete) {
-          registry->DestroySurface(handle);
-        }
-      },
-      base::Unretained(this), handle));
-}
-
-void ActorSurfaceRegistry::StopTrackingTab(tabs::TabHandle tab) {
-  tab_to_surface_.erase(tab);
-  tab_subscriptions_.erase(tab);
 }
 
 }  // namespace actor
