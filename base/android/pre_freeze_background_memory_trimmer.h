@@ -257,7 +257,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   mutable base::Lock lock_;
   std::deque<std::unique_ptr<BackgroundTask>> background_tasks_
       GUARDED_BY(lock());
-  std::vector<const PreFreezeMetric*> metrics_ GUARDED_BY(lock());
+  std::vector<raw_ptr<const PreFreezeMetric>> metrics_ GUARDED_BY(lock());
   // When a metrics task is posted (see |RecordMetrics|), the values of each
   // metric before any tasks are run are saved here. The "i"th entry corresponds
   // to the "i"th entry in |metrics_|. When there is no pending metrics task,
