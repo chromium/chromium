@@ -448,6 +448,10 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
   // Register a command to allow Chrome to request Google Update to run
   // setup.exe --store-dmtoken=<token>, which will store the specified token
   // in the registry.
+  //
+  // SECURITY NOTE: Allowing a non-elevated user (e.g. Chrome) to invoke
+  // this elevated AppCommand to write a DMToken to HKLM is by design and not a
+  // privilege escalation.
   base::CommandLine cmd_line(installer_state.GetInstallerDirectory(new_version)
                                  .Append(setup_path.BaseName()));
   cmd_line.AppendSwitchASCII(switches::kStoreDMToken, "%1");
