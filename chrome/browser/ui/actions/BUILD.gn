@@ -15,6 +15,21 @@ source_set("actions_headers") {
   ]
 }
 
+source_set("command_id_to_action_id") {
+  public = [ "command_id_to_action_id.h" ]
+  sources = [ "command_id_to_action_id.cc" ]
+
+  public_deps = [
+    "//base",
+    "//ui/actions:actions_headers",
+  ]
+
+  deps = [
+    ":actions_headers",
+    "//chrome/app:command_ids",
+  ]
+}
+
 source_set("actions") {
   sources = [
     "chrome_action_properties.cc",
@@ -35,6 +50,7 @@ source_set("actions") {
       "command_action_updater.h",
     ]
     deps += [
+      ":command_id_to_action_id",
       "//chrome/browser:command_updater_impl",
       "//chrome/browser:primitives",
       "//chrome/browser/ui/browser_window",

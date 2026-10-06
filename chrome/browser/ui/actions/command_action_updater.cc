@@ -6,67 +6,16 @@
 
 #include <utility>
 
-#include "base/containers/flat_map.h"
-#include "base/no_destructor.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_observer.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
+#include "chrome/browser/ui/actions/command_id_to_action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace chrome {
-namespace {
 
-#define MAP_ACTION_E1(action)
-#define MAP_ACTION_E2(action, idc) {idc, action},
-#define MAP_ACTION_E3(action, idc, scope) {idc, scope::action},
-#define MAP_ACTION_E4(action, idc, val, scope) {idc, scope::action},
-
-#define GET_MAP_ACTION_E(_1, _2, _3, _4, macro_name, ...) macro_name
-#define E(...)                                                               \
-  GET_MAP_ACTION_E(__VA_ARGS__, MAP_ACTION_E4, MAP_ACTION_E3, MAP_ACTION_E2, \
-                   MAP_ACTION_E1)(__VA_ARGS__)
-
-// Maps Browser Command IDs (IDC_*) to their corresponding declarative Action
-// IDs.
-//
-// MIGRATION GUIDE:
-// -------------------------------
-// To migrate a legacy browser command to the modern Action framework:
-//
-// 1. Define your new Action in `chrome/browser/ui/actions/chrome_action_id.h`.
-// 2. Initialize your Action Item in `BrowserActions::Initialize...`.
-// 3. Associate your legacy `IDC_*` command ID directly in the macro entry
-//    (e.g. `E(kActionFoo, IDC_FOO)`).
-//
-// Once registered there, `CommandActionUpdater` automatically intercepts state
-// updates (`UpdateCommandEnabled`) and executions for your command and routes
-// them into the declarative Action framework.
-const base::flat_map<int, actions::ActionId>& GetCommandIdToActionIdMap() {
-  static const base::NoDestructor<base::flat_map<int, actions::ActionId>> kMap(
-      [] {
-        std::vector<std::pair<int, actions::ActionId>> entries = {
-            CHROME_ACTION_IDS SIDE_PANEL_ACTION_IDS TOOLBAR_PINNABLE_ACTION_IDS
-                SUBMENU_ACTION_IDS};
-        base::flat_map<int, actions::ActionId> map;
-        map.reserve(entries.size());
-        for (const auto& [idc, action_id] : entries) {
-          map.insert({idc, action_id});
-        }
-        return map;
-      }());
-  return *kMap;
-}
-
-#undef E
-#undef GET_MAP_ACTION_E
-#undef MAP_ACTION_E1
-#undef MAP_ACTION_E2
-#undef MAP_ACTION_E3
-#undef MAP_ACTION_E4
-
-}  // namespace
+// See `GetCommandIdToActionIdMap()` in command_id_to_action_id.h for how to
+// migrate a legacy browser command to the Action framework.
 
 CommandActionUpdater::CommandActionUpdater(
     actions::ActionItem* root_action_item)
@@ -155,9 +104,7 @@ std::vector<int> CommandActionUpdater::GetAllIds() const {
 
 // static
 std::optional<actions::ActionId> CommandActionUpdater::GetActionId(int id) {
-  const auto& map = GetCommandIdToActionIdMap();
-  auto it = map.find(id);
-  return it != map.end() ? std::make_optional(it->second) : std::nullopt;
+  return GetActionIdForCommandId(id);
 }
 
 actions::ActionItem* CommandActionUpdater::FindAction(
