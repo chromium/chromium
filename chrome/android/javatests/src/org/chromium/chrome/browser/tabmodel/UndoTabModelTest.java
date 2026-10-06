@@ -117,6 +117,8 @@ public class UndoTabModelTest {
                                     .closeTabs(
                                             TabClosureParams.closeAllTabs()
                                                     .allowUndo(false)
+                                                    .tabClosingSource(
+                                                            TabClosingSource.GRID_TAB_SWITCHER)
                                                     .build(),
                                             /* allowDialog= */ false);
                             return selector.getModel(false).getCount();
@@ -253,7 +255,10 @@ public class UndoTabModelTest {
                     // Take action.
                     model.getTabRemover()
                             .closeTabs(
-                                    TabClosureParams.closeTab(tab).allowUndo(undoable).build(),
+                                    TabClosureParams.closeTab(tab)
+                                            .allowUndo(undoable)
+                                            .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                            .build(),
                                     /* allowDialog= */ false);
                 });
 
@@ -601,6 +606,8 @@ public class UndoTabModelTest {
                                 .closeTabs(
                                         TabClosureParams.closeTabs(tabs)
                                                 .allowUndo(undoable)
+                                                .tabClosingSource(
+                                                        TabClosingSource.GRID_TAB_SWITCHER)
                                                 .build(),
                                         /* allowDialog= */ false),
                 undoable);
@@ -613,7 +620,11 @@ public class UndoTabModelTest {
                 () ->
                         model.getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeAllTabs().allowUndo(undoable).build(),
+                                        TabClosureParams.closeAllTabs()
+                                                .allowUndo(undoable)
+                                                .tabClosingSource(
+                                                        TabClosingSource.GRID_TAB_SWITCHER)
+                                                .build(),
                                         /* allowDialog= */ false),
                 undoable);
     }
@@ -1915,6 +1926,7 @@ public class UndoTabModelTest {
                             .closeTabs(
                                     TabClosureParams.closeTabs(List.of(tab0, tab1))
                                             .allowUndo(true)
+                                            .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
                                             .withUndoRunnable(undoRunnable)
                                             .build(),
                                     /* allowDialog= */ false);
@@ -1931,6 +1943,7 @@ public class UndoTabModelTest {
                             .closeTabs(
                                     TabClosureParams.closeAllTabs()
                                             .allowUndo(true)
+                                            .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
                                             .withUndoRunnable(undoRunnable)
                                             .build(),
                                     /* allowDialog= */ false);

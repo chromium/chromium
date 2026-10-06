@@ -1079,7 +1079,7 @@ public class TabGridDialogMediator
             TabUiUtils.closeTabGroup(
                     tabModel,
                     tabModel.getGroupLastShownTabId(mCurrentTabGroupId),
-                    TabClosingSource.UNKNOWN,
+                    TabClosingSource.BOTTOM_TAB_GROUP_STRIP,
                     allowUndo,
                     hideTabGroups,
                     /* didCloseCallback= */ null);

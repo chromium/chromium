@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -102,6 +103,7 @@ class QuickDeleteTabsFilter {
                         TabClosureParams.closeTabs(mTabs)
                                 .allowUndo(false)
                                 .saveToTabRestoreService(false)
+                                .tabClosingSource(TabClosingSource.QUICK_DELETE)
                                 .build(),
                         /* allowDialog= */ false);
     }

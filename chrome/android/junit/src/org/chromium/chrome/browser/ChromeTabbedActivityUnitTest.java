@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
@@ -170,7 +172,6 @@ public class ChromeTabbedActivityUnitTest {
     @DisableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void
             testVerticalTabsActionDelegate_openHubSearch_enabledOnNonDesktop_triggersHubSearch() {
-        DeviceInfo.setIsDesktopForTesting(false);
         ChromeTabbedActivity activitySpy = spy(mActivity);
         doReturn(true).when(activitySpy).onMenuOrKeyboardAction(anyInt(), anyBoolean());
 
@@ -358,5 +359,92 @@ public class ChromeTabbedActivityUnitTest {
                 spy(Robolectric.buildActivity(ChromeTabbedActivity.class).get());
         activity.onPreCreate();
         verify(activity).supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testShouldRemoveWindowWithZeroTabs_gtsDisabledOnDesktop_quickDeleteClosesWindow() {
+        // Normal profile on desktop case.
+        DeviceInfo.setIsDesktopForTesting(true);
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.REGULAR);
+        assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.GRID_TAB_SWITCHER));
+        assertFalse(
+                mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
+
+        // Off-the-record profile case (Verify it closes unconditionally).
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.GRID_TAB_SWITCHER));
+        assertTrue(
+                mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void
+            testShouldRemoveWindowWithZeroTabs_gtsEnabledOnDesktop_quickDeleteDoesNotCloseWindow() {
+        // Normal profile on desktop case.
+        DeviceInfo.setIsDesktopForTesting(true);
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.REGULAR);
+        assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.GRID_TAB_SWITCHER));
+        assertFalse(
+                mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
+        assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
+
+        // Off-the-record profile case (Verify it closes unconditionally).
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.GRID_TAB_SWITCHER));
+        assertTrue(
+                mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
+    }
+
+    @Test
+    public void testShouldRemoveWindowWithZeroTabs_nonDesktop_quickDeleteDoesNotCloseWindow() {
+        // Normal profile on non-desktop case (GTS always enabled on non-desktop).
+        DeviceInfo.setIsDesktopForTesting(false);
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.REGULAR);
+        assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.GRID_TAB_SWITCHER));
+        assertFalse(
+                mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
+        assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
+
+        // Off-the-record profile case (Verify it closes unconditionally even when GTS is enabled)
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.GRID_TAB_SWITCHER));
+        assertTrue(
+                mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
     }
 }

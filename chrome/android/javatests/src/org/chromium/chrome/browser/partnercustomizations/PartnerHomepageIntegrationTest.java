@@ -182,7 +182,8 @@ public class PartnerHomepageIntegrationTest {
     public void testLastTabClosed() {
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mActivityTestRule.getActivity());
+                (ChromeTabbedActivity) mActivityTestRule.getActivity(),
+                TabClosingSource.GRID_TAB_SWITCHER);
         Assert.assertTrue(
                 "Activity was not closed.",
                 mActivityTestRule.getActivity().isFinishing()
@@ -207,7 +208,10 @@ public class PartnerHomepageIntegrationTest {
                                 }
                             });
                     TabClosureParams params =
-                            TabClosureParams.closeAllTabs().uponExit(false).build();
+                            TabClosureParams.closeAllTabs()
+                                    .uponExit(false)
+                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                    .build();
                     TabModelSelector selector =
                             mActivityTestRule.getActivity().getTabModelSelector();
                     selector.getModel(false)

@@ -1063,16 +1063,24 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 () -> TabbedWindowStateTracker.create(mWindowId));
     }
 
-    private boolean shouldRemoveWindowWithZeroTabs(@TabClosingSource int closingSource) {
+    boolean shouldRemoveWindowWithZeroTabs(@TabClosingSource int closingSource) {
         // Close incognito window when the last tab is closed.
         if (mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD) {
             return true;
         }
 
-        return closingSource == TabClosingSource.TABLET_TAB_STRIP
-                || closingSource == TabClosingSource.KEYBOARD_SHORTCUT
-                || closingSource == TabClosingSource.VERTICAL_TAB_STRIP
-                || closingSource == TabClosingSource.OPEN_IN_APP;
+        // Allowlist closing sources GRID_TAB_SWITCHER, BOTTOM_TAB_GROUP_STRIP, and QUICK_DELETE
+        // when
+        // the Grid Tab Switcher is enabled.
+        if (closingSource == TabClosingSource.QUICK_DELETE) {
+            return TabSwitcherUtils.isGridTabSwitcherDisabled();
+        }
+        return closingSource != TabClosingSource.GRID_TAB_SWITCHER
+                && closingSource != TabClosingSource.BOTTOM_TAB_GROUP_STRIP;
+    }
+
+    void setSupportedProfileTypeForTesting(@SupportedProfileType int type) {
+        mSupportedProfileType = type;
     }
 
     private void onNewTabButtonClick(View view) {
@@ -2375,7 +2383,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private void handleDebugIntent(Intent intent) {
         if (ACTION_CLOSE_TABS.equals(intent.getAction())) {
             CloseAllTabsHelper.closeAllTabsHidingTabGroups(
-                    assertNonNull(getTabModelSelectorSupplier().get()), /* allowUndo= */ true);
+                    assertNonNull(getTabModelSelectorSupplier().get()),
+                    /* allowUndo= */ true,
+                    TabClosingSource.UNKNOWN);
         } else if (MemoryPressureListener.handleDebugIntent(
                 ChromeTabbedActivity.this, intent.getAction())) {
             // Handled.
@@ -4712,7 +4722,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             getCurrentTabModel()
                     .getTabRemover()
                     .closeTabs(
-                            TabClosureParams.closeTab(currentTab).build(), /* allowDialog= */ true);
+                            TabClosureParams.closeTab(currentTab)
+                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                    .build(),
+                            /* allowDialog= */ true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
             boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
