@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 
 class PrefService;
@@ -19,14 +20,17 @@ namespace signin {
 // regenerated if user signs out and signs back in.
 // When refresh token is requested for this user it will be annotated with
 // this device id.
+COMPONENT_EXPORT(SIGNIN_DEVICE_ID_HELPER)
 std::string GetSigninScopedDeviceId(PrefService* prefs);
 
 // Forces the generation of a new device ID, and stores it in the pref service.
+COMPONENT_EXPORT(SIGNIN_DEVICE_ID_HELPER)
 std::string RecreateSigninScopedDeviceId(PrefService* prefs);
 
 // Helper method. The device ID should generally be obtained through
 // GetSigninScopedDeviceId().
 // Creates a new device ID value.
+COMPONENT_EXPORT(SIGNIN_DEVICE_ID_HELPER)
 std::string GenerateSigninScopedDeviceId();
 
 #endif

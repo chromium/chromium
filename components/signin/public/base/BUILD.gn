@@ -55,8 +55,6 @@ static_library("base") {
     "avatar_icon_util.h",
     "bound_session_oauth_multilogin_delegate.h",
     "consent_level.h",
-    "device_id_helper.cc",
-    "device_id_helper.h",
     "gaia_id_hash.cc",
     "gaia_id_hash.h",
     "hybrid_encryption_key.cc",
@@ -81,6 +79,7 @@ static_library("base") {
     "wait_for_network_callback_helper.cc",
     "wait_for_network_callback_helper.h",
   ]
+
   deps = [
     ":signin_prefs_internal",
     "//components/contextual_tasks/public:feature_list",
@@ -97,6 +96,7 @@ static_library("base") {
     "//third_party/re2",
   ]
   public_deps = [
+    ":device_id_helper",
     ":hybrid_encryption_key_proto",
     ":signin_buildflags",
     ":signin_switches",
@@ -244,6 +244,23 @@ source_set("unit_tests") {
     ]
     deps += [ ":signin_deep_link" ]
   }
+}
+
+component("device_id_helper") {
+  output_name = "signin_device_id_helper"
+
+  defines = [ "IS_SIGNIN_DEVICE_ID_HELPER_IMPL" ]
+
+  sources = [
+    "device_id_helper.cc",
+    "device_id_helper.h",
+  ]
+
+  deps = [
+    ":signin_switches",
+    "//base",
+    "//components/prefs",
+  ]
 }
 
 component("signin_switches") {
