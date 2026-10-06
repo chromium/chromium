@@ -168,6 +168,11 @@ export class PostSelectionRendererElement extends
         reflectToAttribute: true,
         value: false,
       },
+      hideHandles: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
       multiRegionSelectionEnabled: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableMultiRegionSelection'),
@@ -260,6 +265,9 @@ export class PostSelectionRendererElement extends
   declare private selectionOverlayRect: DOMRect;
   // Whether the background gradient should be hidden.
   declare private backgroundGradientHidden: boolean;
+  // Whether to hide the corner handles. The region can't be resized without
+  // them.
+  declare hideHandles: boolean;
   declare private multiRegionSelectionEnabled: boolean;
   declare private staticRegions: StaticRegion[];
   declare private activeRegionId: string;

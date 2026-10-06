@@ -596,6 +596,41 @@ suite('PostSelectionRenderer', () => {
     assertFalse(postSelectionRenderer.handleGestureStart(dragGesture));
   });
 
+  test('PostSelectionHideHandles', async () => {
+    await triggerPostSelectionRender({
+      top: normalizeY(10),
+      left: normalizeX(10),
+      width: normalizeX(100),
+      height: normalizeY(70),
+    });
+    postSelectionRenderer.hideHandles = true;
+    await waitAfterNextRender(postSelectionRenderer);
+
+    const corners =
+        postSelectionRenderer.shadowRoot!.querySelector<HTMLElement>(
+            '#selectionCorners')!;
+    assertEquals('none', getComputedStyle(corners).backgroundImage);
+    const hitBoxes =
+        postSelectionRenderer.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.corner-hit-box');
+    assertEquals(4, hitBoxes.length);
+    for (const hitBox of hitBoxes) {
+      assertFalse(isVisible(hitBox));
+    }
+
+    // A drag from the top left corner doesn't resize the region.
+    const bounds =
+        postSelectionRenderer.$.postSelection.getBoundingClientRect();
+    const dragGesture: GestureEvent = {
+      state: GestureState.DRAGGING,
+      startX: bounds.left,
+      startY: bounds.top,
+      clientX: bounds.left,
+      clientY: bounds.top,
+    };
+    assertFalse(postSelectionRenderer.handleGestureStart(dragGesture));
+  });
+
   test('PostSelectionClearAllSelectionsCallback', async () => {
     await triggerPostSelectionRender({
       top: normalizeY(10),

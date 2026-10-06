@@ -455,6 +455,24 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       ShowWithSelectionHidesHandles) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(Do([this]() {
+                    ShowWithSelection(selection::InteractionOptions::New(
+                        /*hide_handles=*/true, /*disable_multi_select=*/false));
+                  }),
+                  WaitForShow(OverlayBaseController::kOverlayId),
+                  InstrumentNonTabWebView(kOverlayWebContentsId,
+                                          OverlayBaseController::kOverlayId),
+                  WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                                    "el => el.hasAttribute('hide-handles')"));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        OverlayHiddenOnBackgroundedTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
@@ -1912,6 +1930,38 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                   // Glic opens in the side panel.
                   WaitForShow(kSidePanelElementId),
                   InAnyContext(WaitForShow(kGlicViewElementId)));
+}
+
+// The small chip opens the overlay with the handles hidden, and they stay
+// hidden while the Explain card shows.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       HandlesHiddenWithExplainCard) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  static constexpr char kCardShownJs[] = R"js(
+    el => !!el.shadowRoot.querySelector(
+        '#inlineFulfillmentHost > glic-explain-fulfillment')
+  )js";
+  // The corners aren't drawn, and their hit boxes are gone, so the region
+  // can't be resized.
+  static constexpr char kHandlesHiddenJs[] = R"js(
+    el => {
+      const corners = el.shadowRoot.querySelector('#selectionCorners');
+      const boxes = [...corners.querySelectorAll('.corner-hit-box')];
+      return getComputedStyle(corners).backgroundImage === 'none' &&
+          boxes.length === 4 &&
+          boxes.every(box => getComputedStyle(box).display === 'none');
+    }
+  )js";
+
+  RunTestSequence(
+      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs),
+      CheckJsResultAt(kOverlayWebContentsId, kRenderer, kHandlesHiddenJs));
 }
 
 namespace {

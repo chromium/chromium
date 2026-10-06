@@ -139,6 +139,10 @@
     filter: drop-shadow(0 0 8px rgba(8, 66, 160, 0.45));
   }
 
+  :host([hide-handles]) #selectionCorners {
+    background-image: none;
+  }
+
   .corner-hit-box {
     height: 50%;
     max-height: var(--post-selection-corner-hitbox-max-size);
@@ -152,6 +156,12 @@
 
   .corner-hit-box:focus-within {
     outline: auto 5px -webkit-focus-ring-color;
+  }
+
+  /* Resizing starts on a hit box, by drag or by the slider inside it, so
+   * hiding them also fixes the region. */
+  :host([hide-handles]) .corner-hit-box {
+    display: none;
   }
 
   #topLeft {
