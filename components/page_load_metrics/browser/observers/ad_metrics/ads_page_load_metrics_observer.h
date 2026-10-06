@@ -222,11 +222,17 @@ class AdsPageLoadMetricsObserver
     FrameTreeData* GetOwnedFrame();
     const FrameTreeData* GetOwnedFrame() const;
 
+    base::TimeTicks navigation_start() const { return navigation_start_; }
+    void set_navigation_start(base::TimeTicks navigation_start) {
+      navigation_start_ = navigation_start;
+    }
+
    private:
     // Only |owned_frame_data_| or |unowned_frame_data_| can be set at one time.
     // Both can be nullptr.
     std::unique_ptr<FrameTreeData> owned_frame_data_;
     base::WeakPtr<FrameTreeData> unowned_frame_data_;
+    base::TimeTicks navigation_start_;
   };
 
   // Checks the current page ad density by height for an better ads standard
@@ -309,8 +315,6 @@ class AdsPageLoadMetricsObserver
   // where FrameInstance::Get() returns nullptr..
   std::map<content::FrameTreeNodeId, FrameInstance> ad_frames_data_;
 
-  std::map<content::FrameTreeNodeId, base::TimeTicks> frame_navigation_starts_;
-
   int64_t navigation_id_ = -1;
   bool subresource_filter_is_enabled_ = false;
 
@@ -319,11 +323,6 @@ class AdsPageLoadMetricsObserver
   // request info (delay it) until the sub-frame commits.
   std::map<content::FrameTreeNodeId, mojom::ResourceDataUpdatePtr>
       ongoing_navigation_resources_;
-
-  // Per-frame memory usage by V8 in bytes. Memory data is stored for each frame
-  // on the page during the navigation.
-  std::unordered_map<content::FrameTreeNodeId, uint64_t>
-      v8_current_memory_usage_map_;
 
   // Tracks page-level information for the navigation.
   std::unique_ptr<AggregateFrameData> aggregate_frame_data_;
@@ -371,9 +370,6 @@ class AdsPageLoadMetricsObserver
   // Whether the heavy ad privacy mitigations feature is enabled.
   const bool heavy_ad_privacy_mitigations_enabled_;
 
-  // Whether there was a heavy ad on the page at some point.
-  bool heavy_ad_on_page_ = false;
-
   // Whether or not the metrics for this observer have already been recorded.
   // This can occur if the Chrome app is backgrounded.  If so, we continue to
   // keep track of things for interventions, but don't report anything further.
@@ -384,9 +380,6 @@ class AdsPageLoadMetricsObserver
 
   // The maximum ad density measurements for the page during its lifecycle.
   PageAdDensityTracker page_ad_density_tracker_;
-
-  // Tracks number of memory updates received.
-  int memory_update_count_ = 0;
 
   base::WeakPtrFactory<AdsPageLoadMetricsObserver> ads_weak_factory_{this};
 };
