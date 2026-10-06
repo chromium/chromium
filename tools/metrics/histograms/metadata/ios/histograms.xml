@@ -2565,6 +2565,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.FirstRun.DefaultBrowserPromo.SegmentationLatency.{Status}"
+    units="ms" expires_after="2027-02-14">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the latency between requesting the device switcher segmentation
+    classification result when constructing the First Run screen sequence and
+    {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Failure" summary="the classification failing or timing out"/>
+    <variant name="Success"
+        summary="receiving a valid device switcher classification result"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.FirstRun.DefaultBrowserPromo.SegmentationResult"
+    enum="IOSFirstRunDefaultBrowserPromoSegmentationResult"
+    expires_after="2027-02-14">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the device switcher segmentation classification result (whether the
+    user is an Android switcher, not an Android switcher, the result was not
+    ready due to timeout, or the classification failed) when evaluating the
+    Default Browser promo during the First Run Experience.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Frame.FirstContentfulPaint.MainFrame" units="ms"
     expires_after="2027-02-14">
   <owner>danieltwhite@chromium.org</owner>

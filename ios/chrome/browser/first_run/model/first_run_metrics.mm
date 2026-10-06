@@ -8,4 +8,13 @@ namespace first_run {
 
 const char kFirstRunStageHistogram[] = "FirstRun.Stage";
 
+const char kDefaultBrowserPromoSegmentationResultHistogram[] =
+    "IOS.FirstRun.DefaultBrowserPromo.SegmentationResult";
+
+const char kDefaultBrowserPromoSegmentationLatencySuccessHistogram[] =
+    "IOS.FirstRun.DefaultBrowserPromo.SegmentationLatency.Success";
+
+const char kDefaultBrowserPromoSegmentationLatencyFailureHistogram[] =
+    "IOS.FirstRun.DefaultBrowserPromo.SegmentationLatency.Failure";
+
 }  // namespace first_run

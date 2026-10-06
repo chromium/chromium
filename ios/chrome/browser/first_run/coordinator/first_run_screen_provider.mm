@@ -4,10 +4,20 @@
 
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 
+#import <algorithm>
+
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/public/result.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
@@ -15,12 +25,112 @@
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace {
+
+// Timeout for waiting for the device switcher classification result.
+constexpr base::TimeDelta kDeviceSwitcherWaitTimeout = base::Seconds(60);
+
+// Returns true if `result` classifies the user as an Android switcher.
+// A user is considered an Android switcher if the classification succeeded,
+// their primary (first) label is `kAndroidPhoneLabel`, and they were not also
+// classified with `kIosPhoneChromeLabel` (matching the Bring Android Tabs
+// criteria).
+bool IsAndroidSwitcher(
+    const segmentation_platform::ClassificationResult& result) {
+  return result.status == segmentation_platform::PredictionStatus::kSucceeded &&
+         !result.ordered_labels.empty() &&
+         result.ordered_labels[0] ==
+             segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel &&
+         !std::ranges::contains(
+             result.ordered_labels,
+             segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel);
+}
+
+// Callback invoked when the segmentation device switcher classification result
+// is received or times out. Records the latency and the Android switcher
+// classification result.
+void OnSegmentationDeviceSwitcherResult(
+    base::ElapsedTimer timer,
+    const segmentation_platform::ClassificationResult& result) {
+  const base::TimeDelta elapsed = timer.Elapsed();
+
+  // Determine the Android switcher classification result from the segmentation
+  // platform prediction result.
+  first_run::DefaultBrowserPromoSegmentationResult segmentation_result =
+      first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+  bool is_success = false;
+  switch (result.status) {
+    case segmentation_platform::PredictionStatus::kNotReady:
+      segmentation_result =
+          first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+      break;
+    case segmentation_platform::PredictionStatus::kFailed:
+      segmentation_result =
+          first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+      break;
+    case segmentation_platform::PredictionStatus::kSucceeded:
+      if (result.ordered_labels.empty()) {
+        segmentation_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+      } else if (std::ranges::contains(
+                     result.ordered_labels,
+                     segmentation_platform::DeviceSwitcherModel::
+                         kNotSyncedLabel)) {
+        segmentation_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+      } else if (IsAndroidSwitcher(result)) {
+        segmentation_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
+        is_success = true;
+      } else {
+        segmentation_result = first_run::DefaultBrowserPromoSegmentationResult::
+            kNotAndroidSwitcher;
+        is_success = true;
+      }
+      break;
+  }
+
+  base::UmaHistogramMediumTimes(
+      is_success
+          ? first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram
+          : first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram,
+      elapsed);
+  base::UmaHistogramEnumeration(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram,
+      segmentation_result);
+}
+
+// Queries the segmentation platform device switcher classification result and
+// records the result and latency metrics.
+void RecordSegmentationDeviceSwitcherSignal(ProfileIOS* profile) {
+  if (!experimental_flags::GetSegmentForForcedDeviceSwitcherExperience()
+           .empty()) {
+    return;
+  }
+  segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetDispatcherForProfile(profile);
+  if (!dispatcher) {
+    return;
+  }
+  dispatcher->WaitForClassificationResult(
+      kDeviceSwitcherWaitTimeout,
+      base::BindOnce(&OnSegmentationDeviceSwitcherResult,
+                     base::ElapsedTimer()));
+}
+
+// Queries device switcher signals to record Default Browser promo metrics
+// without modifying screen visibility.
+void RecordDeviceSwitcherSignals(ProfileIOS* profile) {
+  RecordSegmentationDeviceSwitcherSignal(profile);
+}
 
 // Helper function to add the Best Features, Default Browser Promo, and Address
 // Bar screens when kUpdatedFirstRunSequence is disabled.
@@ -119,6 +229,10 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
           regional_capabilities_service->IsInEeaCountry()) &&
       [screens containsObject:@(kSignIn)]) {
     [screens removeObject:@(kDefaultBrowserPromo)];
+  }
+
+  if (first_run::IsQueryDeviceSwitcherSignalsInFirstRunEnabled()) {
+    RecordDeviceSwitcherSignals(profile);
   }
 
   [screens addObject:@(kStepsCompleted)];

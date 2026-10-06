@@ -16,6 +16,30 @@ namespace first_run {
 // Histogram for first run stage. Related to `enum FirstRunStage`.
 extern const char kFirstRunStageHistogram[];
 
+// Histograms for the Default Browser promo device switcher segmentation result
+// and latency during First Run.
+extern const char kDefaultBrowserPromoSegmentationResultHistogram[];
+extern const char kDefaultBrowserPromoSegmentationLatencySuccessHistogram[];
+extern const char kDefaultBrowserPromoSegmentationLatencyFailureHistogram[];
+
+// Result of the device switcher segmentation classification when evaluating the
+// Default Browser promo during the First Run Experience.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSFirstRunDefaultBrowserPromoSegmentationResult)
+enum class DefaultBrowserPromoSegmentationResult {
+  // The segmentation result was not ready (e.g. timed out).
+  kNotReady = 0,
+  // The user was classified as not an Android switcher.
+  kNotAndroidSwitcher = 1,
+  // The user was classified as an Android switcher.
+  kAndroidSwitcher = 2,
+  // The segmentation classification failed.
+  kFailed = 3,
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSFirstRunDefaultBrowserPromoSegmentationResult)
+
 // The different ways to interact with the sign-in flow during First Run.
 enum SignInAttemptStatus {
   // The user did not attempt to sign in.

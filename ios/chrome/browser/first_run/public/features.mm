@@ -23,6 +23,9 @@ BASE_FEATURE(kUpdatedFirstRunSequence, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPostFREIphInProfileAgent, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQueryDeviceSwitcherSignalsInFirstRun,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
     "AnimatedDefaultBrowserPromoInFREExperimentType";
 
@@ -88,6 +91,10 @@ bool IsSkipDefaultBrowserPromoInFirstRunEnabled(bool is_in_eea_country) {
 
 bool IsPostFREIphInProfileAgentEnabled() {
   return base::FeatureList::IsEnabled(kPostFREIphInProfileAgent);
+}
+
+bool IsQueryDeviceSwitcherSignalsInFirstRunEnabled() {
+  return base::FeatureList::IsEnabled(kQueryDeviceSwitcherSignalsInFirstRun);
 }
 
 }  // namespace first_run

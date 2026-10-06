@@ -846,6 +846,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelEntryPointVariant) -->
 
+<!-- LINT.IfChange(IOSFirstRunDefaultBrowserPromoSegmentationResult) -->
+
+<enum name="IOSFirstRunDefaultBrowserPromoSegmentationResult">
+  <int value="0" label="Not Ready"/>
+  <int value="1" label="Not Android Switcher"/>
+  <int value="2" label="Android Switcher"/>
+  <int value="3" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/first_run/model/first_run_metrics.h:IOSFirstRunDefaultBrowserPromoSegmentationResult) -->
+
 <!-- LINT.IfChange(IOSGeminiAspectRatioBucket) -->
 
 <enum name="IOSGeminiAspectRatioBucket">
