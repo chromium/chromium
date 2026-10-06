@@ -102,6 +102,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Before
     public void setUp() {
+        MultiWindowTestUtils.ensureInitialized();
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         when(mProfileResolverNatives.tokenizeProfile(any())).thenReturn("mock_token");
 
