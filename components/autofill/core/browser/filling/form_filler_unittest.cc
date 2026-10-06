@@ -883,13 +883,11 @@ TEST_F(FormFillerTest, FillAddressForm_AutocompleteOffFillingBehavior) {
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =
       AutofillForm(form, form.fields()[0], &profile).fields();
-  ASSERT_EQ(filled_fields.size(), 3u);
-  EXPECT_THAT(filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  EXPECT_THAT(filled_fields[1],
-              AutofilledWith(profile.GetInfo(NAME_MIDDLE, kAppLocale)));
-  EXPECT_THAT(filled_fields[2],
-              AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
+  EXPECT_THAT(
+      filled_fields,
+      ElementsAre(AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(NAME_MIDDLE, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale))));
 }
 
 // Test that fields with value equal to their placeholder attribute are filled.
@@ -912,13 +910,11 @@ TEST_F(FormFillerTest, FillAddressForm_PlaceholderEqualsValue) {
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =
       AutofillForm(form, form.fields()[0], &profile).fields();
-  ASSERT_EQ(filled_fields.size(), 3u);
-  EXPECT_THAT(filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  EXPECT_THAT(filled_fields[1],
-              AutofilledWith(profile.GetInfo(NAME_MIDDLE, kAppLocale)));
-  EXPECT_THAT(filled_fields[2],
-              AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
+  EXPECT_THAT(
+      filled_fields,
+      ElementsAre(AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(NAME_MIDDLE, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale))));
 }
 
 // Test that credit card fields with unrecognized autocomplete attribute are
@@ -1116,13 +1112,11 @@ TEST_F(FormFillerTest, FillFormWithMultipleEmails) {
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =
       AutofillForm(form, form.fields()[0], &profile).fields();
-  ASSERT_EQ(filled_fields.size(), 3u);
-  EXPECT_THAT(filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
-  EXPECT_THAT(filled_fields[1],
-              AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
-  EXPECT_THAT(filled_fields[2],
-              AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
+  EXPECT_THAT(
+      filled_fields,
+      ElementsAre(AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale))));
 }
 
 // Test that we correctly fill a previously autofilled address form.
@@ -1732,11 +1726,10 @@ TEST_F(FormFillerTest, FormChangesRemoveField) {
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =
       AutofillForm(form, form.fields()[0], &profile).fields();
-  ASSERT_EQ(filled_fields.size(), 2u);
-  EXPECT_THAT(filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
-  EXPECT_THAT(filled_fields[1],
-              AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
+  EXPECT_THAT(
+      filled_fields,
+      ElementsAre(AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale))));
 }
 
 // Test that we can still fill a form when a field has been added to it.
@@ -1755,11 +1748,10 @@ TEST_F(FormFillerTest, FormChangesAddField) {
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =
       AutofillForm(form, form.fields()[0], &profile).fields();
-  ASSERT_EQ(filled_fields.size(), 2u);
-  EXPECT_THAT(filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
-  EXPECT_THAT(filled_fields[1],
-              AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
+  EXPECT_THAT(
+      filled_fields,
+      ElementsAre(AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)),
+                  AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale))));
 }
 
 // Test that we can still fill a form when the visibility of some fields
@@ -1804,15 +1796,13 @@ TEST_F(FormFillerTest, FormChangesVisibilityOfFields) {
   AutofillProfile profile2 = test::GetFullProfile2();
   std::vector<FormFieldData> later_filled_fields =
       AutofillForm(filled_form, filled_form.fields()[2], &profile2).fields();
-  ASSERT_EQ(later_filled_fields.size(), 4u);
-  EXPECT_THAT(later_filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
-  EXPECT_THAT(later_filled_fields[1],
-              AutofilledWith(profile.GetInfo(ADDRESS_HOME_LINE1, kAppLocale)));
-  EXPECT_THAT(later_filled_fields[2],
-              AutofilledWith(profile2.GetInfo(ADDRESS_HOME_ZIP, kAppLocale)));
-  EXPECT_THAT(later_filled_fields[3],
-              AutofilledWith(profile2.GetRawInfo(ADDRESS_HOME_COUNTRY)));
+  EXPECT_THAT(
+      later_filled_fields,
+      ElementsAre(
+          AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)),
+          AutofilledWith(profile.GetInfo(ADDRESS_HOME_LINE1, kAppLocale)),
+          AutofilledWith(profile2.GetInfo(ADDRESS_HOME_ZIP, kAppLocale)),
+          AutofilledWith(profile2.GetRawInfo(ADDRESS_HOME_COUNTRY))));
 }
 
 // Test that fields will be assigned with the source profile that was used for
@@ -2400,10 +2390,10 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
                           "04", "2999", "1");
   FormData first_fill_data =
       AutofillForm(form, form.fields().front(), &credit_card);
-  ASSERT_EQ(first_fill_data.fields().size(), 3u);
-  EXPECT_THAT(first_fill_data.fields()[0], AutofilledWith(u"Elvis Presley"));
-  EXPECT_THAT(first_fill_data.fields()[1], AutofilledWith(u"4234567890123456"));
-  EXPECT_THAT(first_fill_data.fields()[2], AutofilledWith(u"04/2999"));
+  EXPECT_THAT(first_fill_data.fields(),
+              ElementsAre(AutofilledWith(u"Elvis Presley"),
+                          AutofilledWith(u"4234567890123456"),
+                          AutofilledWith(u"04/2999")));
 
   std::vector<FormFieldData> refilled_fields;
   if (test_case.triggers_refill) {
@@ -2763,12 +2753,9 @@ TEST_F(FormFillerTest, FillOtp_MultiField) {
 
   FormData filled_form = AutofillForm(form, form.fields()[0], &otp_fill_data);
 
-  ASSERT_EQ(filled_form.fields().size(), 4u);
-
-  EXPECT_THAT(filled_form.fields()[0], AutofilledWith(u"1"));
-  EXPECT_THAT(filled_form.fields()[1], AutofilledWith(u"2"));
-  EXPECT_THAT(filled_form.fields()[2], AutofilledWith(u"3"));
-  EXPECT_THAT(filled_form.fields()[3], AutofilledWith(u"4"));
+  EXPECT_THAT(filled_form.fields(),
+              ElementsAre(AutofilledWith(u"1"), AutofilledWith(u"2"),
+                          AutofilledWith(u"3"), AutofilledWith(u"4")));
 
   for (size_t i = 0; i < 4; ++i) {
     EXPECT_EQ(form_structure->field(i)->last_modifier(),
@@ -2859,11 +2846,9 @@ TEST_F(FormFillerTest, PreviewOtp_MultiField) {
       /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
       FormFiller::RefillOptions::NotRefill());
 
-  ASSERT_EQ(previewed_fields.size(), 4u);
-  EXPECT_THAT(previewed_fields[0], AutofilledWith(u"4"));
-  EXPECT_THAT(previewed_fields[1], AutofilledWith(u"3"));
-  EXPECT_THAT(previewed_fields[2], AutofilledWith(u"2"));
-  EXPECT_THAT(previewed_fields[3], AutofilledWith(u"1"));
+  EXPECT_THAT(previewed_fields,
+              ElementsAre(AutofilledWith(u"4"), AutofilledWith(u"3"),
+                          AutofilledWith(u"2"), AutofilledWith(u"1")));
 
   for (size_t i = 0; i < 4; ++i) {
     EXPECT_NE(form_structure->field(i)->last_modifier(),
@@ -3031,12 +3016,9 @@ TEST_F(FormFillerTest, UndoOtp_MultiField) {
       *form_structure, *form_structure->field(0), u"5678");
   FormData filled_form = AutofillForm(form, form.fields()[0], &otp_fill_data);
 
-  ASSERT_EQ(filled_form.fields().size(), 4u);
-
-  EXPECT_THAT(filled_form.fields()[0], AutofilledWith(u"5"));
-  EXPECT_THAT(filled_form.fields()[1], AutofilledWith(u"6"));
-  EXPECT_THAT(filled_form.fields()[2], AutofilledWith(u"7"));
-  EXPECT_THAT(filled_form.fields()[3], AutofilledWith(u"8"));
+  EXPECT_THAT(filled_form.fields(),
+              ElementsAre(AutofilledWith(u"5"), AutofilledWith(u"6"),
+                          AutofilledWith(u"7"), AutofilledWith(u"8")));
 
   for (size_t i = 0; i < 4; ++i) {
     ASSERT_EQ(form_structure->field(i)->last_modifier(),
