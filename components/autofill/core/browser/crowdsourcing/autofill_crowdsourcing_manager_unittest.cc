@@ -1708,6 +1708,21 @@ TEST_P(AutofillUploadTest, MAYBE_ThrottlingStructuralFormSignatures) {
   AutofillUploadRequest request_2;
   ASSERT_TRUE(request_2.ParseFromString(payloads()[1]));
   EXPECT_FALSE(request_2.upload().has_structural_form_signature());
+
+  // After clearing the upload throttling history, the structural form signature
+  // should be included again.
+  AutofillCrowdsourcingManager::ClearUploadHistory(
+      autofill_client().GetPrefs());
+  EXPECT_TRUE(SendUploadRequest(form_structure_2, *randomized_encoder,
+                                LanguageCode(""), /*available_field_types=*/{},
+                                /*login_form_signature=*/std::nullopt,
+                                /*observed_submission=*/true,
+                                /*is_password_manager_upload=*/false));
+  ASSERT_THAT(payloads(), SizeIs(3));
+  AutofillUploadRequest request_3;
+  ASSERT_TRUE(request_3.ParseFromString(payloads()[2]));
+  EXPECT_EQ(request_3.upload().structural_form_signature(),
+            kStructuralFormSignature.value());
   payloads().clear();
 }
 

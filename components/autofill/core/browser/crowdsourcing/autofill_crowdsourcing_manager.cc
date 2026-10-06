@@ -898,6 +898,8 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 void AutofillCrowdsourcingManager::ClearUploadHistory(PrefService* pref_service) {
   if (pref_service) {
     pref_service->ClearPref(prefs::kAutofillVoteUploadEvents);
+    pref_service->ClearPref(
+        prefs::kAutofillVoteSecondaryFormSignatureUploadEvents);
     pref_service->ClearPref(prefs::kAutofillMetadataUploadEvents);
     pref_service->SetTime(prefs::kAutofillUploadEventsLastResetTimestamp,
                           AutofillClock::Now());
