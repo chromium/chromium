@@ -4,6 +4,134 @@
 
 import("//build/config/android/rules.gni")
 
+android_library("java") {
+  srcjar_deps = [ ":jni_enums" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/tips/LegacyTipsPromoHandler.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsOptInCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoCustomizer.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoHandler.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoHandlerFactory.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoProperties.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsUtils.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/quick_delete:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_ui/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//chrome/browser/ui/android/toolbar:core_java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:com_airbnb_android_lottie_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.tips"
+}
+
 java_cpp_enum("jni_enums") {
   sources = [ "//chrome/browser/tips/core/tips_types.h" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/anim/view_flipper_fade_in.xml",
+    "java/res/anim/view_flipper_fade_out.xml",
+    "java/res/drawable/steps_number_circle_background.xml",
+    "java/res/drawable/tips_opt_in_logo.xml",
+    "java/res/drawable/tips_promo_bottom_omnibox_logo.xml",
+    "java/res/drawable/tips_promo_create_tab_groups_logo.xml",
+    "java/res/drawable/tips_promo_customize_mvt_logo.xml",
+    "java/res/drawable/tips_promo_esb_logo.xml",
+    "java/res/drawable/tips_promo_lens_logo.xml",
+    "java/res/drawable/tips_promo_password_autofill_logo.xml",
+    "java/res/drawable/tips_promo_recent_tabs_logo.xml",
+    "java/res/drawable/tips_promo_signin_logo.xml",
+    "java/res/drawable/view_list_bottom_item_background.xml",
+    "java/res/drawable/view_list_normal_item_background.xml",
+    "java/res/drawable/view_list_single_item_background.xml",
+    "java/res/drawable/view_list_top_item_background.xml",
+    "java/res/layout/tips_opt_in_bottom_sheet.xml",
+    "java/res/layout/tips_promo_bottom_sheet.xml",
+    "java/res/layout/tips_promo_detail_sheet.xml",
+    "java/res/layout/tips_promo_main_sheet.xml",
+    "java/res/layout/tips_promo_step_item.xml",
+    "java/res/raw/tips_notifications_quick_delete_logo_anim.json",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/android_deps:com_airbnb_android_lottie_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.tips"
+  sources = [
+    "junit/src/org/chromium/chrome/browser/tips/TipsOptInCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tips/TipsPromoCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tips/TipsPromoViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tips/TipsUtilsUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/quick_delete:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
 }

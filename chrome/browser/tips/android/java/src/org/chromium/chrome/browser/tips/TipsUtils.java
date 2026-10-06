@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.tips;
+package org.chromium.chrome.browser.tips;
 
 import android.app.Activity;
 import android.app.NotificationChannel;
@@ -24,23 +24,12 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.browser.notifications.scheduler.TipsAgent;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tips.TipsNotificationsFeatureType;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -51,9 +40,7 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.base.WindowAndroid;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -83,7 +70,7 @@ public class TipsUtils {
             "android.tips.notifications.customize_mvt_shown";
     public static final String RECENT_TABS_SHOWN = "android.tips.notifications.recent_tabs_shown";
 
-    // LINT.ThenChange(//chrome/browser/notifications/scheduler/public/tips_prefs.cc:TipsShownPrefs)
+    // LINT.ThenChange(//chrome/browser/tips/core/tips_prefs.cc:TipsShownPrefs)
 
     /**
      * Assembles a {@link FeatureTipPromoData} object containing required UI and callback
@@ -268,82 +255,6 @@ public class TipsUtils {
     }
 
     /**
-     * With a valid profile, schedule a deferred startup task which potentially schedules a feature
-     * tip notification based on backend segmentation ranker criteria. Also checks if app-level and
-     * tips notifications are also enabled. On all other workflows, ensure that any previously
-     * pending notifications are cancelled on either app startup or flag toggle.
-     *
-     * @param profileProviderSupplier The supplier for the current {@link ProfileProvider}.
-     * @param windowAndroid The current {@link WindowAndroid}.
-     */
-    public static void performNotificationSchedulerSteps(
-            OneshotSupplier<ProfileProvider> profileProviderSupplier, WindowAndroid windowAndroid) {
-        profileProviderSupplier.onAvailable(
-                (provider) -> {
-                    Profile profile = provider.getOriginalProfile();
-                    if (profile.shutdownStarted()) return;
-
-                    if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
-                            && TipsUtils.isSupportedDeviceType()) {
-                        if (ChromeFeatureList.sAndroidTipsNotificationsResetFeatureTipShown
-                                .getValue()) {
-                            clearFeatureTipShownPrefs(profile);
-                        }
-
-                        maybeScheduleTipsNotification(profile, windowAndroid);
-                    } else {
-                        TipsAgent.removePendingNotifications(profile);
-                    }
-                });
-    }
-
-    private static void maybeScheduleTipsNotification(
-            Profile profile, WindowAndroid windowAndroid) {
-        if (windowAndroid.isDestroyed()) return;
-        boolean isBottomOmnibox = isBottomOmniboxActive(windowAndroid);
-
-        TipsUtils.areTipsNotificationsEnabled(
-                (enabled) -> {
-                    // If the notification channel is enabled, check if a notification was actually
-                    // scheduled before scheduling a task to run the reschedule logic.
-                    if (enabled) {
-                        // This function includes rescheduling a notification if one is pending.
-                        TipsAgent.maybeScheduleNotification(profile, isBottomOmnibox);
-                        // Run this current function again in 1 hour since the scheduler will
-                        // schedule a notification 4 hours out, so if the user is still active on
-                        // Chrome then reschedule it. The remove call earlier in this function will
-                        // remove all pending notifications and the new scheduling call acts as a
-                        // reschedule. If the app is closed (user offline) with a post delayed task
-                        // it will be torn down. Note that it is possible that when the notification
-                        // is rescheduled, the usage criteria may have changed such that the user is
-                        // no longer eligible to receive a notification.
-                        WeakReference<WindowAndroid> windowAndroidRef =
-                                new WeakReference<>(windowAndroid);
-                        PostTask.postDelayedTask(
-                                TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    WindowAndroid window = windowAndroidRef.get();
-                                    if (window != null && !window.isDestroyed()) {
-                                        maybeScheduleTipsNotification(profile, window);
-                                    }
-                                },
-                                TimeUnit.HOURS.toMillis(1));
-                    }
-                });
-    }
-
-    private static boolean isBottomOmniboxActive(WindowAndroid windowAndroid) {
-        // Set the default fallback for controls position to be top.
-        @ControlsPosition int controlsPosition = ControlsPosition.TOP;
-        @Nullable BrowserControlsManager browserControlsManager =
-                BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid);
-        if (browserControlsManager != null) {
-            controlsPosition = browserControlsManager.getControlsPosition();
-        }
-        return controlsPosition == ControlsPosition.BOTTOM;
-    }
-
-    /**
      * Check if both app-level and tips notifications are enabled.
      *
      * @param callback Callback to return the result.
@@ -423,7 +334,12 @@ public class TipsUtils {
         return ChromeFeatureList.sAndroidTipsNotificationsAlwaysShowOptInPromo.getValue();
     }
 
-    private static void clearFeatureTipShownPrefs(Profile profile) {
+    /**
+     * Clears the "shown" prefs for every feature tip so each tip becomes eligible again.
+     *
+     * @param profile The current profile.
+     */
+    public static void clearFeatureTipShownPrefs(Profile profile) {
         UserPrefs.get(profile).setBoolean(ENHANCED_SAFE_BROWSING_SHOWN, false);
         UserPrefs.get(profile).setBoolean(QUICK_DELETE_SHOWN, false);
         UserPrefs.get(profile).setBoolean(GOOGLE_LENS_SHOWN, false);

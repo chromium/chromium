@@ -29,7 +29,7 @@ const char kAndroidTipNotificationShownCustomizeMVT[] =
     "android.tips.notifications.customize_mvt_shown";
 const char kAndroidTipNotificationShownRecentTabs[] =
     "android.tips.notifications.recent_tabs_shown";
-// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsUtils.java:TipsShownPrefs)
+// LINT.ThenChange(//chrome/browser/tips/android/java/src/org/chromium/chrome/browser/tips/TipsUtils.java:TipsShownPrefs)
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kAndroidTipNotificationShownESB, false);

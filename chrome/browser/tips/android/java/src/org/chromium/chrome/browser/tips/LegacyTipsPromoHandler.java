@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.tips;
+package org.chromium.chrome.browser.tips;
 
 import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
-import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
-import org.chromium.chrome.browser.tips.TipsNotificationsFeatureType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -46,7 +44,7 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
     private final boolean mIsUserSignedIn;
     private final Supplier<QuickDeleteController> mQuickDeleteControllerCreator;
     private final BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
-    private final ChromeTabCreator mRegularTabCreator;
+    private final TabCreator mRegularTabCreator;
     private final Supplier<LayoutManager> mLayoutManagerSupplier;
     private final Supplier<LensController> mLensControllerSupplier;
 
@@ -72,7 +70,7 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
             boolean isUserSignedIn,
             Supplier<QuickDeleteController> quickDeleteControllerCreator,
             BottomSheetSigninAndHistorySyncCoordinator signinCoordinator,
-            ChromeTabCreator regularTabCreator,
+            TabCreator regularTabCreator,
             Supplier<LayoutManager> layoutManagerSupplier,
             Supplier<LensController> lensControllerSupplier) {
         mFeatureType = featureType;

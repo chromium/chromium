@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.tips;
+package org.chromium.chrome.browser.tips;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,7 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.notifications.tips.TipsUtils.LOGO_IMAGE_MAX_WIDTH_RATIO;
+import static org.chromium.chrome.browser.tips.TipsUtils.LOGO_IMAGE_MAX_WIDTH_RATIO;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,21 +41,19 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lens.LensController;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.TipsPromoSheetContent;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
-import org.chromium.chrome.browser.tips.TipsNotificationsFeatureType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tips.TipsPromoCoordinator.TipsPromoSheetContent;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.ScreenType;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -79,7 +77,7 @@ public class TipsPromoCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private QuickDeleteController mQuickDeleteController;
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
-    @Mock private ChromeTabCreator mTabCreator;
+    @Mock private TabCreator mTabCreator;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LensController mLensController;

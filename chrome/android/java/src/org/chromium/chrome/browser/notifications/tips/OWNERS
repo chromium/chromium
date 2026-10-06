@@ -1,5 +1,0 @@
-# This OWNERS file also covers:
-#
-# //chrome/android/junit/src/org/chromium/chrome/browser/notifications/tips/
-
-file://chrome/browser/notifications/scheduler/OWNERS

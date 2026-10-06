@@ -1001,7 +1001,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.notifications") {
     "src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManagerTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/tips/android:java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {

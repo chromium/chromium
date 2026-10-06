@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.tips;
+package org.chromium.chrome.browser.tips;
 
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 
 /**
  * Interface implemented by feature teams to supply UI data and user action handling for the Tips

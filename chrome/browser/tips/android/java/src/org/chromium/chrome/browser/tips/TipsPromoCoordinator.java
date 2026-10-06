@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.tips;
+package org.chromium.chrome.browser.tips;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -31,16 +31,14 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lens.LensController;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
-import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
-import org.chromium.chrome.browser.tips.TipsNotificationsFeatureType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.ScreenType;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -118,7 +116,7 @@ public class TipsPromoCoordinator {
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param quickDeleteControllerCreator The creator for the quick delete controller.
      * @param signinCoordinator The coordinator for the sign-in promo bottom sheet.
-     * @param regularTabCreator The {@link ChromeTabCreator} to open new tabs when necessary.
+     * @param regularTabCreator The {@link TabCreator} to open new tabs when necessary.
      * @param windowAndroid The current WindowAndroid.
      * @param isIncognito Whether the current context is incognito.
      * @param profile The current profile.
@@ -131,7 +129,7 @@ public class TipsPromoCoordinator {
             BottomSheetController bottomSheetController,
             Supplier<QuickDeleteController> quickDeleteControllerCreator,
             BottomSheetSigninAndHistorySyncCoordinator signinCoordinator,
-            ChromeTabCreator regularTabCreator,
+            TabCreator regularTabCreator,
             WindowAndroid windowAndroid,
             boolean isIncognito,
             Profile profile,

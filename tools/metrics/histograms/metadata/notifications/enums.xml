@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Detail page back button"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsPromoCoordinator.java:FeatureTipPromoEventType) -->
+<!-- LINT.ThenChange(//chrome/browser/tips/android/java/src/org/chromium/chrome/browser/tips/TipsPromoCoordinator.java:FeatureTipPromoEventType) -->
 
 <enum name="TipsNotificationsFeatureType">
   <int value="0" label="Enhanced Safe Browsing"/>
@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Declined"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsOptInCoordinator.java:OptInPromoEventType) -->
+<!-- LINT.ThenChange(//chrome/browser/tips/android/java/src/org/chromium/chrome/browser/tips/TipsOptInCoordinator.java:OptInPromoEventType) -->
 
 <!-- NSError codes returned by -[UNUserNotificationCenter
      addNotificationRequest:withCompletionHandler:]. Codes are only meaningful
