@@ -138,34 +138,6 @@ class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
 
   // Called by the embedder, after creating the download manager, to let it know
   // about downloads from previous runs of the browser.
-  download::DownloadItem* CreateDownloadItem(
-      const std::string& guid,
-      uint32_t id,
-      const base::FilePath& current_path,
-      const base::FilePath& target_path,
-      const std::vector<GURL>& url_chain,
-      const GURL& referrer_url,
-      const StoragePartitionConfig& storage_partition_config,
-      const GURL& tab_url,
-      const GURL& tab_referrer_url,
-      const std::optional<url::Origin>& request_initiator,
-      const std::string& mime_type,
-      const std::string& original_mime_type,
-      base::Time start_time,
-      base::Time end_time,
-      const std::string& etag,
-      const std::string& last_modified,
-      int64_t received_bytes,
-      int64_t total_bytes,
-      const std::string& hash,
-      download::DownloadItem::DownloadState state,
-      download::DownloadDangerType danger_type,
-      download::DownloadInterruptReason interrupt_reason,
-      bool opened,
-      base::Time last_access_time,
-      bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>&
-          received_slices);
   virtual download::DownloadItem* CreateDownloadItem(
       const std::string& guid,
       uint32_t id,

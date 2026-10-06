@@ -115,7 +115,6 @@ class CONTENT_EXPORT DownloadManagerImpl
                        blob_url_loader_factory) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  using DownloadManager::CreateDownloadItem;
   download::DownloadItem* CreateDownloadItem(
       const std::string& guid,
       uint32_t id,

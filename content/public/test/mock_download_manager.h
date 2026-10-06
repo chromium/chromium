@@ -131,7 +131,6 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
 
   // Redirects to mock method to get around gmock 10 argument limit.
-  using DownloadManager::CreateDownloadItem;
   download::DownloadItem* CreateDownloadItem(
       const std::string& guid,
       uint32_t id,

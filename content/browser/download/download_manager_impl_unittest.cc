@@ -546,7 +546,8 @@ class DownloadManagerTest : public testing::Test {
             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
             download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, false,
             base::Time::Now(), true,
-            std::vector<download::DownloadItem::ReceivedSlice>());
+            std::vector<download::DownloadItem::ReceivedSlice>(),
+            base::FilePath());
     return download_item;
   }
 

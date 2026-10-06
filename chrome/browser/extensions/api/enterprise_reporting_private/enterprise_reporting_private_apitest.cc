@@ -1276,8 +1276,8 @@ class EnterpriseReportForceSaveToCloudEventHandledTest
             url::Origin::Create(GURL("https://example.com")), "text/plain",
             "text/plain", current, current, std::string(), std::string(), 100,
             100, "hash", download::DownloadItem::COMPLETE, danger_type,
-            download::DOWNLOAD_INTERRUPT_REASON_NONE, false, current, false,
-            {});
+            download::DOWNLOAD_INTERRUPT_REASON_NONE, false, current, false, {},
+            base::FilePath());
     if (scan_result) {
       item->SetUserData(enterprise_connectors::ScanResult::kKey,
                         std::move(scan_result));

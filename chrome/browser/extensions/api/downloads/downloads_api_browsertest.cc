@@ -660,7 +660,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
               : download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED,
           false,    // opened
           current,  // last_access_time
-          false, std::vector<DownloadItem::ReceivedSlice>());
+          false, std::vector<DownloadItem::ReceivedSlice>(), base::FilePath());
       items->push_back(item);
     }
 
