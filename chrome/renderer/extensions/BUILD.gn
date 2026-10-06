@@ -23,8 +23,6 @@ source_set("extensions") {
   # Files that can only be included from here.
   sources = [
     "api/chrome_extensions_renderer_api_provider.cc",
-    "api/experimental_ai_data_hooks_delegate.cc",
-    "api/experimental_ai_data_hooks_delegate.h",
     "api/extension_hooks_delegate.cc",
     "api/identity_hooks_delegate.cc",
     "api/notifications_native_handler.cc",

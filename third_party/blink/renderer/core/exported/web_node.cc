@@ -40,7 +40,6 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -259,10 +258,6 @@ bool WebNode::IsElementNode() const {
   return private_->IsElementNode();
 }
 
-bool WebNode::IsPseudoElement() const {
-  return private_->IsPseudoElement();
-}
-
 bool WebNode::IsDocumentNode() const {
   return private_->IsDocumentNode();
 }
@@ -374,10 +369,6 @@ int WebNode::GetDomNodeId() const {
 }
 
 // static
-WebNode WebNode::FromV8Value(v8::Isolate* isolate, v8::Local<v8::Value> value) {
-  return WebNode(V8Node::ToWrappable(isolate, value));
-}
-
 WebNode WebNode::FromDomNodeId(int dom_node_id) {
   return WebNode(Node::FromDomNodeId(dom_node_id));
 }

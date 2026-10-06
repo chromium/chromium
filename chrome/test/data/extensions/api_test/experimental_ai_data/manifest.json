@@ -4,10 +4,8 @@
   "manifest_version": 3,
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAx4knjNdvmPkhkdExixnuMgINyVAB1bUL38VfuoSebNeDrwLQah3fe8eeUhO6VYtYGFgEUpNvq/fywO1MiS7cENVsdrtM6gSYr1RdJG8zKwSgf9IKUQjevV9aflpgUwSrW8v6oGLkT+MLzkEgV9J1FKqb9kcSuoP2GRsPqAH5igJFTZ9nP9IS0F6p7/oZ641CjugjnIhCK2uaqNrINU1CmcRzLoOBRrtXYuawCdXvrPBM+5b9NxTKeF3JDYoAiLt2SYWRbaT2Mwys8TZPpPBYa6/QZdt7XPWo3PQZap0Ei2oYVEedDQ1IcnoP6ZFG3yJmSiADah/8rZG06fnkyERcNQIDAQAB",
   "permissions": [
-    "experimentalAiData",
-    "scripting"
+    "experimentalAiData"
   ],
-  "host_permissions": ["http://*/*"],
   "background": {
     "service_worker": "test.js"
   }

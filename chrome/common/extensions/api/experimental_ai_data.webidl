@@ -56,20 +56,9 @@ interface ExperimentalAiData {
       long tabId,
       ArrayBuffer aiDataSpecifier);
 
-  // Synchronously resolves an ID or array of IDs in the calling frame's
-  // document. Unknown, invalid, detached, or other-document nodes return null.
-  // Arrays preserve input order and return null for each invalid entry.
-  // For child-frame IDs, invoke this API in each iframe's isolated world.
-  // Only available to the APC Debugging Extension in content scripts.
-  [nocompile] static any getNodeForDomNodeId(any domNodeIdOrIds);
-
-  // Synchronously returns an ID or array of IDs for live DOM Nodes in the
-  // calling frame's document. Non-Nodes and detached nodes return null.
-  // Only available to the APC Debugging Extension in content scripts.
-  [nocompile] static any getDomNodeId(any nodeOrNodes);
-
   // Captures Annotated Page Content (APC), a viewport screenshot, or both for
   // debugging. Uses the same extension and channel restrictions as getAiData.
+  // Incognito callers and target tabs are not supported.
   // Rejects requests if any frame in the page is blocked by enterprise runtime
   // host policy, honoring allowed-host exceptions. Screenshot restrictions
   // also apply.
