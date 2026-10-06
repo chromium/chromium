@@ -38,12 +38,17 @@
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 #import "ios/chrome/credential_provider_extension/credential_provider_view_controller+Testing.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/multi_profile_passkey_creation_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -135,6 +140,7 @@ using ::webauthn::SharedKeyList;
 constexpr int kPasskeyBucket = static_cast<int>(
     BrowserAssistedLoginType::kPasskeyStoredInGPMFacilitatedThroughIOSUI);
 constexpr NSInteger kSupportedAlgorithm = -7;
+constexpr NSInteger kUnsupportedAlgorithm = 0;
 constexpr size_t kWindowSize = 500;
 
 NSString* const kTestUserDefaultsKey = @"UserDefaultsCredentialStoreTestKey";
@@ -148,6 +154,8 @@ NSString* const kTestPasswordRecordIdentifier = @"passwordRecordIdentifier";
 NSString* const kTestFavicon = @"favicon";
 NSString* const kTestUserDisplayName = @"userDisplayName";
 NSString* const kTestGaia = @"gaia123";
+NSString* const kTestFallbackGaia = @"fallbackGaia456";
+NSString* const kTestEmail = @"user@example.com";
 NSString* const kTestManagedUserId = @"managedUser123";
 NSString* const kBrowserAssistedLoginHistogram =
     @"PasswordManager.BrowserAssistedLogin.Type";
@@ -215,11 +223,11 @@ ArchivableCredential* TestEncryptedPasskeyCredential() {
 
 // Creates a password `ArchivableCredential` with static test fields and a
 // recent `lastUsedTime`.
-ArchivableCredential* TestPasswordCredential() {
+ArchivableCredential* TestPasswordCredential(NSString* gaia = kTestGaia) {
   int64_t recent_time = Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
   return [[ArchivableCredential alloc]
                initWithFavicon:kTestFavicon
-                          gaia:kTestGaia
+                          gaia:gaia
                       password:kTestPassword
                           rank:1
               recordIdentifier:kTestPasswordRecordIdentifier
@@ -242,14 +250,46 @@ ASPasswordCredentialRequest* CreatePasswordRequest(id<Credential> credential) {
 ASPasskeyCredentialRequest* CreatePasskeyRequest(
     id<Credential> credential,
     ASAuthorizationPublicKeyCredentialUserVerificationPreference uv_preference =
-        ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged) {
+        ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged,
+    NSArray<NSNumber*>* algorithms = @[ @(kSupportedAlgorithm) ]) {
   ASPasskeyCredentialIdentity* identity =
       [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
   return [ASPasskeyCredentialRequest
       requestWithCredentialIdentity:identity
                      clientDataHash:StringToData(kTestClientDataHash)
          userVerificationPreference:uv_preference
-                supportedAlgorithms:@[ @(kSupportedAlgorithm) ]];
+                supportedAlgorithms:algorithms];
+}
+
+// Configures `NSUserDefaults` with all settings required for eligible passkey
+// creation.
+void ConfigureEligiblePasskeyCreationDefaults(
+    BOOL automatic_passkey_upgrade_enabled = YES,
+    BOOL multi_profile_enabled = NO) {
+  NSUserDefaults* user_defaults = GetGroupUserDefaults();
+  [user_defaults setObject:kTestGaia
+                    forKey:AppGroupUserDefaultsCredentialProviderUserID()];
+  [user_defaults setObject:kTestEmail
+                    forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  [user_defaults
+      setObject:@YES
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()];
+  [user_defaults
+      setObject:@YES
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()];
+  [user_defaults
+      setBool:NO
+       forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged()];
+  [user_defaults
+      setBool:YES
+       forKey:AppGroupUserDefaultsCredentialProviderPasswordSyncSetting()];
+  [user_defaults
+      setBool:automatic_passkey_upgrade_enabled
+       forKey:
+           AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()];
+  [user_defaults
+      setBool:multi_profile_enabled
+       forKey:AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
 }
 
 // Cleans up temporary files and shared `NSUserDefaults` keys modified by
@@ -267,6 +307,24 @@ void CleanStorage() {
       removeObjectForKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
   [user_defaults removeObjectForKey:
                      AppGroupUserDefaultsCredentialProviderNewCredentials()];
+  [user_defaults
+      removeObjectForKey:
+          AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
+  [user_defaults
+      removeObjectForKey:
+          AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()];
+  [user_defaults
+      removeObjectForKey:
+          AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged()];
+  [user_defaults
+      removeObjectForKey:
+          AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()];
+  [user_defaults
+      removeObjectForKey:
+          AppGroupUserDefaultsCredentialProviderPasswordSyncSetting()];
+  [user_defaults
+      removeObjectForKey:
+          AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()];
   [user_defaults
       removeObjectForKey:HistogramCountKey(kBrowserAssistedLoginHistogram,
                                            kPasskeyBucket)];
@@ -343,6 +401,18 @@ class CredentialProviderViewControllerTest : public PlatformTest {
           [invocation getArgument:&ptr atIndex:2];
           completed_assertion_future_.SetValue(
               (__bridge ASPasskeyAssertionCredential*)ptr);
+        });
+    OCMStub(
+        [mock_extension_context_
+            completeRegistrationRequestWithSelectedPasskeyCredential:[OCMArg
+                                                                         any]
+                                                   completionHandler:[OCMArg
+                                                                         any]])
+        .andDo(^(NSInvocation* invocation) {
+          void* ptr = nullptr;
+          [invocation getArgument:&ptr atIndex:2];
+          completed_registration_future_.SetValue(
+              (__bridge ASPasskeyRegistrationCredential*)ptr);
         });
     OCMStub([mock_extension_context_ completeExtensionConfigurationRequest])
         .andDo(^(NSInvocation* invocation) {
@@ -426,6 +496,7 @@ class CredentialProviderViewControllerTest : public PlatformTest {
   TestFuture<NSError*> cancel_error_future_;
   TestFuture<ASPasswordCredential*> completed_password_future_;
   TestFuture<ASPasskeyAssertionCredential*> completed_assertion_future_;
+  TestFuture<ASPasskeyRegistrationCredential*> completed_registration_future_;
   TestFuture<bool> completed_configuration_future_;
   TestFuture<UIViewController*> presented_vc_future_;
 };
@@ -1065,6 +1136,427 @@ TEST_F(CredentialProviderViewControllerTest,
   ASSERT_TRUE(completed);
   EXPECT_NSEQ(completed.user, kTestUsername);
   EXPECT_NSEQ(completed.password, kTestPassword);
+}
+
+// Test that `performPasskeyRegistrationWithoutUserInteractionIfPossible:` exits
+// with `ASExtensionErrorCodeFailed` when there is no matching password in the
+// store.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ConditionalPasskeyRegistrationWithoutMatchingPasswordExitsWithFailedError) {
+  ConfigureEligiblePasskeyCreationDefaults();
+  CreateStoreWithCredentials(@[]);
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+
+  [controller_
+      performPasskeyRegistrationWithoutUserInteractionIfPossible:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `performPasskeyRegistrationWithoutUserInteractionIfPossible:` exits
+// with `ASExtensionErrorCodeFailed` when passkey creation requires user
+// interaction (e.g., automatic passkey upgrade is disabled).
+TEST_F(CredentialProviderViewControllerTest,
+       ConditionalPasskeyRegistrationWhenIneligibleExitsWithFailedError) {
+  ConfigureEligiblePasskeyCreationDefaults(
+      /*automatic_passkey_upgrade_enabled=*/NO);
+  CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+
+  [controller_
+      performPasskeyRegistrationWithoutUserInteractionIfPossible:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `performPasskeyRegistrationWithoutUserInteractionIfPossible:`
+// creates a passkey and completes registration when a matching password exists
+// and creation is eligible without user interaction.
+TEST_F(CredentialProviderViewControllerTest,
+       ConditionalPasskeyRegistrationSucceedsWhenEligible) {
+  ConfigureEligiblePasskeyCreationDefaults();
+  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+
+  [controller_
+      performPasskeyRegistrationWithoutUserInteractionIfPossible:request];
+
+  ASSERT_TRUE(completed_registration_future_.Wait());
+  EXPECT_TRUE(completed_registration_future_.Get());
+}
+
+// Test that `performPasskeyRegistrationWithoutUserInteractionIfPossible:` exits
+// with `ASExtensionErrorCodeUserInteractionRequired` when trusted vault keys
+// cannot be fetched without user interaction.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ConditionalPasskeyRegistrationWithEmptyKeysExitsWithUserInteractionRequiredError) {
+  ConfigureEligiblePasskeyCreationDefaults();
+  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  fake_keychain_provider_->SetKeys({});
+  CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+
+  [controller_
+      performPasskeyRegistrationWithoutUserInteractionIfPossible:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeUserInteractionRequired);
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` exits with
+// `ASExtensionErrorCodeFailed` when the request is not an
+// `ASPasskeyCredentialRequest`.
+TEST_F(CredentialProviderViewControllerTest,
+       PrepareInterfaceForPasskeyRegistrationWithNonPasskeyRequestExits) {
+  ASPasswordCredentialRequest* password_request =
+      CreatePasswordRequest(TestPasswordCredential());
+
+  [controller_ prepareInterfaceForPasskeyRegistration:password_request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` presents the signed-out
+// error alert when the passkey creation policy is not set in `NSUserDefaults`.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWhenPolicyUnsetShowsSignedOutAlert) {
+  AttachControllerToWindow();
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyErrorAlertViewController* alert_vc =
+      ObjCCast<PasskeyErrorAlertViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(alert_vc);
+  [alert_vc loadViewIfNeeded];
+  EXPECT_NSEQ(alert_vc.titleString,
+              CredentialProviderSignedOutUserTitleString());
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` presents the enterprise
+// disabled alert when the passkey creation policy is set to `NO`.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWhenPasskeyPolicyDisabledShowsEnterpriseAlert) {
+  AttachControllerToWindow();
+  ConfigureEligiblePasskeyCreationDefaults();
+  [GetGroupUserDefaults()
+      setObject:@NO
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()];
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyErrorAlertViewController* alert_vc =
+      ObjCCast<PasskeyErrorAlertViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(alert_vc);
+  [alert_vc loadViewIfNeeded];
+  EXPECT_NSEQ(alert_vc.titleString,
+              CredentialProviderPasskeyCreationEnterpriseDisabledTitleString());
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` presents the enterprise
+// disabled alert when password creation is disabled and managed by enterprise
+// policy.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWhenPasswordSavingManagedDisabledShowsEnterpriseAlert) {
+  AttachControllerToWindow();
+  ConfigureEligiblePasskeyCreationDefaults();
+  [GetGroupUserDefaults()
+      setObject:@NO
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()];
+  [GetGroupUserDefaults()
+      setBool:YES
+       forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged()];
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyErrorAlertViewController* alert_vc =
+      ObjCCast<PasskeyErrorAlertViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(alert_vc);
+  [alert_vc loadViewIfNeeded];
+  EXPECT_NSEQ(alert_vc.titleString,
+              CredentialProviderPasskeyCreationEnterpriseDisabledTitleString());
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` presents the manually
+// disabled alert when password creation is disabled by the user, and tapping
+// the alert's primary action dismisses it and exits with
+// `ASExtensionErrorCodeFailed`.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWhenSavingDisabledByUserShowsAlertAndPrimaryActionExits) {
+  AttachControllerToWindow();
+  ConfigureEligiblePasskeyCreationDefaults();
+  [GetGroupUserDefaults()
+      setObject:@NO
+         forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()];
+  [GetGroupUserDefaults()
+      setBool:NO
+       forKey:AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged()];
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyErrorAlertViewController* alert_vc =
+      ObjCCast<PasskeyErrorAlertViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(alert_vc);
+  [alert_vc loadViewIfNeeded];
+  EXPECT_NSEQ(
+      alert_vc.subtitleString,
+      CredentialProviderPasskeyCreationUserDisabledInPasswordSettingsSubtitleString());
+
+  // Trigger `ConfirmationAlertActionHandler`'s primary action.
+  [alert_vc.actionHandler confirmationAlertPrimaryAction];
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` presents the signed-out
+// error alert when no gaia ID is available in `NSUserDefaults` or the
+// credential store.
+TEST_F(CredentialProviderViewControllerTest,
+       PrepareInterfaceForPasskeyRegistrationWithoutGaiaShowsSignedOutAlert) {
+  AttachControllerToWindow();
+  ConfigureEligiblePasskeyCreationDefaults();
+  [GetGroupUserDefaults()
+      removeObjectForKey:AppGroupUserDefaultsCredentialProviderUserID()];
+  CreateStoreWithCredentials(@[]);
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyErrorAlertViewController* alert_vc =
+      ObjCCast<PasskeyErrorAlertViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(alert_vc);
+  [alert_vc loadViewIfNeeded];
+  EXPECT_NSEQ(alert_vc.titleString,
+              CredentialProviderSignedOutUserTitleString());
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` presents the account sync
+// disabled alert when password sync is disabled.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWhenPasswordSyncDisabledShowsAccountAlert) {
+  AttachControllerToWindow();
+  ConfigureEligiblePasskeyCreationDefaults();
+  [GetGroupUserDefaults()
+      setBool:NO
+       forKey:AppGroupUserDefaultsCredentialProviderPasswordSyncSetting()];
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  PasskeyErrorAlertViewController* alert_vc =
+      ObjCCast<PasskeyErrorAlertViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(alert_vc);
+  [alert_vc loadViewIfNeeded];
+  EXPECT_NSEQ(
+      alert_vc.subtitleString,
+      CredentialProviderPasskeyCreationUserDisabledForAccountSubtitleString());
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` exits with
+// `ASExtensionErrorCodeFailed` when the request specifies no supported
+// algorithms.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWithUnsupportedAlgorithmExitsWithFailedError) {
+  ConfigureEligiblePasskeyCreationDefaults();
+  CreateStoreWithCredentials(@[]);
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(
+      TestPasskeyCredential(),
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged,
+      @[ @(kUnsupportedAlgorithm) ]);
+
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` exits with
+// `ASExtensionErrorCodeMatchedExcludedCredential` when the request's excluded
+// credentials match an existing passkey in the store.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWithExcludedPasskeyExitsWithMatchedExcludedCredential) {
+  ConfigureEligiblePasskeyCreationDefaults();
+  ArchivableCredential* existing_passkey = TestPasskeyCredential();
+  CreateStoreWithCredentials(@[ existing_passkey ]);
+
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(existing_passkey);
+  ASAuthorizationPlatformPublicKeyCredentialDescriptor* descriptor =
+      [[ASAuthorizationPlatformPublicKeyCredentialDescriptor alloc]
+          initWithCredentialID:existing_passkey.credentialId];
+  id mock_request = OCMPartialMock(request);
+  OCMStub([mock_request excludedCredentials]).andReturn(@[ descriptor ]);
+
+  [controller_ prepareInterfaceForPasskeyRegistration:mock_request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeMatchedExcludedCredential);
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` presents
+// `MultiProfilePasskeyCreationViewController` when multi-profile is enabled,
+// and tapping the primary button creates the passkey.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWithMultiProfilePresentsDialogAndCreatesPasskey) {
+  AttachControllerToWindow();
+  ConfigureEligiblePasskeyCreationDefaults(
+      /*automatic_passkey_upgrade_enabled=*/YES,
+      /*multi_profile_enabled=*/YES);
+  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  MultiProfilePasskeyCreationViewController* top_vc =
+      ObjCCast<MultiProfilePasskeyCreationViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(top_vc);
+  [top_vc loadViewIfNeeded];
+
+  // Simulate tapping the primary ("Create") button on the multi-profile dialog.
+  [(id<PromoStyleViewControllerDelegate>)top_vc didTapPrimaryActionButton];
+
+  ASSERT_TRUE(completed_registration_future_.Wait());
+  EXPECT_TRUE(completed_registration_future_.Get());
+}
+
+// Test that tapping the secondary ("Cancel") button on
+// `MultiProfilePasskeyCreationViewController` exits with
+// `ASExtensionErrorCodeUserCanceled`.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationWithMultiProfileCancelExitsWithUserCanceled) {
+  AttachControllerToWindow();
+  ConfigureEligiblePasskeyCreationDefaults(
+      /*automatic_passkey_upgrade_enabled=*/YES,
+      /*multi_profile_enabled=*/YES);
+  CreateStoreWithCredentials(@[]);
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(controller_.presentedViewController);
+  ASSERT_TRUE(nav_controller);
+  MultiProfilePasskeyCreationViewController* top_vc =
+      ObjCCast<MultiProfilePasskeyCreationViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(top_vc);
+  [top_vc loadViewIfNeeded];
+
+  [(id<PromoStyleViewControllerDelegate>)top_vc didTapSecondaryActionButton];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` exits with
+// `ASExtensionErrorCodeFailed` when user validation fails during passkey
+// creation.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationForInvalidUserExitsWithFailedError) {
+  ConfigureEligiblePasskeyCreationDefaults();
+  [GetGroupUserDefaults()
+      setObject:kTestManagedUserId
+         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+  fake_account_verificator_.isValid = NO;
+  CreateStoreWithCredentials(@[]);
+
+  ASPasskeyCredentialRequest* request =
+      CreatePasskeyRequest(TestPasskeyCredential());
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `prepareInterfaceForPasskeyRegistration:` falls back to a gaia ID
+// from `credentialStore` when no gaia ID is stored in `NSUserDefaults`, and
+// completes passkey registration with user verification.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceForPasskeyRegistrationUsesFallbackGaiaAndCompletesRegistration) {
+  ConfigureEligiblePasskeyCreationDefaults();
+  [GetGroupUserDefaults()
+      removeObjectForKey:AppGroupUserDefaultsCredentialProviderUserID()];
+  CreateStoreWithCredentials(@[ TestPasswordCredential(kTestFallbackGaia) ]);
+
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(
+      TestPasskeyCredential(),
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired);
+  [controller_ prepareInterfaceForPasskeyRegistration:request];
+
+  ASSERT_TRUE(completed_registration_future_.Wait());
+  EXPECT_TRUE(completed_registration_future_.Get());
+
+  // Verify user verification was marked as completed by checking that
+  // `performUserVerificationIfNeeded:` immediately succeeds without invoking
+  // `mock_reauth_module_`.
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  TestFuture<BOOL> uv_future;
+  [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
+                                                   uv_future.GetCallback())];
+  ASSERT_TRUE(uv_future.Wait());
+  EXPECT_TRUE(uv_future.Get());
 }
 
 }  // namespace
