@@ -50,8 +50,9 @@ void AudibleContentsTracker::OnTabStripModelChanged(
     if (replace->new_contents) {
       auto* audible_helper =
           RecentlyAudibleHelper::FromWebContents(replace->new_contents);
-      if (audible_helper->WasRecentlyAudible())
+      if (audible_helper && audible_helper->WasRecentlyAudible()) {
         AddAudibleWebContents(replace->new_contents);
+      }
     }
   }
 }
@@ -64,10 +65,11 @@ void AudibleContentsTracker::OnTabChangedAt(tabs::TabInterface* tab,
 
   auto* web_contents = tab->GetContents();
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
-  if (audible_helper->WasRecentlyAudible())
+  if (audible_helper && audible_helper->WasRecentlyAudible()) {
     AddAudibleWebContents(web_contents);
-  else
+  } else {
     RemoveAudibleWebContents(web_contents);
+  }
 }
 
 void AudibleContentsTracker::AddAudibleWebContents(

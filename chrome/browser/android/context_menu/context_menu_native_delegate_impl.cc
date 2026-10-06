@@ -148,8 +148,10 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
   if (!render_frame_host)
     return;
 
-  CoreTabHelper::FromWebContents(web_contents_)
-      ->SearchByImage(render_frame_host, context_menu_params_->src_url);
+  if (auto* core_tab_helper = CoreTabHelper::FromWebContents(web_contents_)) {
+    core_tab_helper->SearchByImage(render_frame_host,
+                                   context_menu_params_->src_url);
+  }
 }
 
 void ContextMenuNativeDelegateImpl::InspectElement(

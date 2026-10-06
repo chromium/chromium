@@ -345,6 +345,12 @@ class TabAndroid : public tabs::TabInterface,
   scoped_refptr<content::DevToolsAgentHost> devtools_host_;
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
 
+  // The unowned user data host that can be used by `tab_features_` and other
+  // tab-scoped objects. Must be declared before `tab_features_`,
+  // `glic_tab_indicator_helper_`, and `tab_alert_controller_` so that it
+  // outlives all `ScopedUnownedUserData` registrations during teardown.
+  ui::UnownedUserDataHost unowned_user_data_host_;
+
   // Holds tab-scoped state. Constructed after tab_helpers.
   std::unique_ptr<tabs::TabFeatures> tab_features_;
 
@@ -375,7 +381,6 @@ class TabAndroid : public tabs::TabInterface,
   std::unique_ptr<tabs::TabAlertController> tab_alert_controller_;
   base::CallbackListSubscription alert_to_show_subscription_;
   const base::WeakPtr<Profile> profile_;
-  ui::UnownedUserDataHost unowned_user_data_host_;
   base::WeakPtrFactory<TabAndroid> weak_ptr_factory_{this};
 };
 

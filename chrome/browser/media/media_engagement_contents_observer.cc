@@ -291,8 +291,10 @@ void MediaEngagementContentsObserver::OnSignificantMediaPlaybackTimeForPlayer(
 
   // Check that the tab is not muted.
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents());
-  if (web_contents()->IsAudioMuted() || !audible_helper->WasRecentlyAudible())
+  if (web_contents()->IsAudioMuted() || !audible_helper ||
+      !audible_helper->WasRecentlyAudible()) {
     return;
+  }
 
   // Record significant audible playback.
   state_it->second.significant_playback_recorded = true;
@@ -307,8 +309,9 @@ void MediaEngagementContentsObserver::OnSignificantMediaPlaybackTimeForPage() {
   // Do not record significant playback if the tab did not make
   // a sound recently.
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents());
-  if (!audible_helper->WasRecentlyAudible())
+  if (!audible_helper || !audible_helper->WasRecentlyAudible()) {
     return;
+  }
 
   session_->RecordSignificantMediaElementPlayback();
 }
@@ -323,8 +326,9 @@ void MediaEngagementContentsObserver::
   // Do not record significant playback if the tab did not make
   // a sound recently.
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents());
-  if (!audible_helper->WasRecentlyAudible())
+  if (!audible_helper || !audible_helper->WasRecentlyAudible()) {
     return;
+  }
 
   session_->RecordSignificantAudioContextPlayback();
 }

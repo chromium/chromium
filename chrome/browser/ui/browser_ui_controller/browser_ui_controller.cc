@@ -193,9 +193,10 @@ void BrowserUiController::ProcessPendingUIUpdates() {
       // Updating the URL happens synchronously in ScheduleUIUpdate.
       std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
       if (flags & content::INVALIDATE_TYPE_LOAD && !status_bubbles.empty()) {
-        status_bubbles.front()->SetStatus(
-            CoreTabHelper::FromWebContents(tab->GetContents())
-                ->GetStatusText());
+        if (auto* core_tab_helper =
+                CoreTabHelper::FromWebContents(tab->GetContents())) {
+          status_bubbles.front()->SetStatus(core_tab_helper->GetStatusText());
+        }
       }
 
       if (flags &
@@ -292,8 +293,10 @@ void BrowserUiController::UpdateWindowForLoadingStateChanged(
 
     std::vector<StatusBubble*> status_bubbles = window_->GetStatusBubbles();
     if (!status_bubbles.empty()) {
-      status_bubbles.front()->SetStatus(
-          CoreTabHelper::FromWebContents(selected_contents)->GetStatusText());
+      if (auto* core_tab_helper =
+              CoreTabHelper::FromWebContents(selected_contents)) {
+        status_bubbles.front()->SetStatus(core_tab_helper->GetStatusText());
+      }
     }
   }
 }

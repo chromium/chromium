@@ -912,9 +912,10 @@ int GetContentRestrictions(const BrowserWindowInterface* browser) {
   WebContents* const current_tab =
       browser->GetTabStripModel()->GetActiveWebContents();
   if (current_tab) {
-    CoreTabHelper* core_tab_helper =
-        CoreTabHelper::FromWebContents(current_tab);
-    content_restrictions = core_tab_helper->content_restrictions();
+    if (CoreTabHelper* core_tab_helper =
+            CoreTabHelper::FromWebContents(current_tab)) {
+      content_restrictions = core_tab_helper->content_restrictions();
+    }
     NavigationEntry* last_committed_entry =
         current_tab->GetController().GetLastCommittedEntry();
     if (!content::IsSavableURL(last_committed_entry->GetURL())) {

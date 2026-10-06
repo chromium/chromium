@@ -845,9 +845,10 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
 
     // Show the loading state (if any).
     if (status_bubble == status_bubbles.front()) {
-      status_bubble->SetStatus(CoreTabHelper::FromWebContents(
-                                   tab_strip_model_->GetActiveWebContents())
-                                   ->GetStatusText());
+      if (auto* core_tab_helper = CoreTabHelper::FromWebContents(
+              tab_strip_model_->GetActiveWebContents())) {
+        status_bubble->SetStatus(core_tab_helper->GetStatusText());
+      }
     }
   }
 

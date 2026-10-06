@@ -2055,7 +2055,9 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
   }
 
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
-  if (!MatchesBool(query_info_.audible, audible_helper->WasRecentlyAudible())) {
+  const bool is_audible =
+      audible_helper && audible_helper->WasRecentlyAudible();
+  if (!MatchesBool(query_info_.audible, is_audible)) {
     return false;
   }
 
