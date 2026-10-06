@@ -115,19 +115,46 @@ class MockFakeOmniboxClient : public FakeOmniboxClient {
 }  // namespace
 
 @interface TestOmniboxAutocompleteController : OmniboxAutocompleteController
-@property(nonatomic, assign) NSUInteger lastOpenedSelectionLineIndex;
+@property(nonatomic, readonly) const AutocompleteMatch& lastOpenedMatch;
 @property(nonatomic, assign) base::RepeatingClosure openSelectionClosure;
+- (void)resetLastOpenedMatch;
 @end
 
-@implementation TestOmniboxAutocompleteController
+@implementation TestOmniboxAutocompleteController {
+  AutocompleteMatch _lastOpenedMatch;
+}
 
-- (void)openSelection:(OmniboxPopupSelection)selection
-            timestamp:(base::TimeTicks)timestamp
-          disposition:(WindowOpenDisposition)disposition {
-  _lastOpenedSelectionLineIndex = selection.line;
+- (void)disconnect {
+  _lastOpenedMatch = AutocompleteMatch();
+  [super disconnect];
+}
+
+- (const AutocompleteMatch&)lastOpenedMatch {
+  return _lastOpenedMatch;
+}
+
+- (void)resetLastOpenedMatch {
+  _lastOpenedMatch = AutocompleteMatch();
+}
+
+- (void)openMatch:(AutocompleteMatch)match
+             popupSelection:(OmniboxPopupSelection)selection
+      windowOpenDisposition:(WindowOpenDisposition)disposition
+            alternateNavURL:(const GURL&)alternateNavURL
+                 pastedText:(const std::u16string&)pastedText
+    matchSelectionTimestamp:(base::TimeTicks)matchSelectionTimestamp {
+  _lastOpenedMatch = match;
   if (_openSelectionClosure) {
     _openSelectionClosure.Run();
     _openSelectionClosure.Reset();
+  }
+  if (match.provider) {
+    [super openMatch:match
+                 popupSelection:selection
+          windowOpenDisposition:disposition
+                alternateNavURL:alternateNavURL
+                     pastedText:pastedText
+        matchSelectionTimestamp:matchSelectionTimestamp];
   }
 }
 @end
@@ -149,7 +176,9 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
-    omnibox_client_ = std::make_unique<MockFakeOmniboxClient>(profile_.get());
+    omnibox_client_ =
+        std::make_unique<testing::NiceMock<MockFakeOmniboxClient>>(
+            profile_.get());
 
     autocomplete_controller_ = std::make_unique<MockAutocompleteController>();
 
@@ -176,6 +205,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
   ~OmniboxAutocompleteControllerTest() override {
     [controller_ disconnect];
+    controller_ = nil;
     clipboard_ = nullptr;
     autocomplete_controller_ = nullptr;
     omnibox_text_model_ = nullptr;
@@ -195,10 +225,9 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
                 /*destination_url=*/"http://this-site-matches.com")};
   }
 
-  /// Returns the match opened by OmniboxEditModel::OpenSelection.
+  /// Returns the last match opened by `OmniboxAutocompleteController`.
   const AutocompleteMatch& LastOpenedMatch() {
-    return autocomplete_controller_->result().match_at(
-        controller_.lastOpenedSelectionLineIndex);
+    return controller_.lastOpenedMatch;
   }
 
   /// Simulates opening `url_text` from the text controller.
@@ -346,8 +375,13 @@ TEST_F(OmniboxAutocompleteControllerTest, OmniboxPositionUpdates) {
 
 // Tests opening a match that doesn't exist in autocomplete controller.
 TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
-  autocomplete_controller_->SetAutocompleteMatches(SampleMatches());
+  ACMatches sample_matches = SampleMatches();
+  autocomplete_controller_->SetAutocompleteMatches(sample_matches);
   AutocompleteMatch match = CreateSearchMatch(u"some match");
+  match.destination_url = GURL("http://some-match.com");
+
+  EXPECT_CALL(*autocomplete_controller_, GroupSuggestionsBySearchVsURL(_, _))
+      .Times(0);
 
   // Open match that doesn't come from the autocomplete controller. Row is
   // higher than autocomplete_controller_->result().size().
@@ -355,20 +389,21 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
                                inRow:10
                               openIn:WindowOpenDisposition::CURRENT_TAB];
 
-  // Expect the match to be opened.
+  // Expect the match to be opened without mutating autocomplete results.
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
+  EXPECT_EQ(autocomplete_controller_->result().size(), sample_matches.size());
 
-  // Reset the last opened selection.
-  controller_.lastOpenedSelectionLineIndex =
-      OmniboxPopupSelection(UINT_MAX).line;
+  // Reset the last opened match.
+  [controller_ resetLastOpenedMatch];
 
   // Open match that doesn't come from the autocomplete controller. Row is
   // smaller than autocomplete_controller_->result().size().
   [controller_ selectMatchForOpening:match
                                inRow:1
                               openIn:WindowOpenDisposition::CURRENT_TAB];
-  // Expect the match to be opened.
+  // Expect the match to be opened without mutating autocomplete results.
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
+  EXPECT_EQ(autocomplete_controller_->result().size(), sample_matches.size());
 }
 
 // Tests opening a clipboard URL match.

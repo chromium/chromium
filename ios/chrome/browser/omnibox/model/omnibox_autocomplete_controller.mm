@@ -347,8 +347,17 @@ using base::UserMetricsAction;
     return;
   }
 
+  // Clipboard match handling.
+  if (match.destination_url.is_empty() &&
+      AutocompleteMatch::IsClipboardType(match.type)) {
+    [self openClipboardMatch:match
+                 disposition:disposition
+          selectionTimestamp:matchSelectionTimestamp];
+    return;
+  }
+
   // Sometimes the match provided does not correspond to the autocomplete
-  // result match specified by `index`. Most Visited Tiles, for example,
+  // result match specified by `row`. Most Visited Tiles, for example,
   // provide ad hoc matches that are not in the result at all.
   if (row >= _autocompleteController->result().size() ||
       _autocompleteController->result().match_at(row).destination_url !=
@@ -356,15 +365,6 @@ using base::UserMetricsAction;
     [self openCustomMatch:match
                disposition:disposition
         selectionTimestamp:matchSelectionTimestamp];
-    return;
-  }
-
-  // Clipboard match handling.
-  if (match.destination_url.is_empty() &&
-      AutocompleteMatch::IsClipboardType(match.type)) {
-    [self openClipboardMatch:match
-                 disposition:disposition
-          selectionTimestamp:matchSelectionTimestamp];
     return;
   }
 
@@ -772,12 +772,19 @@ using base::UserMetricsAction;
             disposition:(WindowOpenDisposition)disposition
      selectionTimestamp:(base::TimeTicks)timestamp {
   AutocompleteController* autocompleteController = self.autocompleteController;
-  if (!autocompleteController || !match) {
+  if (!autocompleteController || !match || !_omniboxTextModel) {
     return;
   }
-  OmniboxPopupSelection selection(
-      autocompleteController->InjectAdHocMatch(match.value()));
-  [self openSelection:selection timestamp:timestamp disposition:disposition];
+  GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
+      _omniboxTextModel->input, match.value(),
+      autocompleteController->autocomplete_provider_client());
+  [self openMatch:match.value()
+               popupSelection:OmniboxPopupSelection(
+                                  OmniboxPopupSelection::kNoMatch)
+        windowOpenDisposition:disposition
+              alternateNavURL:alternate_nav_url
+                   pastedText:u""
+      matchSelectionTimestamp:timestamp];
 }
 
 /// Asks the browser to load the popup's currently selected item, using the
