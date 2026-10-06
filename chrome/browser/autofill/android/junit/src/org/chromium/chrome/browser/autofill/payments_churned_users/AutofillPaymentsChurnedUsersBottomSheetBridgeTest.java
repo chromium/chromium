@@ -38,6 +38,8 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link AutofillPaymentsChurnedUsersBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
+    private static final long NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE = 12345L;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -47,6 +49,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
     private Activity mActivity;
     private WindowAndroid mWindow;
     @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private AutofillPaymentsChurnedUsersBottomSheetBridge.Natives mBridgeNatives;
     private AutofillPaymentsChurnedUsersBottomSheetBridge mBridge;
 
     @Before
@@ -57,7 +60,10 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
                 .when(mBottomSheetController.requestShowContent(any(), anyBoolean()))
                 .thenReturn(true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mBridge = new AutofillPaymentsChurnedUsersBottomSheetBridge(mWindow);
+        AutofillPaymentsChurnedUsersBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
+        mBridge =
+                new AutofillPaymentsChurnedUsersBottomSheetBridge(
+                        NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE, mWindow);
     }
 
     @After
@@ -102,10 +108,14 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
         WindowAndroid windowWithoutController =
                 new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ true);
         AutofillPaymentsChurnedUsersBottomSheetBridge bridge =
-                new AutofillPaymentsChurnedUsersBottomSheetBridge(windowWithoutController);
+                new AutofillPaymentsChurnedUsersBottomSheetBridge(
+                        NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE,
+                        windowWithoutController);
 
         bridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
 
+        verify(mBridgeNatives)
+                .onUiNotShown(NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE);
         assertThat(bridge.getCoordinatorForTesting(), nullValue());
         windowWithoutController.destroy();
     }
@@ -115,11 +125,14 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
         WindowAndroid window = new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ true);
         BottomSheetControllerFactory.attach(window, mBottomSheetController);
         AutofillPaymentsChurnedUsersBottomSheetBridge bridge =
-                new AutofillPaymentsChurnedUsersBottomSheetBridge(window);
+                new AutofillPaymentsChurnedUsersBottomSheetBridge(
+                        NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE, window);
         window.destroy();
 
         bridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
 
+        verify(mBridgeNatives)
+                .onUiNotShown(NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE);
         assertThat(bridge.getCoordinatorForTesting(), nullValue());
     }
 
@@ -145,5 +158,48 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
         mBridge.destroy();
 
         verifyNoInteractions(mBottomSheetController);
+    }
+
+    @Test
+    public void testOnUiAccepted_callsNative() {
+        mBridge.onUiAccepted();
+
+        verify(mBridgeNatives)
+                .onUiAccepted(NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE);
+    }
+
+    @Test
+    public void testOnUiCanceled_callsNative() {
+        mBridge.onUiCanceled();
+
+        verify(mBridgeNatives)
+                .onUiCanceled(NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE);
+    }
+
+    @Test
+    public void testOnUiDismissed_callsNative() {
+        mBridge.onUiDismissed();
+
+        verify(mBridgeNatives)
+                .onUiDismissed(NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE);
+    }
+
+    @Test
+    public void testOnUiNotShown_callsNative() {
+        mBridge.onUiNotShown();
+
+        verify(mBridgeNatives)
+                .onUiNotShown(NATIVE_AUTOFILL_PAYMENTS_CHURNED_USERS_BOTTOM_SHEET_BRIDGE);
+    }
+
+    @Test
+    public void testOnUiCallbacks_whenNativeDestroyed_doNothing() {
+        mBridge.destroy();
+        mBridge.onUiAccepted();
+        mBridge.onUiCanceled();
+        mBridge.onUiDismissed();
+        mBridge.onUiNotShown();
+
+        verifyNoInteractions(mBridgeNatives);
     }
 }

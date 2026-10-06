@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,7 +34,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.AutofillEnableResurrectingPaymentsUsersTreatmentArm;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** Integration tests for the Autofill Payments Churned Users bottom sheet module. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,6 +48,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate mDelegate;
 
     private Activity mActivity;
     private AutofillPaymentsChurnedUsersBottomSheetCoordinator mCoordinator;
@@ -56,7 +60,8 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 new AutofillPaymentsChurnedUsersBottomSheetCoordinator(
                         mActivity,
                         mBottomSheetController,
-                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
+                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE,
+                        mDelegate);
     }
 
     @Test
@@ -75,6 +80,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
         when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
         mCoordinator.requestShowContent();
 
+        verify(mDelegate).onUiNotShown();
         verify(mBottomSheetController)
                 .hideContent(
                         any(AutofillPaymentsChurnedUsersBottomSheetContent.class),
@@ -114,6 +120,24 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 equalTo(
                         mActivity.getString(
                                 R.string.autofill_churned_users_bubble_convenience_description)));
+        ButtonCompat acceptButton =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_accept_button);
+        assertThat(
+                acceptButton.getText().toString(),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_churned_users_bubble_accept_button_label)));
+        ButtonCompat cancelButton =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_cancel_button);
+        assertThat(
+                cancelButton.getText().toString(),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_churned_users_bubble_cancel_button_label)));
     }
 
     @Test
@@ -122,7 +146,8 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 new AutofillPaymentsChurnedUsersBottomSheetCoordinator(
                         mActivity,
                         mBottomSheetController,
-                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY);
+                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY,
+                        mDelegate);
         ImageView headerIconView =
                 securityCoordinator
                         .getContentViewForTesting()
@@ -132,7 +157,6 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 shadowOf(headerIconView.getDrawable()).getCreatedFromResId(),
                 equalTo(R.drawable.autofill_payments_churned_users_security_illustration));
         assertThat(headerIconView.getVisibility(), equalTo(View.VISIBLE));
-
         TextView titleView =
                 securityCoordinator
                         .getContentViewForTesting()
@@ -151,7 +175,57 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 equalTo(
                         mActivity.getString(
                                 R.string.autofill_churned_users_bubble_security_description)));
+        ButtonCompat acceptButton =
+                securityCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_accept_button);
+        assertThat(
+                acceptButton.getText().toString(),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_churned_users_bubble_accept_button_label)));
+        ButtonCompat cancelButton =
+                securityCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_cancel_button);
+        assertThat(
+                cancelButton.getText().toString(),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_churned_users_bubble_cancel_button_label)));
         securityCoordinator.destroy();
+    }
+
+    @Test
+    public void testAcceptButton_clicks_hidesContent() {
+        ButtonCompat acceptButton =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_accept_button);
+        acceptButton.performClick();
+
+        verify(mDelegate).onUiAccepted();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillPaymentsChurnedUsersBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testCancelButton_clicks_hidesContent() {
+        ButtonCompat cancelButton =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_cancel_button);
+        cancelButton.performClick();
+
+        verify(mDelegate).onUiCanceled();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillPaymentsChurnedUsersBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 
     @Test
@@ -165,5 +239,16 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                         eq(BottomSheetController.StateChangeReason.NONE));
         verify(mBottomSheetController)
                 .removeObserver(any(AutofillPaymentsChurnedUsersBottomSheetMediator.class));
+    }
+
+    @Test
+    public void testOnSheetClosed_notifiesDelegate() {
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+
+        observerCaptor.getValue().onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+
+        verify(mDelegate).onUiDismissed();
     }
 }

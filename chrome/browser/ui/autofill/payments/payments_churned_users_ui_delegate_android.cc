@@ -32,24 +32,32 @@ PaymentsChurnedUsersUiDelegateAndroid::
 
 void PaymentsChurnedUsersUiDelegateAndroid::ShowPaymentsChurnedUsersUI(
     base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {
+  if (is_showing_ui_) {
+    if (closed_callback) {
+      std::move(closed_callback).Run(PaymentsUiClosedReason::kUnknown);
+    }
+    return;
+  }
+
   const AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm =
       GetTreatmentArm();
   switch (treatment_arm) {
     case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kSecurity:
     case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kConvenience:
-      closed_callback_ = std::move(closed_callback);
       if (auto* bridge = GetOrCreatePaymentsChurnedUsersBottomSheetBridge()) {
-        bridge->RequestShowContent(treatment_arm);
-      } else {
-        std::move(closed_callback_).Run(PaymentsUiClosedReason::kUnknown);
+        closed_callback_ = std::move(closed_callback);
+        is_showing_ui_ = true;
+        bridge->RequestShowContent(
+            treatment_arm,
+            base::BindOnce(&PaymentsChurnedUsersUiDelegateAndroid::OnUiClosed,
+                           weak_ptr_factory_.GetWeakPtr()));
+      } else if (closed_callback) {
+        std::move(closed_callback).Run(PaymentsUiClosedReason::kUnknown);
       }
       break;
     case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage:
-      if (is_showing_message_) {
-        return;
-      }
       closed_callback_ = std::move(closed_callback);
-      is_showing_message_ = true;
+      is_showing_ui_ = true;
       GetOrCreateAutofillMessageController().Show(
           AutofillMessageModel::CreateForResurrectChurnedUsers(
               base::BindOnce(
@@ -118,10 +126,14 @@ PaymentsChurnedUsersUiDelegateAndroid::GetOrCreateAutofillMessageController() {
 
 void PaymentsChurnedUsersUiDelegateAndroid::OnUiClosed(
     PaymentsUiClosedReason closed_reason) {
+  is_showing_ui_ = false;
   if (!closed_callback_) {
     return;
   }
-  autofill_metrics::LogPaymentsChurnedUsersBubbleResult(closed_reason);
+  if (GetTreatmentArm() ==
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage) {
+    autofill_metrics::LogPaymentsChurnedUsersBubbleResult(closed_reason);
+  }
   std::move(closed_callback_).Run(closed_reason);
 }
 
@@ -146,13 +158,14 @@ void PaymentsChurnedUsersUiDelegateAndroid::OnMessageAccepted() {
 
 void PaymentsChurnedUsersUiDelegateAndroid::OnMessageDismissed(
     messages::DismissReason dismiss_reason) {
-  is_showing_message_ = false;
+  is_showing_ui_ = false;
   if (!closed_callback_) {
     return;
   }
   switch (dismiss_reason) {
     case messages::DismissReason::PRIMARY_ACTION:
       // Primary action is handled in `OnMessageAccepted`.
+      closed_callback_.Reset();
       break;
     case messages::DismissReason::GESTURE:
       // Since the message banner only has a primary action button, swiping the
@@ -163,7 +176,6 @@ void PaymentsChurnedUsersUiDelegateAndroid::OnMessageDismissed(
       OnUiClosed(PaymentsUiClosedReason::kNotInteracted);
       break;
   }
-  closed_callback_.Reset();
 }
 
 }  // namespace autofill::payments

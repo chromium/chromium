@@ -37,7 +37,24 @@ found in the LICENSE file.
         android:id="@+id/payments_churned_users_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_large"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         app:leading="@dimen/text_size_medium_leading" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/payments_churned_users_accept_button"
+        style="@style/FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:textAlignment="center" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/payments_churned_users_cancel_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:textAlignment="center" />
 </LinearLayout>

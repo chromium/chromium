@@ -30,10 +30,26 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
                     PropertyModel, AutofillPaymentsChurnedUsersBottomSheetView, PropertyKey>
             mModelChangeProcessor;
 
+    /** Delegate to receive user action callbacks from the bottom sheet. */
+    /*package*/ interface Delegate {
+        /** Called when the user clicks the accept ("Turn on") button. */
+        void onUiAccepted();
+
+        /** Called when the user clicks the cancel ("No thanks") button. */
+        void onUiCanceled();
+
+        /** Called when the user passively dismisses the bottom sheet (e.g. swipe down, scrim). */
+        void onUiDismissed();
+
+        /** Called when the bottom sheet could not be shown. */
+        void onUiNotShown();
+    }
+
     public AutofillPaymentsChurnedUsersBottomSheetCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
+            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm,
+            Delegate delegate) {
         mView = new AutofillPaymentsChurnedUsersBottomSheetView(context);
 
         AutofillPaymentsChurnedUsersBottomSheetContent content =
@@ -51,10 +67,21 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
                         .with(
                                 AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION,
                                 context.getString(getDescriptionResId(treatmentArm)))
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties
+                                        .ACCEPT_BUTTON_LABEL,
+                                context.getString(
+                                        R.string.autofill_churned_users_bubble_accept_button_label))
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties
+                                        .CANCEL_BUTTON_LABEL,
+                                context.getString(
+                                        R.string.autofill_churned_users_bubble_cancel_button_label))
                         .build();
 
         mMediator =
-                new AutofillPaymentsChurnedUsersBottomSheetMediator(bottomSheetController, content);
+                new AutofillPaymentsChurnedUsersBottomSheetMediator(
+                        bottomSheetController, content, mModel, delegate);
 
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(

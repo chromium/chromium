@@ -22,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
@@ -32,14 +33,20 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private BottomSheetContent mBottomSheetContent;
+    @Mock private AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate mDelegate;
 
+    private PropertyModel mModel;
     private AutofillPaymentsChurnedUsersBottomSheetMediator mMediator;
 
     @Before
     public void setUp() {
+        mModel =
+                new PropertyModel.Builder(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties.ALL_KEYS)
+                        .build();
         mMediator =
                 new AutofillPaymentsChurnedUsersBottomSheetMediator(
-                        mBottomSheetController, mBottomSheetContent);
+                        mBottomSheetController, mBottomSheetContent, mModel, mDelegate);
         verify(mBottomSheetController).addObserver(mMediator);
     }
 
@@ -73,6 +80,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
 
         mMediator.requestShowContent();
 
+        verify(mDelegate).onUiNotShown();
         verify(mBottomSheetController)
                 .hideContent(
                         eq(mBottomSheetContent),
@@ -115,12 +123,15 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
                         BottomSheetController.StateChangeReason.BACK_PRESS,
                         BottomSheetController.StateChangeReason.TAP_SCRIM)) {
             BottomSheetController controller = mock(BottomSheetController.class);
+            AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate delegate =
+                    mock(AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate.class);
             AutofillPaymentsChurnedUsersBottomSheetMediator mediator =
                     new AutofillPaymentsChurnedUsersBottomSheetMediator(
-                            controller, mBottomSheetContent);
+                            controller, mBottomSheetContent, mModel, delegate);
 
             mediator.onSheetClosed(reason);
 
+            verify(delegate).onUiDismissed();
             verify(controller)
                     .hideContent(
                             eq(mBottomSheetContent),
@@ -134,11 +145,82 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
     public void testOnSheetClosed_noneOrSystemReason() {
         mMediator.onSheetClosed(BottomSheetController.StateChangeReason.NONE);
 
+        verify(mDelegate).onUiDismissed();
         verify(mBottomSheetController)
                 .hideContent(
                         eq(mBottomSheetContent),
                         /* animate= */ eq(false),
                         eq(BottomSheetController.StateChangeReason.NONE));
         verify(mBottomSheetController).removeObserver(mMediator);
+    }
+
+    @Test
+    public void testOnAcceptClicked() {
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
+
+        verify(mDelegate).onUiAccepted();
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testOnAcceptClicked_afterDestroy_doesNothing() {
+        mMediator.destroy();
+
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
+
+        verify(mDelegate, times(0)).onUiAccepted();
+        verify(mBottomSheetController, times(0))
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testOnCancelClicked() {
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED).run();
+
+        verify(mDelegate).onUiCanceled();
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testOnCancelClicked_afterDestroy_doesNothing() {
+        mMediator.destroy();
+
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED).run();
+
+        verify(mDelegate, times(0)).onUiCanceled();
+        verify(mBottomSheetController, times(0))
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testOnSheetClosed_afterAccept_doesNotCallDelegateOnUiDismissed() {
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
+        verify(mDelegate).onUiAccepted();
+
+        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+        verify(mDelegate, times(0)).onUiDismissed();
+    }
+
+    @Test
+    public void testOnSheetClosed_afterCancel_doesNotCallDelegateOnUiDismissed() {
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED).run();
+        verify(mDelegate).onUiCanceled();
+
+        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+        verify(mDelegate, times(0)).onUiDismissed();
     }
 }

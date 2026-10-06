@@ -19,7 +19,8 @@ AutofillPaymentsChurnedUsersBottomSheetBridge::
     JNIEnv* env = base::android::AttachCurrentThread();
     java_object_ =
         Java_AutofillPaymentsChurnedUsersBottomSheetBridge_Constructor(
-            env, window_android->GetJavaObject());
+            env, reinterpret_cast<intptr_t>(this),
+            window_android->GetJavaObject());
   }
 }
 
@@ -30,15 +31,48 @@ AutofillPaymentsChurnedUsersBottomSheetBridge::
     Java_AutofillPaymentsChurnedUsersBottomSheetBridge_destroy(env,
                                                                java_object_);
   }
+  if (closed_callback_) {
+    std::move(closed_callback_).Run(PaymentsUiClosedReason::kUnknown);
+  }
 }
 
 void AutofillPaymentsChurnedUsersBottomSheetBridge::RequestShowContent(
-    AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm) {
-  if (java_object_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AutofillPaymentsChurnedUsersBottomSheetBridge_requestShowContent(
-        env, java_object_, static_cast<int>(treatment_arm));
+    AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm,
+    base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {
+  closed_callback_ = std::move(closed_callback);
+  if (!java_object_) {
+    OnUiNotShown(nullptr);
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutofillPaymentsChurnedUsersBottomSheetBridge_requestShowContent(
+      env, java_object_, static_cast<int>(treatment_arm));
+}
+
+void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
+  if (closed_callback_) {
+    std::move(closed_callback_).Run(PaymentsUiClosedReason::kAccepted);
+  }
+}
+
+void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiCanceled(JNIEnv* env) {
+  if (closed_callback_) {
+    std::move(closed_callback_).Run(PaymentsUiClosedReason::kCancelled);
+  }
+}
+
+void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiDismissed(JNIEnv* env) {
+  if (closed_callback_) {
+    std::move(closed_callback_).Run(PaymentsUiClosedReason::kNotInteracted);
+  }
+}
+
+void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiNotShown(JNIEnv* env) {
+  if (closed_callback_) {
+    std::move(closed_callback_).Run(PaymentsUiClosedReason::kUnknown);
   }
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillPaymentsChurnedUsersBottomSheetBridge)

@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the Payments Churned Users bottom sheet. */
 @NullMarked
@@ -17,8 +18,24 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
     static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey<>("title");
     static final ReadableObjectPropertyKey<String> DESCRIPTION =
             new ReadableObjectPropertyKey<>("description");
+    static final ReadableObjectPropertyKey<String> ACCEPT_BUTTON_LABEL =
+            new ReadableObjectPropertyKey<>("accept_button_label");
+    static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
+            new ReadableObjectPropertyKey<>("cancel_button_label");
+    static final WritableObjectPropertyKey<Runnable> ON_ACCEPT_CLICKED =
+            new WritableObjectPropertyKey<>("on_accept_clicked");
+    static final WritableObjectPropertyKey<Runnable> ON_CANCEL_CLICKED =
+            new WritableObjectPropertyKey<>("on_cancel_clicked");
 
-    static final PropertyKey[] ALL_KEYS = {HEADER_ICON, TITLE, DESCRIPTION};
+    static final PropertyKey[] ALL_KEYS = {
+        HEADER_ICON,
+        TITLE,
+        DESCRIPTION,
+        ACCEPT_BUTTON_LABEL,
+        CANCEL_BUTTON_LABEL,
+        ON_ACCEPT_CLICKED,
+        ON_CANCEL_CLICKED,
+    };
 
     private AutofillPaymentsChurnedUsersBottomSheetProperties() {}
 }

@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 
 namespace ui {
@@ -31,10 +32,20 @@ class AutofillPaymentsChurnedUsersBottomSheetBridge {
 
   // Requests to show the bottom sheet for the given `treatment_arm`.
   virtual void RequestShowContent(
-      AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm);
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm,
+      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback);
+
+  // -- JNI calls bridged from Java --
+  void OnUiAccepted(JNIEnv* env);
+  void OnUiCanceled(JNIEnv* env);
+  void OnUiDismissed(JNIEnv* env);
+  void OnUiNotShown(JNIEnv* env);
 
  private:
+  friend class AutofillPaymentsChurnedUsersBottomSheetBridgeTestApi;
+
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
 };
 
 }  // namespace autofill

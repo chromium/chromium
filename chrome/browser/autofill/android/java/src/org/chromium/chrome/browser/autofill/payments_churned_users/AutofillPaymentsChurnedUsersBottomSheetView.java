@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** View holder for the Payments Churned Users bottom sheet. */
 @NullMarked
@@ -20,6 +21,8 @@ import org.chromium.chrome.browser.autofill.R;
     private final ImageView mHeaderIcon;
     private final TextView mTitleText;
     private final TextView mDescriptionText;
+    private final ButtonCompat mAcceptButton;
+    private final ButtonCompat mCancelButton;
 
     AutofillPaymentsChurnedUsersBottomSheetView(Context context) {
         mContentView =
@@ -30,6 +33,8 @@ import org.chromium.chrome.browser.autofill.R;
         mHeaderIcon = mContentView.findViewById(R.id.payments_churned_users_header_icon);
         mTitleText = mContentView.findViewById(R.id.payments_churned_users_title);
         mDescriptionText = mContentView.findViewById(R.id.payments_churned_users_description);
+        mAcceptButton = mContentView.findViewById(R.id.payments_churned_users_accept_button);
+        mCancelButton = mContentView.findViewById(R.id.payments_churned_users_cancel_button);
     }
 
     View getContentView() {
@@ -46,5 +51,13 @@ import org.chromium.chrome.browser.autofill.R;
 
     TextView getDescriptionText() {
         return mDescriptionText;
+    }
+
+    ButtonCompat getAcceptButton() {
+        return mAcceptButton;
+    }
+
+    ButtonCompat getCancelButton() {
+        return mCancelButton;
     }
 }

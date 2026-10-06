@@ -58,8 +58,7 @@ class PaymentsChurnedUsersUiDelegateAndroid
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
   const raw_ref<ContentAutofillClient> client_;
-  // TODO(crbug.com/558874126): Wire callback to the bottom sheet bridge.
-  bool is_showing_message_ = false;
+  bool is_showing_ui_ = false;
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
   std::unique_ptr<AutofillPaymentsChurnedUsersBottomSheetBridge>
       autofill_payments_churned_users_bottom_sheet_bridge_;

@@ -25,6 +25,8 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /** Unit tests for {@link AutofillPaymentsChurnedUsersBottomSheetView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
@@ -59,6 +61,14 @@ public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
         assertThat(
                 mView.getDescriptionText().getId(),
                 equalTo(R.id.payments_churned_users_description));
+        assertThat(mView.getAcceptButton(), notNullValue());
+        assertThat(
+                mView.getAcceptButton().getId(),
+                equalTo(R.id.payments_churned_users_accept_button));
+        assertThat(mView.getCancelButton(), notNullValue());
+        assertThat(
+                mView.getCancelButton().getId(),
+                equalTo(R.id.payments_churned_users_cancel_button));
     }
 
     @Test
@@ -101,6 +111,44 @@ public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
                         testDescription));
 
         assertThat(mView.getDescriptionText().getText().toString(), equalTo(testDescription));
+    }
+
+    @Test
+    public void testAcceptButton() {
+        String testLabel = "Turn on";
+        AtomicBoolean clicked = new AtomicBoolean();
+        bind(
+                mModelBuilder
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties
+                                        .ACCEPT_BUTTON_LABEL,
+                                testLabel)
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED,
+                                () -> clicked.set(true)));
+
+        assertThat(mView.getAcceptButton().getText().toString(), equalTo(testLabel));
+        mView.getAcceptButton().performClick();
+        assertThat(clicked.get(), equalTo(true));
+    }
+
+    @Test
+    public void testCancelButton() {
+        String testLabel = "No thanks";
+        AtomicBoolean clicked = new AtomicBoolean();
+        bind(
+                mModelBuilder
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties
+                                        .CANCEL_BUTTON_LABEL,
+                                testLabel)
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED,
+                                () -> clicked.set(true)));
+
+        assertThat(mView.getCancelButton().getText().toString(), equalTo(testLabel));
+        mView.getCancelButton().performClick();
+        assertThat(clicked.get(), equalTo(true));
     }
 
     private void bind(PropertyModel.Builder modelBuilder) {

@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.payments_churned_users;
 
+import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.ACCEPT_BUTTON_LABEL;
+import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.CANCEL_BUTTON_LABEL;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON;
+import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED;
+import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE;
 
 import android.view.View;
@@ -33,6 +37,28 @@ import org.chromium.ui.modelutil.PropertyModel;
             } else {
                 view.getHeaderIcon().setVisibility(View.GONE);
             }
+        } else if (propertyKey == ACCEPT_BUTTON_LABEL) {
+            view.getAcceptButton().setText(model.get(ACCEPT_BUTTON_LABEL));
+        } else if (propertyKey == CANCEL_BUTTON_LABEL) {
+            view.getCancelButton().setText(model.get(CANCEL_BUTTON_LABEL));
+        } else if (propertyKey == ON_ACCEPT_CLICKED) {
+            Runnable action = model.get(ON_ACCEPT_CLICKED);
+            view.getAcceptButton()
+                    .setOnClickListener(
+                            _ -> {
+                                if (action != null) {
+                                    action.run();
+                                }
+                            });
+        } else if (propertyKey == ON_CANCEL_CLICKED) {
+            Runnable action = model.get(ON_CANCEL_CLICKED);
+            view.getCancelButton()
+                    .setOnClickListener(
+                            _ -> {
+                                if (action != null) {
+                                    action.run();
+                                }
+                            });
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

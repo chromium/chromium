@@ -168,10 +168,14 @@ source_set("browser_tests") {
 
 source_set("test_support") {
   testonly = true
-  sources = [ "save_update_address_profile_flow_manager_test_api.h" ]
+  sources = [
+    "autofill_payments_churned_users_bottom_sheet_bridge_test_api.h",
+    "save_update_address_profile_flow_manager_test_api.h",
+  ]
   deps = [
     ":autofill",
     "//base",
+    "//components/autofill/core/browser",
     "//components/messages/android",
   ]
 }
