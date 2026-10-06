@@ -1814,6 +1814,7 @@ if (is_android) {
       "//chrome/browser/actor/android:java",
       "//chrome/browser/android/metrics:base_java",
       "//chrome/browser/automotivetoolbar:java",
+      "//chrome/browser/base:java",
       "//chrome/browser/notifications:java",
       "//chrome/browser/privacy:privacy_preference_manager_java",
       "//chrome/browser/settings:search_java",
