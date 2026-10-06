@@ -15,7 +15,13 @@ if (media_use_symphonia_decoder) {
     sources = [ "symphonia_decoder_bridge.rs" ]
     cxx_bindings = [ "symphonia_decoder_bridge.rs" ]
     visibility = [ ":*" ]
-    deps = [ "//third_party/rust/symphonia/v0_6:lib" ]
+    deps = [
+      "//third_party/rust/symphonia_bundle_flac/v0_6:lib",
+      "//third_party/rust/symphonia_bundle_mp3/v0_6:lib",
+      "//third_party/rust/symphonia_codec_pcm/v0_6:lib",
+      "//third_party/rust/symphonia_codec_vorbis/v0_6:lib",
+      "//third_party/rust/symphonia_core/v0_6:lib",
+    ]
   }
 }
 

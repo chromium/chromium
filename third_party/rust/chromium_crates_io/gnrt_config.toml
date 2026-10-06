@@ -929,21 +929,26 @@ allow_unsafe = false
 
 [crate.symphonia-bundle-flac.extra_kv]
 allow_unsafe = false
+visibility = [ "//media/filters:*" ]
 
 [crate.symphonia-bundle-mp3.extra_kv]
 allow_unsafe = false
+visibility = [ "//media/filters:*" ]
 
 [crate.symphonia-codec-pcm.extra_kv]
 allow_unsafe = false
+visibility = [ "//media/filters:*" ]
 
 [crate.symphonia-codec-vorbis.extra_kv]
 allow_unsafe = false
+visibility = [ "//media/filters:*" ]
 
 [crate.symphonia-common]
 extra_kv = { allow_unsafe = false }
 
 [crate.symphonia-core.extra_kv]
 allow_unsafe = false
+visibility = [ "//media/filters:*" ]
 
 [crate.symphonia-format-isomp4]
 extra_kv = { allow_unsafe = false }

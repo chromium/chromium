@@ -46,12 +46,12 @@
 //! This bridge is built using the `cxx` crate, which automates the generation
 //! of safe FFI bindings between the two languages.
 
-use symphonia::core::audio::conv::ConvertibleSample;
-use symphonia::core::audio::sample::SampleBytes;
-use symphonia::core::audio::{Audio, Channels, GenericAudioBufferRef, Position};
-use symphonia::core::codecs::audio::{AudioCodecId, AudioCodecParameters, AudioDecoder};
-use symphonia::core::errors::Error;
-use symphonia::core::packet::PacketRef;
+use symphonia_core::audio::conv::ConvertibleSample;
+use symphonia_core::audio::sample::SampleBytes;
+use symphonia_core::audio::{Audio, Channels, GenericAudioBufferRef, Position};
+use symphonia_core::codecs::audio::{AudioCodecId, AudioCodecParameters, AudioDecoder};
+use symphonia_core::errors::Error;
+use symphonia_core::packet::PacketRef;
 
 /// This module defines the FFI boundary using the `cxx` crate.
 ///
@@ -488,7 +488,7 @@ struct DecoderImpl {
     codec_params: AudioCodecParameters,
 
     /// The current codec ID of the active decoder instance.
-    current_codec_id: symphonia::core::codecs::audio::AudioCodecId,
+    current_codec_id: symphonia_core::codecs::audio::AudioCodecId,
 
     /// The MPEG frame header signature (layer, version, sample rate index,
     /// channel mode) of the most recently decoded frame, used to detect
@@ -515,8 +515,8 @@ pub struct SymphoniaDecoder {
 /// Returns an error string if the codec is not supported.
 fn to_symphonia_codec_id(
     codec: ffi::SymphoniaAudioCodec,
-) -> Result<symphonia::core::codecs::audio::AudioCodecId, String> {
-    use symphonia::core::codecs::audio::well_known::*;
+) -> Result<symphonia_core::codecs::audio::AudioCodecId, String> {
+    use symphonia_core::codecs::audio::well_known::*;
     match codec {
         ffi::SymphoniaAudioCodec::Unknown => Err("Unknown codec provided".to_string()),
         ffi::SymphoniaAudioCodec::Flac => Ok(CODEC_ID_FLAC),
@@ -708,6 +708,22 @@ impl From<InitResult> for ffi::SymphoniaInitResult {
     }
 }
 
+/// Gets the `CodecRegistry` pre-registered with the audio codecs supported by
+/// Chromium's `SymphoniaAudioDecoder`.
+fn get_codecs() -> &'static symphonia_core::codecs::registry::CodecRegistry {
+    use std::sync::OnceLock;
+    use symphonia_core::codecs::registry::CodecRegistry;
+    static CODEC_REGISTRY: OnceLock<CodecRegistry> = OnceLock::new();
+    CODEC_REGISTRY.get_or_init(|| {
+        let mut registry = CodecRegistry::new();
+        registry.register_audio_decoder::<symphonia_bundle_flac::FlacDecoder>();
+        registry.register_audio_decoder::<symphonia_bundle_mp3::MpaDecoder>();
+        registry.register_audio_decoder::<symphonia_codec_pcm::PcmDecoder>();
+        registry.register_audio_decoder::<symphonia_codec_vorbis::VorbisDecoder>();
+        registry
+    })
+}
+
 /// Internal method to initialize a decoder.
 ///
 /// This method actually does the instantiation, and returns an `InitResult`
@@ -716,9 +732,8 @@ impl From<InitResult> for ffi::SymphoniaInitResult {
 fn init_symphonia_decoder_impl(config: &ffi::SymphoniaDecoderConfig) -> InitResult {
     let codec_params = AudioCodecParameters::try_from(config)?;
 
-    let decoder = symphonia::default::get_codecs()
-        .make_audio_decoder(&codec_params, &Default::default())
-        .map_err(|e| {
+    let decoder =
+        get_codecs().make_audio_decoder(&codec_params, &Default::default()).map_err(|e| {
             SymphoniaInitError::SymphoniaError(to_symphonia_init_status(&e), e.to_string())
         })?;
 
@@ -745,7 +760,7 @@ pub fn init_symphonia_decoder(config: &ffi::SymphoniaDecoderConfig) -> ffi::Symp
     init_symphonia_decoder_impl(config).into()
 }
 
-/// Converts a `symphonia::core::errors::Error` to an FFI
+/// Converts a `symphonia_core::errors::Error` to an FFI
 /// `SymphoniaDecodeStatus`.
 impl From<&Error> for ffi::SymphoniaDecodeStatus {
     fn from(err: &Error) -> Self {
@@ -820,8 +835,8 @@ impl From<DecodeResult> for ffi::SymphoniaDecodeResult {
 /// AudioCodecId.
 pub fn detect_mpeg_audio_codec_id(
     data: &[u8],
-) -> Option<symphonia::core::codecs::audio::AudioCodecId> {
-    use symphonia::core::codecs::audio::well_known::*;
+) -> Option<symphonia_core::codecs::audio::AudioCodecId> {
+    use symphonia_core::codecs::audio::well_known::*;
     if data.len() < 4 {
         return None;
     }
@@ -889,7 +904,7 @@ impl DecoderImpl {
         }
         let mut new_params = self.codec_params.clone();
         new_params.for_codec(target_codec_id);
-        let new_decoder = symphonia::default::get_codecs()
+        let new_decoder = get_codecs()
             .make_audio_decoder(&new_params, &Default::default())
             .map_err(|e| ((&e).into(), e.to_string()))?;
         self.decoder = new_decoder;
@@ -923,7 +938,7 @@ impl SymphoniaDecoder {
                 // layout) changed mid-stream and the decoder requested a reset,
                 // re-instantiate the decoder so its internal AudioBuffer is
                 // re-created with the new AudioSpec.
-                decoder_impl.decoder = symphonia::default::get_codecs()
+                decoder_impl.decoder = get_codecs()
                     .make_audio_decoder(&decoder_impl.codec_params, &Default::default())
                     .map_err(|e| ((&e).into(), e.to_string()))?;
                 decoder_impl
