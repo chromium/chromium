@@ -82,7 +82,7 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable headingoffset/headingreset attributes
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "HeadingOffset");
-  // Enable layout of canvas children with the layoutsubtree attribute.
+  // Enable layout of canvas descendants with the content=drawable attribute.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "CanvasDrawElement");
   // Enable MenuElements so that the new menu elements are recognized.
