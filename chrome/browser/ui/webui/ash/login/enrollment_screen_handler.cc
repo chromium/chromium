@@ -65,7 +65,7 @@ const char kEnrollmentModeUIManual[] = "manual";
 const char kEnrollmentModeUIRecovery[] = "recovery";
 
 // Converts `mode` to a mode identifier for the UI.
-std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
+std::string_view EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
   switch (mode) {
     case policy::EnrollmentConfig::MODE_NONE:
       NOTREACHED() << "Bad enrollment mode " << mode;
@@ -96,7 +96,7 @@ std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
   }
 }
 
-std::string GetFlowString(EnrollmentScreenView::FlowType type) {
+std::string_view GetFlowString(EnrollmentScreenView::FlowType type) {
   switch (type) {
     case EnrollmentScreenView::FlowType::kEnterprise:
       return "enterprise";
@@ -111,10 +111,10 @@ std::string GetFlowString(EnrollmentScreenView::FlowType type) {
   }
 }
 
-std::string GetLicenseString(policy::LicenseType type) {
+std::string_view GetLicenseString(policy::LicenseType type) {
   switch (type) {
     case policy::LicenseType::kNone:
-      return std::string();
+      return "";
     case policy::LicenseType::kEnterprise:
       return "enterprise";
     case policy::LicenseType::kEducation:
@@ -125,7 +125,7 @@ std::string GetLicenseString(policy::LicenseType type) {
 }
 
 // String constants should be in sync with `OobeTypes.GaiaDialogButtonsType`.
-std::string GetGaiaButtonsTypeString(
+std::string_view GetGaiaButtonsTypeString(
     EnrollmentScreenView::GaiaButtonsType type) {
   switch (type) {
     case EnrollmentScreenView::GaiaButtonsType::kDefault:
@@ -201,7 +201,7 @@ void EnrollmentScreenHandler::ReloadSigninScreen() {
 void EnrollmentScreenHandler::ResetEnrollmentScreen() {
   // The empty string will be replaced by the correct initial step in the screen
   // initialization code.
-  ShowStep(std::string());
+  ShowStep("");
 }
 
 void EnrollmentScreenHandler::ShowUserError(const std::string& email) {
@@ -767,7 +767,7 @@ void EnrollmentScreenHandler::HandleGetDeviceId(
                             base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
-void EnrollmentScreenHandler::ShowStep(const std::string& step) {
+void EnrollmentScreenHandler::ShowStep(std::string_view step) {
   CallExternalAPI("showStep", step);
 }
 
@@ -790,7 +790,7 @@ void EnrollmentScreenHandler::ShowEnrollmentDuringTrialNotAllowedError() {
       /*retry=*/false);
 }
 
-void EnrollmentScreenHandler::ShowErrorMessage(const std::string& message,
+void EnrollmentScreenHandler::ShowErrorMessage(std::string_view message,
                                                bool retry) {
   CallExternalAPI("showError", message, retry);
 }
@@ -847,8 +847,7 @@ base::DictValue EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   screen_data.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
   screen_data.Set(
       "gaiaPath",
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url().GetPath().substr(
-          1));
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(1));
   screen_data.Set("clientId",
                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   screen_data.Set("management_domain", config_.management_domain);

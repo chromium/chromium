@@ -380,17 +380,18 @@ void CreateAndAddOobeUIDataSource(const PrefService& local_state,
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");
 }
 
-std::string GetDisplayType(const GURL& url) {
-  std::string path = url.GetPath().size() ? url.GetPath().substr(1) : "";
+std::string_view GetDisplayType(const GURL& url) {
+  std::string_view path = url.path().size() ? url.path().substr(1) : "";
 
   constexpr auto kKnownDisplayTypes = base::MakeFixedFlatSet<std::string_view>(
       {OobeUI::kAppLaunchSplashDisplay, OobeUI::kGaiaSigninDisplay,
        OobeUI::kOobeDisplay, OobeUI::kOobeTestLoader});
 
-  if (!kKnownDisplayTypes.contains(path)) {
+  auto it = kKnownDisplayTypes.find(path);
+  if (it == kKnownDisplayTypes.end()) {
     NOTREACHED() << "Unknown display type '" << path << "'. Setting default.";
   }
-  return path;
+  return *it;
 }
 
 }  // namespace
