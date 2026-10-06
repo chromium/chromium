@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.download;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -19,32 +21,38 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
+import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /** Test to verify download end to end flow with download location dialog. */
@@ -54,34 +62,75 @@ public class DownloadLocationChangeEnd2EndTest {
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
     public final DownloadTestRule mDownloadTestRule = new DownloadTestRule();
+    public final TemporaryFolder mTempDir = new TemporaryFolder();
 
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule);
+            RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule).around(mTempDir);
 
     private EmbeddedTestServer mTestServer;
+    private File mDefaultDir;
+    private File mAdditionalDir;
     private static final String TEST_DATA_DIRECTORY = "/chrome/test/data/android/download/";
     private static final String TEST_FILE = "test.gzip";
     private static final long STORAGE_SIZE = 1024000;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+        mDefaultDir = mTempDir.newFolder("default");
+        mAdditionalDir = mTempDir.newFolder("additional");
+
         mActivityTestRule.startOnBlankPage();
         mDownloadTestRule.attach(mActivityTestRule.getActivity());
+        ModalDialogView.disableButtonTapProtectionForTesting();
+
+        // Bypass global MediaStore publishing so downloads write directly into the isolated
+        // TemporaryFolder directories without colliding across test retries or Swarming tasks.
+        DownloadCollectionBridge.setDownloadDelegate(
+                new DownloadDelegateImpl() {
+                    @Override
+                    public boolean isDownloadOnSDCard(String filePath) {
+                        return true;
+                    }
+                });
 
         mTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
 
-        // Show the location dialog for the first time.
-        promptDownloadLocationDialog(DownloadPromptStatus.SHOW_INITIAL);
+        // Show the location dialog for the first time and point default download preferences
+        // at the isolated temporary directory.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile();
+                    DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(
+                            profile, mDefaultDir.getAbsolutePath());
+                    DownloadDialogBridge.setPromptForDownloadAndroid(
+                            profile, DownloadPromptStatus.SHOW_INITIAL);
+                });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getModalDialogManager()
+                            .dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                });
+        DownloadCollectionBridge.setDownloadDelegate(new DownloadDelegateImpl());
     }
 
     /** Ensures the default download location dialog is shown to the user with SD card inserted. */
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "crbug.com/40892752")
     public void testDefaultDialogPositiveButtonClickThrough() {
         startDownload(/* hasSDCard= */ true);
 
@@ -92,12 +141,10 @@ public class DownloadLocationChangeEnd2EndTest {
         int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
 
         // Click the button to start download.
-        Espresso.onView(withId(R.id.positive_button)).perform(click());
+        Espresso.onView(withId(R.id.positive_button)).inRoot(isDialog()).perform(click());
 
         // Ensure download is done.
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
-
-        mDownloadTestRule.deleteFilesInDownloadDirectory(new String[] {TEST_FILE});
     }
 
     /** Matches the {@link DirectoryOption} used in the {@link DownloadDirectoryAdapter}. */
@@ -127,7 +174,6 @@ public class DownloadLocationChangeEnd2EndTest {
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "https://crbug.com/40876707")
     public void testDefaultDialogShowSpinner() {
         startDownload(/* hasSDCard= */ true);
 
@@ -136,7 +182,7 @@ public class DownloadLocationChangeEnd2EndTest {
                 () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
 
         // Open the spinner inside the dialog to show download location options.
-        Espresso.onView(withId(R.id.file_location)).perform(click());
+        Espresso.onView(withId(R.id.file_location)).inRoot(isDialog()).perform(click());
 
         // Wait for data to feed into the DownloadDirectoryAdapter.
         String defaultOptionName =
@@ -145,11 +191,12 @@ public class DownloadLocationChangeEnd2EndTest {
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.downloads_location_sd_card);
         onData(new DirectoryOptionMatcher(equalTo(defaultOptionName)))
-                .atPosition(0)
+                .inRoot(isPlatformPopup())
                 .check(matches(isDisplayed()));
         onData(new DirectoryOptionMatcher(equalTo(sdCardOptionName)))
-                .atPosition(1)
-                .check(matches(isDisplayed()));
+                .inRoot(isPlatformPopup())
+                .check(matches(isDisplayed()))
+                .perform(click());
     }
 
     /**
@@ -165,7 +212,6 @@ public class DownloadLocationChangeEnd2EndTest {
 
         // Ensure download is done, no download location dialog should show to interact with user.
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
-        mDownloadTestRule.deleteFilesInDownloadDirectory(new String[] {TEST_FILE});
     }
 
     @Test
@@ -186,7 +232,6 @@ public class DownloadLocationChangeEnd2EndTest {
         int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
         startDownload(/* hasSDCard= */ true);
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
-        mDownloadTestRule.deleteFilesInDownloadDirectory(new String[] {TEST_FILE});
     }
 
     /**
@@ -226,12 +271,12 @@ public class DownloadLocationChangeEnd2EndTest {
         dirs.add(
                 buildDirectoryOption(
                         DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
-                        PathUtils.getExternalStorageDirectory()));
+                        mDefaultDir.getAbsolutePath()));
         if (hasSDCard) {
             dirs.add(
                     buildDirectoryOption(
                             DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
-                            PathUtils.getDataDirectory()));
+                            mAdditionalDir.getAbsolutePath()));
         }
 
         DownloadDirectoryProvider.getInstance()
@@ -241,18 +286,5 @@ public class DownloadLocationChangeEnd2EndTest {
     private DirectoryOption buildDirectoryOption(
             @DirectoryOption.DownloadLocationDirectoryType int type, String directoryPath) {
         return new DirectoryOption("Download", directoryPath, STORAGE_SIZE, STORAGE_SIZE, type);
-    }
-
-    private void promptDownloadLocationDialog(@DownloadPromptStatus int promptStatus) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    DownloadDialogBridge.setPromptForDownloadAndroid(
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getProfileProviderSupplier()
-                                    .get()
-                                    .getOriginalProfile(),
-                            promptStatus);
-                });
     }
 }
