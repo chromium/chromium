@@ -1,7 +1,8 @@
 Name: QUIC trace format description and utilities
 Short Name: quic-trace
 URL: https://github.com/google/quic-trace
-Version: git
+Version: N/A
+Revision: 6ecf6aa8e604655f1dfa72c4a1ae733c4c7fc883
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
