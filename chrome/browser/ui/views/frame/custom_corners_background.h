@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/views/frame/custom_corners.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -126,7 +127,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
 
     raw_ptr<const CustomCornersBackground> background = nullptr;
   };
-  using Cutout = std::variant<InverseOf, const views::View*>;
+  using Cutout = std::variant<InverseOf, raw_ptr<const views::View>>;
   using Cutouts = std::vector<Cutout>;
 
   [[nodiscard]] inline SkPath GetBackgroundPath() const {

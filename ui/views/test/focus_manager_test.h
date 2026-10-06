@@ -101,7 +101,8 @@ class TestNativeViewFocusChangeListener : public NativeViewFocusChangeListener {
 
   ~TestNativeViewFocusChangeListener() override;
 
-  const std::vector<gfx::NativeView>& focus_changes() const {
+  const std::vector<base::RawPtrIfPtrT<gfx::NativeView>>& focus_changes()
+      const {
     return focus_changes_;
   }
   void ClearFocusChanges();
@@ -112,7 +113,7 @@ class TestNativeViewFocusChangeListener : public NativeViewFocusChangeListener {
  private:
   // Parameter received via OnNativeFocusChanged in oldest-to-newest-received
   // order.
-  std::vector<gfx::NativeView> focus_changes_;
+  std::vector<base::RawPtrIfPtrT<gfx::NativeView>> focus_changes_;
 };
 
 }  // namespace views

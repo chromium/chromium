@@ -287,7 +287,7 @@ class PopupRowContainerBuilder {
       has_fully_hidden_entry_ = true;
     }
 
-    rows_.push_back(new_view);
+    rows_.emplace_back(raw_ptr<T>(new_view));
     return new_view;
   }
 
@@ -1290,14 +1290,16 @@ void PopupViewViews::UpdateAccessibleStates() const {
 bool PopupViewViews::HasSelectablePopupInteractiveRowViewAt(
     size_t index) const {
   return index < rows_.size() &&
-         (std::holds_alternative<PopupRowView*>(rows_[index]) ||
-          std::holds_alternative<PopupInteractiveRowView*>(rows_[index])) &&
+         (std::holds_alternative<raw_ptr<PopupRowView>>(rows_[index]) ||
+          std::holds_alternative<raw_ptr<PopupInteractiveRowView>>(
+              rows_[index])) &&
          GetPopupInteractiveRowViewAt(index).IsSelectable();
 }
 
 PopupBnplFootnoteView* PopupViewViews::GetBnplFootnoteView() const {
   for (const RowPointer& row : rows_) {
-    if (const auto* footnote = std::get_if<PopupBnplFootnoteView*>(&row)) {
+    if (const auto* footnote =
+            std::get_if<raw_ptr<PopupBnplFootnoteView>>(&row)) {
       return *footnote;
     }
   }
@@ -1882,7 +1884,7 @@ PopupRowView* PopupViewViews::MaybeGetPopupRowViewAt(size_t index) {
   if (index >= rows_.size()) {
     return nullptr;
   }
-  if (auto* row = std::get_if<PopupRowView*>(&rows_[index])) {
+  if (auto* row = std::get_if<raw_ptr<PopupRowView>>(&rows_[index])) {
     return *row;
   }
   return nullptr;
@@ -1953,7 +1955,7 @@ bool PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
     return true;
   }
 
-  if (auto* warning_view = std::get_if<PopupWarningView*>(&rows_[0]);
+  if (auto* warning_view = std::get_if<raw_ptr<PopupWarningView>>(&rows_[0]);
       warning_view && *warning_view) {
     PopupWarningView* view_ptr = *warning_view;
     return TrackAndRun(

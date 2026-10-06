@@ -93,14 +93,14 @@ class PopupViewViews : public PopupBaseView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kAutofillAccountNameEmailSuggestionElementId);
 
-  using RowPointer = std::variant<PopupRowView*,
-                                  PopupInteractiveRowView*,
-                                  PopupSeparatorView*,
-                                  PopupTitleView*,
-                                  PopupWarningView*,
-                                  PopupLoadingView*,
-                                  PopupCenteredTextView*,
-                                  PopupBnplFootnoteView*>;
+  using RowPointer = std::variant<raw_ptr<PopupRowView>,
+                                  raw_ptr<PopupInteractiveRowView>,
+                                  raw_ptr<PopupSeparatorView>,
+                                  raw_ptr<PopupTitleView>,
+                                  raw_ptr<PopupWarningView>,
+                                  raw_ptr<PopupLoadingView>,
+                                  raw_ptr<PopupCenteredTextView>,
+                                  raw_ptr<PopupBnplFootnoteView>>;
 
   // The maximum width of the popup.
   static constexpr int kAutofillPopupMaxWidth = 456;
@@ -236,17 +236,17 @@ class PopupViewViews : public PopupBaseView,
   // there is such a view at that line number - otherwise the underlying variant
   // will check false.
   PopupInteractiveRowView& GetPopupInteractiveRowViewAt(size_t index) {
-    if (auto* row = std::get_if<PopupRowView*>(&rows_[index])) {
+    if (auto* row = std::get_if<raw_ptr<PopupRowView>>(&rows_[index])) {
       return **row;
     }
-    return *std::get<PopupInteractiveRowView*>(rows_[index]);
+    return *std::get<raw_ptr<PopupInteractiveRowView>>(rows_[index]);
   }
   const PopupInteractiveRowView& GetPopupInteractiveRowViewAt(
       size_t index) const {
-    if (auto* row = std::get_if<PopupRowView*>(&rows_[index])) {
+    if (auto* row = std::get_if<raw_ptr<PopupRowView>>(&rows_[index])) {
       return **row;
     }
-    return *std::get<PopupInteractiveRowView*>(rows_[index]);
+    return *std::get<raw_ptr<PopupInteractiveRowView>>(rows_[index]);
   }
 
   // Returns the `PopupRowView` if a row at the line number `index` is of

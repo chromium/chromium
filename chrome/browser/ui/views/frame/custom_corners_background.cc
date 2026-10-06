@@ -230,8 +230,8 @@ void CustomCornersBackground::SetCutoutFrom(const Cutouts& cutouts) {
   std::vector<SkPath> new_cutout_paths;
 
   for (const auto& cutout : cutouts) {
-    if (const views::View* const* view_ptr =
-            std::get_if<const views::View*>(&cutout)) {
+    if (const auto* view_ptr =
+            std::get_if<raw_ptr<const views::View>>(&cutout)) {
       const views::View* const view = *view_ptr;
       if (!view->GetVisible()) {
         continue;

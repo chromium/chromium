@@ -39,7 +39,7 @@ class WebUIBubbleDialogView;
 // This is needed to deal with the asynchronous presentation of WebUI.
 class WebUIBubbleManager : public views::WidgetObserver {
  public:
-  using Anchor = std::variant<views::View*, gfx::Rect>;
+  using Anchor = std::variant<raw_ptr<views::View>, gfx::Rect>;
 
   template <typename Controller>
   static std::unique_ptr<WebUIBubbleManager> Create(
@@ -221,8 +221,8 @@ WebUIBubbleManagerImpl<T>::CreateWebUIBubbleDialog(
 
   views::View* anchor_view = nullptr;
   std::optional<gfx::Rect> anchor_rect;
-  if (std::holds_alternative<views::View*>(anchor)) {
-    anchor_view = std::get<views::View*>(anchor);
+  if (std::holds_alternative<raw_ptr<views::View>>(anchor)) {
+    anchor_view = std::get<raw_ptr<views::View>>(anchor);
     CHECK(anchor_view);
   } else {
     anchor_rect = std::get<gfx::Rect>(anchor);

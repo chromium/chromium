@@ -1093,8 +1093,7 @@ TEST_F(WidgetTestInteractive, FullscreenMaximizedWindowBounds) {
 TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   TestNativeViewFocusChangeListener focus_listener;
   NativeViewFocusManager::GetInstance()->AddFocusChangeListener(&focus_listener);
-  const std::vector<gfx::NativeView>& focus_changes =
-      focus_listener.focus_changes();
+  const auto& focus_changes = focus_listener.focus_changes();
 
   // Create a top level widget.
   auto top_level_widget = std::make_unique<Widget>();
@@ -1128,6 +1127,8 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   EXPECT_EQ(gfx::NativeView(), focus_changes[1]);
   EXPECT_EQ(modal_native_view, focus_changes[2]);
 
+  focus_listener.ClearFocusChanges();
+
 #if BUILDFLAG(IS_MAC)
   // Window modal dialogs on Mac are "sheets", which animate to close before
   // activating their parent widget.
@@ -1139,12 +1140,15 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   waiter.Wait();
 #endif
 
-  ASSERT_EQ(5u, focus_changes.size());
-  EXPECT_EQ(gfx::NativeView(), focus_changes[3]);
-  EXPECT_EQ(top_level_native_view, focus_changes[4]);
+  ASSERT_EQ(2u, focus_changes.size());
+  EXPECT_EQ(gfx::NativeView(), focus_changes[0]);
+  EXPECT_EQ(top_level_native_view, focus_changes[1]);
+
+  NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(
+      &focus_listener);
+  focus_listener.ClearFocusChanges();
 
   top_level_widget->Close();
-  NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(&focus_listener);
 }
 #endif
 

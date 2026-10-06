@@ -55,8 +55,8 @@ const char kBasePath[] = "file:///c:/tmp/";
 
 MATCHER_P(BookmarkVariantMatcher, node, "") {
   if (node->is_url()) {
-    return std::holds_alternative<const BookmarkNode*>(arg) &&
-           std::get<const BookmarkNode*>(arg) == node;
+    return std::holds_alternative<raw_ptr<const BookmarkNode>>(arg) &&
+           std::get<raw_ptr<const BookmarkNode>>(arg) == node;
   } else {
     return std::get<BookmarkParentFolder>(arg) ==
            BookmarkParentFolder::FromFolderNode(node);
@@ -171,8 +171,8 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
     app_menu_delegate_->BuildFullMenu(root_menu_.get());
   }
 
-  std::variant<const BookmarkNode*, BookmarkParentFolder> GetNodeForMenuItem(
-      views::MenuItemView* menu) {
+  std::variant<raw_ptr<const BookmarkNode>, BookmarkParentFolder>
+  GetNodeForMenuItem(views::MenuItemView* menu) {
     const auto& node_map = active_delegate()->menu_id_to_node_map_;
     auto iter = node_map.find(menu->GetCommand());
     if (iter == node_map.end()) {

@@ -395,7 +395,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   }
 
   PopupRowView& GetPopupRowViewAt(size_t index) {
-    return *std::get<PopupRowView*>(test_api(view()).rows()[index]);
+    return *std::get<raw_ptr<PopupRowView>>(test_api(view()).rows()[index]);
   }
 
   size_t GetNumberOfRows() { return test_api(view()).rows().size(); }
@@ -1934,7 +1934,7 @@ TEST_F(PopupViewViewsTest, PopupFooterWithLinkViewCreated) {
   CreateAndShowView();
 
   PopupFooterWithLinkView* footer_view = static_cast<PopupFooterWithLinkView*>(
-      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]));
+      std::get<raw_ptr<PopupInteractiveRowView>>(test_api(view()).rows()[0]));
   ASSERT_TRUE(footer_view);
 
   ui::AXNodeData node_data;
@@ -1964,7 +1964,7 @@ TEST_F(PopupViewViewsTest, PopupFooterWithLinkViewKeyboardNavigation) {
                 1, PopupInteractiveRowView::CellType::kContent));
 
   PopupFooterWithLinkView* footer_view = static_cast<PopupFooterWithLinkView*>(
-      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[1]));
+      std::get<raw_ptr<PopupInteractiveRowView>>(test_api(view()).rows()[1]));
   ASSERT_TRUE(footer_view);
   EXPECT_EQ(footer_view->GetSelectedCell(),
             PopupInteractiveRowView::CellType::kContent);
@@ -2039,7 +2039,8 @@ TEST_F(PopupViewViewsTest, ChildWidgetRetriggersMouseMovesToParent) {
 
   ASSERT_EQ(view().GetSelectedCell(), std::nullopt);
 
-  PopupRowView* row = std::get<PopupRowView*>(test_api(view()).rows()[0]);
+  PopupRowView* row =
+      std::get<raw_ptr<PopupRowView>>(test_api(view()).rows()[0]);
 
   // Mouse move inside parent, selection by MOUSE_ENTERED is expected.
   generator().MoveMouseTo(row->GetBoundsInScreen().CenterPoint());
@@ -2399,9 +2400,10 @@ TEST_F(PopupViewViewsTest, SubPopupRemainsOpenWhileHoveringParentChevron) {
       {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
 
   // Simulate mouse moving on the chevron of the parent view.
-  PopupRowView* row = test_api(view()).rows().empty()
-                          ? nullptr
-                          : std::get<PopupRowView*>(test_api(view()).rows()[0]);
+  PopupRowView* row =
+      test_api(view()).rows().empty()
+          ? nullptr
+          : std::get<raw_ptr<PopupRowView>>(test_api(view()).rows()[0]);
   ASSERT_TRUE(row);
   ASSERT_TRUE(row->GetExpandChildSuggestionsView());
 
@@ -2463,7 +2465,7 @@ TEST_F(PopupViewViewsTest,
 
   PopupRowView* row_1 =
       test_api(view()).rows().size() > 1
-          ? std::get<PopupRowView*>(test_api(view()).rows()[1])
+          ? std::get<raw_ptr<PopupRowView>>(test_api(view()).rows()[1])
           : nullptr;
   ASSERT_TRUE(row_1);
   ASSERT_TRUE(row_1->GetExpandChildSuggestionsView());
@@ -2511,9 +2513,10 @@ TEST_F(PopupViewViewsTest,
       view(),
       {Suggestion(u"Child #1", SuggestionType::kAddressFieldByFieldFilling)});
 
-  PopupRowView* row = test_api(view()).rows().empty()
-                          ? nullptr
-                          : std::get<PopupRowView*>(test_api(view()).rows()[0]);
+  PopupRowView* row =
+      test_api(view()).rows().empty()
+          ? nullptr
+          : std::get<raw_ptr<PopupRowView>>(test_api(view()).rows()[0]);
   ASSERT_TRUE(row);
 
   generator().MoveMouseTo(
@@ -2559,9 +2562,10 @@ TEST_F(PopupViewViewsTest, SubPopupClosesWhenHoveringAcceptableContent) {
       view(),
       {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
 
-  PopupRowView* row = test_api(view()).rows().empty()
-                          ? nullptr
-                          : std::get<PopupRowView*>(test_api(view()).rows()[0]);
+  PopupRowView* row =
+      test_api(view()).rows().empty()
+          ? nullptr
+          : std::get<raw_ptr<PopupRowView>>(test_api(view()).rows()[0]);
   ASSERT_TRUE(row);
 
   // Mouse moves onto content view (not the control chevron).
@@ -3338,8 +3342,8 @@ TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   CreateAndShowView({SuggestionType::kInsecureContextPaymentDisabledMessage});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
-  auto* const* row_view =
-      std::get_if<PopupWarningView*>(&test_api(view()).rows()[0]);
+  const auto* row_view =
+      std::get_if<raw_ptr<PopupWarningView>>(&test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));

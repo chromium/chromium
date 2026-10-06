@@ -222,8 +222,8 @@ struct AvatarLayoutAttributes {
 
 class AvatarToolbarButtonTestAccessor {
  public:
-  using ButtonVariant =
-      std::variant<AvatarToolbarButton*, WebUIAvatarToolbarButton*>;
+  using ButtonVariant = std::variant<raw_ptr<AvatarToolbarButton>,
+                                     raw_ptr<WebUIAvatarToolbarButton>>;
 
   explicit AvatarToolbarButtonTestAccessor(BrowserWindowInterface* browser);
   ~AvatarToolbarButtonTestAccessor();

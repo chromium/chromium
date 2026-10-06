@@ -318,11 +318,12 @@ AvatarToolbarButtonTestAccessor::CreateUpdateWaiter() {
 AvatarToolbarButtonState AvatarToolbarButtonTestAccessor::GetState() {
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) -> AvatarToolbarButtonState {
+          [](raw_ptr<AvatarToolbarButton> button) -> AvatarToolbarButtonState {
             return button ? button->state_manager_.GetActiveState()
                           : AvatarToolbarButtonState::kNormal;
           },
-          [this](WebUIAvatarToolbarButton* button) -> AvatarToolbarButtonState {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button)
+              -> AvatarToolbarButtonState {
             if (!button) {
               return AvatarToolbarButtonState::kNormal;
             }
@@ -447,10 +448,10 @@ AvatarToolbarButtonTestAccessor::GetButton() {
 bool AvatarToolbarButtonTestAccessor::GetEnabled() {
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) -> bool {
+          [](raw_ptr<AvatarToolbarButton> button) -> bool {
             return button ? button->GetEnabled() : false;
           },
-          [this](WebUIAvatarToolbarButton* button) -> bool {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button) -> bool {
             if (!button) {
               return false;
             }
@@ -491,10 +492,10 @@ bool AvatarToolbarButtonTestAccessor::GetEnabled() {
 bool AvatarToolbarButtonTestAccessor::GetVisible() {
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) {
+          [](raw_ptr<AvatarToolbarButton> button) {
             return button ? button->GetVisible() : false;
           },
-          [this](WebUIAvatarToolbarButton* button) {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button) {
             if (!button) {
               return false;
             }
@@ -513,11 +514,11 @@ bool AvatarToolbarButtonTestAccessor::GetVisible() {
 std::u16string AvatarToolbarButtonTestAccessor::GetText() {
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) -> std::u16string {
+          [](raw_ptr<AvatarToolbarButton> button) -> std::u16string {
             return button ? std::u16string(button->GetText())
                           : std::u16string();
           },
-          [this](WebUIAvatarToolbarButton* button) -> std::u16string {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button) -> std::u16string {
             if (!button) {
               return std::u16string();
             }
@@ -552,7 +553,7 @@ std::u16string AvatarToolbarButtonTestAccessor::GetText() {
 
 void AvatarToolbarButtonTestAccessor::Click() {
   std::visit(
-      [](auto* button) {
+      [](auto button) {
         if (!button) {
           return;
         }
@@ -576,10 +577,10 @@ void AvatarToolbarButtonTestAccessor::SetAnnounceCallbackForTesting(
 
 views::Widget* AvatarToolbarButtonTestAccessor::GetWidget() {
   return std::visit(absl::Overload{
-                        [](AvatarToolbarButton* button) {
+                        [](raw_ptr<AvatarToolbarButton> button) {
                           return button ? button->GetWidget() : nullptr;
                         },
-                        [this](WebUIAvatarToolbarButton* button) {
+                        [this](raw_ptr<WebUIAvatarToolbarButton> button) {
                           auto* const browser_view =
                               BrowserView::GetBrowserViewForBrowser(browser_);
                           return browser_view ? browser_view->GetWidget()
@@ -592,11 +593,11 @@ views::Widget* AvatarToolbarButtonTestAccessor::GetWidget() {
 gfx::ImageSkia AvatarToolbarButtonTestAccessor::GetImage(
     views::Button::ButtonState state) {
   return std::visit(absl::Overload{
-                        [state](AvatarToolbarButton* button) {
+                        [state](raw_ptr<AvatarToolbarButton> button) {
                           return button ? button->GetImage(state)
                                         : gfx::ImageSkia();
                         },
-                        [](WebUIAvatarToolbarButton* button) {
+                        [](raw_ptr<WebUIAvatarToolbarButton> button) {
                           NOTIMPLEMENTED();
                           return gfx::ImageSkia();
                         },
@@ -607,10 +608,10 @@ gfx::ImageSkia AvatarToolbarButtonTestAccessor::GetImage(
 std::string AvatarToolbarButtonTestAccessor::GetImageUrl() {
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) -> std::string {
+          [](raw_ptr<AvatarToolbarButton> button) -> std::string {
             return std::string();
           },
-          [this](WebUIAvatarToolbarButton* button) -> std::string {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button) -> std::string {
             if (!button) {
               return std::string();
             }
@@ -659,11 +660,11 @@ std::u16string AvatarToolbarButtonTestAccessor::GetRenderedTooltipText(
     const gfx::Point& p) {
   return std::visit(
       absl::Overload{
-          [p](AvatarToolbarButton* button) {
+          [p](raw_ptr<AvatarToolbarButton> button) {
             return button ? button->GetRenderedTooltipText(p)
                           : std::u16string();
           },
-          [this](WebUIAvatarToolbarButton* button) {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button) {
             if (!button) {
               return std::u16string();
             }
@@ -704,11 +705,11 @@ std::u16string AvatarToolbarButtonTestAccessor::GetRenderedTooltipText(
 std::u16string AvatarToolbarButtonTestAccessor::GetAccessibilityLabel() {
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) -> std::u16string {
+          [](raw_ptr<AvatarToolbarButton> button) -> std::u16string {
             return button ? button->GetViewAccessibility().GetCachedName()
                           : std::u16string();
           },
-          [this](WebUIAvatarToolbarButton* button) -> std::u16string {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button) -> std::u16string {
             if (!button) {
               return std::u16string();
             }
@@ -751,12 +752,12 @@ std::u16string AvatarToolbarButtonTestAccessor::GetAccessibilityLabel() {
 std::u16string AvatarToolbarButtonTestAccessor::GetAccessibilityDescription() {
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) -> std::u16string {
+          [](raw_ptr<AvatarToolbarButton> button) -> std::u16string {
             return button
                        ? button->GetViewAccessibility().GetCachedDescription()
                        : std::u16string();
           },
-          [this](WebUIAvatarToolbarButton* button) -> std::u16string {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button) -> std::u16string {
             if (!button) {
               return std::u16string();
             }
@@ -834,7 +835,7 @@ AvatarLayoutAttributes AvatarToolbarButtonTestAccessor::GetLayoutAttributes() {
 
   return std::visit(
       absl::Overload{
-          [](AvatarToolbarButton* button) -> AvatarLayoutAttributes {
+          [](raw_ptr<AvatarToolbarButton> button) -> AvatarLayoutAttributes {
             AvatarLayoutAttributes attrs;
             if (!button) {
               return attrs;
@@ -852,7 +853,8 @@ AvatarLayoutAttributes AvatarToolbarButtonTestAccessor::GetLayoutAttributes() {
                 provider ? provider->ShouldShowGradientAvatarRing() : false;
             return attrs;
           },
-          [this](WebUIAvatarToolbarButton* button) -> AvatarLayoutAttributes {
+          [this](raw_ptr<WebUIAvatarToolbarButton> button)
+              -> AvatarLayoutAttributes {
             AvatarLayoutAttributes attrs;
             if (!button) {
               return attrs;
