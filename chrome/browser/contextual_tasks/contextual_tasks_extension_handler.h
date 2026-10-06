@@ -44,6 +44,7 @@ struct InputState;
 namespace contextual_search {
 class ContextualSearchSessionHandle;
 class InputStateModel;
+struct TabContextState;
 struct TabInfo;
 }  // namespace contextual_search
 
@@ -277,6 +278,14 @@ class ContextualTasksExtensionHandler
   void OnInputStateChanged(const omnibox::InputState& state);
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModel();
+  // Updates the tab context subscription callback if there is a new session.
+  // Otherwise, return early.
+  void MaybeRefreshTabContextSubscription(
+      contextual_search::ContextualSearchSessionHandle* session_handle);
+  // Sends tab context state as a tab list (of attached and restored tabs)
+  // to the extension page. Duplicates are skipped.
+  void SendTabContextToExtensionPage(
+      const contextual_search::TabContextState& state);
   bool IsPrimarySearchMessageSender() const;
   void OnLensThumbnailCreated(const std::string& thumbnail_uri);
   void RecordTimeToHandshakeComplete();
@@ -314,6 +323,9 @@ class ContextualTasksExtensionHandler
 
   base::WeakPtr<contextual_search::InputStateModel> input_state_model_;
   base::CallbackListSubscription input_state_subscription_;
+  base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+      subscribed_session_handle_;
+  base::CallbackListSubscription tab_context_subscription_;
 
   base::ScopedObservation<PermissionPromptObserver,
                           PermissionPromptObserver::Observer>

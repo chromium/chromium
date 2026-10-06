@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <set>
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -135,6 +136,15 @@ void DeleteTabToken(
   }
 }
 
+searchbox::mojom::TabInfoPtr CreateMojomTab(
+    const contextual_search::TabInfo& tab) {
+  auto mojom_tab = searchbox::mojom::TabInfo::New();
+  mojom_tab->tab_id = tab.tab_id.value_or(0);
+  mojom_tab->title = tab.title;
+  mojom_tab->url = tab.url;
+  return mojom_tab;
+}
+
 }  // namespace
 
 DOCUMENT_USER_DATA_KEY_IMPL(ContextualTasksExtensionHandler);
@@ -260,11 +270,26 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
   }
 #endif
   InitializeInputStateModel();
+  // Do not reset the session's tab context here. The session is shared by every
+  // extension frame in this WebContents, so a frame binding in the middle of a
+  // session (e.g. the context library, which mounts right after a tab is
+  // attached) would drop the tabs unexpectedly. Instead, send the page any
+  // tabs added before it subscribed, since subscribing does not load initial
+  // state.
+  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+    const auto& tab_context = session_handle->GetTabContextState();
+    if (!tab_context.attached.empty() || !tab_context.restored.empty()) {
+      SendTabContextToExtensionPage(tab_context);
+    }
+  }
 }
 
 // contextual_tasks::mojom::ExtensionPageHandler:
 void ContextualTasksExtensionHandler::SetTaskId(const base::Uuid& uuid) {
   task_id_ = uuid;
+  // Moves to `uuid`'s session. An untasked session and its tabs are adopted by
+  // `uuid` (see `GetSessionForTask()`), so do not reset its tabs. The new
+  // session will adopt these unassigned tabs.
   GetOrCreateInputStateModel();
 }
 
@@ -1214,6 +1239,7 @@ ContextualTasksExtensionHandler::GetOrCreateContextualSessionHandle() {
       task_id_.has_value() ? helper->GetSessionForTask(task_id_.value())
                            : helper->session_handle();
   if (existing_session) {
+    MaybeRefreshTabContextSubscription(existing_session);
     return existing_session;
   }
 
@@ -1230,10 +1256,12 @@ ContextualTasksExtensionHandler::GetOrCreateContextualSessionHandle() {
       session_handle->CheckSearchContentSharingSettings(profile->GetPrefs());
       helper->SetTaskSession(std::nullopt, std::move(session_handle),
                              /*input_state_model=*/nullptr);
+      MaybeRefreshTabContextSubscription(helper->session_handle());
       return helper->session_handle();
     }
   }
 
+  MaybeRefreshTabContextSubscription(existing_session);
   return existing_session;
 }
 
@@ -1383,6 +1411,77 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
     }
   }
   return input_state_model_;
+}
+
+void ContextualTasksExtensionHandler::MaybeRefreshTabContextSubscription(
+    contextual_search::ContextualSearchSessionHandle* session_handle) {
+  if (subscribed_session_handle_.get() == session_handle) {
+    return;
+  }
+  if (!session_handle) {
+    subscribed_session_handle_ = nullptr;
+    tab_context_subscription_ = {};
+    return;
+  }
+  subscribed_session_handle_ = session_handle->AsWeakPtr();
+  tab_context_subscription_ =
+      session_handle->SubscribeTabContext(base::BindRepeating(
+          &ContextualTasksExtensionHandler::SendTabContextToExtensionPage,
+          base::Unretained(this)));
+}
+
+void ContextualTasksExtensionHandler::SendTabContextToExtensionPage(
+    const contextual_search::TabContextState& state) {
+  if (!contextual_tasks_page_.is_bound()) {
+    return;
+  }
+
+  std::vector<base::UnguessableToken> uploaded_tokens;
+  if (subscribed_session_handle_) {
+    uploaded_tokens = subscribed_session_handle_->GetUploadedContextTokens();
+  }
+
+  // Combine and deduplicate tabs between restored tabs and attached
+  // tabs into a single tab list to send to the frontend extension.
+  std::vector<searchbox::mojom::TabInfoPtr> tabs;
+  std::vector<int32_t> submitted_tab_ids;
+  std::set<GURL> seen_urls;
+  std::set<int32_t> seen_tab_ids;
+
+  for (const auto& tab : state.attached) {
+    // Session handle guarantees that `tab_id` is present. De-duplicate.
+    if (!seen_tab_ids.insert(*tab.tab_id).second) {
+      continue;
+    }
+    // Record the URL so restored duplicates are skipped below. Attached tabs
+    // are never skipped, even if two share a URL since the user manually
+    // selected them.
+    if (tab.url.is_valid()) {
+      seen_urls.insert(tab.url);
+    }
+    tabs.push_back(CreateMojomTab(tab));
+    const bool is_submitted =
+        !std::ranges::contains(uploaded_tokens, tab.context_token);
+    if (is_submitted && tab.tab_id.has_value()) {
+      submitted_tab_ids.push_back(*tab.tab_id);
+    }
+  }
+
+  for (const auto& tab : state.restored) {
+    // Tab ID is not guaranteed to be present. Disallow duplicate restored IDs.
+    if (!tab.tab_id.has_value() || !seen_tab_ids.insert(*tab.tab_id).second) {
+      continue;
+    }
+    // Allow for empty URLs, but not duplicate restored URLs.
+    if (tab.url.is_valid() && !seen_urls.insert(tab.url).second) {
+      continue;
+    }
+    tabs.push_back(CreateMojomTab(tab));
+    submitted_tab_ids.push_back(*tab.tab_id);
+  }
+
+  contextual_tasks_page_->OnTabContextUpdated(std::move(tabs),
+                                              std::move(submitted_tab_ids));
 }
 
 bool ContextualTasksExtensionHandler::IsPrimarySearchMessageSender() const {

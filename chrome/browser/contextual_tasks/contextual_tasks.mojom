@@ -4,6 +4,7 @@
 
 module contextual_tasks.mojom;
 
+import "components/omnibox/browser/searchbox.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
@@ -391,4 +392,11 @@ interface ExtensionPage {
   // iframe is already mounted, allowing the chip to update its preview
   // thumbnail in-place without unmounting/remounting.
   OnLensCropUpdated(url.mojom.Url data_uri);
+
+  // Called by the browser process (C++, ContextualTasksExtensionHandler)
+  // when the session's tab context state updates, providing the combined
+  // list of attached and restored tabs along with the IDs of tabs that
+  // have already been submitted or restored.
+  OnTabContextUpdated(array<searchbox.mojom.TabInfo> tabs,
+                      array<int32> submitted_tab_ids);
 };

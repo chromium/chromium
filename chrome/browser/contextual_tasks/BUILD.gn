@@ -573,6 +573,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
   public_deps = [
     "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
+    "//components/omnibox/browser:mojo_bindings",
     "//mojo/public/mojom/base",
     "//mojo/public/mojom/base:protobuf_support",
     "//ui/base/mojom",

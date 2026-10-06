@@ -180,20 +180,8 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     handler_ = ContextualTasksExtensionHandler::GetForCurrentDocument(rfh);
     ASSERT_NE(handler_, nullptr);
 
-    // Bind the mock page to the handler.
-    mojo::PendingReceiver<mojom::ExtensionPageHandler> page_handler_receiver;
-    handler_->CreateExtensionPageHandler(mock_page_.BindAndGetRemote(),
-                                         std::move(page_handler_receiver));
-
-    // Bind the mock searchbox page and composebox page handler to the handler.
-    mojo::PendingReceiver<searchbox::mojom::PageHandler> searchbox_receiver;
-    static_cast<composebox::mojom::PageHandlerFactory*>(handler_)
-        ->CreatePageHandler(
-            composebox_handler_remote_.BindNewPipeAndPassReceiver(),
-            mock_searchbox_page_.BindAndGetRemote(),
-            std::move(searchbox_receiver));
-
-    // Set up mock session handle and controller.
+    // Set up mock session handle and controller before binding handlers so
+    // initial subscriptions attach to `mock_session_handle_`.
     auto session_handle = std::make_unique<
         NiceMock<contextual_search::MockContextualSearchSessionHandle>>();
     mock_session_handle_ = session_handle.get();
@@ -233,6 +221,19 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
         ->SetTaskSession(std::nullopt, std::move(session_handle),
                          /*input_state_model=*/nullptr);
+
+    // Bind the mock page to the handler.
+    mojo::PendingReceiver<mojom::ExtensionPageHandler> page_handler_receiver;
+    handler_->CreateExtensionPageHandler(mock_page_.BindAndGetRemote(),
+                                         std::move(page_handler_receiver));
+
+    // Bind the mock searchbox page and composebox page handler to the handler.
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> searchbox_receiver;
+    static_cast<composebox::mojom::PageHandlerFactory*>(handler_)
+        ->CreatePageHandler(
+            composebox_handler_remote_.BindNewPipeAndPassReceiver(),
+            mock_searchbox_page_.BindAndGetRemote(),
+            std::move(searchbox_receiver));
 
     mock_lens_overlay_controller_ =
         std::make_unique<NiceMock<MockLensOverlayController>>(
@@ -2463,6 +2464,143 @@ IN_PROC_BROWSER_TEST_F(
       tasks_service->GetContextualTaskForTab(active_tab_id);
   ASSERT_TRUE(task.has_value());
   EXPECT_EQ(task->GetTaskId(), *side_panel_task_id_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnTabContextStateChanged_NotifiesExtensionPageOnAttachAndRemove) {
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_session_handle_->GetUploadedContextTokensForTesting().push_back(token);
+
+  base::RunLoop add_run_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->tab_id, 101);
+        EXPECT_EQ(tabs[0]->title, "Tab One");
+        EXPECT_EQ(tabs[0]->url, GURL("https://example.com/one"));
+        EXPECT_TRUE(submitted_tab_ids.empty());
+        add_run_loop.Quit();
+      });
+
+  mock_session_handle_->AddDelayedTabContext(
+      token, 101, GURL("https://example.com/one"), "Tab One");
+  add_run_loop.Run();
+
+  base::RunLoop remove_run_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        EXPECT_TRUE(tabs.empty());
+        EXPECT_TRUE(submitted_tab_ids.empty());
+        remove_run_loop.Quit();
+      });
+
+  mock_session_handle_->RemoveUploadedContextToken(token);
+  remove_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnTabContextStateChanged_DeduplicatesAttachedAndRestoredTabs) {
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_session_handle_->GetUploadedContextTokensForTesting().push_back(token);
+
+  base::RunLoop attach_run_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        ASSERT_EQ(tabs.size(), 1u);
+        attach_run_loop.Quit();
+      });
+  mock_session_handle_->AddDelayedTabContext(
+      token, 10, GURL("https://example.com/shared"), "Shared Tab");
+  attach_run_loop.Run();
+
+  contextual_search::TabInfo duplicate_restored;
+  duplicate_restored.tab_id = 99;
+  duplicate_restored.url = GURL("https://example.com/shared");
+  duplicate_restored.title = "Duplicate Restored";
+
+  contextual_search::TabInfo unique_restored;
+  unique_restored.tab_id = 20;
+  unique_restored.url = GURL("https://example.com/restored");
+  unique_restored.title = "Restored Tab";
+
+  base::RunLoop restore_run_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        ASSERT_EQ(tabs.size(), 2u);
+        EXPECT_EQ(tabs[0]->tab_id, 10);
+        EXPECT_EQ(tabs[0]->url, GURL("https://example.com/shared"));
+        EXPECT_EQ(tabs[1]->tab_id, 20);
+        EXPECT_EQ(tabs[1]->url, GURL("https://example.com/restored"));
+        EXPECT_THAT(submitted_tab_ids, testing::ElementsAre(20));
+        restore_run_loop.Quit();
+      });
+
+  mock_session_handle_->SetRestoredTabs({duplicate_restored, unique_restored});
+  restore_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       CreateExtensionPageHandler_SyncsInitialTabContextState) {
+  const base::UnguessableToken unsubmitted_token =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken submitted_token =
+      base::UnguessableToken::Create();
+  mock_session_handle_->GetUploadedContextTokensForTesting().push_back(
+      unsubmitted_token);
+  mock_session_handle_->GetUploadedContextTokensForTesting().push_back(
+      submitted_token);
+
+  mock_session_handle_->AddDelayedTabContext(
+      unsubmitted_token, 11, GURL("https://example.com/active"), "Active Tab");
+  mock_session_handle_->AddDelayedTabContext(
+      submitted_token, 12, GURL("https://example.com/submitted"),
+      "Submitted Tab");
+  // Simulate `submitted_token` having already been submitted in a prior turn.
+  std::erase(mock_session_handle_->GetUploadedContextTokensForTesting(),
+             submitted_token);
+
+  contextual_search::TabInfo restored_tab;
+  restored_tab.tab_id = 13;
+  restored_tab.url = GURL("https://example.com/restored");
+  restored_tab.title = "Restored Tab";
+  mock_session_handle_->SetRestoredTabs({restored_tab});
+
+  ASSERT_TRUE(
+      content::ExecJs(web_contents_,
+                      "const iframe = document.createElement('iframe'); "
+                      "document.body.appendChild(iframe);"));
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(child_rfh, nullptr);
+
+  ContextualTasksExtensionHandler::CreateForCurrentDocument(child_rfh);
+  auto* child_handler =
+      ContextualTasksExtensionHandler::GetForCurrentDocument(child_rfh);
+  ASSERT_NE(child_handler, nullptr);
+
+  testing::NiceMock<MockContextualTasksExtensionPage> mock_child_page;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_child_page, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        ASSERT_EQ(tabs.size(), 3u);
+        EXPECT_EQ(tabs[0]->tab_id, 11);
+        EXPECT_EQ(tabs[1]->tab_id, 12);
+        EXPECT_EQ(tabs[2]->tab_id, 13);
+        EXPECT_THAT(submitted_tab_ids, testing::ElementsAre(12, 13));
+        run_loop.Quit();
+      });
+
+  mojo::PendingReceiver<mojom::ExtensionPageHandler> child_handler_receiver;
+  child_handler->CreateExtensionPageHandler(mock_child_page.BindAndGetRemote(),
+                                            std::move(child_handler_receiver));
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks
