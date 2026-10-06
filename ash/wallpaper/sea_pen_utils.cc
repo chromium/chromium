@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
+#include "ash/wallpaper/sea_pen_utils.h"
 
 #include <string>
 
@@ -17,7 +17,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace wallpaper_handlers {
+namespace ash {
 
 gfx::Size GetLargestDisplaySizeLandscape() {
   // Screen should be non-null if the user is selecting SeaPen thumbnails.
@@ -59,7 +59,7 @@ bool IsValidOutput(const manta::proto::OutputData& output,
 }
 
 manta::proto::Request CreateMantaRequest(
-    const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+    const personalization_app::mojom::SeaPenQueryPtr& query,
     std::optional<uint32_t> generation_seed,
     int num_outputs,
     const gfx::Size& size,
@@ -94,28 +94,27 @@ manta::proto::Request CreateMantaRequest(
   if (query->is_text_query()) {
     input_data.set_text(query->get_text_query());
   } else if (query->is_template_query() &&
-             ash::IsValidTemplateQuery(query->get_template_query())) {
+             IsValidTemplateQuery(query->get_template_query())) {
     input_data.set_tag(kTemplateIdTag.data());
-    input_data.set_text(
-        ash::TemplateIdToString(query->get_template_query()->id));
+    input_data.set_text(TemplateIdToString(query->get_template_query()->id));
     for (auto option : query->get_template_query()->options) {
       manta::proto::InputData& input_option = *request.add_input_data();
-      input_option.set_tag(ash::TemplateChipToString(option.first));
-      input_option.set_text(ash::TemplateOptionToString(option.second));
+      input_option.set_tag(TemplateChipToString(option.first));
+      input_option.set_text(TemplateOptionToString(option.second));
     }
   }
-  if (ash::features::IsSeaPenUseExptTemplateEnabled()) {
+  if (features::IsSeaPenUseExptTemplateEnabled()) {
     manta::proto::InputData& expt_template_option = *request.add_input_data();
     expt_template_option.set_tag("use_expt_template");
     expt_template_option.set_text("true");
   }
-  if (query->is_text_query() && ash::features::IsSeaPenQueryRewriteEnabled()) {
+  if (query->is_text_query() && features::IsSeaPenQueryRewriteEnabled()) {
     manta::proto::InputData& rewrite_input_data = *request.add_input_data();
     rewrite_input_data.set_tag("use_query_rewrite");
     rewrite_input_data.set_text("true");
   }
   if (query->is_text_query() &&
-      ash::features::IsSeaPenTextInputTranslationEnabled()) {
+      features::IsSeaPenTextInputTranslationEnabled()) {
     manta::proto::InputData& translation_input_data = *request.add_input_data();
     translation_input_data.set_tag("use_i18n");
     translation_input_data.set_text("true");
@@ -124,11 +123,10 @@ manta::proto::Request CreateMantaRequest(
 }
 
 std::string GetFeedbackText(
-    const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-    const ash::personalization_app::mojom::SeaPenFeedbackMetadataPtr&
-        metadata) {
+    const personalization_app::mojom::SeaPenQueryPtr& query,
+    const personalization_app::mojom::SeaPenFeedbackMetadataPtr& metadata) {
   if (query->is_template_query() &&
-      !ash::IsValidTemplateQuery(query->get_template_query())) {
+      !IsValidTemplateQuery(query->get_template_query())) {
     return "";
   }
 
@@ -149,8 +147,8 @@ std::string GetFeedbackText(
     base::StringAppendF(&feedback_text, "options: ");
     for (const auto& [chip, option] : query->get_template_query()->options) {
       base::StringAppendF(&feedback_text, "(%s, %s)",
-                          ash::TemplateChipToString(chip).c_str(),
-                          ash::TemplateOptionToString(option).c_str());
+                          TemplateChipToString(chip).c_str(),
+                          TemplateOptionToString(option).c_str());
     }
     base::StringAppendF(&feedback_text, "\n");
   }
@@ -159,4 +157,4 @@ std::string GetFeedbackText(
   return feedback_text;
 }
 
-}  // namespace wallpaper_handlers
+}  // namespace ash

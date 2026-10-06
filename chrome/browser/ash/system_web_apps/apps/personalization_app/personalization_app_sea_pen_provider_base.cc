@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/wallpaper/sea_pen_utils.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -389,7 +389,7 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
   }
 
   std::string feedback_text =
-      wallpaper_handlers::GetFeedbackText(query_and_thumbnail->first, metadata);
+      GetFeedbackText(query_and_thumbnail->first, metadata);
 
   base::DictValue ai_metadata;
   ai_metadata.Set(feedback::kSeaPenMetadataKey, "true");

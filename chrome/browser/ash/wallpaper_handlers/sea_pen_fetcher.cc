@@ -15,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/wallpaper/sea_pen_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/barrier_callback.h"
 #include "base/containers/span.h"
@@ -29,7 +30,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"
@@ -176,7 +176,7 @@ void SanitizeJpgBytes(
     const manta::proto::OutputData& output_data,
     data_decoder::DataDecoder* data_decoder,
     base::OnceCallback<void(std::optional<ash::SeaPenImage>)> callback) {
-  if (!IsValidOutput(output_data, __func__)) {
+  if (!ash::IsValidOutput(output_data, __func__)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -391,7 +391,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     const int num_outputs = ash::features::IsSeaPenTextInputEnabled()
                                 ? kNumTextThumbnailsRequested
                                 : kNumTemplateThumbnailsRequested;
-    manta::proto::Request request = CreateMantaRequest(
+    manta::proto::Request request = ash::CreateMantaRequest(
         query, std::nullopt, num_outputs, kDesiredThumbnailSize, feature_name);
     snapper_provider_->Call(
         request, TrafficAnnotationForFeature(feature_name),
@@ -440,9 +440,9 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
                        cloned_query->which()));
 
-    manta::proto::Request request =
-        CreateMantaRequest(cloned_query, thumbnail.id, /*num_outputs=*/1,
-                           GetLargestDisplaySizeLandscape(), feature_name);
+    manta::proto::Request request = ash::CreateMantaRequest(
+        cloned_query, thumbnail.id, /*num_outputs=*/1,
+        ash::GetLargestDisplaySizeLandscape(), feature_name);
     snapper_provider_->Call(
         request, TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,

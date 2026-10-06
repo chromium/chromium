@@ -10,8 +10,6 @@ static_library("wallpaper_handlers") {
     "google_photos_wallpaper_handlers.h",
     "sea_pen_fetcher.cc",
     "sea_pen_fetcher.h",
-    "sea_pen_utils.cc",
-    "sea_pen_utils.h",
     "wallpaper_fetcher_delegate.cc",
     "wallpaper_fetcher_delegate.h",
     "wallpaper_handlers.cc",
@@ -67,7 +65,6 @@ source_set("unit_tests") {
   sources = [
     "google_photos_wallpaper_handlers_unittest.cc",
     "sea_pen_fetcher_unittest.cc",
-    "sea_pen_utils_unittest.cc",
   ]
 
   deps = [

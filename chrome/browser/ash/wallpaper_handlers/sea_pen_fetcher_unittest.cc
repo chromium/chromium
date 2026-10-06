@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/wallpaper/sea_pen_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +25,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -256,7 +256,7 @@ TEST_F(SeaPenFetcherTest, TemplateRequestsFourImages) {
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(CreateMantaRequest(
+      Call(base::test::EqualsProto(ash::CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
                /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
@@ -303,7 +303,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(CreateMantaRequest(
+      Call(base::test::EqualsProto(ash::CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
                /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
@@ -681,9 +681,9 @@ TEST_F(SeaPenFetcherTest, WallpaperCallsSnapperProvider) {
   auto query = MakeTemplateQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(CreateMantaRequest(
+              Call(base::test::EqualsProto(ash::CreateMantaRequest(
                        query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -722,9 +722,9 @@ TEST_F(SeaPenFetcherTest, FreeformWallpaperCallsSnapperProvider) {
   auto query = MakeFreeformQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(CreateMantaRequest(
+              Call(base::test::EqualsProto(ash::CreateMantaRequest(
                        query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -956,7 +956,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(CreateMantaRequest(
+      Call(base::test::EqualsProto(ash::CreateMantaRequest(
                query, /*generation_seed=*/std::nullopt,
                /*num_outputs=*/SeaPenFetcher::kNumTextThumbnailsRequested,
                {880, 440}, manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
@@ -1016,9 +1016,9 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
           kGenerativePrompt);
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(CreateMantaRequest(
+              Call(base::test::EqualsProto(ash::CreateMantaRequest(
                        user_query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -1064,9 +1064,9 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
 
   EXPECT_CALL(
       snapper_provider(),
-      Call(base::test::EqualsProto(CreateMantaRequest(
+      Call(base::test::EqualsProto(ash::CreateMantaRequest(
                generative_prompt_query, /*generation_seed=*/kFakeGenerationSeed,
-               /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
+               /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
                manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
            testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -1109,9 +1109,9 @@ TEST_F(SeaPenFetcherTest,
   auto user_query = MakeFreeformQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(CreateMantaRequest(
+              Call(base::test::EqualsProto(ash::CreateMantaRequest(
                        user_query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -1152,9 +1152,9 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
   auto template_query = MakeTemplateQuery();
 
   EXPECT_CALL(snapper_provider(),
-              Call(base::test::EqualsProto(CreateMantaRequest(
+              Call(base::test::EqualsProto(ash::CreateMantaRequest(
                        template_query, /*generation_seed=*/kFakeGenerationSeed,
-                       /*num_outputs=*/1, GetLargestDisplaySizeLandscape(),
+                       /*num_outputs=*/1, ash::GetLargestDisplaySizeLandscape(),
                        manta::proto::FeatureName::CHROMEOS_WALLPAPER)),
                    testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
