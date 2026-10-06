@@ -67,17 +67,22 @@ elif A includes B
   Either break it at the source-file level (eg. by extracting code into a
   common header and declaring that as its own source set), or both headers
   should be part of the same target.
-elif A is a link target (eg. shared_library / static_library) with
+elif A is a link target (eg. shared_library / component / static_library) with
      public / sources
-  Copy the block for A's definition into a new block `source_set("A_sources")`
-  Remove public / sources from A
+  If A is a static_library:
+    Copy A's definition into `static_library("A_sources")`
+    Change A to `group("A")`
+    Remove configs and public_configs from A
+  Else:
+    Copy A's definition into `source_set("A_sources")`
+  Remove public / sources / non-public configs from A
   Add A_sources to the public_deps of A
   Remove deps / public_deps from A_sources
   run `gn check --fix` to add the deps to A_sources and A_sources to B
   Once it's fixed, rerun `gn gen` and
   `siso query graph ... > $OUT_DIR/modified.jsonl`.
-  You should expect no changes, except `obj/.../A/foo.o` being renamed to
-  `A_sources`.
+  You should expect no changes, except `obj/.../A/foo.o` (and `libA.a` for a
+  static_library) being renamed to `A_sources`.
 else
   Run `gn check --fix` to make B depend on A
   Run `gn gen` and see what dependency loop pops up
