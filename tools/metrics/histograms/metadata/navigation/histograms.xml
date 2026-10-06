@@ -1502,17 +1502,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.HostnameHasDeviationCharacters" units="count"
-    expires_after="2024-06-30">
-  <owner>meacer@chromium.org</owner>
-  <owner>chrome-trusty-transport@google.com</owner>
-  <summary>
-    Counts the number of typed and pasted main frame navigations to hostnames
-    that contain characters that are treated differently between IDNA 2003 and
-    IDNA 2008, aka deviation characters. Ignores reload navigations.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess"
     enum="Boolean" expires_after="2027-06-30">
