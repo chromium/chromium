@@ -304,13 +304,13 @@ void OffscreenCanvasRenderingContext2D::Reset() {
 
 scoped_refptr<CanvasResource>
 OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
-  if (!InitializeResourceProvider() || !shared_image_provider_) {
+  if (!InitializeResourceProvider() || !GetSharedImageProvider()) {
     return nullptr;
   }
 
   FlushCanvas(reason);
   scoped_refptr<CanvasResource> frame =
-      shared_image_provider_->ProduceCanvasResource();
+      GetSharedImageProvider()->ProduceCanvasResource();
   if (!frame)
     return nullptr;
 

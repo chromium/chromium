@@ -361,6 +361,7 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  bool clear_frame,
                                  FlushReason reason) {}
 
+  Canvas2DResourceProvider* GetSharedImageProvider() const;
   void CreateBitmapProvider();
   scoped_refptr<StaticBitmapImage> Snapshot();
 

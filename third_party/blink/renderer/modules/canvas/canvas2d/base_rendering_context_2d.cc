@@ -192,6 +192,11 @@ const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
   return recorder_.get();
 }
 
+Canvas2DResourceProvider* BaseRenderingContext2D::GetSharedImageProvider()
+    const {
+  return shared_image_provider_.get();
+}
+
 bool BaseRenderingContext2D::HasResourceProvider() const {
   return shared_image_provider_ != nullptr || surface_ != nullptr;
 }

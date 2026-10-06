@@ -858,16 +858,16 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 
   // If the canvas is backed by a SharedImage resource provider, toggle
   // whether resource recycling is enabled based on page visibility.
-  if (shared_image_provider_) {
-    shared_image_provider_->SetResourceRecyclingEnabled(page_is_visible);
+  if (GetSharedImageProvider()) {
+    GetSharedImageProvider()->SetResourceRecyclingEnabled(page_is_visible);
   }
 
   // Conserve memory.
   SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
 
   if (features::IsCanvas2DHibernationEnabled() && !page_is_visible &&
-      !IsHibernating() && shared_image_provider_ &&
-      shared_image_provider_->IsAccelerated()) {
+      !IsHibernating() && GetSharedImageProvider() &&
+      GetSharedImageProvider()->IsAccelerated()) {
     // Assuming 8-bit RGBA or similar, this means that we don't bother
     // hibernating canvas elements smaller than 64kiB. Hibernation has a cost,
     // and a lot of pages have very small canvas elements, according to metrics.
@@ -1160,7 +1160,7 @@ bool CanvasRenderingContext2D::IsResourceProviderValid() const {
 
 Canvas2DResourceProvider* CanvasRenderingContext2D::GetSharedImageProvider()
     const {
-  return shared_image_provider_.get();
+  return BaseRenderingContext2D::GetSharedImageProvider();
 }
 
 bool CanvasRenderingContext2D::HasResourceProvider() const {
@@ -1317,7 +1317,7 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
             kHibernationEndedWithSwitchToBackgroundRendering);
   } else {
     bool is_accelerated =
-        shared_image_provider_ && shared_image_provider_->IsAccelerated();
+        GetSharedImageProvider() && GetSharedImageProvider()->IsAccelerated();
     if (is_accelerated) {
       CanvasHibernationHandler::ReportHibernationEvent(
           CanvasHibernationHandler::HibernationEvent::
