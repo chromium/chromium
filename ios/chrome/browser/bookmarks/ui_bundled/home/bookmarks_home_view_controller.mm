@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -168,6 +169,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     BookmarksFolderEditorCoordinatorDelegate,
     BookmarksHomeConsumer,
     BookmarkTableCellTitleEditDelegate,
+    SceneStateObserver,
     TableViewURLDragDataSource,
     TableViewURLDropDelegate,
     UIGestureRecognizerDelegate,
@@ -275,6 +277,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser->AsWeakPtr();
+    [browser->GetSceneState() addObserver:self];
     ProfileIOS* profile = self.profile;
     _webStateList = browser->GetWebStateList();
 
@@ -306,6 +309,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   _displayedFolderNode = nullptr;
   self.mediator.consumer = nil;
   self.mediator = nil;
+  if (_browser) {
+    [_browser->GetSceneState() removeObserver:self];
+  }
   _browser = nullptr;
   [self.searchController dismissViewControllerAnimated:YES completion:nil];
   [self dismissActionSheetCoordinator];
@@ -2625,7 +2631,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                  style:UIAlertActionStyleDefault
                enabled:![self isIncognitoForced]];
 
-  if (base::ios::IsMultipleScenesSupported()) {
+  if (_browser && _browser->GetSceneState().multipleScenesAvailable) {
     titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
     auto action = ^{
       [weakSelf actionSheetOpenNewWindowActionWithURL:nodeURL];
@@ -3281,6 +3287,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
               base::SysUTF8ToNSString(URL.spec()), URL,
               self.displayedFolderNode, index, _bookmarkModel.get(),
               self.profile)];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    multipleScenesAvailabilityDidChange:(BOOL)multipleScenesAvailable {
+  [self dismissActionSheetCoordinator];
 }
 
 @end
