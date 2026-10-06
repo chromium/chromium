@@ -27,6 +27,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/pass_key.h"
@@ -3334,6 +3335,80 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
       histogram_tester().GetBucketCount(
           "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated2",
           true));
+}
+
+// Tests that an extension's service worker is registered again after //content
+// wipes its service worker storage to recover from corruption, and that tasks
+// queued before and during the re-registration run once the worker is
+// registered.
+// Regression test for crbug.com/529976577.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       ReRegisterWorkerAfterStorageWipe) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "worker.js"}
+         })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"),
+                     R"(chrome.runtime.onInstalled.addListener(() => {
+                          chrome.test.sendMessage('installed');
+                        });)");
+
+  // Wait for `runtime.onInstalled` so that no event starts the worker during
+  // the wipe below.
+  ExtensionTestMessageListener installed_listener("installed");
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(installed_listener.WaitUntilSatisfied());
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  EXPECT_TRUE(
+      task_queue->RetrieveRegisteredServiceWorkerVersion(extension->id())
+          .IsValid());
+
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+
+  // Add a task, which requests a worker start, and wipe the storage right away
+  // to simulate //content recovering from corruption. The start fails because
+  // the storage is being wiped. This usually happens before the wipe completes
+  // and schedules a start retry (see
+  // `extensions_features::kExtensionsServiceWorkerStartRetry`). The task stays
+  // queued, and `ServiceWorkerTaskQueue::OnStorageWipedSync()` cancels the
+  // retry.
+  const LazyContextId lazy_context_id =
+      LazyContextId::ForExtension(profile(), extension);
+  base::test::TestFuture<std::unique_ptr<LazyContextTaskQueue::ContextInfo>>
+      task_before_wipe;
+  task_queue->AddPendingTask(lazy_context_id, task_before_wipe.GetCallback());
+  content::DeleteAndStartOverServiceWorkerStorage(GetServiceWorkerContext());
+
+  // The registration of the deleted worker is no longer recorded.
+  EXPECT_FALSE(
+      task_queue->RetrieveRegisteredServiceWorkerVersion(extension->id())
+          .IsValid());
+
+  // The task is still queued, waiting for the new registration.
+  EXPECT_FALSE(task_before_wipe.IsReady());
+
+  // Add another task while the worker is being registered again.
+  base::test::TestFuture<std::unique_ptr<LazyContextTaskQueue::ContextInfo>>
+      task_after_wipe;
+  task_queue->AddPendingTask(lazy_context_id, task_after_wipe.GetCallback());
+
+  // Both tasks run once the new registration starts the worker. //content
+  // stores the registration only after the worker handles the install event,
+  // which can happen after the tasks run, so wait for it.
+  EXPECT_NE(nullptr, task_before_wipe.Get());
+  EXPECT_NE(nullptr, task_after_wipe.Get());
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return task_queue->RetrieveRegisteredServiceWorkerVersion(extension->id())
+        .IsValid();
+  }));
 }
 
 // Tests that an extension's service worker can't be used to relax the extension

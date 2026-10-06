@@ -1186,6 +1186,9 @@ void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
 void ServiceWorkerContextCore::OnStorageWiped() {
   observer_list_->Notify(FROM_HERE,
                          &ServiceWorkerContextCoreObserver::OnStorageWiped);
+  for (auto& observer : sync_observer_list_->observers) {
+    observer.OnStorageWipedSync(wrapper_);
+  }
 }
 
 void ServiceWorkerContextCore::OnMainScriptResponseSet(

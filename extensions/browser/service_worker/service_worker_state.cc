@@ -117,6 +117,17 @@ void ServiceWorkerState::Reset() {
   }
 }
 
+void ServiceWorkerState::ResetForStorageWipe() {
+  // A start request sent before the wipe is not aborted by
+  // `DeleteAndStartOver()` and can finish after `OnStorageWipedSync()`. Drop
+  // its callbacks so that its result can't fail tasks queued for the new
+  // registration. No result will arrive anymore, so also clear
+  // `worker_starting_` to allow starting the worker from the new registration.
+  weak_factory_.InvalidateWeakPtrs();
+  worker_starting_ = false;
+  Reset();
+}
+
 bool ServiceWorkerState::IsStarting() const {
   return worker_starting_;
 }
