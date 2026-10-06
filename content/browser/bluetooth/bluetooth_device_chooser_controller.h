@@ -154,10 +154,15 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
 
   // The adapter used to get existing devices and start a discovery session.
   scoped_refptr<device::BluetoothAdapter> adapter_;
-  // The WebBluetoothServiceImpl that owns this instance.
-  raw_ptr<WebBluetoothServiceImpl> web_bluetooth_service_;
-  // The RenderFrameHost that owns web_bluetooth_service_.
-  raw_ref<RenderFrameHost> render_frame_host_;
+  // The WebBluetoothServiceImpl that owns this instance, and the
+  // RenderFrameHost that owns `web_bluetooth_service_`.
+  // Destroying `chooser_` during member destruction may synchronously destroy
+  // the hosting WebContents and therefore both `web_bluetooth_service_` and
+  // `render_frame_host_`. This is safe because neither is accessed after
+  // `chooser_` is destroyed.
+  raw_ptr<WebBluetoothServiceImpl, DisableDanglingPtrDetection>
+      web_bluetooth_service_;
+  raw_ref<RenderFrameHost, DisableDanglingPtrDetection> render_frame_host_;
 
   BluetoothDeviceRequestPromptInfo prompt_info_;
 
