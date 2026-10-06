@@ -810,6 +810,105 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", false));
 }
 
+// Adding and removing tabs from the side panel's "Add tabs" flyout signposts
+// each tab consistently in all four places: favicon coins on the "+" button,
+// coins next to "Sharing n tabs" on the menu trigger row, a checkmark on the
+// tab's flyout row, and an underline on the tab strip.
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
+                       NewThread_AddAndRemoveTabs_SignpostsConsistently) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab2);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+  const GURL kUrl3 = embedded_test_server()->GetURL("/title3.html");
+
+  RunTestSequence(
+      // Tab 0 (title3) is the active, auto-suggested tab. Tabs 1 (title1) and
+      // 2 (title2) are background candidates. Navigate tab 0 before opening
+      // the panel so the auto-suggestion is picked up on panel open rather
+      // than racing a navigation against the composebox handler binding.
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kUrl3),
+      AddInstrumentedTab(kBackgroundTab1, kUrl1),
+      AddInstrumentedTab(kBackgroundTab2, kUrl2),
+      SelectTab(kTabStripElementId, 0), OpenSidePanelWithWebContents(),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+
+      // Previous thread: attach tab 1 on top of the auto-suggested tab 0 and
+      // submit, so the thread switch has something to clear.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
+      VerifyUnderlinedTabs({0, 1}),
+      SubmitSidePanelQuery(kSidePanelWebContentsId, "First turn query"),
+      CommitActiveThreadUrlInSidePanel(kSidePanelWebContentsId,
+                                       "First+turn+query", "thread-1"),
+
+      // Start a new thread. Only the auto-suggested active tab should carry
+      // over; tab 1's underline and all other sign posting must be gone.
+      StartNewThreadFromSidePanel(kSidePanelWebContentsId),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title3"}),
+      VerifyUnderlinedTabs({0}), OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title3", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", false),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", false),
+
+      // Add tab 2 on the new thread. It must be signposted everywhere,
+      // including a new underline on the tab strip.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title3", "title2"}),
+      VerifyUnderlinedTabs({0, 2}),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title3", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", false),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true),
+
+      // Re-add tab 1, which the thread switch cleared. Nothing stale from the
+      // previous thread should prevent it from being signposted again.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 3),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 3),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId,
+                               {"title3", "title1", "title2"}),
+      VerifyUnderlinedTabs({0, 1, 2}),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 3),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title3", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true),
+
+      // Remove tab 2 again. Only its sign posting should disappear; tab 0 and
+      // tab 1 must stay underlined and checked.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title3", "title1"}),
+      VerifyUnderlinedTabs({0, 1}),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title3", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", false),
+
+      // Submit on the new thread. The context assembled on this thread must
+      // survive the turn with the same sign posting.
+      SubmitSidePanelQuery(kSidePanelWebContentsId, "New thread query"),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title3", "title1"}),
+      VerifyUnderlinedTabs({0, 1}),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title3", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", false));
+}
+
 // Context uploads never complete, reproducing real network timing where the
 // user switches to a tab in the window between attaching it and its upload
 // finishing.
