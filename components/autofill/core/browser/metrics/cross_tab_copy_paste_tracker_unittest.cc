@@ -11,11 +11,16 @@
 #include "components/sessions/core/session_id.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
 namespace autofill {
+namespace {
+
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
 
 class CrossTabCopyPasteTrackerTest : public testing::Test {
  protected:
@@ -85,7 +90,7 @@ TEST_F(CrossTabCopyPasteTrackerTest,
   // Verify UKM Copy Event was recorded.
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Clipboard_CopyPasteEvent::kEntryName);
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_THAT(entries, SizeIs(1));
 
   // Verify the CopyFromTabNonce metric exists and is non-zero.
   const int64_t* copy_nonce = ukm::TestAutoSetUkmRecorder::GetEntryMetric(
@@ -110,7 +115,7 @@ TEST_F(CrossTabCopyPasteTrackerTest,
   // Verify a second UKM Copy Event was recorded (associated with the paste).
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Clipboard_CopyPasteEvent::kEntryName);
-  ASSERT_EQ(entries.size(), 2u);
+  ASSERT_THAT(entries, SizeIs(2));
 
   // Verify the PasteFromTabNonce metric exists and both nonces match.
   const int64_t* paste_nonce = ukm::TestAutoSetUkmRecorder::GetEntryMetric(
@@ -120,12 +125,10 @@ TEST_F(CrossTabCopyPasteTrackerTest,
   EXPECT_EQ(*copy_nonce, *paste_nonce);
 
   // Verify that WithAtMemory event was NOT recorded.
-  EXPECT_EQ(
-      ukm_recorder
-          .GetEntriesByName(
-              ukm::builders::Clipboard_CopyPasteEvent_WithAtMemory::kEntryName)
-          .size(),
-      0u);
+  EXPECT_THAT(
+      ukm_recorder.GetEntriesByName(
+          ukm::builders::Clipboard_CopyPasteEvent_WithAtMemory::kEntryName),
+      IsEmpty());
 }
 
 // Verifies that a valid copy-paste sequence records the `CopyFromTabNonce`
@@ -152,7 +155,7 @@ TEST_F(CrossTabCopyPasteTrackerTest, RecordsCopyPasteUkmMetric_WithAtMemory) {
   // Verify UKM Copy Event was recorded for WithAtMemory.
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Clipboard_CopyPasteEvent_WithAtMemory::kEntryName);
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_THAT(entries, SizeIs(1));
 
   // Verify the CopyFromTabNonce metric exists and is non-zero.
   const int64_t* copy_nonce = ukm::TestAutoSetUkmRecorder::GetEntryMetric(
@@ -177,7 +180,7 @@ TEST_F(CrossTabCopyPasteTrackerTest, RecordsCopyPasteUkmMetric_WithAtMemory) {
   // Verify a second UKM Copy Event was recorded (associated with the paste).
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Clipboard_CopyPasteEvent_WithAtMemory::kEntryName);
-  ASSERT_EQ(entries.size(), 2u);
+  ASSERT_THAT(entries, SizeIs(2));
 
   // Verify the PasteFromTabNonce metric exists and both nonces match.
   const int64_t* paste_nonce = ukm::TestAutoSetUkmRecorder::GetEntryMetric(
@@ -187,11 +190,10 @@ TEST_F(CrossTabCopyPasteTrackerTest, RecordsCopyPasteUkmMetric_WithAtMemory) {
   EXPECT_EQ(*copy_nonce, *paste_nonce);
 
   // Verify that the standard Clipboard.CopyPasteEvent was NOT recorded.
-  EXPECT_EQ(
-      ukm_recorder
-          .GetEntriesByName(ukm::builders::Clipboard_CopyPasteEvent::kEntryName)
-          .size(),
-      0u);
+  EXPECT_THAT(ukm_recorder.GetEntriesByName(
+                  ukm::builders::Clipboard_CopyPasteEvent::kEntryName),
+              IsEmpty());
 }
 
+}  // namespace
 }  // namespace autofill
