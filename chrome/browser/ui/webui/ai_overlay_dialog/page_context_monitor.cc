@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -252,6 +253,22 @@ void PageContextMonitor::PrimaryPageChanged(content::Page& page) {
   page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
                                web_contents()->GetTitle(), std::nullopt);
   did_retry_first_fetch_ = false;
+  StartNewFetch();
+}
+
+void PageContextMonitor::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      !navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  // Same-document navigation occurred (e.g. client-side routing in SPAs like
+  // Google Chat). Notify page handler and fetch updated page context.
+  last_page_content_.reset();
+  page_handler_->DidChangePage(navigation_handle->GetURL(),
+                               web_contents()->GetTitle(), std::nullopt);
   StartNewFetch();
 }
 

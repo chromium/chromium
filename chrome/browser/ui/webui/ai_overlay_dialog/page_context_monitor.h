@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class BrowserWindowInterface;
@@ -29,6 +30,8 @@ class PageContextMonitor : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
 
   std::string GetUrlForHash(const std::string& hash) const;
