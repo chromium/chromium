@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
-#include "build/build_config.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -40,7 +39,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/ui_base_switches.h"
@@ -398,12 +396,6 @@ class SyncConfirmationUIDialogPixelTest
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/477426026.";
-  }
-#endif
   ShowAndVerifyUi();
 }
 
