@@ -110,9 +110,6 @@ public class SetupListManager
                     ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
     // TODO(crbug.com/469425754): Deprecate module and cleanup related logic.
     // ModuleType.DEFAULT_BROWSER_PROMO,
-    // ModuleType.SIGN_IN_PROMO,
-    // ModuleType.SAVE_PASSWORDS_PROMO,
-    // ModuleType.PASSWORD_CHECKUP_PROMO,
 
     private static final Set<Integer> BASE_SETUP_LIST_SET = new HashSet<>(BASE_SETUP_LIST_ORDER);
 

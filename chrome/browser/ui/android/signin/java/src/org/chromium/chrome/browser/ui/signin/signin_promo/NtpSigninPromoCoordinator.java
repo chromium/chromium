@@ -23,8 +23,6 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.function.BooleanSupplier;
-
 /** Coordinator for the seamless sign-in promo card in NTP. */
 @NullMarked
 public class NtpSigninPromoCoordinator {
@@ -44,7 +42,7 @@ public class NtpSigninPromoCoordinator {
      * @param launcher A {@link SigninAndHistorySyncActivityLauncher} for the initialization of
      *     {@link SigninPromoDelegate}.
      * @param bottomSheetController Used to interact with the bottom sheet.
-     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param modalDialogManager Manages modal dialogs shown in the app.
      * @param snackbarManager Manages snackbars shown in the app.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param signinPromoViewContainerStub The ViewStub that contains the layout element in which
@@ -60,8 +58,7 @@ public class NtpSigninPromoCoordinator {
             ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            ViewStub signinPromoViewContainerStub,
-            BooleanSupplier isSetupListActiveSupplier) {
+            ViewStub signinPromoViewContainerStub) {
         mSigninPromoCoordinator =
                 new SigninPromoCoordinator(
                         windowAndroid,
@@ -74,11 +71,7 @@ public class NtpSigninPromoCoordinator {
                         snackbarManager,
                         deviceLockActivityLauncher,
                         new NtpSigninPromoDelegate(
-                                activity,
-                                profile,
-                                launcher,
-                                this::onPromoStateChange,
-                                isSetupListActiveSupplier));
+                                activity, profile, launcher, this::onPromoStateChange));
 
         mSigninPromoViewContainerStub = signinPromoViewContainerStub;
         onPromoStateChange();

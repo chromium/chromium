@@ -57,27 +57,17 @@ public interface EducationTipModuleActionDelegate {
     void showHistorySyncOptInLegacy(Runnable removeModuleCallback);
 
     /**
-     * Opens the the sign-in page.
-     *
-     * @deprecated Use {@link #createBottomSheetSigninAndHistorySyncCoordinator()} and {@link
-     *     BottomSheetSigninAndHistorySyncCoordinator#startSigninFlow} instead.
-     */
-    void showSignInLegacy();
-
-    /** Opens the Password Checkup UI. */
-    void showPasswordCheckup();
-
-    /**
      * Returns the total number of tabs for relaunch across both regular and incognito browsing
      * modes from persisted state.
      */
     int getTabCountForRelaunchFromPersistentStore();
 
     /**
-     * Creates a coordinator for the history sync opt in and sign-in pages.
+     * Creates a coordinator for the history sync opt-in page.
      *
      * @param delegate The delegate to notify when the flow is complete.
-     * @param accessPoint The access point from which the sign-in was triggered.
+     * @param accessPoint The access point from which the flow was triggered.
+     * @return The created {@link BottomSheetSigninAndHistorySyncCoordinator}.
      */
     BottomSheetSigninAndHistorySyncCoordinator createBottomSheetSigninAndHistorySyncCoordinator(
             BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
@@ -85,9 +75,6 @@ public interface EducationTipModuleActionDelegate {
 
     /** Creates a configuration for the history sync opt in page. */
     BottomSheetSigninAndHistorySyncConfig createHistorySyncBottomSheetConfig();
-
-    /** Creates a configuration for the sign-in page. */
-    BottomSheetSigninAndHistorySyncConfig createSigninBottomSheetConfig();
 
     /**
      * Launch the Role Manager for the Setup list default browser promo if eligible.

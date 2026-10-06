@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameO
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
-import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
@@ -743,8 +742,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         mModalDialogManager,
                         mSnackbarManager,
                         DeviceLockActivityLauncherImpl.get(),
-                        signinPromoViewContainerStub,
-                        SetupListModuleUtils::isSetupListActive);
+                        signinPromoViewContainerStub);
     }
 
     /** Updates the search box when the parent view's scroll position is changed. */

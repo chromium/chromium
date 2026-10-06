@@ -677,13 +677,6 @@ public class SigninPromoDelegateTest {
 
     private void setupDelegate(
             @SigninAccessPoint int accessPoint, @Nullable DisplayableProfileData visibleAccount) {
-        setupDelegate(accessPoint, visibleAccount, /* isSetupListActive= */ false);
-    }
-
-    private void setupDelegate(
-            @SigninAccessPoint int accessPoint,
-            @Nullable DisplayableProfileData visibleAccount,
-            boolean isSetupListActive) {
         mDelegate =
                 switch (accessPoint) {
                     case SigninAccessPoint.BOOKMARK_MANAGER ->
@@ -702,11 +695,7 @@ public class SigninPromoDelegateTest {
                                     /* isCreatedInCct= */ false);
                     case SigninAccessPoint.NTP_FEED_TOP_PROMO ->
                             new NtpSigninPromoDelegate(
-                                    mContext,
-                                    mProfile,
-                                    mLauncher,
-                                    mOnPromoStateChange,
-                                    () -> isSetupListActive);
+                                    mContext, mProfile, mLauncher, mOnPromoStateChange);
                     case SigninAccessPoint.RECENT_TABS ->
                             new RecentTabsSigninPromoDelegate(
                                     mContext, mProfile, mLauncher, mOnPromoStateChange);

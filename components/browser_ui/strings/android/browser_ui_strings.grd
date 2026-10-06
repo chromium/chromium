@@ -1292,18 +1292,15 @@
         Let’s go
       </message>
 
-      <!-- Setup List strings -->
-
-      <!-- Setup list Sign in promo strings -->
+      <!-- Sign in promo strings -->
       <message name="IDS_EDUCATIONAL_TIP_SIGN_IN_PROMO_TITLE" desc="Title of the sign in promo that invites users to sign in to Chrome in the educational tip module on NTP.">
         Make Chrome your own
       </message>
       <message name="IDS_EDUCATIONAL_TIP_SIGN_IN_PROMO_DESCRIPTION" desc="Description of the sign in promo that invites users to sign in to Chrome in the educational tip module on NTP.">
         Sign in to easily continue on all your devices
       </message>
-      <message name="IDS_EDUCATIONAL_TIP_SIGN_IN_PROMO_BUTTON" desc="Text on the clickable button on the sign in promo that invites users to sign in to Chrome in the educational tip module on NTP.">
-        Sign in to start
-      </message>
+
+      <!-- Setup List strings -->
 
       <!-- Setup list Enhanced Safe Browsing promo strings -->
       <message name="IDS_EDUCATIONAL_TIP_ENHANCED_SAFE_BROWSING_TITLE" desc="Title of the enhanced safe browsing promo that invites users to turn on enhanced safe browsing in the educational tip module on NTP.">
@@ -1311,48 +1308,6 @@
       </message>
       <message name="IDS_EDUCATIONAL_TIP_ENHANCED_SAFE_BROWSING_DESCRIPTION" desc="Description of the enhanced safe browsing promo that invites users to turn on enhanced safe browsing in the educational tip module on NTP.">
         Get Chrome’s strongest protection against online threats
-      </message>
-
-      <!-- Setup list Save Passwords promo strings -->
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_TITLE" desc="Title of the Save Passwords promo that invites users to turn on the save passwords feature in the educational tip module on NTP.">
-        Save passwords in Chrome
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_DESCRIPTION" desc="Description of the Save Passwords promo that invites users to turn on the save passwords feature in the educational tip module on NTP.">
-        Sign in quickly and easily into sites and apps
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BUTTON" desc="Text on the clickable button on the Save Passwords promo in the educational tip module on NTP.">
-        Show me how
-      </message>
-
-      <!-- Save Passwords instructional bottom sheet strings -->
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BOTTOM_SHEET_FIRST_STEP" desc="The first step in the bottom sheet of the save passwords section within the educational tip module on the NTP.">
-        Sign in to any website
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BOTTOM_SHEET_SECOND_STEP" desc="The second step in the bottom sheet of the save passwords section within the educational tip module on the NTP.">
-        Chrome will offer to save your password
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BOTTOM_SHEET_THIRD_STEP" desc="The third step in the bottom sheet of the save passwords section within the educational tip module on the NTP.">
-        Tap Yes to easily use this password the next time you sign in
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the save passwords bottom sheet has closed.">
-        Save passwords instructional bottom sheet has closed
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the save passwords bottom sheet.">
-        Instructional bottom sheet for saving passwords in Chrome
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BOTTOM_SHEET_ACCESSIBILITY_OPENED_FULL" desc="Accessibility string that describes that the save passwords bottom sheet has fully opened.">
-        Save passwords instructional bottom sheet has fully opened
-      </message>
-
-      <!-- Setup list Password Checkup promo strings -->
-      <message name="IDS_EDUCATIONAL_TIP_PASSWORD_CHECKUP_TITLE" desc="Title of the Password Checkup promo that invites users to check their saved passwords in the educational tip module on NTP.">
-        Check your saved passwords
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_PASSWORD_CHECKUP_DESCRIPTION" desc="Description of the Password Checkup promo that invites users to check their saved passwords in the educational tip module on NTP.">
-        Strengthen your security and keep your data safer by checking your passwords
-      </message>
-      <message name="IDS_EDUCATIONAL_TIP_PASSWORD_CHECKUP_BUTTON" desc="Text on the clickable button on the Password Checkup promo in the educational tip module on NTP.">
-        Check now
       </message>
 
       <!-- Setup list Address Bar Placement promo strings -->

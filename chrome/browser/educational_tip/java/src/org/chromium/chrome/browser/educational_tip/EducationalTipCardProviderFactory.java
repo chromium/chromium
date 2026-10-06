@@ -12,11 +12,8 @@ import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoor
 import org.chromium.chrome.browser.educational_tip.cards.EnhancedSafeBrowsingPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.NtpThemePromoCoordinator;
-import org.chromium.chrome.browser.educational_tip.cards.PasswordCheckupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
-import org.chromium.chrome.browser.educational_tip.cards.SavePasswordsPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.SetupListCelebratoryPromoCoordinator;
-import org.chromium.chrome.browser.educational_tip.cards.SignInPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -24,9 +21,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 /** A factory interface for building a EducationalTipCardProvider instance. */
 @NullMarked
 public class EducationalTipCardProviderFactory {
-    /**
-     * @return An instance of EducationalTipCardProvider.
-     */
+    /** Returns an instance of {@link EducationalTipCardProvider}. */
     public static @Nullable EducationalTipCardProvider createInstance(
             @ModuleType int moduleType,
             Runnable onModuleClickedCallback,
@@ -57,13 +52,6 @@ public class EducationalTipCardProviderFactory {
             case ModuleType.ADDRESS_BAR_PLACEMENT_PROMO:
                 return new AddressBarPlacementPromoCoordinator(
                         onModuleClickedCallback, actionDelegate);
-            case ModuleType.SIGN_IN_PROMO:
-                return new SignInPromoCoordinator(onModuleClickedCallback, actionDelegate);
-            case ModuleType.SAVE_PASSWORDS_PROMO:
-                return new SavePasswordsPromoCoordinator(
-                        onModuleClickedCallback, callbackController, actionDelegate);
-            case ModuleType.PASSWORD_CHECKUP_PROMO:
-                return new PasswordCheckupPromoCoordinator(onModuleClickedCallback, actionDelegate);
             case ModuleType.SETUP_LIST_CELEBRATORY_PROMO:
                 return new SetupListCelebratoryPromoCoordinator(
                         onModuleClickedCallback, actionDelegate);

@@ -32,7 +32,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.function.BooleanSupplier;
 
 /** {@link SigninPromoDelegate} for ntp signin promo. */
 @NullMarked
@@ -91,10 +90,8 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
             Context context,
             Profile profile,
             SigninAndHistorySyncActivityLauncher launcher,
-            Runnable onPromoStateChange,
-            BooleanSupplier isSetupListActiveSupplier) {
+            Runnable onPromoStateChange) {
         super(context, profile, launcher, onPromoStateChange);
-        // TODO(crbug.com/469425754): Deprecate isSetupListActiveSupplier.
         resetNtpSyncPromoLimitsIfHiddenForTooLong();
     }
 

@@ -187,7 +187,6 @@ public class SigninPromoCoordinatorTest {
     private PersonalizedSigninPromoView mPromoView;
     private SigninPromoCoordinator mPromoCoordinator;
     private SigninPromoDelegate mDelegate;
-    private boolean mIsSetupListActive;
     private boolean mIsActivityStarted;
     private boolean mIsNativeInitialized;
 
@@ -1062,12 +1061,7 @@ public class SigninPromoCoordinatorTest {
                             mOnPromoStateChange,
                             /* isCreatedInCct= */ false);
             case SigninAccessPoint.NTP_FEED_TOP_PROMO ->
-                    new NtpSigninPromoDelegate(
-                            activity,
-                            mProfile,
-                            mLauncher,
-                            mOnPromoStateChange,
-                            () -> mIsSetupListActive);
+                    new NtpSigninPromoDelegate(activity, mProfile, mLauncher, mOnPromoStateChange);
             case SigninAccessPoint.RECENT_TABS ->
                     new RecentTabsSigninPromoDelegate(
                             activity, mProfile, mLauncher, mOnPromoStateChange);
