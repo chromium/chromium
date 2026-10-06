@@ -1060,10 +1060,8 @@ TEST_F(BnplManagerTest,
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->context_token,
             kContextToken);
 
-  const LegalMessageLines& legal_message_lines =
-      bnpl_tos_model.legal_message_lines;
-  ASSERT_FALSE(legal_message_lines.empty());
-  EXPECT_EQ(legal_message_lines[0].text(), kLegalMessage);
+  EXPECT_THAT(bnpl_tos_model.legal_message_lines,
+              ElementsAre(Property(&LegalMessageLine::text, kLegalMessage)));
 
   EXPECT_EQ(bnpl_tos_model.issuer, unlinked_issuer);
 
@@ -3341,10 +3339,9 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
       std::make_pair(40'000'000, "USD"));
 
-  ASSERT_EQ(returned_order.size(), 2u);
   // Zip is eligible and must be sorted first.
-  EXPECT_EQ(returned_order[0], IssuerId::kBnplZip);
-  EXPECT_EQ(returned_order[1], IssuerId::kBnplAffirm);
+  EXPECT_THAT(returned_order,
+              ElementsAre(IssuerId::kBnplZip, IssuerId::kBnplAffirm));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
