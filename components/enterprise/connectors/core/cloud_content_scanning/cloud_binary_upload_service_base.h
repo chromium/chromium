@@ -266,28 +266,44 @@ class CloudBinaryUploadServiceBase : public BinaryUploadService {
   base::circular_deque<std::unique_ptr<BinaryUploadRequest>> request_queue_;
 
   // Resources associated with an in-progress request.
-  base::flat_map<BinaryUploadRequest::Id, std::unique_ptr<BinaryUploadRequest>>
-      active_requests_;
-  base::flat_map<BinaryUploadRequest::Id, std::unique_ptr<base::OneShotTimer>>
-      active_timers_;
-  base::flat_map<BinaryUploadRequest::Id, std::string> active_tokens_;
-  base::flat_map<BinaryUploadRequest::Id,
-                 std::unique_ptr<ConnectorUploadRequest>>
-      active_uploads_;
+  struct ActiveRequest {
+    ActiveRequest();
+    ActiveRequest(ActiveRequest&&);
+    ActiveRequest& operator=(ActiveRequest&&);
+    ~ActiveRequest();
 
-  // Maps request IDs to their start times, used for duration metrics.
-  base::flat_map<BinaryUploadRequest::Id, base::TimeTicks> start_times_;
+    std::unique_ptr<BinaryUploadRequest> request;
+    std::unique_ptr<base::OneShotTimer> timer;
+    std::string token;
+    std::unique_ptr<ConnectorUploadRequest> upload;
+    base::TimeTicks start_time;
+    base::flat_map<std::string, ContentAnalysisResponse::Result>
+        received_connector_results;
+  };
+  base::flat_map<BinaryUploadRequest::Id, ActiveRequest> active_requests_;
 
-  // Maps requests to each corresponding tag-result pairs.
-  base::flat_map<BinaryUploadRequest::Id,
-                 base::flat_map<std::string, ContentAnalysisResponse::Result>>
-      received_connector_results_;
+  // Data associated with a DM token + Connector combination for enterprise
+  // upload authorization.
+  struct AuthorizationData {
+    AuthorizationData();
+    AuthorizationData(AuthorizationData&&);
+    AuthorizationData& operator=(AuthorizationData&&);
+    ~AuthorizationData();
 
-  // Indicates whether this DM token + Connector combination can be used to
-  // upload data for enterprise requests. Advanced Protection scans are
-  // validated using the user's Advanced Protection enrollment status.
-  base::flat_map<TokenAndConnector, ScanRequestUploadResult>
-      can_upload_enterprise_data_;
+    // Indicates whether this DM token + Connector combination can be used to
+    // upload data for enterprise requests. Advanced Protection scans are
+    // validated using the user's Advanced Protection enrollment status.
+    std::optional<ScanRequestUploadResult> can_upload;
+
+    // Indicates if this service is waiting on the backend to validate event
+    // reporting. Used to avoid spamming the backend.
+    bool pending_validation = false;
+
+    // Callbacks waiting on IsAuthorized request.
+    std::unique_ptr<base::OnceCallbackList<void(ScanRequestUploadResult)>>
+        callbacks;
+  };
+  base::flat_map<TokenAndConnector, AuthorizationData> authorization_data_;
 
   // Data associated with a user action. Used to track metrics for a user
   // action.
@@ -306,17 +322,6 @@ class CloudBinaryUploadServiceBase : public BinaryUploadService {
   base::RepeatingTimer timer_;
 
   BinaryUploadRequest::Id::Generator request_id_generator_;
-
-  // Indicates if this service is waiting on the backend to validate event
-  // reporting. Used to avoid spamming the backend.
-  base::flat_set<TokenAndConnector> pending_validate_data_upload_request_;
-
-  // Callbacks waiting on IsAuthorized request. These are organized by DM token
-  // and Connector.
-  base::flat_map<
-      TokenAndConnector,
-      std::unique_ptr<base::OnceCallbackList<void(ScanRequestUploadResult)>>>
-      authorization_callbacks_;
 
   std::unique_ptr<Delegate> delegate_;
 

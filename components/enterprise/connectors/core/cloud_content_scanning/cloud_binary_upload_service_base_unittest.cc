@@ -62,14 +62,9 @@ class CloudBinaryUploadServiceBaseTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  auto& GetActiveRequests(CloudBinaryUploadServiceBase& service) {
-    return service.active_requests_;
-  }
-  auto& GetReceivedConnectorResults(CloudBinaryUploadServiceBase& service) {
-    return service.received_connector_results_;
-  }
-  auto& GetStartTimes(CloudBinaryUploadServiceBase& service) {
-    return service.start_times_;
+  auto& GetActiveRequest(CloudBinaryUploadServiceBase& service,
+                         BinaryUploadRequest::Id id) {
+    return service.active_requests_[id];
   }
   void CallRecordRequestMetrics(CloudBinaryUploadServiceBase& service,
                                 BinaryUploadRequest::Id id,
@@ -116,18 +111,18 @@ TEST_F(CloudBinaryUploadServiceBaseTest, ResponseIsComplete) {
   auto request = std::make_unique<FakeBinaryUploadRequest>(base::DoNothing());
   request->add_tag("dlp");
   request->add_tag("malware");
-  GetActiveRequests(service)[id] = std::move(request);
+  GetActiveRequest(service, id).request = std::move(request);
 
   // No results yet.
   EXPECT_FALSE(service.ResponseIsComplete(id));
 
   // Only DLP result.
-  GetReceivedConnectorResults(service)[id]["dlp"] =
+  GetActiveRequest(service, id).received_connector_results["dlp"] =
       ContentAnalysisResponse::Result();
   EXPECT_FALSE(service.ResponseIsComplete(id));
 
   // Both results.
-  GetReceivedConnectorResults(service)[id]["malware"] =
+  GetActiveRequest(service, id).received_connector_results["malware"] =
       ContentAnalysisResponse::Result();
   EXPECT_TRUE(service.ResponseIsComplete(id));
 }
@@ -141,13 +136,13 @@ TEST_F(CloudBinaryUploadServiceBaseTest, ResponseIsComplete_SkipMalware) {
   request->add_tag("dlp");
   request->add_tag("malware");
   request->set_should_skip_malware_scan(true);
-  GetActiveRequests(service)[id] = std::move(request);
+  GetActiveRequest(service, id).request = std::move(request);
 
   // No results yet.
   EXPECT_FALSE(service.ResponseIsComplete(id));
 
   // Only DLP result, malware is skipped.
-  GetReceivedConnectorResults(service)[id]["dlp"] =
+  GetActiveRequest(service, id).received_connector_results["dlp"] =
       ContentAnalysisResponse::Result();
   EXPECT_TRUE(service.ResponseIsComplete(id));
 }
@@ -161,7 +156,7 @@ TEST_F(CloudBinaryUploadServiceBaseTest, GetRequest) {
 
   auto request = std::make_unique<FakeBinaryUploadRequest>(base::DoNothing());
   BinaryUploadRequest* request_ptr = request.get();
-  GetActiveRequests(service)[id] = std::move(request);
+  GetActiveRequest(service, id).request = std::move(request);
 
   EXPECT_EQ(service.GetRequest(id), request_ptr);
 }
@@ -173,7 +168,7 @@ TEST_F(CloudBinaryUploadServiceBaseTest, RecordRequestMetrics) {
   TestCloudBinaryUploadServiceBase service;
   BinaryUploadRequest::Id id(1);
 
-  GetStartTimes(service)[id] = base::TimeTicks::Now();
+  GetActiveRequest(service, id).start_time = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(1));
 
   CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
@@ -191,7 +186,7 @@ TEST_F(CloudBinaryUploadServiceBaseTest, RecordRequestMetricsWithResponse) {
   TestCloudBinaryUploadServiceBase service;
   BinaryUploadRequest::Id id(1);
 
-  GetStartTimes(service)[id] = base::TimeTicks::Now();
+  GetActiveRequest(service, id).start_time = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(2));
 
   ContentAnalysisResponse response;
@@ -228,8 +223,8 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
   request->set_device_token("dm_token");
   request->set_analysis_connector(AnalysisConnector::FILE_DOWNLOADED);
 
-  GetActiveRequests(service)[id] = std::move(request);
-  GetStartTimes(service)[id] = base::TimeTicks::Now();
+  GetActiveRequest(service, id).request = std::move(request);
+  GetActiveRequest(service, id).start_time = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(3));
 
   CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
@@ -252,8 +247,8 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
   request->set_device_token("dm_token");
   request->set_analysis_connector(AnalysisConnector::BULK_DATA_ENTRY);
 
-  GetActiveRequests(service)[id] = std::move(request);
-  GetStartTimes(service)[id] = base::TimeTicks::Now();
+  GetActiveRequest(service, id).request = std::move(request);
+  GetActiveRequest(service, id).start_time = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(4));
 
   CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
@@ -276,8 +271,8 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
   request->set_device_token("dm_token");
   request->set_analysis_connector(AnalysisConnector::NETWORK_REQUEST);
 
-  GetActiveRequests(service)[id] = std::move(request);
-  GetStartTimes(service)[id] = base::TimeTicks::Now();
+  GetActiveRequest(service, id).request = std::move(request);
+  GetActiveRequest(service, id).start_time = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(5));
 
   CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
@@ -299,8 +294,8 @@ TEST_F(CloudBinaryUploadServiceBaseTest, ShouldTerminateRequestEarly) {
     request->set_device_token("dm_token");
     request->set_analysis_connector(AnalysisConnector::NETWORK_REQUEST);
     BinaryUploadRequest* raw_request = request.get();
-    GetActiveRequests(service)[id] = std::move(request);
-    GetStartTimes(service)[id] = base::TimeTicks::Now();
+    GetActiveRequest(service, id).request = std::move(request);
+    GetActiveRequest(service, id).start_time = base::TimeTicks::Now();
     return raw_request;
   };
 

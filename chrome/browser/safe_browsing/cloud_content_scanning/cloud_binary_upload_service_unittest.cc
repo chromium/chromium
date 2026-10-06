@@ -300,10 +300,6 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
 
   void ValidateRequestIdMapsCleanedUp(BinaryUploadRequest::Id request_id) {
     EXPECT_FALSE(service_->active_requests_.contains(request_id));
-    EXPECT_FALSE(service_->active_timers_.contains(request_id));
-    EXPECT_FALSE(service_->active_tokens_.contains(request_id));
-    EXPECT_FALSE(service_->start_times_.contains(request_id));
-    EXPECT_FALSE(service_->received_connector_results_.contains(request_id));
   }
 
   void ValidateAuthorizationTimerIdle() {
