@@ -7,6 +7,8 @@ use bytemuck_derive::{Pod, Zeroable};
 
 use crate::{bytes::to_hex_string, tokenv::parse_numeric_token, SimpleVob};
 
+const TRIE_CANCELLATION_CHUNK: usize = 1024;
+
 /// Numeric identifier for a single token in a tokenizer's vocabulary.
 pub type TokenId = u32;
 
@@ -66,6 +68,14 @@ impl TokRxInfo {
 /// backtracking. This lets [`TokTrie`] efficiently compute the set of
 /// tokens that satisfy the constraint.
 pub trait Recognizer {
+    /// Opt in to bounded cancellation checks. Keep this capability stable for one traversal.
+    fn cancellation_enabled(&self) -> bool {
+        false
+    }
+    /// Report a request during traversal. Callers must check status before using token sets.
+    fn cancellation_requested(&self) -> bool {
+        false
+    }
     /// for _ in 0..num { stack.pop() }
     fn pop_bytes(&mut self, num: usize);
     /// "Collapse" the stack so that it consists only of its former
@@ -81,9 +91,8 @@ pub trait Recognizer {
             false
         }
     }
-    /// Called when iteration over the trie is finished
-    /// Stack has exactly one element then, except when iteration started from non-root node.
-    /// In that case, the stack may have more than one element, and trie_finished() needs to pop the excessive elements.
+    /// Called when trie iteration ends, including after cancellation interrupts traversal.
+    /// The implementation must restore its stack to the state required by the next operation.
     fn trie_finished(&mut self);
     /// Called when iteration over the trie is started
     fn trie_started(&mut self, _dbg_lbl: &str) {}
@@ -872,7 +881,11 @@ impl TokTrie {
 
         // let mut anything_goes = StackRecognizer::from(AnythingGoes {});
 
+        let cancellable = r.cancellation_enabled();
         for idx in 0..suff_bytes.len() {
+            if cancellable && r.cancellation_requested() {
+                break;
+            }
             let suff = &suff_bytes[idx..];
             if self.has_valid_extensions(r, suff) {
                 let chop_bytes = suff.len();
@@ -899,31 +912,61 @@ impl TokTrie {
             return false;
         }
         let n = n.unwrap();
+        if r.cancellation_enabled() {
+            self.has_valid_extensions_inner::<true>(r, n)
+        } else {
+            self.has_valid_extensions_inner::<false>(r, n)
+        }
+    }
+
+    fn has_valid_extensions_inner<const CANCELLABLE: bool>(
+        &self,
+        r: &mut impl Recognizer,
+        n: &TrieNode,
+    ) -> bool {
         r.trie_started("has_valid_extensions");
         let off = self.node_offset(n);
         let mut p = off + 1;
         let endp = off + n.subtree_size();
         let mut ok = false;
         let mut next_pop = 0;
+        if CANCELLABLE && r.cancellation_requested() {
+            r.trie_finished();
+            return false;
+        }
+        let mut chunk_end = if CANCELLABLE {
+            p.saturating_add(TRIE_CANCELLATION_CHUNK).min(endp)
+        } else {
+            endp
+        };
         while p < endp {
-            r.pop_bytes(next_pop);
-            let n = &self.nodes[p];
-            let b = n.byte();
-            if r.try_push_byte(b) {
-                if n.token_id().is_some() {
-                    ok = true;
-                    break;
-                }
-                next_pop = if n.subtree_size() == 1 {
-                    n.num_parents()
+            while p < chunk_end {
+                r.pop_bytes(next_pop);
+                let n = &self.nodes[p];
+                let b = n.byte();
+                if r.try_push_byte(b) {
+                    if n.token_id().is_some() {
+                        ok = true;
+                        break;
+                    }
+                    next_pop = if n.subtree_size() == 1 {
+                        n.num_parents()
+                    } else {
+                        0
+                    };
+                    p += 1;
                 } else {
-                    0
-                };
-                p += 1;
-            } else {
-                p += n.subtree_size();
-                next_pop = n.num_parents() - 1;
+                    p += n.subtree_size();
+                    next_pop = n.num_parents() - 1;
+                }
             }
+            if ok || !CANCELLABLE || p >= endp || r.cancellation_requested() {
+                break;
+            }
+            chunk_end = p.saturating_add(TRIE_CANCELLATION_CHUNK).min(endp);
+        }
+        if CANCELLABLE && r.cancellation_requested() {
+            ok = false;
         }
         r.trie_finished();
         ok
@@ -958,7 +1001,11 @@ impl TokTrie {
         }
         let n = n.unwrap();
         r.trie_started("add_bias");
-        let (next_pop, nodes_walked) = self.add_bias_inner(r, toks, n);
+        let (next_pop, nodes_walked) = if r.cancellation_enabled() {
+            self.add_bias_inner::<true>(r, toks, n)
+        } else {
+            self.add_bias_inner::<false>(r, toks, n)
+        };
         if start.is_empty() {
             // if start was non-empty, trie_finished() is supposed to clean this up
             r.pop_bytes(next_pop);
@@ -974,7 +1021,7 @@ impl TokTrie {
     }
 
     #[inline(never)]
-    fn add_bias_inner(
+    fn add_bias_inner<const CANCELLABLE: bool>(
         &self,
         r: &mut impl Recognizer,
         toks: &mut SimpleVob,
@@ -991,43 +1038,57 @@ impl TokTrie {
         let nodes = &self.nodes[..endp];
         let mut next_pop = 0;
         let mut num_skip = 0;
-        while p < endp {
-            r.pop_bytes(next_pop);
-            let n = unsafe {
-                debug_assert!(
-                    p < nodes.len(),
-                    "node index {} out of bounds (len: {})",
-                    p,
-                    nodes.len()
-                );
-                nodes.get_unchecked(p)
-            };
-            let b = n.byte();
-            if r.try_push_byte(b) {
-                // Avoid branching: always set a token (either real or fake at defl_tok)
-                let tok = n.token_id().unwrap_or(defl_tok);
-                debug_assert!(
-                    tok <= self.vocab_size() as u32,
-                    "token {} out of valid range (vocab_size: {})",
-                    tok,
-                    self.vocab_size()
-                );
-                unsafe { toks.allow_token_unchecked(tok) };
-                next_pop = if n.subtree_size() == 1 {
-                    n.num_parents()
-                } else {
-                    0
-                };
-                p += 1;
-            } else {
-                let subtree_size = n.subtree_size();
-                p += subtree_size;
-                // it's slightly faster to count skipped nodes, than walked nodes
-                num_skip += subtree_size - 1;
-                next_pop = n.num_parents() - 1;
-            }
+        if CANCELLABLE && r.cancellation_requested() {
+            return (next_pop, 0);
         }
-        (next_pop, total_nodes - num_skip)
+        let mut chunk_end = if CANCELLABLE {
+            p.saturating_add(TRIE_CANCELLATION_CHUNK).min(endp)
+        } else {
+            endp
+        };
+        while p < endp {
+            while p < chunk_end {
+                r.pop_bytes(next_pop);
+                let n = unsafe {
+                    debug_assert!(
+                        p < nodes.len(),
+                        "node index {} out of bounds (len: {})",
+                        p,
+                        nodes.len()
+                    );
+                    nodes.get_unchecked(p)
+                };
+                let b = n.byte();
+                if r.try_push_byte(b) {
+                    // Avoid branching: always set a token (either real or fake at defl_tok)
+                    let tok = n.token_id().unwrap_or(defl_tok);
+                    debug_assert!(
+                        tok <= self.vocab_size() as u32,
+                        "token {} out of valid range (vocab_size: {})",
+                        tok,
+                        self.vocab_size()
+                    );
+                    unsafe { toks.allow_token_unchecked(tok) };
+                    next_pop = if n.subtree_size() == 1 {
+                        n.num_parents()
+                    } else {
+                        0
+                    };
+                    p += 1;
+                } else {
+                    let subtree_size = n.subtree_size();
+                    p += subtree_size;
+                    // it's slightly faster to count skipped nodes, than walked nodes
+                    num_skip += subtree_size - 1;
+                    next_pop = n.num_parents() - 1;
+                }
+            }
+            if !CANCELLABLE || p >= endp || r.cancellation_requested() {
+                break;
+            }
+            chunk_end = p.saturating_add(TRIE_CANCELLATION_CHUNK).min(endp);
+        }
+        (next_pop, (p - off) - num_skip)
     }
 
     pub fn all_tokens(&self) -> Vec<Vec<u8>> {
@@ -1393,6 +1454,96 @@ impl Recognizer for AnythingGoes {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::cell::Cell;
+
+    #[derive(Default)]
+    struct CountingRecognizer {
+        enabled: bool,
+        cancelled: bool,
+        cancel_at: Option<usize>,
+        accept: bool,
+        visits: usize,
+        cancellation_checks: Cell<usize>,
+        stats: usize,
+        started: usize,
+        finished: usize,
+        stack_depth: usize,
+    }
+
+    impl Recognizer for CountingRecognizer {
+        fn cancellation_enabled(&self) -> bool {
+            self.enabled
+        }
+
+        fn cancellation_requested(&self) -> bool {
+            self.cancellation_checks
+                .set(self.cancellation_checks.get() + 1);
+            self.cancelled
+        }
+
+        fn pop_bytes(&mut self, count: usize) {
+            self.stack_depth -= count;
+        }
+
+        fn collapse(&mut self) {
+            self.stack_depth = usize::from(self.stack_depth > 0);
+        }
+
+        fn trie_finished(&mut self) {
+            self.finished += 1;
+            self.stack_depth = 0;
+        }
+
+        fn trie_started(&mut self, _label: &str) {
+            self.started += 1;
+        }
+
+        fn try_push_byte(&mut self, _byte: u8) -> bool {
+            self.visits += 1;
+            self.stack_depth += usize::from(self.accept);
+            if self.cancel_at == Some(self.visits) {
+                self.cancelled = true;
+            }
+            self.accept
+        }
+
+        fn save_stats(&mut self, count: usize) {
+            self.stats += count;
+        }
+    }
+
+    fn wide_test_trie() -> TokTrie {
+        let mut tokens = Vec::new();
+        for first in 0..64 {
+            for second in 0..64 {
+                tokens.push(vec![first, second]);
+            }
+        }
+        TokTrie::from(&TokRxInfo::new(tokens.len() as u32, 0), &tokens)
+    }
+
+    fn rejected_subtree_trie() -> TokTrie {
+        let mut tokens = Vec::new();
+        for first in 0..64 {
+            for second in 0..64 {
+                tokens.push(vec![0, first, second]);
+            }
+        }
+        for second in 0..16 {
+            tokens.push(vec![1, second]);
+        }
+        TokTrie::from(&TokRxInfo::new(tokens.len() as u32, 0), &tokens)
+    }
+
+    fn prefixed_wide_test_trie() -> TokTrie {
+        let mut tokens = Vec::new();
+        for first in 0..64 {
+            for second in 0..64 {
+                tokens.push(vec![0, first, second]);
+            }
+        }
+        TokTrie::from(&TokRxInfo::new(tokens.len() as u32, 0), &tokens)
+    }
 
     fn make_test_trie(eos: TokenId) -> TokTrie {
         let info = TokRxInfo::new(4, eos);
@@ -1405,6 +1556,196 @@ mod tests {
         let trie = make_test_trie(2);
         assert_eq!(trie.eos_token(), 2);
         assert_eq!(trie.eos_tokens(), &[2]);
+    }
+
+    #[test]
+    fn enabled_and_disabled_walks_return_equal_complete_masks() {
+        let trie = wide_test_trie();
+        let mut disabled = CountingRecognizer {
+            accept: true,
+            ..Default::default()
+        };
+        let mut enabled = CountingRecognizer {
+            enabled: true,
+            accept: true,
+            ..Default::default()
+        };
+        let mut disabled_mask = trie.alloc_token_set();
+        let mut enabled_mask = trie.alloc_token_set();
+        disabled_mask.allow_token(17);
+        enabled_mask.allow_token(17);
+        trie.add_bias(&mut disabled, &mut disabled_mask, &[]);
+        trie.add_bias(&mut enabled, &mut enabled_mask, &[]);
+        assert_eq!(disabled_mask, enabled_mask);
+        assert_eq!(disabled.visits, enabled.visits);
+        assert_eq!(disabled.cancellation_checks.get(), 0);
+        assert_eq!(disabled.finished, 1);
+        assert_eq!(enabled.finished, 1);
+    }
+
+    #[test]
+    fn cancellation_stops_after_a_bounded_chunk_and_keeps_scratch_bits() {
+        let trie = wide_test_trie();
+        let mut recognizer = CountingRecognizer {
+            enabled: true,
+            cancel_at: Some(11),
+            accept: true,
+            ..Default::default()
+        };
+        let mut mask = trie.alloc_token_set();
+        mask.allow_token(4095);
+        trie.add_bias(&mut recognizer, &mut mask, &[]);
+        assert_eq!(recognizer.visits, TRIE_CANCELLATION_CHUNK);
+        assert!(recognizer.stats <= TRIE_CANCELLATION_CHUNK + 1);
+        assert!(mask.is_allowed(4095));
+        assert!(!mask.is_allowed(3000));
+        assert_eq!(recognizer.finished, 1);
+        assert_eq!(recognizer.stack_depth, 0);
+        assert!(!mask.is_allowed(trie.vocab_size() as u32));
+    }
+
+    #[test]
+    fn cancellation_at_chunk_edges_waits_for_the_next_poll() {
+        let trie = wide_test_trie();
+        for (cancel_at, expected_visits) in [
+            (TRIE_CANCELLATION_CHUNK - 1, TRIE_CANCELLATION_CHUNK),
+            (TRIE_CANCELLATION_CHUNK, TRIE_CANCELLATION_CHUNK),
+            (TRIE_CANCELLATION_CHUNK + 1, TRIE_CANCELLATION_CHUNK * 2),
+            (TRIE_CANCELLATION_CHUNK * 2 + 1, TRIE_CANCELLATION_CHUNK * 3),
+        ] {
+            let mut recognizer = CountingRecognizer {
+                enabled: true,
+                cancel_at: Some(cancel_at),
+                accept: true,
+                ..Default::default()
+            };
+            let mut mask = trie.alloc_token_set();
+            trie.add_bias(&mut recognizer, &mut mask, &[]);
+            assert!(recognizer.cancelled);
+            assert_eq!(
+                recognizer.visits, expected_visits,
+                "request at {cancel_at} visits"
+            );
+            assert_eq!(recognizer.finished, 1);
+        }
+    }
+
+    #[test]
+    fn cancellation_under_nonempty_prefix_restores_recognizer_stack() {
+        let trie = prefixed_wide_test_trie();
+        let mut recognizer = CountingRecognizer {
+            enabled: true,
+            cancel_at: Some(7),
+            accept: true,
+            ..Default::default()
+        };
+        let mut mask = trie.alloc_token_set();
+        mask.allow_token(4095);
+        trie.add_bias(&mut recognizer, &mut mask, &[0]);
+        assert_eq!(recognizer.visits, TRIE_CANCELLATION_CHUNK);
+        assert_eq!(recognizer.stack_depth, 0);
+        assert_eq!(recognizer.finished, 1);
+        assert!(mask.is_allowed(4095));
+        assert!(!mask.is_allowed(2048));
+        assert!(!mask.is_allowed(trie.vocab_size() as u32));
+    }
+
+    #[test]
+    fn cancellation_is_checked_after_a_rejected_subtree_skip() {
+        let trie = rejected_subtree_trie();
+        let mut recognizer = CountingRecognizer {
+            enabled: true,
+            cancel_at: Some(1),
+            accept: false,
+            ..Default::default()
+        };
+        let mut mask = trie.alloc_token_set();
+        trie.add_bias(&mut recognizer, &mut mask, &[]);
+        assert_eq!(recognizer.visits, 1);
+        assert_eq!(recognizer.stats, 2);
+        assert!(!mask.is_allowed(4096));
+        assert_eq!(recognizer.finished, 1);
+    }
+
+    #[test]
+    fn completed_short_walk_keeps_scratch_for_caller_cleanup() {
+        let trie = make_test_trie(0);
+        let mut recognizer = CountingRecognizer {
+            enabled: true,
+            cancel_at: Some(1),
+            accept: true,
+            ..Default::default()
+        };
+        let mut mask = trie.alloc_token_set();
+        trie.add_bias(&mut recognizer, &mut mask, &[]);
+        assert!(recognizer.cancelled);
+        assert_eq!(recognizer.visits, 4);
+        assert_eq!(recognizer.finished, 1);
+        assert_eq!(mask.num_set(), 4);
+        assert!(!mask.is_allowed(trie.vocab_size() as u32));
+    }
+
+    #[test]
+    fn extension_search_checks_cancellation_after_multiple_chunks() {
+        let trie = wide_test_trie();
+        let mut recognizer = CountingRecognizer {
+            enabled: true,
+            cancel_at: Some(31),
+            accept: false,
+            ..Default::default()
+        };
+        assert!(!trie.has_valid_extensions(&mut recognizer, &[]));
+        assert!(recognizer.cancelled);
+        assert_eq!(recognizer.visits, 32);
+        assert_eq!(recognizer.started, 1);
+        assert_eq!(recognizer.finished, 1);
+        assert_eq!(recognizer.stack_depth, 0);
+    }
+
+    #[test]
+    fn extension_cancellation_stops_token_chopping() {
+        let tokens = vec![vec![0, 0, 0, 0], vec![0, 0, 0, 1]];
+        let trie = TokTrie::from(&TokRxInfo::new(2, 0), &tokens);
+        let mut recognizer = CountingRecognizer {
+            enabled: true,
+            cancel_at: Some(1),
+            accept: true,
+            ..Default::default()
+        };
+        assert_eq!(trie.chop_tokens(&mut recognizer, &[0]), (0, 0));
+        assert!(recognizer.cancelled);
+        assert_eq!(recognizer.started, 2);
+        assert_eq!(recognizer.finished, 2);
+    }
+
+    #[test]
+    fn nonempty_prefix_and_duplicate_tokens_match_across_modes() {
+        let tokens = vec![
+            b"a".to_vec(),
+            b"ab".to_vec(),
+            b"ab".to_vec(),
+            b"ac".to_vec(),
+        ];
+        let trie = TokTrie::from(&TokRxInfo::new(4, 0), &tokens);
+        let mut disabled = CountingRecognizer {
+            accept: true,
+            ..Default::default()
+        };
+        let mut enabled = CountingRecognizer {
+            enabled: true,
+            accept: true,
+            ..Default::default()
+        };
+        let mut disabled_mask = trie.alloc_token_set();
+        let mut enabled_mask = trie.alloc_token_set();
+        trie.add_bias(&mut disabled, &mut disabled_mask, b"a");
+        trie.add_bias(&mut enabled, &mut enabled_mask, b"a");
+        assert_eq!(disabled_mask, enabled_mask);
+        assert!(disabled_mask.is_allowed(0));
+        assert!(disabled_mask.is_allowed(2));
+        assert!(disabled_mask.is_allowed(3));
+        assert_eq!(disabled.stack_depth, 0);
+        assert_eq!(enabled.stack_depth, 0);
     }
 
     #[test]
