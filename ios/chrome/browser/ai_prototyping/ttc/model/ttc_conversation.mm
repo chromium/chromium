@@ -26,6 +26,13 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   // Generation counter incremented in `stop` to invalidate pending in-flight
   // async start or permission callbacks.
   uint64_t _sessionGeneration;
+
+  // Guard flag preventing re-entrant stop invocations.
+  BOOL _isStopping;
+
+  // Tracks whether the streaming service has signaled completion of the
+  // current model generation turn.
+  BOOL _isServerTurnComplete;
 }
 
 - (instancetype)initWithAudioController:(id<TTCAudioController>)audioController
@@ -39,6 +46,8 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
     _backend.delegate = self;
     _state = TTCConversationState::kStopped;
     _sessionGeneration = 0;
+    _isStopping = NO;
+    _isServerTurnComplete = YES;
   }
   return self;
 }
@@ -57,6 +66,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   }
 
   _lastError = nil;
+  _isServerTurnComplete = YES;
   const uint64_t currentGeneration = ++_sessionGeneration;
 
   [_backend connect];
@@ -71,19 +81,21 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
 - (void)stop {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isStopping) {
+    return;
+  }
+  _isStopping = YES;
 
   // Invalidate any pending in-flight start completions.
   _sessionGeneration++;
-
-  [_backend disconnect];
-
-  if (_state == TTCConversationState::kStopped) {
-    return;
-  }
+  _isServerTurnComplete = YES;
+  [self updateState:TTCConversationState::kStopped];
 
   [_audioController stopCapture];
   [_audioController stopPlayback];
-  [self updateState:TTCConversationState::kStopped];
+  [_backend disconnect];
+
+  _isStopping = NO;
 }
 
 - (void)disconnect {
@@ -101,6 +113,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
     return;
   }
 
+  _isServerTurnComplete = NO;
   if (_state != TTCConversationState::kTalking) {
     [self updateState:TTCConversationState::kTalking];
   }
@@ -111,6 +124,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 - (void)finishTurn {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_state == TTCConversationState::kTalking) {
+    _isServerTurnComplete = YES;
     [self updateState:TTCConversationState::kListening];
   }
 }
@@ -120,7 +134,9 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 - (void)audioController:(id<TTCAudioController>)controller
     didCaptureAudioChunk:(NSData*)pcmData {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_state == TTCConversationState::kStopped) {
+  // Disable barge-in: only stream audio to the backend when actively listening
+  // and not in model speaking state.
+  if (_state != TTCConversationState::kListening) {
     return;
   }
 
@@ -147,9 +163,9 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
 - (void)audioControllerDidStopPlayback:(id<TTCAudioController>)controller {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // When response audio finishes playing through the speaker, transition
-  // back to listening.
-  if (_state == TTCConversationState::kTalking) {
+  // When response audio finishes playing through the speaker and the server has
+  // finished transmitting the turn, transition back to listening.
+  if (_isServerTurnComplete && _state == TTCConversationState::kTalking) {
     [self finishTurn];
   }
 }
@@ -171,6 +187,9 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
 - (void)backendDidInitialize:(id<TTCBackend>)backend {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_state == TTCConversationState::kStopped) {
+    [self updateState:TTCConversationState::kListening];
+  }
   if ([self.delegate
           respondsToSelector:@selector(conversationDidInitialize:)]) {
     [self.delegate conversationDidInitialize:self];
@@ -194,8 +213,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 }
 
 - (void)backend:(id<TTCBackend>)backend
-    didReceiveAudioOutput:(NSData*)audioData
-           sequenceNumber:(int64_t)sequenceNumber {
+    didReceiveAudioOutput:(NSData*)audioData {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self playResponseAudio:audioData];
 }
@@ -206,14 +224,33 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
                         interrupted:(BOOL)interrupted {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (interrupted) {
+    _isServerTurnComplete = YES;
     [_audioController clearPlaybackQueue];
     [_audioController stopPlayback];
     if (_state == TTCConversationState::kTalking) {
       [self updateState:TTCConversationState::kListening];
     }
   } else if (completed) {
-    [self finishTurn];
+    _isServerTurnComplete = YES;
+    // Only transition back to listening if playback has already drained.
+    // Otherwise, audioControllerDidStopPlayback: will transition once the
+    // loudspeaker finishes playing the remaining audio buffers.
+    if (!_audioController.isPlaying) {
+      [self finishTurn];
+    }
   }
+}
+
+- (void)backend:(id<TTCBackend>)backend
+    didReceiveInputTranscription:(NSString*)inputTranscription {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // Transcriptions will be forwarded to observers in a subsequent CL.
+}
+
+- (void)backend:(id<TTCBackend>)backend
+    didReceiveOutputTranscription:(NSString*)outputTranscription {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // Transcriptions will be forwarded to observers in a subsequent CL.
 }
 
 #pragma mark - Private
@@ -241,7 +278,9 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
     return;
   }
 
-  [self updateState:TTCConversationState::kListening];
+  if (_state == TTCConversationState::kStopped) {
+    [self updateState:TTCConversationState::kListening];
+  }
 }
 
 - (void)updateState:(TTCConversationState)newState {

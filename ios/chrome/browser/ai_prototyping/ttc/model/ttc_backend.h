@@ -16,7 +16,6 @@ class GURL;
 // Delegate protocol for receiving session lifecycle, audio output, and
 // transcription events from a TTC model backend.
 @protocol TTCBackendDelegate <NSObject>
-@optional
 
 // Called when the backend has completed setup and handshake, and the session is
 // ready for user interaction.
@@ -31,13 +30,15 @@ class GURL;
 
 // Called when synthesized linear PCM audio arrives from the model.
 - (void)backend:(id<TTCBackend>)backend
-    didReceiveAudioOutput:(NSData*)audioData
-           sequenceNumber:(int64_t)sequenceNumber;
+    didReceiveAudioOutput:(NSData*)audioData;
 
-// Called when user speech or model response text is transcribed.
+// Called when user speech is transcribed.
 - (void)backend:(id<TTCBackend>)backend
-    didReceiveInputTranscription:(NSString*)inputTranscription
-             outputTranscription:(NSString*)outputTranscription;
+    didReceiveInputTranscription:(NSString*)inputTranscription;
+
+// Called when model response speech is transcribed.
+- (void)backend:(id<TTCBackend>)backend
+    didReceiveOutputTranscription:(NSString*)outputTranscription;
 
 // Called when model generation state changes (started, completed, interrupted).
 - (void)backend:(id<TTCBackend>)backend
