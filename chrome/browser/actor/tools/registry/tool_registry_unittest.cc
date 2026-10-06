@@ -4,18 +4,24 @@
 
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
@@ -27,14 +33,26 @@ TEST(ToolRegistryTest, BaseToolRequestGetToolDefinitionReturnsNullopt) {
   EXPECT_EQ(ToolRequest::GetToolDefinition(), std::nullopt);
 }
 
-TEST(ToolRegistryTest, GetAllToolsEmptyInitially) {
+TEST(ToolRegistryTest, NavigateToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      NavigateToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kNavigate);
+  EXPECT_EQ(definition->name, NavigateToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(NavigateToolRequest::kUrlParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(NavigateToolRequest::kUrlParam));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   ActorKeyedService* service = ActorKeyedService::Get(&profile);
-  ASSERT_TRUE(service);
+  CHECK(service);
 
-  EXPECT_TRUE(service->tool_registry().GetAllTools().empty());
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kNavigate, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

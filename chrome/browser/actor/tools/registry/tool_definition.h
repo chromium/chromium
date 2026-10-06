@@ -16,7 +16,11 @@ namespace actor {
 // These values may be persisted to logs. Entries are append-only: do not
 // renumber or reuse numeric values, and update `kMaxValue` when adding new
 // entries.
-enum class ToolId {};
+enum class ToolId {
+  // Navigates the active tab to a specified URL.
+  kNavigate = 0,
+  kMaxValue = kNavigate,
+};
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.

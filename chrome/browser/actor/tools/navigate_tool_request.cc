@@ -5,14 +5,30 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 
 #include <optional>
+#include <string_view>
 
 #include "chrome/browser/actor/tools/navigate_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `navigate` tool.
+constexpr std::string_view kNavigateToolDescription =
+    "Opens a URL in the browser.";
+
+// Description for the `url` parameter of the `navigate` tool.
+constexpr std::string_view kUrlParamDescription =
+    "The complete URL to open (e.g. \"https://example.com\").";
+
+}  // namespace
 
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
@@ -21,6 +37,14 @@ NavigateToolRequest::NavigateToolRequest(TabHandle tab_handle, GURL url)
     : TabToolRequest(tab_handle), url_(url) {}
 
 NavigateToolRequest::~NavigateToolRequest() = default;
+
+std::optional<ToolDefinition> NavigateToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kNavigate, kModelFacingName,
+                               kNavigateToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kUrlParam, kUrlParamDescription, ToolSchemaBuilder::kFormatUri))
+      .Build();
+}
 
 ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
     TaskId task_id,
