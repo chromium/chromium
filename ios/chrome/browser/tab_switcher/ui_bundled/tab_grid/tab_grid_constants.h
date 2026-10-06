@@ -71,6 +71,14 @@ extern const CGFloat kTabGridFloatingButtonInsetIPad;
 extern const CGFloat kTabGridTopToolbarHeight;
 extern const CGFloat kTabGridBottomToolbarHeight;
 
+// Additional top padding for the top toolbar when there is no safe area top
+// inset (e.g. status bar is hidden or along the side).
+inline constexpr CGFloat kTabGridTopToolbarNoSafeAreaTopPadding = 12.0;
+
+// Additional horizontal padding for the top toolbar on Regular x Regular
+// devices.
+inline constexpr CGFloat kTabGridTopToolbarRegularHorizontalPadding = 6.0;
+
 // The Search bar original width ratio before any width modifiers.
 extern const CGFloat kTabGridSearchBarWidthRatio;
 // The tab grid Search bar height.

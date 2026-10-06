@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -107,6 +108,11 @@ CGFloat HorizontalMargin() {
   // Constraints for selection mode, activated the first time selection mode is
   // entered.
   NSArray<NSLayoutConstraint*>* _selectionModeConstraints;
+
+  // Leading, trailing, and top constraints for `containerView`.
+  NSLayoutConstraint* _containerLeadingConstraint;
+  NSLayoutConstraint* _containerTrailingConstraint;
+  NSLayoutConstraint* _containerTopConstraint;
 }
 
 - (instancetype)initWithLayoutGuideCenter:
@@ -321,7 +327,18 @@ CGFloat HorizontalMargin() {
   // earlier return 32 by default, whereas iOS 26 defaults to 44. It is unclear
   // what caused it. Therefore, intrinsicContentSize must be set to a fixed
   // height.
-  return CGSizeMake(UIViewNoIntrinsicMetric, kTabGridTopToolbarHeight);
+  return CGSizeMake(UIViewNoIntrinsicMetric,
+                    kTabGridTopToolbarHeight + [self topPadding]);
+}
+
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  [self updateTopPaddingConstraints];
+}
+
+- (void)safeAreaInsetsDidChange {
+  [super safeAreaInsetsDidChange];
+  [self updateTopPaddingConstraints];
 }
 
 - (void)didMoveToSuperview {
@@ -425,6 +442,12 @@ CGFloat HorizontalMargin() {
 
 // Sets up the buttons for the `traitCollection`.
 - (void)setButtonsForTraitCollection:(UITraitCollection*)traitCollection {
+  CGFloat containerSideMargin =
+      [self containerSideMarginForTraitCollection:traitCollection];
+  _containerLeadingConstraint.constant = containerSideMargin;
+  _containerTrailingConstraint.constant = containerSideMargin;
+  [self updateTopPaddingConstraints];
+
   for (UIView* view in _allViews) {
     // The visibility of `_pageActionMenuEntrypointView` is exclusively
     // controlled by the active grid mediator. The
@@ -685,26 +708,76 @@ CGFloat HorizontalMargin() {
   return [UIMenu menuWithChildren:menuElements];
 }
 
-// Adds the different views to the view hierarchy and setup their constraints.
-- (void)setUpConstraintsForContainerView:(UIView*)containerView {
-  [self addSubview:containerView];
-  UILayoutGuide* safeAreaLayoutGuide = self.safeAreaLayoutGuide;
-  CGFloat containerSideMargin;
+// Returns the horizontal side margin for the container view based on OS version
+// and trait collection.
+- (CGFloat)containerSideMarginForTraitCollection:
+    (UITraitCollection*)traitCollection {
+  CGFloat containerSideMargin = 0;
   if (@available(iOS 26, *)) {
     containerSideMargin = 0;
   } else {
     containerSideMargin = kLeadingTrailingMargin;
   }
 
+  if (IsRegularXRegularSizeClass(traitCollection)) {
+    containerSideMargin += kTabGridTopToolbarRegularHorizontalPadding;
+  }
+
+  return containerSideMargin;
+}
+
+// Returns additional top padding when the view is in regular height and has
+// no safe area top inset.
+- (CGFloat)topPadding {
+  // Explicitly require regular vertical size class.
+  if (self.traitCollection.verticalSizeClass !=
+      UIUserInterfaceSizeClassRegular) {
+    return 0;
+  }
+  // Safe areas are defined by the window. If not attached to a window yet
+  // (e.g. during viewDidLoad or in unattached tests), default to 0 to avoid
+  // transient incorrect layout.
+  if (!self.window) {
+    return 0;
+  }
+  if (self.safeAreaInsets.top > 0) {
+    return 0;
+  }
+  return kTabGridTopToolbarNoSafeAreaTopPadding;
+}
+
+// Updates the top padding constraint and intrinsic content size based on safe
+// area insets.
+- (void)updateTopPaddingConstraints {
+  CGFloat topPadding = [self topPadding];
+  if (_containerTopConstraint.constant != topPadding) {
+    _containerTopConstraint.constant = topPadding;
+    [self invalidateIntrinsicContentSize];
+    [self.superview setNeedsLayout];
+  }
+}
+
+// Adds the different views to the view hierarchy and setup their constraints.
+- (void)setUpConstraintsForContainerView:(UIView*)containerView {
+  [self addSubview:containerView];
+  UILayoutGuide* safeAreaLayoutGuide = self.safeAreaLayoutGuide;
+  CGFloat containerSideMargin =
+      [self containerSideMarginForTraitCollection:self.traitCollection];
+
+  _containerLeadingConstraint = [containerView.leadingAnchor
+      constraintEqualToAnchor:safeAreaLayoutGuide.leadingAnchor
+                     constant:containerSideMargin];
+  _containerTrailingConstraint = [safeAreaLayoutGuide.trailingAnchor
+      constraintEqualToAnchor:containerView.trailingAnchor
+                     constant:containerSideMargin];
+  _containerTopConstraint = [containerView.topAnchor
+      constraintEqualToAnchor:safeAreaLayoutGuide.topAnchor
+                     constant:[self topPadding]];
+
   [NSLayoutConstraint activateConstraints:@[
-    [containerView.leadingAnchor
-        constraintEqualToAnchor:safeAreaLayoutGuide.leadingAnchor
-                       constant:containerSideMargin],
-    [safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor:containerView.trailingAnchor
-                       constant:containerSideMargin],
-    [containerView.topAnchor
-        constraintEqualToAnchor:safeAreaLayoutGuide.topAnchor],
+    _containerLeadingConstraint,
+    _containerTrailingConstraint,
+    _containerTopConstraint,
     [containerView.bottomAnchor
         constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor],
   ]];
