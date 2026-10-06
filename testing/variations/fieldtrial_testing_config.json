@@ -18779,6 +18779,21 @@
             ]
         }
     ],
+    "UniversalOptOutExtensionSilent": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UniversalOptOutExtensionSilent"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2ChromeOS": [
         {
             "platforms": [
