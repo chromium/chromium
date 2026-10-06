@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -25,9 +24,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -227,33 +224,14 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
-  gpu::ImageInfo image_info(size, format, shared_image_usage_flags, color_space,
-                            kTopLeft_GrSurfaceOrigin, alpha_type,
-                            /*buffer_usage=*/std::nullopt,
-                            /*is_software=*/false);
+  auto shared_image =
+      context_provider_wrapper->ContextProvider()
+          .SharedImageInterface()
+          ->CreateSharedImage(
+              {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
+               shared_image_usage_flags, "CanvasResourceRaster"},
+              gpu::kNullSurfaceHandle);
 
-  std::optional<base::TimeDelta> expiration_time =
-      (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-          ? std::make_optional(
-                Canvas2DResourceProvider::kUnusedResourceExpirationTime)
-          : std::nullopt;
-  bool is_single_buffered = shared_image_usage_flags.Has(
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-  constexpr int kMaxRecycledCanvasResources = 3;
-
-  auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-      image_info,
-      context_provider_wrapper->ContextProvider().SharedImageInterface(),
-      "CanvasResourceRaster",
-      is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
-  if (!image_pool) {
-    return nullptr;
-  }
-  auto resource = image_pool->GetImage();
-  if (!resource) {
-    return nullptr;
-  }
-  auto shared_image = resource->GetSharedImage();
   gpu::SyncToken sync_token = shared_image->creation_sync_token();
   if (sync_token.HasData()) {
     shared_image->UpdateDestructionSyncToken(sync_token);
