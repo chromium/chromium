@@ -70,6 +70,18 @@ bool IsAnotherScreen(const WebContents& web_contents,
   return display_id != FullscreenController::GetDisplayId(web_contents);
 }
 
+// Returns whether fullscreen is allowed by the `kFullscreenAllowed` pref (set
+// by the FullscreenAllowed enterprise policy). The pref is not registered on
+// Mac, where fullscreen is always allowed.
+bool IsFullscreenAllowedByPref(ExclusiveAccessContext* context) {
+#if BUILDFLAG(IS_MAC)
+  return true;
+#else
+  Profile* profile = context->GetProfile();
+  return profile && profile->GetPrefs()->GetBoolean(prefs::kFullscreenAllowed);
+#endif
+}
+
 }  // namespace
 
 FullscreenController::FullscreenController(
@@ -182,7 +194,7 @@ bool FullscreenController::CanEnterFullscreenModeForTab(
     return false;
   }
 
-  return true;
+  return IsFullscreenAllowedByPref(exclusive_access_manager()->context());
 }
 
 void FullscreenController::EnterFullscreenModeForTab(
@@ -571,16 +583,14 @@ void FullscreenController::EnterFullscreenModeInternal(
     FullscreenInternalOption option,
     content::RenderFrameHost* requesting_frame,
     FullscreenTabParams fullscreen_tab_params) {
-#if !BUILDFLAG(IS_MAC)
-
-  Profile* profile = exclusive_access_manager()->context()->GetProfile();
   // Do not enter fullscreen mode if disallowed by pref. This prevents the user
   // from manually entering fullscreen mode and also disables kiosk mode on
-  // desktop platforms.
-  if (!profile || !profile->GetPrefs()->GetBoolean(prefs::kFullscreenAllowed)) {
+  // desktop platforms. Tab fullscreen requests are already rejected by
+  // `CanEnterFullscreenModeForTab()`, so this primarily guards the browser
+  // fullscreen path.
+  if (!IsFullscreenAllowedByPref(exclusive_access_manager()->context())) {
     return;
   }
-#endif
   fullscreen_parameters_ = fullscreen_tab_params;
   started_fullscreen_transition_ = true;
   toggled_into_fullscreen_ = true;

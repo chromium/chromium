@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/event.h"
@@ -525,6 +526,36 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame()));
 }
+
+// The kFullscreenAllowed pref is not registered on Mac.
+#if !BUILDFLAG(IS_MAC)
+// Ensure `CanEnterFullscreenModeForTab` respects FullscreenAllowed policy,
+// and correctly rejects the requestFullscreen() promise instead of hanging.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
+                       FullscreenAllowedPrefFalseRejectsRequest) {
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kFullscreenAllowed, false);
+
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_FALSE(GetFullscreenController()->CanEnterFullscreenModeForTab(
+      tab->GetPrimaryMainFrame()));
+
+  // The promise must settle; a hanging promise would time out the test.
+  EXPECT_EQ("rejected: TypeError", content::EvalJs(tab, R"(
+                document.documentElement.requestFullscreen()
+                    .then(() => 'resolved', e => 'rejected: ' + e.name);)"));
+  // Neither side may have half-entered fullscreen: the renderer must not have
+  // set a fullscreen element, and the browser must hold no pending state.
+  EXPECT_EQ(true, content::EvalJs(tab, "document.fullscreenElement === null"));
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+  EXPECT_FALSE(GetExclusiveAccessManager()->context()->IsFullscreen());
+
+  // Re-allowing fullscreen restores the normal gate behavior.
+  prefs->SetBoolean(prefs::kFullscreenAllowed, true);
+  EXPECT_TRUE(GetFullscreenController()->CanEnterFullscreenModeForTab(
+      tab->GetPrimaryMainFrame()));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 class FullscreenControllerPressAndHoldEscTest
     : public FullscreenControllerTest {
