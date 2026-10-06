@@ -708,6 +708,7 @@ class HTMLGeolocationElementSimTest : public SimTest {
  protected:
   void SetUp() override {
     SimTest::SetUp();
+    GetDocument().GetSettings()->SetDefaultFontSize(12);
     feature_list_.InitAndEnableFeature(features::kGeolocationElement);
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,

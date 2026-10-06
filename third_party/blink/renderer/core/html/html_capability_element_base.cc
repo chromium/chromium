@@ -1433,10 +1433,7 @@ void HTMLCapabilityElementBase::OnIntersectionChanged(
   // bound is clipped by the viewport or styling effects). In this case, the
   // `isVisible` false means the element is occluded by something else or has
   // distorted visual effect applied.
-  // Note: It's unlikely we'll encounter an empty target rectangle (height or
-  // width is 0), but if it happens, we can consider the element as visible.
-  if (!latest_observation->isVisible() &&
-      !latest_observation->GetGeometry().TargetRect().IsEmpty()) {
+  if (!latest_observation->isVisible()) {
     new_intersection_visibility =
         latest_observation->intersectionRatio() >= kIntersectionThreshold
             ? IntersectionVisibility::kOccludedOrDistorted

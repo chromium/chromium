@@ -203,7 +203,10 @@ class HTMLCapabilityElementBaseTestBase : public PageTestBase {
       base::test::TaskEnvironment::TimeSource time_source)
       : PageTestBase(time_source) {}
 
-  void SetUp() override { PageTestBase::SetUp(); }
+  void SetUp() override {
+    PageTestBase::SetUp();
+    GetDocument().GetSettings()->SetDefaultFontSize(12);
+  }
 
  private:
   ScopedUserMediaElementForTest scoped_feature_{true};
@@ -821,6 +824,7 @@ class HTMLCapabilityElementBaseSimTest : public SimTest {
  protected:
   void SetUp() override {
     SimTest::SetUp();
+    GetDocument().GetSettings()->SetDefaultFontSize(12);
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
         blink::BindRepeating(
@@ -2265,6 +2269,61 @@ TEST_F(HTMLCapabilityElementBaseIntersectionTest, MAYBE_ContainerDivClipPath) {
           kOutOfViewportOrClipped);
 }
 
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ContainerDivSingularTransform \
+  DISABLED_ContainerDivSingularTransform
+#else
+#define MAYBE_ContainerDivSingularTransform ContainerDivSingularTransform
+#endif
+TEST_F(HTMLCapabilityElementBaseIntersectionTest,
+       MAYBE_ContainerDivSingularTransform) {
+  for (const char* transform :
+       {"scaleX(0)", "scaleY(0)", "scale(0)", "rotateY(90deg)"}) {
+    SCOPED_TRACE(transform);
+    TestContainerStyleAffectsVisibility(
+        CSSPropertyID::kTransform, transform,
+        HTMLCapabilityElementBase::IntersectionVisibility::
+            kOccludedOrDistorted);
+  }
+
+  // Also verify that an element initially attached inside a container with a
+  // singular transform does not become valid after the attach cooldown expires.
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+    <div id='container' style='transform: scaleX(0);'>
+      <geolocation id='geo'></geolocation>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element = To<HTMLCapabilityElementBase>(
+      GetDocument().QuerySelector(AtomicString("geolocation")));
+  auto* div =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  WaitForPermissionElementRegistration(permission_element);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLCapabilityElementBase::IntersectionVisibility::kOccludedOrDistorted);
+
+  DeferredChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/false);
+  EXPECT_FALSE(permission_element->isValid());
+  EXPECT_EQ(permission_element->invalidReason(),
+            "intersection_occluded_or_distorted");
+
+  // Removing the singular transform restores visibility after the cooldown.
+  div->RemoveInlineStyleProperty(CSSPropertyID::kTransform);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLCapabilityElementBase::IntersectionVisibility::kFullyVisible);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+  EXPECT_TRUE(permission_element->isValid());
+}
+
 class HTMLCapabilityElementBaseLayoutChangeTest
     : public HTMLCapabilityElementBaseSimTest {
  public:
@@ -2454,9 +2513,9 @@ TEST_F(HTMLCapabilityElementBaseLayoutChangeTest,
   ClassicScript::CreateUnspecifiedScript(
       "window.requestAnimationFrame(function() {\n"
       "  var camera = document.getElementById('camera');\n"
-      "  camera.style.width = '10px';\n"
+      "  camera.style.height = '1em';\n"
       "  camera.getBoundingClientRect();\n"
-      "  camera.style.width = '40px';\n"
+      "  camera.style.height = '3em';\n"
       "\n"
       "});\n")
       ->RunScript(&Window());
