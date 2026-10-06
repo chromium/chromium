@@ -91,13 +91,6 @@ void MockBlobStorageContext::RegisterFromDataItem(
   mojo::MakeSelfOwnedReceiver(std::move(fake_blob), std::move(blob));
 }
 
-void MockBlobStorageContext::RegisterFromMemory(
-    mojo::PendingReceiver<::blink::mojom::Blob> blob,
-    const std::string& uuid,
-    ::mojo_base::BigBuffer data) {
-  NOTREACHED();
-}
-
 void MockBlobStorageContext::WriteBlobToFile(
     mojo::PendingRemote<::blink::mojom::Blob> blob,
     const base::FilePath& path,

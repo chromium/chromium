@@ -772,9 +772,10 @@ class CacheStorageCacheTest : public testing::Test {
     for (int i = 0; i < 100; ++i)
       expected_blob_data_ += kTestData;
 
-    blob_storage_context_->context()->RegisterFromMemory(
-        blob_remote_.BindNewPipeAndPassReceiver(), expected_blob_uuid_,
-        base::as_byte_span(expected_blob_data_));
+    storage::RegisterBlobWithContents(*blob_storage_context_->context(),
+                                      blob_remote_.BindNewPipeAndPassReceiver(),
+                                      expected_blob_uuid_,
+                                      base::as_byte_span(expected_blob_data_));
 
     ASSERT_OK_AND_ASSIGN(auto bucket_locator,
                          GetOrCreateDefaultBucket(kTestUrl));

@@ -68,10 +68,6 @@ interface BlobStorageContext {
   // BlobDataItem::DataHandle constructed from |item|.
   RegisterFromDataItem(pending_receiver<blink.mojom.Blob> blob, string uuid,
                        BlobDataItem item);
-  // Create a blob with a particular uuid whose contents are contained
-  // in |data|.
-  RegisterFromMemory(pending_receiver<blink.mojom.Blob> blob, string uuid,
-                     mojo_base.mojom.BigBuffer data);
 
   // Writes the given blob to the given file path. If the given |path| is not
   // under the blob storage context's profile directory or if it has references

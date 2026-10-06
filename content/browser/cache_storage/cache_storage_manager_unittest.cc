@@ -68,6 +68,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/test/blob_test_utils.h"
 #include "storage/browser/test/fake_blob.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -656,7 +657,8 @@ class CacheStorageManagerTest : public testing::Test {
     blob->uuid = blob_uuid;
     blob->size = request->url.spec().size();
     auto& str = request->url.spec();
-    blob_storage_context_->context()->RegisterFromMemory(
+    storage::RegisterBlobWithContents(
+        *blob_storage_context_->context(),
         blob->blob.InitWithNewPipeAndPassReceiver(), blob_uuid,
         base::as_byte_span(str));
 

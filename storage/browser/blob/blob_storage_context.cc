@@ -704,22 +704,6 @@ void BlobStorageContext::RegisterFromDataItem(
   BlobImpl::Create(std::move(handle), std::move(blob));
 }
 
-void BlobStorageContext::RegisterFromMemory(
-    mojo::PendingReceiver<::blink::mojom::Blob> blob,
-    const std::string& uuid,
-    mojo_base::BigBuffer data) {
-  if (registry_.HasEntry(uuid)) {
-    receivers_.ReportBadMessage("duplicate uuid");
-    return;
-  }
-
-  std::unique_ptr<BlobDataBuilder> builder =
-      std::make_unique<BlobDataBuilder>(uuid);
-  builder->AppendData(data);
-  std::unique_ptr<BlobDataHandle> handle = AddFinishedBlob(std::move(builder));
-  BlobImpl::Create(std::move(handle), std::move(blob));
-}
-
 void BlobStorageContext::WriteBlobToFile(
     mojo::PendingRemote<::blink::mojom::Blob> pending_blob,
     const base::FilePath& file_path,

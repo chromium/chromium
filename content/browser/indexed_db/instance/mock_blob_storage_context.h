@@ -33,9 +33,6 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
   void RegisterFromDataItem(mojo::PendingReceiver<::blink::mojom::Blob> blob,
                             const std::string& uuid,
                             storage::mojom::BlobDataItemPtr item) override;
-  void RegisterFromMemory(mojo::PendingReceiver<::blink::mojom::Blob> blob,
-                          const std::string& uuid,
-                          ::mojo_base::BigBuffer data) override;
   void WriteBlobToFile(mojo::PendingRemote<::blink::mojom::Blob> blob,
                        const base::FilePath& path,
                        bool flush_on_write,
