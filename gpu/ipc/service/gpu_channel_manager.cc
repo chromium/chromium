@@ -916,6 +916,10 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     return shared_context_state_;
   }
 
+  // Cleanup the previous context if any.
+  SharedContextState::ClearForCurrentThread();
+  shared_context_state_.reset();
+
   scoped_refptr<gl::GLSurface> surface = default_offscreen_surface();
   bool use_virtualized_gl_contexts = false;
 #if BUILDFLAG(IS_MAC)
@@ -1037,7 +1041,9 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
   shared_context_state_ = std::move(shared_context_state);
   // Register as the active SharedContextState on the GPU main thread so
   // downstream operations (e.g. CompoundImageBacking fallback copy strategies)
-  // can access the active context for this thread.
+  // can access the active context for this thread. Overwriting a live
+  // registration would leave a dangling thread-local pointer.
+  CHECK(!SharedContextState::GetForCurrentThread());
   SharedContextState::SetForCurrentThread(shared_context_state_.get());
 
   *result = ContextResult::kSuccess;

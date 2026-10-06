@@ -139,6 +139,28 @@ TEST_F(GpuChannelManagerTest, EstablishChannel) {
   EXPECT_EQ(channel_manager()->LookupChannel(kClientId), channel);
 }
 
+TEST_F(GpuChannelManagerTest,
+       GetSharedContextStateAfterContextLostUpdatesThreadLocal) {
+  ContextResult result = ContextResult::kFatalFailure;
+  auto context_state1 = channel_manager()->GetSharedContextState(&result);
+  ASSERT_EQ(result, ContextResult::kSuccess);
+  ASSERT_TRUE(context_state1);
+  EXPECT_EQ(SharedContextState::GetForCurrentThread(), context_state1.get());
+
+  // Mark the context lost directly without triggering LoseAllContexts() so
+  // `channel_manager()` still holds the lost context in TLS. Drop the local
+  // reference so `channel_manager()` holds the last reference.
+  context_state1->MarkContextLost(error::kUnknown);
+  context_state1.reset();
+
+  // Recreating SharedContextState must clear TLS before resetting the old
+  // lost context so ~SharedContextState() does not hit CHECK_NE.
+  auto context_state2 = channel_manager()->GetSharedContextState(&result);
+  ASSERT_EQ(result, ContextResult::kSuccess);
+  ASSERT_TRUE(context_state2);
+  EXPECT_EQ(SharedContextState::GetForCurrentThread(), context_state2.get());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(GpuChannelManagerTest, OnBackgroundedWithoutWebGL) {
   TestApplicationBackgrounded(CONTEXT_TYPE_OPENGLES2, true);

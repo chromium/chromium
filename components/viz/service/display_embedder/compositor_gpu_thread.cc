@@ -123,6 +123,7 @@ CompositorGpuThread::GetSharedContextState() {
     return shared_context_state_;
 
   // Cleanup the previous context if any.
+  gpu::SharedContextState::ClearForCurrentThread();
   shared_context_state_.reset();
 
   // Create a new share group. Note that this share group is different from the
@@ -204,7 +205,9 @@ CompositorGpuThread::GetSharedContextState() {
   }
   shared_context_state_ = std::move(shared_context_state);
   // Register as the active SharedContextState on the CompositorGpuThread so
-  // downstream operations running on this thread can retrieve it.
+  // downstream operations running on this thread can retrieve it. Overwriting
+  // a live registration would leave a dangling thread-local pointer.
+  CHECK(!gpu::SharedContextState::GetForCurrentThread());
   gpu::SharedContextState::SetForCurrentThread(shared_context_state_.get());
   return shared_context_state_;
 }
