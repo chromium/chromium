@@ -5,16 +5,36 @@
 #ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_CREDENTIAL_PROVIDER_VIEW_CONTROLLER_TESTING_H_
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_CREDENTIAL_PROVIDER_VIEW_CONTROLLER_TESTING_H_
 
-#import "ios/chrome/common/credential_provider/credential_store.h"
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/credential_provider_extension/credential_provider_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
-// Exposes CredentialProviderViewController's private properties for tests only.
+@protocol AccountVerificationProvider;
+@protocol CredentialStore;
+@protocol ReauthenticationProtocol;
+
+// Exposes CredentialProviderViewController's dependency injection seams and
+// protocol conformances for tests only.
 @interface CredentialProviderViewController (Testing) <
-    CredentialResponseHandler>
+    CredentialResponseHandler,
+    PasskeyKeychainProviderBridgeDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 // Interface for the persistent credential store.
 @property(nonatomic, strong) id<CredentialStore> credentialStore;
+
+// Reauthentication module used for reauthentication.
+@property(nonatomic, strong) id<ReauthenticationProtocol>
+    reauthenticationModule;
+
+// Interface for verifying that accounts are still valid.
+@property(nonatomic, strong) id<AccountVerificationProvider> accountVerificator;
+
+// Bridge to the `PasskeyKeychainProvider` that manages passkey vault keys.
+@property(nonatomic, strong)
+    PasskeyKeychainProviderBridge* passkeyKeychainProviderBridge;
 
 @end
 

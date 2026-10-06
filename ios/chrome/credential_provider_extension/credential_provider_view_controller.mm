@@ -29,6 +29,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 #import "ios/chrome/credential_provider_extension/font_provider.h"
@@ -100,14 +101,15 @@ enum class PasskeyCreationEligibility {
 @property(nonatomic, strong) ConsentCoordinator* consentCoordinator;
 
 // Reauthentication Module used for reauthentication.
-@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+@property(nonatomic, strong) id<ReauthenticationProtocol>
+    reauthenticationModule;
 
 // Interface for `reauthenticationModule`, handling mostly the case when no
 // hardware for authentication is available.
 @property(nonatomic, strong) ReauthenticationHandler* reauthenticationHandler;
 
-// Interface for verified that accounts are still valid.
-@property(nonatomic, strong) AccountVerificationProvider* accountVerificator;
+// Interface for verifying that accounts are still valid.
+@property(nonatomic, strong) id<AccountVerificationProvider> accountVerificator;
 
 // Loading indicator used for user validation, which APIs can take a long time.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
@@ -503,14 +505,14 @@ enum class PasskeyCreationEligibility {
   return _reauthenticationHandler;
 }
 
-- (ReauthenticationModule*)reauthenticationModule {
+- (id<ReauthenticationProtocol>)reauthenticationModule {
   if (!_reauthenticationModule) {
     _reauthenticationModule = [[ReauthenticationModule alloc] init];
   }
   return _reauthenticationModule;
 }
 
-- (AccountVerificationProvider*)accountVerificator {
+- (id<AccountVerificationProvider>)accountVerificator {
   if (!_accountVerificator) {
     _accountVerificator = [[AccountVerificationProvider alloc] init];
   }

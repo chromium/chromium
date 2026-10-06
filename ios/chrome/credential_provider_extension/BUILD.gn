@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "passkey_welcome_screen_util_unittest.mm",
   ]
   deps = [
+    ":account_verification_provider",
     ":credential_provider",
     ":generated_strings",
     ":metrics_util",
@@ -113,7 +114,14 @@ source_set("unit_tests") {
     "//device/fido",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_extension",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_header",
+    "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/common/credential_provider/ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/credential_provider_extension/ui",
     "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
     "//testing/gtest",
     "//third_party/ocmock",
