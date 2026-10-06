@@ -15,7 +15,6 @@ found in the LICENSE file.
     </style>
     <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge">
         <item name="android:navigationBarDividerColor">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
     <style name="Theme.Chromium.Activity.Fullscreen" parent="Base.Theme.Chromium.Activity.Fullscreen">
         <item name="android:navigationBarDividerColor">@android:color/transparent</item>

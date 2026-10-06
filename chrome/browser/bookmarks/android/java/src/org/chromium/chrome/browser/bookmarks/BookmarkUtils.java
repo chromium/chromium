@@ -45,7 +45,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
@@ -949,15 +948,6 @@ public class BookmarkUtils {
      */
     public static boolean isDesktopBookmarksLayoutEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT);
-    }
-
-    /**
-     * @param context The current context.
-     * @return Whether the bookmark activity should be shown as a floating dialog.
-     */
-    public static boolean isBookmarkDialog(Context context) {
-        return isDesktopBookmarksDialogEnabled()
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**

@@ -613,7 +613,6 @@ chrome_java_resources = [
   "java/res/values-hdpi/dimens.xml",
   "java/res/values-land/styles.xml",
   "java/res/values-large/drawables.xml",
-  "java/res/values-large/styles.xml",
   "java/res/values-ldrtl/drawables.xml",
   "java/res/values-night/colors.xml",
   "java/res/values-night/drawables.xml",
