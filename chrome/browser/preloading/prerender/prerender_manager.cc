@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -183,12 +184,78 @@ class PrerenderManager::SearchPrerenderTask {
   const GURL prerendered_canonical_search_url_;
 };
 
-PrerenderManager::~PrerenderManager() {
-  if (is_search_prewarm_ongoing_) {
-    // NotifySearchPrewarmFinished will remove the observer.
-    NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus::kCancelled);
+class PrerenderManager::SearchPrewarmTask
+    : public content::PrerenderHandle::Observer {
+ public:
+  SearchPrewarmTask(
+      base::WeakPtr<SearchPreloadProgressService> progress_service,
+      std::unique_ptr<content::PrerenderHandle> search_prewarm_handle)
+      : progress_service_(std::move(progress_service)),
+        search_prewarm_handle_(std::move(search_prewarm_handle)) {
+    CHECK(search_prewarm_handle_);
+    if (progress_service_ && search_prewarm_handle_->IsValid() &&
+        search_prewarm_handle_->IsWaitingForResponseHeaders()) {
+      is_search_prewarm_ongoing_ = true;
+      search_prewarm_handle_->AddObserver(this);
+      progress_service_->OnSearchPrewarmStarted(
+          search_prewarm_handle_->GetPrerenderHostId());
+    }
   }
-}
+
+  SearchPrewarmTask(const SearchPrewarmTask&) = delete;
+  SearchPrewarmTask& operator=(const SearchPrewarmTask&) = delete;
+
+  ~SearchPrewarmTask() override {
+    if (is_search_prewarm_ongoing_) {
+      // NotifySearchPrewarmFinished will remove the observer.
+      NotifySearchPrewarmFinished(
+          content::PrerenderLifecycleStatus::kCancelled);
+    }
+  }
+
+  bool IsValid() const {
+    return search_prewarm_handle_ && search_prewarm_handle_->IsValid();
+  }
+
+  // content::PrerenderHandle::Observer:
+  void OnLifecycleStateChanged(
+      content::PrerenderLifecycleStatus status) override {
+    switch (status) {
+      case content::PrerenderLifecycleStatus::kHTTPSuccessResponse:
+      case content::PrerenderLifecycleStatus::kHttpBadResponse:
+      case content::PrerenderLifecycleStatus::kStop:
+      case content::PrerenderLifecycleStatus::kCancelled:
+      case content::PrerenderLifecycleStatus::kOtherFailure:
+        // Any terminal state (or headers received) for the prewarm phase
+        // should notify to unthrottle.
+        if (is_search_prewarm_ongoing_) {
+          NotifySearchPrewarmFinished(status);
+        }
+        break;
+      case content::PrerenderLifecycleStatus::kActivated:
+        // SearchPrewarmTask doesn't care about activation for prewarm.
+        break;
+    }
+  }
+
+ private:
+  void NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus result) {
+    CHECK(is_search_prewarm_ongoing_);
+    CHECK(search_prewarm_handle_);
+    is_search_prewarm_ongoing_ = false;
+    search_prewarm_handle_->RemoveObserver(this);
+    if (progress_service_) {
+      progress_service_->OnSearchPrewarmFinished(
+          search_prewarm_handle_->GetPrerenderHostId(), result);
+    }
+  }
+
+  base::WeakPtr<SearchPreloadProgressService> progress_service_;
+  std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
+  bool is_search_prewarm_ongoing_ = false;
+};
+
+PrerenderManager::~PrerenderManager() = default;
 
 void PrerenderManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -289,91 +356,63 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
           content::PreloadingData::GetSameURLMatcher(prewarm_url),
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
-  search_prewarm_handle_ = web_contents()->StartPrerendering(
-      prewarm_url, content::PreloadingTriggerType::kEmbedder,
-      prerender_utils::kPrewarmDefaultSearchEngineMetricSuffix,
-      /*additional_headers=*/net::HttpRequestHeaders(),
-      /*no_vary_search_hint=*/std::nullopt,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*should_warm_up_compositor=*/true,
-      /*should_prepare_paint_tree=*/true,
-      content::PreloadingHoldbackStatus::kUnspecified,
-      content::PreloadPipelineInfo::Create(
-          /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
-      preloading_attempt,
-      // Prewarm page won't be activated, so we don't need to match the
-      // prerendering url with the navigation url.
-      // TODO(https://crbug.com/406378765): Revisit when we support process
-      // reuse.
-      /*url_match_predicate=*/
-      base::BindRepeating(
-          [](const GURL& url, const std::optional<content::UrlMatchType>&) {
-            return false;
-          }),
-      base::BindRepeating(
-          &PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle,
-          GetWeakPtr()),
-      /*allow_reuse=*/true);
+  search_prewarm_task_.reset();
 
-  if (search_prewarm_handle_ && search_prewarm_handle_->IsValid() &&
-      search_prewarm_handle_->IsWaitingForResponseHeaders()) {
-    auto* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
-    if (service) {
-      service->OnSearchPrewarmStarted(
-          search_prewarm_handle_->GetPrerenderHostId());
-      is_search_prewarm_ongoing_ = true;
-      search_prewarm_handle_->AddObserver(this);
-    }
+  std::unique_ptr<content::PrerenderHandle> search_prewarm_handle =
+      web_contents()->StartPrerendering(
+          prewarm_url, content::PreloadingTriggerType::kEmbedder,
+          prerender_utils::kPrewarmDefaultSearchEngineMetricSuffix,
+          /*additional_headers=*/net::HttpRequestHeaders(),
+          /*no_vary_search_hint=*/std::nullopt,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*should_warm_up_compositor=*/true,
+          /*should_prepare_paint_tree=*/true,
+          content::PreloadingHoldbackStatus::kUnspecified,
+          content::PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/content::PreloadingType::
+                  kPrerender),
+          preloading_attempt,
+          // Prewarm page won't be activated, so we don't need to match the
+          // prerendering url with the navigation url.
+          // TODO(https://crbug.com/406378765): Revisit when we support process
+          // reuse.
+          /*url_match_predicate=*/
+          base::BindRepeating(
+              [](const GURL& url, const std::optional<content::UrlMatchType>&) {
+                return false;
+              }),
+          base::BindRepeating(
+              &PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle,
+              GetWeakPtr()),
+          /*allow_reuse=*/true);
+
+  if (search_prewarm_handle) {
+    auto* service = SearchPreloadProgressServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    search_prewarm_task_ = std::make_unique<SearchPrewarmTask>(
+        service ? service->GetWeakPtr() : nullptr,
+        std::move(search_prewarm_handle));
   }
 
-  return search_prewarm_handle_ != nullptr;
-}
-
-void PrerenderManager::NotifySearchPrewarmFinished(
-    content::PrerenderLifecycleStatus result) {
-  CHECK(is_search_prewarm_ongoing_);
-  CHECK(search_prewarm_handle_);
-  is_search_prewarm_ongoing_ = false;
-  search_prewarm_handle_->RemoveObserver(this);
-  auto* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
-  if (service) {
-    service->OnSearchPrewarmFinished(
-        search_prewarm_handle_->GetPrerenderHostId(), result);
-  }
-}
-
-void PrerenderManager::OnLifecycleStateChanged(
-    content::PrerenderLifecycleStatus status) {
-  switch (status) {
-    case content::PrerenderLifecycleStatus::kHTTPSuccessResponse:
-    case content::PrerenderLifecycleStatus::kHttpBadResponse:
-    case content::PrerenderLifecycleStatus::kStop:
-    case content::PrerenderLifecycleStatus::kCancelled:
-    case content::PrerenderLifecycleStatus::kOtherFailure:
-      // Any terminal state (or headers received) for the prewarm phase
-      // should notify to unthrottle.
-      NotifySearchPrewarmFinished(status);
-      break;
-    case content::PrerenderLifecycleStatus::kActivated:
-      // PrerenderManager doesn't care about activation for prewarm.
-      break;
-  }
+  return search_prewarm_task_ != nullptr;
 }
 
 void PrerenderManager::StopPrewarmSearchResultForTesting() {
-  if (is_search_prewarm_ongoing_) {
-    NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus::kStop);
-  }
-  search_prewarm_handle_.reset();
+  search_prewarm_task_.reset();
 }
 
 void PrerenderManager::SetPrewarmUrlForTesting(const GURL& url) {
   prewarm_url_for_testing_ = url;
+}
+
+content::PrerenderHandle::Observer*
+PrerenderManager::GetPrewarmObserverForTesting() {
+  return search_prewarm_task_.get();
+}
+
+bool PrerenderManager::HasSearchPrewarmTaskForTesting() const {
+  return search_prewarm_task_ != nullptr;
 }
 
 void PrerenderManager::StartPrerenderSearchResult(
@@ -515,11 +554,11 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
 
 PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
     GURL& prewarm_url) {
-  if (IsPrewarmValid() || HasSearchResultPagePrerendered()) {
-    return PrewarmDecision::kAlreadyExists;
-  }
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
     return PrewarmDecision::kDisabled;
+  }
+  if (IsPrewarmValid() || HasSearchResultPagePrerendered()) {
+    return PrewarmDecision::kAlreadyExists;
   }
   if (base::FeatureList::IsEnabled(features::kPrewarmDisableOnStartup) &&
       !AfterStartupTaskUtils::IsBrowserStartupComplete()) {
@@ -597,9 +636,12 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
 bool PrerenderManager::IsPrewarmValid() {
   if (base::FeatureList::IsEnabled(features::kPrewarm) &&
       features::kPrewarmRevalidate.Get()) {
-    return search_prewarm_handle_ && search_prewarm_handle_->IsValid();
+    return search_prewarm_task_ && search_prewarm_task_->IsValid();
   }
-  return search_prewarm_handle_ != nullptr;
+  // We explicitly keep `search_prewarm_task_` even if it is reused or
+  // cancelled. We will only create the prewarm page again if the revalidate
+  // feature is enabled.
+  return search_prewarm_task_ != nullptr;
 }
 
 void PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle(

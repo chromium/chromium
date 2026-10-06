@@ -13,12 +13,15 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service_factory.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/page_load_metrics/google/browser/search_preload_process_data.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -408,7 +411,8 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
   EXPECT_EQ(prerender_host_id, content::PrerenderHostId());
 }
 
-TEST_F(PrerenderManagerPrewarmTest, PrewarmPageRevalidatedAndNotCreatedAgain) {
+TEST_F(PrerenderManagerPrewarmTest,
+       PrewarmPageCreatedAgainWhenRevalidateEnabled) {
   // Use same origin url as the test search URL so that it can be reused
   // by the search prerender.
   const GURL prewarm_url = GetUrl("/foo");
@@ -439,6 +443,101 @@ TEST_F(PrerenderManagerPrewarmTest, PrewarmPageRevalidatedAndNotCreatedAgain) {
   // Trigger prewarm again and it should create a new prewarm page.
   EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
   registry_observer.WaitForTrigger(prewarm_url);
+}
+
+class PrerenderManagerPrewarmRevalidateDisabledTest
+    : public PrerenderManagerPrewarmTest {
+ public:
+  PrerenderManagerPrewarmRevalidateDisabledTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPrewarm,
+        {
+            {"url", "https://search.example.com/prewarm.html"},
+            {"throttle_prefetch", "true"},
+            {"revalidate", "false"},
+            {"throttle_user_navigation", "true"},
+        });
+  }
+  ~PrerenderManagerPrewarmRevalidateDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PrerenderManagerPrewarmRevalidateDisabledTest,
+       PrewarmPageNotCreatedAgainWhenRevalidateDisabled) {
+  // Use same origin url as the test search URL so that it can be reused
+  // by the search prerender.
+  const GURL prewarm_url = GetUrl("/foo");
+  ASSERT_TRUE(prewarm_url.is_valid());
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  // Prerender the prewarm page.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
+  registry_observer.WaitForTrigger(prewarm_url);
+
+  // Trigger a new search prerender, reusing the prewarm host.
+  GURL search_suggestion_url = GetSearchSuggestionUrl("pre", "prerender");
+  GURL canonical_search_url = GetCanonicalSearchUrl(search_suggestion_url);
+  prerender_manager()->StartPrerenderSearchResult(canonical_search_url,
+                                                  search_suggestion_url,
+                                                  /*attempt=*/nullptr);
+
+  // Cancel the search prerender.
+  prerender_manager()->StopPrerenderSearchResult(canonical_search_url);
+
+  // When revalidate is disabled, `search_prewarm_task_` is retained and
+  // `MaybeStartPrewarmSearchResult()` returns false.
+  EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+  EXPECT_FALSE(prerender_manager()->MaybeStartPrewarmSearchResult());
+}
+
+TEST_F(PrerenderManagerPrewarmTest, SearchPrewarmTaskLifecycleObserver) {
+  const GURL prewarm_url = GetUrl("/foo");
+  ASSERT_TRUE(prewarm_url.is_valid());
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
+
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
+  registry_observer.WaitForTrigger(prewarm_url);
+  EXPECT_TRUE(service->HasOnGoingSearchPrewarm());
+
+  // Simulate prewarm receiving headers via SearchPrewarmTask's observer.
+  content::PrerenderHandle::Observer* observer =
+      prerender_manager()->GetPrewarmObserverForTesting();
+  ASSERT_TRUE(observer);
+  observer->OnLifecycleStateChanged(
+      content::PrerenderLifecycleStatus::kHTTPSuccessResponse);
+  EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
+}
+
+TEST_F(PrerenderManagerPrewarmTest,
+       SearchPrewarmUnthrottlesOnWebContentsDestruction) {
+  const GURL prewarm_url = GetUrl("/foo");
+  ASSERT_TRUE(prewarm_url.is_valid());
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
+
+  {
+    content::test::PrerenderHostRegistryObserver registry_observer(
+        *GetActiveWebContents());
+    EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
+    registry_observer.WaitForTrigger(prewarm_url);
+  }
+  EXPECT_TRUE(service->HasOnGoingSearchPrewarm());
+
+  DeleteContents();
+  EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
