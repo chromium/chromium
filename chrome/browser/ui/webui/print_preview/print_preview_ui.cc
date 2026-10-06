@@ -444,7 +444,7 @@ bool PrintPreviewUIConfig::IsWebUIEnabled(
 }
 
 bool PrintPreviewUIConfig::ShouldHandleURL(const GURL& url) {
-  return url.GetPath() == "/" || url.GetPath() == "/test_loader.html";
+  return url.path() == "/" || url.path() == "/test_loader.html";
 }
 
 PrintPreviewUIConfig::~PrintPreviewUIConfig() = default;

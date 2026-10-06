@@ -393,11 +393,11 @@ base::FilePath PdfPrinterHandler::GetFileNameForURL(const GURL& url) {
                             std::string(), std::string());
 
   // If host is used as file name, try to decode punycode.
-  if (name.AsUTF8Unsafe() == url.GetHost()) {
+  if (name.AsUTF8Unsafe() == url.host()) {
     name = base::FilePath::FromUTF16Unsafe(
-        url_formatter::IDNToUnicode(url.GetHost()));
+        url_formatter::IDNToUnicode(url.host()));
   }
-  if (name.AsUTF8Unsafe() == url.GetHost()) {
+  if (name.AsUTF8Unsafe() == url.host()) {
     return name.AddExtension(kPdfExtension);
   }
   return name.ReplaceExtension(kPdfExtension);
