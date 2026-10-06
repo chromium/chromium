@@ -28,7 +28,8 @@ std::string_view ToolIdToName(ToolId id);
 // returns `std::nullopt` if `name` is not a registered Actor tool.
 std::optional<ToolId> NameToToolId(std::string_view name);
 
-// In-memory metadata and parameter schema for a shared browser tool.
+// In-memory metadata and parameter schema for a shared browser tool. Prefer
+// building instances with `ToolDefinitionBuilder`.
 struct ToolDefinition {
   ToolDefinition(ToolId id, std::string description);
   ToolDefinition(ToolId id,
