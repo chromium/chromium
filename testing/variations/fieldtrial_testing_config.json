@@ -6604,7 +6604,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_DSEv1CompatPriority_AheadOfImminentNavigation",
+                    "name": "Enabled_Base_AheadOfImminentNavigation",
                     "params": {
                         "dse_preload2_initial_no_vary_search_hint": "",
                         "dse_preload2_prefetch_priority_policy": "SearchPrefetchCompat",
