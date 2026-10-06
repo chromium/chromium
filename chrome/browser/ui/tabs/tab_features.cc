@@ -28,6 +28,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_web_contents_observer.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
@@ -511,6 +512,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     contextual_cueing_helper_ = glic::ContextualCueingHelper::MaybeCreate(&tab);
     glic_cue_tab_state_ = std::make_unique<glic::GlicCueTabState>(tab);
+    contextual_search_cue_tab_state_ =
+        std::make_unique<contextual_search::ContextualSearchCueTabState>(tab);
 
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {

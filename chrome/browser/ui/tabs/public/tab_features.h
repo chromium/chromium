@@ -184,6 +184,10 @@ class ContextualCueingController;
 class ContextualCueingWebContentsObserver;
 }  // namespace contextual_cueing
 
+namespace contextual_search {
+class ContextualSearchCueTabState;
+}  // namespace contextual_search
+
 namespace contextual_tasks {
 class ContextualTasksTabVisitTracker;
 class CopySearchJourneyTabFeature;
@@ -712,6 +716,10 @@ class TabFeatures {
 
   // Per-tab eligibility state for the glic contextual cue.
   std::unique_ptr<glic::GlicCueTabState> glic_cue_tab_state_;
+
+  // Per-tab eligibility state for the contextual search contextual cue.
+  std::unique_ptr<contextual_search::ContextualSearchCueTabState>
+      contextual_search_cue_tab_state_;
 
   std::unique_ptr<memory_saver::MemorySaverChipController>
       memory_saver_chip_controller_;
