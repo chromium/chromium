@@ -18,6 +18,24 @@ class IdentityManager;
 
 namespace optimization_guide {
 
+// The various results of an access token request.
+//
+// Keep in sync with OptimizationGuideAccessTokenResult in enums.xml.
+enum class OptimizationGuideAccessTokenResult {
+  kUnknown = 0,
+  // The access token was received successfully.
+  kSuccess = 1,
+  // User was not signed-in.
+  kUserNotSignedIn = 2,
+  // Failed with a transient error.
+  kTransientError = 3,
+  // Failed with a persistent error.
+  kPersistentError = 4,
+
+  // Add new values above this line.
+  kMaxValue = kPersistentError,
+};
+
 using AccessTokenReceivedCallback =
     base::OnceCallback<void(const std::string&)>;
 

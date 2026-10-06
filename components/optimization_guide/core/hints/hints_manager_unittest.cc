@@ -20,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/hints/hint_cache.h"
