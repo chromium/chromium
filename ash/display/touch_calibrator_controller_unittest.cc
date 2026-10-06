@@ -11,6 +11,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/test_display_layout_manager.h"
@@ -27,6 +29,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -838,6 +841,37 @@ TEST_F(TouchCalibratorControllerTest, InternalTouchDeviceIsRejected) {
   EXPECT_TRUE(touch_device_manager()
                   ->GetCalibrationData(internal_touchdevice, info.id())
                   .IsEmpty());
+}
+
+TEST_F(TouchCalibratorControllerTest, CalibratorViewAccessibility) {
+  const display::Display& touch_display = InitDisplays();
+  TouchCalibratorController touch_calibrator_controller;
+  StartCalibrationChecks(&touch_calibrator_controller, touch_display);
+
+  TouchCalibratorView* target_calibrator_view =
+      static_cast<TouchCalibratorView*>(
+          GetCalibratorViews(&touch_calibrator_controller)[touch_display.id()]
+              ->GetContentsView());
+  ASSERT_TRUE(target_calibrator_view);
+
+  target_calibrator_view->GetViewAccessibility().CompleteCacheInitialization();
+
+  ui::AXNodeData root_node_data;
+  target_calibrator_view->GetViewAccessibility().GetAccessibleNodeData(
+      &root_node_data);
+
+  bool found_hint_box = false;
+  for (views::View* child : target_calibrator_view->children()) {
+    ui::AXNodeData node_data;
+    child->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    if (node_data.role == ax::mojom::Role::kTooltip && child->GetVisible()) {
+      found_hint_box = true;
+      EXPECT_FALSE(
+          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+              .empty());
+    }
+  }
+  EXPECT_TRUE(found_hint_box);
 }
 
 }  // namespace ash

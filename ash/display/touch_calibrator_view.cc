@@ -296,7 +296,6 @@ class HintBox : public views::View {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void OnAccessibilityInitializing(ui::AXNodeData* data) override;
 
   void SetLabel(const std::u16string& text, const SkColor& color);
   void SetSubLabel(const std::u16string& text, const SkColor& color);
@@ -430,10 +429,6 @@ void HintBox::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawStringRectWithFlags(sublabel_text_, sublabel_font_list_,
                                   sublabel_color_, sublabel_text_bounds_,
                                   gfx::Canvas::NO_ELLIPSIS);
-}
-void HintBox::OnAccessibilityInitializing(ui::AXNodeData* ax_data) {
-  views::View::OnAccessibilityInitializing(ax_data);
-  UpdateAccessibleName();
 }
 
 void HintBox::UpdateAccessibleName() {
