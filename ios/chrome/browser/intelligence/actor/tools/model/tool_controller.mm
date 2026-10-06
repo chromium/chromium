@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/location.h"
 #import "base/logging.h"
 #import "base/no_destructor.h"
 #import "base/not_fatal_until.h"
@@ -223,6 +224,17 @@ void ToolController::Cancel() {
 }
 
 void ToolController::FailCurrentTool(mojom::ActionResultCode code) {
+  if (state_ != State::kInvoking) {
+    return;
+  }
+
+  // Posted so that the tool is never cancelled while it is on the stack.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ToolController::FailCurrentToolInternal,
+                                weak_ptr_factory_.GetWeakPtr(), code));
+}
+
+void ToolController::FailCurrentToolInternal(mojom::ActionResultCode code) {
   if (state_ != State::kInvoking) {
     return;
   }

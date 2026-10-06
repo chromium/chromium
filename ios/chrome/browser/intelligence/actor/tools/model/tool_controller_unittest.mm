@@ -6,10 +6,14 @@
 
 #import <optional>
 
+#import "base/functional/bind.h"
+#import "base/location.h"
 #import "base/run_loop.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -430,25 +434,79 @@ TEST_F(ToolControllerTest, DeletingControllerInValidationCallbackDoesNotUAF) {
 
 // Tests that a tool can be failed during execution with an error code.
 TEST_F(ToolControllerTest, FailCurrentToolMidExecution) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorTools);
-
   tool_factory_ = std::make_unique<AsyncActorToolFactory>(profile_.get());
 
-  std::unique_ptr<ActorToolRequest> request = MakeSuccessfulActorToolRequest();
-
   base::test::TestFuture<ToolExecutionResult> validation_future;
-  controller_->CreateToolAndValidate(*request, validation_future.GetCallback());
-  EXPECT_TRUE(validation_future.Get().IsOk());
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
 
   base::test::TestFuture<ToolExecutionResult> invoke_future;
   controller_->Invoke(invoke_future.GetCallback());
   controller_->FailCurrentTool(
       mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  ToolExecutionResult result = invoke_future.Get();
-  EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(result.code(),
-            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  EXPECT_FALSE(invoke_future.IsReady());
+  EXPECT_EQ(ToolController::State::kInvoking, controller_->state());
+
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            invoke_future.Get().code());
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
+}
+
+// Tests that failing a tool interrupts the observation delay.
+TEST_F(ToolControllerTest, FailCurrentToolInterruptsObservationDelay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kActorTools, {{"PageStabilityEnabled", "true"}});
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetLoading(true);
+  tool_factory_ = std::make_unique<StabilizingActorToolFactory>(
+      profile_.get(), fake_web_state->GetWeakPtr());
+  controller_ = std::make_unique<ToolController>(this);
+
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
+
+  base::test::TestFuture<ToolExecutionResult> invoke_future;
+  controller_->Invoke(invoke_future.GetCallback());
+  // Wait until the observation delay is running.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ASSERT_FALSE(invoke_future.IsReady());
+  ASSERT_EQ(ToolController::State::kInvoking, controller_->state());
+
+  const base::TimeTicks fail_time = task_environment_.NowTicks();
+  controller_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            invoke_future.Get().code());
+  EXPECT_EQ(fail_time, task_environment_.NowTicks());
+}
+
+// Tests that cancelling the tool drops a failure posted before the cancel.
+TEST_F(ToolControllerTest, CancelDropsPendingFailCurrentTool) {
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(profile_.get());
+
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
+
+  controller_->Invoke(base::BindOnce([](ToolExecutionResult result) {
+    FAIL() << "Callback should not be called when cancelled.";
+  }));
+  controller_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  controller_->Cancel();
+
+  // Flush the posted failure.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
 }
 
 // Test that CreateToolAndValidate logs the tool's DebugString in the

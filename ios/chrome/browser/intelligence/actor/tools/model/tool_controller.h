@@ -56,7 +56,8 @@ class ToolController {
   // delays.
   void Invoke(ResultCallback result_callback);
   void Cancel();
-  // Fails the currently executing tool with `code`.
+  // Asynchronously fails the currently executing tool with `code`. Safe to call
+  // from within the tool.
   void FailCurrentTool(mojom::ActionResultCode code);
 
   // Returns the current state of the controller.
@@ -88,6 +89,9 @@ class ToolController {
 
   // Called when the tool itself finishes its execution.
   void DidFinishToolExecution(ToolExecutionResult result);
+
+  // Applies a failure posted by `FailCurrentTool()`.
+  void FailCurrentToolInternal(mojom::ActionResultCode code);
 
   // Clears the current tool invocation and returns the result.
   void CompleteToolRequest(ToolExecutionResult result);

@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 
+#import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
+#import "base/test/bind.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
@@ -22,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
@@ -50,6 +54,66 @@ namespace {
 TaskSourceInfo TestSource() {
   return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
 }
+
+// State shared between a test and the `ControllableActorTool`s it creates,
+// letting the test complete validation and execution by hand.
+struct ControllableToolHooks {
+  // Completes the pending `Validate()` call when run.
+  ToolExecutionCallback validate_callback;
+  // Completes the pending `Execute()` call when run.
+  ToolExecutionCallback execute_callback;
+  // If set, run synchronously from within `Execute()`.
+  base::OnceClosure on_execute;
+  // Whether the most recently created tool has been destroyed.
+  bool tool_destroyed = false;
+};
+
+// A tool that only completes validation and execution when the test runs the
+// callbacks stored in its `ControllableToolHooks`.
+class ControllableActorTool : public ActorTool {
+ public:
+  explicit ControllableActorTool(ControllableToolHooks& hooks) : hooks_(hooks) {
+    hooks_->tool_destroyed = false;
+  }
+  ~ControllableActorTool() override { hooks_->tool_destroyed = true; }
+
+  void Validate(ToolExecutionCallback callback) override {
+    hooks_->validate_callback = std::move(callback);
+  }
+
+  void Execute(ToolExecutionCallback callback) override {
+    hooks_->execute_callback = std::move(callback);
+    if (hooks_->on_execute) {
+      std::move(hooks_->on_execute).Run();
+    }
+  }
+
+  base::WeakPtr<web::WebState> GetTargetWebState() const override {
+    return nullptr;
+  }
+  ToolType GetToolType() const override { return ToolType::kWait; }
+  std::string DebugString() const override { return "ControllableActorTool"; }
+
+ private:
+  const raw_ref<ControllableToolHooks> hooks_;
+};
+
+// Creates `ControllableActorTool`s bound to `hooks`.
+class ControllableActorToolFactory : public ActorToolFactory {
+ public:
+  ControllableActorToolFactory(ProfileIOS* profile,
+                               ControllableToolHooks& hooks)
+      : ActorToolFactory(profile), hooks_(hooks) {}
+
+  base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
+      const ActorToolRequest& request,
+      ToolDelegate* tool_delegate) override {
+    return std::make_unique<ControllableActorTool>(*hooks_);
+  }
+
+ private:
+  const raw_ref<ControllableToolHooks> hooks_;
+};
 
 struct DelegateCall {
   ToolType tool_type;
@@ -84,7 +148,7 @@ class ActorEngineTest : public PlatformTest {
     PlatformTest::SetUp();
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
-    tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
+    tool_factory_ = CreateToolFactory();
     task_ = std::make_unique<ActorTask>(
         ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
@@ -100,6 +164,12 @@ class ActorEngineTest : public PlatformTest {
     journal_.reset();
     profile_.reset();
     PlatformTest::TearDown();
+  }
+
+  // Returns the factory used by the task to create tools. Overridden by
+  // fixtures that drive tool validation and execution by hand.
+  virtual std::unique_ptr<ActorToolFactory> CreateToolFactory() {
+    return std::make_unique<ActorToolFactory>(profile_.get());
   }
 
   void SetNextActionIndex(size_t index) { engine_->next_action_index_ = index; }
@@ -120,6 +190,15 @@ class ActorEngineTest : public PlatformTest {
 
   ToolController* GetToolController() const {
     return engine_->tool_controller_.get();
+  }
+
+  // Runs tasks until the current tool is executing. Returns false on timeout.
+  [[nodiscard]] bool WaitForToolInvoking() {
+    return base::test::RunUntil([this]() {
+      ToolController* controller = GetToolController();
+      return controller &&
+             controller->state() == ToolController::State::kInvoking;
+    });
   }
 
   void CompleteActions(ActionResult&& result) {
@@ -420,38 +499,164 @@ TEST_F(ActorEngineTest, FailCurrentToolWhenNotInToolInvoke) {
   EXPECT_EQ(GetState(), ActorEngine::State::kInit);
 }
 
-// Test that calling FailCurrentTool while a tool is in-flight aborts the tool,
-// transitions the engine to kFailed, and reports the error code.
-TEST_F(ActorEngineTest, FailCurrentToolMidExecution) {
-  // Create a WaitAction with a 10-second duration so it stays in-flight.
-  optimization_guide::proto::Action action;
-  auto* wait = action.mutable_wait();
-  wait->set_wait_time_ms(10000);
+// Test fixture for `FailCurrentTool()`, driving a tool whose validation and
+// execution are completed by hand.
+class ActorEngineFailCurrentToolTest : public ActorEngineTest {
+ protected:
+  std::unique_ptr<ActorToolFactory> CreateToolFactory() override {
+    return std::make_unique<ControllableActorToolFactory>(profile_.get(),
+                                                          hooks_);
+  }
 
-  std::vector<std::unique_ptr<ActorToolRequest>> actions;
-  actions.push_back(std::make_unique<ActorToolRequest>(action));
+  // Starts a single-action sequence. Returns once the tool awaits validation.
+  void StartAction(ActCallback callback) {
+    std::vector<std::unique_ptr<ActorToolRequest>> actions;
+    actions.push_back(MakeSuccessfulActorToolRequest());
+    engine_->Act(std::move(actions), std::move(callback));
+    ASSERT_FALSE(hooks_.validate_callback.is_null());
+  }
+
+  // Starts a single-action sequence and completes validation. Returns once the
+  // tool is executing.
+  void StartActionAndWaitForInvoking(ActCallback callback) {
+    ASSERT_NO_FATAL_FAILURE(StartAction(std::move(callback)));
+    CompleteValidation(ToolExecutionResult::Ok());
+    ASSERT_TRUE(WaitForToolInvoking());
+  }
+
+  void CompleteValidation(ToolExecutionResult result) {
+    std::move(hooks_.validate_callback).Run(std::move(result));
+  }
+
+  void CompleteExecution(ToolExecutionResult result) {
+    std::move(hooks_.execute_callback).Run(std::move(result));
+  }
+
+  ControllableToolHooks hooks_;
+};
+
+// Test that `FailCurrentTool` fails an executing tool without waiting for it to
+// complete.
+TEST_F(ActorEngineFailCurrentToolTest, FailCurrentToolMidExecution) {
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(future.GetCallback()));
+
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  EXPECT_FALSE(hooks_.tool_destroyed);
+  EXPECT_EQ(GetToolController()->state(), ToolController::State::kInvoking);
+  EXPECT_FALSE(future.IsReady());
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+  EXPECT_TRUE(hooks_.tool_destroyed);
+}
+
+// Test that `FailCurrentTool` can be called from within the tool.
+TEST_F(ActorEngineFailCurrentToolTest, FailCurrentToolFromWithinTool) {
+  hooks_.on_execute = base::BindLambdaForTesting([this]() {
+    engine_->FailCurrentTool(
+        mojom::ActionResultCode::kTriggeredNavigationBlocked);
+    EXPECT_FALSE(hooks_.tool_destroyed);
+  });
 
   base::test::TestFuture<std::vector<ActionResult>> future;
-  engine_->Act(std::move(actions), future.GetCallback());
+  ASSERT_NO_FATAL_FAILURE(StartAction(future.GetCallback()));
+  CompleteValidation(ToolExecutionResult::Ok());
 
-  // Wait until tool validation completes and the tool starts executing.
-  ASSERT_TRUE(base::test::RunUntil([this]() {
-    ToolController* controller = GetToolController();
-    return controller &&
-           controller->state() == ToolController::State::kInvoking;
-  }));
-  ASSERT_EQ(GetState(), ActorEngine::State::kToolInvoke);
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_TRUE(hooks_.on_execute.is_null());
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
 
-  // Preemptively fail the in-flight tool.
+// Test that the failure wins over a tool result reported after it.
+TEST_F(ActorEngineFailCurrentToolTest, FailCurrentToolBeforeToolResult) {
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(future.GetCallback()));
+
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  CompleteExecution(ToolExecutionResult::Ok());
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+// Test that a tool result reported before the failure wins.
+TEST_F(ActorEngineFailCurrentToolTest, ToolResultBeforeFailCurrentTool) {
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(future.GetCallback()));
+
+  CompleteExecution(ToolExecutionResult::Ok());
   engine_->FailCurrentTool(
       mojom::ActionResultCode::kTriggeredNavigationBlocked);
 
   std::vector<ActionResult> results = future.Take();
   ASSERT_EQ(results.size(), 1U);
-  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_EQ(GetState(), ActorEngine::State::kCompleted);
+}
+
+// Test that a failure reported while the tool is being validated is dropped,
+// since the tool has not acted yet.
+TEST_F(ActorEngineFailCurrentToolTest, FailCurrentToolDuringValidationIgnored) {
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartAction(future.GetCallback()));
+  ASSERT_EQ(GetState(), ActorEngine::State::kToolInvoke);
+
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  CompleteValidation(ToolExecutionResult::Ok());
+  ASSERT_TRUE(WaitForToolInvoking());
+  CompleteExecution(ToolExecutionResult::Ok());
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+}
+
+// Test that a failure reported during validation does not replace the tool's
+// own validation error.
+TEST_F(ActorEngineFailCurrentToolTest,
+       FailCurrentToolDuringValidationKeepsValidationError) {
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartAction(future.GetCallback()));
+
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  CompleteValidation(
+      ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1U);
   EXPECT_EQ(results[0].tool_result.code(),
-            mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+            mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+// Test that a failure posted for a cancelled tool does not leak into the
+// result of the next tool.
+TEST_F(ActorEngineFailCurrentToolTest, FailCurrentToolDoesNotLeakIntoNextTool) {
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(base::DoNothing()));
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  engine_->CancelOngoingAndPendingActions(
+      ActorEngine::EngineResult::kCancelled);
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(future.GetCallback()));
+  CompleteExecution(ToolExecutionResult::Ok());
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_TRUE(results[0].tool_result.IsOk());
 }
 
 class ActorEngineOriginGatingTest : public ActorEngineTest {

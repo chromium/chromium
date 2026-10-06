@@ -178,6 +178,7 @@ void ActorEngine::CancelOngoingAndPendingActions(
 }
 
 void ActorEngine::FailCurrentTool(mojom::ActionResultCode reason) {
+  CHECK_NE(reason, mojom::ActionResultCode::kOk);
   if (state_ != State::kToolInvoke || !tool_controller_) {
     return;
   }

@@ -115,7 +115,8 @@ class ActorEngine : public ToolDelegate {
   // Cancels any ongoing and pending actions.
   void CancelOngoingAndPendingActions(EngineResult reason);
 
-  // Fails the current in-flight tool with `reason` and completes the action.
+  // Asynchronously fails the current in-flight tool with `reason` and
+  // completes the action.
   void FailCurrentTool(mojom::ActionResultCode reason);
 
   // Pauses any ongoing actions being executed by the engine.
