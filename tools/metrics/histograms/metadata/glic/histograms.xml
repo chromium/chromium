@@ -789,7 +789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.EntryPoint.Status" enum="GlicEntryPointStatus"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>sanaakbani@google.com</owner>
   <owner>iwells@google.com</owner>
   <summary>
@@ -1145,7 +1145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Host.LoadingStageDuration.{LoadingStage}" units="ms"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>iwells@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <summary>
@@ -1513,7 +1513,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.PanelPresentationTime.{EmbedderType}" units="ms"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3394,7 +3394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <summary>
@@ -3815,7 +3815,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Glic.ZoomLevel.{Suffix}" units="%" expires_after="2027-01-31">
+<histogram name="Glic.ZoomLevel.{Suffix}" units="%" expires_after="2027-04-04">
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>

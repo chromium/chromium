@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Downloader.FirstParty.FetchResult"
-    enum="SkillsFetchResult" expires_after="2027-02-01">
+    enum="SkillsFetchResult" expires_after="2027-04-04">
   <owner>aashnas@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>

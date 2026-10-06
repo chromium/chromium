@@ -3097,7 +3097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.IneligibilityReason"
-    enum="IOSGeminiIneligibilityReason" expires_after="2027-02-03">
+    enum="IOSGeminiIneligibilityReason" expires_after="2027-04-04">
   <owner>fbeauchamp@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -4484,7 +4484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.TopImpression"
-    enum="IOSMagicStackModuleType" expires_after="2027-01-31">
+    enum="IOSMagicStackModuleType" expires_after="2027-04-04">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -4654,7 +4654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}ApplicationResumeTime" units="ms"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -4677,7 +4677,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.MetricKit.{MXVersion}AverageSuspendedMemory{ActivityReportDomain}"
-    units="MB" expires_after="2027-01-31">
+    units="MB" expires_after="2027-04-04">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -4932,7 +4932,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.MetricKit.{MXVersion}PeakMemoryUsage{ActivityReportDomain}"
-    units="MB" expires_after="2027-01-31">
+    units="MB" expires_after="2027-04-04">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -4963,7 +4963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}TimeToFirstDraw" units="ms"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -5469,7 +5469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.OverflowMenu.ActionType" enum="IOSOverflowMenuActionType"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>rkgibson@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>The type of action the user took in the overflow/tools menu</summary>
@@ -6377,7 +6377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PromoStyleSheet.Outcome" enum="PromoStyleSheetAction"
-    expires_after="2027-01-31">
+    expires_after="2027-04-04">
   <owner>pabouchard@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -6775,7 +6775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.Heuristic.Result"
-    enum="ReaderModeHeuristicResult" expires_after="2027-01-31">
+    enum="ReaderModeHeuristicResult" expires_after="2027-04-04">
   <owner>fernandex@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -8109,7 +8109,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2027-02-01">
+<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2027-04-04">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <summary>
