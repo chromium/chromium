@@ -222,7 +222,7 @@ struct CardMetadataLoggingContext {
   CreditCardBenefitType selected_benefit_type = CreditCardBenefitType::kUnknown;
 
   // Keeps record of the selected card instrument id for later events logging.
-  int64_t selected_card_instrument_id;
+  int64_t selected_card_instrument_id = 0;
 
   // Keeps record of the number of masked server card suggestions.
   uint8_t masked_server_card_count = 0;
