@@ -474,30 +474,26 @@ source_set("google_accounts_private_api") {
   deps = [ "//google_apis" ]
 }
 
-# SigninBrowserTestBase derives from InProcessBrowserTest, which is not
-# built on Android.
-if (!is_android) {
-  source_set("signin_browser_test_base") {
-    testonly = true
+source_set("signin_browser_test_base") {
+  testonly = true
 
-    sources = [ "signin_browser_test_base.h" ]
+  sources = [ "signin_browser_test_base.h" ]
 
-    public_deps = [
-      ":identity_test_support",
-      ":signin",
-      ":test_support",
-      "//base",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/profiles:profile_manager",
-      "//chrome/browser/profiles:profile_test_util",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support_ui",
-      "//components/signin/public/identity_manager",
-      "//components/signin/public/identity_manager:test_support",
-      "//components/trusted_vault",
-      "//services/network:test_support",
-    ]
-  }
+  public_deps = [
+    ":identity_test_support",
+    ":signin",
+    ":test_support",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile_test_util",
+    "//chrome/test/base:platform_browser_test",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/trusted_vault",
+    "//services/network:test_support",
+  ]
 }
 
 source_set("test_support") {

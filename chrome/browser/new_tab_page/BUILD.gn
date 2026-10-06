@@ -217,36 +217,43 @@ source_set("unit_tests") {
   }
 }
 
-# TODO(b/502297163): Enable tests.
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
+source_set("browser_tests") {
+  testonly = true
+  visibility = [ "//chrome/test:*" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "new_tab_page_util_browsertest.cc" ]
+  deps = [
+    ":impl",
+    ":new_tab_page",
+    "//chrome/browser",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/signin:signin_browser_test_base",
+    "//chrome/browser/sync",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_scoped_utils",
+    "//components/ntp_tiles:pref_names",
+    "//components/variations/service",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  # TODO(b:535209960): Enable chrome_colors_service_browsertest on Android once
+  # ChromeColorsService is implemented there.
+  # TODO(b:502297163): Enable new_tab_page_feature_promo_helper_browsertest on
+  # Android once its user education integration is implemented there.
+  if (!is_android) {
+    sources += [
       "chrome_colors/chrome_colors_service_browsertest.cc",
       "feature_promo_helper/new_tab_page_feature_promo_helper_browsertest.cc",
-      "new_tab_page_util_browsertest.cc",
     ]
-    deps = [
-      ":impl",
-      ":new_tab_page",
-      "//chrome/browser",
+    deps += [
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
-      "//chrome/browser/optimization_guide",
-      "//chrome/browser/signin:signin_browser_test_base",
-      "//chrome/browser/sync",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/user_education",
-      "//chrome/test:test_support",
-      "//chrome/test/base:chrome_test_scoped_utils",
       "//chrome/test/user_education:impl",
       "//components/feature_engagement/test:test_support",
-      "//components/ntp_tiles:pref_names",
-      "//components/variations/service",
-      "//content/test:test_support",
-      "//testing/gtest",
       "//ui/base:test_support",
     ]
   }

@@ -1378,6 +1378,7 @@ if (is_android) {
 
     if (enable_webui_ntp) {
       deps += [
+        "//chrome/browser/new_tab_page:browser_tests",
         "//chrome/browser/ui/customize_chrome:android_browsertests",
         "//chrome/browser/ui/webui/customize_buttons:browser_tests",
       ]
