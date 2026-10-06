@@ -494,9 +494,13 @@ public class ScrollCaptureCallbackDelegateTest {
         inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
         // Test end capture
+        HistogramWatcher heightWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sharing.ScrollCapture.CapturedHeightPercentageOfViewport", 50);
         scrollCaptureCallback.onScrollCaptureEnd(mOnReady);
         inOrder.verify(mEntryManager).destroy();
         Assert.assertNull(scrollCaptureCallback.getContentAreaForTesting());
         inOrder.verify(mOnReady).run();
+        heightWatcher.assertExpected();
     }
 }

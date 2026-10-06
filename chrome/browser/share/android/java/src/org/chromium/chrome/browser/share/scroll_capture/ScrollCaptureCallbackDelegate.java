@@ -61,6 +61,9 @@ public class ScrollCaptureCallbackDelegate {
     private float mMinPageScaleFactor;
 
     private long mCaptureStartTime;
+    // Tracks the minimum and maximum Y coordinates captured during a session for metrics.
+    private int mMinCapturedY = Integer.MAX_VALUE;
+    private int mMaxCapturedY = Integer.MIN_VALUE;
 
     public ScrollCaptureCallbackDelegate(EntryManagerWrapper entryManagerWrapper) {
         mEntryManagerWrapper = entryManagerWrapper;
@@ -120,6 +123,8 @@ public class ScrollCaptureCallbackDelegate {
         assert mCurrentTab != null;
 
         mCaptureStartTime = SystemClock.elapsedRealtime();
+        mMinCapturedY = Integer.MAX_VALUE;
+        mMaxCapturedY = Integer.MIN_VALUE;
         mEntryManager = mEntryManagerWrapper.create(mCurrentTab);
         mEntryManager.addBitmapGeneratorObserver(
                 new BitmapGeneratorObserver() {
@@ -205,6 +210,8 @@ public class ScrollCaptureCallbackDelegate {
                         onComplete.onResult(new Rect());
                         return;
                     }
+                    mMinCapturedY = Math.min(mMinCapturedY, captureArea.top);
+                    mMaxCapturedY = Math.max(mMaxCapturedY, captureArea.bottom);
                     // Translate the captureArea Rect back to its original coordinates.
                     captureArea.offset(0, -mInitialYOffset);
                     onComplete.onResult(captureArea);
@@ -224,7 +231,17 @@ public class ScrollCaptureCallbackDelegate {
                     "Sharing.ScrollCapture.SuccessfulCaptureDuration",
                     SystemClock.elapsedRealtime() - mCaptureStartTime);
         }
+        if (mMinCapturedY < mMaxCapturedY && mViewportRect != null && mViewportRect.height() > 0) {
+            RecordHistogram.recordLinearCountHistogram(
+                    "Sharing.ScrollCapture.CapturedHeightPercentageOfViewport",
+                    Math.round(100f * (mMaxCapturedY - mMinCapturedY) / mViewportRect.height()),
+                    /* min= */ 1,
+                    /* max= */ 1001,
+                    /* numBuckets= */ 52);
+        }
         mCaptureStartTime = 0;
+        mMinCapturedY = Integer.MAX_VALUE;
+        mMaxCapturedY = Integer.MIN_VALUE;
         mContentArea = null;
         mViewportRect = null;
         mInitialYOffset = 0;

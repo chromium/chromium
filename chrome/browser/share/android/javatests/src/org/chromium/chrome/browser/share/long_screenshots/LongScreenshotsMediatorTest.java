@@ -31,8 +31,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Manual;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager.BitmapGeneratorObserver;
@@ -253,6 +256,47 @@ public class LongScreenshotsMediatorTest {
     @MediumTest
     public void testGetScreenshot_NullFullBitmap() {
         Assert.assertNull(mMediator.getScreenshot());
+    }
+
+    @Test
+    @MediumTest
+    public void testGetScreenshot_RecordsCapturedHeightPercentage() {
+        int displayHeight = mActivity.getResources().getDisplayMetrics().heightPixels;
+        Bitmap tallBitmap = Bitmap.createBitmap(800, displayHeight * 3, Bitmap.Config.ARGB_8888);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMediator.showAreaSelectionDialog(tallBitmap);
+                    Assert.assertTrue(mMediator.getDialog().isShowing());
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View imageView = mMediator.getDialog().findViewById(R.id.screenshot_image);
+                    View topMask = mMediator.getDialog().findViewById(R.id.region_selection_top);
+                    View bottomMask =
+                            mMediator.getDialog().findViewById(R.id.region_selection_bottom);
+                    return imageView != null
+                            && topMask != null
+                            && bottomMask != null
+                            && imageView.getWidth() > 0
+                            && bottomMask.getHeight() > topMask.getHeight()
+                            && !bottomMask.isLayoutRequested();
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    HistogramWatcher watcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectAnyRecord(
+                                            "Sharing.ShareSheetLongScreenshots."
+                                                    + "CapturedHeightPercentageOfViewport")
+                                    .build();
+                    Bitmap cropped = mMediator.getScreenshot();
+                    Assert.assertNotNull(cropped);
+                    watcher.assertExpected();
+                    mMediator.areaSelectionClose(mView);
+                });
     }
 
     @Test

@@ -301,6 +301,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.ScrollCapture.CapturedHeightPercentageOfViewport"
+    units="%" expires_after="2027-02-07">
+  <owner>jhimawan@google.com</owner>
+  <owner>ckitagawa@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the total vertical span of tiles requested by the Android system
+    during a scroll capture session, expressed as a percentage of a single
+    viewport height (e.g. 100% = 1 viewport, 300% = 3 viewports). Recorded when
+    the scroll capture session ends if at least one tile was successfully
+    captured. Android S+ only.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.ScrollCapture.MemoryPressureOnSearch"
     enum="MemoryPressureLevel" expires_after="2027-02-07">
   <owner>jhimawan@google.com</owner>
@@ -651,6 +666,22 @@ chromium-metrics-reviews@google.com.
     Records the status of the Bitmap Generator when capturing long screenshot
     from the share sheet (3-dot menu path). Recorded when the capture completes
     or fails due to insufficient memory or other errors. Android only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sharing.ShareSheetLongScreenshots.CapturedHeightPercentageOfViewport"
+    units="%" expires_after="2027-02-07">
+  <owner>jhimawan@google.com</owner>
+  <owner>ckitagawa@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the height of the cropped long screenshot selected by the user in
+    the share sheet area selection dialog, expressed as a percentage of a single
+    viewport height (e.g. 100% = 1 viewport, 300% = 3 viewports). Recorded when
+    the user confirms the area selection and the cropped screenshot bitmap is
+    created. Android only.
   </summary>
 </histogram>
 
