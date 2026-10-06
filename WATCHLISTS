@@ -2651,7 +2651,6 @@
     'android_search_widget': ['yusufo+watch@chromium.org'],
     'android_side_panel': ['clhager@google.com',
                            'linyuh+watch@google.com',
-                           'mschillaci+watchsidepanel@google.com',
                            'nemco+watch@google.com',
                            'shuyng@google.com'],
     'android_startup_metrics': ['pasko+watch@chromium.org'],
