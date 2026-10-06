@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -51,6 +53,7 @@ std::unique_ptr<KeyedService>
 CupsPrintJobManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return CupsPrintJobManager::CreateInstance(
+      CHECK_DEREF(g_browser_process->print_job_manager()),
       Profile::FromBrowserContext(context));
 }
 

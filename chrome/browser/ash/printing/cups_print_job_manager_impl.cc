@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -105,16 +104,16 @@ void RecordJobResult(JobResultForHistogram result,
 
 class CupsPrintJobManagerImpl : public CupsPrintJobManager {
  public:
-  explicit CupsPrintJobManagerImpl(Profile* profile)
+  CupsPrintJobManagerImpl(::printing::PrintJobManager& print_job_manager,
+                          Profile* profile)
       : CupsPrintJobManager(profile),
         cups_wrapper_(CupsWrapper::Create()),
         weak_ptr_factory_(this) {
     // NOTE: base::Unretained(this) is safe here because this object owns
     // |subscription_| and the callback won't be invoked after |subscription_|
     // is destroyed.
-    subscription_ = g_browser_process->print_job_manager()->AddDocDoneCallback(
-        base::BindRepeating(&CupsPrintJobManagerImpl::OnDocDone,
-                            base::Unretained(this)));
+    subscription_ = print_job_manager.AddDocDoneCallback(base::BindRepeating(
+        &CupsPrintJobManagerImpl::OnDocDone, base::Unretained(this)));
     timer_.SetTaskRunner(content::GetUIThreadTaskRunner({}));
   }
 
@@ -537,8 +536,9 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
 
 // static
 std::unique_ptr<CupsPrintJobManager> CupsPrintJobManager::CreateInstance(
+    ::printing::PrintJobManager& print_job_manager,
     Profile* profile) {
-  return std::make_unique<CupsPrintJobManagerImpl>(profile);
+  return std::make_unique<CupsPrintJobManagerImpl>(print_job_manager, profile);
 }
 
 }  // namespace ash

@@ -13,6 +13,7 @@ namespace ash {
 
 // static
 std::unique_ptr<CupsPrintJobManager> CupsPrintJobManager::CreateInstance(
+    ::printing::PrintJobManager& print_job_manager,
     Profile* profile) {
   return std::make_unique<FakeCupsPrintJobManager>(profile);
 }

@@ -19,6 +19,10 @@
 
 class Profile;
 
+namespace printing {
+class PrintJobManager;
+}  // namespace printing
+
 namespace ash {
 
 class CupsPrintJob;
@@ -50,7 +54,9 @@ class CupsPrintJobManager : public KeyedService {
     ~Observer() override = default;
   };
 
-  static std::unique_ptr<CupsPrintJobManager> CreateInstance(Profile* profile);
+  static std::unique_ptr<CupsPrintJobManager> CreateInstance(
+      ::printing::PrintJobManager& print_job_manager,
+      Profile* profile);
 
   explicit CupsPrintJobManager(Profile* profile);
   CupsPrintJobManager(const CupsPrintJobManager&) = delete;
