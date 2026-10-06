@@ -48,7 +48,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/values_equivalent.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/texture_layer.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
@@ -1281,17 +1280,7 @@ void CanvasRenderingContext2D::RecreateResourceProvider() {
     return;
   }
 
-  if (shared_image_provider_) {
-    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              shared_image_provider_->IsAccelerated());
-    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  CanvasResourceProviderType::kSharedImage);
-  } else {
-    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              false);
-    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  CanvasResourceProviderType::kBitmap);
-  }
+  RecordResourceProviderHistograms();
 
   if (GetHibernationHandler()->IsHibernating()) {
     WakeUpFromHibernation();

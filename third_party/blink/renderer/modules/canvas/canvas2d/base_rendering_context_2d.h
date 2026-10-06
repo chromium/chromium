@@ -363,6 +363,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   Canvas2DResourceProvider* GetSharedImageProvider() const;
   void CreateBitmapProvider();
+  void RecordResourceProviderHistograms();
   scoped_refptr<StaticBitmapImage> Snapshot();
 
   bool context_restorable_{true};

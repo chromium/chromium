@@ -274,6 +274,21 @@ void BaseRenderingContext2D::CreateBitmapProvider() {
   sw_snapshot_sk_image_id_ = 0u;
 }
 
+void BaseRenderingContext2D::RecordResourceProviderHistograms() {
+  CHECK(HasResourceProvider());
+  if (shared_image_provider_) {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              shared_image_provider_->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  CanvasResourceProviderType::kSharedImage);
+  } else {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              false);
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  CanvasResourceProviderType::kBitmap);
+  }
+}
+
 void BaseRenderingContext2D::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   // BaseRenderingContext2D is only registered with CanvasMemoryDumpProvider
