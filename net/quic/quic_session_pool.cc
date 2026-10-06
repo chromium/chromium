@@ -214,6 +214,8 @@ const char* AllActiveSessionsGoingAwayReasonToString(
   }
 }
 
+// TODO(crbug.com/557126867): Deprecate `HistogramCreateSessionFailure` and
+// `Net.QuicSession.CreationError` in favor of `QuicSocketConfigStep`.
 void HistogramCreateSessionFailure(enum CreateSessionFailure error) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.CreationError", error,
                             CREATION_ERROR_MAX);
@@ -1214,11 +1216,12 @@ void QuicSessionPool::ClearCachedStatesInCryptoConfig(
   }
 }
 
-void QuicSessionPool::ConnectAndConfigureSocket(CompletionOnceCallback callback,
-                                                DatagramClientSocket* socket,
-                                                IPEndPoint addr,
-                                                handles::NetworkHandle network,
-                                                const SocketTag& socket_tag) {
+void QuicSessionPool::ConnectAndConfigureSocket(
+    ConnectAndConfigureCallback callback,
+    DatagramClientSocket* socket,
+    IPEndPoint addr,
+    handles::NetworkHandle network,
+    const SocketTag& socket_tag) {
   socket->UseNonBlockingIO();
 
   int rv;
@@ -1247,13 +1250,13 @@ void QuicSessionPool::ConnectAndConfigureSocket(CompletionOnceCallback callback,
 }
 
 void QuicSessionPool::FinishConnectAndConfigureSocket(
-    CompletionOnceCallback callback,
+    ConnectAndConfigureCallback callback,
     DatagramClientSocket* socket,
     const SocketTag& socket_tag,
     int rv) {
   if (rv != OK) {
-    OnFinishConnectAndConfigureSocketError(
-        std::move(callback), CREATION_ERROR_CONNECTING_SOCKET, rv);
+    OnFinishConnectAndConfigureSocketError(std::move(callback),
+                                           QuicSocketConfigStep::kConnect, rv);
     return;
   }
 
@@ -1262,7 +1265,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
   rv = socket->SetReceiveBufferSize(kQuicSocketReceiveBufferSize);
   if (rv != OK) {
     OnFinishConnectAndConfigureSocketError(
-        std::move(callback), CREATION_ERROR_SETTING_RECEIVE_BUFFER, rv);
+        std::move(callback), QuicSocketConfigStep::kSetReceiveBufferSize, rv);
     return;
   }
 
@@ -1270,14 +1273,14 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
   // SetDoNotFragment is not implemented on all platforms, so ignore errors.
   if (rv != OK && rv != ERR_NOT_IMPLEMENTED) {
     OnFinishConnectAndConfigureSocketError(
-        std::move(callback), CREATION_ERROR_SETTING_DO_NOT_FRAGMENT, rv);
+        std::move(callback), QuicSocketConfigStep::kSetDoNotFragment, rv);
     return;
   }
 
   rv = socket->SetRecvTos();
   if (rv != OK) {
     OnFinishConnectAndConfigureSocketError(
-        std::move(callback), CREATION_ERROR_SETTING_RECEIVE_ECN, rv);
+        std::move(callback), QuicSocketConfigStep::kSetReceiveEcn, rv);
     return;
   }
 
@@ -1286,7 +1289,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     rv = socket->SetSendBufferSize(send_buffer_size.value());
     if (rv != OK) {
       OnFinishConnectAndConfigureSocketError(
-          std::move(callback), CREATION_ERROR_SETTING_SEND_BUFFER, rv);
+          std::move(callback), QuicSocketConfigStep::kSetSendBufferSize, rv);
       return;
     }
   }
@@ -1310,8 +1313,9 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&QuicSessionPool::DoCallback, weak_factory_.GetWeakPtr(),
-                     std::move(callback), rv));
+      base::BindOnce(&QuicSessionPool::DoConnectAndConfigureCallback,
+                     weak_factory_.GetWeakPtr(), std::move(callback), rv,
+                     /*error_step=*/std::nullopt));
 }
 
 bool QuicSessionPool::CanWaiveIpMatching(
@@ -1337,19 +1341,40 @@ bool QuicSessionPool::CanWaiveIpMatching(
 }
 
 void QuicSessionPool::OnFinishConnectAndConfigureSocketError(
-    CompletionOnceCallback callback,
-    enum CreateSessionFailure error,
+    ConnectAndConfigureCallback callback,
+    QuicSocketConfigStep step,
     int rv) {
   DCHECK(callback);
-  HistogramCreateSessionFailure(error);
+  // TODO(crbug.com/557126867): Remove this switch once `CreateSessionFailure`
+  // and its related UMA logging are deprecated.
+  switch (step) {
+    case QuicSocketConfigStep::kConnect:
+      HistogramCreateSessionFailure(CREATION_ERROR_CONNECTING_SOCKET);
+      break;
+    case QuicSocketConfigStep::kSetReceiveBufferSize:
+      HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_BUFFER);
+      break;
+    case QuicSocketConfigStep::kSetDoNotFragment:
+      HistogramCreateSessionFailure(CREATION_ERROR_SETTING_DO_NOT_FRAGMENT);
+      break;
+    case QuicSocketConfigStep::kSetReceiveEcn:
+      HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_ECN);
+      break;
+    case QuicSocketConfigStep::kSetSendBufferSize:
+      HistogramCreateSessionFailure(CREATION_ERROR_SETTING_SEND_BUFFER);
+      break;
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&QuicSessionPool::DoCallback, weak_factory_.GetWeakPtr(),
-                     std::move(callback), rv));
+      FROM_HERE, base::BindOnce(&QuicSessionPool::DoConnectAndConfigureCallback,
+                                weak_factory_.GetWeakPtr(), std::move(callback),
+                                rv, step));
 }
 
-void QuicSessionPool::DoCallback(CompletionOnceCallback callback, int rv) {
-  std::move(callback).Run(rv);
+void QuicSessionPool::DoConnectAndConfigureCallback(
+    ConnectAndConfigureCallback callback,
+    int rv,
+    std::optional<QuicSocketConfigStep> error_step) {
+  std::move(callback).Run(rv, error_step);
 }
 
 int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
@@ -2220,18 +2245,23 @@ int QuicSessionPool::CreateSessionAsync(
   std::unique_ptr<DatagramClientSocket> socket(CreateSocket(
       key.session_key().target_network(), net_log.net_log(), net_log.source()));
   DatagramClientSocket* socket_ptr = socket.get();
-  CompletionOnceCallback connect_and_configure_callback = base::BindOnce(
-      &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
-      std::move(callback), std::move(key), quic_version, cert_verify_flags,
-      require_confirmation, peer_address, std::move(metadata),
-      dns_resolution_start_time, dns_resolution_end_time,
-      std::move(resolution_details),
-      /*session_max_packet_length=*/0, net_log,
-      // TODO(crbug.com/518753285): Stop setting the network that should be used
-      // due to connection migration via ConnectAndConfigureSocket. Instead,
-      // rely on the new parameter in `CreateSocket`.
-      network, std::move(socket), session_creation_initiator,
-      quic_connection_reuse_details, connection_management_config);
+  ConnectAndConfigureCallback connect_and_configure_callback = base::BindOnce(
+      [](CompletionOnceCallback cb, int rv,
+         std::optional<QuicSocketConfigStep> /*error_step*/) {
+        std::move(cb).Run(rv);
+      },
+      base::BindOnce(
+          &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
+          std::move(callback), std::move(key), quic_version, cert_verify_flags,
+          require_confirmation, peer_address, std::move(metadata),
+          dns_resolution_start_time, dns_resolution_end_time,
+          std::move(resolution_details),
+          /*session_max_packet_length=*/0, net_log,
+          // TODO(crbug.com/518753285): Stop setting the network that should be
+          // used due to connection migration via ConnectAndConfigureSocket.
+          // Instead, rely on the new parameter in `CreateSocket`.
+          network, std::move(socket), session_creation_initiator,
+          quic_connection_reuse_details, connection_management_config));
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.

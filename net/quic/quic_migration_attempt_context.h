@@ -6,12 +6,15 @@
 #define NET_QUIC_QUIC_MIGRATION_ATTEMPT_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <variant>
 
 #include "base/functional/callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "net/quic/quic_socket_config_step.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_socket_address.h"
 
 namespace net {
@@ -129,8 +132,14 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   QuicMigrationAttemptContext& operator=(const QuicMigrationAttemptContext&) =
       delete;
 
+  struct SocketConfigFailureDetails {
+    QuicSocketConfigStep step;
+    int net_error;
+  };
+
   void SetSuccess();
   void SetFailure(QuicMigrationAttemptFailureReason reason);
+  void SetSocketConfigFailure(QuicSocketConfigStep step, int net_error);
   void SetIneligible(QuicMigrationAttemptIneligibleReason reason);
   void SetSuperseded(QuicMigrationAttemptCause cause);
 
@@ -141,6 +150,14 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
     return target_peer_address_;
   }
   bool is_google_host() const { return is_google_host_; }
+
+  const QuicMigrationAttemptFailureReason* failure_reason() const {
+    return std::get_if<QuicMigrationAttemptFailureReason>(&outcome_details_);
+  }
+
+  const SocketConfigFailureDetails* socket_config_failure_details() const {
+    return std::get_if<SocketConfigFailureDetails>(&outcome_details_);
+  }
 
   QuicChromiumPacketReader* reader() const { return reader_.get(); }
   QuicChromiumPacketWriter* writer() const { return writer_.get(); }
@@ -161,6 +178,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   Outcome outcome_ = Outcome::kUnknown;
   std::variant<std::monostate,
                QuicMigrationAttemptFailureReason,
+               SocketConfigFailureDetails,
                QuicMigrationAttemptIneligibleReason,
                QuicMigrationAttemptCause>
       outcome_details_;

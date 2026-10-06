@@ -3392,6 +3392,18 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/quic/quic_session_pool_async_dns_job.h:QuicSessionPoolAsyncDnsJobSuccessSource) -->
 
+<!-- LINT.IfChange(QuicSocketConfigStep) -->
+
+<enum name="QuicSocketConfigStep">
+  <int value="0" label="Connect"/>
+  <int value="1" label="Set receive buffer size"/>
+  <int value="2" label="Set do not fragment"/>
+  <int value="3" label="Set receive ECN"/>
+  <int value="4" label="Set send buffer size"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_socket_config_step.h:QuicSocketConfigStep) -->
+
 <enum name="QuicTransportErrorCodes">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="INTERNAL_ERROR"/>

@@ -980,6 +980,8 @@ component("net") {
     "quic/quic_session_pool_job.h",
     "quic/quic_session_pool_proxy_job.cc",
     "quic/quic_session_pool_proxy_job.h",
+    "quic/quic_socket_config_step.cc",
+    "quic/quic_socket_config_step.h",
     "quic/set_quic_flag.cc",
     "quic/set_quic_flag.h",
     "quic/web_transport_client.cc",

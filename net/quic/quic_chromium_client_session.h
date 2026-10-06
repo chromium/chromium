@@ -838,10 +838,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // Helper for CreateContextForMultiPortPath. Gets the result of
   // ConnectAndConfigureSocket and uses it to create the multiport path context.
+  // `error_step` is non-empty only when `rv` is not OK.
   void FinishCreateContextForMultiPortPath(
       std::unique_ptr<quic::MultiPortPathContextObserver> context_observer,
       std::unique_ptr<QuicMigrationAttemptContext> context,
-      int rv);
+      int rv,
+      std::optional<QuicSocketConfigStep> error_step);
 
   // Performs a crypto handshake with the server.
   int CryptoConnect(CompletionOnceCallback callback);
@@ -933,7 +935,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicMigrationAttemptContext> migration_context,
       bool close_session_on_error,
       MigrationCallback callback,
-      int rv);
+      int rv,
+      std::optional<QuicSocketConfigStep> error_step);
 
   void DoMigrationCallback(MigrationCallback callback, MigrationResult rv);
 
@@ -1065,9 +1068,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // Helper to finish network probe once socket has been opened. Always called
   // asynchronously.
+  // `error_step` is non-empty only when `rv` is not OK.
   void FinishStartProbing(ProbingCallback probing_callback,
                           std::unique_ptr<QuicMigrationAttemptContext> context,
-                          int rv);
+                          int rv,
+                          std::optional<QuicSocketConfigStep> error_step);
 
   // Perform a few checks before StartProbing. If any of those checks fails,
   // StartProbing will be skipped.

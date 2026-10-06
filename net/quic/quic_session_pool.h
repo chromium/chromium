@@ -58,6 +58,7 @@
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_key.h"
+#include "net/quic/quic_socket_config_step.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/ssl/ssl_config_service.h"
@@ -135,6 +136,9 @@ enum AllActiveSessionsGoingAwayReason {
   kSSLContextConfigChanged,
 };
 
+// TODO(crbug.com/557126867): Deprecate `CreateSessionFailure` and its related
+// UMA logging (`Net.QuicSession.CreationError`) in favor of
+// `QuicSocketConfigStep`.
 enum CreateSessionFailure {
   CREATION_ERROR_CONNECTING_SOCKET,
   CREATION_ERROR_SETTING_RECEIVE_BUFFER,
@@ -441,12 +445,16 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   void ClearCachedStatesInCryptoConfig(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 
+  using ConnectAndConfigureCallback =
+      base::OnceCallback<void(int rv,
+                              std::optional<QuicSocketConfigStep> error_step)>;
+
   // Helper method that connects a DatagramClientSocket. Socket is
   // bound to the default network if the |network| param is
   // handles::kInvalidNetworkHandle. This method calls
   // DatagramClientSocket::ConnectAsync and always completes asynchronously,
   // implicitly returning ERR_IO_PENDING.
-  void ConnectAndConfigureSocket(CompletionOnceCallback callback,
+  void ConnectAndConfigureSocket(ConnectAndConfigureCallback callback,
                                  DatagramClientSocket* socket,
                                  IPEndPoint addr,
                                  handles::NetworkHandle network,
@@ -454,18 +462,23 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   // Helper method that configures a DatagramClientSocket once
   // DatagramClientSocket::ConnectAsync completes. Posts a task to run
-  // `callback` with a net_error code.
+  // `callback` with a net_error code and optional error step.
   // This method is virtual to facilitate mocking for tests.
-  virtual void FinishConnectAndConfigureSocket(CompletionOnceCallback callback,
-                                               DatagramClientSocket* socket,
-                                               const SocketTag& socket_tag,
-                                               int rv);
+  virtual void FinishConnectAndConfigureSocket(
+      ConnectAndConfigureCallback callback,
+      DatagramClientSocket* socket,
+      const SocketTag& socket_tag,
+      int rv);
 
-  void OnFinishConnectAndConfigureSocketError(CompletionOnceCallback callback,
-                                              enum CreateSessionFailure error,
-                                              int rv);
+  void OnFinishConnectAndConfigureSocketError(
+      ConnectAndConfigureCallback callback,
+      QuicSocketConfigStep step,
+      int rv);
 
-  void DoCallback(CompletionOnceCallback callback, int rv);
+  void DoConnectAndConfigureCallback(
+      ConnectAndConfigureCallback callback,
+      int rv,
+      std::optional<QuicSocketConfigStep> error_step);
 
   // Helper method that configures a DatagramClientSocket. Socket is
   // bound to the default network if the |network| param is

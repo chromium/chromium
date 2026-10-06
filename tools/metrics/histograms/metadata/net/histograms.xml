@@ -181,6 +181,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptCause) -->
 
+<!-- LINT.IfChange(QuicSocketConfigStep) -->
+
+<variants name="QuicSocketConfigStep">
+  <variant name="Connect" summary="Connecting and binding the socket."/>
+  <variant name="SetDoNotFragment"
+      summary="Setting the do-not-fragment socket option."/>
+  <variant name="SetReceiveBufferSize"
+      summary="Setting the receive buffer size."/>
+  <variant name="SetReceiveEcn"
+      summary="Setting the receive ECN / TOS socket option."/>
+  <variant name="SetSendBufferSize" summary="Setting the send buffer size."/>
+</variants>
+
+<!-- LINT.ThenChange(//net/quic/quic_socket_config_step.h:QuicSocketConfigStep) -->
+
 <variants name="ReferrerPolicySameOrigin">
   <variant name=".CrossOrigin" summary="Cross-origin requests."/>
   <variant name=".SameOrigin"
@@ -4911,6 +4926,68 @@ chromium-metrics-reviews@google.com.
   <summary>
     Same as Net.Quic.Migration.Attempt.Ineligible, but partitioned by the
     migration cause {Trigger}.
+  </summary>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.SocketConfigError.NetError"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the net error code when socket configuration failed during an
+    eligible QUIC connection migration attempt.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByStep.{Step}"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.SocketConfigError.NetError, but
+    partitioned by the socket configuration step {Step}. We expect the majority
+    (all?) of the failures to be in the connect step, so this should be
+    deprecated shortly after verifying that belief.
+  </summary>
+  <token key="Step" variants="QuicSocketConfigStep"/>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByTrigger.{Trigger}"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.SocketConfigError.NetError, but
+    partitioned by the migration cause {Trigger}.
+  </summary>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.SocketConfigError.Step"
+    enum="QuicSocketConfigStep" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the socket configuration step that failed during an eligible QUIC
+    connection migration attempt. We expect the majority (all?) of the failures
+    to be in the connect step, so this should be deprecated shortly after
+    verifying that belief.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt.SocketConfigError.Step.ByTrigger.{Trigger}"
+    enum="QuicSocketConfigStep" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.SocketConfigError.Step, but partitioned
+    by the migration cause {Trigger}. We expect the majority (all?) of the
+    failures to be in the connect step, so this should be deprecated shortly
+    after verifying that belief.
   </summary>
   <token key="Trigger" variants="QuicMigrationAttemptCause"/>
 </histogram>

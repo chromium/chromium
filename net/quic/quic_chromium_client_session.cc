@@ -3558,10 +3558,11 @@ void QuicChromiumClientSession::CreateContextForMultiPortPath(
       CreateSessionAliveCallback(), IsGoogleHost(session_key_.host()));
 
   if (base::FeatureList::IsEnabled(net::features::kAsyncMultiPortPath)) {
-    CompletionOnceCallback configure_callback = base::BindOnce(
-        &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
-        weak_factory_.GetWeakPtr(), std::move(context_observer),
-        std::move(attempt_context));
+    QuicSessionPool::ConnectAndConfigureCallback configure_callback =
+        base::BindOnce(
+            &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
+            weak_factory_.GetWeakPtr(), std::move(context_observer),
+            std::move(attempt_context));
     session_pool_->ConnectAndConfigureSocket(
         std::move(configure_callback), probing_socket_ptr,
         ToIPEndPoint(peer_address()), default_network_,
@@ -3572,18 +3573,25 @@ void QuicChromiumClientSession::CreateContextForMultiPortPath(
   if (session_pool_->ConfigureSocket(
           probing_socket_ptr, ToIPEndPoint(peer_address()), default_network_,
           session_key_.socket_tag()) != OK) {
+    // TODO(crbug.com/569884901): We should report this to
+    // OnMultiPortPathContextAvailable, like we do for the async case.
+    // Similarly, we should also report the failure to `attempt_context`.
     return;
   }
 
   FinishCreateContextForMultiPortPath(std::move(context_observer),
-                                      std::move(attempt_context), OK);
+                                      std::move(attempt_context), OK,
+                                      /*error_step=*/std::nullopt);
 }
 
 void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
     std::unique_ptr<quic::MultiPortPathContextObserver> context_observer,
     std::unique_ptr<QuicMigrationAttemptContext> context,
-    int rv) {
+    int rv,
+    std::optional<QuicSocketConfigStep> error_step) {
   if (rv != OK) {
+    CHECK(error_step.has_value());
+    context->SetSocketConfigFailure(*error_step, rv);
     context_observer->OnMultiPortPathContextAvailable(nullptr);
     return;
   }
@@ -3657,7 +3665,7 @@ void QuicChromiumClientSession::StartProbing(
                                                  task_runner_),
       CreateSessionAliveCallback(), IsGoogleHost(session_key_.host()));
 
-  CompletionOnceCallback configure_callback =
+  QuicSessionPool::ConnectAndConfigureCallback configure_callback =
       base::BindOnce(&QuicChromiumClientSession::FinishStartProbing,
                      weak_factory_.GetWeakPtr(), std::move(probing_callback),
                      std::move(attempt_context));
@@ -3677,9 +3685,11 @@ void QuicChromiumClientSession::StartProbing(
 void QuicChromiumClientSession::FinishStartProbing(
     ProbingCallback probing_callback,
     std::unique_ptr<QuicMigrationAttemptContext> context,
-    int rv) {
+    int rv,
+    std::optional<QuicSocketConfigStep> error_step) {
   if (rv != OK) {
-    context->SetFailure(QuicMigrationAttemptFailureReason::kSocketConfigFailed);
+    CHECK(error_step.has_value());
+    context->SetSocketConfigFailure(*error_step, rv);
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_INTERNAL_ERROR,
                                     connection_id(),
                                     "Socket configuration failed");
@@ -4392,7 +4402,7 @@ void QuicChromiumClientSession::MigrateWithoutProbing(
   DVLOG(1) << "Force blocking the packet writer";
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
-  CompletionOnceCallback connect_callback =
+  QuicSessionPool::ConnectAndConfigureCallback connect_callback =
       base::BindOnce(&QuicChromiumClientSession::FinishMigrateWithoutProbing,
                      weak_factory_.GetWeakPtr(), std::move(migration_context),
                      close_session_on_error, std::move(migration_callback));
@@ -4410,10 +4420,11 @@ void QuicChromiumClientSession::FinishMigrateWithoutProbing(
     std::unique_ptr<QuicMigrationAttemptContext> migration_context,
     bool close_session_on_error,
     MigrationCallback callback,
-    int rv) {
+    int rv,
+    std::optional<QuicSocketConfigStep> error_step) {
   if (rv != OK) {
-    migration_context->SetFailure(
-        QuicMigrationAttemptFailureReason::kSocketConfigFailed);
+    CHECK(error_step.has_value());
+    migration_context->SetSocketConfigFailure(*error_step, rv);
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_INTERNAL_ERROR,
                                     connection_id(),
                                     "Socket configuration failed");

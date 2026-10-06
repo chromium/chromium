@@ -355,7 +355,7 @@ class MockQuicSessionPool : public QuicSessionPool {
 
   MOCK_METHOD0(MockFinishConnectAndConfigureSocket, void());
 
-  void FinishConnectAndConfigureSocket(CompletionOnceCallback callback,
+  void FinishConnectAndConfigureSocket(ConnectAndConfigureCallback callback,
                                        DatagramClientSocket* socket,
                                        const SocketTag& socket_tag,
                                        int rv) override {
@@ -7673,7 +7673,8 @@ TEST_P(QuicSessionPoolTest,
       /*is_google_host=*/false);
   pool_->ConnectAndConfigureSocket(
       base::BindLambdaForTesting(
-          [&session, context = std::move(context)](int rv) mutable {
+          [&session, context = std::move(context)](
+              int rv, std::optional<QuicSocketConfigStep> error_step) mutable {
             session->CloseSessionOnErrorLater(
                 0, quic::QUIC_TOO_MANY_RTOS,
                 quic::ConnectionCloseBehavior::SILENT_CLOSE);
@@ -7684,7 +7685,7 @@ TEST_P(QuicSessionPoolTest,
                 std::move(context), true,
                 base::BindLambdaForTesting(
                     [](MigrationResult result) { NOTREACHED(); }),
-                /* RV = OK */ 0);
+                /* RV = OK */ 0, /*error_step=*/std::nullopt);
           }),
       socket_ptr, ToIPEndPoint(session->connection()->peer_address()),
       kNewNetworkForTests, SocketTag());
@@ -8224,6 +8225,7 @@ TEST_P(QuicSessionPoolTest,
 // This test verifies that the connection will not migrate to a bad socket
 // when path degrading is detected.
 TEST_P(QuicSessionPoolTest, DoNotMigrateToBadSocketOnPathDegrading) {
+  base::HistogramTester histogram_tester;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -8326,6 +8328,24 @@ TEST_P(QuicSessionPoolTest, DoNotMigrateToBadSocketOnPathDegrading) {
   stream.reset();
   quic_data.ExpectAllReadDataConsumed();
   quic_data.ExpectAllWriteDataConsumed();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.Step",
+      QuicSocketConfigStep::kConnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.Step.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      QuicSocketConfigStep::kConnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError",
+      -ERR_INTERNET_DISCONNECTED, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByStep.Connect",
+      -ERR_INTERNET_DISCONNECTED, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      -ERR_INTERNET_DISCONNECTED, 1);
 }
 
 // Regression test for http://crbug.com/847569.
@@ -8659,6 +8679,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
 // migration signal.
 TEST_P(QuicSessionPoolTest,
        MigrateMultipleSessionsToBadSocketsAfterDisconnected) {
+  base::HistogramTester histogram_tester;
   InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
 
   MockQuicData socket_data1(version_);
@@ -8768,6 +8789,24 @@ TEST_P(QuicSessionPoolTest,
   socket_data1.ExpectAllWriteDataConsumed();
   socket_data2.ExpectAllReadDataConsumed();
   socket_data2.ExpectAllWriteDataConsumed();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.Step",
+      QuicSocketConfigStep::kConnect, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.Step.ByTrigger."
+      "OnNetworkDisconnected",
+      QuicSocketConfigStep::kConnect, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError",
+      -ERR_INTERNET_DISCONNECTED, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByStep.Connect",
+      -ERR_INTERNET_DISCONNECTED, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByTrigger."
+      "OnNetworkDisconnected",
+      -ERR_INTERNET_DISCONNECTED, 2);
 }
 
 // This test verifies that session attempts connection migration with signals
