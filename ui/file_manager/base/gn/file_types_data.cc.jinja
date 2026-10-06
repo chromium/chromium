@@ -9,22 +9,52 @@
 
 #include "{{ out_file_path.split('gen/')[1] | replace('.cc', '.h') }}"
 
+#include <algorithm>
+
 namespace file_types_data {
 
-const base::flat_map<std::string, std::string> kExtensionToMIME({
-{%- for key, value in extension_to_type_map.items() %}
-{%- if value['mime'] %}
-  {"{{ key }}", "{{ value['mime'] }}"},
-{%- endif %}
-{%- endfor %}
-});
+namespace {
 
-const base::flat_set<std::string> kDocumentMIMETypes({
-{%- for file_type in model.file_types %}
-{%- if file_type['mime'] and file_type['type'] in ['text', 'hosted', 'document'] %}
-  "{{ file_type['mime'] }}",
-{%- endif %}
-{%- endfor %}
-});
+struct ExtensionToMime {
+  std::string_view extension;
+  std::string_view mime;
+};
 
-}  // namespace files_types_data
+// Sorted by extension for binary search.
+constexpr ExtensionToMime kExtensionToMime[] = {
+{%- for extension, mime in extension_mime_pairs %}
+  {"{{ extension }}", "{{ mime }}"},
+{%- endfor %}
+};
+static_assert(std::ranges::is_sorted(kExtensionToMime, {},
+                                     &ExtensionToMime::extension));
+
+// Sorted for binary search.
+constexpr std::string_view kDocumentMimeTypes[] = {
+{%- for mime in document_mime_types %}
+  "{{ mime }}",
+{%- endfor %}
+};
+static_assert(std::ranges::is_sorted(kDocumentMimeTypes));
+
+}  // namespace
+
+std::optional<std::string_view> GetMimeTypeForExtension(
+    std::string_view extension) {
+  const auto* it = std::ranges::lower_bound(kExtensionToMime, extension, {},
+                                            &ExtensionToMime::extension);
+  if (it == std::ranges::end(kExtensionToMime) || it->extension != extension) {
+    return std::nullopt;
+  }
+  return it->mime;
+}
+
+base::span<const std::string_view> GetDocumentMimeTypes() {
+  return kDocumentMimeTypes;
+}
+
+bool IsDocumentMimeType(std::string_view mime_type) {
+  return std::ranges::binary_search(kDocumentMimeTypes, mime_type);
+}
+
+}  // namespace file_types_data

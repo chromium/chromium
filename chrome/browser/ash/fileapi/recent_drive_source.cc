@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/fileapi/recent_drive_source.h"
 
 #include <iterator>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -66,9 +68,10 @@ std::vector<std::string> RecentDriveSource::CreateTypeFilters(
       type_filters.push_back(kVideoMimeType);
       break;
     case FileType::kDocument: {
-      type_filters.insert(type_filters.end(),
-                          file_types_data::kDocumentMIMETypes.begin(),
-                          file_types_data::kDocumentMIMETypes.end());
+      const base::span<const std::string_view> document_mime_types =
+          file_types_data::GetDocumentMimeTypes();
+      type_filters.insert(type_filters.end(), document_mime_types.begin(),
+                          document_mime_types.end());
       break;
     }
     default:

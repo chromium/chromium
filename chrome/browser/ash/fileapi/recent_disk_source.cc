@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/fileapi/recent_disk_source.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -294,20 +296,21 @@ bool RecentDiskSource::MatchesFileType(const base::FilePath& path,
   // TODO(fukino): It is better to have better coverage of file extensions to be
   // consistent with file-type detection on Android system. crbug.com/1034874.
   const auto ext = base::ToLowerASCII(path.Extension());
-  if (!file_types_data::kExtensionToMIME.contains(ext)) {
+  const std::optional<std::string_view> mime_type =
+      file_types_data::GetMimeTypeForExtension(ext);
+  if (!mime_type) {
     return false;
   }
-  std::string mime_type = file_types_data::kExtensionToMIME.at(ext);
 
   switch (file_type) {
     case RecentSource::FileType::kAudio:
-      return net::MatchesMimeType(kAudioMimeType, mime_type);
+      return net::MatchesMimeType(kAudioMimeType, *mime_type);
     case RecentSource::FileType::kImage:
-      return net::MatchesMimeType(kImageMimeType, mime_type);
+      return net::MatchesMimeType(kImageMimeType, *mime_type);
     case RecentSource::FileType::kVideo:
-      return net::MatchesMimeType(kVideoMimeType, mime_type);
+      return net::MatchesMimeType(kVideoMimeType, *mime_type);
     case RecentSource::FileType::kDocument:
-      return file_types_data::kDocumentMIMETypes.contains(mime_type);
+      return file_types_data::IsDocumentMimeType(*mime_type);
     default:
       return false;
   }

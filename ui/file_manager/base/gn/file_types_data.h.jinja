@@ -12,21 +12,24 @@
 #ifndef {{ header_guard }}
 #define {{ header_guard }}
 
-#include <string>
+#include <optional>
+#include <string_view>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 
 namespace file_types_data {
 
-// Maps a file extension to the MIME type, e.g.:
-//   {".jpeg", "image/jpeg"},
-//   {".jpg", "image/jpeg"},
-extern const base::flat_map<std::string, std::string> kExtensionToMIME;
+// Returns the MIME type for a lowercase file extension, e.g. "image/jpeg" for
+// ".jpg", or std::nullopt if the extension is unknown.
+std::optional<std::string_view> GetMimeTypeForExtension(
+    std::string_view extension);
 
-// A set includes all the MIME types for Documents, e.g.:
-//   {"text/plain", "application/vnd.google-apps.document", "application/pdf"}
-extern const base::flat_set<std::string> kDocumentMIMETypes;
+// Returns all the MIME types for Documents, e.g. "text/plain",
+// "application/vnd.google-apps.document" and "application/pdf".
+base::span<const std::string_view> GetDocumentMimeTypes();
+
+// Returns whether `mime_type` is one of GetDocumentMimeTypes().
+bool IsDocumentMimeType(std::string_view mime_type);
 
 }  // namespace file_types_data
 
