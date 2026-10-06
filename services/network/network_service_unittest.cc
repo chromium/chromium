@@ -1802,6 +1802,29 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
   client()->RunUntilComplete();
   EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED,
             client()->completion_status().error_code);
+
+  {
+    std::vector<mojom::MatchedNetworkConditionsPtr> network_conditions;
+    network_conditions.emplace_back(mojom::MatchedNetworkConditions::New());
+    network_conditions.back()->conditions = mojom::NetworkConditions::New();
+    network_conditions.back()->conditions->offline = false;
+    network_conditions.back()->conditions->latency = base::Milliseconds(100);
+    context()->SetNetworkConditions(profile_id, client_id,
+                                    std::move(network_conditions));
+  }
+  request.enable_load_timing = true;
+  StartLoadingURL(request, OriginatingProcessId::browser());
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  const net::LoadTimingInfo& load_timing =
+      client()->response_head()->load_timing;
+  EXPECT_GE(load_timing.receive_headers_start - load_timing.send_end,
+            base::Milliseconds(100));
+  EXPECT_GE(load_timing.receive_non_informational_headers_start -
+                load_timing.send_end,
+            base::Milliseconds(100));
+  EXPECT_GE(load_timing.receive_headers_end, load_timing.receive_headers_start);
+
   context()->SetNetworkConditions(profile_id, client_id, {});
   StartLoadingURL(request, OriginatingProcessId::browser());
   client()->RunUntilComplete();

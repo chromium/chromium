@@ -4,6 +4,7 @@
 
 #include "services/network/throttling/throttling_network_transaction.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -250,7 +251,31 @@ net::LoadState ThrottlingNetworkTransaction::GetLoadState() const {
 
 bool ThrottlingNetworkTransaction::GetLoadTimingInfo(
     net::LoadTimingInfo* load_timing_info) const {
-  return network_transaction_->GetLoadTimingInfo(load_timing_info);
+  if (!network_transaction_->GetLoadTimingInfo(load_timing_info)) {
+    return false;
+  }
+  if (!interceptor_ || !load_timing_info->push_start.is_null() ||
+      load_timing_info->send_end.is_null()) {
+    return true;
+  }
+
+  double latency_ms = interceptor_->conditions().latency();
+  if (latency_ms <= 0) {
+    return true;
+  }
+
+  base::TimeTicks min_receive_headers_start =
+      load_timing_info->send_end + base::Milliseconds(latency_ms);
+  if (!load_timing_info->receive_headers_start.is_null()) {
+    load_timing_info->receive_headers_start = std::max(
+        load_timing_info->receive_headers_start, min_receive_headers_start);
+  }
+  if (!load_timing_info->receive_non_informational_headers_start.is_null()) {
+    load_timing_info->receive_non_informational_headers_start =
+        std::max(load_timing_info->receive_non_informational_headers_start,
+                 min_receive_headers_start);
+  }
+  return true;
 }
 
 void ThrottlingNetworkTransaction::PopulateLoadTimingInternalInfo(

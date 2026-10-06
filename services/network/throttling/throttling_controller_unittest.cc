@@ -15,8 +15,10 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/completion_repeating_callback.h"
+#include "net/base/load_timing_info.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
@@ -544,6 +546,64 @@ TEST(ThrottlingControllerTest, MultipleMatchedConditions) {
                 ->conditions()
                 .upload_throughput(),
             1.0);
+}
+
+TEST(ThrottlingControllerTest, LatencyThrottlesLoadTimingReceiveHeadersStart) {
+  ThrottlingControllerTestHelper helper;
+  helper.SetNetworkState(
+      {{std::string{}, NetworkConditions{false, 100.0, 0.0, 0.0}}});
+
+  int rv = helper.Start(false);
+  EXPECT_EQ(rv, net::ERR_IO_PENDING);
+  helper.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(helper.callback()->run_count(), 1);
+  EXPECT_GE(helper.callback()->value(), net::OK);
+
+  // MockNetworkTransaction::GetLoadTimingInfo sets send_start and send_end to
+  // Now() without populating receive_headers_start.
+  {
+    net::LoadTimingInfo load_timing_info;
+    load_timing_info.receive_headers_start = base::TimeTicks::Now();
+    load_timing_info.receive_non_informational_headers_start =
+        base::TimeTicks::Now();
+    ASSERT_TRUE(helper.transaction()->GetLoadTimingInfo(&load_timing_info));
+    EXPECT_EQ(
+        load_timing_info.receive_headers_start - load_timing_info.send_end,
+        base::Milliseconds(100));
+    EXPECT_EQ(load_timing_info.receive_non_informational_headers_start -
+                  load_timing_info.send_end,
+              base::Milliseconds(100));
+  }
+
+  // Slower responses should not have receive_headers_start reduced.
+  {
+    net::LoadTimingInfo load_timing_info;
+    load_timing_info.receive_headers_start =
+        base::TimeTicks::Now() + base::Milliseconds(250);
+    load_timing_info.receive_non_informational_headers_start =
+        base::TimeTicks::Now() + base::Milliseconds(250);
+    ASSERT_TRUE(helper.transaction()->GetLoadTimingInfo(&load_timing_info));
+    EXPECT_EQ(
+        load_timing_info.receive_headers_start - load_timing_info.send_end,
+        base::Milliseconds(250));
+    EXPECT_EQ(load_timing_info.receive_non_informational_headers_start -
+                  load_timing_info.send_end,
+              base::Milliseconds(250));
+  }
+
+  // Pushed responses should not have receive_headers_start modified.
+  {
+    net::LoadTimingInfo load_timing_info;
+    load_timing_info.receive_headers_start = base::TimeTicks::Now();
+    load_timing_info.receive_non_informational_headers_start =
+        base::TimeTicks::Now();
+    load_timing_info.push_start = base::TimeTicks::Now();
+    ASSERT_TRUE(helper.transaction()->GetLoadTimingInfo(&load_timing_info));
+    EXPECT_EQ(load_timing_info.receive_headers_start,
+              load_timing_info.send_end);
+    EXPECT_EQ(load_timing_info.receive_non_informational_headers_start,
+              load_timing_info.send_end);
+  }
 }
 
 }  // namespace network
