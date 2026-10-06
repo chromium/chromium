@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
@@ -230,7 +231,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
                     @Override
                     public void onNewTabCreated(Tab tab) {
                         // Only invalidate if the tab exists in the currently selected model.
-                        if (getCurrentModel().getTabById(tab.getId()) != null) {
+                        if (getCurrentModel().getTabById(tab.getId()) != null
+                                && (!ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()
+                                        || !tab.isFrozen())) {
                             mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
                         }
                     }

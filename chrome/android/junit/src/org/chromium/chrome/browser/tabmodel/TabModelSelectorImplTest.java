@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -42,7 +43,10 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -59,8 +63,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImplTest.TestTabMode
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -617,5 +623,46 @@ public class TabModelSelectorImplTest {
                             mTabModelSelector.getCurrentModel(),
                             active));
         }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testOnNewTabCreated_skipsInvalidateIfChangedForFrozenTabWhenEnabled() {
+        MockTab tab = new MockTab(1, mProfile);
+        tab.setIsInitialized(true);
+        tab.setUrl(new GURL("https://example.com"));
+        tab.setTabLaunchType(TabLaunchType.FROM_RESTORE);
+
+        mRegularTabModel.addTab(
+                tab, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+        verify(mMockTabContentManager, never()).invalidateIfChanged(anyInt(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testOnNewTabCreated_callsInvalidateIfChangedForActiveTabWhenEnabled() {
+        MockTab tab = new MockTab(1, mProfile);
+        tab.setIsInitialized(true);
+        tab.setUrl(new GURL("https://example.com"));
+        tab.setWebContentsOverrideForTesting(mock(WebContents.class));
+
+        mRegularTabModel.addTab(
+                tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        verify(mMockTabContentManager)
+                .invalidateIfChanged(eq(1), eq(new GURL("https://example.com")));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreFrozenTab_withOptimizationsDisabled() {
+        MockTab tab = new MockTab(1, mProfile);
+        tab.setIsInitialized(true);
+        tab.setUrl(new GURL("https://example.com"));
+        tab.setTabLaunchType(TabLaunchType.FROM_RESTORE);
+
+        mRegularTabModel.addTab(
+                tab, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+        verify(mMockTabContentManager)
+                .invalidateIfChanged(eq(1), eq(new GURL("https://example.com")));
     }
 }
