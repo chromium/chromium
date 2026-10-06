@@ -315,10 +315,8 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
     context.current.force_update_children |= UpdateForSelf(context, layer);
   }
 
-  // TODO(crbug.com/565840014): Add a check for
-  // context.current.subtree_should_use_infinite_cull_rect and add a test of a
-  // drawable element under a clip.
-  if (!context.current.subtree_is_out_of_cull_rect &&
+  if (!context.current.subtree_should_use_infinite_cull_rect &&
+      !context.current.subtree_is_out_of_cull_rect &&
       object.ShouldClipOverflowAlongBothAxis() && !object.IsFragmented()) {
     const auto* box = layer.GetLayoutBox();
     DCHECK(box);

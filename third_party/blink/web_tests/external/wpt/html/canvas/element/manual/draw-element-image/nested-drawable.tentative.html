@@ -37,6 +37,11 @@
     height: 50px;
     background: cyan;
   }
+  #grandchildf {
+    width: 50px;
+    height: 50px;
+    background: magenta;
+  }
   #canvas {
     background: #ccc;
   }
@@ -51,6 +56,9 @@
       <div style="opacity: 0.5">
         <div id="grandchilde" drawable></div>
       </div>
+    </div>
+    <div style="overflow: hidden; width: 0; height: 0;">
+      <div id="grandchildf" drawable></div>
     </div>
   </div>
 </canvas>
@@ -68,6 +76,9 @@
     // Draw the 50x50 cyan #grandchilde at 100,100; the non-drawable ancestor's
     // opacity should be ignored.
     canvas.getContext('2d').drawElementImage(grandchilde, 100, 100);
+    // Draw the 50x50 magenta #grandchildf at 200,100; the ancestor clip
+    // should be ignored.
+    canvas.getContext('2d').drawElementImage(grandchildf, 200, 100);
     takeScreenshot();
   };
 </script>
