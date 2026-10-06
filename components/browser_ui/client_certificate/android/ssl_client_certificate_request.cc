@@ -18,6 +18,8 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -98,6 +100,12 @@ class SSLClientCertPendingRequests
                        scoped_refptr<net::X509Certificate> cert,
                        scoped_refptr<net::SSLPrivateKey> key);
 
+  std::unique_ptr<ClientCertRequest> TakeActiveRequestForTesting() {
+    ClientCertRequest* request = active_request_;
+    active_request_ = nullptr;
+    return base::WrapUnique(request);
+  }
+
   // Remove pending requests when |should_keep| returns false. Calls |on_drop|
   // before dropping a request.
   void FilterPendingRequests(
@@ -114,8 +122,9 @@ class SSLClientCertPendingRequests
   class CertificateDialogPolicy {
    public:
     // Has the maximum number of cert dialogs been exceeded?
-    bool MaxExceeded() { return count_ >= k_max_displayed_dialogs; }
-    // Resets counter. Should be called on navigation.
+    bool MaxExceeded() { return count_ >= kMaxDisplayedDialogs; }
+    // Resets counter. Should be called on navigation and when the user
+    // successfully selects a certificate.
     void ResetCount() { count_ = 0; }
     // Increment the counter.
     void IncrementCount() { count_++; }
@@ -123,14 +132,15 @@ class SSLClientCertPendingRequests
     size_t GetCount() { return count_; }
 
    private:
+    static constexpr size_t kMaxDisplayedDialogs = 5;
+
     size_t count_ = 0;
-    const size_t k_max_displayed_dialogs = 5;
   };
 
  private:
   void PumpRequests();
 
-  bool active_request_ = false;
+  raw_ptr<ClientCertRequest> active_request_ = nullptr;
 
   CertificateDialogPolicy dialog_policy_;
   base::queue<std::unique_ptr<ClientCertRequest>> pending_requests_;
@@ -226,7 +236,17 @@ void SSLClientCertPendingRequests::RequestComplete(
     net::SSLCertRequestInfo* info,
     scoped_refptr<net::X509Certificate> cert,
     scoped_refptr<net::SSLPrivateKey> key) {
-  active_request_ = false;
+  active_request_ = nullptr;
+
+  // The dialog limit exists to stop a page from repeatedly prompting a user who
+  // keeps dismissing the dialog. A successful selection means the user is
+  // engaging with the prompts, so reset the limit. Otherwise a page which
+  // legitimately needs client certificates for more than kMaxDisplayedDialogs
+  // hosts (every host needs its own selection) has its later requests silently
+  // dropped.
+  if (cert && key) {
+    dialog_policy_.ResetCount();
+  }
 
   // Deduplicate pending requests. Only keep pending requests whose host and
   // port differ from those of the completed request.
@@ -249,6 +269,9 @@ void SSLClientCertPendingRequests::PumpRequests() {
 
   // Check if this page is allowed to show any more client cert dialogs.
   if (dialog_policy_.MaxExceeded()) {
+    LOG(WARNING) << "Dropping " << pending_requests_.size()
+                 << " client certificate request(s): too many certificate "
+                    "dialogs shown for this page";
     auto should_keep = [](auto* req) { return false; };
     FilterPendingRequests(should_keep);
     return;
@@ -259,8 +282,9 @@ void SSLClientCertPendingRequests::PumpRequests() {
         std::move(pending_requests_.front());
     pending_requests_.pop();
 
+    ClientCertRequest* raw_next = next.get();
     if (StartClientCertificateRequest(std::move(next), web_contents())) {
-      active_request_ = true;
+      active_request_ = raw_next;
       dialog_policy_.IncrementCount();
       return;
     }
@@ -418,6 +442,19 @@ size_t GetCountOfSSLClientCertificateSelectorForTesting(  // IN-TEST
       SSLClientCertPendingRequests::FromWebContents(contents);
   DCHECK(active_requests);
   return active_requests->GetDialogCount();
+}
+
+void CompleteActiveSSLClientCertificateRequestForTesting(  // IN-TEST
+    content::WebContents* contents,
+    scoped_refptr<net::X509Certificate> cert,
+    scoped_refptr<net::SSLPrivateKey> key) {
+  SSLClientCertPendingRequests* active_requests =
+      SSLClientCertPendingRequests::FromWebContents(contents);
+  DCHECK(active_requests);
+  std::unique_ptr<ClientCertRequest> request =
+      active_requests->TakeActiveRequestForTesting();
+  DCHECK(request);
+  request->CertificateSelected(std::move(cert), std::move(key));
 }
 
 }  // namespace browser_ui

@@ -4,9 +4,12 @@
 
 #include "components/browser_ui/client_certificate/android/ssl_client_certificate_request.h"
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -24,6 +27,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_private_key.h"
+#include "net/ssl/test_ssl_private_key.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -199,6 +203,79 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
   EXPECT_TRUE(second_destroyed);
   EXPECT_EQ(0u, GetCountOfSSLClientCertificateSelectorForTesting(
                     detached_web_contents.get()));
+}
+
+// Verifies that successfully selecting a certificate resets the dialog limit,
+// so a page which needs certificates for more hosts than the limit does not
+// have its later requests silently dropped.
+IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
+                       SuccessfulSelectionResetsDialogLimit) {
+  content::WebContents* contents = shell()->web_contents();
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  ASSERT_TRUE(https_server.Start());
+  scoped_refptr<net::X509Certificate> cert = https_server.GetCertificate();
+  ASSERT_TRUE(cert);
+  scoped_refptr<net::SSLPrivateKey> key = net::CreateFailSigningSSLPrivateKey();
+
+  // More requests than the dialog limit (5), each for a different host.
+  constexpr size_t kNumRequests = 10;
+  std::array<bool, kNumRequests> destroyed = {};
+  for (size_t i = 0; i < kNumRequests; ++i) {
+    auto info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+    info->host_and_port =
+        net::HostPortPair(base::StringPrintf("host%zu.test", i), 443);
+    ShowSSLClientCertificateSelector(
+        contents, info.get(),
+        std::make_unique<TestClientCertificateDelegate>(&destroyed[i]));
+
+    // The request must have been started rather than dropped.
+    EXPECT_FALSE(destroyed[i]) << i;
+    EXPECT_EQ(1u, GetCountOfSSLClientCertificateSelectorForTesting(contents))
+        << i;
+
+    // The user selects a certificate, which resets the limit.
+    CompleteActiveSSLClientCertificateRequestForTesting(contents, cert, key);
+    EXPECT_TRUE(destroyed[i]) << i;
+    EXPECT_EQ(0u, GetCountOfSSLClientCertificateSelectorForTesting(contents))
+        << i;
+  }
+}
+
+// Verifies that requests the user declines still count towards the dialog
+// limit, so a page cannot keep prompting a user who keeps dismissing it.
+IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
+                       DeclinedSelectionsCountTowardsDialogLimit) {
+  content::WebContents* contents = shell()->web_contents();
+
+  constexpr size_t kMaxDialogs = 5;
+  std::array<bool, kMaxDialogs + 1> destroyed = {};
+  for (size_t i = 0; i < kMaxDialogs; ++i) {
+    auto info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+    info->host_and_port =
+        net::HostPortPair(base::StringPrintf("host%zu.test", i), 443);
+    ShowSSLClientCertificateSelector(
+        contents, info.get(),
+        std::make_unique<TestClientCertificateDelegate>(&destroyed[i]));
+    EXPECT_FALSE(destroyed[i]) << i;
+    EXPECT_EQ(i + 1,
+              GetCountOfSSLClientCertificateSelectorForTesting(contents));
+
+    // The user declines to select a certificate.
+    CompleteActiveSSLClientCertificateRequestForTesting(contents, nullptr,
+                                                        nullptr);
+    EXPECT_TRUE(destroyed[i]) << i;
+  }
+
+  // The limit has been reached, so the next request is dropped.
+  auto info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  info->host_and_port = net::HostPortPair("dropped.test", 443);
+  ShowSSLClientCertificateSelector(
+      contents, info.get(),
+      std::make_unique<TestClientCertificateDelegate>(&destroyed[kMaxDialogs]));
+  EXPECT_TRUE(destroyed[kMaxDialogs]);
+  EXPECT_EQ(kMaxDialogs,
+            GetCountOfSSLClientCertificateSelectorForTesting(contents));
 }
 
 }  // namespace

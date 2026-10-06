@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace content {
 class ClientCertificateDelegate;
@@ -16,6 +17,8 @@ class WebContents;
 
 namespace net {
 class SSLCertRequestInfo;
+class SSLPrivateKey;
+class X509Certificate;
 }  // namespace net
 
 namespace browser_ui {
@@ -29,6 +32,13 @@ base::OnceClosure ShowSSLClientCertificateSelector(
 
 size_t GetCountOfSSLClientCertificateSelectorForTesting(
     content::WebContents* contents);
+
+// Simulates the system certificate selector completing the active request for
+// `contents` with `cert` and `key` (both null if the user declined).
+void CompleteActiveSSLClientCertificateRequestForTesting(
+    content::WebContents* contents,
+    scoped_refptr<net::X509Certificate> cert,
+    scoped_refptr<net::SSLPrivateKey> key);
 
 }  // namespace browser_ui
 
