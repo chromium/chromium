@@ -948,12 +948,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   // Input something to trigger inline autocomplete.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kInlineAutocompleteTextKeys));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
 
-  std::u16string old_text = omnibox_view->GetText();
+  std::u16string old_text;
 
   // Make sure inline autocomplete is triggered.
-  EXPECT_GT(old_text.length(), std::size(kInlineAutocompleteText) - 1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    old_text = omnibox_view->GetText();
+    return old_text.length() > (std::size(kInlineAutocompleteText) - 1);
+  }));
 
   size_t old_selected_line = GetOmniboxEditModel()->GetPopupSelection().line;
   EXPECT_EQ(0U, old_selected_line);
