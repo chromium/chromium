@@ -104,7 +104,7 @@ void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
   CacheHardwareLatencyIfNeeded();
 
   // Fill audio data with silence to avoid start-up glitches. Don't use
-  // FillBufferQueueNoLock() since it can trigger recursive entry if an error
+  // FillBufferQueueLocked() since it can trigger recursive entry if an error
   // occurs while writing into the stream. See http://crbug.com/624877.
   std::ranges::fill(audio_data_[active_buffer_index_], 0);
   LOG_ON_FAILURE_AND_RETURN(
@@ -125,7 +125,8 @@ void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
   // we're continuing on from this previous position.
   uint32_t position_in_ms = 0;
   LOG_ON_FAILURE_AND_RETURN((*player_)->GetPosition(player_, &position_in_ms));
-  delay_calculator_.SetBaseTimestamp(base::Milliseconds(position_in_ms));
+  delay_calculator_.SetBaseTimestamp(
+      AdjustPositionForHardwareLatency(base::Milliseconds(position_in_ms)));
   delay_calculator_.AddFrames(audio_bus_->frames());
 
   started_ = true;
@@ -348,10 +349,10 @@ void OpenSLESOutputStream::FillBufferQueue() {
 
   // Fill up one buffer in the queue by asking the registered source for
   // data using the OnMoreData() callback.
-  FillBufferQueueNoLock();
+  FillBufferQueueLocked();
 }
 
-void OpenSLESOutputStream::FillBufferQueueNoLock() {
+void OpenSLESOutputStream::FillBufferQueueLocked() {
   // Ensure that the calling thread has acquired the lock since it is not
   // done in this method.
   lock_.AssertAcquired();
@@ -360,18 +361,10 @@ void OpenSLESOutputStream::FillBufferQueueNoLock() {
   uint32_t position_in_ms = 0;
   SLresult err = (*player_)->GetPosition(player_, &position_in_ms);
 
-  // Given the position of the playback head, compute the approximate number of
-  // frames that have been queued to the buffer but not yet played out.
-  // Note that the value returned by GetFramesToTarget() is negative because
-  // more frames have been added to |delay_calculator_| than have been played
-  // out and thus the target timestamp is earlier than the current timestamp of
-  // |delay_calculator_|.
-  const int delay_frames =
-      err == SL_RESULT_SUCCESS
-          ? -delay_calculator_.GetFramesToTarget(
-                AdjustPositionForHardwareLatency(position_in_ms))
-          : 0;
-  DCHECK_GE(delay_frames, 0);
+  int delay_frames = 0;
+  if (err == SL_RESULT_SUCCESS) {
+    delay_frames = CalculateDelayFrames(base::Milliseconds(position_in_ms));
+  }
 
   // Note: *DO NOT* use format_.samplesPerSecond in any calculations, it is not
   // actually the sample rate! See constructor comments. :|
@@ -434,20 +427,44 @@ void OpenSLESOutputStream::HandleError(SLresult error) {
 void OpenSLESOutputStream::CacheHardwareLatencyIfNeeded() {
   // If the feature is turned off, then leave it at its default (zero) value.
   // In general, GetOutputLatency is not reliable.
-  if (!base::FeatureList::IsEnabled(kUseAudioLatencyFromHAL))
+  if (!base::FeatureList::IsEnabled(kUseAudioLatencyFromHAL) ||
+      !audio_manager_) {
     return;
+  }
 
   hardware_latency_ = audio_manager_->GetOutputLatency();
 }
 
 base::TimeDelta OpenSLESOutputStream::AdjustPositionForHardwareLatency(
-    uint32_t position_in_ms) {
-  base::TimeDelta position = base::Milliseconds(position_in_ms);
-
+    base::TimeDelta position) const {
   if (position <= hardware_latency_)
     return base::Milliseconds(0);
 
   return position - hardware_latency_;
+}
+
+int OpenSLESOutputStream::CalculateDelayFrames(base::TimeDelta position) const {
+  // Given the position of the playback head, compute the approximate number of
+  // frames that have been queued to the buffer but not yet played out.
+  // Note that the value returned by GetFramesToTarget() is negative because
+  // more frames have been added to |delay_calculator_| than have been played
+  // out and thus the target timestamp is earlier than the current timestamp of
+  // |delay_calculator_|.
+  base::TimeDelta target_position = AdjustPositionForHardwareLatency(position);
+  // AudioTimestampHelper requires target >= base_timestamp. On some Android
+  // devices, GetPosition() may jitter or report non-monotonic values, or
+  // latency adjustment may clamp to zero below the base timestamp.
+  if (delay_calculator_.base_timestamp().has_value() &&
+      target_position < *delay_calculator_.base_timestamp()) {
+    target_position = *delay_calculator_.base_timestamp();
+  }
+  const int delay_frames =
+      -delay_calculator_.GetFramesToTarget(target_position);
+
+  // Clamp delay_frames to valid bounds [0, max_frames_in_queue] to guard
+  // against clock skew or underflow.
+  const int max_delay_frames = kMaxNumOfBuffersInQueue * audio_bus_->frames();
+  return std::clamp(delay_frames, 0, max_delay_frames);
 }
 
 }  // namespace media

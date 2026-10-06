@@ -488,6 +488,9 @@ source_set("unit_tests") {
       "android/audio_device_type_unittest.cc",
       "android/audio_device_unittest.cc",
     ]
+    if (media_use_opensles) {
+      sources += [ "android/opensles_output_unittest.cc" ]
+    }
     deps += [
       "//media/gpu",
       "//ui/gl",

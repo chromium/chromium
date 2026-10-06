@@ -24,6 +24,7 @@
 #include "media/audio/android/opensles_util.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
@@ -33,7 +34,7 @@ class AudioManagerAndroid;
 // This class is created and lives on the Audio Manager thread but recorded
 // audio buffers are given to us from an internal OpenSLES audio thread.
 // All public methods should be called on the Audio Manager thread.
-class OpenSLESOutputStream : public MuteableAudioOutputStream {
+class MEDIA_EXPORT OpenSLESOutputStream : public MuteableAudioOutputStream {
  public:
   static const int kMaxNumOfBuffersInQueue = 2;
 
@@ -60,6 +61,8 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   void SetMute(bool muted) override;
 
  private:
+  friend class OpenSLESOutputStreamTest;
+
   bool CreatePlayer();
 
   // Called from OpenSLES specific audio worker thread.
@@ -71,8 +74,8 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // Called from OpenSLES specific audio worker thread.
   void FillBufferQueue();
 
-  // Called from the audio manager thread.
-  void FillBufferQueueNoLock() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // Called from OpenSLES specific audio worker thread while holding |lock_|.
+  void FillBufferQueueLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Called in Open();
   void SetupAudioBuffer();
@@ -85,8 +88,13 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // kUseAudioLatencyFromHAL is enabled.
   void CacheHardwareLatencyIfNeeded();
 
-  // Adjust |position_in_ms| for hardware latency, and return the result.
-  base::TimeDelta AdjustPositionForHardwareLatency(uint32_t position_in_ms);
+  // Adjust |position| for hardware latency, and return the result.
+  base::TimeDelta AdjustPositionForHardwareLatency(
+      base::TimeDelta position) const;
+
+  // Computes the playback delay in frames for |position|, clamped to
+  // [0, kMaxNumOfBuffersInQueue * audio_bus_->frames()].
+  int CalculateDelayFrames(base::TimeDelta position) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
