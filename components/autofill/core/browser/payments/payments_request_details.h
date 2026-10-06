@@ -331,7 +331,7 @@ struct UploadCardRequestDetails {
   ~UploadCardRequestDetails();
 
   int64_t billing_customer_number = 0;
-  int detected_values;
+  int detected_values = 0;
   CreditCard card;
   std::u16string cvc;
   std::vector<AutofillProfile> profiles;
