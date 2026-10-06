@@ -847,18 +847,22 @@ void BaseAudioContext::AddPendingPromiseResolver(
   pending_promise_resolvers_.push_back(resolver);
 }
 
-void BaseAudioContext::ResolvePendingPromiseResolvers() {
+void BaseAudioContext::ResolvePendingPromiseResolver(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
   DCHECK(IsMainThread());
 
-  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>> resolvers;
-  {
-    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
-    resolvers.swap(pending_promise_resolvers_);
+  if (!resolver) {
+    return;
   }
 
-  for (auto& resolver : resolvers) {
-    resolver->Resolve();
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+    if (Erase(pending_promise_resolvers_, resolver) == 0) {
+      return;
+    }
   }
+
+  resolver->Resolve();
 }
 
 void BaseAudioContext::RejectPendingPromiseResolversWithException(
@@ -875,6 +879,16 @@ void BaseAudioContext::RejectPendingPromiseResolversWithException(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, message));
   }
+}
+
+void BaseAudioContext::RemovePendingPromiseResolvers(
+    const HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>& resolvers) {
+  DCHECK(IsMainThread());
+
+  DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+  EraseIf(pending_promise_resolvers_, [&resolvers](const auto& resolver) {
+    return resolvers.Contains(resolver);
+  });
 }
 
 void BaseAudioContext::RejectPendingDecodeAudioDataResolvers() {

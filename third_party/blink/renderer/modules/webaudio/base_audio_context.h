@@ -362,8 +362,11 @@ class MODULES_EXPORT BaseAudioContext
   LocalDOMWindow* GetWindow() const;
 
   void AddPendingPromiseResolver(ScriptPromiseResolver<IDLUndefined>*);
-  void ResolvePendingPromiseResolvers();
-  void RejectPendingPromiseResolversWithException(const String& message);
+  void ResolvePendingPromiseResolver(ScriptPromiseResolver<IDLUndefined>*);
+  virtual void RejectPendingPromiseResolversWithException(
+      const String& message);
+  void RemovePendingPromiseResolvers(
+      const HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>&);
 
   Member<AudioDestinationNode> destination_node_;
 

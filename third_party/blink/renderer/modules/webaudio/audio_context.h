@@ -294,7 +294,8 @@ class MODULES_EXPORT AudioContext final
   void invoke_onrendererror_from_platform_for_testing();
   void set_clock_for_testing(const base::TickClock* clock);
 
-  void RejectPendingResolvers() override;
+  void RejectPendingPromiseResolversWithException(
+      const String& message) override;
 
  private:
   // Dispatches the `sinkchange` event in a separate task. This is necessary to
@@ -369,7 +370,7 @@ class MODULES_EXPORT AudioContext final
   void PerformInitialTransitionToRunning();
 
   // Performs the async transition of the context state to "suspended".
-  void PerformTransitionToSuspended();
+  void PerformTransitionToSuspended(ScriptPromiseResolver<IDLUndefined>*);
 
   // Starts rendering via AudioDestinationNode. This sets the self-referencing
   // pointer to this object.
@@ -641,10 +642,12 @@ class MODULES_EXPORT AudioContext final
   // Also cleared by close(), which makes the already-scheduled task a no-op.
   bool pending_initial_transition_to_running_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = false;
-  // Whether the state transition to "suspended" is pending. Set when suspend()
-  // is called, cleared when it executes. Also cleared by close() or resume().
-  bool pending_transition_to_suspend_
-      GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = false;
+  // Number of pending transitions to the "suspended" state. Increased when
+  // suspend() posts the transition task and decreased when the task runs.
+  // Reset to 0 by DidClose() (via close() or Uninitialize()), which makes
+  // the already-scheduled tasks a no-ops.
+  size_t pending_transition_to_suspend_count_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = 0;
 
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-pending-resume-promises-slot
   HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
