@@ -1,7 +1,7 @@
 Name: lazy_static
 URL: https://crates.io/crates/lazy_static
-Version: 1.5.0
-Revision: be7c1c43f264699f956b70ce8e29941bd1e61bde
+Version: 1.5.1
+Revision: 4c1b9a170c157d679592e2682b13cc780c1db814
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/lazy_static-v1/LICENSE-APACHE

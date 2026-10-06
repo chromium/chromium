@@ -11,9 +11,15 @@
 
 [package]
 name = "lazy_static"
-version = "1.5.0"
+version = "1.5.1"
 authors = ["Marvin Löbel <loebel.marvin@gmail.com>"]
+build = false
 exclude = [".github"]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "A macro for declaring lazily evaluated statics in Rust."
 documentation = "https://docs.rs/lazy_static"
 readme = "README.md"
@@ -30,6 +36,29 @@ categories = [
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-lang-nursery/lazy-static.rs"
 
+[features]
+spin_no_std = ["spin"]
+
+[lib]
+name = "lazy_static"
+path = "src/lib.rs"
+
+[[example]]
+name = "mutex_map"
+path = "examples/mutex_map.rs"
+
+[[test]]
+name = "no_std"
+path = "tests/no_std.rs"
+
+[[test]]
+name = "test"
+path = "tests/test.rs"
+
+[[test]]
+name = "ui"
+path = "tests/ui.rs"
+
 [dependencies.spin]
 version = "0.9.8"
 features = ["once"]
@@ -41,6 +70,3 @@ version = "0.3.1"
 
 [dev-dependencies.trybuild]
 version = "1"
-
-[features]
-spin_no_std = ["spin"]

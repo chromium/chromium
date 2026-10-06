@@ -1,7 +1,7 @@
 [package]
 name = "lazy_static"
 # NB: When modifying, also modify html_root_url in lib.rs
-version = "1.5.0"
+version = "1.5.1"
 authors = ["Marvin Löbel <loebel.marvin@gmail.com>"]
 license = "MIT OR Apache-2.0"
 

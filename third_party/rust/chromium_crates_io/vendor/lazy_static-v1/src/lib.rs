@@ -6,6 +6,14 @@
 // copied, modified, or distributed except according to those terms.
 
 /*!
+<div class="warning">
+
+This crate has been replaced by the [`LazyLock`] type, which is stable since Rust 1.80.0 with a slightly different syntax. Barring breakages and security fixes, this crate will no longer be updated.
+
+[`LazyLock`]: https://doc.rust-lang.org/std/sync/struct.LazyLock.html
+
+</div>
+
 A macro for declaring lazily evaluated statics.
 
 Using this macro, it is possible to have `static`s that require code to be
@@ -31,7 +39,7 @@ use lazy_static::lazy_static;
 
 # fn main() {
 lazy_static! {
-    /// This is an example for using doc comment attributes
+    /// This is an example of using doc comment attributes
     static ref EXAMPLE: u8 = 42;
 }
 # }
@@ -94,7 +102,7 @@ This crate provides one cargo feature:
 
 */
 
-#![doc(html_root_url = "https://docs.rs/lazy_static/1.5.0")]
+#![doc(html_root_url = "https://docs.rs/lazy_static/1.5.1")]
 #![no_std]
 
 #[cfg(doctest)]
@@ -172,7 +180,7 @@ macro_rules! lazy_static {
     () => ()
 }
 
-/// Support trait for enabling a few common operation on lazy static values.
+/// Support trait for enabling a few common operations on lazy static values.
 ///
 /// This is implemented by each defined lazy static, and
 /// used by the free functions in this crate.
