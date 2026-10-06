@@ -164,13 +164,14 @@ void VerifySharedTabs(NSArray<NSString*>* expectedTitles,
       grey_sufficientlyVisible(), nil);
 
   if (expectedTitles.count == 0) {
+    id<GREYMatcher> selectTabsMenuItem =
+        grey_allOf(grey_accessibilityID(
+                       kComposeboxSelectTabsActionAccessibilityIdentifier),
+                   grey_sufficientlyVisible(), nil);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:selectTabsMenuItem];
     [[EarlGrey selectElementWithMatcher:sharedTabsMenuItem]
         assertWithMatcher:grey_nil()];
     if (dismissAfterVerification) {
-      id<GREYMatcher> selectTabsMenuItem =
-          grey_allOf(grey_accessibilityID(
-                         kComposeboxSelectTabsActionAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil);
       [[EarlGrey selectElementWithMatcher:selectTabsMenuItem]
           performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
       [ChromeEarlGrey
@@ -186,14 +187,14 @@ void VerifySharedTabs(NSArray<NSString*>* expectedTitles,
   auto cellMatcher = [](NSString* title) {
     return grey_allOf(
         grey_text(title),
-        grey_ancestor(grey_kindOfClassName(@"UICollectionViewListCell")), nil);
+        grey_ancestor(grey_kindOfClassName(@"UICollectionViewListCell")),
+        grey_sufficientlyVisible(), nil);
   };
 
   {
     ScopedSynchronizationDisabler disabler;
     for (NSString* title in expectedTitles) {
-      [[EarlGrey selectElementWithMatcher:cellMatcher(title)]
-          assertWithMatcher:grey_sufficientlyVisible()];
+      [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cellMatcher(title)];
     }
     for (NSString* title in absentTitles) {
       [[EarlGrey selectElementWithMatcher:cellMatcher(title)]
@@ -205,8 +206,12 @@ void VerifySharedTabs(NSArray<NSString*>* expectedTitles,
           grey_allOf(grey_accessibilityLabel(@"Close"),
                      grey_ancestor(grey_kindOfClassName(@"UINavigationBar")),
                      grey_sufficientlyVisible(), nil);
+      [ChromeEarlGrey
+          waitForUIElementToAppearWithMatcher:sharedTabsCloseButton];
       [[EarlGrey selectElementWithMatcher:sharedTabsCloseButton]
           performAction:grey_tap()];
+      [ChromeEarlGrey
+          waitForUIElementToDisappearWithMatcher:sharedTabsCloseButton];
     }
   }
 
@@ -215,6 +220,7 @@ void VerifySharedTabs(NSArray<NSString*>* expectedTitles,
         grey_allOf(grey_accessibilityID(
                        kComposeboxSelectTabsActionAccessibilityIdentifier),
                    grey_sufficientlyVisible(), nil);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:selectTabsMenuItem];
     [[EarlGrey selectElementWithMatcher:selectTabsMenuItem]
         performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
     [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:selectTabsMenuItem];
@@ -239,7 +245,8 @@ void RemoveSharedTab(NSString* title) {
 
   id<GREYMatcher> cellMatcher = grey_allOf(
       grey_text(title),
-      grey_ancestor(grey_kindOfClassName(@"UICollectionViewListCell")), nil);
+      grey_ancestor(grey_kindOfClassName(@"UICollectionViewListCell")),
+      grey_sufficientlyVisible(), nil);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cellMatcher];
   [[EarlGrey selectElementWithMatcher:cellMatcher]
       performAction:grey_longPress()];
@@ -253,12 +260,17 @@ void RemoveSharedTab(NSString* title) {
 
   {
     ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:removeActionMatcher];
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:cellMatcher];
     id<GREYMatcher> sharedTabsCloseButton =
         grey_allOf(grey_accessibilityLabel(@"Close"),
                    grey_ancestor(grey_kindOfClassName(@"UINavigationBar")),
                    grey_sufficientlyVisible(), nil);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:sharedTabsCloseButton];
     [[EarlGrey selectElementWithMatcher:sharedTabsCloseButton]
         performAction:grey_tap()];
+    [ChromeEarlGrey
+        waitForUIElementToDisappearWithMatcher:sharedTabsCloseButton];
   }
 
   // Dismiss the "Tab removed" snackbar first so it doesn't obscure the
@@ -272,6 +284,7 @@ void RemoveSharedTab(NSString* title) {
   id<GREYMatcher> selectTabsMenuItem = grey_allOf(
       grey_accessibilityID(kComposeboxSelectTabsActionAccessibilityIdentifier),
       grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:selectTabsMenuItem];
   [[EarlGrey selectElementWithMatcher:selectTabsMenuItem]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:selectTabsMenuItem];
