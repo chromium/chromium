@@ -1195,6 +1195,9 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
                   fieldIdentifier:(FieldRendererId)fieldIdentifier
                           inFrame:(web::WebFrame*)frame
               isManuallyTriggered:(BOOL)isManuallyTriggered {
+  if (!frame) {
+    return;
+  }
   const autofill::PasswordFormGenerationData* generationData =
       [self formForGenerationFromFormID:formIdentifier];
   if (!isManuallyTriggered && !generationData) {
