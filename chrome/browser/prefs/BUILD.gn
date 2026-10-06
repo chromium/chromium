@@ -168,6 +168,7 @@ source_set("impl") {
     "//components/omnibox/browser",
     "//components/optimization_guide/core:features",
     "//components/optimization_guide/core:hints",
+    "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/core:prediction",
     "//components/password_manager/core/browser",
     "//components/performance_manager",

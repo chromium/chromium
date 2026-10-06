@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -77,7 +78,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
     // Disable PI shadow metrics by default, so no additional calls to the
     // `model_executor()` are generated.
     features.InitAndDisableFeature(features::kAutofillAiPrivateAiShadowMetric);
-    optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+    optimization_guide::RegisterModelQualityLocalStatePrefs(
         local_state_.registry());
     optimization_guide::model_execution::prefs::RegisterProfilePrefs(
         local_state_.registry());

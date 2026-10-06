@@ -17,7 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
@@ -45,8 +45,7 @@ int64_t GenerateAndStoreClientId(PrefService* pref_service) {
     client_id = base::RandIntInclusive(1, 10000);
   }
 
-  pref_service->SetInt64(optimization_guide::model_execution::prefs::
-                             localstate::kModelQualityLoggingClientId,
+  pref_service->SetInt64(prefs::localstate::kModelQualityLoggingClientId,
                          client_id);
   return client_id;
 }
@@ -76,12 +75,10 @@ int64_t GetOrCreateModelQualityClientId(
     return 0;
   }
   int64_t client_id =
-      pref_service->GetInt64(optimization_guide::model_execution::prefs::
-                                 localstate::kModelQualityLoggingClientId);
+      pref_service->GetInt64(prefs::localstate::kModelQualityLoggingClientId);
   if (!client_id) {
     client_id = GenerateAndStoreClientId(pref_service);
-    pref_service->SetInt64(optimization_guide::model_execution::prefs::
-                               localstate::kModelQualityLoggingClientId,
+    pref_service->SetInt64(prefs::localstate::kModelQualityLoggingClientId,
                            client_id);
   }
 

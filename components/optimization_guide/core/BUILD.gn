@@ -212,6 +212,8 @@ source_set("model_execution") {
     "model_quality/model_quality_log_entry.h",
     "model_quality/model_quality_logs_uploader_service.cc",
     "model_quality/model_quality_logs_uploader_service.h",
+    "model_quality/model_quality_prefs.cc",
+    "model_quality/model_quality_prefs.h",
     "model_quality/model_quality_util.cc",
     "model_quality/model_quality_util.h",
   ]

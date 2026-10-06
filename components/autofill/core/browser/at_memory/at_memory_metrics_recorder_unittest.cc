@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -42,7 +43,7 @@ HasAction(optimization_guide::proto::AtMemorySuggestionAction action) {
 class AtMemoryMetricsRecorderTest : public testing::Test {
  public:
   AtMemoryMetricsRecorderTest() {
-    optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+    optimization_guide::RegisterModelQualityLocalStatePrefs(
         local_state_.registry());
     optimization_guide::model_execution::prefs::RegisterProfilePrefs(
         local_state_.registry());

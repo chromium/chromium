@@ -7,7 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -18,7 +18,7 @@ namespace optimization_guide {
 class ModelQualityUtilTest : public testing::Test {
  public:
   void SetUp() override {
-    model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
+    RegisterModelQualityLocalStatePrefs(pref_service_.registry());
   }
 
  protected:

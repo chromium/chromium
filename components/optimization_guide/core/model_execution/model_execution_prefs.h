@@ -61,8 +61,6 @@ extern const char kLastUsageByFeature[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeEligibleForOnDeviceModelDownload[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelQualityLoggingClientId[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kGenAILocalFoundationalModelEnterprisePolicySettings[];
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

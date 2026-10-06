@@ -13,6 +13,7 @@
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -73,7 +74,7 @@ class ActorLoginQualityLoggerTest : public testing::Test {
     logs_uploader_ = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(
         &pref_service_);
-    optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+    optimization_guide::RegisterModelQualityLocalStatePrefs(
         pref_service_.registry());
     optimization_guide::model_execution::prefs::RegisterProfilePrefs(
         pref_service_.registry());

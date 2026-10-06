@@ -11,6 +11,7 @@
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -65,7 +66,7 @@ class ModelQualityLogEntryTest : public testing::Test {
 
   void SetUp() override {
     model_execution::prefs::RegisterProfilePrefs(prefs_.registry());
-    model_execution::prefs::RegisterLocalStatePrefs(prefs_.registry());
+    RegisterModelQualityLocalStatePrefs(prefs_.registry());
   }
 
   int NumPendingUploads() {
