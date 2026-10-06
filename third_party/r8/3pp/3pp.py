@@ -147,7 +147,11 @@ def _install(version, output_prefix):
 
     os.environ['PATH'] += os.path.pathsep + os.path.abspath('depot_tools')
 
-    common.run_cmd(['tools/gradle.py', 'r8'])
+    # R8's gradle build (d8_r8/commonBuildSrc/.../R8SettingsPlugin.kt) enables
+    # its GCS remote build cache whenever SWARMING_BOT_ID is set, which the 3pp
+    # bot's service account cannot read (403 on bucket r8-build-cache).
+    gradle_env = {k: v for k, v in os.environ.items() if k != 'SWARMING_BOT_ID'}
+    common.run_cmd(['tools/gradle.py', 'r8'], env=gradle_env)
 
     # Shrink (improves r8/d8 launch time):
     # Needs the -D flag to avoid compilation error, see http://b/311202383.
