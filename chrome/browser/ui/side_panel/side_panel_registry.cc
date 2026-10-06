@@ -111,8 +111,6 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
     active_entry_.reset();
   }
 
-// TODO(crbug.com/489780669): Temporarily disabled until a coordinator is made.
-#if !BUILDFLAG(IS_ANDROID)
   const bool for_tab = get_scope_type() == SidePanelEntryScope::ScopeType::kTab;
   // A tab-scoped registry's tab may be detached from any window (e.g. while
   // being dragged between windows), in which case there is no side panel UI to
@@ -136,7 +134,6 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
       }
     }
   }
-#endif
 
   auto it = std::find_if(entries_.begin(), entries_.end(),
                          base::MatchesUniquePtr(entry));
