@@ -24,10 +24,12 @@ source_set("selection") {
     "selection_suggestion.h",
     "selection_suggestion_tool.cc",
     "selection_suggestion_tool.h",
+    "shake_trigger.cc",
   ]
 
   public_deps = [
     ":mojo_bindings",
+    ":shake_trigger",
     "//chrome/browser/glic",
     "//chrome/browser/selection",
     "//chrome/browser/ui/lens",
@@ -59,6 +61,16 @@ source_set("selection") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
     "//mojo/public/mojom/base",
+    "//third_party/blink/public/common:headers",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("shake_trigger") {
+  sources = [ "shake_trigger.h" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx/geometry",
   ]
 }
 
@@ -136,6 +148,7 @@ source_set("unit_tests") {
     "inline_cue_blocklist_utils_unittest.cc",
     "quick_answers_tool_unittest.cc",
     "selection_suggestion_tool_unittest.cc",
+    "shake_trigger_unittest.cc",
   ]
   deps = [
     ":selection",
@@ -156,5 +169,6 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
   ]
 }

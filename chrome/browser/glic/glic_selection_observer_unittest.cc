@@ -26,6 +26,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/common/glic_enums.mojom-shared.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -100,13 +101,11 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     last_sent_context_.reset();
     show_selection_affordance_called_ = false;
     last_affordance_text_.reset();
-    trigger_region_capture_called_ = false;
     mock_side_panel_open_ = true;
     show_selection_overlay_called_ = false;
   }
 
   // Expose methods for testing.
-  using GlicSelectionObserver::IsShakeTriggerEnabled;
   using GlicSelectionObserver::IsSidePanelOpen;
   using GlicSelectionObserver::OnInputEvent;
   using GlicSelectionObserver::OnPageContextEligibilityChanged;
@@ -141,10 +140,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     return last_affordance_text_;
   }
 
-  bool trigger_region_capture_called() const {
-    return trigger_region_capture_called_;
-  }
-
   bool show_selection_overlay_called() const {
     return show_selection_overlay_called_;
   }
@@ -177,11 +172,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     last_affordance_text_ = selected_text;
   }
 
-  void TriggerRegionCapture() override {
-    trigger_region_capture_called_ = true;
-    GlicSelectionObserver::TriggerRegionCapture();
-  }
-
   bool IsSidePanelOpen() const override { return mock_side_panel_open_; }
 
   void ShowSelectionOverlay() override {
@@ -202,7 +192,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   std::optional<std::u16string> last_sent_context_;
   bool show_selection_affordance_called_ = false;
   std::optional<std::u16string> last_affordance_text_;
-  bool trigger_region_capture_called_ = false;
   bool show_selection_overlay_called_ = false;
 };
 
@@ -1311,134 +1300,6 @@ TEST_F(GlicSelectionObserverTest, OnHideHidesSelectionWidget) {
                 url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
 }
 
-TEST_F(GlicSelectionObserverTest,
-       ShakeTriggerSucceedsWhenFeatureAndPrefEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicShakeTrigger},
-      /*disabled_features=*/{});
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-  SimulateMouseShake();
-  EXPECT_TRUE(observer->trigger_region_capture_called());
-}
-
-TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByFeatureFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kGlicShakeTrigger);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-  SimulateMouseShake();
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-}
-
-TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByPref) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicShakeTrigger},
-      /*disabled_features=*/{});
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, false);
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-  SimulateMouseShake();
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-}
-
-TEST_F(GlicSelectionObserverTest, ContinuousMoveDoesNotTriggerShake) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicShakeTrigger},
-      /*disabled_features=*/{});
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  // Move continuously in the positive X direction.
-  SimulateMouseMove(0.0f, 0.0f);
-  SimulateMouseMove(20.0f, 0.0f);
-  SimulateMouseMove(40.0f, 0.0f);
-  SimulateMouseMove(60.0f, 0.0f);
-  SimulateMouseMove(80.0f, 0.0f);
-  SimulateMouseMove(100.0f, 0.0f);
-
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-}
-
-TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledWhenSidePanelClosed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicShakeTrigger},
-      /*disabled_features=*/{});
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-  observer->set_mock_side_panel_open(false);
-
-  EXPECT_FALSE(observer->IsShakeTriggerEnabled());
-
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-  SimulateMouseShake();
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-}
-
-TEST_F(GlicSelectionObserverTest,
-       ShakeTriggerSucceedsWhenSidePanelClosedIfOnlyOnSidePanelFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kGlicShakeTrigger,
-                             {{"only_on_side_panel", "false"}}}},
-      /*disabled_features=*/{});
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-  observer->set_mock_side_panel_open(false);
-
-  EXPECT_TRUE(observer->IsShakeTriggerEnabled());
-
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-  SimulateMouseShake();
-  EXPECT_TRUE(observer->trigger_region_capture_called());
-}
-
-TEST_F(GlicSelectionObserverTest, ShakeTriggerSucceedsWhenSidePanelOpen) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicShakeTrigger},
-      /*disabled_features=*/{});
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-  observer->set_mock_side_panel_open(true);
-
-  EXPECT_TRUE(observer->IsShakeTriggerEnabled());
-
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-  SimulateMouseShake();
-  EXPECT_TRUE(observer->trigger_region_capture_called());
-}
-
 TEST_F(GlicSelectionObserverTest, BaseIsSidePanelOpenReturnsFalseWithoutTab) {
   EXPECT_FALSE(observer_->BaseIsSidePanelOpen());
 }
@@ -1617,6 +1478,27 @@ TEST_F(GlicSelectionObserverPromptTest,
 
   GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
                                                   u"Sample selected text");
+}
+
+TEST_F(GlicSelectionObserverPromptTest, ShakeInvokesRegionCapture) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicShakeTrigger);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  EXPECT_CALL(
+      *mock_glic_service(),
+      Invoke(testing::AllOf(
+          testing::Property(&GlicInvokeOptions::GetInvocationSource,
+                            mojom::InvocationSource::kCaptureRegionHotkey),
+          testing::Field(&GlicInvokeOptions::wait_for_panel_open, true))))
+      .Times(1);
+
+  SimulateMouseShake();
 }
 
 TEST_F(GlicSelectionObserverTest, ShouldShowSelectionWidgetSiteBlocked) {

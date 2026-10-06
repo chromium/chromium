@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/selection/shake_trigger.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
@@ -55,7 +56,8 @@ class GlicKeyedService;
 class GlicSelectionObserver
     : public content::WebContentsObserver,
       public content::RenderWidgetHost::InputEventObserver,
-      public content_settings::Observer {
+      public content_settings::Observer,
+      public ShakeTriggerClient {
  public:
   DECLARE_USER_DATA(GlicSelectionObserver);
 
@@ -76,6 +78,7 @@ class GlicSelectionObserver
   explicit GlicSelectionObserver(content::WebContents* web_contents);
   ~GlicSelectionObserver() override;
 
+  // `content::WebContentsObserver`:
   void OnTextSelectionChanged(content::RenderFrameHost* render_frame_host,
                               std::u16string_view selected_text) override;
 
@@ -100,15 +103,37 @@ class GlicSelectionObserver
   virtual void DismissUI(DismissReason reason);
 
  protected:
+  // `ShakeTriggerClient`:
+  bool IsTextSelectionSharingEnabled() const override;
+  bool IsSidePanelOpen() const override;
+
+  // `content::WebContentsObserver`:
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+  void PrimaryPageChanged(content::Page& page) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
+
+  // `content::RenderWidgetHost::InputEventObserver`:
+  void OnInputEvent(
+      const content::RenderWidgetHost& host,
+      const blink::WebInputEvent& event,
+      content::RenderWidgetHost::InputEventObserver::InputEventSource source)
+      override;
+
+  // `content_settings::Observer`:
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
+
   // Updates the Glic UI (widget or panel) with the selected text.
   // Virtual for testing.
   virtual void UpdateSelectionState(const std::u16string& text,
                                     bool is_pending_selection,
                                     SelectionSource source);
-
-  // Returns true if the text selection is shared for the current profile.
-  // Virtual for testing.
-  virtual bool IsTextSelectionSharingEnabled() const;
 
   // Returns true if the inline cue is enabled for the current profile.
   // Virtual for testing.
@@ -132,48 +157,14 @@ class GlicSelectionObserver
   // Returns true if the selection widget should be shown for the current page.
   bool ShouldShowSelectionWidget();
 
-  // Triggers Glic region capture when a mouse shake is detected.
-  // Virtual for testing.
-  virtual void TriggerRegionCapture();
-
   // Shows the selection overlay.
   // Virtual for testing.
   virtual void ShowSelectionOverlay();
-
-  // Returns true if mouse shake trigger is enabled by feature flag and pref.
-  // Virtual for testing.
-  virtual bool IsShakeTriggerEnabled() const;
-
-  // Returns true if the Glic side panel is open.
-  // Virtual for testing.
-  virtual bool IsSidePanelOpen() const;
 
   // Called when the page context eligibility changes.
   // Virtual for testing.
   virtual void OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus status);
-
-  // content::WebContentsObserver:
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
-  void PrimaryPageChanged(content::Page& page) override;
-  void PrimaryMainFrameWasResized(bool width_changed) override;
-  void OnWebContentsLostFocus(
-      content::RenderWidgetHost* render_widget_host) override;
-
-  // content::RenderWidgetHost::InputEventObserver:
-  void OnInputEvent(
-      const content::RenderWidgetHost& host,
-      const blink::WebInputEvent& event,
-      content::RenderWidgetHost::InputEventObserver::InputEventSource source)
-      override;
-
-  // content_settings::Observer:
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsTypeSet content_type_set) override;
 
  private:
   void UpdatePageBlockedState();
@@ -235,8 +226,7 @@ class GlicSelectionObserver
   // True if a dismissal metric has already been recorded for the shown widget.
   bool dismissal_recorded_ = false;
 
-  class ShakeDetector;
-  std::unique_ptr<ShakeDetector> shake_detector_;
+  std::unique_ptr<ShakeTrigger> shake_trigger_;
 
   // Private bridge implementation of
   // GlicSelectionWidgetDelegate::ActionDelegate. This is required because

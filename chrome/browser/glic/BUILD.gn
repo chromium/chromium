@@ -164,6 +164,7 @@ source_set("glic") {
 
     public_deps += [
       "//chrome/browser/glic/resources:browser_resources",
+      "//chrome/browser/glic/selection:shake_trigger",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/pwc",
       "//chrome/browser/themes",
