@@ -193,15 +193,12 @@ class Handler : public content::WebContentsObserver {
 
 #if BUILDFLAG(ENABLE_PDF)
     if (chrome_pdf::features::IsOopifPdfEnabled()) {
-      // Don't expose any child frames of the PDF extension frame, such as the
-      // PDF content frame.
-      content::RenderFrameHost* parent = frame->GetParent();
-      if (parent) {
-        const url::Origin& origin = parent->GetLastCommittedOrigin();
-        if (origin.scheme() == extensions::kExtensionScheme &&
-            origin.host() == extension_misc::kPdfExtensionId) {
-          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
-        }
+      // Don't expose the PDF extension frame or any of its children, such as
+      // the PDF content frame.
+      const url::Origin& origin = frame->GetLastCommittedOrigin();
+      if (origin.scheme() == extensions::kExtensionScheme &&
+          origin.host() == extension_misc::kPdfExtensionId) {
+        return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
       }
     }
 #endif  // BUILDFLAG(ENABLE_PDF)

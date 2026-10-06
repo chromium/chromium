@@ -3265,6 +3265,17 @@ function testDialogInPdf() {
   document.body.appendChild(webview);
 }
 
+// Test that <webview>.executeScript({allFrames: true}) on a guest page
+// embedding a PDF does not execute scripts in the PDF extension frame or the
+// PDF content frame.
+function testExecuteScriptInEmbeddedPdf() {
+  let webview = document.createElement('webview');
+  webview.onloadstop = embedder.test.succeed;
+  webview.onloadabort = embedder.test.fail;
+  webview.src = embedder.baseGuestURL + '/page_with_embedded_pdf.html';
+  document.body.appendChild(webview);
+}
+
 // This test verifies that mailto links are enabled.
 function testMailtoLink() {
   var webview = new WebView();
@@ -4238,6 +4249,7 @@ embedder.test.testList = {
   'testPDFInWebview': testPDFInWebview,
   'testNavigateToPDFInWebview': testNavigateToPDFInWebview,
   'testDialogInPdf': testDialogInPdf,
+  'testExecuteScriptInEmbeddedPdf': testExecuteScriptInEmbeddedPdf,
   'testMailtoLink': testMailtoLink,
   'testRendererNavigationRedirectWhileUnattached':
       testRendererNavigationRedirectWhileUnattached,
