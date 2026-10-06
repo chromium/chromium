@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -165,6 +166,7 @@ TEST_F(ExternalDateTimeChooserTest, FinePointerFocusability) {
 }
 
 TEST_F(ExternalDateTimeChooserTest, NonFinePointerFocusability) {
+  ScopedInputMultipleFieldsUIWithPointerChecksForTest scoped_feature(true);
   GetDocument().GetFrame()->GetSettings()->SetAvailablePointerTypes(
       static_cast<int>(mojom::blink::PointerType::kPointerCoarseType));
 
