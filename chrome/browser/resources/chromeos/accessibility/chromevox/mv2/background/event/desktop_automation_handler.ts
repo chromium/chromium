@@ -675,6 +675,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   }
 
   onSelection(evt: ChromeVoxEvent): void {
+    if (evt.target.selected === false) {
+      return;
+    }
+
     // Invalidate any previous editable text handler state since some nodes,
     // like menuitems, can receive selection while focus remains on an
     // editable leading to braille output routing to the editable.
@@ -775,6 +779,12 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       }
 
       if (override || (focus && AutomationUtil.isDescendantOf(target, focus))) {
+        // Avoid duplicate announcements when a prior focus event (e.g. from
+        // SetPopupFocusOverride) already moved ChromeVoxRange to |target|.
+        if (ChromeVoxRange.current?.equalsWithoutRecovery(
+                CursorRange.fromNode(target))) {
+          return;
+        }
         this.onEventDefault(evt);
       }
     });
