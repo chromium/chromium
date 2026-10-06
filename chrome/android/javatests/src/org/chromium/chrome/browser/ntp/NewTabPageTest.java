@@ -100,7 +100,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -993,18 +992,18 @@ public class NewTabPageTest {
         View ntpLayout = mNtp.getLayout();
         View mvTilesContainer = ntpLayout.findViewById(R.id.mv_tiles_container);
 
-        boolean isDesktop = OmniboxCapabilities.isDesktopPlatform();
+        boolean isTablet = mActivityTestRule.getActivity().isTablet();
         int expectedMvtLateralMargin;
-        if (isDesktop) {
+        if (isTablet) {
+            expectedMvtLateralMargin =
+                    mNtp.getNewTabPageCoordinator().getLateralMarginToMatchFeeds();
+        } else {
             int searchBoxTwoSideMargin =
                     mNtp.getNewTabPageCoordinator().getSearchBoxTwoSideMarginForTesting();
             int maxSearchBoxWidth = res.getDimensionPixelSize(R.dimen.ntp_search_box_max_width);
             int searchBoxWidth =
                     Math.min(ntpLayout.getWidth() - searchBoxTwoSideMargin, maxSearchBoxWidth);
             expectedMvtLateralMargin = (ntpLayout.getWidth() - searchBoxWidth) / 2;
-        } else {
-            expectedMvtLateralMargin =
-                    mNtp.getNewTabPageCoordinator().getLateralMarginToMatchFeeds();
         }
 
         Assert.assertEquals(

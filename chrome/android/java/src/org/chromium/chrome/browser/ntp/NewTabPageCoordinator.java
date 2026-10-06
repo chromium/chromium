@@ -1618,12 +1618,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mComposeplateCoordinator.setLayoutWidth(searchBoxWidth);
         }
 
-        // Most Visited Tiles: Match Search Box on Desktop, and Feeds width on Mobile.
+        // Most Visited Tiles: Match Feeds width on Tablet, and Search Box on Phone.
         if (mMostVisitedTilesCoordinator != null) {
-            int mvtWidth =
-                    OmniboxCapabilities.isDesktopPlatform()
-                            ? searchBoxWidth
-                            : (width - getLateralMarginToMatchFeeds() * 2);
+            int mvtWidth = mIsLff ? (width - getLateralMarginToMatchFeeds() * 2) : searchBoxWidth;
             mMostVisitedTilesCoordinator.updateMvtWidth(width, mvtWidth);
         }
 

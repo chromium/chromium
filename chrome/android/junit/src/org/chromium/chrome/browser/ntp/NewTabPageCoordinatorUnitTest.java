@@ -110,7 +110,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -541,29 +540,32 @@ public class NewTabPageCoordinatorUnitTest {
 
         View mvtView = layout.findViewById(R.id.mv_tiles_container);
         assertNotNull(mvtView);
-        int feedPadding =
-                -FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(
-                        mActivity.getResources(), mUiConfig);
-        assertEquals(measureWidth - (feedPadding * 2), mvtView.getLayoutParams().width);
+        // On phones, MVT width matches the search box width to align visually in landscape.
+        assertEquals(expectedBoundedWidth, mvtView.getLayoutParams().width);
 
-        // Verify that the applied MVT margins are non-negative on Mobile
+        // Verify that the applied MVT margins are non-negative on Phone
         ViewGroup.MarginLayoutParams mvtMarginParams =
                 (ViewGroup.MarginLayoutParams) mvtView.getLayoutParams();
         assertTrue(mvtMarginParams.leftMargin >= 0);
         assertTrue(mvtMarginParams.rightMargin >= 0);
 
-        // On Desktop Android, the MVT width cap is applied
-        DeviceInfo.setIsDesktopForTesting(true);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        // On tablet / LFF, MVT width expands to match the Feed bounds.
+        createCoordinator(/* isLff= */ true);
+        layout = mCoordinator.getNewTabPageLayout();
+        mvtView = layout.findViewById(R.id.mv_tiles_container);
+        assertNotNull(mvtView);
         mvtView.setVisibility(View.VISIBLE);
         mCoordinator.onMeasure(measureWidth);
-        assertEquals(expectedBoundedWidth, mvtView.getLayoutParams().width);
+        int feedPadding =
+                -FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(
+                        mActivity.getResources(), mUiConfig);
+        assertEquals(measureWidth - (feedPadding * 2), mvtView.getLayoutParams().width);
 
-        // Verify that the applied MVT margins are non-negative on Desktop
-        ViewGroup.MarginLayoutParams desktopMarginParams =
+        // Verify that the applied MVT margins are non-negative on Tablet
+        ViewGroup.MarginLayoutParams tabletMarginParams =
                 (ViewGroup.MarginLayoutParams) mvtView.getLayoutParams();
-        assertTrue(desktopMarginParams.leftMargin >= 0);
-        assertTrue(desktopMarginParams.rightMargin >= 0);
+        assertTrue(tabletMarginParams.leftMargin >= 0);
+        assertTrue(tabletMarginParams.rightMargin >= 0);
     }
 
     @Test

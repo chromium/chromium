@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -55,7 +54,6 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     private final MostVisitedTilesLayout mMvTilesLayout;
     private final PropertyModel mModel;
     private final boolean mIsLff;
-    private final boolean mIsTablet;
     private final int mTileViewLandscapePadding;
     private final int mTileViewPortraitEdgePadding;
     private final @Nullable Runnable mSnapshotTileGridChangedRunnable;
@@ -87,7 +85,6 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
         mRenderer = renderer;
         mModel = propertyModel;
         mIsLff = isLff;
-        mIsTablet = mIsLff && !OmniboxCapabilities.isDesktopPlatform();
         mSnapshotTileGridChangedRunnable = snapshotTileGridChangedRunnable;
         mTileCountChangedRunnable = tileCountChangedRunnable;
         mMvTilesContainerLayout = mvTilesContainerLayout;
@@ -244,8 +241,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
         marginLayoutParams.leftMargin = lateralMargin;
         marginLayoutParams.rightMargin = lateralMargin;
 
-        if (mIsTablet && mMvTilesLayout.contentFitsOnLff(mvtWidth)) {
-            // On tablet, use WRAP_CONTENT to permits {@link MostVisitedTilesLayout} to calculate
+        if (mIsLff && mMvTilesLayout.contentFitsOnLff(mvtWidth)) {
+            // On tablet, use WRAP_CONTENT to permit {@link MostVisitedTilesLayout} to calculate
             // and apply expanded edge margins to center its tiles.
             marginLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         } else {
