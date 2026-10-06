@@ -1105,7 +1105,14 @@ class PrewarmOmniboxUIBrowserTest
 
 // Basic scenario for the interactive_ui_tests to trigger the prewarm feature
 // from the omnibox.
-IN_PROC_BROWSER_TEST_P(PrewarmOmniboxUIBrowserTest, StartPrewarmOnTrigger) {
+// TODO(crbug.com/570295407): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StartPrewarmOnTrigger DISABLED_StartPrewarmOnTrigger
+#else
+#define MAYBE_StartPrewarmOnTrigger StartPrewarmOnTrigger
+#endif
+IN_PROC_BROWSER_TEST_P(PrewarmOmniboxUIBrowserTest,
+                       MAYBE_StartPrewarmOnTrigger) {
   // Add a new tab to make it possible to close the tab to flush metrics.
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
   ASSERT_TRUE(AddTabAtIndex(0, embedded_test_server()->GetURL("/empty.html"),
