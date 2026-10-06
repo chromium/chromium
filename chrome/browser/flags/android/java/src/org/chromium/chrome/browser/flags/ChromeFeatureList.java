@@ -290,8 +290,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_NEW_MANAGEMENT_NOTICE = "AndroidNewManagementNotice";
     public static final String ANDROID_NEW_TAB_BUTTON_TABSTRIP_WEB_UI =
             "AndroidNewTabButtonTabstripWebUI";
-    public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
-            "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE =
             "AndroidOmniboxFocusedNewTabPage";
     public static final String ANDROID_OPEN_INCOGNITO_AS_WINDOW = "AndroidOpenIncognitoAsWindow";
@@ -1794,8 +1792,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(LONG_SCREENSHOTS_NO_MEMORY_CHECK, false);
     public static final MutableFlagWithSafeDefault sLongScreenshotsNumViewports =
             newMutableFlagWithSafeDefault(LONG_SCREENSHOTS_NUM_VIEWPORTS, false);
-    public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
-            newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
     public static final MutableFlagWithSafeDefault sOnDemandBackgroundTabContextCapture =
             newMutableFlagWithSafeDefault(ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE, true);
     public static final MutableFlagWithSafeDefault

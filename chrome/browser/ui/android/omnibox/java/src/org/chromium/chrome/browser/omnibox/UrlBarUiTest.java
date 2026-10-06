@@ -64,9 +64,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.KeyUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -258,7 +256,6 @@ public class UrlBarUiTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD)
     public void testVisibleTextPrefixHint_DifferentTld_NoVisibleHintCalculation() {
         final String domain1 = "www.a.com";
         final String domain2 = "www.b.com";

@@ -60,7 +60,6 @@ BASE_DECLARE_FEATURE(kAndroidKeyboardShortcutHints);
 BASE_DECLARE_FEATURE(kAndroidKeyboardShortcutOpenFile);
 BASE_DECLARE_FEATURE(kAndroidNewManagementNotice);
 BASE_DECLARE_FEATURE(kAndroidNewTabButtonTabstripWebUI);
-BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
 BASE_DECLARE_FEATURE(kAndroidOpenIncognitoAsWindowRestrictions);
 BASE_DECLARE_FEATURE(kAndroidPageInfoAsAppMenuItem);

@@ -20,9 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
@@ -235,7 +233,6 @@ public class PhoneCaptureStateTokenTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD)
     public void testCompareHintToPreviousUrl() {
         String latestVisibleHint = DEFAULT_URL_TEXT + "aaaaa";
         PhoneCaptureStateToken initialPhoneCaptureStateToken =

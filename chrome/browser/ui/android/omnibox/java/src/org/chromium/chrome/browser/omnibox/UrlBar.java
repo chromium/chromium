@@ -55,7 +55,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarFocusChangeInfo.FocusDirection;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.components.browser_ui.share.ShareHelper;
@@ -1686,37 +1685,29 @@ public class UrlBar extends AutocompleteEditText {
                 // reliable.
                 mVisibleTextPrefixHint =
                         url.subSequence(0, Math.min(originEndIndex + 1, urlTextLength));
+            } else if (textLayout.getPrimaryHorizontal(urlTextLength) <= measuredWidth) {
+                // Only store the visibility hint if the text is wider than the viewport. Text
+                // narrower than the viewport is not a useful hint because a consumer would not
+                // understand if a subsequent character would be visible on screen or not.
+                //
+                // If issues arise where text that is very close to the visible viewport is
+                // causing issues with the reliability of visible hint, consider checking that
+                // the measured text is greater than the measured width plus a small additional
+                // padding.
+                mVisibleTextPrefixHint = null;
             } else {
-                if (textLayout.getPrimaryHorizontal(urlTextLength) <= measuredWidth) {
-                    // Only store the visibility hint if the text is wider than the viewport. Text
-                    // narrower than the viewport is not a useful hint because a consumer would not
-                    // understand if a subsequent character would be visible on screen or not.
-                    //
-                    // If issues arise where text that is very close to the visible viewport is
-                    // causing issues with the reliability of visible hint, consider checking that
-                    // the measured text is greater than the measured width plus a small additional
-                    // padding.
-                    mVisibleTextPrefixHint = null;
+                // TODO(b/357649034): revisit and simplify the logic, seek to obsolete
+                // mPreviousScrollOriginEndIndex if possible.
+                String previousTLD =
+                        mPreviousScrollText == null
+                                        || (mPreviousScrollText.length()
+                                                < mPreviousScrollOriginEndIndex)
+                                ? null
+                                : mPreviousScrollText.substring(0, mPreviousScrollOriginEndIndex);
+                if (!TextUtils.isEmpty(previousTLD) && TextUtils.indexOf(url, previousTLD) == 0) {
+                    mVisibleTextPrefixHint = calculateVisibleHint();
                 } else {
-                    if (ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled()) {
-                        // TODO(b/357649034): revisit and simplify the logic, seek to obsolete
-                        // mPreviousScrollOriginEndIndex if possible.
-                        String previousTLD =
-                                mPreviousScrollText == null
-                                                || (mPreviousScrollText.length()
-                                                        < mPreviousScrollOriginEndIndex)
-                                        ? null
-                                        : mPreviousScrollText.substring(
-                                                0, mPreviousScrollOriginEndIndex);
-                        if (!TextUtils.isEmpty(previousTLD)
-                                && TextUtils.indexOf(url, previousTLD) == 0) {
-                            mVisibleTextPrefixHint = calculateVisibleHint();
-                        } else {
-                            mVisibleTextPrefixHint = null;
-                        }
-                    } else {
-                        mVisibleTextPrefixHint = calculateVisibleHint();
-                    }
+                    mVisibleTextPrefixHint = null;
                 }
             }
         } else {

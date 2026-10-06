@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * A best effort to give equality between two visual states of URL text. Contains a hint that should
@@ -52,14 +51,12 @@ public class VisibleUrlText {
      */
     public static boolean isVisuallyEquivalent(
             VisibleUrlText currentVisibleUrlText, VisibleUrlText nextVisibleUrlText) {
-        // If this feature is enabled, then we only calculate the visible hint when navigating
-        // to a url with the same domain. This means the first navigation will result in a null
-        // visible hint and a screenshot being captured. If we navigate to another url with the same
-        // domain, we calculate the visible hint, but we don't have to capture a screenshot (even
-        // though the two VisibleUrlTexts aren't equal) if the visible hint is a prefix of the
-        // previous url.
-        if (ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled()
-                && TextUtils.isEmpty(currentVisibleUrlText.mVisibleTextPrefixHint)
+        // We only calculate the visible hint when navigating to a url with the same domain. This
+        // means the first navigation will result in a null visible hint and a screenshot being
+        // captured. If we navigate to another url with the same domain, we calculate the visible
+        // hint, but we don't have to capture a screenshot (even though the two VisibleUrlTexts
+        // aren't equal) if the visible hint is a prefix of the previous url.
+        if (TextUtils.isEmpty(currentVisibleUrlText.mVisibleTextPrefixHint)
                 && !TextUtils.isEmpty(nextVisibleUrlText.mVisibleTextPrefixHint)
                 && TextUtils.indexOf(
                                 currentVisibleUrlText.mUrlText,

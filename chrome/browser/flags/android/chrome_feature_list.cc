@@ -271,7 +271,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidKeyboardShortcutOpenFile,
     &kAndroidNewManagementNotice,
     &kAndroidNewTabButtonTabstripWebUI,
-    &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOmniboxFocusedNewTabPage,
     &kAndroidOpenIncognitoAsWindowRestrictions,
     &kAndroidPageInfoAsAppMenuItem,
@@ -699,7 +698,6 @@ BASE_FEATURE(kAndroidKeyboardShortcutOpenFile, base::FEATURE_DISABLED_BY_DEFAULT
 // sign-in flow on Android is replaced with the new management notice.
 BASE_FEATURE(kAndroidNewManagementNotice, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidNewTabButtonTabstripWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidOpenIncognitoAsWindowRestrictions, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPageInfoAsAppMenuItem, base::FEATURE_DISABLED_BY_DEFAULT);
