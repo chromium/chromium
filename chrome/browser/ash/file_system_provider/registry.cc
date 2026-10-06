@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -41,8 +41,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(ash::prefs::kFileSystemProviderMounted);
 }
 
-Registry::Registry(Profile* profile) : profile_(profile) {
-}
+Registry::Registry(PrefService* prefs) : prefs_(CHECK_DEREF(prefs)) {}
 
 Registry::~Registry() = default;
 
@@ -82,10 +81,7 @@ void Registry::RememberFileSystem(
   }
   file_system.Set(kPrefKeyWatchers, std::move(watchers_dict));
 
-  PrefService* const pref_service = profile_->GetPrefs();
-  CHECK(pref_service, base::NotFatalUntil::M160);
-
-  ScopedDictPrefUpdate dict_update(pref_service,
+  ScopedDictPrefUpdate dict_update(&prefs_.get(),
                                    ash::prefs::kFileSystemProviderMounted);
 
   base::DictValue* file_systems_per_extension =
@@ -96,10 +92,7 @@ void Registry::RememberFileSystem(
 
 void Registry::ForgetFileSystem(const ProviderId& provider_id,
                                 const std::string& file_system_id) {
-  PrefService* const pref_service = profile_->GetPrefs();
-  CHECK(pref_service, base::NotFatalUntil::M160);
-
-  ScopedDictPrefUpdate dict_update(pref_service,
+  ScopedDictPrefUpdate dict_update(&prefs_.get(),
                                    ash::prefs::kFileSystemProviderMounted);
 
   base::DictValue* file_systems_per_extension =
@@ -114,11 +107,8 @@ void Registry::ForgetFileSystem(const ProviderId& provider_id,
 
 std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     const ProviderId& provider_id) {
-  PrefService* const pref_service = profile_->GetPrefs();
-  CHECK(pref_service, base::NotFatalUntil::M160);
-
   const base::DictValue& file_systems =
-      pref_service->GetDict(ash::prefs::kFileSystemProviderMounted);
+      prefs_->GetDict(ash::prefs::kFileSystemProviderMounted);
 
   const base::DictValue* file_systems_per_extension =
       file_systems.FindDict(provider_id.ToString());
@@ -225,12 +215,9 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
 
 void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
                                 const Watcher& watcher) {
-  PrefService* const pref_service = profile_->GetPrefs();
-  CHECK(pref_service, base::NotFatalUntil::M160);
-
   // TODO(mtomasz): Consider optimizing it by moving information about watchers
   // or even file systems to leveldb.
-  ScopedDictPrefUpdate dict_update(pref_service,
+  ScopedDictPrefUpdate dict_update(&prefs_.get(),
                                    ash::prefs::kFileSystemProviderMounted);
 
   // All of the following checks should not happen in healthy environment.

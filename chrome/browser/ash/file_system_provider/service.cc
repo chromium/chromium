@@ -47,7 +47,7 @@ Service::Service(Profile* profile,
                  extensions::ExtensionRegistry* extension_registry)
     : profile_(profile),
       extension_registry_(extension_registry),
-      registry_(new Registry(profile)) {
+      registry_(new Registry(profile->GetPrefs())) {
   extension_registry_->AddObserver(this);
   if (chromeos::features::IsFileSystemProviderContentCacheEnabled()) {
     CHECK(profile, base::NotFatalUntil::M160);

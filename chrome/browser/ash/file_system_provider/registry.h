@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
-class Profile;
+class PrefService;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -40,7 +40,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // Remembers and restores file systems in a persistent storage.
 class Registry : public RegistryInterface {
  public:
-  explicit Registry(Profile* profile);
+  // `prefs` is the user's PrefService. It must be non-null and must outlive
+  // `this`.
+  explicit Registry(PrefService* prefs);
 
   Registry(const Registry&) = delete;
   Registry& operator=(const Registry&) = delete;
@@ -58,7 +60,7 @@ class Registry : public RegistryInterface {
                         const Watcher& watcher) override;
 
  private:
-  raw_ptr<Profile> profile_;  // Not owned.
+  const raw_ref<PrefService> prefs_;
 };
 
 }  // namespace ash::file_system_provider
