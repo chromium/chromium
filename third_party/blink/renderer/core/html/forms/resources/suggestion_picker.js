@@ -223,8 +223,15 @@ class SuggestionPicker extends Picker {
     } else if (
         entry.dataset.action ===
         SuggestionPicker.ActionNames.OPEN_CALENDAR_PICKER) {
-      openCalendarPicker();
+      window.addEventListener(
+          'didHide', SuggestionPicker.handleWindowDidHide_, false);
+      hideWindow();
     }
+  }
+
+  static handleWindowDidHide_() {
+    openCalendarPicker();
+    window.removeEventListener('didHide', SuggestionPicker.handleWindowDidHide_);
   }
 
   /**

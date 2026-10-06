@@ -26,8 +26,7 @@ function testPartiallyVisible() {
 
   function onUpdate() {
     setTimeout(function() {
-      shouldBeGreaterThan('internals.pagePopupWindow.innerWidth', '1');
-      shouldBeGreaterThan('internals.pagePopupWindow.innerHeight', '1');
+      shouldBeFalse('internals.pagePopupWindow.isWindowHidden()');
       picker.removeListener('didUpdate', onUpdate);
       finishJSTest();
     });

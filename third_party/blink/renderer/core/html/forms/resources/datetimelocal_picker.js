@@ -29,9 +29,7 @@ class DateTimeLocalPicker extends HTMLElement {
 
     this.className = DateTimeLocalPicker.ClassName;
 
-    // We own the popup size; tell the inner calendar not to resize it.
-    this.datePicker_ =
-        new CalendarPicker(config.mode, {...config, skipWindowResize: true});
+    this.datePicker_ = new CalendarPicker(config.mode, config);
     this.timePicker_ = new TimePicker(config);
     this.append(this.datePicker_.element, this.timePicker_);
 
@@ -43,7 +41,7 @@ class DateTimeLocalPicker extends HTMLElement {
     this.addEventListener('keydown', this.onKeyDown_);
     this.addEventListener('click', this.onClick_);
 
-    runOnceWhenLaidOut((event) => this.onWindowResize_(event));
+    window.addEventListener('resize', this.onWindowResize_, {once: true});
   };
 
   onKeyDown_ = (event) => {
