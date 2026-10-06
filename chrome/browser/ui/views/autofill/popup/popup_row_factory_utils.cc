@@ -1110,7 +1110,12 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
                                     FillingProduct::kAtMemory,
                                     /*filter_match=*/std::nullopt));
     }
-
+    case SuggestionType::kMerchantPromoCodeEntry: {
+      return std::make_unique<PopupRowView>(
+          a11y_selection_delegate, selection_delegate, controller, line_number,
+          CreateWalletDirectOfferRowContentView(suggestion, show_new_badge,
+                                                std::move(filter_match)));
+    }
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
@@ -1150,17 +1155,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageOffers:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
-    case SuggestionType::kMerchantPromoCodeEntry: {
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableWalletDirectOffers)) {
-        return std::make_unique<PopupRowView>(
-            a11y_selection_delegate, selection_delegate, controller,
-            line_number,
-            CreateWalletDirectOfferRowContentView(suggestion, show_new_badge,
-                                                  std::move(filter_match)));
-      }
-      [[fallthrough]];
-    }
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kOpenGmailForOtps:
     case SuggestionType::kPasswordFieldByFieldFilling:

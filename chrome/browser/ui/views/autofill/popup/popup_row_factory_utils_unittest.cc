@@ -754,20 +754,4 @@ TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferShortTextNoExtraPadding) {
   EXPECT_EQ(insets.bottom(), 0);
 }
 
-// Tests that legacy promo code suggestions (without kOfferTag icon) use
-// standard single-line rows.
-TEST_F(PopupRowFactoryUtilsTest, LegacyPromoCodeSuggestionSingleLine) {
-  EXPECT_CALL(controller(), GetMainFillingProduct())
-      .WillRepeatedly(testing::Return(FillingProduct::kMerchantPromoCode));
-
-  Suggestion suggestion(u"PROMO123", SuggestionType::kMerchantPromoCodeEntry);
-  suggestion.icon = Suggestion::Icon::kNoIcon;
-  ShowSuggestion(suggestion);
-
-  views::Label* label =
-      FindLabelWithText(&row_view().GetContentView(), u"PROMO123");
-  ASSERT_THAT(label, NotNull());
-  EXPECT_FALSE(label->GetMultiLine());
-}
-
 }  // namespace autofill
