@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 
 namespace remoting::internal {
 
@@ -16,8 +17,7 @@ namespace {
 // proto, we just use the same empty string here and return it as a const& so
 // callers can't modify or mess with it.
 const std::string& GetEmptyStringRef() {
-  static std::string empty;
-  return empty;
+  return base::EmptyString();
 }
 }  // namespace
 

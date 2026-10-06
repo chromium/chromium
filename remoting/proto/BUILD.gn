@@ -58,10 +58,6 @@ source_set("internal_structs") {
     "//remoting/base:errors",
     "//remoting/base:session_policies",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
@@ -78,10 +74,6 @@ source_set("internal_stubs") {
     ":proto",
     "//base",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("error_code_proto") {
