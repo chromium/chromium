@@ -46,10 +46,13 @@ using optimization_guide::OptimizationGuideModelExecutionResultCallback;
 using optimization_guide::proto::AutofillAiTypeRequest;
 using optimization_guide::proto::AutofillAiTypeResponse;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::An;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Pointee;
+using ::testing::Property;
 using MockOnModelExecutedCallback =
     base::MockCallback<base::OnceCallback<void(const FormGlobalId&)>>;
 
@@ -396,14 +399,16 @@ TEST_F(AutofillAiModelExecutorImplTest, MqlsUpload) {
           /*log_entry=*/nullptr));
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 
-  const std::vector<
-      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
-      uploaded_logs = mqls_uploader().uploaded_logs();
-  ASSERT_EQ(uploaded_logs.size(), 1u);
-  const optimization_guide::proto::FormsClassificationsLoggingData& log =
-      uploaded_logs[0]->forms_classifications();
-  EXPECT_THAT(log.request(), EqualsProto(expected_request));
-  EXPECT_THAT(log.response(), EqualsProto(response));
+  EXPECT_THAT(
+      mqls_uploader().uploaded_logs(),
+      ElementsAre(Pointee(Property(
+          &optimization_guide::proto::LogAiDataRequest::forms_classifications,
+          AllOf(Property(&optimization_guide::proto::
+                             FormsClassificationsLoggingData::request,
+                         EqualsProto(expected_request)),
+                Property(&optimization_guide::proto::
+                             FormsClassificationsLoggingData::response,
+                         EqualsProto(response)))))));
 }
 
 // Tests that no MQLS log is sent if the server returned with an error.
