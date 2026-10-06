@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
@@ -21,45 +22,14 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/sync_tab_context/mock_tab_context_sync_service.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
+#include "components/sync_tab_context/upload_outcome.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace context_hub {
-
-namespace {
-
-class MockTabContextSyncService
-    : public sync_tab_context::TabContextSyncService {
- public:
-  MOCK_METHOD(std::optional<sync_tab_context::ContainerId>,
-              CreateContainer,
-              (),
-              (override));
-  MOCK_METHOD(bool,
-              UploadPageContext,
-              (const sync_tab_context::ContainerId&,
-               const std::string&,
-               std::string),
-              (override));
-  MOCK_METHOD(void,
-              GetContainerAccessToken,
-              (const sync_tab_context::ContainerId&,
-               base::OnceCallback<void(std::optional<std::string>)>),
-              (override));
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetSyncControllerDelegateForContainer,
-              (),
-              (override));
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetSyncControllerDelegateForItem,
-              (),
-              (override));
-  MOCK_METHOD(bool, IsActiveForTesting, (), (const, override));
-};
-
-}  // namespace
 
 class ContextHubServiceFactoryTest : public testing::Test {
  public:
@@ -216,13 +186,15 @@ TEST_F(ContextHubServiceFactoryTest,
       TabContextSyncServiceFactory::GetInstance(),
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
-        auto mock =
-            std::make_unique<testing::NiceMock<MockTabContextSyncService>>();
+        auto mock = std::make_unique<
+            testing::NiceMock<sync_tab_context::MockTabContextSyncService>>();
         ON_CALL(*mock, CreateContainer())
             .WillByDefault(testing::Return(
                 sync_tab_context::ContainerId(base::Uuid::GenerateRandomV4())));
-        ON_CALL(*mock, UploadPageContext(testing::_, testing::_, testing::_))
-            .WillByDefault(testing::Return(true));
+        ON_CALL(*mock, UploadPageContext(testing::_, testing::_, testing::_,
+                                         testing::_))
+            .WillByDefault(base::test::RunOnceCallbackRepeatedly<3>(
+                sync_tab_context::UploadOutcome::kSucceeded));
         return mock;
       }));
   std::unique_ptr<TestingProfile> profile = builder.Build();

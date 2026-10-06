@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/context_hub/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
+#include "components/sync_tab_context/upload_outcome.h"
 
 namespace context_hub {
 
@@ -105,13 +108,20 @@ void TabContextSyncMemoryBank::SaveMemoryBankEntry(
   // All other fields and annotations (URL, tab title, timestamp, tags, note,
   // collection) are only stored in the local in-memory LRU cache and will not
   // be synced or persisted across restarts.
-  bool upload_success = tab_context_sync_service_->UploadPageContext(
-      *container_id, base::NumberToString(entry_id), std::move(payload));
-
   observers_.Notify(&Observer::OnMemoryBankEntryAdded, it->second);
-  if (callback) {
-    std::move(callback).Run(upload_success);
-  }
+  base::OnceCallback<void(sync_tab_context::UploadOutcome)> upload_callback =
+      callback
+          ? base::BindOnce(
+                [](OperationCompleteCallback callback,
+                   sync_tab_context::UploadOutcome outcome) {
+                  std::move(callback).Run(
+                      outcome == sync_tab_context::UploadOutcome::kSucceeded);
+                },
+                std::move(callback))
+          : base::DoNothing();
+  tab_context_sync_service_->UploadPageContext(
+      *container_id, base::NumberToString(entry_id), std::move(payload),
+      std::move(upload_callback));
 }
 
 void TabContextSyncMemoryBank::UpdateEntryAnnotations(

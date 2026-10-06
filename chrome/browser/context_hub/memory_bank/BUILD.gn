@@ -73,6 +73,7 @@ source_set("unit_tests") {
     "//chrome/browser/context_hub/storage",
     "//components/prefs:test_support",
     "//components/sync_tab_context",
+    "//components/sync_tab_context:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

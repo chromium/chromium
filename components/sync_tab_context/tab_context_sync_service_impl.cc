@@ -134,18 +134,6 @@ std::optional<ContainerId> TabContextSyncServiceImpl::CreateContainer() {
   return container_bridge_->CreateContainer();
 }
 
-bool TabContextSyncServiceImpl::UploadPageContext(
-    const ContainerId& container_id,
-    const std::string& entry_id,
-    std::string page_context) {
-  if (!container_bridge_->GetEncryptionKeyForContainer(container_id)) {
-    return false;
-  }
-  UploadPageContext(container_id, entry_id, std::move(page_context),
-                    base::DoNothing());
-  return true;
-}
-
 void TabContextSyncServiceImpl::UploadPageContext(
     const ContainerId& container_id,
     const std::string& entry_id,

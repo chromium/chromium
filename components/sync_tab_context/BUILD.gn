@@ -54,6 +54,22 @@ static_library("sync_tab_context") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_tab_context_sync_service.cc",
+    "mock_tab_context_sync_service.h",
+  ]
+
+  public_deps = [
+    ":sync_tab_context",
+    "//base",
+    "//components/sync/model",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

@@ -26,6 +26,7 @@
 #include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "components/sync_tab_context/http_rpc_constants.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
+#include "components/sync_tab_context/upload_outcome.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -50,9 +51,12 @@ class FakeTabContextSyncService
     NOTREACHED();
   }
 
-  bool UploadPageContext(const sync_tab_context::ContainerId& container_id,
-                         const std::string& entry_id,
-                         std::string page_context) override {
+  void UploadPageContext(
+      const sync_tab_context::ContainerId& container_id,
+      const std::string& entry_id,
+      std::string page_context,
+      base::OnceCallback<void(sync_tab_context::UploadOutcome)> callback)
+      override {
     NOTREACHED();
   }
 

@@ -37,22 +37,15 @@ class TabContextSyncService : public KeyedService {
   // Returns nullopt in case of failure.
   virtual std::optional<ContainerId> CreateContainer() = 0;
 
-  // Deprecated; use the overload accepting a completion callback instead.
-  virtual bool UploadPageContext(const ContainerId& container_id,
-                                 const std::string& entry_id,
-                                 std::string page_context) = 0;
-
   // Inserts or updates an entry into a container identified via
   // `container_id`. `entry_id` acts as uniqueness key within the container.
   // Invokes `callback` with `UploadOutcome::kSucceeded` once the item is
   // committed to the server, or `UploadOutcome::kFailed` on failure.
-  // Temporarily provides a default implementation until all subclasses are
-  // migrated.
   virtual void UploadPageContext(
       const ContainerId& container_id,
       const std::string& entry_id,
       std::string page_context,
-      base::OnceCallback<void(UploadOutcome)> callback);
+      base::OnceCallback<void(UploadOutcome)> callback) = 0;
 
   // Asynchronously returns an access token that can be used to access the
   // contents of a container. The precise means the token may be consumed is

@@ -42,9 +42,6 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
 
   // TabContextSyncService implementation.
   std::optional<ContainerId> CreateContainer() override;
-  bool UploadPageContext(const ContainerId& container_id,
-                         const std::string& entry_id,
-                         std::string page_context) override;
   void UploadPageContext(
       const ContainerId& container_id,
       const std::string& entry_id,
