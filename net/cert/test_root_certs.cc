@@ -75,9 +75,8 @@ bool TestRootCerts::Add(X509Certificate* certificate,
 
   bssl::CertErrors errors;
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(certificate->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), &errors);
+      x509_util::CreateParsedCertificate(
+          bssl::UpRef(certificate->cert_buffer()), &errors);
   if (!parsed) {
     return false;
   }

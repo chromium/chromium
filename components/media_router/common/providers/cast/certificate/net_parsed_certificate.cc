@@ -24,9 +24,8 @@ namespace openscreen::cast {
 ErrorOr<std::unique_ptr<ParsedCertificate>> ParsedCertificate::ParseFromDER(
     openscreen::ByteView der_cert) {
   std::shared_ptr<const bssl::ParsedCertificate> cert =
-      bssl::ParsedCertificate::Create(
-          net::x509_util::CreateCryptoBuffer(der_cert),
-          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+      net::x509_util::CreateParsedCertificate(
+          net::x509_util::CreateCryptoBuffer(der_cert), nullptr);
   if (!cert) {
     return Error::Code::kErrCertsParse;
   }

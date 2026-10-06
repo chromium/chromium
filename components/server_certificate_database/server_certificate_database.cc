@@ -228,9 +228,8 @@ ServerCertificateDatabase::GetUserCertificateTrust(
     case CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED:
       return bssl::CertificateTrustType::DISTRUSTED;
     case CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED: {
-      auto parsed = bssl::ParsedCertificate::Create(
-          net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
-          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+      auto parsed = net::x509_util::CreateParsedCertificate(
+          net::x509_util::CreateCryptoBuffer(cert_info.der_cert), nullptr);
 
       if (!parsed) {
         return std::nullopt;

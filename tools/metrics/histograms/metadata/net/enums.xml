@@ -1217,6 +1217,17 @@ historical analysis. -->
   <int value="3" label="Chain contained only one certificate"/>
 </enum>
 
+<!-- LINT.IfChange(NetCertificateSerialNumberType) -->
+
+<enum name="NetCertificateSerialNumberType">
+  <int value="0" label="Positive"/>
+  <int value="1" label="Zero"/>
+  <int value="2" label="Negative"/>
+  <int value="3" label="Invalid"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cert/x509_util.h:SerialNumberType) -->
+
 <!-- LINT.IfChange(NetCertVerifier1QwacResult) -->
 
 <enum name="NetCertVerifier1QwacResult">

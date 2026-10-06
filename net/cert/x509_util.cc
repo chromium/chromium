@@ -18,6 +18,7 @@
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -217,9 +218,7 @@ bssl::ParsedCertificateList ParseAllValidCerts(
   bssl::ParsedCertificateList parsed_certs;
   for (const auto& x509_cert : x509_certs) {
     std::shared_ptr<const bssl::ParsedCertificate> cert =
-        bssl::ParsedCertificate::Create(
-            bssl::UpRef(x509_cert->cert_buffer()),
-            net::x509_util::DefaultParseCertificateOptions(), nullptr);
+        CreateParsedCertificate(bssl::UpRef(x509_cert->cert_buffer()), nullptr);
     if (cert) {
       parsed_certs.push_back(std::move(cert));
     }
@@ -543,6 +542,37 @@ bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
   // separates the two.
   options.allow_invalid_serial_numbers = true;
   return options;
+}
+
+std::shared_ptr<const bssl::ParsedCertificate> CreateParsedCertificate(
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
+    bssl::CertErrors* errors) {
+  std::shared_ptr<const bssl::ParsedCertificate> cert =
+      bssl::ParsedCertificate::Create(std::move(cert_buffer),
+                                      DefaultParseCertificateOptions(), errors);
+  if (!cert) {
+    return nullptr;
+  }
+
+  bssl::der::Input serial = cert->tbs().serial_number;
+  base::UmaHistogramCounts100("Net.Certificate.SerialNumberLength",
+                              serial.size());
+
+  SerialNumberType type;
+  bool negative;
+  static constexpr uint8_t kZero[] = {0};
+  if (!bssl::der::IsValidInteger(serial, &negative)) {
+    type = SerialNumberType::kInvalid;
+  } else if (negative) {
+    type = SerialNumberType::kNegative;
+  } else if (serial == bssl::der::Input(kZero)) {
+    type = SerialNumberType::kZero;
+  } else {
+    type = SerialNumberType::kPositive;
+  }
+  base::UmaHistogramEnumeration("Net.Certificate.SerialNumberType", type);
+
+  return cert;
 }
 
 SHA256HashValue CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer) {

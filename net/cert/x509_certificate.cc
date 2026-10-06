@@ -686,9 +686,8 @@ SHA256HashValue X509Certificate::CalculateChainFingerprint256() const {
 // static
 bool X509Certificate::IsSelfSigned(CRYPTO_BUFFER* cert_buffer) {
   std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(cert_buffer), x509_util::DefaultParseCertificateOptions(),
-          /*errors=*/nullptr);
+      x509_util::CreateParsedCertificate(bssl::UpRef(cert_buffer),
+                                         /*errors=*/nullptr);
   if (!parsed_cert) {
     return false;
   }

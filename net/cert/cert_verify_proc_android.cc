@@ -68,9 +68,14 @@ bool PerformAIAFetchAndAddResultToVector(
   if (error != OK)
     return false;
   bssl::CertErrors errors;
-  return bssl::ParsedCertificate::CreateAndAddToVector(
-      x509_util::CreateCryptoBuffer(aia_fetch_bytes),
-      x509_util::DefaultParseCertificateOptions(), cert_list, &errors);
+  std::shared_ptr<const bssl::ParsedCertificate> cert =
+      x509_util::CreateParsedCertificate(
+          x509_util::CreateCryptoBuffer(aia_fetch_bytes), &errors);
+  if (!cert) {
+    return false;
+  }
+  cert_list->push_back(std::move(cert));
+  return true;
 }
 
 // Uses android::VerifyX509CertChain() to verify the certificates in |certs| for
@@ -242,11 +247,13 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
   bssl::CertErrors errors;
   bssl::ParsedCertificateList certs;
   for (const auto& cert : cert_bytes) {
-    if (!bssl::ParsedCertificate::CreateAndAddToVector(
-            x509_util::CreateCryptoBuffer(cert),
-            x509_util::DefaultParseCertificateOptions(), &certs, &errors)) {
+    std::shared_ptr<const bssl::ParsedCertificate> parsed =
+        x509_util::CreateParsedCertificate(x509_util::CreateCryptoBuffer(cert),
+                                           &errors);
+    if (!parsed) {
       return android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT;
     }
+    certs.push_back(std::move(parsed));
   }
 
   if (certs.empty()) {

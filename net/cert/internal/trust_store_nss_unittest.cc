@@ -63,9 +63,8 @@ std::shared_ptr<const bssl::ParsedCertificate> GetASSLTrustedBuiltinRoot() {
   if (!ssl_trusted_root) {
     return nullptr;
   }
-  return bssl::ParsedCertificate::Create(
-      bssl::UpRef(ssl_trusted_root->cert_buffer()),
-      x509_util::DefaultParseCertificateOptions(), &parsing_errors);
+  return x509_util::CreateParsedCertificate(
+      bssl::UpRef(ssl_trusted_root->cert_buffer()), &parsing_errors);
 }
 
 std::optional<unsigned> GetNSSTrustForCert(
@@ -411,9 +410,8 @@ TEST_F(TrustStoreNSSTest, GetAllUserAddedCertsManualTrustClientCert) {
                                      "client_1.pk8", test_nssdb_.slot());
   ASSERT_TRUE(client_cert);
   std::shared_ptr<const bssl::ParsedCertificate> parsed_client_cert =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(client_cert->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), nullptr);
+      x509_util::CreateParsedCertificate(
+          bssl::UpRef(client_cert->cert_buffer()), nullptr);
   ASSERT_TRUE(parsed_client_cert);
   TrustCert(parsed_client_cert.get());
 
@@ -664,9 +662,8 @@ TEST_F(TrustStoreNSSTest, TrustedCA) {
 TEST_F(TrustStoreNSSTest, TrustedCertWithDifferentKey) {
   auto [leaf_builder, root_builder] = CertBuilder::CreateSimpleChain2();
 
-  auto trusted_root = bssl::ParsedCertificate::Create(
-      root_builder->DupCertBuffer(),
-      x509_util::DefaultParseCertificateOptions(), nullptr);
+  auto trusted_root = x509_util::CreateParsedCertificate(
+      root_builder->DupCertBuffer(), nullptr);
   ASSERT_TRUE(trusted_root);
   AddCertToNSSSlotWithTrust(trusted_root.get(), test_nssdb_.slot(),
                             bssl::CertificateTrustType::TRUSTED_ANCHOR);
@@ -674,9 +671,8 @@ TEST_F(TrustStoreNSSTest, TrustedCertWithDifferentKey) {
   // Regenerate the private key of the cert builder to create a similar cert
   // where the only difference is the SPKI (and the self-signature).
   root_builder->GenerateECKey();
-  auto imposter_root = bssl::ParsedCertificate::Create(
-      root_builder->DupCertBuffer(),
-      x509_util::DefaultParseCertificateOptions(), nullptr);
+  auto imposter_root = x509_util::CreateParsedCertificate(
+      root_builder->DupCertBuffer(), nullptr);
   ASSERT_TRUE(imposter_root);
 
   EXPECT_TRUE(HasTrust({trusted_root}, ExpectedTrustForAnchor()));

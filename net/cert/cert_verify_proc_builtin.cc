@@ -1172,9 +1172,7 @@ class TwoQwacPathBuilderDelegateImpl : public QwacPathBuilderDelegateImpl {
 std::shared_ptr<const bssl::ParsedCertificate> ParseCertificateFromBuffer(
     CRYPTO_BUFFER* cert_handle,
     bssl::CertErrors* errors) {
-  return bssl::ParsedCertificate::Create(
-      bssl::UpRef(cert_handle), x509_util::DefaultParseCertificateOptions(),
-      errors);
+  return x509_util::CreateParsedCertificate(bssl::UpRef(cert_handle), errors);
 }
 
 class CertVerifyProcBuiltin : public CertVerifyProc {

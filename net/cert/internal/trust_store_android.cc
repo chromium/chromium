@@ -29,9 +29,8 @@ class TrustStoreAndroid::Impl
 
     for (auto& root : roots) {
       bssl::CertErrors errors;
-      auto parsed = bssl::ParsedCertificate::Create(
-          net::x509_util::CreateCryptoBuffer(root),
-          net::x509_util::DefaultParseCertificateOptions(), &errors);
+      auto parsed = net::x509_util::CreateParsedCertificate(
+          net::x509_util::CreateCryptoBuffer(root), &errors);
       if (!parsed) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;

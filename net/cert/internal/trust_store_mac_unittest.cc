@@ -289,11 +289,10 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     // TrustStoreMac. The parsing options set here need to match the ones used
     // in trust_store_mac.cc.
     std::shared_ptr<const bssl::ParsedCertificate> cert =
-        bssl::ParsedCertificate::Create(
-            x509_util::CreateCryptoBuffer(cert_der),
-            x509_util::DefaultParseCertificateOptions(), &errors);
+        x509_util::CreateParsedCertificate(
+            x509_util::CreateCryptoBuffer(cert_der), &errors);
     if (!cert) {
-      LOG(WARNING) << "bssl::ParseCertificate::Create " << hash_text
+      LOG(WARNING) << "x509_util::CreateParsedCertificate " << hash_text
                    << " failed:\n"
                    << errors.ToDebugString();
       continue;

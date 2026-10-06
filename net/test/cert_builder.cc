@@ -1079,11 +1079,19 @@ void CertBuilder::SetTBSSignatureAlgorithmTLV(
 
 void CertBuilder::SetSerialNumber(uint64_t serial_number) {
   serial_number_ = serial_number;
+  serial_number_bytes_.reset();
+  Invalidate();
+}
+
+void CertBuilder::SetSerialNumber(base::span<const uint8_t> serial_number) {
+  serial_number_ = 0;
+  serial_number_bytes_ = base::ToVector(serial_number);
   Invalidate();
 }
 
 void CertBuilder::SetRandomSerialNumber() {
   serial_number_ = base::RandUint64();
+  serial_number_bytes_.reset();
   Invalidate();
 }
 
@@ -1110,6 +1118,7 @@ const std::string& CertBuilder::GetSubject() {
 }
 
 uint64_t CertBuilder::GetSerialNumber() {
+  CHECK(!serial_number_bytes_.has_value());
   if (!serial_number_)
     serial_number_ = base::RandUint64();
   return serial_number_;
@@ -1445,7 +1454,12 @@ void CertBuilder::BuildTBSCertificate(std::string_view signature_algorithm_tlv,
         NOTREACHED();
     }
   }
-  ASSERT_TRUE(CBB_add_asn1_uint64(&tbs_cert, GetSerialNumber()));
+  if (serial_number_bytes_.has_value()) {
+    ASSERT_TRUE(
+        CBBAddAsn1Element(&tbs_cert, CBS_ASN1_INTEGER, *serial_number_bytes_));
+  } else {
+    ASSERT_TRUE(CBB_add_asn1_uint64(&tbs_cert, GetSerialNumber()));
+  }
   ASSERT_TRUE(CBBAddBytes(&tbs_cert, signature_algorithm_tlv));
   ASSERT_TRUE(CBBAddBytes(&tbs_cert, issuer_tlv_.has_value()
                                          ? *issuer_tlv_

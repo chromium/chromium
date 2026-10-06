@@ -42,9 +42,7 @@ std::shared_ptr<const bssl::ParsedCertificate> ToParsedCertificate(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer) {
   bssl::CertErrors errors;
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
-      bssl::ParsedCertificate::Create(
-          std::move(cert_buffer), x509_util::DefaultParseCertificateOptions(),
-          &errors);
+      x509_util::CreateParsedCertificate(std::move(cert_buffer), &errors);
   EXPECT_TRUE(parsed) << errors.ToDebugString();
   return parsed;
 }

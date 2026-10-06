@@ -211,9 +211,8 @@ std::optional<ChromeRootStoreData::Anchor> CreateChromeRootStoreDataAnchor(
     return std::nullopt;
   }
 
-  auto parsed = bssl::ParsedCertificate::Create(
-      net::x509_util::CreateCryptoBuffer(anchor.der()),
-      net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  auto parsed = net::x509_util::CreateParsedCertificate(
+      net::x509_util::CreateCryptoBuffer(anchor.der()), nullptr);
   if (!parsed) {
     LOG(ERROR) << "Error parsing cert for update";
     return std::nullopt;
@@ -323,8 +322,7 @@ ChromeRootStoreData::ChromeRootStoreData(
       cert = x509_util::CreateCryptoBuffer(cert_info.root_cert_der);
     }
     bssl::CertErrors errors;
-    auto parsed = bssl::ParsedCertificate::Create(
-        std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
+    auto parsed = x509_util::CreateParsedCertificate(std::move(cert), &errors);
     // There should always be a valid cert, because we should be parsing Chrome
     // Root Store static data compiled in.
     CHECK(parsed);
@@ -346,8 +344,7 @@ ChromeRootStoreData::ChromeRootStoreData(
       cert = x509_util::CreateCryptoBuffer(cert_bytes);
     }
     bssl::CertErrors errors;
-    auto parsed = bssl::ParsedCertificate::Create(
-        std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
+    auto parsed = x509_util::CreateParsedCertificate(std::move(cert), &errors);
     CHECK(parsed);
     // crs_root_id is not populated for eutl certs, since it isn't quite the
     // same thing. If we want to add an eutl usage histogram, we'd need to

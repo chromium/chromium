@@ -171,6 +171,25 @@ NET_EXPORT bool CreateCertBuffersFromPKCS7Bytes(
 // Returns the default ParseCertificateOptions for the net stack.
 NET_EXPORT bssl::ParseCertificateOptions DefaultParseCertificateOptions();
 
+// Values for the Net.Certificate.SerialNumberType histogram. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+// LINT.IfChange(SerialNumberType)
+enum class SerialNumberType {
+  kPositive = 0,
+  kZero = 1,
+  kNegative = 2,
+  kInvalid = 3,
+  kMaxValue = kInvalid,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetCertificateSerialNumberType)
+
+// Parses a certificate from `cert_buffer` with
+// `DefaultParseCertificateOptions()` and records histograms on the certificate.
+NET_EXPORT std::shared_ptr<const bssl::ParsedCertificate>
+CreateParsedCertificate(bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
+                        bssl::CertErrors* errors);
+
 // Returns the SHA-256 hash of the SubjectPublicKeyInfo of the certificate in
 // |buffer|. CHECK-fails if |buffer| is not a valid certificate, so don't use
 // this to parse certificates in production code.

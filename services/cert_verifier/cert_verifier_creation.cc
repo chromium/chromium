@@ -173,9 +173,8 @@ ConvertMojoListToInternalList(
         net::x509_util::CreateCryptoBuffer(
             cert_with_constraints_mojo->certificate);
     std::shared_ptr<const bssl::ParsedCertificate> cert =
-        bssl::ParsedCertificate::Create(
-            std::move(cert_buffer),
-            net::x509_util::DefaultParseCertificateOptions(), nullptr);
+        net::x509_util::CreateParsedCertificate(std::move(cert_buffer),
+                                                nullptr);
     if (!cert) {
       continue;
     }

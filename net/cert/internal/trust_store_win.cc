@@ -469,9 +469,11 @@ class TrustStoreWin::Impl {
       bssl::UniquePtr<CRYPTO_BUFFER> der_crypto = x509_util::CreateCryptoBuffer(
           x509_util::CertContextAsSpan(cert_from_store));
       bssl::CertErrors errors;
-      bssl::ParsedCertificate::CreateAndAddToVector(
-          std::move(der_crypto), x509_util::DefaultParseCertificateOptions(),
-          issuers, &errors);
+      std::shared_ptr<const bssl::ParsedCertificate> parsed =
+          x509_util::CreateParsedCertificate(std::move(der_crypto), &errors);
+      if (parsed) {
+        issuers->push_back(std::move(parsed));
+      }
     }
   }
 

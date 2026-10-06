@@ -67,9 +67,8 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
   ASSERT_GE(certs.size(), 1u);
 
   std::shared_ptr<const bssl::ParsedCertificate> root =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(certs[0]->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), nullptr);
+      x509_util::CreateParsedCertificate(bssl::UpRef(certs[0]->cert_buffer()),
+                                         nullptr);
   ASSERT_TRUE(root);
 
   auto test_system_trust_store = std::make_unique<bssl::TrustStoreInMemory>();
@@ -111,9 +110,8 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
   ASSERT_GE(certs.size(), 1u);
 
   std::shared_ptr<const bssl::ParsedCertificate> root =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(certs[0]->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), nullptr);
+      x509_util::CreateParsedCertificate(bssl::UpRef(certs[0]->cert_buffer()),
+                                         nullptr);
   ASSERT_TRUE(root);
 
   auto test_system_trust_store = std::make_unique<bssl::TrustStoreInMemory>();
@@ -197,9 +195,8 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
     // The traditional anchor and MTC anchor that were added from the protos
     // should be recognized as known roots.
     std::shared_ptr<const bssl::ParsedCertificate> parsed_root =
-        bssl::ParsedCertificate::Create(
-            bssl::UpRef(root->GetCertBuffer()),
-            x509_util::DefaultParseCertificateOptions(), nullptr);
+        x509_util::CreateParsedCertificate(bssl::UpRef(root->GetCertBuffer()),
+                                           nullptr);
     ASSERT_TRUE(parsed_root);
     EXPECT_TRUE(system_trust_store->IsKnownRoot(parsed_root.get()));
 
@@ -215,9 +212,8 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
     // A different anchor and MTC anchor should not be known roots.
     auto [unused_leaf2, root2] = net::CertBuilder::CreateSimpleChain2();
     std::shared_ptr<const bssl::ParsedCertificate> parsed_root2 =
-        bssl::ParsedCertificate::Create(
-            bssl::UpRef(root2->GetCertBuffer()),
-            x509_util::DefaultParseCertificateOptions(), nullptr);
+        x509_util::CreateParsedCertificate(bssl::UpRef(root2->GetCertBuffer()),
+                                           nullptr);
     ASSERT_TRUE(parsed_root2);
     EXPECT_FALSE(system_trust_store->IsKnownRoot(parsed_root2.get()));
 

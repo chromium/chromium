@@ -472,9 +472,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     std::vector<std::vector<uint8_t>> distrusted_spkis;
     for (const auto& x509_cert : additional_distrusted_certificates) {
       std::shared_ptr<const bssl::ParsedCertificate> cert =
-          bssl::ParsedCertificate::Create(
+          net::x509_util::CreateParsedCertificate(
               bssl::UpRef(x509_cert->cert_buffer()),
-              net::x509_util::DefaultParseCertificateOptions(),
               /*errors=*/nullptr);
       EXPECT_TRUE(cert);
       distrusted_spkis.push_back(base::ToVector(cert->tbs().spki_tlv));
@@ -2536,9 +2535,8 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithOutsideDNSConstraints) {
   CertVerifyProc::InstanceParams instance_params;
 
   std::shared_ptr<const bssl::ParsedCertificate> root_cert =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
-          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+      net::x509_util::CreateParsedCertificate(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()), nullptr);
   ASSERT_TRUE(root_cert);
   CertVerifyProc::CertificateWithConstraints cert_with_constraints;
   cert_with_constraints.certificate = std::move(root_cert);
@@ -2568,9 +2566,8 @@ TEST_F(CertVerifyProcBuiltinTest,
   CertVerifyProc::InstanceParams instance_params;
 
   std::shared_ptr<const bssl::ParsedCertificate> root_cert =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
-          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+      net::x509_util::CreateParsedCertificate(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()), nullptr);
   ASSERT_TRUE(root_cert);
   CertVerifyProc::CertificateWithConstraints cert_with_constraints;
   cert_with_constraints.certificate = std::move(root_cert);

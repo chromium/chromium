@@ -27,9 +27,10 @@ const int kMaxFetchesPerCert = 5;
 bool ParseCertFromDer(base::span<const uint8_t> data,
                       bssl::ParsedCertificateList* results) {
   bssl::CertErrors errors;
-  if (!bssl::ParsedCertificate::CreateAndAddToVector(
-          x509_util::CreateCryptoBuffer(data),
-          x509_util::DefaultParseCertificateOptions(), results, &errors)) {
+  std::shared_ptr<const bssl::ParsedCertificate> cert =
+      x509_util::CreateParsedCertificate(x509_util::CreateCryptoBuffer(data),
+                                         &errors);
+  if (!cert) {
     // TODO(crbug.com/41267838): propagate error info.
     // TODO(mattm): this creates misleading log spam if one of the other Parse*
     // methods is actually able to parse the data.
@@ -39,6 +40,7 @@ bool ParseCertFromDer(base::span<const uint8_t> data,
     return false;
   }
 
+  results->push_back(std::move(cert));
   return true;
 }
 
@@ -56,14 +58,15 @@ bool ParseCertsFromCms(base::span<const uint8_t> data,
   bool any_succeeded = false;
   for (auto& cert_buffer : cert_buffers) {
     bssl::CertErrors errors;
-    if (!bssl::ParsedCertificate::CreateAndAddToVector(
-            std::move(cert_buffer), x509_util::DefaultParseCertificateOptions(),
-            results, &errors)) {
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        x509_util::CreateParsedCertificate(std::move(cert_buffer), &errors);
+    if (!cert) {
       // TODO(crbug.com/41267838): propagate error info.
       LOG(ERROR) << "Error parsing cert extracted from AIA PKCS7:\n"
                  << errors.ToDebugString();
       continue;
     }
+    results->push_back(std::move(cert));
     any_succeeded = true;
   }
   return any_succeeded;

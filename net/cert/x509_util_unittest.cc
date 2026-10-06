@@ -10,10 +10,12 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "net/cert/x509_certificate.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/key_util.h"
 #include "net/test/test_data_directory.h"
@@ -999,6 +1001,60 @@ TEST(X509UtilTest, TrustAnchorIDsToString) {
   };
   EXPECT_EQ("44363.48.7, 44363.48.7.127",
             TrustAnchorIDsToString(trust_anchor_ids));
+}
+
+TEST(X509UtilTest, CreateParsedCertificateHistograms) {
+  const struct {
+    std::vector<uint8_t> serial;
+    SerialNumberType expected_type;
+  } kTests[] = {
+      // Positive serial numbers.
+      {{0x01}, SerialNumberType::kPositive},
+      {{0x7f}, SerialNumberType::kPositive},
+      {{0x00, 0x80}, SerialNumberType::kPositive},
+      {std::vector<uint8_t>(21, 0x01), SerialNumberType::kPositive},
+
+      // Zero serial number.
+      {{0x00}, SerialNumberType::kZero},
+
+      // Negative serial numbers.
+      {{0x80}, SerialNumberType::kNegative},
+      {{0xff}, SerialNumberType::kNegative},
+      {{0x80, 0x01}, SerialNumberType::kNegative},
+      {{0xff, 0x7f}, SerialNumberType::kNegative},
+
+      // Invalid (empty or non-minimally encoded) serial numbers.
+      {{}, SerialNumberType::kInvalid},
+      {{0x00, 0x00}, SerialNumberType::kInvalid},
+      {{0x00, 0x01}, SerialNumberType::kInvalid},
+      {{0x00, 0x7f}, SerialNumberType::kInvalid},
+      {{0xff, 0x80}, SerialNumberType::kInvalid},
+      {{0xff, 0xff}, SerialNumberType::kInvalid},
+  };
+
+  std::unique_ptr<CertBuilder> builder =
+      std::move(CertBuilder::CreateSimpleChain(1)[0]);
+  for (const auto& test : kTests) {
+    base::HistogramTester histogram_tester;
+    builder->SetSerialNumber(test.serial);
+
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        CreateParsedCertificate(builder->DupCertBuffer(), nullptr);
+    ASSERT_TRUE(cert);
+
+    histogram_tester.ExpectUniqueSample("Net.Certificate.SerialNumberLength",
+                                        test.serial.size(), 1);
+    histogram_tester.ExpectUniqueSample("Net.Certificate.SerialNumberType",
+                                        test.expected_type, 1);
+  }
+
+  // Failed parses should not record histograms.
+  base::HistogramTester histogram_tester;
+  static const uint8_t kInvalidCert[] = {0x30, 0x00};
+  EXPECT_FALSE(
+      CreateParsedCertificate(CreateCryptoBuffer(kInvalidCert), nullptr));
+  histogram_tester.ExpectTotalCount("Net.Certificate.SerialNumberLength", 0);
+  histogram_tester.ExpectTotalCount("Net.Certificate.SerialNumberType", 0);
 }
 
 }  // namespace net::x509_util

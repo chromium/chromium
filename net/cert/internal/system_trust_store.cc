@@ -76,9 +76,8 @@ class PemFileCertStore {
 
     for (const auto& cert : certs) {
       bssl::CertErrors errors;
-      auto parsed = bssl::ParsedCertificate::Create(
-          bssl::UpRef(cert->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), &errors);
+      auto parsed = x509_util::CreateParsedCertificate(
+          bssl::UpRef(cert->cert_buffer()), &errors);
       if (!parsed) {
         LOG(ERROR) << file_name << ": " << errors.ToDebugString();
         continue;
@@ -308,9 +307,8 @@ class FuchsiaSystemCerts {
 
     for (const auto& cert : certs) {
       bssl::CertErrors errors;
-      auto parsed = bssl::ParsedCertificate::Create(
-          bssl::UpRef(cert->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), &errors);
+      auto parsed = x509_util::CreateParsedCertificate(
+          bssl::UpRef(cert->cert_buffer()), &errors);
       CHECK(parsed) << errors.ToDebugString();
       system_trust_store_.AddTrustAnchor(std::move(parsed));
     }

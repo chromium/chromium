@@ -368,9 +368,7 @@ class TrustDomainCacheFullCerts {
           base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
       std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-          bssl::ParsedCertificate::Create(
-              std::move(buffer), x509_util::DefaultParseCertificateOptions(),
-              &errors);
+          x509_util::CreateParsedCertificate(std::move(buffer), &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
@@ -761,9 +759,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
           base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
       std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-          bssl::ParsedCertificate::Create(
-              std::move(buffer), x509_util::DefaultParseCertificateOptions(),
-              &errors);
+          x509_util::CreateParsedCertificate(std::move(buffer), &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
@@ -926,9 +922,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
           base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
       std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-          bssl::ParsedCertificate::Create(
-              std::move(buffer), x509_util::DefaultParseCertificateOptions(),
-              &errors);
+          x509_util::CreateParsedCertificate(std::move(buffer), &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;

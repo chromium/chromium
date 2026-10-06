@@ -322,6 +322,10 @@ class CertBuilder {
   void SetTBSSignatureAlgorithmTLV(std::string_view signature_algorithm_tlv);
 
   void SetSerialNumber(uint64_t serial_number);
+  // Sets the serial number to the raw bytes in `serial_number`, which will be
+  // encoded inside an ASN.1 INTEGER tag. This may be used to construct
+  // certificates with invalid or negative serial numbers.
+  void SetSerialNumber(base::span<const uint8_t> serial_number);
   void SetRandomSerialNumber();
 
   // Sets the configuration that will be used to generate a
@@ -478,6 +482,7 @@ class CertBuilder {
   std::string outer_signature_algorithm_tlv_;
   std::string tbs_signature_algorithm_tlv_;
   uint64_t serial_number_ = 0;
+  std::optional<std::vector<uint8_t>> serial_number_bytes_;
   int default_pkey_id_ = EVP_PKEY_EC;
 
   std::vector<SctConfig> sct_configs_;

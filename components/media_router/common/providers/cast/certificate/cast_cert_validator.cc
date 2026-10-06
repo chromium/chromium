@@ -342,9 +342,8 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   std::vector<std::shared_ptr<const bssl::ParsedCertificate>> parsed_certs;
   for (const std::string& cert_str : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> cert(
-        bssl::ParsedCertificate::Create(
-            net::x509_util::CreateCryptoBuffer(cert_str),
-            net::x509_util::DefaultParseCertificateOptions(), &errors));
+        net::x509_util::CreateParsedCertificate(
+            net::x509_util::CreateCryptoBuffer(cert_str), &errors));
     if (!cert) {
       return CastCertError::ERR_CERTS_PARSE;
     }

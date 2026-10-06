@@ -185,9 +185,9 @@ std::shared_ptr<const bssl::ParsedCertificate> CertificateFromBase64(
   if (!certificate_data) {
     return nullptr;
   }
-  return bssl::ParsedCertificate::Create(
+  return net::x509_util::CreateParsedCertificate(
       net::x509_util::CreateCryptoBuffer(*certificate_data),
-      net::x509_util::DefaultParseCertificateOptions(), /*errors=*/nullptr);
+      /*errors=*/nullptr);
 }
 
 // Returns a fresh trusted cert store for the cloud root.
@@ -196,10 +196,10 @@ std::unique_ptr<bssl::TrustStoreInMemory> ConstructTrustedCertStore() {
   // trust store around after use.
   auto trust_store = std::make_unique<bssl::TrustStoreInMemory>();
   std::shared_ptr<const bssl::ParsedCertificate> root_cert =
-      bssl::ParsedCertificate::Create(
+      net::x509_util::CreateParsedCertificate(
           net::x509_util::CreateCryptoBuffer(
               kRecoverableKeyStoreServiceRootCaCert),
-          net::x509_util::DefaultParseCertificateOptions(), /*errors=*/nullptr);
+          /*errors=*/nullptr);
   CHECK(root_cert);
   trust_store->AddTrustAnchor(root_cert);
   return trust_store;

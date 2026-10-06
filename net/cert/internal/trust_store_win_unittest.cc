@@ -53,12 +53,11 @@ namespace {
   }
   bssl::CertErrors errors;
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(cert->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), &errors);
+      x509_util::CreateParsedCertificate(bssl::UpRef(cert->cert_buffer()),
+                                         &errors);
   if (!parsed) {
     return ::testing::AssertionFailure()
-           << "bssl::ParseCertificate::Create failed:\n"
+           << "x509_util::CreateParsedCertificate failed:\n"
            << errors.ToDebugString();
   }
   *out_cert = parsed;
@@ -553,9 +552,8 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
 
       bssl::CertErrors errors;
       std::shared_ptr<const bssl::ParsedCertificate> test_cert =
-          bssl::ParsedCertificate::Create(
-              cert_builder->DupCertBuffer(),
-              x509_util::DefaultParseCertificateOptions(), &errors);
+          x509_util::CreateParsedCertificate(cert_builder->DupCertBuffer(),
+                                             &errors);
       ASSERT_TRUE(test_cert);
 
       crypto::ScopedPCCERT_CONTEXT test_cert_context(
