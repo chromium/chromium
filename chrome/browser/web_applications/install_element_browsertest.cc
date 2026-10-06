@@ -152,7 +152,7 @@ class InstallElementBrowserTestBase : public WebAppBrowserTestBase {
   }
 
   void WaitForInvalidDataEvent(const std::string& id) {
-    ExpectConsoleMessage(id + "-installresult-invalid_data");
+    ExpectConsoleMessage(id + "-installresult-invalid-data");
   }
 
   // The web app test pages log quite a few additional console messages during
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
 ///////////////////////////////////////////////////////////////////////////////
 
 // Unresolvable manifest URL: fetch fails, parsed manifest is null -> kDataError
-// -> invalid_data.
+// -> invalid-data.
 IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InvalidManifestUrl) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InvalidManifestUrl) {
 }
 
 // Manifest URL resolves to a non-manifest resource (HTML): parsing fails ->
-// kDataError -> invalid_data.
+// kDataError -> invalid-data.
 IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, ManifestParseFailure) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, ManifestParseFailure) {
 }
 
 // manifestid set without a manifest attribute is rejected in Blink
-// (HTMLInstallElement::OnActivated) -> invalid_data.
+// (HTMLInstallElement::OnActivated) -> invalid-data.
 IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, ManifestIdOnly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, ManifestIdOnly) {
 }
 
 // A manifest whose declared id does not match the manifestid attribute is
-// rejected with kManifestIdMismatch -> kDataError -> invalid_data.
+// rejected with kManifestIdMismatch -> kDataError -> invalid-data.
 IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, ManifestIdMismatch) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),

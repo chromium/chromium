@@ -158,7 +158,7 @@ class WebInstallDevToolsBrowserTest
             "})",
             kInstallElementId, manifest_url.spec())));
     EXPECT_EQ(content::EvalJs(web_contents(), "window.installResult"),
-              "invalid_data");
+              "invalid-data");
   }
 
   void TriggerCurrentDocumentInstall(content::WebContents* contents = nullptr) {
@@ -184,7 +184,7 @@ class WebInstallDevToolsBrowserTest
             "})",
             kInstallElementId)));
     EXPECT_EQ(content::EvalJs(web_contents(), "window.installResult"),
-              "invalid_data");
+              "invalid-data");
   }
 
   void AcceptCrossOriginPermission() {

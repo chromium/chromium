@@ -60,7 +60,7 @@ constexpr double kGeometryTolerance = 0.01;
 // Result strings for InstallResultEvent.
 constexpr char kResultSuccess[] = "success";
 constexpr char kResultAborted[] = "aborted";
-constexpr char kResultInvalidData[] = "invalid_data";
+constexpr char kResultInvalidData[] = "invalid-data";
 
 String ResourceIdToString(int resource_id) {
   switch (resource_id) {
@@ -710,7 +710,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithManifestDataError) {
   web_install_service_.WaitForCall();
 
   // DataError should trigger an `installresult` event with result
-  // "invalid_data".
+  // "invalid-data".
   web_install_service_.RespondManifestWithDataError();
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
@@ -719,7 +719,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithManifestDataError) {
 
 TEST_F(HTMLInstallElementTestBase, ManifestIdOnlyReturnsInvalidData) {
   // manifestid alone is not supported and should trigger an `installresult`
-  // event with result "invalid_data" without calling the service.
+  // event with result "invalid-data" without calling the service.
   HTMLInstallElement* element =
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
   element->setAttribute(html_names::kManifestidAttr,

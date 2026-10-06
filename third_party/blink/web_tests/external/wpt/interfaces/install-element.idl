@@ -29,7 +29,7 @@ HTMLInstallElement includes ActivationBlockersMixin;
 enum InstallResult {
   "success",
   "aborted",
-  "invalid_data"
+  "invalid-data"
 };
 
 [Exposed=Window]

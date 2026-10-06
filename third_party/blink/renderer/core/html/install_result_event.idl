@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum InstallResult { "success", "aborted", "invalid_data" };
+enum InstallResult { "success", "aborted", "invalid-data" };
 
 // `installresult` is dispatched by the user agent at an <install> element to
 // report the outcome of an install triggered by that element. The outcome is
