@@ -723,8 +723,11 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
           permissions_data->policy_allowed_hosts(),
           permissions_data->UsesDefaultPolicyHostRestrictions());
 
-      // Notify ScriptInjectionTracker when host permissions change.
-      if (!changed->effective_hosts().is_empty()) {
+      // Notify ScriptInjectionTracker when host permissions or policy host
+      // restrictions change. For policy updates `changed` is empty, but
+      // unblocking a host may allow scripts to inject into it.
+      if (event_type == EventType::kPolicy ||
+          !changed->effective_hosts().is_empty()) {
         ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
             base::PassKey<PermissionsUpdater>(), *extension, *host);
       }
@@ -744,6 +747,8 @@ void PermissionsUpdater::NotifyDefaultPolicyHostRestrictionsUpdated(
     const URLPatternSet default_runtime_blocked_hosts,
     const URLPatternSet default_runtime_allowed_hosts) {
   // Send the new policy to the renderers.
+  const ExtensionSet& enabled_extensions =
+      ExtensionRegistry::Get(browser_context)->enabled_extensions();
   for (RenderProcessHost::iterator host_iterator(
            RenderProcessHost::AllHostsIterator());
        !host_iterator.IsAtEnd(); host_iterator.Advance()) {
@@ -759,6 +764,12 @@ void PermissionsUpdater::NotifyDefaultPolicyHostRestrictionsUpdated(
         renderer->UpdateDefaultPolicyHostRestrictions(
             default_runtime_blocked_hosts.Clone(),
             default_runtime_allowed_hosts.Clone());
+
+        // Unblocking a host may allow scripts to inject into it.
+        for (const auto& extension : enabled_extensions) {
+          ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
+              base::PassKey<PermissionsUpdater>(), *extension, *host);
+        }
       }
     }
   }

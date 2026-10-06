@@ -29,6 +29,7 @@ class Extension;
 class ExtensionActionRunner;
 class ExtensionWebContentsObserver;
 class UserScriptLoader;
+class PermissionsManager;
 class PermissionsUpdater;
 class RequestContentScript;
 class ScriptExecutor;
@@ -157,9 +158,17 @@ class ScriptInjectionTracker {
       content::RenderProcessHost& process);
 
   // Called right after the given renderer `process` is notified about
-  // permission updates.
+  // permission updates, including policy host restriction updates.
   static void DidUpdatePermissionsInRenderer(
       base::PassKey<PermissionsUpdater> pass_key,
+      const Extension& extension,
+      content::RenderProcessHost& process);
+
+  // Called right after the given renderer `process` is notified about user
+  // host restriction updates (e.g. the user unrestricting a site), once the
+  // browser-side restrictions have been updated.
+  static void DidUpdatePermissionsInRenderer(
+      base::PassKey<PermissionsManager> pass_key,
       const Extension& extension,
       content::RenderProcessHost& process);
 

@@ -230,11 +230,14 @@ bool CanExtensionScriptsAffectFrame(content::RenderFrameHost& frame,
 // scripts. This function approximates a subset of checks from
 // UserScriptSet::GetInjectionForScript (which runs in the renderer process).
 // Unlike the renderer version, the code below doesn't consider ability to
-// create an injection host, nor the results of
-// ScriptInjector::CanExecuteOnFrame, nor the path of `url_patterns`.
-// Additionally the `effective_url` calculations are also only an approximation.
-// This is okay, because the top-level doc comment for ScriptInjectionTracker
-// documents that false positives are expected and why they are okay.
+// create an injection host, only approximates the host permission checks of
+// ScriptInjector::CanExecuteOnFrame (e.g. it ignores the PDF and extension
+// page restrictions), and ignores the paths of both `url_patterns` and the
+// extension's host permissions. Additionally the `effective_url` calculations
+// are also only an approximation. This is okay because false positives are
+// expected (see the top-level doc comment for ScriptInjectionTracker), but
+// every check here must be at least as permissive as the renderer's, since a
+// false negative results in a renderer kill.
 bool DoesScriptMatch(const Extension& extension,
                      const UserScript& script,
                      content::RenderFrameHost& frame,
@@ -250,18 +253,29 @@ bool DoesScriptMatch(const Extension& extension,
   auto* web_contents = content::WebContents::FromRenderFrameHost(&frame);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
-  // Script can inject if the extension has tab permissions for the url.
-  if (extension.permissions_data()->HasTabPermissionsForSecurityOrigin(
-          tab_id, effective_url)) {
-    return true;
-  }
-
-  // Dynamic scripts can only inject when the extension has host permissions for
-  // the url.
+  // The host permission checks below match at origin granularity because the
+  // renderer evaluates injection against the document URL at each run
+  // location, which may differ in path from `url` (e.g. after
+  // history.pushState()). Matching paths here could cause false negatives.
+  //
+  // Dynamic scripts share the host permission requirements of programmatic
+  // scripts and can only inject when the extension's page access (explicit
+  // hosts or tab permissions, not withheld or blocked by policy/user) is
+  // allowed for the url.
   auto script_source = script.GetSource();
   if ((script_source == UserScript::Source::kDynamicContentScript ||
        script_source == UserScript::Source::kDynamicUserScript) &&
-      !extension.permissions_data()->HasHostPermission(effective_url)) {
+      extension.permissions_data()->GetPageAccessForSecurityOrigin(
+          effective_url, tab_id) != PermissionsData::PageAccess::kAllowed) {
+    return false;
+  }
+
+  // Static content scripts can only inject when the extension's content script
+  // access (scriptable hosts or tab permissions, not withheld or blocked by
+  // policy/user) is allowed for the url.
+  if (script_source == UserScript::Source::kStaticContentScript &&
+      extension.permissions_data()->GetContentScriptAccessForSecurityOrigin(
+          effective_url, tab_id) != PermissionsData::PageAccess::kAllowed) {
     return false;
   }
 
@@ -890,6 +904,16 @@ void ScriptInjectionTracker::DidUpdateScriptsInRenderer(
 // static
 void ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
     base::PassKey<PermissionsUpdater> pass_key,
+    const Extension& extension,
+    content::RenderProcessHost& process) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  AddMatchingScriptsToProcess(extension, process);
+}
+
+// static
+void ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
+    base::PassKey<PermissionsManager> pass_key,
     const Extension& extension,
     content::RenderProcessHost& process) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

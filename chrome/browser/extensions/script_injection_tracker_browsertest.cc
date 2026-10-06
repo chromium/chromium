@@ -13,6 +13,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/trace_event/trace_log.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -50,12 +52,16 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/url_pattern.h"
+#include "extensions/common/url_pattern_set.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/result_catcher.h"
@@ -68,6 +74,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace extensions {
 
@@ -802,6 +809,267 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+}
+
+// Tests that a static content script is not considered as injectable when the
+// user has withheld the extension's host permissions (i.e. configured the
+// extension to only run on click) and that granting the withheld permission
+// back makes the script considered as injectable again.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
+                       ContentScriptWithWithheldHostPermissions) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install a test extension with a static content script and withhold its
+  // host permissions.
+  TestExtensionDir dir;
+  const char kManifest[] = R"(
+      {
+        "name": "ScriptInjectionTrackerBrowserTest - Withheld",
+        "version": "1.0",
+        "manifest_version": 3,
+        "content_scripts": [{
+          "all_frames": true,
+          "matches": ["*://a.com/*", "*://b.com/*"],
+          "js": ["content_script.js"],
+          "run_at": "document_end"
+        }]
+      } )";
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                "document.body.title = 'Content script has run';");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ScriptingPermissionsModifier(profile(), extension)
+        .SetWithholdHostPermissions(true);
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+
+  // Navigate to a page covered by `content_scripts.matches`. The extension's
+  // access to the page is withheld, so the content script should not run and
+  // the process should not be reported as having run a content script.
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+  EXPECT_EQ("", content::EvalJs(web_contents, "document.body.title"));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Grant the extension access to a.com and verify the tracker notices the
+  // now-injectable content script.
+  {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ScriptingPermissionsModifier(profile(), extension).GrantHostPermission(url);
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+  // No script has run in the loaded document, but the tracker conservatively
+  // records the process on permission changes (see
+  // ScriptInjectionTrackerRestrictedHostBrowserTest).
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // After a navigation the content script should actually inject.
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+  EXPECT_EQ("Content script has run",
+            content::EvalJs(web_contents, "document.body.title"));
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // b.com is covered by `content_scripts.matches`, but the user only granted
+  // access to a.com - a process hosting b.com should not be reported as
+  // having run a content script.
+  ASSERT_TRUE(NavigateToURLInNewProcess("b.com", "/title1.html"));
+  web_contents = GetActiveWebContents();
+  EXPECT_EQ("", content::EvalJs(web_contents, "document.body.title"));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+}
+
+// Test suite covering static content scripts whose access to a host is
+// restricted (withheld, or blocked by policy or by the user).
+//
+// When host access is restored, ScriptInjectionTracker conservatively records
+// any process with a matching frame, since it can't tell whether a document
+// has yet to reach the script's run location (a false negative would kill the
+// renderer).
+class ScriptInjectionTrackerRestrictedHostBrowserTest
+    : public ScriptInjectionTrackerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ScriptInjectionTrackerBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  // Loads an extension with `activeTab` and a static content script matching
+  // a.com.
+  const Extension* LoadExtensionWithAComContentScript() {
+    static constexpr char kManifest[] = R"(
+        {
+          "name": "ScriptInjectionTrackerBrowserTest - Restricted host",
+          "version": "1.0",
+          "manifest_version": 3,
+          "permissions": ["activeTab"],
+          "content_scripts": [{
+            "matches": ["*://a.com/*"],
+            "js": ["content_script.js"],
+            "run_at": "document_end"
+          }]
+        } )";
+    extension_dir_.WriteManifest(kManifest);
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                             "document.body.title = 'Content script has run';");
+    return LoadExtension(extension_dir_.UnpackedPath());
+  }
+
+  // Grants `extension` activeTab on the active tab.
+  void GrantActiveTab(const Extension& extension) {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ActiveTabPermissionGranter::FromWebContents(GetActiveWebContents())
+        ->GrantIfRequested(&extension);
+    waiter.WaitForActiveTabPermissionGranted(extension.id());
+  }
+
+  // Sets the policy blocked hosts of `extension` to `blocked_hosts`.
+  void SetPolicyBlockedHosts(const Extension& extension,
+                             const URLPatternSet& blocked_hosts) {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    PermissionsUpdater(profile()).SetPolicyHostRestrictions(
+        &extension, blocked_hosts, URLPatternSet());
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+
+  // Returns whether ScriptInjectionTracker reports that the process of the
+  // active tab ran a content script from `extension`.
+  bool DidActiveTabProcessRunContentScript(const Extension& extension) {
+    return ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+        *GetActiveWebContents()->GetPrimaryMainFrame()->GetProcess(),
+        extension.id());
+  }
+
+  // Returns host patterns matching a.com.
+  static URLPatternSet GetAComPatterns() {
+    URLPatternSet patterns;
+    patterns.AddPattern(
+        URLPattern(Extension::kValidHostPermissionSchemes, "*://a.com/*"));
+    return patterns;
+  }
+
+ private:
+  TestExtensionDir extension_dir_;
+};
+
+// Tests that a static content script with withheld host permissions is
+// considered as injectable once the user grants the extension activeTab, but
+// only if the page matches the script's URL patterns.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerRestrictedHostBrowserTest,
+                       ContentScriptWithWithheldHostPermissionsActiveTab) {
+  const Extension* extension = LoadExtensionWithAComContentScript();
+  ASSERT_TRUE(extension);
+  {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ScriptingPermissionsModifier(profile(), extension)
+        .SetWithholdHostPermissions(true);
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+
+  // Grant activeTab on b.com. The content script only matches a.com, so
+  // b.com's process must not be recorded as having run a content script.
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    embedded_test_server()->GetURL("b.com", "/title1.html")));
+  GrantActiveTab(*extension);
+  EXPECT_FALSE(DidActiveTabProcessRunContentScript(*extension));
+
+  // Navigate to a.com in a new tab, where the extension's access is withheld.
+  ASSERT_TRUE(NavigateToURLInNewProcess("a.com", "/title1.html"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  EXPECT_EQ("", content::EvalJs(web_contents, "document.body.title"));
+  EXPECT_FALSE(DidActiveTabProcessRunContentScript(*extension));
+
+  // Granting activeTab makes the content script injectable.
+  GrantActiveTab(*extension);
+  EXPECT_TRUE(DidActiveTabProcessRunContentScript(*extension));
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.com", "/title1.html")));
+  EXPECT_EQ("Content script has run",
+            content::EvalJs(web_contents, "document.body.title"));
+  EXPECT_TRUE(DidActiveTabProcessRunContentScript(*extension));
+}
+
+// Tests that a static content script is not considered as injectable on a host
+// blocked by the extension's policy (even with activeTab), and that unblocking
+// the host makes it injectable without needing a new navigation.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerRestrictedHostBrowserTest,
+                       ContentScriptOnPolicyUnblockedHost) {
+  const Extension* extension = LoadExtensionWithAComContentScript();
+  ASSERT_TRUE(extension);
+  SetPolicyBlockedHosts(*extension, GetAComPatterns());
+
+  ASSERT_TRUE(NavigateToURLInNewProcess("a.com", "/title1.html"));
+  EXPECT_EQ("", content::EvalJs(GetActiveWebContents(), "document.body.title"));
+  EXPECT_FALSE(DidActiveTabProcessRunContentScript(*extension));
+  GrantActiveTab(*extension);
+  EXPECT_FALSE(DidActiveTabProcessRunContentScript(*extension));
+
+  SetPolicyBlockedHosts(*extension, URLPatternSet());
+  EXPECT_TRUE(DidActiveTabProcessRunContentScript(*extension));
+}
+
+// Same as above, but for the default policy host restrictions.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerRestrictedHostBrowserTest,
+                       ContentScriptOnDefaultPolicyUnblockedHost) {
+  const Extension* extension = LoadExtensionWithAComContentScript();
+  ASSERT_TRUE(extension);
+  PermissionsUpdater(profile()).SetDefaultPolicyHostRestrictions(
+      GetAComPatterns(), URLPatternSet());
+
+  ASSERT_TRUE(NavigateToURLInNewProcess("a.com", "/title1.html"));
+  EXPECT_EQ("", content::EvalJs(GetActiveWebContents(), "document.body.title"));
+  EXPECT_FALSE(DidActiveTabProcessRunContentScript(*extension));
+
+  // There is no observer for default policy updates, so wait for the tracker.
+  PermissionsUpdater(profile()).SetDefaultPolicyHostRestrictions(
+      URLPatternSet(), URLPatternSet());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return DidActiveTabProcessRunContentScript(*extension); }));
+}
+
+class ScriptInjectionTrackerUserRestrictedHostBrowserTest
+    : public ScriptInjectionTrackerRestrictedHostBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kExtensionsMenuAccessControl};
+};
+
+// Tests that a static content script is not considered as injectable on a site
+// restricted by the user, and that unrestricting the site makes it injectable
+// without needing a new navigation.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerUserRestrictedHostBrowserTest,
+                       ContentScriptOnUserUnrestrictedSite) {
+  const Extension* extension = LoadExtensionWithAComContentScript();
+  ASSERT_TRUE(extension);
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  const url::Origin origin = url::Origin::Create(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  {
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserRestrictedSite(origin);
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+
+  ASSERT_TRUE(NavigateToURLInNewProcess("a.com", "/title1.html"));
+  EXPECT_EQ("", content::EvalJs(GetActiveWebContents(), "document.body.title"));
+  EXPECT_FALSE(DidActiveTabProcessRunContentScript(*extension));
+
+  {
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->RemoveUserRestrictedSite(origin);
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+  EXPECT_TRUE(DidActiveTabProcessRunContentScript(*extension));
 }
 
 // Ensure ScriptInjectionTracker correctly tracks script injections in frames

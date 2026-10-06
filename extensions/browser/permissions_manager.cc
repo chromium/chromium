@@ -31,6 +31,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -1043,6 +1044,12 @@ void PermissionsManager::OnUserPermissionsSettingsChanged() {
     UpdatePermissionsWithUserSettings(*extension, user_allowed_set);
   }
 
+  // Update the browser-side user host restrictions before notifying
+  // ScriptInjectionTracker below, which reads them.
+  PermissionsData::SetUserHostRestrictions(
+      util::GetBrowserContextId(browser_context_), user_blocked_sites.Clone(),
+      user_allowed_sites.Clone());
+
   // Send the new permissions states to the renderers, including both the
   // updated user host settings and the updated permissions for each extension.
   // Unlike above, we only care about enabled extensions here, since disabled
@@ -1075,13 +1082,17 @@ void PermissionsManager::OnUserPermissionsSettingsChanged() {
                 permissions_data->UsesDefaultPolicyHostRestrictions());
           }
         }
+
+        // Unrestricting a site may allow scripts to inject into it. This runs
+        // in the same task as the renderer updates above, so it precedes any
+        // IPC the renderer sends in response.
+        for (const auto& extension : registry->enabled_extensions()) {
+          ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
+              base::PassKey<PermissionsManager>(), *extension, *host);
+        }
       }
     }
   }
-
-  PermissionsData::SetUserHostRestrictions(
-      util::GetBrowserContextId(browser_context_),
-      std::move(user_blocked_sites), std::move(user_allowed_sites));
 
   // Notify observers of a permissions change once the changes have taken
   // effect in the network layer.
