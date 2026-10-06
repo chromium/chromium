@@ -52,6 +52,7 @@ class CollaborationMessagingPageActionController;
 class CommitLimitOOMRecoveryTracker;
 class ConnectionHelpTabHelper;
 class CookieControlsPageActionController;
+class CoreTabHelper;
 class ExternalProtocolObserver;
 class FileSystemAccessPageActionController;
 class FileSystemAccessTabHelper;
@@ -1021,6 +1022,8 @@ class TabFeatures {
   std::unique_ptr<
       page_content_annotations::PageContentAnnotationsWebContentsObserver>
       page_content_annotations_web_contents_observer_;
+
+  std::unique_ptr<CoreTabHelper> core_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -119,6 +119,7 @@
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
+#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
@@ -1164,6 +1165,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                                 PageContentAnnotationsWebContentsObserver>(
                 tab, tab, tab.GetContents(), *page_content_annotations_service);
   }
+
+  core_tab_helper_ = GetUserDataFactory().CreateInstance<CoreTabHelper>(
+      tab, tab, tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1666,6 +1670,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                 PageContentAnnotationsWebContentsObserver>(
                 *tab, *tab, new_contents, *page_content_annotations_service);
   }
+
+  core_tab_helper_.reset();
+  core_tab_helper_ = GetUserDataFactory().CreateInstance<CoreTabHelper>(
+      *tab, *tab, new_contents);
 }
 
 customize_chrome::SidePanelController*

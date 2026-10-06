@@ -14,6 +14,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metrics.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -37,7 +39,8 @@ class LensRegionSearchControllerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("about:blank"));
 
-    CoreTabHelper::CreateForWebContents(web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+    core_tab_helper_ = std::make_unique<CoreTabHelper>(tab_, web_contents());
     controller_ =
         std::make_unique<LensRegionSearchController>(unowned_user_data_host_);
     controller_->SetWebContentsForTesting(web_contents());
@@ -48,11 +51,14 @@ class LensRegionSearchControllerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     controller_.reset();
+    core_tab_helper_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<CoreTabHelper> core_tab_helper_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<LensRegionSearchController> controller_;
 };

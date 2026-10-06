@@ -89,6 +89,7 @@
 #include "chrome/browser/ui/side_panel/internal/android/dev/side_panel_tab_scoped_dev_feature.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
@@ -526,6 +527,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
                                 PageContentAnnotationsWebContentsObserver>(
                 *tab, *tab, web_contents, *page_content_annotations_service);
   }
+
+  core_tab_helper_ = GetUserDataFactory().CreateInstance<CoreTabHelper>(
+      *tab, *tab, web_contents);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

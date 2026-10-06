@@ -15,13 +15,17 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 class SkBitmap;
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 using DownscaleAndEncodeBitmapCallback = base::OnceCallback<void(
     const std::vector<unsigned char>& thumbnail_data,
@@ -32,13 +36,18 @@ using DownscaleAndEncodeBitmapCallback = base::OnceCallback<void(
 
 // Per-tab class to handle functionality that is core to the operation of tabs.
 // TODO(crbug.com/346044243): Delete this class.
-class CoreTabHelper : public content::WebContentsObserver,
-                      public content::WebContentsUserData<CoreTabHelper> {
+class CoreTabHelper : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(CoreTabHelper);
+
+  CoreTabHelper(tabs::TabInterface& tab, content::WebContents* web_contents);
   CoreTabHelper(const CoreTabHelper&) = delete;
   CoreTabHelper& operator=(const CoreTabHelper&) = delete;
 
   ~CoreTabHelper() override;
+
+  static CoreTabHelper* From(tabs::TabInterface* tab);
+  static CoreTabHelper* FromWebContents(content::WebContents* web_contents);
 
   // Initial title assigned to NavigationEntries from Navigate.
   static std::u16string GetDefaultTitle();
@@ -96,9 +105,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   int content_restrictions() const { return content_restrictions_; }
 
  private:
-  explicit CoreTabHelper(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<CoreTabHelper>;
-
   static bool GetStatusTextForWebContents(std::u16string* status_text,
                                           content::WebContents* source);
 
@@ -161,9 +167,9 @@ class CoreTabHelper : public content::WebContentsObserver,
   // (full-page plugins for now only) permissions.
   int content_restrictions_ = 0;
 
-  base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
+  ui::ScopedUnownedUserData<CoreTabHelper> scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_CONTENTS_CORE_TAB_HELPER_H_

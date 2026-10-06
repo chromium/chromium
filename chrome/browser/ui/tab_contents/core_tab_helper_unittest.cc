@@ -26,12 +26,6 @@ class CoreTabHelperImageProcessingTest
 
   ~CoreTabHelperImageProcessingTest() override = default;
 
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-
-    CoreTabHelper::CreateForWebContents(web_contents());
-  }
-
   void DownscaleAndEncodeBitmapAndVerifyResponse(
       SkBitmap& bitmap,
       int thumbnail_min_size,
@@ -68,13 +62,11 @@ class CoreTabHelperImageProcessingTest
     gfx::Size downscaled_size;
     int log_data_size;
     base::RunLoop run_loop;
-    CoreTabHelper::FromWebContents(web_contents())
-        ->DownscaleAndEncodeBitmap(
-            bitmap, thumbnail_min_size, thumbnail_max_width,
-            thumbnail_max_height,
-            base::BindOnce(callback, &thumbnail_data, &content_type,
-                           &original_size, &downscaled_size, &log_data_size,
-                           run_loop.QuitClosure()));
+    CoreTabHelper::DownscaleAndEncodeBitmap(
+        bitmap, thumbnail_min_size, thumbnail_max_width, thumbnail_max_height,
+        base::BindOnce(callback, &thumbnail_data, &content_type, &original_size,
+                       &downscaled_size, &log_data_size,
+                       run_loop.QuitClosure()));
     run_loop.Run();
 
     EXPECT_EQ(downscaled_size, expected_downscaled_size);

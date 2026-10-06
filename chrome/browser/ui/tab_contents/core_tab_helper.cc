@@ -32,6 +32,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -85,11 +86,26 @@ gfx::Image DownscaleImage(const gfx::Image& image) {
 
 }  // namespace
 
-CoreTabHelper::CoreTabHelper(WebContents* web_contents)
+DEFINE_USER_DATA(CoreTabHelper);
+
+CoreTabHelper::CoreTabHelper(tabs::TabInterface& tab, WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<CoreTabHelper>(*web_contents) {}
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 CoreTabHelper::~CoreTabHelper() = default;
+
+// static
+CoreTabHelper* CoreTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+CoreTabHelper* CoreTabHelper::FromWebContents(WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
 
 // static
 std::u16string CoreTabHelper::GetDefaultTitle() {
@@ -573,5 +589,3 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
 
   web_contents()->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CoreTabHelper);

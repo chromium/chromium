@@ -149,6 +149,7 @@ class AutoPictureInPictureTabHelper;
 class ChainedBackNavigationTracker;
 class ChromeFacilitatedPaymentsClient;
 class ConnectionHelpTabHelper;
+class CoreTabHelper;
 class ExternalProtocolObserver;
 class FileSystemAccessTabHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
@@ -327,6 +328,7 @@ class TabFeatures {
   std::unique_ptr<
       page_content_annotations::PageContentAnnotationsWebContentsObserver>
       page_content_annotations_web_contents_observer_;
+  std::unique_ptr<CoreTabHelper> core_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;
