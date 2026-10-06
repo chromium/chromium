@@ -140,6 +140,7 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   void ClaimInterfaceComplete(int interface_number,
                               ResultCallback callback,
                               bool success);
+  void ResetDeviceComplete(ResultCallback callback, bool success);
   void IsochronousTransferInternal(uint8_t endpoint_address,
                                    scoped_refptr<base::RefCountedBytes> buffer,
                                    size_t total_length,
@@ -212,7 +213,7 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
   virtual bool ClaimInterface(int interface_number);
   virtual bool ReleaseInterface(int interface_number);
   virtual bool SetInterface(int interface_number, int alternate_setting);
-  bool ResetDevice();
+  virtual bool ResetDevice();
   bool ClearHalt(uint8_t endpoint_address);
   void DiscardUrb(Transfer* transfer);
 

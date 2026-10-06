@@ -120,6 +120,7 @@ class UsbDeviceHandleImpl : public UsbDeviceHandle {
                                             bool success,
                                             ResultCallback callback);
   void ResetDeviceBlocking(ResultCallback callback);
+  void ResetDeviceComplete(ResultCallback callback, bool success);
   void ClearHaltBlocking(uint8_t endpoint_address, ResultCallback callback);
 
   // Refresh endpoint_map_ after ClaimInterface, ReleaseInterface and

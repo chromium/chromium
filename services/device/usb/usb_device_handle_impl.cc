@@ -690,9 +690,18 @@ void UsbDeviceHandleImpl::ResetDevice(ResultCallback callback) {
     return;
   }
 
+  ResultCallback complete_callback;
+  if (base::FeatureList::IsEnabled(
+          features::kWebUsbResetInvalidatesConfiguration)) {
+    complete_callback = base::BindOnce(
+        &UsbDeviceHandleImpl::ResetDeviceComplete, this, std::move(callback));
+  } else {
+    complete_callback = std::move(callback);
+  }
+
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UsbDeviceHandleImpl::ResetDeviceBlocking, this,
-                                std::move(callback)));
+                                std::move(complete_callback)));
 }
 
 void UsbDeviceHandleImpl::ClearHalt(UsbTransferDirection direction,
@@ -1050,6 +1059,31 @@ void UsbDeviceHandleImpl::ResetDeviceBlocking(ResultCallback callback) {
   }
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), rv == LIBUSB_SUCCESS));
+}
+
+void UsbDeviceHandleImpl::ResetDeviceComplete(ResultCallback callback,
+                                              bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!device_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Release all claimed interfaces on the blocking thread to ensure that
+  // ~InterfaceClaimer (which makes a blocking libusb_release_interface call
+  // and checks its sequence) is destroyed on the blocking thread.
+  for (auto& map_entry : claimed_interfaces_) {
+    blocking_task_runner_->ReleaseSoon(FROM_HERE, std::move(map_entry.second));
+  }
+  // Always clear claimed interfaces and active configuration regardless of
+  // whether reset succeeded, because a failed reset may still have left the
+  // hardware in an unconfigured state. Update active configuration before
+  // RefreshEndpointMap so it clears endpoint_map_ without reading stale
+  // configuration info.
+  claimed_interfaces_.clear();
+  device_->ActiveConfigurationChanged(0);
+  RefreshEndpointMap();
+  std::move(callback).Run(success);
 }
 
 void UsbDeviceHandleImpl::ClearHaltBlocking(uint8_t endpoint_address,

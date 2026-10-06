@@ -68,6 +68,12 @@ BASE_FEATURE(kWebUsbEnforceStandardRequestAllowlist,
 // See crbug.com/513167952.
 BASE_FEATURE(kWebUsbHardenEndpointAliasing, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, resetting a USB device drops the active configuration back to
+// 0 (unconfigured) and clears claimed interfaces, endpoints, and detached
+// interface state.
+BASE_FEATURE(kWebUsbResetInvalidatesConfiguration,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, accessing the navigator.hid attribute does not prevent the
 // frame from entering the back forward cache.
 BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,

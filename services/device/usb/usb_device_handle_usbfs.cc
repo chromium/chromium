@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/device_event_log/device_event_log.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device_linux.h"
 
@@ -36,7 +37,6 @@
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #include "base/metrics/histogram_macros.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/usb/usb_interface_detach_allowlist.h"
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
@@ -406,16 +406,27 @@ bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ResetDevice() {
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  // TODO(reillyg): libusb releases interfaces before and then reclaims
-  // interfaces after a reset. We should probably do this too or document that
-  // callers have to call ClaimInterface as well.
+  // A bus reset returns the device to an unconfigured state (config 0) and
+  // releases all claimed interfaces. Interfaces are intentionally not
+  // reclaimed; callers must select a configuration and claim interfaces again.
   int rc = HANDLE_EINTR(ioctl(fd_.get(), USBDEVFS_RESET, nullptr));
   if (rc) {
     USB_PLOG(DEBUG) << "Failed to reset the device";
-    return false;
   }
 
-  return true;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(
+          features::kWebUsbResetInvalidatesConfiguration)) {
+    // USBDEVFS_RESET causes the kernel to rebind drivers to all interfaces.
+    // Clear detached_interfaces_ to match the kernel's reattached state.
+    // Always clear detached_interfaces_ regardless of whether reset succeeded,
+    // because a failed reset may still have left the hardware in an
+    // unconfigured state.
+    detached_interfaces_.clear();
+  }
+#endif
+
+  return rc == 0;
 }
 
 bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ClearHalt(
@@ -733,8 +744,15 @@ void UsbDeviceHandleUsbfs::ResetDevice(ResultCallback callback) {
   // USBDEVFS_RESET is synchronous because it waits for the port to be reset
   // and the device re-enumerated so it must be performed on a thread where it
   // is okay to block.
-  helper_.AsyncCall(&BlockingTaskRunnerHelper::ResetDevice)
-      .Then(std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          features::kWebUsbResetInvalidatesConfiguration)) {
+    helper_.AsyncCall(&BlockingTaskRunnerHelper::ResetDevice)
+        .Then(base::BindOnce(&UsbDeviceHandleUsbfs::ResetDeviceComplete, this,
+                             std::move(callback)));
+  } else {
+    helper_.AsyncCall(&BlockingTaskRunnerHelper::ResetDevice)
+        .Then(std::move(callback));
+  }
 }
 
 void UsbDeviceHandleUsbfs::ClearHalt(mojom::UsbTransferDirection direction,
@@ -1007,6 +1025,23 @@ void UsbDeviceHandleUsbfs::ReleaseInterfaceComplete(int interface_number,
   }
 #endif
   std::move(callback).Run(true);
+}
+
+void UsbDeviceHandleUsbfs::ResetDeviceComplete(ResultCallback callback,
+                                               bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!device_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Always clear interfaces, endpoints, and active configuration regardless
+  // of whether reset succeeded, because a failed reset may still have left
+  // the hardware in an unconfigured state.
+  interfaces_.clear();
+  endpoints_.clear();
+  device_->ActiveConfigurationChanged(0);
+  std::move(callback).Run(success);
 }
 
 void UsbDeviceHandleUsbfs::IsochronousTransferInternal(

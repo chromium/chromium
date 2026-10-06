@@ -6,19 +6,16 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/usb/mock_usb_device.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#include "base/test/scoped_feature_list.h"
-#include "services/device/public/cpp/device_features.h"
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 namespace device {
 
@@ -29,6 +26,7 @@ class MockBlockingTaskRunnerHelper
     ON_CALL(*this, ClaimInterface).WillByDefault(testing::Return(true));
     ON_CALL(*this, ReleaseInterface).WillByDefault(testing::Return(true));
     ON_CALL(*this, SetInterface).WillByDefault(testing::Return(true));
+    ON_CALL(*this, ResetDevice).WillByDefault(testing::Return(true));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
     ON_CALL(*this, DetachInterface).WillByDefault(testing::Return(true));
     ON_CALL(*this, ReattachInterface).WillByDefault(testing::Return(true));
@@ -46,6 +44,7 @@ class MockBlockingTaskRunnerHelper
   MOCK_METHOD(bool, ClaimInterface, (int), (override));
   MOCK_METHOD(bool, ReleaseInterface, (int), (override));
   MOCK_METHOD(bool, SetInterface, (int, int), (override));
+  MOCK_METHOD(bool, ResetDevice, (), (override));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   MOCK_METHOD(bool,
               DetachInterface,
@@ -82,13 +81,15 @@ class UsbDeviceHandleUsbfsTest : public ::testing::Test {
   }
 
   static scoped_refptr<UsbDeviceHandleUsbfs> CreateHandle(
-      scoped_refptr<UsbDevice> usb_device) {
+      scoped_refptr<UsbDevice> usb_device,
+      std::unique_ptr<MockBlockingTaskRunnerHelper> helper =
+          std::make_unique<MockBlockingTaskRunnerHelper>()) {
     scoped_refptr<UsbDeviceHandleUsbfs> handle =
         base::MakeRefCounted<UsbDeviceHandleUsbfs>(
             usb_device, /*fd=*/base::ScopedFD(),
             /*lifeline_fd=*/base::ScopedFD(),
             /*client_id=*/"", UsbService::CreateBlockingTaskRunner(),
-            std::make_unique<MockBlockingTaskRunnerHelper>());
+            std::move(helper));
     usb_device->handles().push_back(handle.get());
     return handle;
   }
@@ -203,6 +204,126 @@ TEST_F(UsbDeviceHandleUsbfsTest, SetInterfaceAlternateSettingUnclaimed) {
   handle1_->SetInterfaceAlternateSetting(1, 0,
                                          set_interface_future2.GetCallback());
   ASSERT_TRUE(set_interface_future2.Get());
+}
+
+TEST_F(UsbDeviceHandleUsbfsTest, ResetDevice) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebUsbResetInvalidatesConfiguration);
+
+  mojom::UsbConfigurationInfoPtr config = BuildUsbConfigurationInfoPtr(
+      /*configuration_value=*/1, /*self_powered=*/false,
+      /*remote_wakeup=*/false, /*maximum_power=*/0);
+  config->interfaces.push_back(CreateInterface(0));
+  config->interfaces.push_back(CreateInterface(1));
+  config->interfaces.push_back(CreateInterface(2));
+  usb_device_->AddMockConfig(std::move(config));
+
+  // Set the active configuration to 1.
+  usb_device_->ActiveConfigurationChanged(1);
+  EXPECT_NE(usb_device_->GetActiveConfiguration(), nullptr);
+
+  // Claim interface 1.
+  TestFuture<bool> claim_interface_future;
+  handle1_->ClaimInterface(1, claim_interface_future.GetCallback());
+  ASSERT_TRUE(claim_interface_future.Get());
+
+  // Reset the device.
+  TestFuture<bool> reset_future;
+  handle1_->ResetDevice(reset_future.GetCallback());
+  ASSERT_TRUE(reset_future.Get());
+
+  // Resetting the device invalidates active configuration (sets it back to 0)
+  // and clears claimed interfaces.
+  EXPECT_EQ(usb_device_->device_info().active_configuration, 0);
+
+  // Setting alternate setting on the previously claimed interface now fails.
+  TestFuture<bool> set_interface_future;
+  handle1_->SetInterfaceAlternateSetting(1, 0,
+                                         set_interface_future.GetCallback());
+  ASSERT_FALSE(set_interface_future.Get());
+}
+
+TEST_F(UsbDeviceHandleUsbfsTest, ResetDeviceFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWebUsbResetInvalidatesConfiguration);
+
+  mojom::UsbConfigurationInfoPtr config = BuildUsbConfigurationInfoPtr(
+      /*configuration_value=*/1, /*self_powered=*/false,
+      /*remote_wakeup=*/false, /*maximum_power=*/0);
+  config->interfaces.push_back(CreateInterface(0));
+  config->interfaces.push_back(CreateInterface(1));
+  config->interfaces.push_back(CreateInterface(2));
+  usb_device_->AddMockConfig(std::move(config));
+
+  // Set the active configuration to 1.
+  usb_device_->ActiveConfigurationChanged(1);
+  EXPECT_NE(usb_device_->GetActiveConfiguration(), nullptr);
+
+  // Claim interface 1.
+  TestFuture<bool> claim_interface_future;
+  handle1_->ClaimInterface(1, claim_interface_future.GetCallback());
+  ASSERT_TRUE(claim_interface_future.Get());
+
+  // Reset the device.
+  TestFuture<bool> reset_future;
+  handle1_->ResetDevice(reset_future.GetCallback());
+  ASSERT_TRUE(reset_future.Get());
+
+  // When the feature is disabled, active configuration is preserved.
+  EXPECT_EQ(usb_device_->device_info().active_configuration, 1);
+
+  // Setting alternate setting on the claimed interface still succeeds.
+  TestFuture<bool> set_interface_future;
+  handle1_->SetInterfaceAlternateSetting(1, 0,
+                                         set_interface_future.GetCallback());
+  ASSERT_TRUE(set_interface_future.Get());
+}
+
+TEST_F(UsbDeviceHandleUsbfsTest, ResetDeviceFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebUsbResetInvalidatesConfiguration);
+
+  auto helper = std::make_unique<MockBlockingTaskRunnerHelper>();
+  ON_CALL(*helper, ResetDevice).WillByDefault(testing::Return(false));
+  scoped_refptr<UsbDeviceHandleUsbfs> handle =
+      CreateHandle(usb_device_, std::move(helper));
+
+  mojom::UsbConfigurationInfoPtr config = BuildUsbConfigurationInfoPtr(
+      /*configuration_value=*/1, /*self_powered=*/false,
+      /*remote_wakeup=*/false, /*maximum_power=*/0);
+  config->interfaces.push_back(CreateInterface(0));
+  config->interfaces.push_back(CreateInterface(1));
+  config->interfaces.push_back(CreateInterface(2));
+  usb_device_->AddMockConfig(std::move(config));
+
+  // Set the active configuration to 1.
+  usb_device_->ActiveConfigurationChanged(1);
+  EXPECT_NE(usb_device_->GetActiveConfiguration(), nullptr);
+
+  // Claim interface 1.
+  TestFuture<bool> claim_interface_future;
+  handle->ClaimInterface(1, claim_interface_future.GetCallback());
+  ASSERT_TRUE(claim_interface_future.Get());
+
+  // Reset the device (which fails).
+  TestFuture<bool> reset_future;
+  handle->ResetDevice(reset_future.GetCallback());
+  ASSERT_FALSE(reset_future.Get());
+
+  // Even if reset fails, active configuration is invalidated (set back to 0)
+  // and claimed interfaces are cleared.
+  EXPECT_EQ(usb_device_->device_info().active_configuration, 0);
+
+  // Setting alternate setting on the previously claimed interface now fails.
+  TestFuture<bool> set_interface_future;
+  handle->SetInterfaceAlternateSetting(1, 0,
+                                       set_interface_future.GetCallback());
+  ASSERT_FALSE(set_interface_future.Get());
+
+  handle->Close();
 }
 
 }  // namespace
