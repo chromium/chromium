@@ -346,6 +346,8 @@ component("network_service") {
 
   if (is_linux) {
     sources += [
+      "linux_system_proxy_resolver_mojo.cc",
+      "linux_system_proxy_resolver_mojo.h",
       "network_change_notifier_passive_factory.cc",
       "network_change_notifier_passive_factory.h",
     ]
@@ -598,6 +600,10 @@ source_set("tests") {
 
   if (is_mac) {
     sources += [ "mac_system_proxy_resolver_mojo_unittest.cc" ]
+  }
+
+  if (is_linux) {
+    sources += [ "linux_system_proxy_resolver_mojo_unittest.cc" ]
   }
 
   if (enable_device_bound_sessions) {

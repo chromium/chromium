@@ -14,9 +14,9 @@
 #include "services/network/url_request_context_owner.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
@@ -35,9 +35,9 @@ namespace network {
 // Specialization of `URLRequestContextBuilder` that can create one or more
 // `ProxyResolutionService`s that use Mojo. This can be a
 // `ConfiguredProxyResolutionService` that uses a Mojo `ProxyResolver` or a
-// system proxy resolution service (Windows or macOS) that may mojo all proxy
-// resolutions to a utility process if enabled. The consumer is responsible for
-// providing either the `proxy_resolver::mojom::ProxyResolverFactory` or
+// system proxy resolution service (Windows, macOS, or Linux) that may mojo all
+// proxy resolutions to another process if enabled. The consumer is responsible
+// for providing either the `proxy_resolver::mojom::ProxyResolverFactory` or
 // `proxy_resolver::mojom::SystemProxyResolver`, respectively. If a
 // `ProxyResolutionService` is set directly via the `URLRequestContextBuilder`
 // API, it will be used instead of either of the `ProxyResolutionService`
@@ -59,11 +59,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
           mojo_proxy_resolver_factory);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void SetMojoSystemProxyResolver(
       mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
           mojo_system_proxy_resolver);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetDhcpWpadUrlClient(
@@ -92,10 +92,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
   mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
       mojo_proxy_resolver_factory_;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
       mojo_system_proxy_resolver_;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 };
 
 }  // namespace network

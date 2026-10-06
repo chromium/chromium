@@ -19,9 +19,13 @@
 #elif BUILDFLAG(IS_MAC)
 #include "net/proxy_resolution/mac/mac_system_proxy_resolution_service.h"
 #include "services/network/mac_system_proxy_resolver_mojo.h"
+#elif BUILDFLAG(IS_LINUX)
+#include "net/proxy_resolution/linux/linux_system_proxy_resolution_service.h"
+#include "services/network/linux_system_proxy_resolver_mojo.h"
 #elif BUILDFLAG(IS_CHROMEOS)
 #include "services/network/dhcp_pac_file_fetcher_mojo.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 namespace network {
 
@@ -35,13 +39,13 @@ void URLRequestContextBuilderMojo::SetMojoProxyResolverFactory(
   mojo_proxy_resolver_factory_ = std::move(mojo_proxy_resolver_factory);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void URLRequestContextBuilderMojo::SetMojoSystemProxyResolver(
     mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
         mojo_system_proxy_resolver) {
   mojo_system_proxy_resolver_ = std::move(mojo_system_proxy_resolver);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 void URLRequestContextBuilderMojo::SetDhcpWpadUrlClient(
@@ -98,7 +102,17 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
       return proxy_resolution_service;
     }
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_LINUX)
+  if (mojo_system_proxy_resolver_) {
+    std::unique_ptr<net::ProxyResolutionService> proxy_resolution_service =
+        net::LinuxSystemProxyResolutionService::Create(
+            std::make_unique<LinuxSystemProxyResolverMojo>(
+                std::move(mojo_system_proxy_resolver_)));
+    if (proxy_resolution_service) {
+      return proxy_resolution_service;
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   if (mojo_proxy_resolver_factory_) {
     std::unique_ptr<net::DhcpPacFileFetcher> dhcp_pac_file_fetcher =

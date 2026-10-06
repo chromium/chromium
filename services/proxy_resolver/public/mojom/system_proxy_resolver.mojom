@@ -10,7 +10,7 @@ module proxy_resolver.mojom;
 import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
 
-[EnableIf=is_win|is_mac]
+[EnableIf=is_win|is_mac|is_linux]
 import "services/network/public/mojom/proxy_config.mojom";
 
 // Windows-specific system proxy resolution support. Additional platforms can
@@ -49,6 +49,20 @@ enum MacProxyStatus {
 // LINT.ThenChange(//net/proxy_resolution/mac/mac_proxy_resolution_status.h:
 //                 MacProxyResolutionStatus)
 
+// Linux-specific system proxy resolution status codes.
+// LINT.IfChange(LinuxProxyStatus)
+[EnableIf=is_linux]
+enum LinuxProxyStatus {
+  kOk,
+  kPortalUnavailable,
+  kDBusError,
+  kEmptyProxyList,
+  kInvalidResponse,
+  kAborted,
+};
+// LINT.ThenChange(//net/proxy_resolution/linux/linux_proxy_resolution_status.h:
+//                 LinuxProxyResolutionStatus)
+
 // Describes the outcome of a system proxy resolution request. Each platform
 // fills in the optional status field guarded by its EnableIf annotation.
 struct SystemProxyResolutionStatus {
@@ -57,6 +71,7 @@ struct SystemProxyResolutionStatus {
 
   [EnableIf=is_win] WinHttpStatus? win_http_status;
   [EnableIf=is_mac] MacProxyStatus? mac_proxy_status;
+  [EnableIf=is_linux] LinuxProxyStatus? linux_proxy_status;
 };
 
 [EnableIf=is_win|is_mac, ServiceSandbox=sandbox.mojom.Sandbox.kProxyResolver]
@@ -69,6 +84,17 @@ interface SystemProxyResolver {
   // returned proxy list is populated and `status.os_error` is 0. On failure the
   // proxy list is empty and the platform-specific status plus `os_error`
   // describe the failure.
+  GetProxyForUrl(url.mojom.Url url) => (network.mojom.ProxyList proxy_list,
+                                        SystemProxyResolutionStatus status);
+};
+
+// On Linux, SystemProxyResolver is implemented in the browser process, which
+// queries the org.freedesktop.portal.ProxyResolver XDG desktop portal over
+// D-Bus. It is not hosted in a utility process, so it has no ServiceSandbox.
+// This must be kept in sync with the definition above.
+[EnableIf=is_linux]
+interface SystemProxyResolver {
+  // See the definition above. `status.os_error` is always 0 on Linux.
   GetProxyForUrl(url.mojom.Url url) => (network.mojom.ProxyList proxy_list,
                                         SystemProxyResolutionStatus status);
 };

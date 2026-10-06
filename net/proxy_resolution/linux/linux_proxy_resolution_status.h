@@ -9,6 +9,7 @@ namespace net {
 
 // Enumerates the outcomes produced by the Linux system proxy resolver, which
 // is backed by the org.freedesktop.portal.ProxyResolver XDG desktop portal.
+// Keep in sync with proxy_resolver::mojom::LinuxProxyStatus.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -28,7 +29,8 @@ enum class LinuxProxyResolutionStatus {
 
   kMaxValue = kAborted,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:LinuxProxyResolutionStatus)
+// LINT.ThenChange(//services/proxy_resolver/public/mojom/system_proxy_resolver.mojom:LinuxProxyStatus,
+// //tools/metrics/histograms/metadata/net/enums.xml:LinuxProxyResolutionStatus)
 
 }  // namespace net
 
