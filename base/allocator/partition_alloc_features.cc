@@ -190,12 +190,7 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrEnabledProcesses,
                         kBackupRefPtrEnabledProcessesParam,
                         &kPartitionAllocBackupRefPtr,
                         kPAFeatureEnabledProcessesStr,
-// Exception for IS_DESKTOP_ANDROID approved in crbug.com/482155132.
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
-                        BackupRefPtrEnabledProcesses::kNonRenderer,
-#else
                         BackupRefPtrEnabledProcesses::kAllProcesses,
-#endif
                         &kBackupRefPtrEnabledProcessesOptions);
 
 constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
