@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 
+#include <type_traits>
+
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -22,6 +24,10 @@ class StringResourceBase {
   USING_FAST_MALLOC(StringResourceBase);
 
  public:
+  static StringResourceBase* GetExternalizedString(
+      v8::Isolate* isolate,
+      v8::Local<v8::String> v8_string);
+
   explicit StringResourceBase(v8::Isolate* isolate, String string)
       : plain_string_(std::move(string)) {
     DCHECK(!plain_string_.IsNull());
@@ -303,6 +309,35 @@ class ParkableStringResource8 final : public StringResource8Base {
     return GetParkableString().SpanChar().data();
   }
 };
+
+ALWAYS_INLINE StringResourceBase* StringResourceBase::GetExternalizedString(
+    v8::Isolate* isolate,
+    v8::Local<v8::String> v8_string) {
+  v8::String::Encoding encoding;
+  v8::String::ExternalStringResourceBase* resource =
+      v8_string->GetExternalStringResourceBase(isolate, &encoding);
+  if (resource) [[likely]] {
+    static_assert(std::is_base_of<v8::String::ExternalOneByteStringResource,
+                                  StringResource8Base>::value,
+                  "");
+    static_assert(std::is_base_of<v8::String::ExternalStringResource,
+                                  StringResource16Base>::value,
+                  "");
+    static_assert(
+        std::is_base_of<StringResourceBase, StringResource8Base>::value, "");
+    static_assert(
+        std::is_base_of<StringResourceBase, StringResource16Base>::value, "");
+    // Then StringResource{8,16}Base allows to go from one ancestry path to
+    // the other one. Even though it's empty, removing it causes UB, see
+    // crbug.com/909796.
+    if (encoding == v8::String::ONE_BYTE_ENCODING) {
+      return static_cast<StringResource8Base*>(resource);
+    }
+    return static_cast<StringResource16Base*>(resource);
+  }
+
+  return nullptr;
+}
 
 }  // namespace blink
 
