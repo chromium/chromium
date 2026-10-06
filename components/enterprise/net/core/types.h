@@ -100,19 +100,21 @@ struct ProvisioningDomainProxyConfig {
     // Configuration was successfully fetched and validated; actively used for
     // routing and proxy authentication.
     kValid,
-    // A temporary network, 5xx server, or token fetch error occurred.
+    // A temporary network, 5xx server, HTTP 401/403/408/429, or token fetch
+    // error occurred.
     // Cached routes are preserved in memory to prevent session disruption,
     // and refreshes are retried on timers and applicable changes
     // (network, account etc).
     kFailedTransient,
     // A blocking condition occurred (e.g. invalid credentials, unparsable
-    // server responses etc.). Active routes are flushed to prevent sign-in
-    // deadlocks and will be retried upon applicable changes (network, account
-    // etc).
+    // server responses, certificate errors, or non-retryable HTTP 4xx errors
+    // such as 400/404). Active routes are preserved and refreshes will be
+    // retried upon applicable changes (network, account, manual refresh etc).
     kFailedBlocked,
     // An unrecoverable policy or configuration error occurred (e.g. malformed
-    // policy dictionary, invalid URL, unsupported scope, or HTTP 404/403).
-    // Active routes are flushed and the domain will not be retried.
+    // policy dictionary, invalid URL, or unsupported scope).
+    // Active routes are flushed and the domain will not be retried (even on
+    // manual refreshes).
     kFailedPermanent,
   };
 

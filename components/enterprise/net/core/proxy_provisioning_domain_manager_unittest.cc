@@ -379,13 +379,14 @@ TEST_F(ProxyProvisioningDomainManagerTest,
        ErrorClassificationTransientVsPermanent) {
   auto auth_service = CreateAuthService();
 
-  // Test permanent error case with a 404.
-  {
+  // Test blocked error case with HTTP 404 Not Found and 400 Bad Request.
+  for (net::HttpStatusCode status_code :
+       {net::HTTP_NOT_FOUND, net::HTTP_BAD_REQUEST}) {
     auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
     ASSERT_EQ(1, test_url_loader_factory_.NumPending());
-    test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kTestUrl, "", net::HTTP_NOT_FOUND);
-    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+    test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl, "",
+                                                               status_code);
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
               manager->state());
   }
 
@@ -414,13 +415,25 @@ TEST_F(ProxyProvisioningDomainManagerTest,
               manager->state());
   }
 
-  // Test permanent error case with certificate error.
+  // Test blocked error case with certificate error.
   {
     auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
     ASSERT_EQ(1, test_url_loader_factory_.NumPending());
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GURL(kTestUrl),
         network::URLLoaderCompletionStatus(net::ERR_CERT_COMMON_NAME_INVALID),
+        network::mojom::URLResponseHead::New(), "");
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
+              manager->state());
+  }
+
+  // Test permanent error case with invalid URL net error.
+  {
+    auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
+    ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(kTestUrl),
+        network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
         network::mojom::URLResponseHead::New(), "");
     EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
               manager->state());
@@ -459,13 +472,14 @@ TEST_F(ProxyProvisioningDomainManagerTest,
               manager->state());
   }
 
-  // Test permanent error case with HTTP 403 Forbidden.
-  {
+  // Test transient error cases with HTTP 401 Unauthorized and 403 Forbidden.
+  for (net::HttpStatusCode status_code :
+       {net::HTTP_UNAUTHORIZED, net::HTTP_FORBIDDEN}) {
     auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
     ASSERT_EQ(1, test_url_loader_factory_.NumPending());
-    test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kTestUrl, "", net::HTTP_FORBIDDEN);
-    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+    test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl, "",
+                                                               status_code);
+    EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
               manager->state());
   }
 
@@ -708,6 +722,53 @@ TEST_F(ProxyProvisioningDomainManagerTest,
             manager->state());
   EXPECT_FALSE(manager->is_refresh_in_progress());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+TEST_F(ProxyProvisioningDomainManagerTest,
+       ForceRefreshRecoversFromHttp4xxErrors) {
+  auto auth_service = CreateAuthService();
+  MockDomainObserver observer;
+
+  auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
+  manager->AddObserver(&observer);
+
+  // Initial fetch fails with HTTP 404 Not Found -> kFailedBlocked (no timer).
+  ExpectStateTransitionTo(observer, manager.get(),
+                          ProvisioningDomainProxyConfig::State::kFailedBlocked);
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestUrl, "", net::HTTP_NOT_FOUND);
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
+            manager->state());
+  EXPECT_FALSE(manager->IsExpirationTimerRunningForTesting());
+
+  // ForceRefresh retries and transitions to kFailedTransient on HTTP 403
+  // Forbidden (which schedules a backoff timer).
+  ExpectStateTransitionTo(
+      observer, manager.get(),
+      ProvisioningDomainProxyConfig::State::kFailedTransient);
+  manager->ForceRefresh();
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestUrl, "", net::HTTP_FORBIDDEN);
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
+            manager->state());
+  EXPECT_TRUE(manager->IsExpirationTimerRunningForTesting());
+
+  // Another ForceRefresh recovers when the server responds with valid PvD JSON.
+  ExpectStateTransitionTo(observer, manager.get(),
+                          ProvisioningDomainProxyConfig::State::kValid);
+  manager->ForceRefresh();
+  EXPECT_TRUE(manager->is_refresh_in_progress());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestUrl, kTestPvdJson));
+
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, manager->state());
+  EXPECT_EQ(2u, manager->fetched_config().proxy_endpoints.size());
+  EXPECT_EQ(3u, manager->fetched_config().routing_rules.size());
+
+  manager->RemoveObserver(&observer);
 }
 
 TEST_F(ProxyProvisioningDomainManagerTest,

@@ -21,39 +21,39 @@ namespace enterprise_net {
 
 namespace {
 
-bool IsTransientHttpError(int net_error, std::optional<int> response_code) {
+ProvisioningDomainProxyConfig::State ClassifyHttpError(
+    int net_error,
+    std::optional<int> response_code) {
   // Network / Socket errors
   if (net_error != net::OK) {
-    // Permanent network/client errors: certificate failures, browser blocks,
-    // invalid URLs, unknown URL scheme.
+    if (net_error == net::ERR_INVALID_URL ||
+        net_error == net::ERR_UNKNOWN_URL_SCHEME) {
+      return ProvisioningDomainProxyConfig::State::kFailedPermanent;
+    }
+
     if (net::IsCertificateError(net_error) ||
         net::IsClientCertificateError(net_error) ||
-        net::IsRequestBlockedError(net_error) ||
-        net_error == net::ERR_INVALID_URL ||
-        net_error == net::ERR_UNKNOWN_URL_SCHEME) {
-      return false;
+        net::IsRequestBlockedError(net_error)) {
+      return ProvisioningDomainProxyConfig::State::kFailedBlocked;
     }
 
     // Other net errors are considered to be transient.
-    return true;
+    return ProvisioningDomainProxyConfig::State::kFailedTransient;
   }
 
   // HTTP Status Codes
   if (response_code.has_value()) {
     int code = *response_code;
-    // 5xx errors are transient.
-    if (code / 100 == 5) {
-      return true;
-    }
-    // 408 and 429 are transient.
-    if (code == net::HTTP_TOO_MANY_REQUESTS ||
+    // 5xx, 401, 403, 408, and 429 are transient.
+    if (code / 100 == 5 || code == net::HTTP_UNAUTHORIZED ||
+        code == net::HTTP_FORBIDDEN || code == net::HTTP_TOO_MANY_REQUESTS ||
         code == net::HTTP_REQUEST_TIMEOUT) {
-      return true;
+      return ProvisioningDomainProxyConfig::State::kFailedTransient;
     }
-    return false;
+    return ProvisioningDomainProxyConfig::State::kFailedBlocked;
   }
 
-  return true;
+  return ProvisioningDomainProxyConfig::State::kFailedTransient;
 }
 
 ProvisioningDomainProxyConfig::State ClassifyFetchError(
@@ -85,10 +85,7 @@ ProvisioningDomainProxyConfig::State ClassifyFetchError(
       }
 
     case ProvisioningDomainFetchResultStatus::kHttpError:
-      if (IsTransientHttpError(error.net_error, error.response_code)) {
-        return ProvisioningDomainProxyConfig::State::kFailedTransient;
-      }
-      return ProvisioningDomainProxyConfig::State::kFailedPermanent;
+      return ClassifyHttpError(error.net_error, error.response_code);
 
     case ProvisioningDomainFetchResultStatus::kSuccess:
       NOTREACHED();

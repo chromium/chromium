@@ -349,12 +349,12 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
 }
 
 // Verifies that a 404 Not Found response during PvD fetch causes the domain
-// to enter a permanent failure state.
+// to enter a blocked failure state.
 IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
                        PvdFetchFailure_404NotFound) {
   VerifyPvdFetchFailure(
       net::HttpStatusCode::HTTP_NOT_FOUND, "Not Found", "text/plain",
-      enterprise_net::ProvisioningDomainProxyConfig::State::kFailedPermanent);
+      enterprise_net::ProvisioningDomainProxyConfig::State::kFailedBlocked);
 }
 
 // Verifies that a malformed JSON response during PvD fetch transitions the

@@ -912,6 +912,62 @@ TEST_F(EnterpriseProxyServiceTest, MalformedPolicyDoesNotRefresh) {
   service_->RemoveObserver(&observer);
 }
 
+TEST_F(EnterpriseProxyServiceTest,
+       ForceRefreshAllConfigsRecoversFromHttp4xxErrors) {
+  CreateService();
+  MockObserver observer;
+  service_->AddObserver(&observer);
+
+  // Initial fetch fails with HTTP 404 Not Found -> kFailedBlocked.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  SetPolicyDomains({kTestDomain1});
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", "", net::HTTP_NOT_FOUND);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  ASSERT_EQ(1u, service_->GetProvisioningDomainConfigs().size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,
+            service_->GetProvisioningDomainConfigs()[0].state);
+
+  // ForceRefreshAllConfigs() retries kFailedBlocked and transitions to
+  // kFailedTransient on HTTP 403 Forbidden.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  service_->ForceRefreshAllConfigs();
+  EXPECT_TRUE(service_->IsRefreshInProgress());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", "", net::HTTP_FORBIDDEN);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  ASSERT_EQ(1u, service_->GetProvisioningDomainConfigs().size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
+            service_->GetProvisioningDomainConfigs()[0].state);
+
+  // Another ForceRefreshAllConfigs() retries and recovers to kValid.
+  EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged()).Times(2);
+  service_->ForceRefreshAllConfigs();
+  EXPECT_TRUE(service_->IsRefreshInProgress());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  ASSERT_EQ(1u, service_->GetProvisioningDomainConfigs().size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid,
+            service_->GetProvisioningDomainConfigs()[0].state);
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+
+  service_->RemoveObserver(&observer);
+}
+
 TEST_F(EnterpriseProxyServiceTest, NetLogEmittedOnShutdownDuringNetworkPause) {
   CreateService();
 
