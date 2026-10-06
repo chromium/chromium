@@ -1678,18 +1678,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   composebox::TabDiff allDiff =
       composebox::ComputeTabDiff(alreadyProcessedIDs, selectedWebStateIDs);
 
-  // If the user explicitly selects or attaches a tab that was originally
-  // auto-attached, promote it to a user attachment (`isAutoAdded = NO`). This
-  // ensures the tab is preserved when subsequent active tab navigations occur.
   if (!autoAdded) {
     for (const web::WebStateID& webStateID : selectedWebStateIDs) {
       _removedWebStateIDs.erase(webStateID);
-    }
-    for (ComposeboxInputItem* item in _items.containedItems) {
-      web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
-      if (webStateID.valid() && selectedWebStateIDs.contains(webStateID)) {
-        item.isAutoAdded = NO;
-      }
     }
   }
 

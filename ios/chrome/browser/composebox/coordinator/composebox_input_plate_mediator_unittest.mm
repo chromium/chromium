@@ -1849,4 +1849,82 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(consumer.items.count, 0U);
 }
 
+// Tests that confirming a tab picker selection that adds another tab preserves
+// `isAutoAdded` on the preselected auto-added tab, and that deselecting and
+// then reselecting that tab re-attaches it as a manual attachment.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       TabPickerPreservesAutoAddedStateForPreselectedTab) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_web_state);
+  web::WebStateID active_id = active_web_state->GetUniqueIdentifier();
+
+  auto second_web_state = std::make_unique<web::FakeWebState>();
+  web::WebStateID second_id = second_web_state->GetUniqueIdentifier();
+
+  // Mark the tabs as loading so that tab picker attachments wait for the page
+  // load. Otherwise, page context extraction fails synchronously for a
+  // `FakeWebState` without an HTTP(S) URL, which removes the attached item.
+  active_web_state->SetLoading(true);
+  second_web_state->SetLoading(true);
+
+  web_state_list_->InsertWebState(std::move(second_web_state),
+                                  WebStateList::InsertionParams::AtIndex(1));
+
+  // Create an auto-added item for the active tab.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kCurrentTab];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* auto_added_item = consumer.items.firstObject;
+  auto_added_item.isAutoAdded = YES;
+
+  // 1. Selecting a second tab in the tab picker while keeping the preselected
+  // auto-added tab checked must preserve `isAutoAdded == YES` on the first tab.
+  [mediator attachSelectedTabsWithWebStateIDs:{active_id, second_id}
+                            cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer.items.count, 2U);
+  EXPECT_TRUE([consumer.items containsObject:auto_added_item]);
+  EXPECT_TRUE(auto_added_item.isAutoAdded);
+
+  // 2. Deselecting the auto-added tab in the tab picker removes its item.
+  [mediator attachSelectedTabsWithWebStateIDs:{second_id} cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer.items.count, 1U);
+  EXPECT_FALSE([consumer.items containsObject:auto_added_item]);
+
+  // 3. Reselecting the tab attaches it as a manual attachment
+  // (`isAutoAdded == NO`).
+  [mediator attachSelectedTabsWithWebStateIDs:{active_id, second_id}
+                            cachedWebStateIDs:{}];
+  ASSERT_EQ(consumer.items.count, 2U);
+  for (NSUInteger i = 0; i < consumer.items.count; ++i) {
+    EXPECT_FALSE(consumer.items[i].isAutoAdded) << "Item at index " << i;
+  }
+}
+
 }  // namespace
