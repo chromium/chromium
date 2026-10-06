@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
-#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
 
 class GURL;
 

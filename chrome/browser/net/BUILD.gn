@@ -91,6 +91,7 @@ source_set("net") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/proxy_resolver/public/mojom",
+    "//services/proxy_resolver/public/mojom:system_proxy_resolver",
     "//ui/base/unowned_user_data",
     "//url",
   ]

@@ -32,7 +32,7 @@
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_service.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
 #include "net/test/test_with_task_environment.h"
-#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
 #include "services/proxy_resolver_win/winhttp_api_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

@@ -25,7 +25,7 @@ enum class MacProxyResolutionStatus {
 
   kMaxValue = kAborted,
 };
-// LINT.ThenChange(//services/proxy_resolver/public/mojom/proxy_resolver.mojom:
+// LINT.ThenChange(//services/proxy_resolver/public/mojom/system_proxy_resolver.mojom:
 //                 MacProxyStatus)
 
 }  // namespace net

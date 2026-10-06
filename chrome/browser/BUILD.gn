@@ -1499,6 +1499,7 @@ source_set("core") {
       "//media/mojo/services",
       "//sandbox/win:sandbox",
       "//services/proxy_resolver/public/mojom",
+      "//services/proxy_resolver/public/mojom:system_proxy_resolver",
       "//third_party/crashpad/crashpad/client",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",

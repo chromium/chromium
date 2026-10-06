@@ -7,7 +7,7 @@
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
-#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom-shared.h"
+#include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom-shared.h"
 
 namespace mojo {
 

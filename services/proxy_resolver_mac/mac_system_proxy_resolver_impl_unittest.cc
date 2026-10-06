@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/proxy_resolution/mac/mac_proxy_resolution_status.h"
 #include "net/proxy_resolution/proxy_list.h"
-#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
 #include "services/proxy_resolver_mac/mac_api_wrapper/mac_api_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

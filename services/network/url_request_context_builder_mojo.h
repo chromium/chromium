@@ -14,6 +14,10 @@
 #include "services/network/url_request_context_owner.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)

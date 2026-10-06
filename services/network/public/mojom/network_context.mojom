@@ -85,6 +85,7 @@ import "services/network/public/mojom/web_transport.mojom";
 import "services/network/public/mojom/websocket.mojom";
 import "services/network/public/mojom/x509_certificate.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
+import "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";

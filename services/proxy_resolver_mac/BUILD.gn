@@ -23,6 +23,7 @@ component("proxy_resolver_mac") {
     "//net",
     "//services/network/public/cpp",
     "//services/proxy_resolver/public/mojom",
+    "//services/proxy_resolver/public/mojom:system_proxy_resolver",
   ]
 
   defines = [ "IS_PROXY_RESOLVER_MAC_IMPL" ]
@@ -39,6 +40,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/proxy_resolver/public/mojom",
+    "//services/proxy_resolver/public/mojom:system_proxy_resolver",
     "//services/proxy_resolver_mac/mac_api_wrapper",
     "//testing/gtest",
     "//url",

@@ -1985,6 +1985,7 @@ mojom("mojom") {
     "//mojo/public/mojom/base:protobuf_support",
     "//sandbox/policy/mojom",
     "//services/proxy_resolver/public/mojom",
+    "//services/proxy_resolver/public/mojom:system_proxy_resolver",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
     "//url/mojom:url_mojom_scheme_host_port",

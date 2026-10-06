@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_NET_CHROME_MOJO_PROXY_RESOLVER_MAC_H_
 
 #include "base/time/time.h"
-#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/proxy_resolver/public/mojom/system_proxy_resolver.mojom.h"
 #include "url/gurl.h"
 
 // `MacSystemProxyResolver` that acts as a proxy to the `proxy_resolver_mac`

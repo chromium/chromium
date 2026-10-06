@@ -12,7 +12,6 @@ mojom("mojom") {
     "//services/network/public/mojom:mojom_ip_address",
     "//services/network/public/mojom:mojom_network_anonymization_key",
     "//services/network/public/mojom:mojom_network_param",
-    "//services/network/public/mojom:mojom_proxy_config",
     "//url/mojom:url_mojom_gurl",
   ]
   public_deps = [ "//sandbox/policy/mojom" ]
@@ -45,6 +44,27 @@ mojom("mojom") {
       ]
     },
   ]
+}
+
+# Kept separate from :mojom since it depends on proxy_config.mojom, which is
+# heavy to include, and :mojom is included by many translation units.
+mojom("system_proxy_resolver") {
+  generate_blink = true
+  generate_java = true
+  sources = [ "system_proxy_resolver.mojom" ]
+  deps = [
+    "//services/network/public/mojom:mojom_proxy_config",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  public_deps = [ "//sandbox/policy/mojom" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = []
 
   if (is_win) {
     cpp_typemaps += [
