@@ -393,19 +393,22 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
           syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable)
           .empty());
 
-  // 2. When screenshot feature is disabled.
+  // 2. When screenshot feature is disabled, only unflagged capabilities are
+  // reported.
   {
     base::test::ScopedFeatureList features;
     features.InitAndDisableFeature(
         features::kGlicExperimentalTriggeringScreenshot);
 
-    EXPECT_TRUE(GlicExperimentalTriggeringCoordinator::GetCapabilities(
-                    syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady)
-                    .empty());
-    EXPECT_TRUE(
+    const base::flat_set<std::string> expected = {
+        kGlicCapabilityStructuredYields};
+    EXPECT_EQ(GlicExperimentalTriggeringCoordinator::GetCapabilities(
+                  syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
+              expected);
+    EXPECT_EQ(
         GlicExperimentalTriggeringCoordinator::GetCapabilities(
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn)
-            .empty());
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn),
+        expected);
   }
 
   // 3. When screenshot feature is enabled.
@@ -414,13 +417,15 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
     features.InitAndEnableFeature(
         features::kGlicExperimentalTriggeringScreenshot);
 
+    const base::flat_set<std::string> expected = {
+        kGlicCapabilityScreenshot, kGlicCapabilityStructuredYields};
     EXPECT_EQ(GlicExperimentalTriggeringCoordinator::GetCapabilities(
                   syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
-              base::flat_set<std::string>{kGlicCapabilityScreenshot});
+              expected);
     EXPECT_EQ(
         GlicExperimentalTriggeringCoordinator::GetCapabilities(
             syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn),
-        base::flat_set<std::string>{kGlicCapabilityScreenshot});
+        expected);
   }
 }
 
