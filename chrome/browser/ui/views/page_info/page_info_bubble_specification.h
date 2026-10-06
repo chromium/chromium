@@ -66,6 +66,10 @@ class PageInfoBubbleSpecification {
     // bubble is clicked, and enables showing the extensions menu item.
     Builder& SetOnExtensionsClickedCallback(base::RepeatingClosure callback);
 
+    // Sets the surface from which the page info bubble is opened (e.g.
+    // Contextual Tasks side panel toolbar Super G button).
+    Builder& SetSurface(PageInfo::Surface surface);
+
     std::unique_ptr<PageInfoBubbleSpecification> Build();
 
    private:
@@ -90,6 +94,7 @@ class PageInfoBubbleSpecification {
   void HideExtendedSiteInfo();
   void ShowPermissionPage(ContentSettingsType type);
   void SetOnExtensionsClickedCallback(base::RepeatingClosure callback);
+  void SetSurface(PageInfo::Surface surface);
 
   views::BubbleAnchor anchor();
   gfx::NativeWindow parent_window();
@@ -103,6 +108,7 @@ class PageInfoBubbleSpecification {
   std::optional<ContentSettingsType> permission_page_type();
   bool should_show_extensions_menu() const;
   const base::RepeatingClosure& get_open_extensions_menu_callback() const;
+  PageInfo::Surface surface() const;
 
  private:
   views::BubbleAnchor anchor_;
@@ -117,6 +123,7 @@ class PageInfoBubbleSpecification {
   bool show_extended_site_info_ = true;
   std::optional<ContentSettingsType> permission_page_type_;
   base::RepeatingClosure open_extensions_menu_callback_;
+  PageInfo::Surface surface_ = PageInfo::Surface::kDefault;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_SPECIFICATION_H_

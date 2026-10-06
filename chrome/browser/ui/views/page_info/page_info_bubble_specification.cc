@@ -83,6 +83,12 @@ PageInfoBubbleSpecification::Builder::SetOnExtensionsClickedCallback(
   return *this;
 }
 
+PageInfoBubbleSpecification::Builder&
+PageInfoBubbleSpecification::Builder::SetSurface(PageInfo::Surface surface) {
+  page_info_bubble_specification_->SetSurface(surface);
+  return *this;
+}
+
 void PageInfoBubbleSpecification::Builder::ValidateSpecification() {
   CHECK(page_info_bubble_specification_->web_contents());
 }
@@ -195,4 +201,12 @@ bool PageInfoBubbleSpecification::show_extended_site_info() {
 std::optional<ContentSettingsType>
 PageInfoBubbleSpecification::permission_page_type() {
   return permission_page_type_;
+}
+
+void PageInfoBubbleSpecification::SetSurface(PageInfo::Surface surface) {
+  surface_ = surface;
+}
+
+PageInfo::Surface PageInfoBubbleSpecification::surface() const {
+  return surface_;
 }

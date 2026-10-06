@@ -165,6 +165,14 @@ class PageInfo : private content_settings::CookieControlsObserver,
 #endif  // BUILDFLAG(IS_ANDROID)
   };
 
+  enum class Surface {
+    // Standard PageInfo bubble (e.g. omnibox page info or unspecified surface).
+    kDefault = 0,
+    // Contextual Tasks side panel toolbar Super G button.
+    kContextualTasks = 1,
+    kMaxValue = kContextualTasks,
+  };
+
   // Creates a PageInfo for the passed |url| using the given |ssl| status
   // object to determine the status of the site's connection. Computes the UI
   // inputs and records page info opened action. It is assumed that this is
@@ -172,7 +180,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // closed.
   PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
            content::WebContents* web_contents,
-           const GURL& url);
+           const GURL& url,
+           Surface surface = Surface::kDefault);
 
   PageInfo(const PageInfo&) = delete;
   PageInfo& operator=(const PageInfo&) = delete;
@@ -503,6 +512,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
   bool is_subscribed_to_permission_change_for_testing = false;
 
   bool has_recorded_permission_metrics_ = false;
+
+  Surface surface_ = Surface::kDefault;
 
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };

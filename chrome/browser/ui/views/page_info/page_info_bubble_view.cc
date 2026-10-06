@@ -187,7 +187,8 @@ PageInfoBubbleView::PageInfoBubbleView(
     PageInfoClosingCallback closing_callback,
     bool allow_extended_site_info,
     ChromePageInfoDelegate::GetBrowserCallback get_browser_callback,
-    base::RepeatingClosure open_extensions_menu_callback)
+    base::RepeatingClosure open_extensions_menu_callback,
+    PageInfo::Surface surface)
     : PageInfoBubbleViewBase(anchor,
                              anchor_rect,
                              parent_window,
@@ -208,7 +209,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents(),
                                                std::move(get_browser_callback)),
-      web_contents(), url);
+      web_contents(), url, surface);
   view_factory_ = std::make_unique<PageInfoViewFactory>(
       presenter_.get(), ui_delegate_.get(), this, allow_extended_site_info,
       std::move(open_extensions_menu_callback));
@@ -256,13 +257,14 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
                                           web_contents, url);
   }
 
-  PageInfoBubbleView* const bubble = new PageInfoBubbleView(
-      anchor, anchor_rect, parent_view, web_contents, url,
-      specification->initialized_callback(),
-      specification->page_info_closing_callback(),
-      specification->show_extended_site_info(),
-      specification->get_browser_callback(),
-      specification->get_open_extensions_menu_callback());
+  PageInfoBubbleView* const bubble =
+      new PageInfoBubbleView(anchor, anchor_rect, parent_view, web_contents,
+                             url, specification->initialized_callback(),
+                             specification->page_info_closing_callback(),
+                             specification->show_extended_site_info(),
+                             specification->get_browser_callback(),
+                             specification->get_open_extensions_menu_callback(),
+                             specification->surface());
   if (specification->permission_page_type().has_value()) {
     bubble->OpenPermissionPage(specification->permission_page_type().value());
   }

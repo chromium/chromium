@@ -102,3 +102,25 @@ TEST_F(PageInfoBubbleSpecificationTest,
   specification->get_browser_callback().Run(test_web_contents.get());
   EXPECT_TRUE(callback_called);
 }
+
+TEST_F(PageInfoBubbleSpecificationTest, SurfaceConfigured) {
+  auto anchor_view = std::make_unique<views::View>();
+  auto const test_web_contents = CreateTestWebContents();
+  GURL test_url("https://www.example.com");
+
+  std::unique_ptr<PageInfoBubbleSpecification> default_specification =
+      PageInfoBubbleSpecification::Builder(
+          views::BubbleAnchor(anchor_view.get()), gfx::NativeWindow(),
+          test_web_contents.get(), test_url)
+          .Build();
+  EXPECT_EQ(PageInfo::Surface::kDefault, default_specification->surface());
+
+  std::unique_ptr<PageInfoBubbleSpecification> contextual_tasks_specification =
+      PageInfoBubbleSpecification::Builder(
+          views::BubbleAnchor(anchor_view.get()), gfx::NativeWindow(),
+          test_web_contents.get(), test_url)
+          .SetSurface(PageInfo::Surface::kContextualTasks)
+          .Build();
+  EXPECT_EQ(PageInfo::Surface::kContextualTasks,
+            contextual_tasks_specification->surface());
+}

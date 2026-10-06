@@ -65,7 +65,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       bool allow_extended_site_info,
       ChromePageInfoDelegate::GetBrowserCallback get_browser_callback,
       base::RepeatingClosure open_extensions_menu_callback =
-          base::RepeatingClosure());
+          base::RepeatingClosure(),
+      PageInfo::Surface surface = PageInfo::Surface::kDefault);
 
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize(

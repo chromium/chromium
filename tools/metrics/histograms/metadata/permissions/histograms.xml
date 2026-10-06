@@ -116,6 +116,13 @@ chromium-metrics-reviews@google.com.
   <variant name="VideoCapture"/>
 </variants>
 
+<variants name="PageInfoSurface">
+  <variant name="ContextualTasks"
+      summary="Triggered from the Contextual Tasks toolbar Super G button."/>
+  <variant name="Default"
+      summary="Triggered from the default Page Info surface (e.g. omnibox)."/>
+</variants>
+
 <variants name="PermissionRequestGesture">
   <variant name=".Gesture" summary="With user gesture"/>
   <variant name=".NoGesture" summary="Without user gesture"/>
@@ -2337,6 +2344,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebsiteSettings.Action.{PageInfoSurface}"
+    enum="WebsiteSettingsAction" expires_after="2027-10-05">
+  <owner>estark@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Tracks actions with the website setting (a.k.a. page info / origin info)
+    bubble, such as opening it up or clicking on the Connection tab.
+    {PageInfoSurface}
+  </summary>
+  <token key="PageInfoSurface" variants="PageInfoSurface"/>
+</histogram>
+
 <histogram name="WebsiteSettings.AllSitesAction2"
     enum="WebSiteSettingsAllSitesAction2" expires_after="2027-10-05">
   <owner>sauski@google.com</owner>
@@ -2376,6 +2397,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebsiteSettings.OriginInfo.PermissionChanged.Allowed.{PageInfoSurface}"
+    enum="ContentType" expires_after="2027-10-05">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission is set to 'Allowed' in the Page Info dialog.
+    Records the content type. {PageInfoSurface}
+  </summary>
+  <token key="PageInfoSurface" variants="PageInfoSurface"/>
+</histogram>
+
 <histogram name="WebsiteSettings.OriginInfo.PermissionChanged.Blocked"
     enum="ContentType" expires_after="2027-06-16">
   <owner>andypaicu@chromium.org</owner>
@@ -2389,6 +2424,38 @@ chromium-metrics-reviews@google.com.
     Note: The values of this metric collected for Chrome 49 (early 2016) are
     innacurate and should not be trusted. crbug.com/589255.
   </summary>
+</histogram>
+
+<histogram
+    name="WebsiteSettings.OriginInfo.PermissionChanged.Blocked.{PageInfoSurface}"
+    enum="ContentType" expires_after="2027-10-05">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission is set to 'Blocked' in the Page Info dialog.
+    Records the content type. {PageInfoSurface}
+  </summary>
+  <token key="PageInfoSurface" variants="PageInfoSurface"/>
+</histogram>
+
+<histogram
+    name="WebsiteSettings.OriginInfo.PermissionChanged.{PageInfoSurface}"
+    enum="ContentType" expires_after="2027-10-05">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission is changed in the Page Info dialog. Records
+    the content type. {PageInfoSurface}
+  </summary>
+  <token key="PageInfoSurface" variants="PageInfoSurface"/>
 </histogram>
 
 </histograms>

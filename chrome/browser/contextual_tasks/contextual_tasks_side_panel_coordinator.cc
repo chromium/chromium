@@ -76,6 +76,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -160,10 +161,12 @@ std::unique_ptr<content::WebContents> CreateWebContents(
       content::WebContents::Create(create_params);
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
 
-  // Create PermissionRequestManager explicitly for this WebContents.
-  // The permission bubble will anchor to the browser window via
-  // BrowserWindowInterface.
+  // Create PermissionRequestManager and PermissionRecoverySuccessRateTracker
+  // explicitly for this WebContents. The permission bubble will anchor to
+  // the browser window via BrowserWindowInterface.
   permissions::PermissionRequestManager::CreateForWebContents(
+      web_contents.get());
+  permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       web_contents.get());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -1604,6 +1607,7 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
   PageInfoBubbleSpecification::Builder builder(
       specification_anchor, browser_view->GetWidget()->GetNativeWindow(),
       contents, contents->GetVisibleURL());
+  builder.SetSurface(PageInfo::Surface::kContextualTasks);
   // The panel's WebContents is not a tab, so page info's default lookup
   // (BrowserCollection::FindBrowserWithTab()) cannot resolve a browser for it.
   // Supply the hosting browser window instead; without it, actions such as

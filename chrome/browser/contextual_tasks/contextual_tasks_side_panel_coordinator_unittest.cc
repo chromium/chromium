@@ -32,6 +32,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -1368,6 +1369,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       GetWebContentsForTaskForTesting(expected_task.GetTaskId());
   ASSERT_TRUE(panel_contents);
   EXPECT_TRUE(extensions::TabHelper::FromWebContents(panel_contents));
+  EXPECT_TRUE(
+      permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
+          panel_contents));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 

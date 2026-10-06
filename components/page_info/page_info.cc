@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -317,6 +319,35 @@ const char kPageInfoTimeActionPrefix[] = "Security.PageInfo.TimeOpen.Action";
 const char kPageInfoTimeNoActionPrefix[] =
     "Security.PageInfo.TimeOpen.NoAction";
 const base::TimeDelta kRecordPageInfoPermissionChangeWindow = base::Minutes(1);
+
+std::string_view GetSurfaceHistogramSuffix(PageInfo::Surface surface) {
+  switch (surface) {
+    case PageInfo::Surface::kContextualTasks:
+      return ".ContextualTasks";
+    case PageInfo::Surface::kDefault:
+      return ".Default";
+  }
+}
+
+template <typename T>
+void RecordSlicedHistogramEnumeration(std::string_view base_histogram,
+                                      PageInfo::Surface surface,
+                                      T sample) {
+  base::UmaHistogramEnumeration(base_histogram, sample);
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram, GetSurfaceHistogramSuffix(surface)}),
+      sample);
+}
+
+void RecordSlicedContentSettingsHistogram(std::string_view base_histogram,
+                                          PageInfo::Surface surface,
+                                          ContentSettingsType type) {
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      std::string(base_histogram), type);
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      base::StrCat({base_histogram, GetSurfaceHistogramSuffix(surface)}), type);
+}
+
 }  // namespace
 
 using PermissionInfo = PageInfo::PermissionInfo;
@@ -328,7 +359,8 @@ PermissionInfo::~PermissionInfo() = default;
 
 PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
                    content::WebContents* web_contents,
-                   const GURL& url)
+                   const GURL& url,
+                   Surface surface)
     : web_contents_(web_contents->GetWeakPtr()),
       delegate_(std::move(delegate)),
       show_info_bar_(false),
@@ -340,7 +372,8 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
       show_ssl_decision_revoke_button_(false),
       did_revoke_user_ssl_decisions_(false),
       show_change_password_buttons_(false),
-      did_perform_action_(false) {
+      did_perform_action_(false),
+      surface_(surface) {
   DCHECK(delegate_);
   security_level_ = delegate_->GetSecurityLevel();
   visible_security_state_for_metrics_ = delegate_->GetVisibleSecurityState();
@@ -476,8 +509,8 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
   delegate_->OnPageInfoActionOccurred(action);
 #endif
 
-  base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
-                                action);
+  RecordSlicedHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                   surface_, action);
 
   if (web_contents_) {
     ukm::builders::PageInfoBubble(
@@ -631,15 +664,15 @@ void PageInfo::OnSitePermissionChanged(
 
   // Count how often a permission for a specific content type is changed using
   // the Page Info UI.
-  content_settings_uma_util::RecordContentSettingsHistogram(
-      "WebsiteSettings.OriginInfo.PermissionChanged", type);
+  RecordSlicedContentSettingsHistogram(
+      "WebsiteSettings.OriginInfo.PermissionChanged", surface_, type);
 
   if (setting && info->delegate().IsAnyPermissionAllowed(*setting)) {
-    content_settings_uma_util::RecordContentSettingsHistogram(
-        "WebsiteSettings.OriginInfo.PermissionChanged.Allowed", type);
+    RecordSlicedContentSettingsHistogram(
+        "WebsiteSettings.OriginInfo.PermissionChanged.Allowed", surface_, type);
   } else if (setting && info->delegate().IsBlocked(*setting)) {
-    content_settings_uma_util::RecordContentSettingsHistogram(
-        "WebsiteSettings.OriginInfo.PermissionChanged.Blocked", type);
+    RecordSlicedContentSettingsHistogram(
+        "WebsiteSettings.OriginInfo.PermissionChanged.Blocked", surface_, type);
   }
 
   // This is technically redundant given the histogram above, but putting the
@@ -810,8 +843,10 @@ void PageInfo::OnSitePermissionChanged(
         permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
             web_contents_.get());
 
-    permission_tracker->PermissionStatusChanged(
-        type, ToContentSettingForMetrics(info, setting), show_info_bar_);
+    if (permission_tracker) {
+      permission_tracker->PermissionStatusChanged(
+          type, ToContentSettingForMetrics(info, setting), show_info_bar_);
+    }
   }
 
   // Refresh the UI to reflect the new setting.
