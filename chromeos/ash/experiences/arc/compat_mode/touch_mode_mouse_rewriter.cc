@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/experiences/arc/compat_mode/metrics.h"
 #include "ui/aura/window_tree_host.h"
@@ -33,7 +34,8 @@ constexpr base::TimeDelta kSmoothScrollEventInterval = base::Milliseconds(20);
 TouchModeMouseRewriter::TouchModeMouseRewriter() = default;
 
 TouchModeMouseRewriter::~TouchModeMouseRewriter() {
-  std::set<aura::WindowTreeHost*> unique_hosts(hosts_.begin(), hosts_.end());
+  std::set<raw_ptr<aura::WindowTreeHost>> unique_hosts(hosts_.begin(),
+                                                       hosts_.end());
   for (aura::WindowTreeHost* host : unique_hosts) {
     host->GetEventSource()->RemoveEventRewriter(this);
   }
