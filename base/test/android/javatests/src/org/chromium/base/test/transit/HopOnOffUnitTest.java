@@ -108,7 +108,7 @@ public class HopOnOffUnitTest {
 
     private static <T extends Station<?>> T hopOnTo(
             Activity activity, T station, Facility<?>... facilities) throws Throwable {
-        runTransition(() -> TrafficControl.hopOnAt(activity, station, facilities));
+        runTransition(() -> Triggers.noopTo().hopOnTo(activity, station, facilities));
         return station;
     }
 

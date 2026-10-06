@@ -310,6 +310,7 @@ public class TabGridDialogTest {
                             () -> cta.getTabModelSelectorSupplier().get().getTotalTabCount());
             if (tabCount == 0) {
                 addBlankTabs(cta, false, 1);
+                LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
             } else {
                 leaveTabSwitcher(cta);
             }
