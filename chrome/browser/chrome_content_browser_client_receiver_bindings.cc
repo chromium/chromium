@@ -250,7 +250,13 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
   }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  if (safe_browsing_service_) {
+  // Profiles that disable keyed services by default aren't used for browsing
+  // the web, so there is nothing for Safe Browsing to do in them.
+  // SafeBrowsingService doesn't track these profiles either (see
+  // `SafeBrowsingServiceImpl::OnProfileAdded()`).
+  if (safe_browsing_service_ &&
+      !AreKeyedServicesDisabledForProfileByDefault(Profile::FromBrowserContext(
+          render_process_host->GetBrowserContext()))) {
     registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
         base::BindRepeating(
             &MaybeCreateSafeBrowsingForRenderer,
