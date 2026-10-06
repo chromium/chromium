@@ -46,23 +46,26 @@ ContentCaptureDeviceBrowserTestBase::~ContentCaptureDeviceBrowserTestBase() =
 void ContentCaptureDeviceBrowserTestBase::ChangePageContentColor(
     SkColor color) {
   // See the HandleRequest() method for the original documents being modified
-  // here.
-  std::string script;
-  const std::string color_string =
-      base::StringPrintf("%02x%02x%02x", SkColorGetR(color), SkColorGetG(color),
-                         SkColorGetB(color));
+  // here. Modify the target frame's background color in-place rather than
+  // navigating the cross-site iframe to a new URL on each color change; with
+  // RenderDocument enabled for subframes, navigating the iframe swaps its
+  // RenderFrameHost and child surface, which can briefly expose the main
+  // frame's white background before the new subframe surface embeds.
+  const std::string script = base::StringPrintf(
+      "document.body.style.backgroundColor = '#%02x%02x%02x';",
+      SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
+  RenderFrameHost* target_frame = nullptr;
   if (IsCrossSiteCaptureTest()) {
-    const GURL& inner_frame_url =
-        embedded_test_server()->GetURL(kInnerFrameHostname, kInnerFramePath);
-    script = base::StringPrintf(
-        "document.getElementsByTagName('iframe')[0].src = '%s?color=%s';",
-        inner_frame_url.spec().c_str(), color_string.c_str());
+    target_frame =
+        ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+    CHECK(target_frame);
+    CHECK(target_frame->IsCrossProcessSubframe());
   } else {
-    script = base::StringPrintf("document.body.style.backgroundColor = '#%s';",
-                                color_string.c_str());
+    target_frame = shell()->web_contents()->GetPrimaryMainFrame();
   }
+  CHECK(target_frame);
 
-  CHECK(ExecJs(shell()->web_contents(), script));
+  CHECK(ExecJs(target_frame, script));
 }
 
 gfx::Size ContentCaptureDeviceBrowserTestBase::GetExpectedSourceSize() {
@@ -102,6 +105,16 @@ ContentCaptureDeviceBrowserTestBase::SnapshotCaptureParams() {
       IsFixedAspectRatioTest()
           ? media::ResolutionChangePolicy::FIXED_ASPECT_RATIO
           : media::ResolutionChangePolicy::ANY_WITHIN_LIMIT;
+  // Disable HiDPI auto-scaling so that WebContentsAutoScaler does not
+  // asynchronously change the capture scale override (e.g. from 1.0x to 1.5x)
+  // after the first 200x150 frame is captured. In cross-site iframe tests, an
+  // asynchronous scale change causes the main frame and child frame to resize
+  // in separate processes, which can briefly produce an intermediate frame
+  // where the main frame is at 1.5x (300x225) while the child frame's fallback
+  // surface is still at 1.0x (100x75).
+  // TODO(crbug.com/40944861): Add browser tests for HiDPI capture auto-scaling
+  // once scale changes can be synchronized across cross-site frames.
+  params.is_high_dpi_enabled = false;
   return params;
 }
 
@@ -147,13 +160,11 @@ void ContentCaptureDeviceBrowserTestBase::
   device_->AllocateAndStartWithReceiver(SnapshotCaptureParams(),
                                         capture_stack()->CreateFrameReceiver());
   RunUntilIdle();
-  // AllocateAndStart will not trigger 'started' event. The started event will
-  // be triggered when the first frame is captured successfully.
-  EXPECT_FALSE(capture_stack()->Started());
   EXPECT_FALSE(capture_stack()->ErrorOccurred());
   capture_stack()->ExpectNoLogMessages();
 
   WaitForFirstFrame();
+  EXPECT_TRUE(capture_stack()->Started());
 }
 
 void ContentCaptureDeviceBrowserTestBase::StopAndDeAllocate() {

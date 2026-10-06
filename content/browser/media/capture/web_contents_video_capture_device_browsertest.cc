@@ -12,11 +12,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
 #include "content/browser/media/capture/fake_video_capture_stack.h"
 #include "content/browser/media/capture/frame_test_util.h"
@@ -42,11 +42,8 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_switches.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "content/public/common/content_features.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -156,9 +153,11 @@ class WebContentsVideoCaptureDeviceBrowserTest
         const gfx::RectF iframe_in_frame_rect_f = TransformSimilarly(
             gfx::Rect(source_size), content_in_frame_rect_f, iframe_rect);
 
-        // viz::SoftwareRenderer does not do color space management. Otherwise
-        // (normal case), be strict about color differences.
-        const int max_color_diff = (IsSoftwareCompositingTest())
+        // viz::SoftwareRenderer does not do color space management, and bots
+        // without hardware GPUs may fall back to software compositing or
+        // SwiftShader at runtime. Otherwise (normal case), be strict about
+        // color differences.
+        const int max_color_diff = IsSoftwareOrSwiftShaderCompositing()
                                        ? kVeryLooseMaxColorDifference
                                        : kMaxColorDifference;
 
@@ -315,6 +314,15 @@ class WebContentsVideoCaptureDeviceBrowserTest
   }
 
  protected:
+  bool IsSoftwareOrSwiftShaderCompositing() const {
+    if (IsSoftwareCompositingTest()) {
+      return true;
+    }
+    auto* const gpu_data_manager = GpuDataManagerImpl::GetInstance();
+    return !gpu_data_manager || gpu_data_manager->IsGpuCompositingDisabled() ||
+           gpu_data_manager->GetGPUInfo().UsesSwiftShader();
+  }
+
   // Don't call this. Call <BaseClass>::GetExpectedSourceSize() instead.
   gfx::Size GetCapturedSourceSize() const final {
     return shell()
@@ -340,7 +348,6 @@ class WebContentsVideoCaptureDeviceBrowserTest
   void WaitForFirstFrame() final { WaitForFrameWithColor(SK_ColorBLACK); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<GlobalRenderFrameHostId> pinned_capture_id_;
 };
 
@@ -394,8 +401,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // errors-out because the WebContents is destroyed before the device is stopped.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug.com/328658521): It is also flaky on macOS.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
   DISABLED_ErrorsOutWhenWebContentsIsDestroyed
 #else
@@ -426,8 +432,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // changes.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug.com/328658521): It is also flaky on macOS.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ChangesTargettedRenderView DISABLED_ChangesTargettedRenderView
 #else
 #define MAYBE_ChangesTargettedRenderView ChangesTargettedRenderView
@@ -478,14 +483,8 @@ class WebContentsVideoCaptureDeviceBrowserTestAura
 };
 
 // Verifies capture still works if the WindowTreeHost is occluded.
-// TODO(crbug.com/372481179): Failing on win-asan.
-#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
-#define MAYBE_CapturesWhenOccluded DISABLED_CapturesWhenOccluded
-#else
-#define MAYBE_CapturesWhenOccluded CapturesWhenOccluded
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
-                       MAYBE_CapturesWhenOccluded) {
+                       CapturesWhenOccluded) {
   aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
   aura::test::DisableNativeWindowOcclusionTracking(window_tree_host);
   NavigateToInitialDocument();
@@ -513,11 +512,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 // reload. Regression test for http://crbug.com/916332.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug.com/328658521): It is also flaky on macOS.
-// TODO(crbug.com/372481179): Failing on win-asan.
-// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_WIN) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
 #else
 #define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
@@ -562,8 +557,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // session.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug.com/328658521): It is also flaky on macOS.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ResumesCaptureAfterCrossProcessNavigationWhileStopped \
   DISABLED_ResumesCaptureAfterCrossProcessNavigationWhileStopped
 #else
@@ -640,8 +634,7 @@ IN_PROC_BROWSER_TEST_F(
 // to be delivered, to ensure the client is up-to-date.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug/328419809): Also flaky on Mac.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SuspendsAndResumes DISABLED_SuspendsAndResumes
 #else
 #define MAYBE_SuspendsAndResumes SuspendsAndResumes
@@ -683,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // content is not changing.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug.com/328658521): It is also flaky on macOS.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_DeliversRefreshFramesUponRequest \
   DISABLED_DeliversRefreshFramesUponRequest
 #else
@@ -745,12 +737,6 @@ class WebContentsVideoCaptureDeviceBrowserTestP
       command_line->AppendSwitch(switches::kUseGpuInTests);
     }
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-    // Disable RenderDocument temporarily while we figure out why the test
-    // "CapturesContentChange" is flaky when we change RenderFrameHosts.
-    scoped_feature_list_.InitWithFeatures({}, {features::kRenderDocument});
-#endif
   }
 
   // Returns human-readable description of the test based on test parameters.
@@ -769,9 +755,6 @@ class WebContentsVideoCaptureDeviceBrowserTestP
              : "Detect"});
     return name;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -825,13 +808,7 @@ INSTANTIATE_TEST_SUITE_P(
 // and whether the main document contains a cross-site iframe.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug.com/328419809): Also flaky on Mac.
-// TODO(crbug.com/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
-// TODO(crbug.com/540031290): Also flaky on Win ASAN.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) ||                \
-    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) ||                          \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges
@@ -842,11 +819,13 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
   media::VideoPixelFormat expected_format = specified_format;
 
   if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
-    if (IsSoftwareCompositingTest()) {
-      expected_format = media::VideoPixelFormat::PIXEL_FORMAT_I420;
-    } else {
-      expected_format = media::VideoPixelFormat::PIXEL_FORMAT_NV12;
-    }
+    // Even in the GPU compositing test variant, bots without hardware GPU
+    // support may fall back to software compositing or SwiftShader at runtime,
+    // in which case FrameSinkVideoCaptureDevice::CanSupportNV12Format() returns
+    // false and selects I420.
+    expected_format = IsSoftwareOrSwiftShaderCompositing()
+                          ? media::VideoPixelFormat::PIXEL_FORMAT_I420
+                          : media::VideoPixelFormat::PIXEL_FORMAT_NV12;
   }
 
   SCOPED_TRACE(testing::Message()
