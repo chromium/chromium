@@ -224,10 +224,6 @@ public class KeyboardFocusRowManagerTest {
                 () -> mTabbedRootUiCoordinator.getSidePanelDevFeatureForTesting().toggle());
     }
 
-    // TODO(crbug.com/543500090): Fix and re-enable on android-14-tablet-landscape-arm64-rel
-    // (currently excluded in its test filter file).
-    // If this test flakes on another bot, please check the test history and disable it only for
-    // the specific problematic bot(s) rather than disabling the test across all bots.
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
