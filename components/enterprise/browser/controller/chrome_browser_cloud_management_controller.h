@@ -299,6 +299,11 @@ class ChromeBrowserCloudManagementController
     return report_scheduler_.get();
   }
 
+  enterprise_reporting::SaasUsageReportScheduler*
+  saas_usage_report_scheduler() {
+    return saas_usage_report_scheduler_.get();
+  }
+
  protected:
   void NotifyPolicyRegisterFinished(bool succeeded);
   void NotifyBrowserUnenrolled(bool succeeded);

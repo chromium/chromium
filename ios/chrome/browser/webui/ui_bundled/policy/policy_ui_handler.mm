@@ -22,6 +22,7 @@
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/report_scheduler.h"
+#import "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #import "components/policy/core/browser/policy_conversions.h"
 #import "components/policy/core/browser/webui/json_generation.h"
 #import "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
@@ -221,12 +222,32 @@ void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
   upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
-  auto* report_scheduler = GetApplicationContext()
-                               ->GetBrowserPolicyConnector()
-                               ->chrome_browser_cloud_management_controller()
-                               ->report_scheduler();
+
+  auto* browser_controller = GetApplicationContext()
+                                 ->GetBrowserPolicyConnector()
+                                 ->chrome_browser_cloud_management_controller();
   auto* profile_reporting_service = enterprise_reporting::
       CloudProfileReportingServiceFactoryIOS::GetForProfile(&profile_.get());
+
+  // Upload SaaS usage reports.
+  auto* browser_saas_scheduler =
+      browser_controller ? browser_controller->saas_usage_report_scheduler()
+                         : nullptr;
+  auto* profile_saas_scheduler =
+      profile_reporting_service
+          ? profile_reporting_service->saas_usage_report_scheduler()
+          : nullptr;
+
+  if (browser_saas_scheduler) {
+    browser_saas_scheduler->TriggerReport();
+  }
+  if (profile_saas_scheduler) {
+    profile_saas_scheduler->TriggerReport();
+  }
+
+  // Upload browser and profile reports.
+  auto* report_scheduler =
+      browser_controller ? browser_controller->report_scheduler() : nullptr;
   auto* profile_report_scheduler =
       profile_reporting_service ? profile_reporting_service->report_scheduler()
                                 : nullptr;

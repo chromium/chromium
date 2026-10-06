@@ -58,6 +58,7 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/webui/json_generation.h"
@@ -481,13 +482,32 @@ void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
   upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
-  auto* report_scheduler = g_browser_process->browser_policy_connector()
-                               ->chrome_browser_cloud_management_controller()
-                               ->report_scheduler();
 
+  auto* browser_controller = g_browser_process->browser_policy_connector()
+                                 ->chrome_browser_cloud_management_controller();
   auto* cloud_profile_reporting_service =
       enterprise_reporting::CloudProfileReportingServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
+
+  // Upload SaaS usage reports.
+  auto* browser_saas_scheduler =
+      browser_controller ? browser_controller->saas_usage_report_scheduler()
+                         : nullptr;
+  auto* profile_saas_scheduler =
+      cloud_profile_reporting_service
+          ? cloud_profile_reporting_service->saas_usage_report_scheduler()
+          : nullptr;
+
+  if (browser_saas_scheduler) {
+    browser_saas_scheduler->TriggerReport();
+  }
+  if (profile_saas_scheduler) {
+    profile_saas_scheduler->TriggerReport();
+  }
+
+  // Upload browser and profile reports.
+  auto* report_scheduler =
+      browser_controller ? browser_controller->report_scheduler() : nullptr;
   auto* profile_report_scheduler =
       cloud_profile_reporting_service
           ? cloud_profile_reporting_service->report_scheduler()

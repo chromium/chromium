@@ -10,12 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/enterprise/browser/reporting/browser_launch/browser_launch_event_controller.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
-#include "components/enterprise/browser/reporting/browser_launch/browser_launch_event_controller.h"
 
 class Profile;
 
@@ -31,6 +31,9 @@ class CloudProfileReportingService : public KeyedService,
   ~CloudProfileReportingService() override;
 
   ReportScheduler* report_scheduler() { return report_scheduler_.get(); }
+  SaasUsageReportScheduler* saas_usage_report_scheduler() {
+    return saas_usage_report_scheduler_.get();
+  }
 
   void CreateReportScheduler();
 

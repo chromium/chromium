@@ -195,13 +195,15 @@ export class PolicyAppElement extends CrLitElement {
     });
 
     // <if expr="not is_chromeos">
-    this.enableReportButton_ =
-        [
-          'CloudReportingEnabled',
-          'CloudProfileReportingEnabled',
-          'UserSecuritySignalsReporting',
-        ].map(p => !!policyGroups['chrome']?.policies[p]?.value)
-            .reduce((accumulator, current) => accumulator ||= current, false);
+    const isNonEmpty = (value: unknown) =>
+        Array.isArray(value) ? value.length > 0 : !!value;
+    this.enableReportButton_ = [
+      'CloudReportingEnabled',
+      'CloudProfileReportingEnabled',
+      'UserSecuritySignalsReporting',
+      'SaasUsageReportingDomainUrlsForBrowsers',
+      'SaasUsageReportingDomainUrlsForProfiles',
+    ].some(p => isNonEmpty(policyGroups['chrome']?.policies[p]?.value));
     // </if>
     this.reloadPoliciesDone_();
   }
