@@ -30,6 +30,19 @@ const char kLinkURL[] = "https://www.example.com/article";
 
 }  // namespace
 
+// Counts dismissal notifications from the coordinator.
+@interface FakeGeminiWebModalCoordinatorDelegate
+    : NSObject <GeminiWebModalCoordinatorDelegate>
+@property(nonatomic, assign) int dismissalCount;
+@end
+
+@implementation FakeGeminiWebModalCoordinatorDelegate
+- (void)geminiWebModalCoordinatorDidDismiss:
+    (GeminiWebModalCoordinator*)coordinator {
+  self.dismissalCount++;
+}
+@end
+
 class GeminiWebModalCoordinatorTest : public PlatformTest {
  public:
   GeminiWebModalCoordinatorTest() {
@@ -45,13 +58,12 @@ class GeminiWebModalCoordinatorTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
 
+    delegate_ = [[FakeGeminiWebModalCoordinatorDelegate alloc] init];
     coordinator_ = [[GeminiWebModalCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
-                               URL:GURL(kTestURL)
-                  dismissalHandler:^{
-                    dismissal_count_++;
-                  }];
+                               URL:GURL(kTestURL)];
+    coordinator_.delegate = delegate_;
   }
 
   ~GeminiWebModalCoordinatorTest() override { [coordinator_ stop]; }
@@ -82,7 +94,7 @@ class GeminiWebModalCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
   GeminiWebModalCoordinator* coordinator_;
-  int dismissal_count_ = 0;
+  FakeGeminiWebModalCoordinatorDelegate* delegate_;
 };
 
 // Test that the title falls back to the host while the page has no title.
@@ -104,8 +116,8 @@ TEST_F(GeminiWebModalCoordinatorTest, StopDismissesModal) {
   EXPECT_TRUE(WaitForDismissal());
 }
 
-// Test that tapping close calls the dismissal handler.
-TEST_F(GeminiWebModalCoordinatorTest, CloseButtonCallsDismissalHandler) {
+// Test that tapping close notifies the delegate.
+TEST_F(GeminiWebModalCoordinatorTest, CloseButtonNotifiesDelegate) {
   [coordinator_ start];
 
   GeminiModalContentViewController* viewController = PresentedModal();
@@ -113,12 +125,11 @@ TEST_F(GeminiWebModalCoordinatorTest, CloseButtonCallsDismissalHandler) {
   [viewController.delegate
       geminiModalContentViewControllerDidTapClose:viewController];
 
-  EXPECT_EQ(1, dismissal_count_);
+  EXPECT_EQ(1, delegate_.dismissalCount);
 }
 
-// Test that swiping the sheet down also calls the dismissal handler.
-TEST_F(GeminiWebModalCoordinatorTest,
-       InteractiveDismissalCallsDismissalHandler) {
+// Test that swiping the sheet down also notifies the delegate.
+TEST_F(GeminiWebModalCoordinatorTest, InteractiveDismissalNotifiesDelegate) {
   [coordinator_ start];
 
   UIPresentationController* presentationController =
@@ -128,7 +139,7 @@ TEST_F(GeminiWebModalCoordinatorTest,
   [presentationController.delegate
       presentationControllerDidDismiss:presentationController];
 
-  EXPECT_EQ(1, dismissal_count_);
+  EXPECT_EQ(1, delegate_.dismissalCount);
 }
 
 // Test that stopping without ever starting is a no-op rather than a crash.

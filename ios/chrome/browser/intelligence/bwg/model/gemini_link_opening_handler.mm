@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 @implementation GeminiLinkOpeningHandler {
@@ -45,6 +46,17 @@
 
 - (void)closePresentedViewsAndOpenURLInNewTab:(NSString*)URL {
   [self openURL:URL closePresentedViews:YES];
+}
+
+- (void)openImmersiveLearningCardURLInWebModal:(NSURL*)URL {
+  GURL gurl = net::GURLWithNSURL(URL);
+  if (!gurl.is_valid()) {
+    return;
+  }
+  RecordURLOpened();
+  id<GeminiCommands> geminiHandler =
+      HandlerForProtocol(_dispatcher, GeminiCommands);
+  [geminiHandler showGeminiWebModalForURL:gurl];
 }
 
 - (void)openURL:(NSString*)URL closePresentedViews:(BOOL)closePresentedViews {

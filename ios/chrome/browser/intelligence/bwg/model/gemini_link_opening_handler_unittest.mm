@@ -19,6 +19,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -156,4 +157,47 @@ TEST_F(GeminiLinkOpeningHandlerTest,
   [link_opening_handler_ openURLInNewTab:@""];
 
   [mock_gemini_commands_handler_ verify];
+}
+
+// Test that openImmersiveLearningCardURLInWebModal: forwards the URL to
+// GeminiCommands.
+TEST_F(GeminiLinkOpeningHandlerTest,
+       TestOpenImmersiveLearningCardURLInWebModal) {
+  // OCMock compares C++ reference args by address, so capture the URL instead.
+  __block GURL opened_url;
+  OCMExpect([mock_gemini_commands_handler_ showGeminiWebModalForURL:GURL()])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation* invocation) {
+        const GURL* url = nullptr;
+        [invocation getArgument:&url atIndex:2];
+        opened_url = *url;
+      });
+
+  [link_opening_handler_
+      openImmersiveLearningCardURLInWebModal:[NSURL URLWithString:@(kTestURL)]];
+
+  [mock_gemini_commands_handler_ verify];
+  EXPECT_EQ(GURL(kTestURL), opened_url);
+}
+
+// Test that openImmersiveLearningCardURLInWebModal: records the URL opened user
+// action.
+TEST_F(GeminiLinkOpeningHandlerTest,
+       TestOpenImmersiveLearningCardURLInWebModalRecordsUserAction) {
+  [link_opening_handler_
+      openImmersiveLearningCardURLInWebModal:[NSURL URLWithString:@(kTestURL)]];
+
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("MobileGeminiURLOpened"));
+}
+
+// Test that openImmersiveLearningCardURLInWebModal: ignores a nil URL.
+TEST_F(GeminiLinkOpeningHandlerTest,
+       TestOpenImmersiveLearningCardURLInWebModalWithNilURL) {
+  [[[mock_gemini_commands_handler_ reject] ignoringNonObjectArgs]
+      showGeminiWebModalForURL:GURL()];
+
+  [link_opening_handler_ openImmersiveLearningCardURLInWebModal:nil];
+
+  [mock_gemini_commands_handler_ verify];
+  EXPECT_EQ(0, user_action_tester_.GetActionCount("MobileGeminiURLOpened"));
 }

@@ -5,10 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_WEB_MODAL_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_WEB_MODAL_COORDINATOR_H_
 
-#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class GURL;
+@class GeminiWebModalCoordinator;
+
+// Delegate for `GeminiWebModalCoordinator`.
+@protocol GeminiWebModalCoordinatorDelegate
+
+// Called when the modal is dismissed, whether by the close button or by the
+// user swiping the sheet away. The delegate should stop `coordinator`.
+- (void)geminiWebModalCoordinatorDidDismiss:
+    (GeminiWebModalCoordinator*)coordinator;
+
+@end
 
 // Presents a URL in a modal web view sheet, over the Gemini surface.
 //
@@ -16,17 +26,17 @@ class GURL;
 // profile and shares the profile's cookies and signed-in session.
 @interface GeminiWebModalCoordinator : ChromeCoordinator
 
-// Initializes the coordinator to present `URL`. `dismissalHandler` is called
-// when the modal is dismissed, whether by the close button or by the user
-// swiping the sheet away, and should stop the coordinator.
+// Initializes the coordinator to present `URL`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                        URL:(const GURL&)URL
-                          dismissalHandler:(ProceduralBlock)dismissalHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Notified when the modal is dismissed.
+@property(nonatomic, weak) id<GeminiWebModalCoordinatorDelegate> delegate;
 
 @end
 
