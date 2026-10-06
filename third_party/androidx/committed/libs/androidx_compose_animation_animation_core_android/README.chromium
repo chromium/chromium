@@ -1,7 +1,7 @@
 Name: Compose Animation Core
 Short Name: animation-core-android
-URL: https://androidx.dev/snapshots/builds/16513820/artifacts/repository/androidx/compose/animation/animation-core-android/1.13.0-SNAPSHOT/animation-core-android-1.13.0-20261005.121359-1.aar
-Version: 1.13.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/16518735/artifacts/repository/androidx/compose/animation/animation-core-android/1.14.0-SNAPSHOT/animation-core-android-1.14.0-20261005.210526-1.aar
+Version: 1.14.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Animation engine and animation primitives that are the building blocks of the Compose animation library
 
-See also: https://developer.android.com/jetpack/androidx/releases/compose-animation#1.13.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/compose-animation#1.14.0-SNAPSHOT
 
 
 Local Modifications:
