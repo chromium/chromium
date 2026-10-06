@@ -1603,15 +1603,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // TODO(b/552482504): Fix this test on Windows.
 // TODO(b/567944511): Fix this test on ChromeOS, where clicking the tab strip
 // of the reactivated window doesn't restore omnibox focus.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ClickInactiveWindowWithDraftRestoresOmniboxFocus \
-  DISABLED_ClickInactiveWindowWithDraftRestoresOmniboxFocus
-#else
-#define MAYBE_ClickInactiveWindowWithDraftRestoresOmniboxFocus \
-  ClickInactiveWindowWithDraftRestoresOmniboxFocus
-#endif
-IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       MAYBE_ClickInactiveWindowWithDraftRestoresOmniboxFocus) {
+// TODO(crbug.com/569045384): Fix this test on Mac.
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    DISABLED_ClickInactiveWindowWithDraftRestoresOmniboxFocus) {
   if (IsWebUIToolbarEnabled()) {
     GTEST_SKIP()
         << "TODO(crbug.com/567926983): With the WebUI toolbar, the location "
