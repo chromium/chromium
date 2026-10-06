@@ -3500,7 +3500,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabState.MigrationStatus" enum="TabStateMigrationStatus"
-    expires_after="2026-11-15">
+    expires_after="2027-11-15">
+  <owner>ckitagawa@chromium.org</owner>
   <owner>davidjm@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
