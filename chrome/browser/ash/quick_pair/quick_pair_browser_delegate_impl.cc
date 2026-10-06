@@ -18,8 +18,8 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -102,15 +102,16 @@ void QuickPairBrowserDelegateImpl::OpenPlayStorePage(GURL play_store_uri) {
 }
 
 Profile* QuickPairBrowserDelegateImpl::GetActiveProfile() {
-  if (!user_manager::UserManager::Get()->IsUserLoggedIn())
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  // No active session before login.
+  if (!session) {
     return nullptr;
-
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user, base::NotFatalUntil::M160);
+  }
 
   return Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          session->account_id()));
 }
 
 }  // namespace quick_pair

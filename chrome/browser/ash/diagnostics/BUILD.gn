@@ -17,10 +17,10 @@ static_library("diagnostics") {
     "//ash/webui/diagnostics_ui/backend",
     "//base",
     "//chrome/browser/ash/net/network_health",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/profiles",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/services/network_health/public/mojom",
-    "//components/user_manager",
+    "//components/session_manager/core",
+    "//content/public/browser",
   ]
 }
 

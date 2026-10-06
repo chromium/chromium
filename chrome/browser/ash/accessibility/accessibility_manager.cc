@@ -82,6 +82,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session.h"
 #include "components/soda/soda_installer.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_prefs/user_prefs.h"
@@ -498,13 +499,17 @@ AccessibilityManager* AccessibilityManager::Get() {
 
 // static
 void AccessibilityManager::ShowAccessibilityHelp() {
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  if (!user) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  // No active session before login.
+  if (!session) {
     return;
   }
   ShowSingletonTab(
       Profile::FromBrowserContext(
-          BrowserContextHelper::Get()->GetBrowserContextByUser(user)),
+          BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              session->account_id())),
       GURL(ash::external_urls::kAccessibilityHelpURL));
 }
 

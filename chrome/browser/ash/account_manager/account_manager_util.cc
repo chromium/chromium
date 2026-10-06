@@ -19,6 +19,8 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -53,8 +55,12 @@ bool IsAccountManagerAvailable(Profile* profile) {
 }
 
 void OpenAccountManagerSettingsForActiveUser() {
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(session);
   SettingsAppManager::Get()->Open(
-      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser()),
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUser(session->account_id())),
       {.sub_page = chromeos::settings::mojom::kPeopleSectionPath});
 }
 
