@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -31,6 +32,8 @@ using autofill::features::kAutofillEnableAblationStudy;
 
 namespace autofill {
 namespace {
+
+using ::testing::SizeIs;
 
 // Calls GetAblationGroup |n| times on different security origins and returns a
 // histogram of the number of times certain AblationGroups were returned.
@@ -224,7 +227,7 @@ TEST_F(AutofillAblationStudyTestInUTC, FeatureDisabled) {
   AutofillAblationStudy study("seed");
   auto result =
       RunNIterations(study, 100, FormTypeForAblationStudy::kAddress, nullptr);
-  EXPECT_EQ(1u, result.size());
+  EXPECT_THAT(result, SizeIs(1));
   EXPECT_EQ(100, result[AblationGroup::kDefault]);
 }
 
@@ -242,7 +245,7 @@ TEST_F(AutofillAblationStudyTestInUTC, InvalidParameters) {
                                               feature_parameters);
   auto result =
       RunNIterations(study, 100, FormTypeForAblationStudy::kAddress, nullptr);
-  EXPECT_EQ(1u, result.size());
+  EXPECT_THAT(result, SizeIs(1));
   EXPECT_EQ(100, result[AblationGroup::kDefault]);
 }
 
@@ -260,7 +263,7 @@ TEST_F(AutofillAblationStudyTestInUTC, FormTypesDisabled) {
   AutofillAblationStudy study("seed");
   auto result =
       RunNIterations(study, 100, FormTypeForAblationStudy::kAddress, nullptr);
-  EXPECT_EQ(1u, result.size());
+  EXPECT_THAT(result, SizeIs(1));
   EXPECT_EQ(100, result[AblationGroup::kDefault]);
 }
 
@@ -279,7 +282,7 @@ TEST_F(AutofillAblationStudyTestInUTC, IntegrationTest) {
   AutofillAblationStudy study("seed");
   auto result =
       RunNIterations(study, 1000, FormTypeForAblationStudy::kAddress, nullptr);
-  EXPECT_EQ(3u, result.size());
+  EXPECT_THAT(result, SizeIs(3));
   // Note that these are not guaranteed but the chances are good enough that we
   // can risk it.
   EXPECT_NE(0, result[AblationGroup::kDefault]);
@@ -306,7 +309,7 @@ TEST_F(AutofillAblationStudyTestInUTC, IntegrationTestForEmptySeed) {
   AutofillAblationStudy study("");
   auto result =
       RunNIterations(study, 1000, FormTypeForAblationStudy::kAddress, nullptr);
-  EXPECT_EQ(1u, result.size());
+  EXPECT_THAT(result, SizeIs(1));
   EXPECT_EQ(1000, result[AblationGroup::kDefault]);
 }
 
