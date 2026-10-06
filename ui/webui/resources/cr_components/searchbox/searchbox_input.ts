@@ -522,6 +522,17 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
                                                        newInput.text.length;
       input.selectionEnd =
           preserveSelection ? oldSelectionEnd : newInputValue.length;
+
+      // Programmatic value and selection updates do not automatically scroll
+      // the input element. Explicitly scroll to the end when the caret is
+      // placed at the end of the input.
+      if (this.multiLineEnabled) {
+        input.scrollTop = input.scrollHeight;
+      } else if (
+          input.selectionStart === newInputValue.length &&
+          input.selectionEnd === newInputValue.length) {
+        input.scrollLeft = input.scrollWidth;
+      }
     }
 
     this.isDeletingInput_ = update.isDeletingInput ??

@@ -170,6 +170,10 @@ cr-searchbox-input::part(searchbox-input) {
   padding-top: 0;
 }
 
+:host(:not([aim-button-visible_])) cr-searchbox-input::part(searchbox-input) {
+  margin-inline-end: 18px;
+}
+
 /* When the window is inactive (top container has focus), the selection should
    still be the same color. */
 cr-searchbox-input::part(searchbox-input)::selection,
