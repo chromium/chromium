@@ -124,6 +124,7 @@ enum AppMenuAction {
   // MENU_ACTION_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL = 102, // DEPRECATED
   MENU_ACTION_NEW_ISOLATED_WINDOW = 103,
   MENU_ACTION_TTC_APP_MENU = 104,
+  MENU_ACTION_CREATE_NEW_TAB_GROUP = 105,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)

@@ -1289,6 +1289,7 @@ chromium-metrics-reviews@google.com.
       label="(Obsolete) Show contextual tasks side panel. Removed 12/18/25"/>
   <int value="103" label="New isolated window"/>
   <int value="104" label="TTC app menu"/>
+  <int value="105" label="Create new tab group"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

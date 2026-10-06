@@ -422,17 +422,19 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
       RecordAction(MENU_ACTION_NEW_ISOLATED_WINDOW, "NewIsolatedWindow");
       break;
 
+    // Saved tab groups submenu.
+    case kActionCreateNewTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_"
+          "CreateNewGroupTriggeredFromTabGroupsAppMenu"));
+      RecordAction(MENU_ACTION_CREATE_NEW_TAB_GROUP, "CreateNewTabGroup");
+      break;
+
     // Actions present in the menu that do not have a per-action TimeToAction
     // variant in histograms.xml, but still record the overall
     // WrenchMenu.TimeToAction histogram (and WrenchMenu.MenuAction if defined).
     // TODO(crbug.com/565832018): Add TimeToAction and MenuAction entries for
     // each of these.
-    case kActionCreateNewTabGroup:
-      base::RecordAction(base::UserMetricsAction(
-          "TabGroups_SavedTabGroups_"
-          "CreateNewGroupTriggeredFromTabGroupsAppMenu"));
-      RecordTimeToAction();
-      break;
     case kActionTabGroupDelete:
     case kActionTabGroupOpenInBrowser:
     case kActionTabGroupOpenInNewWindow:

@@ -2746,6 +2746,7 @@ TEST_F(ActionAppMenuTest, RecentTabsDynamicMenuMetrics) {
 
 TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
   base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -2768,6 +2769,11 @@ TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
                 "TabGroups_SavedTabGroups_"
                 "CreateNewGroupTriggeredFromTabGroupsAppMenu"),
             1);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_CREATE_NEW_TAB_GROUP, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.CreateNewTabGroup",
+                                    1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
 
   actions::ActionInvocationContext captured_context;
   EXPECT_CALL(mock_action_invoked_,
