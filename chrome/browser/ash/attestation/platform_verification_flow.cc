@@ -19,10 +19,9 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -150,8 +149,9 @@ void PlatformVerificationFlow::ChallengePlatformKey(
     const std::string& service_id,
     const std::string& challenge,
     ChallengeCallback callback) {
-  const user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  const user_manager::User* user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(
+          web_contents->GetBrowserContext());
   ChallengePlatformKey(user, service_id, challenge, std::move(callback));
 }
 
