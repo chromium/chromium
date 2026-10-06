@@ -251,6 +251,17 @@ TEST_F(OutOfMemoryDeathTest, AlignedAlloc) {
   });
 }
 
+TEST_F(OutOfMemoryDeathTest, AlignedCalloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
+  ASSERT_OOM_DEATH({
+    SetUpInDeathAssert();
+    [[maybe_unused]] void* volatile ptr =
+        base::AlignedCalloc(1024, test_size_ / 1024L, 8);
+  });
+}
+
 // POSIX does not define an aligned realloc function.
 #if BUILDFLAG(IS_WIN)
 TEST_F(OutOfMemoryDeathTest, AlignedRealloc) {
@@ -353,6 +364,17 @@ TEST_F(OutOfMemoryDeathTest, SecurityAlignedAlloc) {
     SetUpInDeathAssert();
     [[maybe_unused]] void* volatile ptr =
         base::AlignedAlloc(insecure_test_size_, 8);
+  });
+}
+
+TEST_F(OutOfMemoryDeathTest, SecurityAlignedCalloc) {
+  if (ShouldSkipTest()) {
+    return;
+  }
+  ASSERT_OOM_DEATH({
+    SetUpInDeathAssert();
+    [[maybe_unused]] void* volatile ptr =
+        base::AlignedCalloc(1024, insecure_test_size_ / 1024L, 8);
   });
 }
 

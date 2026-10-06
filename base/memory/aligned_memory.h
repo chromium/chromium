@@ -11,9 +11,11 @@
 #include <algorithm>
 #include <bit>
 #include <ostream>
+#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
@@ -30,6 +32,11 @@
 //   base::AlignedHeapArray<float> array = base::AlignedUninit<float>(
 //       size, alignment);
 //   CHECK(reinterpret_cast<uintptr_t>(array.data()) % alignment == 0);
+//
+// The same, but with every object set to zero:
+//
+//   base::AlignedHeapArray<float> zeroed_array = base::AlignedZeroed<float>(
+//       size, alignment);
 //
 // A runtime sized aligned allocation for objects of type `T` but represented as
 // a char array, along with a span accessing that memory as `T*` for in-place
@@ -50,6 +57,14 @@
 //
 //   // ... later, to release the memory:
 //   AlignedFree(my_array);
+//
+// To get zeroed memory, use `AlignedCalloc()` instead of `AlignedAlloc()` and
+// `memset()`:
+//
+//   float* my_zeroed_array =
+//       static_cast<float*>(AlignedCalloc(count, sizeof(float), alignment));
+//   ...
+//   AlignedFree(my_zeroed_array);
 
 namespace base {
 
@@ -70,7 +85,20 @@ namespace base {
 // `alignment` while this implementation does not.
 BASE_EXPORT void* AlignedAlloc(size_t size, size_t alignment);
 
-// Deallocate memory allocated by `AlignedAlloc`.
+// Allocates memory for `num_items` objects of `size` bytes each, aligned to
+// `alignment` and set to zero, like `calloc()`. Like `AlignedAlloc()`, crashes
+// if the allocation fails, including if `num_items * size` overflows.
+//
+// This can be faster than `AlignedAlloc()` followed by `memset()`: large
+// allocations can get new pages from the OS, which are zeroed already, and then
+// aren't zeroed again.
+//
+// Prefer `AlignedZeroed()` to make a `base::HeapArray`.
+BASE_EXPORT void* AlignedCalloc(size_t num_items,
+                                size_t size,
+                                size_t alignment);
+
+// Deallocate memory allocated by `AlignedAlloc()` or `AlignedCalloc()`.
 inline void AlignedFree(void* ptr) {
 #if defined(COMPILER_MSVC)
   _aligned_free(ptr);
@@ -106,6 +134,23 @@ AlignedHeapArray<T> AlignedUninit(size_t capacity,
   // the size of the `HeapArray<T>`.
   return UNSAFE_BUFFERS(HeapArray<T, AlignedFreeDeleter>::FromOwningPointer(
       static_cast<T*>(AlignedAlloc(bytes, alignment)), capacity));
+}
+
+// Like `AlignedUninit()`, but every object is set to zero, using
+// `AlignedCalloc()`. This can be faster than `AlignedUninit()` followed by
+// filling the array with zeros, and the pages of a large array that are never
+// used may not take physical memory.
+template <class T>
+  requires(std::is_arithmetic_v<T> || std::is_same_v<T, std::byte>)
+AlignedHeapArray<T> AlignedZeroed(size_t capacity,
+                                  size_t alignment = alignof(T)) {
+  alignment = std::max(alignment, alignof(void*));
+  CHECK_GE(alignment, alignof(T));
+  // SAFETY: AlignedCalloc() allocates `capacity` objects of `sizeof(T)` bytes,
+  // so we specify `capacity` as the size of the `HeapArray<T>`.
+  return UNSAFE_BUFFERS(HeapArray<T, AlignedFreeDeleter>::FromOwningPointer(
+      static_cast<T*>(AlignedCalloc(capacity, sizeof(T), alignment)),
+      capacity));
 }
 
 // Constructs a AlignedHeapArray<char> that is sized to hold `capacity` many
