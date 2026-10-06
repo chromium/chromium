@@ -67,9 +67,9 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void StopStreamingSession() override;
 
   // TtcMesClient::Observer
-  void OnApplicationInitialized() override;
-  void OnApplicationClosed() override;
-  void OnApplicationError(ErrorCode error) override;
+  void OnBackendInitialized() override;
+  void OnBackendClosed() override;
+  void OnBackendError(ErrorCode error) override;
   void OnTranscriptions(const std::string& input_transcription,
                         const std::string& output_transcription) override;
   void OnAudioOutput(base::span<const int16_t> audio_data,

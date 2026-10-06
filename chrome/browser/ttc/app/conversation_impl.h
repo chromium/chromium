@@ -58,9 +58,9 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
   void OnPageContextChanged() override;
 
   // TtcBackend::Observer implementation:
-  void OnApplicationInitialized() override;
-  void OnApplicationClosed() override;
-  void OnApplicationError(ErrorCode error) override;
+  void OnBackendInitialized() override;
+  void OnBackendClosed() override;
+  void OnBackendError(ErrorCode error) override;
   void OnTranscriptions(const std::string& input_transcription,
                         const std::string& output_transcription) override;
   void OnAudioOutput(base::span<const int16_t> audio_data,

@@ -28,9 +28,9 @@ namespace {
 
 class FakeObserver : public TtcBackend::Observer {
  public:
-  void OnApplicationInitialized() override {}
-  void OnApplicationClosed() override {}
-  void OnApplicationError(ErrorCode error) override { last_error_ = error; }
+  void OnBackendInitialized() override {}
+  void OnBackendClosed() override {}
+  void OnBackendError(ErrorCode error) override { last_error_ = error; }
   void OnTranscriptions(const std::string& input_transcription,
                         const std::string& output_transcription) override {}
   void OnAudioOutput(base::span<const int16_t> audio_data,

@@ -200,22 +200,22 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
   EXPECT_FALSE(audio_controller().is_playing());
 }
 
-TEST_F(ConversationImplTest, ApplicationErrorIsReportedToSessionController) {
+TEST_F(ConversationImplTest, BackendErrorIsReportedToSessionController) {
   ConversationImpl& conversation = CreateConversation();
 
   EXPECT_EQ(session_controller_.last_error(), std::nullopt);
 
-  conversation.OnApplicationError(ErrorCode::kRateLimited);
+  conversation.OnBackendError(ErrorCode::kRateLimited);
   EXPECT_EQ(session_controller_.last_error(), ErrorCode::kRateLimited);
 }
 
-TEST_F(ConversationImplTest, ApplicationClosedEndsSession) {
+TEST_F(ConversationImplTest, BackendClosedEndsSession) {
   ConversationImpl& conversation = CreateConversation();
 
-  conversation.OnApplicationInitialized();
+  conversation.OnBackendInitialized();
   EXPECT_EQ(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
 
-  conversation.OnApplicationClosed();
+  conversation.OnBackendClosed();
   EXPECT_EQ(session_controller_.end_session_count(), 1);
   EXPECT_EQ(session_controller_.error_count(), 0);
 }
@@ -308,7 +308,7 @@ TEST_F(ConversationImplTest, SendTextInputForwardsToBackend) {
   conversation.SendTextInput("hello world");
 }
 
-TEST_F(ConversationImplTest, ApplicationInitializedSendsToolSetUpdate) {
+TEST_F(ConversationImplTest, BackendInitializedSendsToolSetUpdate) {
   session_controller_.AddToolDefinition("navigate");
 
   ConversationImpl& conversation = CreateConversation();
@@ -320,28 +320,28 @@ TEST_F(ConversationImplTest, ApplicationInitializedSendsToolSetUpdate) {
           sent_tool_names.push_back(tool.name);
         }
       });
-  conversation.OnApplicationInitialized();
+  conversation.OnBackendInitialized();
   EXPECT_THAT(sent_tool_names, testing::ElementsAre("navigate"));
 }
 
-TEST_F(ConversationImplTest, ApplicationShutdownDoesNotSendToolSetUpdate) {
+TEST_F(ConversationImplTest, BackendShutdownDoesNotSendToolSetUpdate) {
   session_controller_.AddToolDefinition("navigate");
 
   ConversationImpl& conversation = CreateConversation();
 
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
-  conversation.OnApplicationClosed();
+  conversation.OnBackendClosed();
 }
 
-TEST_F(ConversationImplTest, ApplicationErrorDoesNotSendToolSetUpdate) {
+TEST_F(ConversationImplTest, BackendErrorDoesNotSendToolSetUpdate) {
   session_controller_.AddToolDefinition("navigate");
 
   ConversationImpl& conversation = CreateConversation();
 
-  // The tool set is only sent once the application is initialized; a session
+  // The tool set is only sent once the backend is initialized; a session
   // that closes or fails has nothing to send it for.
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
-  conversation.OnApplicationError(ErrorCode::kUnknown);
+  conversation.OnBackendError(ErrorCode::kUnknown);
 }
 
 TEST_F(ConversationImplTest, AudioCaptureErrorIsReported) {
@@ -376,11 +376,11 @@ TEST_F(ConversationImplTest, AudioCaptureErrorAfterStopIsIgnored) {
 
 // The backend can report a disconnection as a clean close before the error
 // that caused it, which must still be forwarded.
-TEST_F(ConversationImplTest, ApplicationErrorAfterCloseIsReported) {
+TEST_F(ConversationImplTest, BackendErrorAfterCloseIsReported) {
   ConversationImpl& conversation = CreateConversation();
 
-  conversation.OnApplicationClosed();
-  conversation.OnApplicationError(ErrorCode::kUnknown);
+  conversation.OnBackendClosed();
+  conversation.OnBackendError(ErrorCode::kUnknown);
 
   EXPECT_EQ(session_controller_.error_count(), 1);
   EXPECT_EQ(session_controller_.last_error(), ErrorCode::kUnknown);

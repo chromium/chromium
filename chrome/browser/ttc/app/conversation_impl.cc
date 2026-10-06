@@ -45,7 +45,7 @@ void ConversationImpl::Start() {
           &ConversationImpl::OnPlaybackCompleted, base::Unretained(this)));
   audio_capture_error_subscription_ =
       audio_controller_->AddErrorListener(base::BindRepeating(
-          &ConversationImpl::OnApplicationError, base::Unretained(this)));
+          &ConversationImpl::OnBackendError, base::Unretained(this)));
   audio_controller_->StartCapture();
 
   backend_->Connect(this);
@@ -98,17 +98,17 @@ void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {
   backend_->ReportPlaybackStatus(sequence_number);
 }
 
-void ConversationImpl::OnApplicationInitialized() {
+void ConversationImpl::OnBackendInitialized() {
   backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
   session_controller_->SetSessionLifecycle(SessionLifecycle::kLive);
 }
 
-void ConversationImpl::OnApplicationClosed() {
+void ConversationImpl::OnBackendClosed() {
   session_controller_->GetJournal().Log("TtcBackendClosed", {});
   session_controller_->EndSessionAsync();
 }
 
-void ConversationImpl::OnApplicationError(ErrorCode error) {
+void ConversationImpl::OnBackendError(ErrorCode error) {
   session_controller_->OnError(error);
 }
 

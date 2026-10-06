@@ -601,7 +601,7 @@ void AiOverlayDialogPageHandler::StopStreamingSession() {
   }
 }
 
-void AiOverlayDialogPageHandler::OnApplicationInitialized() {
+void AiOverlayDialogPageHandler::OnBackendInitialized() {
   if (page_.is_bound()) {
     page_->OnStreamingSessionStateChanged(/*connected=*/true,
                                           /*session_id=*/"",
@@ -609,7 +609,7 @@ void AiOverlayDialogPageHandler::OnApplicationInitialized() {
   }
 }
 
-void AiOverlayDialogPageHandler::OnApplicationClosed() {
+void AiOverlayDialogPageHandler::OnBackendClosed() {
   if (page_.is_bound()) {
     page_->OnStreamingSessionStateChanged(/*connected=*/false,
                                           /*session_id=*/"",
@@ -617,7 +617,7 @@ void AiOverlayDialogPageHandler::OnApplicationClosed() {
   }
 }
 
-void AiOverlayDialogPageHandler::OnApplicationError(ErrorCode error) {
+void AiOverlayDialogPageHandler::OnBackendError(ErrorCode error) {
   if (page_.is_bound()) {
     page_->OnStreamingSessionStateChanged(
         /*connected=*/false, /*session_id=*/"",

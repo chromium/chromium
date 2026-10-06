@@ -34,15 +34,15 @@ class TtcBackend {
 
     // Called when the backend has set up the application and the session is
     // ready to be interacted with.
-    virtual void OnApplicationInitialized() = 0;
+    virtual void OnBackendInitialized() = 0;
 
     // Called when the application on the backend has shut down. The session
     // can no longer be interacted with.
-    virtual void OnApplicationClosed() = 0;
+    virtual void OnBackendClosed() = 0;
 
     // Called when the application on the backend failed with `error`. The
     // session can no longer be interacted with.
-    virtual void OnApplicationError(ErrorCode error) = 0;
+    virtual void OnBackendError(ErrorCode error) = 0;
 
     virtual void OnTranscriptions(const std::string& input_transcription,
                                   const std::string& output_transcription) = 0;

@@ -138,7 +138,7 @@ void TtcMesClient::Connect(Observer* observer) {
   observer_ = observer;
 
   if (!model_executor_) {
-    observer_->OnApplicationError(ErrorCode::kOptimizationGuideUnavailable);
+    observer_->OnBackendError(ErrorCode::kOptimizationGuideUnavailable);
     return;
   }
 
@@ -151,7 +151,7 @@ void TtcMesClient::Connect(Observer* observer) {
                           weak_factory_.GetWeakPtr()));
 
   if (!session_) {
-    observer_->OnApplicationError(ErrorCode::kExecutionSessionCreationFailed);
+    observer_->OnBackendError(ErrorCode::kExecutionSessionCreationFailed);
     return;
   }
 
@@ -182,7 +182,7 @@ void TtcMesClient::OnConnectionStateChanged(
                     ConnectionState::kConnected);
   if (state == optimization_guide::RemoteModelExecutionSession::
                    ConnectionState::kDisconnected) {
-    observer_->OnApplicationClosed();
+    observer_->OnBackendClosed();
   }
 }
 
@@ -192,7 +192,7 @@ void TtcMesClient::OnStreamingResult(
     // TODO(b/564241442): Propagate a better error code.
     VLOG(1) << "Model execution failed with error "
             << static_cast<int>(result.response.error().error());
-    observer_->OnApplicationError(ErrorCode::kUnknown);
+    observer_->OnBackendError(ErrorCode::kUnknown);
     return;
   }
 
@@ -209,7 +209,7 @@ void TtcMesClient::HandleServerFrame(
   if (frame.has_session_status()) {
     session_id_ = frame.session_status().server_session_id();
     // TODO(b/564241442): SessionStatus could be unsuccessful.
-    observer_->OnApplicationInitialized();
+    observer_->OnBackendInitialized();
   }
 
   if (frame.has_server_content()) {
@@ -263,11 +263,11 @@ void TtcMesClient::HandleServerFrame(
         server_error_code <= static_cast<int>(ErrorCode::kMaxServerErrorCode)) {
       ttc_error_code = static_cast<ErrorCode>(server_error_code);
     }
-    observer_->OnApplicationError(ttc_error_code);
+    observer_->OnBackendError(ttc_error_code);
   }
 
   if (frame.has_go_away()) {
-    observer_->OnApplicationClosed();
+    observer_->OnBackendClosed();
   }
 
   if (frame.has_journal_event()) {
