@@ -4762,6 +4762,102 @@ TEST_F(SpdySessionTest, SessionFlowControlNoSendLeaks) {
   EXPECT_TRUE(data.AllReadDataConsumed());
 }
 
+// Regression test for crbug.com/565797214: when a stream with unwritten DATA in
+// the write queue is canceled after a session WINDOW_UPDATE has inflated the
+// session send window so that refunding the discarded DATA overflows, the
+// session must drain asynchronously rather than synchronously failing other
+// streams or pending SpdyStreamRequests during Cancel().
+TEST_F(SpdySessionTest,
+       SessionFlowControlCancelStreamSendWindowOverflowDrainsAsynchronously) {
+  const int32_t kMsgDataSize = 100;
+  const std::string msg_data(kMsgDataSize, 'a');
+  const int32_t initial_window_size = kDefaultInitialWindowSize;
+
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyPost(kDefaultUrl, 1, kMsgDataSize, MEDIUM,
+                                   base::span<const std::string_view>()));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(
+      0, spdy::ERROR_CODE_PROTOCOL_ERROR,
+      "Received WINDOW_UPDATE [delta: 100] for session overflows "
+      "session_send_window_size_ [current: 2147483647]"));
+  MockWrite writes[] = {
+      CreateMockWrite(req, 0),
+      CreateMockWrite(rst, 5),
+      CreateMockWrite(goaway, 6),
+  };
+
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), 1));
+  const uint32_t delta_window_size = std::numeric_limits<int32_t>::max() -
+                                     (initial_window_size - kMsgDataSize);
+  spdy::SpdySerializedFrame window_update(spdy_util_.ConstructSpdyWindowUpdate(
+      spdy::kSessionFlowControlStreamId, delta_window_size));
+  MockRead reads[] = {
+      MockRead(ASYNC, ERR_IO_PENDING, 1),
+      CreateMockRead(resp, 2),
+      CreateMockRead(window_update, 3, SYNCHRONOUS),
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 4),
+  };
+
+  SequencedSocketData data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+  set_max_concurrent_streams(1);
+
+  base::WeakPtr<SpdyStream> stream1 =
+      CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session_, test_url_,
+                                MEDIUM, NetLogWithSource());
+  ASSERT_TRUE(stream1);
+
+  test::StreamDelegateSendImmediate delegate(stream1, msg_data);
+  stream1->SetDelegate(&delegate);
+
+  quiche::HttpHeaderBlock headers(
+      spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, kMsgDataSize));
+  EXPECT_EQ(ERR_IO_PENDING,
+            stream1->SendRequestHeaders(std::move(headers), MORE_DATA_TO_SEND));
+
+  // Start a second stream request that stalls waiting for a stream slot.
+  SpdyStreamRequest request2;
+  TestCompletionCallback callback2;
+  EXPECT_EQ(ERR_IO_PENDING, request2.StartRequest(
+                                SPDY_BIDIRECTIONAL_STREAM, session_, test_url_,
+                                /*can_send_early=*/false, MEDIUM, SocketTag(),
+                                NetLogWithSource(), callback2.callback(),
+                                TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Write the request headers for stream1.
+  data.RunUntilPaused();
+  EXPECT_EQ(1u, stream1->stream_id());
+  EXPECT_EQ(initial_window_size, session_send_window_size());
+
+  // Read the response headers (which queues the DATA frame and decrements the
+  // session send window) and the synchronous session WINDOW_UPDATE (which
+  // inflates the session send window to INT32_MAX), without running the
+  // message loop so the DATA frame remains queued.
+  data.Resume();
+  EXPECT_EQ(std::numeric_limits<int32_t>::max(), session_send_window_size());
+
+  // Canceling stream1 discards the queued DATA frame and refunds kMsgDataSize
+  // to the session send window, overflowing INT32_MAX. This must schedule an
+  // asynchronous session drain rather than synchronously invoking callback2.
+  stream1->Cancel(ERR_ABORTED);
+  EXPECT_FALSE(stream1);
+  EXPECT_FALSE(callback2.have_result());
+
+  // Running the message loop drains the session and fails request2.
+  EXPECT_THAT(callback2.WaitForResult(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !session_; }));
+  EXPECT_TRUE(data.AllReadDataConsumed());
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+}
+
 // Send data back and forth; the send and receive windows should
 // change appropriately.
 TEST_F(SpdySessionTest, SessionFlowControlEndToEnd) {

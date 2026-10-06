@@ -1415,7 +1415,7 @@ void SpdySession::StartGoingAway(spdy::SpdyStreamId last_good_stream_id,
 
 void SpdySession::MaybeFinishGoingAway() {
   if (active_streams_.empty() && created_streams_.empty() &&
-      availability_state_ == STATE_GOING_AWAY) {
+      availability_state_ == STATE_GOING_AWAY && !drain_session_pending_) {
     DoDrainSession(OK, "Finished going away");
   }
 }
@@ -1824,6 +1824,9 @@ base::WeakPtr<SpdyStreamRequest> SpdySession::GetNextPendingStreamRequest() {
 }
 
 void SpdySession::ProcessPendingStreamRequests() {
+  if (availability_state_ != STATE_AVAILABLE) {
+    return;
+  }
   size_t max_requests_to_process =
       max_concurrent_streams_ -
       (active_streams_.size() + created_streams_.size());
@@ -1853,7 +1856,8 @@ void SpdySession::CloseActiveStreamIterator(ActiveStreamMap::iterator it,
 
   DeleteStream(std::move(owned_stream), status);
 
-  if (active_streams_.empty() && created_streams_.empty()) {
+  if (active_streams_.empty() && created_streams_.empty() &&
+      !drain_session_pending_) {
     // If the socket belongs to a socket pool, and there are no active streams,
     // and the socket pool is stalled, then close the session to free up a
     // socket slot.
@@ -1950,7 +1954,7 @@ void SpdySession::EnqueuePriorityFrame(spdy::SpdyStreamId stream_id,
 
 void SpdySession::PumpReadLoop(ReadState expected_read_state, int result) {
   CHECK(!in_io_loop_);
-  if (availability_state_ == STATE_DRAINING) {
+  if (availability_state_ == STATE_DRAINING || drain_session_pending_) {
     return;
   }
   std::ignore = DoReadLoop(expected_read_state, result);
@@ -1983,8 +1987,9 @@ int SpdySession::DoReadLoop(ReadState expected_read_state, int result) {
         NOTREACHED() << "read_state_: " << read_state_;
     }
 
-    if (availability_state_ == STATE_DRAINING)
+    if (availability_state_ == STATE_DRAINING || drain_session_pending_) {
       break;
+    }
 
     if (result == ERR_IO_PENDING)
       break;
@@ -2063,7 +2068,7 @@ int SpdySession::DoReadComplete(int result) {
         reinterpret_cast<char*>(available_data.data()), available_data.size());
     available_data = available_data.subspan(bytes_processed);
 
-    if (availability_state_ == STATE_DRAINING) {
+    if (availability_state_ == STATE_DRAINING || drain_session_pending_) {
       return ERR_CONNECTION_CLOSED;
     }
 
@@ -2698,6 +2703,7 @@ void SpdySession::DcheckDraining() const {
 void SpdySession::DoDrainSession(Error err,
                                  const std::string& description,
                                  bool force_send_go_away) {
+  drain_session_pending_ = false;
   if (availability_state_ == STATE_DRAINING) {
     return;
   }
@@ -2756,10 +2762,14 @@ void SpdySession::DoDrainSession(Error err,
 void SpdySession::DoDrainSessionAsync(Error err,
                                       std::string description,
                                       bool force_send_go_away) {
+  if (availability_state_ == STATE_DRAINING || drain_session_pending_) {
+    return;
+  }
   // Make this unavailable to prevent consumers from pulling it from the session
   // pool again, which could result in an infinite loop, or otherwise running
   // into this error again rather than trying a new connection.
   MakeUnavailable(err);
+  drain_session_pending_ = true;
 
   // This will close the socket and inform consumers asynchronously. If
   // something happens before this task runs (like a read error), that should
@@ -3310,7 +3320,10 @@ void SpdySession::IncreaseSendWindowSize(int delta_window_size) {
       std::numeric_limits<int32_t>::max() - session_send_window_size_;
   if (delta_window_size > max_delta_window_size) {
     RecordProtocolErrorHistogram(PROTOCOL_ERROR_INVALID_WINDOW_UPDATE_SIZE);
-    DoDrainSession(
+    // Drain asynchronously because IncreaseSendWindowSize() can be called from
+    // OnWriteBufferConsumed() when discarding a queued SpdyBuffer during stream
+    // cancellation, while a consumer is on the stack.
+    DoDrainSessionAsync(
         ERR_HTTP2_PROTOCOL_ERROR,
         base::StrCat(
             {"Received WINDOW_UPDATE [delta: ",

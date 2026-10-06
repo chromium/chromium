@@ -209,6 +209,11 @@ void SpdyStream::OnWriteBufferConsumed(
 void SpdyStream::IncreaseSendWindowSize(int32_t delta_window_size) {
   DCHECK_GE(delta_window_size, 1);
 
+  // By the time a write is discarded, this stream may already be inactive.
+  if (!session_->IsStreamActive(stream_id_)) {
+    return;
+  }
+
   if (!AdjustSendWindowSize(delta_window_size)) {
     std::string desc = base::StringPrintf(
         "Received WINDOW_UPDATE [delta: %d] for stream %d overflows "
