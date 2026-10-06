@@ -71,6 +71,7 @@ using ProcessBoundEncryptionTest = ::testing::Test;
 // the test string, meaning it never gets cleared. Which is fine, since it was
 // never encrypted anyway.
 #if BUILDFLAG(IS_WIN)
+
 // Reading into freed memory upsets sanitizers.
 #if !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
     !defined(MEMORY_SANITIZER)
@@ -84,6 +85,7 @@ TEST_F(ProcessBoundEncryptionTest, Encryption) {
                 ::testing::Not(ContainsSubsequence(kPlainText)));
     EXPECT_STREQ(secure.c_str(), "hello");
     data = secure.data();
+    ASSERT_NE(data, nullptr);
   }
 // In debug builds, frees are poisoned after the SecureString allocator has
 // zeroed it, so this check can only take place for release builds.
@@ -93,6 +95,21 @@ TEST_F(ProcessBoundEncryptionTest, Encryption) {
 }
 #endif  // !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) &&
         // !defined(MEMORY_SANITIZER)
+
+TEST_F(ProcessBoundEncryptionTest, EmptyString) {
+  crypto::ProcessBound<std::string> process_bound("");
+  crypto::SecureString secure = process_bound.secure_value();
+  EXPECT_TRUE(process_bound.maybe_encrypted_data_.empty());
+  EXPECT_TRUE(secure.empty());
+  const char* data = secure.data();
+  // Empty string is "\0", not nullptr.
+  ASSERT_NE(data, nullptr);
+  // Due to the Small String Optimization (SSO) empty strings may be allocated
+  // on the stack, and not go through SecureAllocator::deallocate. That's ok
+  // because the entire content was already zero.
+  EXPECT_EQ(data[0], '\x00');
+}
+
 #endif  // #if BUILDFLAG(IS_WIN)
 
 }  // namespace crypto
