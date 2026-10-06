@@ -488,4 +488,9 @@ interface UntrustedPage {
   // Called by the browser to trigger renderer-side actions after the webui is
   // shown.
   OnReadingModeShown(read_anything.mojom.ReadAnythingOpenTrigger open_trigger);
+
+  // Notifies the WebUI whether the contents of the active tab are currently
+  // translated (translate::LanguageState::IsPageTranslated()). Only sent when
+  // translate::kEnableTranslatePdf is enabled.
+  OnTranslationStateChanged(bool is_translated);
 };

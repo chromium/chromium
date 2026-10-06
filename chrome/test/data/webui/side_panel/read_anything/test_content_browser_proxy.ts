@@ -13,6 +13,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   onImageDownloaded = new FakeChromeEvent();
   onMainFrameSameDocumentNavigation = new FakeChromeEvent();
   onRenderedTextMappingReady = new FakeChromeEvent();
+  onTranslationStateChanged = new FakeChromeEvent();
   showEmpty = new FakeChromeEvent();
   showLoading = new FakeChromeEvent();
   updateImages = new FakeChromeEvent();
@@ -27,6 +28,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   hasValidSelectionVal: boolean = true;
   readabilityEnabled: boolean = true;
   isReadabilitySelectTextEnabledFlag: boolean = true;
+  contentTranslated: boolean = false;
   textContentMap: {[key: number]: string} = {2: 'some text content'};
   prefixText: string = '';
   rootId: number = 1;
@@ -64,6 +66,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'hasValidSelection',
       'isReadabilityEnabled',
       'isReadabilitySelectTextEnabled',
+      'isContentTranslated',
       'getActiveDistillationMethod',
       'getDistillationTypeReadability',
       'getDistillationTypeScreen2x',
@@ -137,6 +140,11 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   isReadabilitySelectTextEnabled(): boolean {
     this.methodCalled('isReadabilitySelectTextEnabled');
     return this.isReadabilitySelectTextEnabledFlag;
+  }
+
+  isContentTranslated(): boolean {
+    this.methodCalled('isContentTranslated');
+    return this.contentTranslated;
   }
 
   onConnected(): void {

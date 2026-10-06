@@ -31,6 +31,7 @@ export interface ContentBrowserProxy {
   onNodeWillBeDeleted: ChromeEvent<(nodeId: number) => void>;
   onMainFrameSameDocumentNavigation: ChromeEvent<(url: string) => void>;
   onRenderedTextMappingReady: ChromeEvent<() => void>;
+  onTranslationStateChanged: ChromeEvent<() => void>;
 
   showEmpty: ChromeEvent<() => void>;
   showLoading: ChromeEvent<() => void>;
@@ -72,6 +73,7 @@ export interface ContentBrowserProxy {
   hasValidSelection(): boolean;
   isReadabilityEnabled(): boolean;
   isReadabilitySelectTextEnabled(): boolean;
+  isContentTranslated(): boolean;
   isGoogleDocs(): boolean;
   isLeafNode(nodeId: number): boolean;
   isOverline(nodeId: number): boolean;
@@ -101,6 +103,7 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
   onMainFrameSameDocumentNavigation =
       new EventForwarder<(url: string) => void>();
   onRenderedTextMappingReady = new EventForwarder<() => void>();
+  onTranslationStateChanged = new EventForwarder<() => void>();
   showEmpty = new EventForwarder<() => void>();
   showLoading = new EventForwarder<() => void>();
   updateImages = new EventForwarder<() => void>();
@@ -127,6 +130,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
     chrome.readingMode.onRenderedTextMappingReady = () => {
       this.onRenderedTextMappingReady.forward();
+    };
+
+    chrome.readingMode.onTranslationStateChanged = () => {
+      this.onTranslationStateChanged.forward();
     };
 
     chrome.readingMode.showEmpty = () => {
@@ -180,6 +187,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   isReadabilitySelectTextEnabled(): boolean {
     return chrome.readingMode.isReadabilitySelectTextEnabled;
+  }
+
+  isContentTranslated(): boolean {
+    return chrome.readingMode.isContentTranslated;
   }
 
   isGoogleDocs(): boolean {

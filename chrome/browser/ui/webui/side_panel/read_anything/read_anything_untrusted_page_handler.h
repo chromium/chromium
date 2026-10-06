@@ -375,6 +375,9 @@ class ReadAnythingUntrustedPageHandler :
   // be determined.
   void SetLanguageCode(const std::string& code);
 
+  // Sends whether the tab is currently translated to the page.
+  void SendTranslationState(bool is_translated);
+
   void SetUpPdfObserver();
   void CheckIfActiveAXTreeChangedToPdf();
 
@@ -480,6 +483,9 @@ class ReadAnythingUntrustedPageHandler :
 
   // The current language being used in the app.
   std::string current_language_code_ = "en-US";
+  // The translation state last sent to the page, or nullopt if none has been
+  // sent yet.
+  std::optional<bool> last_sent_is_translated_;
   const bool use_screen_ai_service_;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -525,7 +531,7 @@ class ReadAnythingUntrustedPageHandler :
 
   base::ScopedClosureRunner audible_closure_;
 
-  // Observes the page's language.
+  // Observes the page's language and translation state.
   ReadAnythingTranslateObserver translate_observer_;
 
   // Timer used for checking for pdf contents after the page has loaded.

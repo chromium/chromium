@@ -717,6 +717,12 @@ class ReadAnythingAppModel {
   bool IsPdf() const;
   void SetIsPdf(bool is_pdf);
 
+  // Whether the active tab's contents are currently translated.
+  bool is_content_translated() const { return is_content_translated_; }
+  void set_is_content_translated(bool is_content_translated) {
+    is_content_translated_ = is_content_translated;
+  }
+
   void AddObserver(ModelObserver* observer);
   void RemoveObserver(ModelObserver* observer);
 
@@ -983,6 +989,13 @@ class ReadAnythingAppModel {
   // For determining whether the latest tree is a reload or new page.
   std::string previous_tree_url_;
   base::OnceCallback<void()> set_url_information_callback_;
+
+  // Whether the active tab's contents are currently translated. Only kept up to
+  // date when translate::kEnableTranslatePdf is enabled. Only changed by the
+  // browser through OnTranslationStateChanged(), and intentionally not reset
+  // when the active tree changes: the browser only sends changes (see
+  // ReadAnythingUntrustedPageHandler::SendTranslationState()).
+  bool is_content_translated_ = false;
 
   // Distillation is slow and happens out-of-process when Screen2x is running.
   // This boolean marks when distillation is in progress to avoid sending

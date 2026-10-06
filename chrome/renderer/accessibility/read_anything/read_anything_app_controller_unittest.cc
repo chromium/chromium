@@ -27,6 +27,7 @@
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
+#include "components/translate/core/common/translate_features.h"
 #include "content/public/test/mock_render_thread.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
@@ -2880,6 +2881,34 @@ TEST_F(ReadAnythingAppControllerTest,
   EnableReadAnythingTranslateEntryPoint();
   EXPECT_CALL(page_handler_, OnTranslationRequested()).Times(1);
   controller().OnTranslationRequested();
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsContentTranslated_DefaultsToFalse) {
+  EXPECT_FALSE(controller().IsContentTranslated());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTranslationStateChanged_UpdatesIsContentTranslated) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  controller().OnTranslationStateChanged(/*is_translated=*/true);
+  EXPECT_TRUE(controller().IsContentTranslated());
+
+  controller().OnTranslationStateChanged(/*is_translated=*/false);
+  EXPECT_FALSE(controller().IsContentTranslated());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IsTranslatePdfEnabled_FeatureEnabled_ReturnsTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+  EXPECT_TRUE(controller().IsTranslatePdfEnabled());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IsTranslatePdfEnabled_FeatureDisabled_ReturnsFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(translate::kEnableTranslatePdf);
+  EXPECT_FALSE(controller().IsTranslatePdfEnabled());
 }
 
 TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOn_SavesHighlightState) {

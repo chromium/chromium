@@ -57,6 +57,7 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -167,6 +168,10 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void,
               OnReadingModeShown,
               (read_anything::mojom::ReadAnythingOpenTrigger open_trigger));
+  MOCK_METHOD(void,
+              OnTranslationStateChanged,
+              (bool is_translated),
+              (override));
 
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 };
@@ -464,7 +469,8 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
   // language has been determined, as it does when the renderer reports it.
   void OnLanguageDetermined(const std::string& code) {
     mojo::PendingRemote<translate::mojom::TranslateAgent> agent;
-    translate_agent_receivers_.push_back(agent.InitWithNewPipeAndPassReceiver());
+    translate_agent_receivers_.push_back(
+        agent.InitWithNewPipeAndPassReceiver());
     translate::LanguageDetectionDetails details;
     details.adopted_language = code;
     GetChromeTranslateClient()->translate_driver()->RegisterPage(
@@ -2503,8 +2509,253 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   EXPECT_NE(controller->GetTranslateBubble(), nullptr);
 }
 
-// Tests the legacy distiller path (kReadAnythingDistillerRefactor disabled).
-// TODO(crbug.com/558399596): Add equivalent tests with the refactor enabled.
+class ReadAnythingUntrustedPageHandlerPdfTranslationTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerPdfTranslationTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            {features::kReadAnythingTranslateEntryPoint,
+             translate::kEnableTranslatePdf}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPdfTranslationTest,
+    OnDistillationStatus_AfterActivateWithPdfTranslation_TriggersTranslation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to a PDF so IsPdfTranslation() returns true.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+  handler_ = CreateHandler();
+
+  // Set the open trigger of ReadAnything/SidePanel to kPdfTranslation
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+
+  // Set pending translation languages in the tab's language state.
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  ASSERT_NE(chrome_translate_client, nullptr);
+  translate::LanguageState* language_state =
+      chrome_translate_client->GetTranslateManager()->GetLanguageState();
+  language_state->SetPendingTranslationLanguages(
+      base::i18n::GetKnownLanguageTag("la"),
+      base::i18n::GetKnownLanguageTag("en"));
+
+  // Verify that they are initially set.
+  EXPECT_TRUE(language_state->pending_source_language().has_value());
+  EXPECT_TRUE(language_state->pending_target_language().has_value());
+
+  // Register a side panel agent with the driver so side_panel_agent.is_bound()
+  // is true when MaybeTriggerPendingPdfTranslation is called.
+  mojo::PendingRemote<translate::mojom::TranslateAgent> side_panel_agent;
+  mojo::PendingReceiver<translate::mojom::TranslateAgent>
+      side_panel_agent_receiver =
+          side_panel_agent.InitWithNewPipeAndPassReceiver();
+  translate::LanguageDetectionDetails side_panel_details;
+  side_panel_details.url =
+      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
+  side_panel_details.adopted_language = "en";
+  side_panel_details.is_model_reliable = true;
+  chrome_translate_client->translate_driver()->RegisterPage(
+      std::move(side_panel_agent), side_panel_details, true);
+
+  // Call OnDistillationStatus with Success. This should trigger
+  // MaybeTriggerPendingPdfTranslation and clear the pending languages.
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kSuccess, 100);
+
+  // Verify that the pending languages are cleared.
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPdfTranslationTest,
+    OnDistillationStatus_AfterActivateWithPdfTranslation_FailedDoesNotTriggerTranslation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to a PDF so IsPdfTranslation() returns true.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+  handler_ = CreateHandler();
+
+  // Set the open trigger of ReadAnything/SidePanel to kPdfTranslation
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+
+  // Set pending translation languages in the tab's language state.
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  ASSERT_NE(chrome_translate_client, nullptr);
+  translate::LanguageState* language_state =
+      chrome_translate_client->GetTranslateManager()->GetLanguageState();
+  language_state->SetPendingTranslationLanguages(
+      base::i18n::GetKnownLanguageTag("la"),
+      base::i18n::GetKnownLanguageTag("en"));
+
+  // Verify that they are initially set.
+  EXPECT_TRUE(language_state->pending_source_language().has_value());
+  EXPECT_TRUE(language_state->pending_target_language().has_value());
+
+  // Call OnDistillationStatus with Failed. This should NOT trigger
+  // MaybeTriggerPendingPdfTranslation.
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kFailure, 100);
+
+  // Verify that the pending languages are NOT cleared.
+  EXPECT_TRUE(language_state->pending_source_language().has_value());
+  EXPECT_TRUE(language_state->pending_target_language().has_value());
+}
+
+class ReadAnythingUntrustedPageHandlerPdfTranslationStateTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerPdfTranslationStateTest()
+      : ReadAnythingUntrustedPageHandlerTest({translate::kEnableTranslatePdf}) {
+  }
+
+ protected:
+  ReadAnythingUntrustedPageHandlerPdfTranslationStateTest(
+      std::vector<base::test::FeatureRef> enabled_features,
+      std::vector<base::test::FeatureRef> disabled_features)
+      : ReadAnythingUntrustedPageHandlerTest(std::move(enabled_features),
+                                             std::move(disabled_features)) {}
+
+  translate::LanguageState* GetLanguageState(content::WebContents* contents) {
+    return ChromeTranslateClient::FromWebContents(contents)
+        ->GetTranslateManager()
+        ->GetLanguageState();
+  }
+
+  translate::LanguageState* GetTabLanguageState() {
+    return GetLanguageState(GetReadAnythingWebContents());
+  }
+
+  // Makes the language state of `contents` report that it's translated.
+  void Translate(content::WebContents* contents) {
+    translate::LanguageState* language_state = GetLanguageState(contents);
+    language_state->LanguageDetermined(
+        "fr", /*page_level_translation_criteria_met=*/true);
+    language_state->SetCurrentLanguage("en");
+  }
+
+  // Makes the tab's language state report that the tab is translated.
+  void TranslateTab() { Translate(GetReadAnythingWebContents()); }
+
+  // Dispatches the messages sent to `page_` so far, then verifies and clears
+  // its expectations.
+  void FlushAndVerifyPage() {
+    page_.receiver_.FlushForTesting();
+    testing::Mock::VerifyAndClearExpectations(&page_);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
+                       OnHandlerConstructed_SendsNotTranslated) {
+  EXPECT_CALL(page_, OnTranslationStateChanged(false)).Times(1);
+
+  handler_ = CreateHandler();
+  FlushAndVerifyPage();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
+                       OnHandlerConstructed_TabTranslated_SendsTranslated) {
+  TranslateTab();
+  EXPECT_CALL(page_, OnTranslationStateChanged(true)).Times(1);
+
+  handler_ = CreateHandler();
+  FlushAndVerifyPage();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
+                       TabTranslationStateChanged_SendsTranslationState) {
+  handler_ = CreateHandler();
+  FlushAndVerifyPage();
+
+  EXPECT_CALL(page_, OnTranslationStateChanged(true)).Times(1);
+  TranslateTab();
+  FlushAndVerifyPage();
+
+  // Reverting to the original language, e.g. via "Show original".
+  EXPECT_CALL(page_, OnTranslationStateChanged(false)).Times(1);
+  GetTabLanguageState()->SetCurrentLanguage("fr");
+  FlushAndVerifyPage();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
+                       TabNavigatedAfterTranslation_SendsNotTranslated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  TranslateTab();
+  EXPECT_CALL(page_, OnTranslationStateChanged(true)).Times(1);
+  handler_ = CreateHandler();
+  FlushAndVerifyPage();
+
+  // Navigating resets the tab's translation state. The observation is kept, so
+  // the state is only sent once.
+  EXPECT_CALL(page_, OnTranslationStateChanged(false)).Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  FlushAndVerifyPage();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerPdfTranslationStateTest,
+                       TabDiscarded_ObservesNewContents) {
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  handler_ = CreateHandler();
+  FlushAndVerifyPage();
+
+  // Move the tab to the background, then discard it. This replaces its contents
+  // and destroys the old contents, which must no longer be observed.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_NE(browser()->GetActiveTabInterface(), tab);
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  content::WebContents* new_contents_ptr = new_contents.get();
+  // The new contents isn't translated either, so the unchanged state isn't sent
+  // again.
+  EXPECT_CALL(page_, OnTranslationStateChanged).Times(0);
+  browser()->tab_strip_model()->DiscardWebContents(tab->GetContents(),
+                                                   std::move(new_contents));
+  FlushAndVerifyPage();
+
+  // The translation state of the new contents is observed.
+  EXPECT_CALL(page_, OnTranslationStateChanged(true)).Times(1);
+  Translate(new_contents_ptr);
+  FlushAndVerifyPage();
+}
+
+class ReadAnythingUntrustedPageHandlerPdfTranslationStateDisabledTest
+    : public ReadAnythingUntrustedPageHandlerPdfTranslationStateTest {
+ public:
+  ReadAnythingUntrustedPageHandlerPdfTranslationStateDisabledTest()
+      : ReadAnythingUntrustedPageHandlerPdfTranslationStateTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{translate::kEnableTranslatePdf}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPdfTranslationStateDisabledTest,
+    DoesNotSendTranslationState) {
+  EXPECT_CALL(page_, OnTranslationStateChanged).Times(0);
+
+  handler_ = CreateHandler();
+  TranslateTab();
+  FlushAndVerifyPage();
+}
+
 class ReadAnythingUntrustedPageHandlerDistillerTest
     : public ReadAnythingUntrustedPageHandlerTest {
  public:

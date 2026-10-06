@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
@@ -37,6 +38,7 @@
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller_factory.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/translate/core/common/translate_features.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -1311,6 +1313,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isPdf", &ReadAnythingAppController::IsPdf)
+      .SetProperty("isContentTranslated",
+                   &ReadAnythingAppController::IsContentTranslated)
       .SetProperty("isImprovedReadAloudEnabled",
                    &ReadAnythingAppController::IsImprovedReadAloudEnabled)
       .SetProperty("isReadAnythingImprovedUiEnabled",
@@ -1318,6 +1322,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty(
           "isReadAnythingTranslateEntryPointEnabled",
           &ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled)
+      .SetProperty("isTranslatePdfEnabled",
+                   &ReadAnythingAppController::IsTranslatePdfEnabled)
       .SetProperty("isReadAnythingReadAloudExperimentalPlaybackUiEnabled",
                    &ReadAnythingAppController::
                        IsReadAnythingReadAloudExperimentalPlaybackUiEnabled)
@@ -2077,6 +2083,10 @@ bool ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled()
   return features::IsReadAnythingTranslateEntryPointEnabled();
 }
 
+bool ReadAnythingAppController::IsTranslatePdfEnabled() const {
+  return base::FeatureList::IsEnabled(translate::kEnableTranslatePdf);
+}
+
 // Returns true if the experimental flag allowing testing with alternative
 // distillation methods such as Readability.js is enabled.
 bool ReadAnythingAppController::IsReadabilityEnabled() const {
@@ -2098,6 +2108,11 @@ bool ReadAnythingAppController::IsGoogleDocs() const {
 
 bool ReadAnythingAppController::IsPdf() const {
   return model_.IsPdf();
+}
+
+bool ReadAnythingAppController::IsContentTranslated() const {
+  return IsTranslatePdfEnabled() &&
+         model_.is_content_translated();
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
@@ -2733,6 +2748,14 @@ void ReadAnythingAppController::TogglePresentation() {
 void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {
   ExecuteJavaScript("chrome.readingMode.onTabMuteStateChange(" +
                     base::ToString(muted) + ")");
+}
+
+void ReadAnythingAppController::OnTranslationStateChanged(bool is_translated) {
+  // The browser only sends the translation state when PDF translation is
+  // enabled. See ReadAnythingTranslateObserver::ObserveTranslationState().
+  CHECK(IsTranslatePdfEnabled());
+  model_.set_is_content_translated(is_translated);
+  ExecuteJavaScript("chrome.readingMode.onTranslationStateChanged();");
 }
 
 void ReadAnythingAppController::SetDefaultLanguageCode(

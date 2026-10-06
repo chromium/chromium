@@ -625,6 +625,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_test",
     "//components/sync_tab_context:constants",
+    "//components/translate/core/common",
     "//gin",
     "//gin:gin_test",
     "//testing/gtest",
