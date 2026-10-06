@@ -68,6 +68,9 @@ const base::FeatureParam<base::TimeDelta> kTrailingEligibilityWindow{
 const base::FeatureParam<double> kEligibilityThresholdRatio{
     &kUniversalOptOut, "eligibility_threshold_ratio", 0.5};
 
+const base::FeatureParam<double> kTrailingEligibilityThresholdRatio{
+    &kUniversalOptOut, "trailing_eligibility_threshold_ratio", 0.5};
+
 std::vector<std::string> GetTargetLocations() {
   return base::SplitString(kTargetLocations.Get(), ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
