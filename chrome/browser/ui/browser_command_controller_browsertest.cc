@@ -1935,4 +1935,42 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestIsolatedTest,
                                         IDC_RECENT_TABS_SEE_DEVICE_TABS));
 }
 
+// In Isolated mode, New Incognito Window stays visible but disabled in menus
+// (e.g. the macOS File menu and pinned toolbar button), while New Isolated
+// Window is enabled.
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestIsolatedTest,
+                       OnlyIsolatedWindowCommandEnabled) {
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_NEW_INCOGNITO_WINDOW));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_NEW_ISOLATED_WINDOW));
+
+  actions::ActionItem* const root =
+      BrowserActions::From(browser())->root_action_item();
+  actions::ActionItem* const incognito_action =
+      actions::ActionManager::Get().FindAction(kActionNewIncognitoWindow, root);
+  actions::ActionItem* const isolated_action =
+      actions::ActionManager::Get().FindAction(kActionNewIsolatedWindow, root);
+  ASSERT_TRUE(incognito_action);
+  ASSERT_TRUE(isolated_action);
+  EXPECT_FALSE(incognito_action->GetEnabled());
+  EXPECT_TRUE(isolated_action->GetEnabled());
+}
+
+// Executing the disabled New Incognito Window command is a no-op (and must not
+// crash).
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestIsolatedTest,
+                       NewIncognitoWindowCommandIsNoOp) {
+  EXPECT_FALSE(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestIsolatedTest,
+                       NewIsolatedWindowCommandOpensIsolatedWindow) {
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_NEW_ISOLATED_WINDOW));
+  BrowserWindowInterface* const isolated_browser =
+      browser_created_observer.Wait();
+  ASSERT_TRUE(isolated_browser);
+  EXPECT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+}
+
 }  // namespace chrome

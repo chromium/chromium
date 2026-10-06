@@ -1064,6 +1064,42 @@ IN_PROC_BROWSER_TEST_F(BrowserViewIsolatedTest, AccessibleWindowTitleIsolated) {
                           ->GetAccessibleWindowTitle();
   EXPECT_TRUE(window_title.contains(u"Isolated"));
 }
+
+#if !BUILDFLAG(IS_MAC)
+// In Isolated mode, the New Incognito Window accelerator (Ctrl+Shift+N) opens
+// an Isolated window.
+IN_PROC_BROWSER_TEST_F(BrowserViewIsolatedTest,
+                       NewIncognitoWindowAcceleratorOpensIsolatedWindow) {
+  const ui::Accelerator kNewIncognitoWindowAccel(
+      ui::VKEY_N, ui::EF_PLATFORM_ACCELERATOR | ui::EF_SHIFT_DOWN);
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  EXPECT_TRUE(browser_view()->AcceleratorPressed(kNewIncognitoWindowAccel));
+  BrowserWindowInterface* const isolated_browser =
+      browser_created_observer.Wait();
+  ASSERT_TRUE(isolated_browser);
+  EXPECT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+}
+
+// Same as above, but triggered from within an Isolated window.
+IN_PROC_BROWSER_TEST_F(BrowserViewIsolatedTest,
+                       NewIncognitoWindowAcceleratorFromIsolatedWindow) {
+  BrowserWindowInterface* const isolated_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  const ui::Accelerator kNewIncognitoWindowAccel(
+      ui::VKEY_N, ui::EF_PLATFORM_ACCELERATOR | ui::EF_SHIFT_DOWN);
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(isolated_browser)
+                  ->AcceleratorPressed(kNewIncognitoWindowAccel));
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_TRUE(new_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   scoped_refptr<TabResourceUsage> tab_resource_usage =
       base::MakeRefCounted<TabResourceUsage>();

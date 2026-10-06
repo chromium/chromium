@@ -48,6 +48,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -5947,6 +5948,15 @@ bool BrowserView::FindCommandIdForAccelerator(
   *command_id = iter->second;
   if (accelerator.IsRepeat() && !IsCommandRepeatable(*command_id)) {
     return false;
+  }
+
+  // When Enterprise Isolated Mode replaces Incognito, the New Incognito Window
+  // accelerator opens an Isolated window instead. This mirrors macOS, where
+  // AppController moves the key equivalent to the New Isolated Window item.
+  if (*command_id == IDC_NEW_INCOGNITO_WINDOW &&
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+          browser_->GetProfile())) {
+    *command_id = IDC_NEW_ISOLATED_WINDOW;
   }
 
   return true;

@@ -2107,8 +2107,10 @@ void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
   // open.
   if (auto* const incognito_action =
           FindAction(kActionNewIncognitoWindow, browser_)) {
-    incognito_action->SetEnabled(
-        IncognitoModePrefs::IsIncognitoAllowed(profile()));
+    // Only standard Incognito enables this action. When Enterprise Isolated
+    // Mode replaces Incognito, kActionNewIsolatedWindow is used instead.
+    incognito_action->SetEnabled(IncognitoModePrefs::IsIncognitoTypeAllowed(
+        profile(), IncognitoModePrefs::IncognitoModeType::kStandard));
   }
   if (auto* const isolated_action =
           FindAction(kActionNewIsolatedWindow, browser_)) {
