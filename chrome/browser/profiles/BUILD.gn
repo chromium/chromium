@@ -432,7 +432,7 @@ source_set("profile") {
     "//content/public/browser",
     "//extensions/buildflags",
   ]
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//extensions/browser" ]
   }
   if (is_chromeos) {
