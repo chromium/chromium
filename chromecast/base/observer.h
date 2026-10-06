@@ -110,6 +110,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -293,7 +294,7 @@ class ObservableInternals
     void SetValue(const T& value) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       value_ = value;
-      for (auto* obs : observers_) {
+      for (Observer<T>* obs : observers_) {
         obs->OnUpdate();
       }
     }
@@ -303,7 +304,7 @@ class ObservableInternals
     }
 
    private:
-    std::vector<Observer<T>*> observers_;
+    std::vector<raw_ptr<Observer<T>>> observers_;
     T value_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
