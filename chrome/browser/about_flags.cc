@@ -7323,13 +7323,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"composebox-drive-context-menu-option",
      flag_descriptions::kComposeboxDriveContextMenuOptionName,
      flag_descriptions::kComposeboxDriveContextMenuOptionDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOption)},
 
     {"composebox-drive-context-menu-option-disclaimer",
      flag_descriptions::kComposeboxDriveContextMenuOptionDisclaimerName,
      flag_descriptions::kComposeboxDriveContextMenuOptionDisclaimerDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOptionDisclaimer)},
 
     {"composebox-drive-context-menu-option-signin-promo",
