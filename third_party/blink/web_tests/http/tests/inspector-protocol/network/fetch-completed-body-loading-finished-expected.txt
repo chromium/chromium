@@ -1,0 +1,12 @@
+Tests that fetch() requests whose body has been received finish loading.
+
+Scenario 1: No-store body read to the end with a stream reader
+Page: Hello world
+Event: Network.loadingFinished
+Body: 'Hello world'
+
+Scenario 2: Empty body that is never read
+Page: 200
+Event: Network.loadingFinished
+Body: ''
+

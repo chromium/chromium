@@ -209,6 +209,9 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
         // We have no information to notify the client.
         break;
       }
+      // Record the terminal state before notifying the client, which may
+      // Cancel() on seeing it.
+      HandleResult(result);
       if (bytes_consumer_client_) {
         bytes_consumer_client_->OnStateChange();
       }

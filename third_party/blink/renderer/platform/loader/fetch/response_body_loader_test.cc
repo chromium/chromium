@@ -114,9 +114,11 @@ class ResponseBodyLoaderTest : public testing::Test {
                               public BytesConsumer::Client {
    public:
     ReadingClient(BytesConsumer& bytes_consumer,
-                  TestClient& test_response_body_loader_client)
+                  TestClient& test_response_body_loader_client,
+                  bool cancel_when_closed_or_errored = false)
         : bytes_consumer_(bytes_consumer),
-          test_response_body_loader_client_(test_response_body_loader_client) {}
+          test_response_body_loader_client_(test_response_body_loader_client),
+          cancel_when_closed_or_errored_(cancel_when_closed_or_errored) {}
 
     void OnStateChangeInternal() {
       while (true) {
@@ -135,7 +137,15 @@ class ResponseBodyLoaderTest : public testing::Test {
     // BytesConsumer::Client implementation
     void OnStateChange() override {
       on_state_change_called_ = true;
-      OnStateChangeInternal();
+      // Like BodyStreamBuffer, cancel without reading once the body is closed
+      // or errored.
+      if (cancel_when_closed_or_errored_ &&
+          bytes_consumer_->GetPublicState() !=
+              PublicState::kReadableOrWaiting) {
+        bytes_consumer_->Cancel();
+      } else {
+        OnStateChangeInternal();
+      }
       // Notification is done asynchronously.
       EXPECT_FALSE(test_response_body_loader_client_->LoadingIsCancelled());
       EXPECT_FALSE(test_response_body_loader_client_->LoadingIsFinished());
@@ -154,6 +164,7 @@ class ResponseBodyLoaderTest : public testing::Test {
     bool on_state_change_called_ = false;
     const Member<BytesConsumer> bytes_consumer_;
     const Member<TestClient> test_response_body_loader_client_;
+    const bool cancel_when_closed_or_errored_;
   };
 
   ResponseBodyLoader* MakeResponseBodyLoader(
@@ -1243,6 +1254,68 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_TRUE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
+}
+
+TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
+       CancelAfterDone) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* original_consumer =
+      MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  original_consumer->Add(Command(Command::kWait));
+  original_consumer->Add(Command(Command::kDone));
+
+  auto* client = MakeGarbageCollected<TestClient>();
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
+
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+  auto* reading_client = MakeGarbageCollected<ReadingClient>(
+      consumer, *client, /*cancel_when_closed_or_errored=*/true);
+  consumer.SetClient(reading_client);
+
+  base::span<const char> buffer;
+  // This BeginRead posts a task which calls OnStateChange.
+  Result result = consumer.BeginRead(buffer);
+  EXPECT_EQ(result, Result::kShouldWait);
+
+  task_runner->RunUntilIdle();
+
+  EXPECT_TRUE(reading_client->IsOnStateChangeCalled());
+  EXPECT_FALSE(client->LoadingIsCancelled());
+  EXPECT_TRUE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+}
+
+TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
+       CancelAfterError) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* original_consumer =
+      MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  original_consumer->Add(Command(Command::kWait));
+  original_consumer->Add(Command(Command::kError));
+
+  auto* client = MakeGarbageCollected<TestClient>();
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
+
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+  auto* reading_client = MakeGarbageCollected<ReadingClient>(
+      consumer, *client, /*cancel_when_closed_or_errored=*/true);
+  consumer.SetClient(reading_client);
+
+  base::span<const char> buffer;
+  // This BeginRead posts a task which calls OnStateChange.
+  Result result = consumer.BeginRead(buffer);
+  EXPECT_EQ(result, Result::kShouldWait);
+
+  task_runner->RunUntilIdle();
+
+  EXPECT_TRUE(reading_client->IsOnStateChangeCalled());
+  EXPECT_FALSE(client->LoadingIsCancelled());
+  EXPECT_FALSE(client->LoadingIsFinished());
+  EXPECT_TRUE(client->LoadingIsFailed());
 }
 
 class ResponseBodyLoaderTestAllowDrainAsBytesConsumerInBFCache
