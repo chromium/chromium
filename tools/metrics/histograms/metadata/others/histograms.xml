@@ -2055,6 +2055,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FirstRun.IOSFirebaseConfigured" enum="FirebaseConfiguredState"
+    expires_after="2027-10-01">
+  <owner>sdefresne@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Track whether Firebase is enabled or not at app startup.</summary>
+</histogram>
+
 <histogram name="FirstRun.LaunchSource" enum="FirstRunLaunchSource"
     expires_after="2027-04-01">
   <owner>jlebel@chromium.org</owner>
