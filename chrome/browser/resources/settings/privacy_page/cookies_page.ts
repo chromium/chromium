@@ -8,7 +8,6 @@
  * settings.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -24,7 +23,6 @@ import '../settings_shared.css.js';
 import '../site_settings/site_list.js';
 import './do_not_track_toggle.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -44,8 +42,8 @@ import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_br
 
 import {getTemplate} from './cookies_page.html.js';
 
-const SettingsCookiesPageElementBase = SettingsViewMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
+const SettingsCookiesPageElementBase =
+    SettingsViewMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   static get is() {
