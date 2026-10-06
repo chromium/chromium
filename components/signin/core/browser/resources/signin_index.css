@@ -20,7 +20,21 @@ tr.header {
   font-weight: bold;
 }
 
-div {
+body {
+  margin: 0;
+}
+
+cr-tab-box {
+  width: auto;
+}
+
+div[slot='panel'] {
+  margin-top: 5px;
+}
+
+/* Exclude cr-tab-box tabs/panels, since document-level styles take precedence
+ * over cr-tab-box's ::slotted() rules that show/hide them. */
+div:not([slot]) {
   break-inside: avoid;
   display: inline-block;
   width: 100%;

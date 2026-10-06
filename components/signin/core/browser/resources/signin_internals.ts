@@ -11,6 +11,7 @@ declare namespace chrome {
 }
 
 import '/strings.m.js';
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {html, render} from '//resources/lit/v3_0/lit.rollup.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
@@ -286,18 +287,17 @@ function onOverrideValueChange(accountId: string, capName: string, e: Event) {
 
 function getAccountCapabilitiesHtml(infos: AccountCapabilitiesInfo[]) {
   if (!infos || infos.length === 0) {
-    return html``;
+    return html`<p>No account capabilities available.</p>`;
   }
   // clang-format off
   return html`
-    <h2>Account Capabilities By Account</h2>
     ${infos.map(item => {
       // Only show the override column if at least one capability of this
       // account can be overridden.
       const canOverrideAny = item.capabilities.some(cap => cap.can_override);
       return html`
       <div class="account-capabilities-section">
-        <h3>${item.accountId}</h3>
+        <h3>Account ID: ${item.accountId}</h3>
         <table class="signin-details">
           <tr class="header">
             <td>Capability Name</td>

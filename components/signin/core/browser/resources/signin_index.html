@@ -6,13 +6,23 @@
   <link rel="stylesheet" type="text/css" href="signin_index.css">
 </head>
 <body>
-  <div id="signin-info"></div>
-  <div id="token-info"></div>
-  <div id="cookie-info"></div>
-  <div id="account-info"></div>
-  <div id="refresh-token-events"></div>
-  <div id="bound-session-info"></div>
-  <div id="account-capabilities"></div>
+  <cr-tab-box id="signin-page">
+    <div slot="tab" id="signin-overview-tab">Overview</div>
+    <div slot="tab" id="signin-account-capabilities-tab">
+      Account Capabilities
+    </div>
+    <div slot="panel">
+      <div id="signin-info"></div>
+      <div id="token-info"></div>
+      <div id="cookie-info"></div>
+      <div id="account-info"></div>
+      <div id="refresh-token-events"></div>
+      <div id="bound-session-info"></div>
+    </div>
+    <div slot="panel">
+      <div id="account-capabilities"></div>
+    </div>
+  </cr-tab-box>
 
   <script type="module" src="signin_internals.js"></script>
 </body>
