@@ -958,6 +958,18 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgri
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid/row/grid-lanes-subgrid-002a.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid/row/independent-formatting-context.html [ Failure ]
 
+# Grid Lanes does not support reading flow through the stacking axis.
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-column-reading-flow-003.html [ Failure ]
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-column-reading-flow-004.html [ Failure ]
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-column-reading-flow-006.html [ Failure ]
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-column-reading-flow-007.html [ Failure ]
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-row-reading-flow-001.html [ Failure ]
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-row-reading-flow-003.html [ Failure ]
+
+# Grid Lanes reading flow with spanning items and dense packing.
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-column-reading-flow-008.html [ Failure ]
+crbug.com/1076027 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-lanes-row-reading-flow-002.html [ Failure ]
+
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure Timeout ]
 crbug.com/819816 external/wpt/css/css-fonts/font-kerning-03.html [ Failure ]
