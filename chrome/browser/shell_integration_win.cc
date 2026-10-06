@@ -9,7 +9,6 @@
 #include <shobjidl.h>
 #include <windows.h>
 
-#include <propkey.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <wrl/client.h>
@@ -29,7 +28,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -46,7 +44,6 @@
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
-#include "base/win/scoped_propvariant.h"
 #include "base/win/shlwapi.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -696,9 +693,6 @@ int MigrateShortcutsInPath(const base::FilePath& chrome_exe,
       base::FeatureList::IsEnabled(win::kMigrateTaskbarShortcutLocation);
 
   int shortcuts_migrated = 0;
-  base::FilePath target_path;
-  std::wstring arguments;
-  base::win::ScopedPropVariant propvariant;
   for (base::FilePath shortcut = shortcuts_enum.Next(); !shortcut.empty();
        shortcut = shortcuts_enum.Next()) {
     if (only_profile_shortcuts &&
@@ -707,15 +701,20 @@ int MigrateShortcutsInPath(const base::FilePath& chrome_exe,
       continue;
     }
 
-    // TODO(gab): Use ProgramCompare instead of comparing FilePaths below once
-    // it is fixed to work with FilePaths with spaces.
-    if (!base::win::ResolveShortcut(shortcut, &target_path, &arguments) ||
-        !base::FilePath::CompareEqualIgnoreCase(chrome_exe.value(),
-                                                target_path.value())) {
+    constexpr uint32_t kResolveOptions =
+        base::win::ShortcutProperties::PROPERTIES_TARGET |
+        base::win::ShortcutProperties::PROPERTIES_ARGUMENTS |
+        base::win::ShortcutProperties::PROPERTIES_APP_ID;
+    base::win::ShortcutProperties shortcut_properties;
+    if (!base::win::ResolveShortcutProperties(shortcut, kResolveOptions,
+                                              &shortcut_properties) ||
+        !base::FilePath::CompareEqualIgnoreCase(
+            chrome_exe.value(), shortcut_properties.target.value())) {
       continue;
     }
     base::CommandLine command_line(base::CommandLine::FromString(
-        base::StrCat({L"\"", target_path.value(), L"\" ", arguments})));
+        base::StrCat({L"\"", shortcut_properties.target.value(), L"\" ",
+                      shortcut_properties.arguments})));
     if (only_profile_shortcuts &&
         !command_line.HasSwitch(switches::kProfileDirectory)) {
       continue;
@@ -728,48 +727,14 @@ int MigrateShortcutsInPath(const base::FilePath& chrome_exe,
       continue;
     }
 
-    // Load the shortcut.
-    Microsoft::WRL::ComPtr<IShellLink> shell_link;
-    Microsoft::WRL::ComPtr<IPersistFile> persist_file;
-    if (FAILED(::CoCreateInstance(CLSID_ShellLink, nullptr,
-                                  CLSCTX_INPROC_SERVER,
-                                  IID_PPV_ARGS(&shell_link))) ||
-        FAILED(shell_link.As(&persist_file)) ||
-        FAILED(persist_file->Load(shortcut.value().c_str(), STGM_READ))) {
-      DLOG(WARNING) << "Failed loading shortcut at " << shortcut.value();
-      continue;
-    }
-
     // Any properties that need to be updated on the shortcut will be stored in
-    // |updated_properties|.
+    // `updated_properties`.
     base::win::ShortcutProperties updated_properties;
 
     // Validate the existing app id for the shortcut.
-    Microsoft::WRL::ComPtr<IPropertyStore> property_store;
-    propvariant.Reset();
-    if (FAILED(shell_link.As(&property_store)) ||
-        property_store->GetValue(PKEY_AppUserModel_ID, propvariant.Receive()) !=
-            S_OK) {
-      // When in doubt, prefer not updating the shortcut.
-      NOTREACHED();
-    } else {
-      switch (propvariant.get().vt) {
-        case VT_EMPTY:
-          // If there is no app_id set, set our app_id.
-          updated_properties.set_app_id(expected_app_id);
-          break;
-        case VT_LPWSTR:
-          if (expected_app_id != std::wstring(propvariant.get().pwszVal)) {
-            updated_properties.set_app_id(expected_app_id);
-          }
-          break;
-        default:
-          NOTREACHED();
-      }
+    if (shortcut_properties.app_id != expected_app_id) {
+      updated_properties.set_app_id(expected_app_id);
     }
-
-    persist_file.Reset();
-    shell_link.Reset();
 
     // Ensure shortcuts are tagged with
     // `--source-shortcut-location=<target_location>`. Remove any existing
