@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MENU_UI_BUNDLED_MENU_ACTION_TYPE_H_
-#define IOS_CHROME_BROWSER_MENU_UI_BUNDLED_MENU_ACTION_TYPE_H_
+#ifndef IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_ACTION_TYPE_H_
+#define IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_ACTION_TYPE_H_
 
 // Enum representing the existing set of menu actions as types. Current values
 // should not be renumbered. Please keep in sync with "IOSMenuAction" in
@@ -89,4 +89,4 @@ enum class MenuActionType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 
-#endif  // IOS_CHROME_BROWSER_MENU_UI_BUNDLED_MENU_ACTION_TYPE_H_
+#endif  // IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_ACTION_TYPE_H_

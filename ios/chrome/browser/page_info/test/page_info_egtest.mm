@@ -18,7 +18,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
-#import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
+#import "ios/chrome/browser/menu/public/menu_action_type.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/page_info/constants/page_info_constants.h"

@@ -7,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/menu/public",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
   "+ios/chrome/browser/net/model",

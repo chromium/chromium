@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MENU_UI_BUNDLED_MENU_HISTOGRAMS_H_
-#define IOS_CHROME_BROWSER_MENU_UI_BUNDLED_MENU_HISTOGRAMS_H_
+#ifndef IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_HISTOGRAMS_H_
+#define IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_HISTOGRAMS_H_
 
 // Enum representing the existing set of menu scenarios. Current values should
 // not be renumbered. Please keep in sync with "IOSMenuScenario" in
@@ -60,4 +60,4 @@ void RecordMenuShown(enum MenuScenarioHistogram scenario);
 // Retrieves a histogram name for the given menu `scenario`'s actions.
 const char* GetActionsHistogramName(enum MenuScenarioHistogram scenario);
 
-#endif  // IOS_CHROME_BROWSER_MENU_UI_BUNDLED_MENU_HISTOGRAMS_H_
+#endif  // IOS_CHROME_BROWSER_MENU_PUBLIC_MENU_HISTOGRAMS_H_

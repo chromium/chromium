@@ -26,6 +26,7 @@ include_rules = [
   "+ios/chrome/browser/level_up/model",
   "+ios/chrome/browser/level_up/ui",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
+  "+ios/chrome/browser/menu/public",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
   "+ios/chrome/browser/net/model/crurl.h",

@@ -12,7 +12,7 @@
 #endif
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
+#import "ios/chrome/browser/menu/public/menu_histograms.h"
 
 @class CrURL;
 @protocol SystemIdentity;

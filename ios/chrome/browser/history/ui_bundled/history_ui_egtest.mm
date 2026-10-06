@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
-#import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
+#import "ios/chrome/browser/menu/public/menu_action_type.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

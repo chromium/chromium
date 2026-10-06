@@ -5,6 +5,7 @@ include_rules = [
   "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/lens/ui_bundled",
+  "+ios/chrome/browser/menu/public",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",

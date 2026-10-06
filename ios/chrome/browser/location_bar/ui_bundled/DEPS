@@ -32,6 +32,7 @@ include_rules = [
   "+ios/chrome/browser/lens_overlay/public/lens_overlay_availability_utils.h",
   "+ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h",
   "+ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h",
+  "+ios/chrome/browser/menu/public",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",

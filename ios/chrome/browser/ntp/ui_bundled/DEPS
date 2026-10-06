@@ -34,6 +34,7 @@ include_rules = [
   "+ios/chrome/browser/image_fetcher/model",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/location_bar/ui_bundled",
+  "+ios/chrome/browser/menu/public",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/metrics/model/constants.h",
   "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",

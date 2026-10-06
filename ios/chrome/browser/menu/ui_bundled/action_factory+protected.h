@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_MENU_UI_BUNDLED_ACTION_FACTORY_PROTECTED_H_
 #define IOS_CHROME_BROWSER_MENU_UI_BUNDLED_ACTION_FACTORY_PROTECTED_H_
 
+#import "ios/chrome/browser/menu/public/menu_action_type.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
-#import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 
 @interface ActionFactory (Protected)
 

@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_data_source.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
-#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
+#import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_group_confirmation_commands.h"

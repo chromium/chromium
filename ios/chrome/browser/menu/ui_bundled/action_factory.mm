@@ -9,7 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
+#import "ios/chrome/browser/menu/public/menu_action_type.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"

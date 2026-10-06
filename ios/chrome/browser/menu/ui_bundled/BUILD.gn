@@ -42,7 +42,7 @@ source_set("ui_bundled") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ ":menu_action_type" ]
+  public_deps = [ "//ios/chrome/browser/menu/public" ]
 }
 
 source_set("tab_context_menu_delegate") {
@@ -54,16 +54,6 @@ source_set("tab_context_menu_delegate") {
   ]
 }
 
-source_set("menu_action_type") {
-  sources = [
-    "menu_action_type.h",
-    "menu_histograms.h",
-    "menu_histograms.mm",
-  ]
-
-  deps = [ "//base" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -71,7 +61,6 @@ source_set("unit_tests") {
     "browser_action_factory_unittest.mm",
   ]
   deps = [
-    ":menu_action_type",
     ":ui_bundled",
     "//base",
     "//base/test:test_support",
@@ -79,6 +68,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/tab_groups",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/menu/public",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
