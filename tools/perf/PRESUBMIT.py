@@ -32,8 +32,85 @@ def _CommonChecks(input_api, output_api, block_on_failure=False):
   return input_api.RunTests(commands)
 
 
+def CheckPresubmitUnittests(input_api, output_api):
+  """Runs unittests for tools/perf/PRESUBMIT.py."""
+  return input_api.canned_checks.RunUnitTestsInDirectory(
+    input_api,
+    output_api,
+    input_api.PresubmitLocalPath(),
+    [r'^PRESUBMIT_test\.py$'],
+  )
+
+
+def _GetPylintFilesToCheck(input_api):
+  """Returns regex patterns identifying Python files to lint.
+
+  If tools/perf/PRESUBMIT.py, pylintrc, any root Python file under
+  tools/perf/, or input_api.no_diffs is set, or a Python file was deleted,
+  returns None to lint all Python files under tools/perf/. Otherwise,
+  scopes linting to the affected subdirectories under tools/perf/, or
+  returns [] if no Python files are affected.
+  """
+  if input_api.no_diffs:
+    return None
+
+  local_root = input_api.PresubmitLocalPath()
+  norm_root = input_api.os_path.normcase(input_api.os_path.abspath(local_root))
+  this_presubmit = input_api.os_path.normcase(
+    input_api.os_path.join(norm_root, 'PRESUBMIT.py')
+  )
+  this_pylintrc = input_api.os_path.normcase(
+    input_api.os_path.join(norm_root, 'pylintrc')
+  )
+
+  affected_subdirs = set()
+  has_root_py = False
+
+  for f in input_api.AffectedFiles():
+    abs_path = f.AbsoluteLocalPath()
+    norm_path = input_api.os_path.normcase(input_api.os_path.abspath(abs_path))
+    if norm_path in (this_presubmit, this_pylintrc):
+      return None
+
+    if not norm_path.endswith('.py'):
+      continue
+
+    # Deletions fall back to a full scan to catch broken imports across files.
+    if f.Action() == 'D':
+      return None
+
+    try:
+      rel_path = input_api.os_path.relpath(abs_path, local_root)
+    except ValueError:
+      continue
+
+    if rel_path.startswith('..'):
+      continue
+
+    parts = rel_path.split(input_api.os_path.sep)
+    if len(parts) > 1:
+      affected_subdirs.add(parts[0])
+    else:
+      has_root_py = True
+
+  if not affected_subdirs and not has_root_py:
+    return []
+
+  # If root Python files changed, check everything to ensure module consistency.
+  if has_root_py:
+    return None
+
+  patterns = []
+  for subdir in sorted(affected_subdirs):
+    # Match both POSIX and Windows separators across OS regex engines.
+    escaped = input_api.re.escape(subdir)
+    patterns.append(rf'{escaped}(?:/|\\).*\.py$')
+  return patterns
+
+
 def CheckPyLint(input_api, output_api):
-  if not input_api.HasAffectedFiles(extensions='.py'):
+  files_to_check = _GetPylintFilesToCheck(input_api)
+  if files_to_check == []:
     return []
   disabled_warnings = [
     'broad-exception-raised',
@@ -60,6 +137,7 @@ def CheckPyLint(input_api, output_api):
       output_api,
       disabled_warnings=disabled_warnings,
       extra_paths_list=_GetPathsToPrepend(input_api),
+      files_to_check=files_to_check,
       pylintrc='pylintrc',
       version='3.2',
     )
