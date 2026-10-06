@@ -2128,6 +2128,264 @@ TEST_F(ContextualTasksUiTest,
   observer.reset();
 }
 
+// Ensure that an existing task is reused and not replaced by a new task when
+// the webview performs a same-document navigation updating its thread ID with a
+// server-generated title that differs from the initial query (e.g. when the
+// response finishes loading and updates the header title).
+TEST_F(ContextualTasksUiTest,
+       InPlaceThreadIdUpdate_SameDocDifferentTitle_ReusesTask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  const std::string initial_query = "initial query about tabs";
+  const std::string initial_thread_id = "initial_thread_id";
+  const std::string canonical_server_thread_id = "canonical_server_thread_id";
+  const std::string generated_title = "Generated Summary Title";
+  const std::string turn_id = "5678";
+
+  // Simulate an existing task with initial provisional thread ID and query
+  // title.
+  SetupMockDelegate(&delegate, task_id, initial_thread_id, initial_query);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", generated_title);
+  url = net::AppendQueryParameter(url, "mtid", canonical_server_thread_id);
+  url = net::AppendQueryParameter(url, "mstk", turn_id);
+
+  // A new task should NOT be created; the existing task should be reused.
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(0);
+  EXPECT_CALL(delegate, OnTaskChanged()).Times(0);
+  EXPECT_CALL(*contextual_tasks_service_,
+              UpdateThreadForTask(task_id, _, canonical_server_thread_id,
+                                  Optional(turn_id), Optional(generated_title)))
+      .Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  nav_handle->set_is_same_document(true);
+  ON_CALL(*nav_handle, HasUserGesture()).WillByDefault(Return(false));
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+  EXPECT_EQ(delegate.GetThreadId(), canonical_server_thread_id);
+  EXPECT_EQ(delegate.GetThreadTitle(), generated_title);
+
+  observer.reset();
+}
+
+// Ensure that even when kContextManagementInComposebox is disabled, an existing
+// task is reused and not replaced on same-document in-place thread ID updates.
+TEST_F(ContextualTasksUiTest,
+       InPlaceThreadIdUpdate_FeatureDisabled_SameDocDifferentTitle_ReusesTask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kContextManagementInComposebox);
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  const std::string initial_query = "initial query";
+  const std::string initial_thread_id = "initial_thread_id";
+  const std::string canonical_server_thread_id = "canonical_server_thread_id";
+  const std::string generated_title = "Server Generated Title";
+
+  SetupMockDelegate(&delegate, task_id, initial_thread_id, initial_query);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", generated_title);
+  url = net::AppendQueryParameter(url, "mtid", canonical_server_thread_id);
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(0);
+  EXPECT_CALL(delegate, OnTaskChanged()).Times(0);
+  EXPECT_CALL(*contextual_tasks_service_,
+              UpdateThreadForTask(task_id, _, canonical_server_thread_id, _,
+                                  Optional(generated_title)))
+      .Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  nav_handle->set_is_same_document(true);
+  ON_CALL(*nav_handle, HasUserGesture()).WillByDefault(Return(false));
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+  EXPECT_EQ(delegate.GetThreadId(), canonical_server_thread_id);
+  EXPECT_EQ(delegate.GetThreadTitle(), generated_title);
+
+  observer.reset();
+}
+
+// Ensure that a pending task is reused and attaches the thread ID without
+// creating a new task when a same-document navigation occurs with a generated
+// title.
+TEST_F(ContextualTasksUiTest,
+       InPlaceThreadIdUpdate_PendingTaskSameDoc_ReusesTask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kContextManagementInComposebox);
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  const std::string initial_query = "pending query";
+  const std::string canonical_server_thread_id = "canonical_server_thread_id";
+  const std::string generated_title = "Generated Summary Title";
+
+  // Simulate a pending task (task ID set, no thread ID).
+  SetupMockDelegate(&delegate, task_id, /*thread_id=*/std::nullopt,
+                    initial_query);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", generated_title);
+  url = net::AppendQueryParameter(url, "mtid", canonical_server_thread_id);
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(0);
+  EXPECT_CALL(delegate, OnTaskChanged()).Times(0);
+  EXPECT_CALL(*contextual_tasks_service_,
+              UpdateThreadForTask(task_id, _, canonical_server_thread_id, _,
+                                  Optional(generated_title)))
+      .Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  nav_handle->set_is_same_document(true);
+  ON_CALL(*nav_handle, HasUserGesture()).WillByDefault(Return(false));
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+  EXPECT_EQ(delegate.GetThreadId(), canonical_server_thread_id);
+  EXPECT_EQ(delegate.GetThreadTitle(), generated_title);
+
+  observer.reset();
+}
+
+// Ensure that a user-initiated same-document navigation to a different thread
+// (e.g. selecting a thread from history) creates a new task even when the
+// thread is unknown to the service, so the previous thread's context (such as
+// Smart Tab Sharing) does not leak into the selected thread.
+TEST_F(ContextualTasksUiTest, UserInitiatedSameDocThreadSwitch_CreatesNewTask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid old_task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  base::Uuid new_task_id =
+      base::Uuid::ParseCaseInsensitive("22222222-2222-2222-2222-222222222222");
+  const std::string old_title = "current thread";
+  const std::string old_thread_id = "current_thread_id";
+  const std::string history_thread_id = "history_thread_id";
+  const std::string history_title = "Historical Thread Title";
+
+  SetupMockDelegate(&delegate, old_task_id, old_thread_id, old_title);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", history_title);
+  url = net::AppendQueryParameter(url, "mtid", history_thread_id);
+
+  ContextualTask new_task(new_task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillByDefault(Return(new_task));
+  ON_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, history_thread_id))
+      .WillByDefault(Return(std::nullopt));
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url)).Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, Optional(old_task_id),
+                                               Optional(new_task_id), _))
+      .Times(1);
+  EXPECT_CALL(delegate, OnTaskChanged()).Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  nav_handle->set_is_same_document(true);
+  ON_CALL(*nav_handle, HasUserGesture()).WillByDefault(Return(true));
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), new_task_id);
+  EXPECT_EQ(delegate.GetThreadId(), history_thread_id);
+  EXPECT_EQ(delegate.GetThreadTitle(), history_title);
+
+  observer.reset();
+}
+
+// Ensure that selecting a thread from history while the current task is still
+// pending (has no thread ID yet, e.g. the user switches threads before the
+// response finishes loading) creates a new task rather than attaching the
+// selected thread to the pending task.
+TEST_F(ContextualTasksUiTest,
+       UserInitiatedSameDocThreadSwitch_PendingTask_CreatesNewTask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid old_task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  base::Uuid new_task_id =
+      base::Uuid::ParseCaseInsensitive("22222222-2222-2222-2222-222222222222");
+  const std::string history_thread_id = "history_thread_id";
+  const std::string history_title = "Historical Thread Title";
+
+  SetupMockDelegate(&delegate, old_task_id, /*thread_id=*/std::nullopt,
+                    /*title=*/std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", history_title);
+  url = net::AppendQueryParameter(url, "mtid", history_thread_id);
+
+  ContextualTask new_task(new_task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillByDefault(Return(new_task));
+  ON_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, history_thread_id))
+      .WillByDefault(Return(std::nullopt));
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url)).Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, Optional(old_task_id),
+                                               Optional(new_task_id), _))
+      .Times(1);
+  EXPECT_CALL(delegate, OnTaskChanged()).Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  nav_handle->set_is_same_document(true);
+  ON_CALL(*nav_handle, HasUserGesture()).WillByDefault(Return(true));
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), new_task_id);
+  EXPECT_EQ(delegate.GetThreadId(), history_thread_id);
+  EXPECT_EQ(delegate.GetThreadTitle(), history_title);
+
+  observer.reset();
+}
+
 // Ensure that when switching between different threads (different query/title),
 // a new task is created even if kContextManagementInComposebox is enabled,
 // so context does not leak between threads.

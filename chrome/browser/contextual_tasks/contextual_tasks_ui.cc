@@ -1905,25 +1905,36 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     // threads while we were in a bad state,  so we must create a NEW task to
     // avoid leaking context.
     bool pending_task_title_mismatch =
-        is_pending_task && current_title.has_value() &&
-        !current_title.value().empty() && !query_value.empty() &&
-        current_title.value() != query_value;
+        !navigation_handle->IsSameDocument() && is_pending_task &&
+        current_title.has_value() && !current_title.value().empty() &&
+        !query_value.empty() && current_title.value() != query_value;
 
     // We have no thread ID and no pending task, so this is a fresh start.
     bool is_new_conversation = !webui_thread_id && !is_pending_task;
 
-    // Did we switch from one active thread to another, i.e. we had a thread ID,
-    // but the URL has a different one.
-    bool is_thread_switch =
-        webui_thread_id && webui_thread_id.value() != url_thread_id;
+    // A user-initiated same-document navigation to a thread while the task is
+    // still pending is the user selecting a different thread (e.g. from
+    // history) rather than the server attaching a thread ID to the pending
+    // task, which happens without a user gesture.
+    bool is_pending_task_thread_selection =
+        is_pending_task && navigation_handle->IsSameDocument() &&
+        navigation_handle->HasUserGesture();
 
-    // A same-document navigation with an updated thread ID for the same query
-    // represents an in-place server thread ID resolution (e.g. client mtid to
-    // canonical server mtid) rather than a switch between distinct threads.
-    bool is_in_place_thread_update =
-        is_thread_switch && navigation_handle->IsSameDocument() &&
-        current_title.has_value() && !query_value.empty() &&
-        current_title.value() == query_value;
+    // Did we switch from one active thread to another, i.e. we had a thread ID,
+    // but the URL has a different one, or the user selected a thread while the
+    // current task was still pending.
+    bool is_thread_switch =
+        (webui_thread_id && webui_thread_id.value() != url_thread_id) ||
+        is_pending_task_thread_selection;
+
+    // A same-document navigation with an updated thread ID that was not
+    // initiated by the user represents an in-place server thread ID
+    // resolution (e.g. client mtid to canonical server mtid) rather than a
+    // switch between distinct threads. A user-initiated same-document
+    // navigation (e.g. selecting a thread from history) is a thread switch.
+    bool is_in_place_thread_update = is_thread_switch &&
+                                     navigation_handle->IsSameDocument() &&
+                                     !navigation_handle->HasUserGesture();
 
     bool has_reusable_task =
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
