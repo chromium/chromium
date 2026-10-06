@@ -28,7 +28,11 @@
   ],
 
   "entries": [
-    { "name": "no-rejected-pins-pkp.preloaded.test", "pins": "withoutRejectedPins" },
+    { "name": "no-rejected-pins.test", "pins": "withoutRejectedPins" },
+    { "name": "with-subdomains-no-rejected-pins.test", "include_subdomains": true, "pins": "withoutRejectedPins" },
+
+    { "name": "rejected-pins.test", "pins": "withRejectedPins" },
+    { "name": "with-subdomains-rejected-pins.test", "include_subdomains": true, "pins": "withRejectedPins" },
 
     { "name": "hsts-hpkp-preloaded.test", "pins": "withoutRejectedPins" },
 

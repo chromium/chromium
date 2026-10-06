@@ -84,14 +84,40 @@ namespace test3 {
 
 const char kHost[] = "example.test";
 
-// kGoodPath and kBadPath are each a list of the steps in a single path.
+// GoodPin1 is in the `static_spki_hashes` of both withoutRejectedPins and
+// withRejectedPins pinsets of the static_unittest_default pin data.
+constexpr char kGoodPin1[] =
+    "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY=";
+
+// TestSPKI1 is in the `static_spki_hashes` of withoutRejectedPins, but is in
+// the `bad_static_spki_hashes` of withRejectedPins pinset of the
+// static_unittest_default pin data.
+constexpr char kTestSPKI1[] =
+    "sha256/w3y7Yg3RzkAyhCeBoLHm71YRnuuUW87AAR/DVpLMTw4=";
+
+// kGoodPath is a list of hashes that will be allowed by CheckPublicKeyPins for
+// both withRejectedPins and withoutRejectedPins pinsets. It contains kGoodPin1
+// plus some other unknown hashes.
 constexpr auto kGoodPath = std::to_array<const char*>({
     "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
     "sha256/fzP+pVAbH0hRoUphJKenIP8+2tD/d2QH9J+kQNieM6Q=",
     "sha256/9vRUVdjloCa4wXUKfDWotV5eUXYD7vu0v0z9SRzQdzg=",
-    "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY=",
+    kGoodPin1,
 });
 
+// kMaybeRejectedPath is a list of hashes that will be allowed by
+// CheckPublicKeyPins for withoutRejectedPins but will fail for the
+// withRejectedPins pinset which has TestSPKI1 in `bad_static_spki_hashes`.
+constexpr auto kMaybeRejectedPath = std::to_array<const char*>({
+    "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "sha256/fzP+pVAbH0hRoUphJKenIP8+2tD/d2QH9J+kQNieM6Q=",
+    kTestSPKI1,
+    kGoodPin1,
+});
+
+// kBadPath is a list of hashes that will be rejected by CheckPublicKeyPins for
+// both withRejectedPins and withoutRejectedPins pinsets. It contains only
+// unknown hashes.
 constexpr auto kBadPath = std::to_array<const char*>({
     "sha256/1111111111111111111111111111111111111111111=",
     "sha256/2222222222222222222222222222222222222222222=",
@@ -723,26 +749,114 @@ TEST_F(TransportSecurityStateTest, LongNames) {
   EXPECT_FALSE(state.GetDynamicPKPState(kLongName, &pkp_state));
 }
 
-TEST_F(TransportSecurityStateTest, PinValidationWithoutRejectedCerts) {
+TEST_F(TransportSecurityStateTest, PinValidationWithCompiledInPins) {
   AddScopedFeatureList().InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
 
   std::vector<SHA256HashValue> good_hashes = DeserializeHashes(kGoodPath);
+  std::vector<SHA256HashValue> maybe_rejected_hashes =
+      DeserializeHashes(kMaybeRejectedPath);
   std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
   state.SetPinningListAlwaysTimelyForTesting(true);
   EnableStaticPins(&state);
 
-  TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(state.GetStaticPKPState("no-rejected-pins-pkp.preloaded.test",
-                                      &pkp_state));
-  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
+  struct TestCase {
+    std::string_view hostname;
+    bool has_pins;
+    std::vector<std::vector<SHA256HashValue>> good_hash_lists;
+    std::vector<std::vector<SHA256HashValue>> fail_hash_lists;
+  };
+  const TestCase kTestcases[] = {
+      {.hostname = "no-rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes, maybe_rejected_hashes},
+       .fail_hash_lists = {bad_hashes}},
+      {.hostname = "subdomain.no-rejected-pins.test", .has_pins = false},
+      {.hostname = "subdomain2.subdomain.no-rejected-pins.test",
+       .has_pins = false},
 
-  EXPECT_TRUE(pkp_state.CheckPublicKeyPins(good_hashes));
-  EXPECT_FALSE(pkp_state.CheckPublicKeyPins(bad_hashes));
+      {.hostname = "with-subdomains-no-rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes, maybe_rejected_hashes},
+       .fail_hash_lists = {bad_hashes}},
+      {.hostname = "subdomain.with-subdomains-no-rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes, maybe_rejected_hashes},
+       .fail_hash_lists = {bad_hashes}},
+      {.hostname = "subdomain2.subdomain.with-subdomains-no-rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes, maybe_rejected_hashes},
+       .fail_hash_lists = {bad_hashes}},
+
+      {.hostname = "rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes},
+       .fail_hash_lists = {maybe_rejected_hashes, bad_hashes}},
+      {.hostname = "subdomain.rejected-pins.test", .has_pins = false},
+      {.hostname = "subdomain2.subdomain.rejected-pins.test",
+       .has_pins = false},
+
+      {.hostname = "with-subdomains-rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes},
+       .fail_hash_lists = {maybe_rejected_hashes, bad_hashes}},
+      {.hostname = "subdomain.with-subdomains-rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes},
+       .fail_hash_lists = {maybe_rejected_hashes, bad_hashes}},
+      {.hostname = "subdomain2.subdomain.with-subdomains-rejected-pins.test",
+       .has_pins = true,
+       .good_hash_lists = {good_hashes},
+       .fail_hash_lists = {maybe_rejected_hashes, bad_hashes}},
+
+      {.hostname = "test", .has_pins = false},
+      {.hostname = "not-present.test", .has_pins = false},
+  };
+
+  for (const auto& testcase : kTestcases) {
+    SCOPED_TRACE(testcase.hostname);
+
+    TransportSecurityState::PKPState pkp_state;
+    EXPECT_EQ(testcase.has_pins,
+              state.GetStaticPKPState(testcase.hostname, &pkp_state));
+    EXPECT_EQ(testcase.has_pins, pkp_state.HasPublicKeyPins());
+
+    EXPECT_EQ(testcase.has_pins, state.HasPublicKeyPins(testcase.hostname));
+    EXPECT_EQ(testcase.has_pins,
+              state.ShouldSSLErrorsBeFatal(testcase.hostname));
+
+    for (const auto& hash_list : testcase.good_hash_lists) {
+      EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+                state.CheckPublicKeyPins(testcase.hostname, true, hash_list));
+      EXPECT_TRUE(pkp_state.CheckPublicKeyPins(hash_list));
+    }
+
+    for (const auto& hash_list : testcase.fail_hash_lists) {
+      EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
+                state.CheckPublicKeyPins(testcase.hostname, true, hash_list));
+      EXPECT_FALSE(pkp_state.CheckPublicKeyPins(hash_list));
+    }
+
+    // For hostnames that don't match any pins, any hashes should be allowed.
+    if (!testcase.has_pins) {
+      EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+                state.CheckPublicKeyPins(testcase.hostname, true, good_hashes));
+      EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+                state.CheckPublicKeyPins(testcase.hostname, true,
+                                         maybe_rejected_hashes));
+      EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+                state.CheckPublicKeyPins(testcase.hostname, true, bad_hashes));
+    }
+  }
 }
 
+// TODO(crbug.com/497882860): A bunch of these tests were originally written to
+// test that storing PKP and HSTS data in the same trie behaved correctly. Now
+// that they are stored separately the tests may not be very useful anymore.
+// Consider whether they should be removed/consolidated/updated in some way.
+//
 // Simple test for the HSTS preload process. The trie (generated from
 // transport_security_state_static_unittest1.json) contains 1 entry. Test that
 // the lookup methods can find the entry and correctly decode the different
