@@ -3430,73 +3430,46 @@ RecalcScrollableOverflowResult LayoutBox::RecalcChildScrollableOverflow() {
   return result;
 }
 
-void LayoutBox::AddSelfVisualOverflow(const PhysicalRect& rect) {
-  NOT_DESTROYED();
-  if (rect.IsEmpty())
-    return;
-
-  PhysicalRect border_box = PhysicalBorderBoxRect();
-  if (border_box.Contains(rect))
-    return;
-
-  if (!VisualOverflowIsSet()) {
-    if (!overflow_)
-      overflow_ = MakeGarbageCollected<BoxOverflowModel>();
-
-    overflow_->visual_overflow.emplace(border_box);
-  }
-
-  overflow_->visual_overflow->AddSelfVisualOverflow(rect);
-}
-
-void LayoutBox::AddContentsVisualOverflow(const PhysicalRect& rect) {
-  NOT_DESTROYED();
-  if (rect.IsEmpty())
-    return;
-
-  // If hasOverflowClip() we always save contents visual overflow because we
-  // need it
-  // e.g. to determine whether to apply rounded corner clip on contents.
-  // Otherwise we save contents visual overflow only if it overflows the border
-  // box.
-  PhysicalRect border_box = PhysicalBorderBoxRect();
-  if (!HasNonVisibleOverflow() && border_box.Contains(rect))
-    return;
-
-  if (!VisualOverflowIsSet()) {
-    if (!overflow_)
-      overflow_ = MakeGarbageCollected<BoxOverflowModel>();
-
-    overflow_->visual_overflow.emplace(border_box);
-  }
-  overflow_->visual_overflow->AddContentsVisualOverflow(rect);
-}
-
-void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
-    const PhysicalBoxStrut& outsets) {
-  NOT_DESTROYED();
-  if (!VisualOverflowIsSet()) {
-    return;
-  }
-  overflow_->visual_overflow->SetHasSubpixelVisualEffectOutsets(
-      !outsets.top.IsInteger() || !outsets.right.IsInteger() ||
-      !outsets.bottom.IsInteger() || !outsets.left.IsInteger());
-}
-
 void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
                                   const PhysicalRect& contents) {
   NOT_DESTROYED();
   ClearVisualOverflow();
-  AddSelfVisualOverflow(self);
-  AddContentsVisualOverflow(contents);
-  if (!VisualOverflowIsSet())
-    return;
 
   const PhysicalRect border_box_rect = PhysicalBorderBoxRect();
-  const PhysicalRect self_overflow_rect =
-      overflow_->visual_overflow->SelfVisualOverflowRect();
+
+  // If HasNonVisibleOverflow() is true we always save contents visual-overflow
+  // as we need it to determine whether to apply the rounded corner clip on its
+  // contents.
+  const bool has_contents_overflow =
+      !contents.IsEmpty() &&
+      (HasNonVisibleOverflow() || !border_box_rect.Contains(contents));
+  const bool has_self_overflow =
+      !self.IsEmpty() && !border_box_rect.Contains(self);
+
+  if (!has_self_overflow && !has_contents_overflow) {
+    return;
+  }
+
+  const PhysicalRect contents_overflow_rect =
+      has_contents_overflow ? contents : PhysicalRect();
+  const PhysicalRect self_overflow_rect = ([&]() {
+    PhysicalRect rect = border_box_rect;
+    if (has_self_overflow) {
+      rect.Unite(self);
+    }
+    return rect;
+  })();
+
   const PhysicalBoxStrut outsets(self_overflow_rect, border_box_rect);
-  UpdateHasSubpixelVisualEffectOutsets(outsets);
+  const bool has_subpixel_outsets =
+      !outsets.top.IsInteger() || !outsets.right.IsInteger() ||
+      !outsets.bottom.IsInteger() || !outsets.left.IsInteger();
+
+  if (!overflow_) {
+    overflow_ = MakeGarbageCollected<BoxOverflowModel>();
+  }
+  overflow_->visual_overflow.emplace(self_overflow_rect, contents_overflow_rect,
+                                     has_subpixel_outsets);
 
   // |OutlineMayBeAffectedByDescendants| is set whenever outline style
   // changes. Update to the actual value here.

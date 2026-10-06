@@ -213,15 +213,11 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
   }
 }
 
-void LayoutSVGRoot::RecalcVisualOverflow() {
-  NOT_DESTROYED();
-  LayoutReplaced::RecalcVisualOverflow();
-  if (!ClipsToContentBox())
-    AddContentsVisualOverflow(ComputeContentsVisualOverflow());
-}
-
 PhysicalRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   NOT_DESTROYED();
+  if (ClipsToContentBox()) {
+    return PhysicalRect();
+  }
   gfx::RectF content_visual_rect = VisualRectInLocalSVGCoordinates();
   content_visual_rect =
       local_to_border_box_transform_.MapRect(content_visual_rect);

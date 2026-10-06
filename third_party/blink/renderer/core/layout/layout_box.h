@@ -380,10 +380,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return ComputeScrollableOverflowFromFragments(PreviousPhysicalFragments());
   }
 
-  void AddSelfVisualOverflow(const PhysicalRect& r);
-  void AddContentsVisualOverflow(const PhysicalRect& r);
-  void UpdateHasSubpixelVisualEffectOutsets(const PhysicalBoxStrut&);
-
   void ClearVisualOverflow();
 
   bool CanUseFragmentsForVisualOverflow() const;
@@ -1249,6 +1245,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   RecalcScrollableOverflowResult RecalcScrollableOverflow();
   RecalcScrollableOverflowResult RecalcChildScrollableOverflow();
 
+  void SetVisualOverflow(const PhysicalRect& self,
+                         const PhysicalRect& contents);
+
  private:
   inline bool ScrollableOverflowIsSet() const {
     NOT_DESTROYED();
@@ -1265,8 +1264,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return overflow_ && overflow_->visual_overflow;
   }
 
-  void SetVisualOverflow(const PhysicalRect& self,
-                         const PhysicalRect& contents);
   void CopyVisualOverflowFromFragmentsWithoutInvalidations();
 
   void UpdateShapeOutsideInfoAfterStyleChange(const ComputedStyle&,

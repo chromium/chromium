@@ -122,8 +122,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   gfx::RectF ViewBoxRect() const;
   gfx::SizeF ViewportSize() const;
 
-  void RecalcVisualOverflow() override;
-
   bool HasNonIsolatedBlendingDescendants() const final;
 
   void IntersectChildren(HitTestResult&, const HitTestLocation&) const;
@@ -135,7 +133,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
  private:
   OverflowClipAxes ComputeOverflowClipAxes() const override;
-  PhysicalRect ComputeContentsVisualOverflow() const;
+  PhysicalRect ComputeContentsVisualOverflow() const override;
 
   LayoutObjectChildList* VirtualChildren() override {
     NOT_DESTROYED();

@@ -837,7 +837,6 @@ blink_core_tests_layout = [
   "min_max_sizes_cache_test.cc",
   "out_of_flow_layout_part_test.cc",
   "outline_rect_collector_test.cc",
-  "overflow_model_test.cc",
   "paint_containment_test.cc",
   "physical_box_fragment_test.cc",
   "physical_fragment_test.cc",

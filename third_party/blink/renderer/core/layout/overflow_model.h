@@ -110,40 +110,30 @@ class BoxScrollableOverflowModel {
 
 class BoxVisualOverflowModel {
  public:
-  explicit BoxVisualOverflowModel(const PhysicalRect& self_visual_overflow_rect)
-      : self_visual_overflow_(self_visual_overflow_rect) {}
+  BoxVisualOverflowModel(const PhysicalRect& self_visual_overflow_rect,
+                         const PhysicalRect& contents_visual_overflow_rect,
+                         bool has_subpixel_visual_effect_outsets)
+      : self_visual_overflow_(self_visual_overflow_rect),
+        contents_visual_overflow_(contents_visual_overflow_rect),
+        has_subpixel_visual_effect_outsets_(
+            has_subpixel_visual_effect_outsets) {}
   BoxVisualOverflowModel(const BoxVisualOverflowModel&) = delete;
   BoxVisualOverflowModel& operator=(const BoxVisualOverflowModel&) = delete;
-
-  void SetSelfVisualOverflow(const PhysicalRect& rect) {
-    self_visual_overflow_ = rect;
-  }
 
   const PhysicalRect& SelfVisualOverflowRect() const {
     return self_visual_overflow_;
   }
-  void AddSelfVisualOverflow(const PhysicalRect& rect) {
-    self_visual_overflow_.Unite(rect);
-  }
-
   const PhysicalRect& ContentsVisualOverflowRect() const {
     return contents_visual_overflow_;
-  }
-  void AddContentsVisualOverflow(const PhysicalRect& rect) {
-    contents_visual_overflow_.Unite(rect);
-  }
-
-  void SetHasSubpixelVisualEffectOutsets(bool b) {
-    has_subpixel_visual_effect_outsets_ = b;
   }
   bool HasSubpixelVisualEffectOutsets() const {
     return has_subpixel_visual_effect_outsets_;
   }
 
  private:
-  PhysicalRect self_visual_overflow_;
-  PhysicalRect contents_visual_overflow_;
-  bool has_subpixel_visual_effect_outsets_ = false;
+  const PhysicalRect self_visual_overflow_;
+  const PhysicalRect contents_visual_overflow_;
+  const bool has_subpixel_visual_effect_outsets_;
 };
 
 struct BoxOverflowModel : public GarbageCollected<BoxOverflowModel> {

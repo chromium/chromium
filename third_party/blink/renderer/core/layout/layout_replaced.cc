@@ -240,10 +240,13 @@ void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
   ReplacedPainter(*this).Paint(paint_info);
 }
 
-PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
+PhysicalRect LayoutReplaced::ComputeSelfVisualOverflow() const {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
-  DCHECK(style.HasVisualOverflowingEffect());
+  if (!style.HasVisualOverflowingEffect()) {
+    return PhysicalRect();
+  }
+
   const PhysicalRect border_box_rect = PhysicalBorderBoxRect();
 
   PhysicalBoxStrut outsets = style.BoxDecorationOutsets();
@@ -266,9 +269,6 @@ PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
         OutlineRects(&info, PhysicalOffset(),
                      style.OutlineRectsShouldIncludeBlockInkOverflow());
     PhysicalRect rect = UnionRect(outline_rects);
-    bool outline_affected = rect.size != border_box_rect.size;
-    SetOutlineMayBeAffectedByDescendants(outline_affected);
-
     if (!style.HasBorderShape() || style.OutlineStyleIsAuto()) {
       rect.Inflate(
           LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
@@ -276,41 +276,31 @@ PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
     }
   }
 
-  return outsets;
+  PhysicalRect self_visual_overflow = border_box_rect;
+  self_visual_overflow.Expand(outsets);
+  return self_visual_overflow;
 }
 
-void LayoutReplaced::AddVisualEffectOverflow() {
+PhysicalRect LayoutReplaced::ComputeContentsVisualOverflow() const {
   NOT_DESTROYED();
-  if (!StyleRef().HasVisualOverflowingEffect()) {
-    return;
-  }
-
-  // Add in the final overflow with shadows, outsets and outline combined.
-  PhysicalRect visual_effect_overflow = PhysicalBorderBoxRect();
-  PhysicalBoxStrut outsets = ComputeVisualEffectOverflowOutsets();
-  visual_effect_overflow.Expand(outsets);
-  AddSelfVisualOverflow(visual_effect_overflow);
-  UpdateHasSubpixelVisualEffectOutsets(outsets);
-}
-
-void LayoutReplaced::RecalcVisualOverflow() {
-  NOT_DESTROYED();
-  ClearVisualOverflow();
-  LayoutObject::RecalcVisualOverflow();
-  AddVisualEffectOverflow();
-
   // Replaced elements clip the content to the element's content-box by default.
   // But if the CSS overflow property is respected, the content may paint
   // outside the element's bounds as ink overflow (with overflow:visible for
-  // example). So we add |ReplacedContentRect()|, which provides the element's
-  // painting rectangle relative to it's bounding box in its visual overflow if
-  // the overflow property is respected.
+  // example). So we include |ReplacedContentRect()|, which provides the
+  // element's painting rectangle relative to its bounding box in its visual
+  // overflow if the overflow property is respected.
   // Note that |overflow_| is meant to track the maximum potential ink overflow.
   // The actual painted overflow (based on the values for overflow,
   // overflow-clip-margin and paint containment) is computed in
   // LayoutBox::VisualOverflowRect.
-  if (RespectsCSSOverflow())
-    AddContentsVisualOverflow(ReplacedContentRect());
+  return RespectsCSSOverflow() ? ReplacedContentRect() : PhysicalRect();
+}
+
+void LayoutReplaced::RecalcVisualOverflow() {
+  NOT_DESTROYED();
+  LayoutObject::RecalcVisualOverflow();
+  SetVisualOverflow(ComputeSelfVisualOverflow(),
+                    ComputeContentsVisualOverflow());
 }
 
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
