@@ -635,15 +635,10 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
     ColorState state = ColorState::kNormal;
   } const kMaps[] = {
       // Core colors
-      {ui::kColorDisabledForeground, ColorType::kWindowFg,
-       ColorState::kDisabled},
       {ui::kColorEndpointBackground, ColorType::kEntryBg},
       {ui::kColorEndpointForeground, ColorType::kEntryFg},
       {ui::kColorMidground, ColorType::kMidground},
       {ui::kColorPrimaryBackground, ColorType::kWindowBg},
-      {ui::kColorPrimaryForeground, ColorType::kWindowFg},
-      {ui::kColorSecondaryForeground, ColorType::kWindowFg,
-       ColorState::kDisabled},
       {ui::kColorSubtleAccent, ColorType::kHighlightBg, ColorState::kInactive},
       {ui::kColorSubtleEmphasisBackground, ColorType::kWindowBg},
 
@@ -672,6 +667,22 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
   for (const auto& map : kMaps) {
     mixer[map.id] = {shim_->GetColor(map.role, map.state)};
   }
+
+  // Some palettes provide text colors with little or no contrast against their
+  // own window background (e.g. a white disabled text color on a light
+  // window). Nudge them just enough to stay legible: readable for regular and
+  // secondary text, and visible for disabled text.
+  const SkColor window_fg =
+      shim_->GetColor(ColorType::kWindowFg, ColorState::kNormal);
+  const SkColor window_fg_disabled =
+      shim_->GetColor(ColorType::kWindowFg, ColorState::kDisabled);
+  mixer[ui::kColorDisabledForeground] = ui::BlendForMinContrast(
+      window_fg_disabled, ui::kColorPrimaryBackground, std::nullopt,
+      color_utils::kMinimumVisibleContrastRatio);
+  mixer[ui::kColorPrimaryForeground] =
+      ui::BlendForMinContrast(window_fg, ui::kColorPrimaryBackground);
+  mixer[ui::kColorSecondaryForeground] =
+      ui::BlendForMinContrast(window_fg_disabled, ui::kColorPrimaryBackground);
 
   const ui::ColorId kAccentIds[] = {
       ui::kColorAccent,

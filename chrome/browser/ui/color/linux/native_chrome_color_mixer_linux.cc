@@ -97,6 +97,52 @@ ui::ColorTransform UseNativeIfPaletteMismatch(ui::ColorTransform native,
   return base::BindRepeating(generator, std::move(native), dark_mode);
 }
 
+// Keeps the input background if `foreground` is readable on it. Otherwise,
+// returns `fallback`.
+ui::ColorTransform KeepBackgroundIfReadable(ui::ColorTransform foreground,
+                                            ui::ColorTransform fallback) {
+  const auto generator = [](ui::ColorTransform foreground,
+                            ui::ColorTransform fallback, SkColor input_color,
+                            const ui::ColorMixer& mixer) {
+    const SkColor foreground_color = color_utils::GetResultingPaintColor(
+        foreground.Run(input_color, mixer), input_color);
+    const bool readable =
+        color_utils::GetContrastRatio(foreground_color, input_color) >=
+        color_utils::kMinimumReadableContrastRatio;
+    const SkColor result_color =
+        readable ? input_color : fallback.Run(input_color, mixer);
+    DVLOG(2) << "ColorTransform KeepBackgroundIfReadable:"
+             << " Input Color: " << ui::SkColorName(input_color)
+             << " Foreground Color: " << ui::SkColorName(foreground_color)
+             << " Result Color: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(foreground),
+                             std::move(fallback));
+}
+
+// Keeps the input foreground if it is readable on `background`. Otherwise,
+// returns the color with max contrast against `background`.
+ui::ColorTransform KeepForegroundIfReadable(ui::ColorTransform background) {
+  const auto generator = [](ui::ColorTransform background, SkColor input_color,
+                            const ui::ColorMixer& mixer) {
+    const SkColor background_color = background.Run(input_color, mixer);
+    const SkColor foreground_color =
+        color_utils::GetResultingPaintColor(input_color, background_color);
+    const SkColor result_color =
+        color_utils::GetContrastRatio(foreground_color, background_color) >=
+                color_utils::kMinimumReadableContrastRatio
+            ? input_color
+            : color_utils::GetColorWithMaxContrast(background_color);
+    DVLOG(2) << "ColorTransform KeepForegroundIfReadable:"
+             << " Input Color: " << ui::SkColorName(input_color)
+             << " Background Color: " << ui::SkColorName(background_color)
+             << " Result Color: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(background));
+}
+
 }  // namespace
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
@@ -161,6 +207,19 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                            high_contrast);
   mixer[kColorToolbarTopSeparatorFrameInactive] = {
       kColorToolbarTopSeparatorFrameActive};
+
+  // The location icon chip (e.g. "Chromium" on chrome:// pages) draws
+  // `kColorOmniboxText` on `kColorOmniboxIconBackground`, which is the toolbar
+  // color for themes. The toolbar comes from the toolkit, but the omnibox text
+  // may not (e.g. Qt, which doesn't supply textfield colors), so the two can
+  // have the same darkness. In that case, tint the location bar background
+  // instead, which the omnibox text is drawn on anyway.
+  mixer[kColorOmniboxIconBackground] = KeepBackgroundIfReadable(
+      kColorOmniboxText,
+      ui::AlphaBlend(kColorOmniboxText, kColorLocationBarBackground,
+                     /*alpha=*/0x14));
+  mixer[kColorOmniboxIconForeground] =
+      KeepForegroundIfReadable(kColorOmniboxIconBackground);
 
   // App menu surfaces. Keep the upstream (Material) colors when the toolkit
   // palette matches color_mode; otherwise derive them from the toolkit's

@@ -242,10 +242,18 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   // Content colors, which are painted on Material surfaces. See the comment on
   // `palette_matches_color_mode` above.
   if (palette_matches_color_mode) {
-    mixer[ui::kColorDisabledForeground] = {label_fg_disabled};
+    // Some themes provide label colors with little or no contrast against
+    // their own window background (e.g. a white disabled label on a light
+    // window). Nudge them just enough to stay legible: readable for regular
+    // and secondary text, and visible for disabled text.
+    mixer[ui::kColorDisabledForeground] = ui::BlendForMinContrast(
+        label_fg_disabled, ui::kColorPrimaryBackground, std::nullopt,
+        color_utils::kMinimumVisibleContrastRatio);
     mixer[ui::kColorPrimaryBackground] = {primary_bg};
-    mixer[ui::kColorPrimaryForeground] = {label_fg};
-    mixer[ui::kColorSecondaryForeground] = {label_fg_disabled};
+    mixer[ui::kColorPrimaryForeground] =
+        ui::BlendForMinContrast(label_fg, ui::kColorPrimaryBackground);
+    mixer[ui::kColorSecondaryForeground] =
+        ui::BlendForMinContrast(label_fg_disabled, ui::kColorPrimaryBackground);
 
     mixer[ui::kColorButtonBackground] = {GetBgColor("button")};
     mixer[ui::kColorButtonBackgroundProminentDisabled] = {button_bg_disabled};

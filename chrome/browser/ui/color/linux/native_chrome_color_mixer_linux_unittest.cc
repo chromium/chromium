@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -260,6 +261,77 @@ TEST_F(NativeChromeColorMixerLinuxTest, DefaultSystemThemeUnchanged) {
             provider->GetColor(ui::kColorSysTonalContainer));
   EXPECT_EQ(provider->GetColor(ui::kColorAppMenuRowBackgroundHovered),
             provider->GetColor(ui::kColorSysStateHoverOnSubtle));
+}
+
+// Stand-in for the theme supplier the GTK/Qt system themes put in the key.
+class TestNativeThemeSupplier
+    : public ui::ColorProviderKey::ThemeInitializerSupplier {
+ public:
+  TestNativeThemeSupplier() : ThemeInitializerSupplier(ThemeType::kNativeX11) {}
+
+  // ui::ColorProviderKey::ThemeInitializerSupplier:
+  void AddColorMixers(ui::ColorProvider* provider,
+                      const ui::ColorProviderKey& key) const override {}
+  bool GetColor(int id, SkColor* color) const override { return false; }
+  bool GetTint(int id, color_utils::HSL* hsl) const override { return false; }
+  bool GetDisplayProperty(int id, int* result) const override { return false; }
+  bool HasCustomImage(int id) const override { return false; }
+
+ private:
+  ~TestNativeThemeSupplier() override = default;
+};
+
+// Builds a provider for a toolkit that supplies the toolbar color but not the
+// textfield colors (like Qt), so the omnibox follows the color mode.
+std::unique_ptr<ui::ColorProvider> CreateToolbarOnlyProvider(
+    ColorMode color_mode,
+    SkColor toolbar) {
+  ui::ColorProviderKey key;
+  key.color_mode = color_mode;
+  key.system_theme = ui::SystemTheme::kQt;
+  key.custom_theme = base::MakeRefCounted<TestNativeThemeSupplier>();
+
+  auto provider = std::make_unique<ui::ColorProvider>();
+  ui::AddColorMixers(provider.get(), key);
+  ui::ColorMixer& toolkit_mixer = provider->AddMixer();
+  toolkit_mixer[ui::kColorNativeToolbarBackground] = {toolbar};
+  AddChromeColorMixers(provider.get(), key);
+  return provider;
+}
+
+void ExpectLocationIconChipReadable(const ui::ColorProvider& provider) {
+  const SkColor chip = provider.GetColor(kColorOmniboxIconBackground);
+  for (ui::ColorId id : {kColorOmniboxText, kColorOmniboxIconForeground}) {
+    const SkColor foreground = provider.GetColor(id);
+    EXPECT_GE(color_utils::GetContrastRatio(foreground, chip),
+              color_utils::kMinimumReadableContrastRatio)
+        << ui::ColorIdName(id) << " " << ui::SkColorName(foreground) << " on "
+        << ui::SkColorName(chip);
+  }
+}
+
+// The location icon chip used the toolbar color as its background and the
+// omnibox text color for its label. With a dark Qt toolbar and a light color
+// mode, both were dark.
+TEST(NativeChromeColorMixerLinuxChipTest, DarkToolbarLightModeReadable) {
+  auto provider = CreateToolbarOnlyProvider(ColorMode::kLight,
+                                            kDarkToolkit.menu_background);
+  ExpectLocationIconChipReadable(*provider);
+}
+
+TEST(NativeChromeColorMixerLinuxChipTest, LightToolbarDarkModeReadable) {
+  auto provider = CreateToolbarOnlyProvider(ColorMode::kDark,
+                                            kLightToolkit.menu_background);
+  ExpectLocationIconChipReadable(*provider);
+}
+
+// When the omnibox text is readable on the toolbar, the toolbar color is kept.
+TEST(NativeChromeColorMixerLinuxChipTest, MatchingToolbarKept) {
+  auto provider = CreateToolbarOnlyProvider(ColorMode::kLight,
+                                            kLightToolkit.menu_background);
+  ExpectLocationIconChipReadable(*provider);
+  EXPECT_EQ(provider->GetColor(kColorOmniboxIconBackground),
+            provider->GetColor(kColorToolbar));
 }
 
 }  // namespace
