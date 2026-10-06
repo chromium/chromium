@@ -716,6 +716,7 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     @EnableFeatures({ChromeFeatureList.BOOKMARKS_BAR_NTP})
     public void testBookmarkBarMenuAction_StateChanges() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -849,7 +850,7 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568497446
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     @EnableFeatures({ChromeFeatureList.BOOKMARKS_BAR_NTP})
     public void testBookmarkBarMenuAction_IncompatibleActivity() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -934,6 +935,7 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     public void testBookmarkBarToggleKeyboardShortcut_V2() {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
@@ -1003,6 +1005,7 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     public void testBookmarkBarVisibility_OnlyShowOnNtp() {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
