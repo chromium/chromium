@@ -981,4 +981,7 @@ void AiOverlayDialogPageHandler::OnToolCall(
   send_error(base::StrCat({"Unknown tool: ", name}));
 }
 
+void AiOverlayDialogPageHandler::OnJournalEvent(
+    const ServerJournalEvent& journal_event) {}
+
 }  // namespace ttc

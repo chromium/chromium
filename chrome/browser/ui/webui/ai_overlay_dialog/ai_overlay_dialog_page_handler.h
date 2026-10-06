@@ -79,6 +79,7 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
                                 bool interrupted) override;
   void OnToolCall(const ToolRequest& tool_request,
                   ToolResponseCallback response_callback) override;
+  void OnJournalEvent(const ServerJournalEvent& journal_event) override;
 
   void DidChangePage(const GURL& url,
                      const std::optional<std::u16string>& title,

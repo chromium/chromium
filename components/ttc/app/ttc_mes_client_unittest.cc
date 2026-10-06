@@ -42,6 +42,9 @@ class FakeObserver : public TtcBackend::Observer {
   void OnGenerationStateChanged(bool started,
                                 bool completed,
                                 bool interrupted) override {}
+  void OnToolCall(const ToolRequest& tool_request,
+                  ToolResponseCallback response_callback) override {}
+  void OnJournalEvent(const ServerJournalEvent& journal_event) override {}
 
   int audio_output_count() const { return audio_output_count_; }
   const std::vector<int16_t>& last_samples() const { return last_samples_; }

@@ -54,10 +54,9 @@ class TtcBackend {
     virtual void OnGenerationStateChanged(bool started,
                                           bool completed,
                                           bool interrupted) = 0;
-    // TODO(bokan): These should be pure virtual
     virtual void OnToolCall(const ToolRequest& tool_request,
-                            ToolResponseCallback response_callback) {}
-    virtual void OnJournalEvent(const ServerJournalEvent& journal_event) {}
+                            ToolResponseCallback response_callback) = 0;
+    virtual void OnJournalEvent(const ServerJournalEvent& journal_event) = 0;
   };
 
   virtual ~TtcBackend() = default;
