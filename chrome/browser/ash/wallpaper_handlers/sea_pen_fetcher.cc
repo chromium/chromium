@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,6 +21,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -26,7 +30,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
-#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"
@@ -221,6 +224,102 @@ std::vector<ash::SeaPenImage> TakeValidImages(
     }
   }
   return filtered_images;
+}
+
+// Used to record metrics for SeaPen initial thumbnails request and SeaPen
+// upscale request. Keep in sync with histograms.xml variant SeaPenApiType.
+enum class SeaPenApiType {
+  kThumbnails,
+  kWallpaper,
+};
+
+// NOTE: These strings are persisted to metric logs and should match
+// SeaPenApiType variants in
+// //tools/metrics/histograms/metadata/ash/histograms.xml.
+std::string ToHistogramString(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    SeaPenApiType sea_pen_api_type,
+    std::string_view histogram_name) {
+  const bool is_text_query =
+      query_tag ==
+      ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery;
+  const std::string_view freeform = is_text_query ? "Freeform." : "";
+  const bool for_thumbnails = sea_pen_api_type == SeaPenApiType::kThumbnails;
+  const std::string api_type = for_thumbnails ? "Thumbnails." : "Wallpaper.";
+  return base::StrCat(
+      {"Ash.SeaPen.", freeform, "Api.", api_type, histogram_name});
+}
+
+// Records the client side latency of an API request. Only record if the request
+// completed successfully and did not timeout.
+void RecordSeaPenLatency(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    base::TimeDelta elapsed_time,
+    SeaPenApiType sea_pen_api_type) {
+  base::UmaHistogramCustomTimes(
+      ToHistogramString(query_tag, sea_pen_api_type, "Latency"), elapsed_time,
+      /*min=*/base::Seconds(1),
+      /*max=*/SeaPenFetcher::kRequestTimeout,
+      /*buckets=*/50);
+}
+
+// Records the status code of a SeaPen API request.
+void RecordSeaPenMantaStatusCode(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    manta::MantaStatusCode status_code,
+    SeaPenApiType sea_pen_api_type) {
+  base::UmaHistogramEnumeration(
+      ToHistogramString(query_tag, sea_pen_api_type, "MantaStatusCode"),
+      status_code);
+}
+
+// Records whether the request timed out.
+void RecordSeaPenTimeout(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    bool hit_timeout,
+    SeaPenApiType sea_pen_api_type) {
+  base::UmaHistogramBoolean(
+      ToHistogramString(query_tag, sea_pen_api_type, "Timeout"), hit_timeout);
+}
+
+// Records the number of thumbnails returned. Only recorded if the request
+// completed successfully. Expected to be in bounds [0,
+// kNumThumbnailsRequested].
+void RecordSeaPenThumbnailsCount(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    size_t thumbnails_count) {
+  if (!ash::features::IsSeaPenTextInputEnabled()) {
+    const size_t limit = SeaPenFetcher::kNumTemplateThumbnailsRequested;
+    base::UmaHistogramExactLinear(
+        ToHistogramString(query_tag, SeaPenApiType::kThumbnails, "Count"),
+        std::min(thumbnails_count, limit), limit + 1);
+    return;
+  }
+  const size_t limit = SeaPenFetcher::kNumTextThumbnailsRequested;
+  // The histogram name is different because when SeaPenTextInput is enabled,
+  // template query will request 4 thumbnails instead of 8.
+  //
+  // Ash.SeaPen.Api.Thumbnails.Count: template thumbnails from 0-8.
+  // Ash.SeaPen.Api.Thumbnails.Count2: template thumbnails from 0-4.
+  // Ash.SeaPen.Freeform.Api.Thumbnails.Count: text thumbnails from 0-4.
+  const std::string_view histogram_name =
+      (query_tag ==
+       ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery)
+          ? "Count"
+          : "Count2";
+  base::UmaHistogramExactLinear(
+      ToHistogramString(query_tag, SeaPenApiType::kThumbnails, histogram_name),
+      std::min(thumbnails_count, limit), limit + 1);
+}
+
+// Records whether at least one image exists on the response for full size
+// wallpaper image. Only recorded if the request completed successfully.
+void RecordSeaPenWallpaperHasImage(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    bool has_image) {
+  base::UmaHistogramBoolean(
+      ToHistogramString(query_tag, SeaPenApiType::kWallpaper, "HasImage"),
+      has_image);
 }
 
 class SeaPenFetcherImpl : public SeaPenFetcher {
