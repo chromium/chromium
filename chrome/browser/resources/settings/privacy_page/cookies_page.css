@@ -1,0 +1,84 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #include=settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+#explanationText,
+#generalControls {
+  padding: 0 var(--cr-section-padding);
+}
+
+#explanationText {
+  padding-bottom: var(--cr-section-vertical-padding);
+}
+
+#additionalProtections,
+#cookiesHeader,
+#siteRequestsHeader {
+  padding: 16px var(--cr-section-padding) 8px var(--cr-section-padding);
+}
+
+#defaultHeader {
+  padding-top: 0;
+  padding-bottom: 6px;
+}
+
+#exceptionHeader {
+  padding: 0 var(--cr-section-padding);
+  margin-bottom: -32px;
+}
+
+.bullet-line {
+  align-items: center;
+  display: flex;
+  min-height: var(--cr-section-two-line-min-height);
+}
+
+.bullet-line.one-line {
+  min-height: var(--cr-section-min-height);
+}
+
+.bullet-line > div {
+  padding-inline-start: var(--cr-radio-button-size);
+}
+
+settings-collapse-radio-button {
+  --settings-collapse-toggle-min-height: var(--cr-section-min-height);
+}
+
+settings-collapse-radio-button:not(:first-of-type) {
+  --settings-collapse-separator-line: var(--cr-separator-line);
+}
+
+settings-collapse-radio-button .bullet-line:last-child {
+  padding-bottom: 12px;
+}
+
+:host-context([settings-refresh-2026]) ul.icon-bulleted-list {
+  --cr-icon-size: 20px;
+  list-style-type: none;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-inline-start: 0;
+}
+
+:host-context([settings-refresh-2026]) ul.icon-bulleted-list li {
+  align-items: flex-start;
+  display: flex;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+:host-context([settings-refresh-2026]) ul.icon-bulleted-list li:last-child {
+  margin-bottom: 0;
+}
+
+:host-context([settings-refresh-2026]) ul.icon-bulleted-list cr-icon {
+  flex-shrink: 0;
+  margin-inline-end: 10px;
+}

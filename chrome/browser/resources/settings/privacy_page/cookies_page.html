@@ -1,100 +1,31 @@
-  <style include="settings-shared">
-    #explanationText,
-    #generalControls {
-      padding: 0 var(--cr-section-padding);
-    }
+<!-- #html_wrapper_imports_start
+import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
+import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_browser_proxy.js';
+#html_wrapper_imports_end -->
 
-    #explanationText {
-      padding-bottom: var(--cr-section-vertical-padding);
-    }
-
-    #additionalProtections,
-    #cookiesHeader,
-    #siteRequestsHeader {
-      padding: 16px var(--cr-section-padding) 8px var(--cr-section-padding);
-    }
-
-    #defaultHeader {
-      padding-top: 0;
-      padding-bottom: 6px;
-    }
-
-    #exceptionHeader {
-      padding: 0 var(--cr-section-padding);
-      margin-bottom: -32px;
-    }
-
-    .bullet-line {
-      align-items: center;
-      display: flex;
-      min-height: var(--cr-section-two-line-min-height);
-    }
-
-    .bullet-line.one-line {
-      min-height: var(--cr-section-min-height);
-    }
-
-    .bullet-line > div {
-      padding-inline-start: var(--cr-radio-button-size);
-    }
-
-    settings-collapse-radio-button {
-      --settings-collapse-toggle-min-height: var(--cr-section-min-height);
-    }
-
-    settings-collapse-radio-button:not(:first-of-type) {
-      --settings-collapse-separator-line: var(--cr-separator-line);
-    }
-
-    settings-collapse-radio-button .bullet-line:last-child {
-      padding-bottom: 12px;
-    }
-
-    :host-context([settings-refresh-2026]) ul.icon-bulleted-list {
-      --cr-icon-size: 20px;
-      list-style-type: none;
-      margin-bottom: 0;
-      margin-top: 0;
-      padding-inline-start: 0;
-    }
-
-    :host-context([settings-refresh-2026]) ul.icon-bulleted-list li {
-      align-items: flex-start;
-      display: flex;
-      margin-bottom: 8px;
-      margin-top: 0;
-    }
-
-    :host-context([settings-refresh-2026]) ul.icon-bulleted-list li:last-child {
-      margin-bottom: 0;
-    }
-
-    :host-context([settings-refresh-2026]) ul.icon-bulleted-list cr-icon {
-      flex-shrink: 0;
-      margin-inline-end: 10px;
-    }
-  </style>
-  <settings-subpage page-title="[[pageTitle_]]"
+  <settings-subpage page-title="${this.pageTitle_}"
       learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
       search-label="$i18n{siteSettingsAllSitesFilter}"
       search-icon="settings20:filter-list"
-      search-term="{{searchTerm}}" route-path$="[[routePath]]">
-    <template is="dom-if" if="[[showUniversalOptOutSettings_]]">
+      search-term="${this.searchTerm}"
+      @search-term-changed="${this.onSearchTermChanged_}"
+      route-path="${this.routePath}">
+    ${this.showUniversalOptOutSettings_ ? html`
       <h2 id="cookiesHeader">$i18n{thirdPartyCookiesSubHeader}</h2>
-    </template>
+    ` : ''}
     <div id="explanationText" class="secondary">
       $i18n{thirdPartyCookiesPageDescription}
     </div>
     <div id="generalControls">
-      <template is="dom-if" if="[[isSettingsRefresh2026_]]">
+      ${this.isSettingsRefresh2026_ ? html`
         <settings-radio-group id="thirdPartyCookieBlockingSettingGroup"
             no-set-pref
             pref-key="generated.third_party_cookie_blocking_setting"
             is-horizontal
-            on-change="onThirdPartyCookieBlockingSettingChanged_">
+            @change="${this.onThirdPartyCookieBlockingSettingGroupChange_}">
           <controlled-radio-button id="block3pcIncognito"
               pref-key="generated.third_party_cookie_blocking_setting"
-              name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
+              name="${ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY}"
               label="$i18n{thirdPartyCookiesPageAllowRadioLabel}">
             <ul class="icon-bulleted-list" slot="additional-content">
               <li>
@@ -119,7 +50,7 @@
           </controlled-radio-button>
           <controlled-radio-button id="blockAll3pc"
               pref-key="generated.third_party_cookie_blocking_setting"
-              name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
+              name="${ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY}"
               label="$i18n{thirdPartyCookiesPageBlockRadioLabel}">
             <ul class="icon-bulleted-list" slot="additional-content">
               <li>
@@ -143,18 +74,18 @@
             </ul>
           </controlled-radio-button>
         </settings-radio-group>
-      </template>
+      ` : ''}
 
-      <template is="dom-if" if="[[!isSettingsRefresh2026_]]">
+      ${!this.isSettingsRefresh2026_ ? html`
         <settings-radio-group id="thirdPartyCookieBlockingSettingGroup"
             no-set-pref
             pref-key="generated.third_party_cookie_blocking_setting"
             selectable-elements=
                 "cr-radio-button, settings-collapse-radio-button"
-            on-change="onThirdPartyCookieBlockingSettingChanged_">
+            @change="${this.onThirdPartyCookieBlockingSettingGroupChange_}">
           <settings-collapse-radio-button id="block3pcIncognito"
               pref-key="generated.third_party_cookie_blocking_setting"
-              name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
+              name="${ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY}"
               label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
               expand-aria-label="$i18n{allowThirdPartyCookiesExpandA11yLabel}">
             <div slot="collapse">
@@ -180,7 +111,7 @@
           </settings-collapse-radio-button>
           <settings-collapse-radio-button id="blockAll3pc"
               pref-key="generated.third_party_cookie_blocking_setting"
-              name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
+              name="${ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY}"
               label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
               expand-aria-label="$i18n{blockThirdPartyCookiesExpandA11yLabel}">
             <div slot="collapse">
@@ -205,42 +136,42 @@
             </div>
           </settings-collapse-radio-button>
         </settings-radio-group>
-      </template>
+      ` : ''}
     </div>
-    <template is="dom-if" if="[[showUniversalOptOutSettings_]]">
+    ${this.showUniversalOptOutSettings_ ? html`
       <h2 id="siteRequestsHeader">
         $i18n{siteRequestsSubHeader}
       </h2>
-    </template>
-    <template is="dom-if" if="[[!showUniversalOptOutSettings_]]">
+    ` : ''}
+    ${!this.showUniversalOptOutSettings_ ? html`
       <h2 id="additionalProtections">
         $i18n{trackingProtectionAdvancedLabel}
       </h2>
-    </template>
+    ` : ''}
     <settings-do-not-track-toggle id="doNotTrack">
     </settings-do-not-track-toggle>
-    <template is="dom-if" if="[[showUniversalOptOutSettings_]]" restamp>
+    ${this.showUniversalOptOutSettings_ ? html`
       <settings-toggle-button id="universalOptOutToggle" class="toggle"
           label="$i18n{universalOptOutLabel}"
           pref-key="universal_optout.enabled"
-          on-settings-boolean-control-change="onUniversalOptOutToggleChange_"
+          @settings-boolean-control-change="${this.onUniversalOptOutToggleSettingsBooleanControlChange_}"
           icon="settings20:front-hand"
           sub-label="$i18n{universalOptOutSubLabel}"
           learn-more-url="$i18n{universalOptOutLearnMoreURL}">
       </settings-toggle-button>
-    </template>
+    ` : ''}
     <cr-link-row id="siteDataTrigger" class="hr"
-        on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
+        @click="${this.onSiteDataClick_}" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <div id="exceptionHeader">
       <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
     </div>
     <site-list id="allow3pcExceptionsList"
-        category="[[cookiesContentSettingType_]]"
-        category-subtype="[[contentSettingEnum_.ALLOW]]"
+        category="${ContentSettingsTypes.COOKIES}"
+        category-subtype="${ContentSetting.ALLOW}"
         category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
-        search-filter="[[searchTerm]]"
+        search-filter="${this.searchTerm}"
         cookies-exception-type="third-party">
     </site-list>
   </settings-subpage>

@@ -19,14 +19,14 @@ import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 import '../site_settings/site_list.js';
 import './do_not_track_toggle.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -36,25 +36,31 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_br
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {Router} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_browser_proxy.js';
 
-import {getTemplate} from './cookies_page.html.js';
+import {getCss} from './cookies_page.css.js';
+import {getHtml} from './cookies_page.html.js';
 
 const SettingsCookiesPageElementBase =
-    SettingsViewMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
+
+export type CookiesPageElement = SettingsCookiesPageElement;
 
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   static get is() {
     return 'settings-cookies-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Current search term.
@@ -62,58 +68,47 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       searchTerm: {
         type: String,
         notify: true,
-        value: '',
       },
 
-      thirdPartyCookieBlockingSettingEnum_: {
-        type: Object,
-        value: ThirdPartyCookieBlockingSetting,
-      },
+      showUniversalOptOutSettings_: {type: Boolean},
 
-      contentSettingEnum_: {
-        type: Object,
-        value: ContentSetting,
-      },
+      pageTitle_: {type: String},
 
-      cookiesContentSettingType_: {
-        type: String,
-        value: ContentSettingsTypes.COOKIES,
-      },
-
-      showUniversalOptOutSettings_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showUniversalOptOutSettings'),
-      },
-
-      pageTitle_: {
-        type: String,
-        computed: 'computePageTitle_(showUniversalOptOutSettings_)',
-      },
-
-      isSettingsRefresh2026_: {
-        type: Boolean,
-        value: () => loadTimeData.getString('settingsRefresh2026') !== '',
-      },
+      isSettingsRefresh2026_: {type: Boolean},
     };
   }
 
-  declare searchTerm: string;
-  declare private pageTitle_: string;
-  declare private cookiesContentSettingType_: ContentSettingsTypes;
-  declare private showUniversalOptOutSettings_: boolean;
-  declare private isSettingsRefresh2026_: boolean;
+  accessor searchTerm: string = '';
+  protected accessor pageTitle_: string = '';
+  protected accessor showUniversalOptOutSettings_: boolean =
+      loadTimeData.getBoolean('showUniversalOptOutSettings');
+  protected accessor isSettingsRefresh2026_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  private onSiteDataClick_() {
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('showUniversalOptOutSettings_')) {
+      this.pageTitle_ = this.computePageTitle_();
+    }
+  }
+
+  protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
+    this.searchTerm = e.detail.value;
+  }
+
+  protected onSiteDataClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
   }
 
-  private onThirdPartyCookieBlockingSettingChanged_() {
+  protected onThirdPartyCookieBlockingSettingGroupChange_() {
     const thirdPartyCookieBlockingSettingGroup: SettingsRadioGroupElement =
-        this.shadowRoot!.querySelector('#thirdPartyCookieBlockingSettingGroup')!
-        ;
+        this.shadowRoot.querySelector('#thirdPartyCookieBlockingSettingGroup')!;
     const selection = Number(thirdPartyCookieBlockingSettingGroup.selected);
     if (selection === ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY) {
       this.metricsBrowserProxy_.recordSettingsPageHistogram(
@@ -131,7 +126,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     thirdPartyCookieBlockingSettingGroup.sendPrefChange();
   }
 
-  private onUniversalOptOutToggleChange_(event: Event) {
+  protected onUniversalOptOutToggleSettingsBooleanControlChange_(event: Event) {
     const toggle = event.target as SettingsToggleButtonElement;
 
     this.metricsBrowserProxy_.recordAction(
@@ -146,7 +141,9 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             'thirdPartyCookiesPageTitle');
   }
 
-  override currentRouteChanged(currentRoute: Route) {
+  override currentRouteChanged(currentRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(currentRoute, oldRoute);
+
     if (currentRoute === routes.COOKIES) {
       this.metricsBrowserProxy_.recordBooleanHistogram(
           'Privacy.UniversalOptOut.SettingsVisibility',
@@ -154,7 +151,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override getFocusConfig() {
     return new Map([
       [
@@ -164,9 +161,9 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     ]);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

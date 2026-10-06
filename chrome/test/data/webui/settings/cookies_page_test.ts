@@ -46,7 +46,7 @@ suite('CookiesPageTest', function() {
   let prefService: PrefService;
 
   function thirdPartyCookieBlockingSettingGroup(): SettingsRadioGroupElement {
-    const group = page.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+    const group = page.shadowRoot.querySelector<SettingsRadioGroupElement>(
         '#thirdPartyCookieBlockingSettingGroup');
     assertTrue(!!group);
     return group;
@@ -54,7 +54,7 @@ suite('CookiesPageTest', function() {
 
   function blockAll3pc(): SettingsCollapseRadioButtonElement {
     const blockAll3pc =
-        page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+        page.shadowRoot.querySelector<SettingsCollapseRadioButtonElement>(
             '#blockAll3pc');
     assertTrue(!!blockAll3pc);
     return blockAll3pc;
@@ -62,7 +62,7 @@ suite('CookiesPageTest', function() {
 
   function block3pcIncognito(): SettingsCollapseRadioButtonElement {
     const block3pcIncognito =
-        page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+        page.shadowRoot.querySelector<SettingsCollapseRadioButtonElement>(
             '#block3pcIncognito');
     assertTrue(!!block3pcIncognito);
     return block3pcIncognito;
@@ -71,7 +71,6 @@ suite('CookiesPageTest', function() {
   function createPage() {
     page = document.createElement('settings-cookies-page');
     document.body.appendChild(page);
-    flush();
   }
 
   suiteSetup(function() {
@@ -106,7 +105,7 @@ suite('CookiesPageTest', function() {
   test('SubpageTitle', function() {
     assertEquals(
         page.i18n('thirdPartyCookiesPageTitle'),
-        page.shadowRoot!.querySelector('settings-subpage')!.pageTitle);
+        page.shadowRoot.querySelector('settings-subpage')!.pageTitle);
   });
 
   test('ElementVisibility', async function() {
@@ -185,7 +184,7 @@ suite('UniversalOptOut', function() {
 
     Router.getInstance().navigateTo(routes.COOKIES);
     document.body.appendChild(page);
-    flush();
+    await microtasksFinished();
   }
 
   teardown(function() {
@@ -195,7 +194,7 @@ suite('UniversalOptOut', function() {
 
   test('UniversalOptOutEnabled', async function() {
     await createPage(true);
-    const subpage = page.shadowRoot!.querySelector('settings-subpage');
+    const subpage = page.shadowRoot.querySelector('settings-subpage');
     assertTrue(!!subpage);
     assertEquals(
         page.i18n('thirdPartyCookiesAndSiteDataPageTitle'), subpage.pageTitle);
@@ -209,7 +208,7 @@ suite('UniversalOptOut', function() {
     assertEquals('Privacy.UniversalOptOut.SettingsVisibility', histogramName);
     assertTrue(visible);
 
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = page.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#universalOptOutToggle');
     assertTrue(!!toggle);
     assertEquals(page.i18n('universalOptOutLearnMoreURL'), toggle.learnMoreUrl);
@@ -218,7 +217,7 @@ suite('UniversalOptOut', function() {
     assertFalse(prefService.getPref<boolean>('universal_optout.enabled').value);
 
     toggle.click();
-    flush();
+    await microtasksFinished();
     assertTrue(toggle.checked);
     assertTrue(prefService.getPref<boolean>('universal_optout.enabled').value);
     assertEquals(
@@ -227,7 +226,7 @@ suite('UniversalOptOut', function() {
     testMetricsBrowserProxy.reset();
 
     toggle.click();
-    flush();
+    await microtasksFinished();
     assertFalse(toggle.checked);
     assertFalse(prefService.getPref<boolean>('universal_optout.enabled').value);
     assertEquals(
@@ -238,7 +237,7 @@ suite('UniversalOptOut', function() {
 
   test('UniversalOptOutDisabled', async function() {
     await createPage(false);
-    const subpage = page.shadowRoot!.querySelector('settings-subpage');
+    const subpage = page.shadowRoot.querySelector('settings-subpage');
     assertTrue(!!subpage);
     assertEquals(page.i18n('thirdPartyCookiesPageTitle'), subpage.pageTitle);
     assertFalse(isChildVisible(page, '#cookiesHeader'));
@@ -270,7 +269,7 @@ suite('ExceptionsList', function() {
 
     page = document.createElement('settings-cookies-page');
     document.body.appendChild(page);
-    flush();
+    await microtasksFinished();
   });
 
   test('ExceptionsSearch', async function() {
@@ -289,20 +288,22 @@ suite('ExceptionsList', function() {
     page.searchTerm = 'foo';
     siteSettingsBrowserProxy.setPrefs(exceptionPrefs);
     await siteSettingsBrowserProxy.whenCalled('getExceptionList');
+    await microtasksFinished();
     flush();
 
-    const exceptionList = page.shadowRoot!.querySelector('site-list');
+    const exceptionList = page.shadowRoot.querySelector('site-list');
     assertTrue(!!exceptionList);
     assertTrue(isChildVisible(exceptionList, 'site-list-entry'));
 
     page.searchTerm = 'unrelated.com';
+    await microtasksFinished();
     flush();
 
     assertFalse(isChildVisible(exceptionList, 'site-list-entry'));
   });
 
   test('ExceptionListHasCorrectCookieExceptionType', function() {
-    const exceptionList = page.shadowRoot!.querySelector('site-list');
+    const exceptionList = page.shadowRoot.querySelector('site-list');
     assertTrue(!!exceptionList);
     assertEquals(
         'third-party', exceptionList.getAttribute('cookies-exception-type'));
@@ -316,7 +317,7 @@ suite('CookiesPageSettingsRefresh2026Test', function() {
   let prefService: PrefService;
 
   function thirdPartyCookieBlockingSettingGroup(): SettingsRadioGroupElement {
-    const group = page.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+    const group = page.shadowRoot.querySelector<SettingsRadioGroupElement>(
         '#thirdPartyCookieBlockingSettingGroup');
     assertTrue(!!group);
     return group;
@@ -324,7 +325,7 @@ suite('CookiesPageSettingsRefresh2026Test', function() {
 
   function blockAll3pc(): ControlledRadioButtonElement {
     const blockAll3pc =
-        page.shadowRoot!.querySelector<ControlledRadioButtonElement>(
+        page.shadowRoot.querySelector<ControlledRadioButtonElement>(
             '#blockAll3pc');
     assertTrue(!!blockAll3pc);
     return blockAll3pc;
@@ -332,7 +333,7 @@ suite('CookiesPageSettingsRefresh2026Test', function() {
 
   function block3pcIncognito(): ControlledRadioButtonElement {
     const block3pcIncognito =
-        page.shadowRoot!.querySelector<ControlledRadioButtonElement>(
+        page.shadowRoot.querySelector<ControlledRadioButtonElement>(
             '#block3pcIncognito');
     assertTrue(!!block3pcIncognito);
     return block3pcIncognito;
@@ -341,7 +342,6 @@ suite('CookiesPageSettingsRefresh2026Test', function() {
   function createPage() {
     page = document.createElement('settings-cookies-page');
     document.body.appendChild(page);
-    flush();
   }
 
   suiteSetup(function() {
@@ -384,7 +384,7 @@ suite('CookiesPageSettingsRefresh2026Test', function() {
   test('SubpageTitle', function() {
     assertEquals(
         page.i18n('thirdPartyCookiesPageTitle'),
-        page.shadowRoot!.querySelector('settings-subpage')!.pageTitle);
+        page.shadowRoot.querySelector('settings-subpage')!.pageTitle);
   });
 
   test('ElementVisibility', async function() {
