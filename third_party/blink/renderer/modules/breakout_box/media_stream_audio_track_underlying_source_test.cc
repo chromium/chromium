@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 
-#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -126,14 +125,9 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
     EXPECT_EQ(bus.channels(), buffer->channel_count());
     EXPECT_EQ(bus.frames(), buffer->frame_count());
 
-    for (int ch = 0; ch < bus.channels(); ch++) {
-      base::span<const float> bus_channel = bus.channel(ch);
-      const float* buffer_channel =
-          reinterpret_cast<float*>(buffer->channel_data()[ch].get());
-      for (int i = 0; i < bus.frames(); ++i) {
-        if (bus_channel[i] != UNSAFE_TODO(buffer_channel[i])) {
-          return false;
-        }
+    for (int ch = 0; ch < bus.channels(); ++ch) {
+      if (bus.channel(ch) != buffer->planar_channel_cast<const float>(ch)) {
+        return false;
       }
     }
 

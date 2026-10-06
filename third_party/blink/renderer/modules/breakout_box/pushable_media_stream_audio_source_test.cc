@@ -6,7 +6,6 @@
 
 #include <ranges>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -282,14 +281,14 @@ TEST_P(PushableMediaStreamAudioSourceTest, ConvertsFormatInternally) {
   interleaved_buffer->set_timestamp(kDefaultTimeStamp);
 
   // Create interleaved data, with negative values on the second channel.
-  float* interleaved_buffer_data =
-      reinterpret_cast<float*>(interleaved_buffer->channel_data()[0].get());
+  base::span<float> interleaved_buffer_data =
+      interleaved_buffer->interleaved_data_cast<float>();
   for (int i = 0; i < kFrames; ++i) {
     float value = static_cast<float>(i) / kFrames;
 
-    interleaved_buffer_data[0] = value;
-    UNSAFE_TODO(interleaved_buffer_data[1]) = -value;
-    UNSAFE_TODO(interleaved_buffer_data += 2);
+    auto frame = interleaved_buffer_data.take_first<kChannels>();
+    frame[0] = value;
+    frame[1] = -value;
   }
 
   // Create reference planar data.
