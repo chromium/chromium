@@ -11,6 +11,14 @@
 namespace features {
 
 // Please keep features in alphabetical order.
+// Enables stateful memory pressure handling in BlobMemoryController, where the
+// in-memory blob quota scales with the memory limit. Only has an effect if
+// base::kStatefulMemoryPressure is also enabled. When disabled,
+// BlobMemoryController registers as a stateless memory consumer and uses
+// one-shot paging to disk on memory pressure.
+COMPONENT_EXPORT(STORAGE_BROWSER)
+BASE_DECLARE_FEATURE(kBlobStatefulMemoryPressure);
+
 // Enables Fetch-compliant Range header validation for blob: URL fetches.
 // Invalid or unsupported Range headers fail with a network error instead of
 // falling back to serving the full blob.

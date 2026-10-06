@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_item.h"
+#include "storage/browser/blob/features.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1197,6 +1198,79 @@ TEST_F(BlobMemoryControllerTest, StatelessMemoryPressure) {
   EXPECT_EQ(size_to_load - 1, controller.disk_usage());
 }
 
+// Without kBlobStatefulMemoryPressure, enabling kStatefulMemoryPressure must
+// not change the behavior: the in-memory quota is never reduced and memory
+// pressure results in one-shot paging to disk.
+TEST_F(BlobMemoryControllerTest, StatefulMemoryPressureBlobDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({base::kStatefulMemoryPressure},
+                                       {features::kBlobStatefulMemoryPressure});
+
+  BlobMemoryController controller(temp_dir_.GetPath(), file_runner_);
+  SetTestMemoryLimits(&controller);
+  AssertEnoughDiskSpace();
+
+  // Let the async registration complete.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  char kData[1];
+  kData[0] = 'e';
+
+  std::vector<scoped_refptr<ShareableBlobDataItem>> small_items;
+  size_t size_to_load = 2 * kTestBlobStorageMaxBlobMemorySize *
+                            kTestMaxBlobInMemorySpaceUnderPressureRatio +
+                        1;
+  for (size_t i = 0; i < size_to_load; i++) {
+    BlobDataBuilder builder("fake");
+    builder.AppendData(std::string(kData, 1));
+    std::vector<scoped_refptr<ShareableBlobDataItem>> items =
+        CreateSharedDataItems(builder);
+    base::WeakPtr<QuotaAllocationTask> memory_task =
+        controller.ReserveMemoryQuota(items, GetMemoryRequestCallback());
+    EXPECT_FALSE(memory_task);
+    items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
+    small_items.insert(small_items.end(), items.begin(), items.end());
+  }
+  controller.NotifyMemoryItemsUsed(small_items);
+  EXPECT_FALSE(file_runner_->HasPendingTask());
+  EXPECT_EQ(size_to_load, controller.memory_usage());
+
+  // Trigger moderate memory pressure (50% limit) asynchronously.
+  {
+    base::RunLoop run_loop;
+    registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::ModeratePressureThreshold(), base::DoNothing());
+    registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // The in-memory quota is not reduced.
+  EXPECT_EQ(kTestBlobStorageMaxBlobMemorySize,
+            controller.limits().max_blob_in_memory_space);
+  EXPECT_TRUE(file_runner_->HasPendingTask());
+
+  RunFileThreadTasks();
+
+  // Let the eviction complete notification run on the main thread.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Same result as the legacy one-shot eviction.
+  EXPECT_EQ(1u, controller.memory_usage());
+  EXPECT_EQ(size_to_load - 1, controller.disk_usage());
+  EXPECT_EQ(kTestBlobStorageMaxBlobMemorySize,
+            controller.limits().max_blob_in_memory_space);
+}
+
 TEST_F(BlobMemoryControllerTest, LowMemoryDevice) {
   BlobMemoryController controller(temp_dir_.GetPath(), nullptr);
   // Make 1% of physical memory size just less than min_page_file_size
@@ -1210,7 +1284,9 @@ TEST_F(BlobMemoryControllerTest, LowMemoryDevice) {
 
 TEST_F(BlobMemoryControllerTest, StatefulMemoryPressure) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+  scoped_feature_list.InitWithFeatures(
+      {base::kStatefulMemoryPressure, features::kBlobStatefulMemoryPressure},
+      {});
 
   BlobMemoryController controller(temp_dir_.GetPath(), file_runner_);
   SetTestMemoryLimits(&controller);
@@ -1312,7 +1388,9 @@ TEST_F(BlobMemoryControllerTest, StatefulMemoryPressure) {
 
 TEST_F(BlobMemoryControllerTest, StatefulMemoryPressureCriticalBypass) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+  scoped_feature_list.InitWithFeatures(
+      {base::kStatefulMemoryPressure, features::kBlobStatefulMemoryPressure},
+      {});
 
   BlobMemoryController controller(temp_dir_.GetPath(), file_runner_);
   SetTestMemoryLimits(&controller);
