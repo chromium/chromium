@@ -188,6 +188,12 @@ export interface PageElementTypes {
   manageSkillsBtn: HTMLButtonElement;
   browseSkillsBtn: HTMLButtonElement;
   skillsList: HTMLUListElement;
+  getChromeToolsBtn: HTMLButtonElement;
+  toolSelect: HTMLSelectElement;
+  toolArgumentsInput: HTMLTextAreaElement;
+  executeToolBtn: HTMLButtonElement;
+  toolsStatus: HTMLParagraphElement;
+  executeToolResult: HTMLTextAreaElement;
   stressTestEngageBtn: HTMLButtonElement;
   stressTestEngageRetainBtn: HTMLButtonElement;
   invocationLog: HTMLDivElement;

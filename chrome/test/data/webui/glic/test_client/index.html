@@ -682,6 +682,35 @@ found in the LICENSE file.
     </div>
   </div>
   <div class="section">
+    <h1>Chrome Tools</h1>
+    <div>
+      <button id="getChromeToolsBtn">Get Chrome Tools</button>
+    </div>
+    <p id="toolsStatus" style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">Click Get Chrome Tools to query available host tools.</p>
+    <div>
+      <label>Select Tool:
+        <select id="toolSelect">
+          <option value="">-- No tools loaded --</option>
+        </select>
+      </label>
+    </div>
+    <div style="margin-top: 8px;">
+      <label>JSON Arguments:
+        <br />
+        <textarea id="toolArgumentsInput" rows="4" style="width: 100%; font-family: monospace;" placeholder='{"url": "https://google.com", "new_tab": true}'></textarea>
+      </label>
+    </div>
+    <div style="margin-top: 8px;">
+      <button id="executeToolBtn">Execute Tool</button>
+    </div>
+    <div>
+      <label>Execution Result:
+        <br />
+        <textarea id="executeToolResult" rows="4" readonly style="width: 100%; font-family: monospace; background: #f0f0f0;"></textarea>
+      </label>
+    </div>
+  </div>
+  <div class="section">
     <h1>Additional Context</h1>
     <div id="additionalContextResult"></div>
   </div>
