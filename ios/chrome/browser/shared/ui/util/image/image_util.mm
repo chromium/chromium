@@ -11,6 +11,7 @@
 #import <algorithm>
 
 #import "base/apple/foundation_util.h"
+#import "base/trace_event/trace_event.h"
 #import "ui/gfx/color_analysis.h"
 #import "ui/gfx/image/image.h"
 
@@ -36,6 +37,7 @@ bool starts_with(base::span<T> span, base::span<T, E> prefix) {
 UIImage* CreateDownsampledImage(CGImageSourceRef source,
                                 CGSize point_size,
                                 CGFloat scale) {
+  TRACE_EVENT("ui", "ImageUtil::CreateDownsampledImage");
   CGFloat max_dimension_in_pixels =
       std::max(point_size.width, point_size.height) * scale;
   NSDictionary* downsample_options = @{

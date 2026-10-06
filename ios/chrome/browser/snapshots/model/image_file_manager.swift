@@ -26,6 +26,8 @@ private final class ImageWriteCompletion: @unchecked Sendable {
   }
 }
 
+extension SnapshotReadImageTrace: @unchecked Sendable {}
+
 // A class to manage images stored in disk.
 // Tasks for handling disk (reading an image, writing an image, deleting images, renaming an image,
 // etc.) are executed on a background thread. Callbacks to use UI APIs should be called on the main
@@ -81,20 +83,26 @@ private final class ImageWriteCompletion: @unchecked Sendable {
       return
     }
 
+    let trace = SnapshotReadImageTrace()
+
     backgroundTaskGroup.enter()
     backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
       guard let self = self else { return }
-      let image = UIImage(contentsOfFile: imagePath.path)
-      // Call the callback on the main thread.
-      mainTaskGroup.enter()
-      DispatchQueue.main.async { [weak self, image] in
-        guard let self = self else { return }
-        completion(image)
-        // Do not call `backgroundTaskGroup.leave()` here. It causes a deadlock on the main thread
-        // if we call `backgroundTaskGroup.wait()` before reaching here.
-        mainTaskGroup.leave()
+      trace.backgroundTask {
+        let image = UIImage(contentsOfFile: imagePath.path)
+        // Call the callback on the main thread.
+        self.mainTaskGroup.enter()
+        DispatchQueue.main.async { [weak self, image] in
+          guard let self = self else { return }
+          trace.completion {
+            completion(image)
+            // Do not call `backgroundTaskGroup.leave()` here. It causes a deadlock on the main thread
+            // if we call `backgroundTaskGroup.wait()` before reaching here.
+            self.mainTaskGroup.leave()
+          }
+        }
+        self.backgroundTaskGroup.leave()
       }
-      backgroundTaskGroup.leave()
     }
   }
 

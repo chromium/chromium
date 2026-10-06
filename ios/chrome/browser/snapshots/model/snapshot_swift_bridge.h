@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_kind.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_read_image_trace.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 

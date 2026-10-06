@@ -57,6 +57,8 @@ source_set("model_common") {
     "snapshot_id_wrapper.h",
     "snapshot_id_wrapper.mm",
     "snapshot_kind.h",
+    "snapshot_read_image_trace.h",
+    "snapshot_read_image_trace.mm",
     "snapshot_scale.h",
     "snapshot_scale.mm",
     "snapshot_types.h",
