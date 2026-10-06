@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_toolbar/icon_table.h"
 #include "chrome/common/pref_names.h"
@@ -448,6 +450,12 @@ views::BubbleAnchor
 WebUIToolbarExtensionsContainer::GetExtensionsButtonAnchor() {
   if (ui::TrackedElement* anchor = GetExtensionsMenuButtonAnchor()) {
     return views::BubbleAnchor(anchor);
+  }
+  if (BrowserView* browser_view =
+          BrowserView::GetBrowserViewForBrowser(&browser_.get())) {
+    if (browser_view->toolbar()) {
+      return views::BubbleAnchor(browser_view->toolbar());
+    }
   }
   return views::BubbleAnchor(GetWidget()->GetRootView());
 }
