@@ -86,7 +86,7 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
 | `[Native] enum` | Generator would emit an **empty** enum | ⚠️ | Must be hand-defined in `common/` and added to `IGNORED_TYPES`. |
 | `struct` | `ILType` + `ObjectGroup` + constructor builtin | ✅ | Uses the fuzzing-only positional constructors in the lite bindings. |
 | `union` | `ILType` + `ObjectGroup` + per-variant constructor | ✅ | Uses the fuzzing-only positional constructors in the lite bindings. |
-| Union with a nullable field | N/A | ❌ | |
+| Union with a nullable field | N/A | ✅ | |
 
 ### Containers
 
@@ -251,7 +251,6 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
 *   Nullable container elements are approximated by pre-filling containers with
     a few `undefined`. Consequently, Fuzzilli cannot correctly infer the type
     of container elements.
-*   Nullable union fields are unsupported.
 
 
 ## Testing

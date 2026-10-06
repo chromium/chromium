@@ -1,4 +1,5 @@
-{#- TODO(crbug.com/532201584): Handle nullable union field types -#}
+{%- import "macros.tmpl" as macros -%}
+
 extension ILType {
 {%- for union in unions %}
     fileprivate static let {{union|format_il_type}}: ILType = .object(
@@ -6,7 +7,7 @@ extension ILType {
     {%- for field in union.fields %}
     fileprivate static let {{union|format_il_type}}
         {{- field.name|to_camel}}Constructor: ILType = .constructor(
-        [.plain(.{{field.kind|format_il_type}})] => .{{union|format_il_type}})
+        [{{macros.to_fuzzilli_parameter(field)}}] => .{{union|format_il_type}})
     {%- endfor %}
 {%- endfor %}
 }

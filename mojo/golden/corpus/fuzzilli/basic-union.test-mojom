@@ -14,7 +14,7 @@ interface Primary {
 union SimpleUnion {
   array<int64> arr;
   Token token;
-  bool flag;
+  bool? flag;
 };
 
 struct Token {

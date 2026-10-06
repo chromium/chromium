@@ -161,7 +161,7 @@ extension ILType {
     fileprivate static let jsGoldenSimpleUnionTokenConstructor: ILType = .constructor(
         [.plain(.jsGoldenToken)] => .jsGoldenSimpleUnion)
     fileprivate static let jsGoldenSimpleUnionFlagConstructor: ILType = .constructor(
-        [.plain(.boolean)] => .jsGoldenSimpleUnion)
+        [.either(.boolean, .undefined)] => .jsGoldenSimpleUnion)
 }
 
 extension ObjectGroup {

@@ -11,7 +11,7 @@ extension ILType {
         ])
     fileprivate static let {{struct|format_il_type}}Constructor: ILType = .constructor([
     {%- for field in struct.fields %}
-        {{ macros.to_fuzzilli_parameter(field) }}
+        {{ macros.to_fuzzilli_parameter(field) }},
     {%- endfor %}
     ] => .{{struct|format_il_type}})
 {%- endfor %}

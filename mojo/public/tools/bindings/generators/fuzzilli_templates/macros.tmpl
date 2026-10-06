@@ -2,8 +2,8 @@
     parameters represented via the `.either` case. -#}
 {%- macro to_fuzzilli_parameter(parameter) -%}
     {%- if parameter.kind.is_nullable -%}
-    .either(.{{parameter.kind|format_il_type}}, .undefined),
+    .either(.{{parameter.kind|format_il_type}}, .undefined)
     {%- else -%}
-    .plain(.{{parameter.kind|format_il_type}}),
+    .plain(.{{parameter.kind|format_il_type}})
     {%- endif -%}
 {%- endmacro -%}

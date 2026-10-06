@@ -60,7 +60,7 @@ extension ObjectGroup {
         {%- for method in remote.methods %}
             "{{method.name}}": [
             {%- for parameter in method.parameters %}
-                {{ macros.to_fuzzilli_parameter(parameter) }}
+                {{ macros.to_fuzzilli_parameter(parameter) }},
             {%- endfor %}
             {#-
                 The `{{ "" }}` preserves a whitespace between `=>` and the return type. The
@@ -137,7 +137,7 @@ extension ObjectGroup {
                     .function(
                         [
                         {%- for parameter in method.parameters %}
-                            {{ macros.to_fuzzilli_parameter(parameter) }}
+                            {{ macros.to_fuzzilli_parameter(parameter) }},
                         {%- endfor %}
                         ] => .undefined))
             ] => .integer,
