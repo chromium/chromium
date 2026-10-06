@@ -1625,8 +1625,10 @@ features through Chrome Labs. -->
     <variant name=".ShowTurnOnSync"/>
     <variant name=".SiteSettings"/>
     <variant name=".SwitchToAnotherProfile"/>
+    <variant name=".TabSearch"/>
     <variant name=".TakeScreenshot"/>
     <variant name=".TaskManager"/>
+    <variant name=".ToggleVerticalTabs"/>
     <variant name=".TtcAppMenu"/>
     <variant name=".UpgradeDialog"/>
     <variant name=".ViewSource"/>
