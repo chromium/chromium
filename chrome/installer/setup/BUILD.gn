@@ -55,6 +55,7 @@ if (is_win) {
     sources = [
       "${branding_path_product}_behaviors.cc",
       "brand_behaviors.h",
+      "component_interface.h",
       "configure_app_container_sandbox.cc",
       "configure_app_container_sandbox.h",
       "downgrade_cleanup.cc",
@@ -79,6 +80,8 @@ if (is_win) {
       "launch_chrome.cc",
       "launch_chrome.h",
       "modify_params.h",
+      "platform_runtime_component.cc",
+      "platform_runtime_component.h",
       "progress_calculator.cc",
       "progress_calculator.h",
       "scoped_thread_pool.cc",
@@ -161,6 +164,7 @@ if (is_win) {
       "install_worker_unittest.cc",
       "installer_state_unittest.cc",
       "memory_unittest.cc",
+      "platform_runtime_component_unittest.cc",
       "progress_calculator_unittest.cc",
       "run_all_unittests.cc",
       "setup_install_details_unittest.cc",
@@ -191,8 +195,12 @@ if (is_win) {
       "//chrome/installer/util:test_support",
       "//components/crash/core/app:test_support",
       "//components/crx_file",
+      "//components/crx_file:crx_creator",
+      "//crypto",
+      "//crypto:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/zlib/google:zip",
     ]
 
     data = [

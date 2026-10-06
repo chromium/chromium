@@ -7,57 +7,61 @@
 
 #include <stdint.h>
 
-#include <optional>
-#include <string_view>
+#include <array>
+#include <memory>
 
-#include "base/containers/span.h"
-#include "base/memory/raw_span.h"
+#include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/version.h"
+#include "chrome/installer/setup/component_interface.h"
 #include "chrome/installer/util/util_constants.h"
-#include "components/crx_file/crx_verifier.h"
+#include "crypto/hash.h"
 
 namespace base {
-class FilePath;
+class CommandLine;
 }  // namespace base
+
+namespace crx_file {
+enum class VerifierFormat;
+}
 
 namespace installer {
 
 class InstallerState;
 
-// Configuration for a supported component, linking its expected manifest name
-// and pinned public key SHA256 hash.
-struct ComponentConfig {
-  std::string_view manifest_name;
-  base::raw_span<const uint8_t> public_key_sha256;
-};
-
 // Installs a Chrome component from an inner CRX to the Chrome application
-// directory under its CRX ID (system-level or user-level depending on
-// `installer_state`).
+// directory (system-level or user-level depending on `installer_state`).
 //
 // `source_file`: Path to the inner CRX component file to install.
 // `installer_state`: State encapsulating target paths and installation level.
+// `command_line`: The installer's command line, from which component-specific
+// options are read.
 // Returns InstallStatus indicating the result of the installation.
 InstallStatus InstallComponent(const base::FilePath& source_file,
-                               const InstallerState& installer_state);
+                               const InstallerState& installer_state,
+                               const base::CommandLine& command_line);
 
-// Test-only entry point that allows specifying custom supported components
-// (overriding the developer keys) and verifier format.
+// Factory function type that maps a component public key SHA256 digest to its
+// ComponentInterface instance. Returns nullptr if the component is unsupported.
+using ComponentFactory = base::FunctionRef<std::unique_ptr<ComponentInterface>(
+    const std::array<uint8_t, crypto::hash::kSha256Size>&)>;
+
+// Test-only entry point that allows specifying a custom component factory
+// (overriding the supported components) and verifier format.
 InstallStatus InstallComponentForTesting(
     const base::FilePath& source_file,
     const InstallerState& installer_state,
-    base::span<const ComponentConfig> supported_components,
+    ComponentFactory component_factory,
     crx_file::VerifierFormat verifier_format);
 
 // Returns the parsed component version if `version_dir` has a valid version
-// directory name and contains a valid `manifest.json` file.
-std::optional<base::Version> GetComponentVersion(
-    const base::FilePath& version_dir);
+// directory name and contains a `manifest.json` file, or an invalid version
+// otherwise.
+base::Version GetComponentVersion(const base::FilePath& version_dir);
 
 // Returns the highest valid component version installed in `component_root`,
-// or `std::nullopt` if no valid version directories exist.
-std::optional<base::Version> FindHighestComponentVersion(
-    const base::FilePath& component_root);
+// or an invalid version if no valid version directories exist.
+base::Version FindHighestComponentVersion(const base::FilePath& component_root);
 
 // Deletes subdirectories under `component_root` that are either corrupted
 // (invalid or missing `manifest.json`) or represent versions strictly older

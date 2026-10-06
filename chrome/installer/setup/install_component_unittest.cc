@@ -8,47 +8,139 @@
 
 #include <stdint.h>
 
+#include <array>
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/command_line.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_ostream_operators.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "base/win/security_descriptor.h"
+#include "chrome/installer/setup/component_interface.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/util/util_constants.h"
+#include "components/crx_file/crx_creator.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/crx_file/id_util.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
+#include "crypto/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/zip.h"
+
+#define FPL(x) FILE_PATH_LITERAL(x)
 
 namespace installer {
 
 namespace {
 
 // The developer key ID of "valid_publisher.crx3".
-constexpr char kTestDeveloperCrxId[] = "ojjgnpkioondelmggbekfhllhdaimnho";
+constexpr std::string_view kTestDeveloperCrxId =
+    "ojjgnpkioondelmggbekfhllhdaimnho";
 
 // The SHA256 of the developer SubjectPublicKeyInfo of "valid_publisher.crx3".
-constexpr uint8_t kTestDeveloperPublicKeySHA256[32] = {
-    0xe9, 0x96, 0xdf, 0xa8, 0xee, 0xd3, 0x4b, 0xc6, 0x61, 0x4a, 0x57,
-    0xbb, 0x73, 0x08, 0xcd, 0x7e, 0x51, 0x9b, 0xcc, 0x69, 0x08, 0x41,
-    0xe1, 0x96, 0x9f, 0x7c, 0xb1, 0x73, 0xef, 0x16, 0x80, 0x0a};
-
-constexpr ComponentConfig kTestComponents[] = {
-    {"sthset", kTestDeveloperPublicKeySHA256},
-};
+constexpr std::array<uint8_t, crypto::hash::kSha256Size>
+    kTestDeveloperPublicKeySHA256 = {
+        0xe9, 0x96, 0xdf, 0xa8, 0xee, 0xd3, 0x4b, 0xc6, 0x61, 0x4a, 0x57,
+        0xbb, 0x73, 0x08, 0xcd, 0x7e, 0x51, 0x9b, 0xcc, 0x69, 0x08, 0x41,
+        0xe1, 0x96, 0x9f, 0x7c, 0xb1, 0x73, 0xef, 0x16, 0x80, 0x0a};
 
 base::FilePath GetTestCrxPath(
-    const std::string& filename = "valid_publisher.crx3") {
+    base::FilePath::StringViewType filename = FPL("valid_publisher.crx3")) {
   base::FilePath test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root);
-  return test_data_root.Append(FILE_PATH_LITERAL("components"))
-      .Append(FILE_PATH_LITERAL("test"))
-      .Append(FILE_PATH_LITERAL("data"))
-      .Append(FILE_PATH_LITERAL("crx_file"))
-      .AppendASCII(filename);
+  return test_data_root.Append(FPL("components"))
+      .Append(FPL("test"))
+      .Append(FPL("data"))
+      .Append(FPL("crx_file"))
+      .Append(filename);
+}
+
+// Creates a CRX signed with `signing_key` containing a dummy DLL and, if
+// provided, a manifest.json with the contents `manifest_json`. `tag` is used to
+// generate unique file names within `base_dir`.
+base::FilePath CreateTestCrx(const base::FilePath& base_dir,
+                             const crypto::keypair::PrivateKey& signing_key,
+                             base::FilePath::StringViewType tag,
+                             std::optional<std::string_view> manifest_json) {
+  base::FilePath staging_dir =
+      base_dir.Append(base::StrCat({FPL("staging_"), tag}));
+  CHECK(base::CreateDirectory(staging_dir));
+
+  if (manifest_json) {
+    CHECK(base::WriteFile(staging_dir.Append(FPL("manifest.json")),
+                          *manifest_json));
+  }
+  CHECK(base::WriteFile(staging_dir.Append(FPL("chrome_renderer.dll")),
+                        "dummy_dll_payload"));
+
+  base::FilePath zip_path =
+      base_dir.Append(base::StrCat({FPL("patch_"), tag, FPL(".zip")}));
+  CHECK(zip::Zip(staging_dir, zip_path, /*include_hidden_files=*/true));
+
+  base::FilePath crx_path =
+      base_dir.Append(base::StrCat({FPL("patch_"), tag, FPL(".crx3")}));
+  CHECK_EQ(crx_file::CreatorResult::OK,
+           crx_file::Create(crx_path, zip_path, signing_key));
+  return crx_path;
+}
+
+// A component whose operations succeed or fail as directed. It is installed
+// into a directory named for its CRX ID.
+class FakeComponent : public ComponentInterface {
+ public:
+  struct Results {
+    bool read_manifest = true;
+    // The status returned by DetermineDestinationRoot(), if it is to fail.
+    std::optional<InstallStatus> determine_destination_root_error;
+    bool initialize_destination_root = true;
+  };
+
+  // Constructs a component whose operations all succeed.
+  FakeComponent() : FakeComponent(Results()) {}
+  explicit FakeComponent(const Results& results) : results_(results) {}
+
+  // ComponentInterface:
+  bool ReadManifest(const base::DictValue& manifest) override {
+    return results_.read_manifest;
+  }
+  base::expected<base::FilePath, InstallStatus> DetermineDestinationRoot(
+      const InstallerState& installer_state,
+      std::string_view crx_id) override {
+    if (results_.determine_destination_root_error) {
+      return base::unexpected(*results_.determine_destination_root_error);
+    }
+    return installer_state.target_path().AppendASCII(crx_id);
+  }
+  bool InitializeDestinationRoot(
+      const InstallerState& installer_state,
+      const base::FilePath& destination_root) override {
+    return results_.initialize_destination_root;
+  }
+
+ private:
+  const Results results_;
+};
+
+// Returns a component whose operations all succeed if `hash` is that of the
+// test developer key, or nullptr otherwise.
+std::unique_ptr<ComponentInterface> TestComponentFactory(
+    const std::array<uint8_t, crypto::hash::kSha256Size>& hash) {
+  if (hash == kTestDeveloperPublicKeySHA256) {
+    return std::make_unique<FakeComponent>();
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -66,7 +158,7 @@ TEST(InstallComponentTest, GetComponentVersion) {
   // Valid version directory without manifest.json.
   base::FilePath no_manifest_dir = temp_dir.GetPath().AppendASCII("2.0.0.0");
   ASSERT_TRUE(base::CreateDirectory(no_manifest_dir));
-  EXPECT_EQ(GetComponentVersion(no_manifest_dir), std::nullopt);
+  EXPECT_FALSE(GetComponentVersion(no_manifest_dir).IsValid());
 
   // Valid version directory with temporary manifest only (e.g. interrupted
   // installation).
@@ -74,7 +166,7 @@ TEST(InstallComponentTest, GetComponentVersion) {
   ASSERT_TRUE(base::CreateDirectory(temp_manifest_dir));
   ASSERT_TRUE(base::WriteFile(
       temp_manifest_dir.AppendASCII("manifest.json.tmp"), "dummy"));
-  EXPECT_EQ(GetComponentVersion(temp_manifest_dir), std::nullopt);
+  EXPECT_FALSE(GetComponentVersion(temp_manifest_dir).IsValid());
 
   // Invalid version directory name with manifest.json.
   base::FilePath invalid_name_dir =
@@ -82,12 +174,12 @@ TEST(InstallComponentTest, GetComponentVersion) {
   ASSERT_TRUE(base::CreateDirectory(invalid_name_dir));
   ASSERT_TRUE(
       base::WriteFile(invalid_name_dir.AppendASCII("manifest.json"), "dummy"));
-  EXPECT_EQ(GetComponentVersion(invalid_name_dir), std::nullopt);
+  EXPECT_FALSE(GetComponentVersion(invalid_name_dir).IsValid());
 
   // Non-existent directory.
   base::FilePath non_existent_dir =
       temp_dir.GetPath().AppendASCII("non_existent");
-  EXPECT_EQ(GetComponentVersion(non_existent_dir), std::nullopt);
+  EXPECT_FALSE(GetComponentVersion(non_existent_dir).IsValid());
 }
 
 TEST(InstallComponentTest, FindHighestComponentVersion) {
@@ -96,12 +188,12 @@ TEST(InstallComponentTest, FindHighestComponentVersion) {
   base::FilePath component_root = temp_dir.GetPath().AppendASCII("Component");
 
   // Non-existent root directory.
-  EXPECT_EQ(FindHighestComponentVersion(component_root), std::nullopt);
+  EXPECT_FALSE(FindHighestComponentVersion(component_root).IsValid());
 
   ASSERT_TRUE(base::CreateDirectory(component_root));
 
   // Empty root directory.
-  EXPECT_EQ(FindHighestComponentVersion(component_root), std::nullopt);
+  EXPECT_FALSE(FindHighestComponentVersion(component_root).IsValid());
 
   // Populate multiple version directories.
   base::FilePath v1 = component_root.AppendASCII("1.0.0.0");
@@ -246,7 +338,7 @@ TEST(InstallComponentTest, AntiDowngrade) {
 
     EXPECT_EQ(INSTALL_COMPONENT_ALREADY_EXISTS,
               InstallComponentForTesting(
-                  src_file, installer_state, kTestComponents,
+                  src_file, installer_state, &TestComponentFactory,
                   crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 
     // Existing versions remain untouched when an installation attempt is
@@ -283,7 +375,7 @@ TEST(InstallComponentTest, UpgradeDeletesOlderVersions) {
 
   EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
             InstallComponentForTesting(
-                src_file, installer_state, kTestComponents,
+                src_file, installer_state, &TestComponentFactory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 
   // Older versions should be deleted upon successful installation of 394.
@@ -295,25 +387,6 @@ TEST(InstallComponentTest, UpgradeDeletesOlderVersions) {
   EXPECT_TRUE(base::PathExists(v394));
 }
 
-TEST(InstallComponentTest, ManifestNameMismatch) {
-  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  installer_state.set_target_path_for_testing(temp_dir.GetPath());
-
-  base::FilePath src_file = GetTestCrxPath();
-  ASSERT_TRUE(base::PathExists(src_file));
-
-  static constexpr ComponentConfig kMismatchedComponents[] = {
-      {"mismatched_manifest_name", kTestDeveloperPublicKeySHA256},
-  };
-
-  EXPECT_EQ(INSTALL_COMPONENT_INVALID_INPUT,
-            InstallComponentForTesting(
-                src_file, installer_state, kMismatchedComponents,
-                crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
-}
-
 TEST(InstallComponentTest, PublicKeyMismatch) {
   InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
   base::ScopedTempDir temp_dir;
@@ -323,15 +396,21 @@ TEST(InstallComponentTest, PublicKeyMismatch) {
   base::FilePath src_file = GetTestCrxPath();
   ASSERT_TRUE(base::PathExists(src_file));
 
-  // Same manifest name, but a mismatched public key hash.
-  static constexpr uint8_t kWrongPublicKeySHA256[32] = {0x12, 0x34};
-  static constexpr ComponentConfig kWrongKeyComponents[] = {
-      {"sthset", kWrongPublicKeySHA256},
+  // A component is supported only for a public key hash other than the CRX's.
+  static constexpr std::array<uint8_t, crypto::hash::kSha256Size>
+      kWrongPublicKeySHA256 = {0x12, 0x34};
+  auto wrong_key_factory =
+      [](const std::array<uint8_t, crypto::hash::kSha256Size>& hash)
+      -> std::unique_ptr<ComponentInterface> {
+    if (hash == kWrongPublicKeySHA256) {
+      return std::make_unique<FakeComponent>();
+    }
+    return nullptr;
   };
 
   EXPECT_EQ(INSTALL_COMPONENT_INVALID_INPUT,
             InstallComponentForTesting(
-                src_file, installer_state, kWrongKeyComponents,
+                src_file, installer_state, wrong_key_factory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 }
 
@@ -344,19 +423,20 @@ TEST(InstallComponentTest, SignatureFailure) {
   // A CRX with a test publisher proof must fail when production publisher
   // proof is required.
   base::FilePath test_publisher_crx =
-      GetTestCrxPath("valid_test_publisher.crx3");
+      GetTestCrxPath(FPL("valid_test_publisher.crx3"));
   ASSERT_TRUE(base::PathExists(test_publisher_crx));
   EXPECT_EQ(INSTALL_COMPONENT_FAILED_SIGNATURE,
             InstallComponentForTesting(
-                test_publisher_crx, installer_state, kTestComponents,
+                test_publisher_crx, installer_state, &TestComponentFactory,
                 crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF));
 
   // A CRX without publisher proof must fail when publisher proof is required.
-  base::FilePath no_publisher_crx = GetTestCrxPath("valid_no_publisher.crx3");
+  base::FilePath no_publisher_crx =
+      GetTestCrxPath(FPL("valid_no_publisher.crx3"));
   ASSERT_TRUE(base::PathExists(no_publisher_crx));
   EXPECT_EQ(INSTALL_COMPONENT_FAILED_SIGNATURE,
             InstallComponentForTesting(
-                no_publisher_crx, installer_state, kTestComponents,
+                no_publisher_crx, installer_state, &TestComponentFactory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 }
 
@@ -371,14 +451,16 @@ TEST(InstallComponentTest, UnsupportedComponent) {
 
   // Production InstallComponent only supports production components
   // (e.g. kPlatformRuntimeCrxId), so the test CRX is unsupported.
+  const base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   EXPECT_EQ(INSTALL_COMPONENT_INVALID_INPUT,
-            InstallComponent(src_file, installer_state));
+            InstallComponent(src_file, installer_state, command_line));
 
   // Omitting the developer key from supported components must reject the CRX.
+  auto empty_factory = [](const std::array<uint8_t, crypto::hash::kSha256Size>&)
+      -> std::unique_ptr<ComponentInterface> { return nullptr; };
   EXPECT_EQ(INSTALL_COMPONENT_INVALID_INPUT,
             InstallComponentForTesting(
-                src_file, installer_state,
-                /*supported_components=*/{},
+                src_file, installer_state, empty_factory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 }
 
@@ -410,7 +492,7 @@ TEST(InstallComponentTest, CleanupCorruptedOrEmptyDirectories) {
 
     EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
               InstallComponentForTesting(
-                  src_file, installer_state, kTestComponents,
+                  src_file, installer_state, &TestComponentFactory,
                   crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 
     // v500_corrupted should have been deleted because it lacked manifest.json.
@@ -441,7 +523,7 @@ TEST(InstallComponentTest, ArbitrarySourceFilePath) {
   // than the source file path, correctly installing under its CRX ID directory.
   EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
             InstallComponentForTesting(
-                arbitrary_source_file, installer_state, kTestComponents,
+                arbitrary_source_file, installer_state, &TestComponentFactory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 
   base::FilePath installed_version_dir =
@@ -462,7 +544,7 @@ TEST(InstallComponentTest, UserLevelInstallation) {
   ASSERT_TRUE(base::PathExists(src_file));
   EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
             InstallComponentForTesting(
-                src_file, installer_state, kTestComponents,
+                src_file, installer_state, &TestComponentFactory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
   base::FilePath target_dir =
       temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
@@ -501,7 +583,7 @@ TEST(InstallComponentTest, IncompletePreviousInstallationOverwritten) {
   // successfully replaced by the fresh installation.
   EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
             InstallComponentForTesting(
-                src_file, installer_state, kTestComponents,
+                src_file, installer_state, &TestComponentFactory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 
   EXPECT_TRUE(base::PathExists(v394_incomplete));
@@ -524,7 +606,7 @@ TEST(InstallComponentTest, InstalledComponentDirectoryInheritsAcl) {
   ASSERT_TRUE(base::PathExists(src_file));
   ASSERT_EQ(INSTALL_COMPONENT_SUCCESS,
             InstallComponentForTesting(
-                src_file, installer_state, kTestComponents,
+                src_file, installer_state, &TestComponentFactory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 
   base::FilePath installed_dir =
@@ -536,6 +618,146 @@ TEST(InstallComponentTest, InstalledComponentDirectoryInheritsAcl) {
                                               DACL_SECURITY_INFORMATION);
   ASSERT_TRUE(descriptor.has_value());
   EXPECT_FALSE(descriptor->dacl_protected());
+}
+
+TEST(InstallComponentTest, InvalidManifestRejected) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+  const base::FilePath crx_dir = temp_dir.GetPath().Append(FPL("crx"));
+  ASSERT_TRUE(base::CreateDirectory(crx_dir));
+
+  auto signing_key = crypto::test::FixedRsa4096PrivateKeyForTesting();
+  const std::array<uint8_t, crypto::hash::kSha256Size> public_key_sha256 =
+      crypto::hash::Sha256(signing_key.ToSubjectPublicKeyInfo());
+  const base::FilePath component_root = temp_dir.GetPath().AppendASCII(
+      crx_file::id_util::GenerateIdFromHash(public_key_sha256));
+  auto factory = [&public_key_sha256](
+                     const std::array<uint8_t, crypto::hash::kSha256Size>& hash)
+      -> std::unique_ptr<ComponentInterface> {
+    return hash == public_key_sha256 ? std::make_unique<FakeComponent>()
+                                     : nullptr;
+  };
+
+  static constexpr struct {
+    base::FilePath::StringViewType tag;
+    std::optional<std::string_view> manifest;
+  } kCases[] = {
+      {FPL("missing"), std::nullopt},
+      {FPL("malformed"), R"({"name": "Test Component", )"},
+      {FPL("not_a_dict"), R"(["Test Component"])"},
+      {FPL("no_version"), R"({"name": "Test Component"})"},
+      {FPL("invalid_version"),
+       R"({"name": "Test Component", "version": "one"})"},
+      {FPL("non_string_version"),
+       R"({"name": "Test Component", "version": 1})"},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.tag);
+    base::FilePath crx_path =
+        CreateTestCrx(crx_dir, signing_key, test_case.tag, test_case.manifest);
+    EXPECT_EQ(INSTALL_COMPONENT_INVALID_INPUT,
+              InstallComponentForTesting(crx_path, installer_state, factory,
+                                         crx_file::VerifierFormat::CRX3));
+    EXPECT_FALSE(base::PathExists(component_root));
+  }
+
+  // A well-formed manifest succeeds under the same conditions.
+  base::FilePath crx_path =
+      CreateTestCrx(crx_dir, signing_key, FPL("valid"),
+                    R"({"name": "Test Component", "version": "1.0"})");
+  EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
+            InstallComponentForTesting(crx_path, installer_state, factory,
+                                       crx_file::VerifierFormat::CRX3));
+  EXPECT_TRUE(base::PathExists(
+      component_root.Append(FPL("1.0")).Append(FPL("manifest.json"))));
+}
+
+// Verifies that a failure partway through installation reverts the changes
+// made to the target directory.
+TEST(InstallComponentTest, FailedInstallationRollsBack) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+
+  // Simulate an interrupted installation of version 394.
+  const base::FilePath v394 =
+      temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
+  ASSERT_TRUE(base::CreateDirectory(v394));
+  ASSERT_TRUE(base::WriteFile(v394.Append(FPL("stale.dll")), "stale"));
+  ASSERT_TRUE(base::WriteFile(v394.Append(FPL("locked.dll")), "locked"));
+
+  {
+    // Hold a file in the leftover directory open without FILE_SHARE_DELETE so
+    // that the directory can only be partially moved aside. Moving the new
+    // payload into place then fails since the directory still exists.
+    base::File locked(v394.Append(FPL("locked.dll")),
+                      base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ASSERT_TRUE(locked.IsValid());
+    EXPECT_EQ(INSTALL_COMPONENT_FAILED_INTERNAL,
+              InstallComponentForTesting(
+                  GetTestCrxPath(), installer_state, &TestComponentFactory,
+                  crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
+  }
+
+  // The directory's original contents have been restored, and nothing from the
+  // new payload remains.
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(v394.Append(FPL("stale.dll")), &contents));
+  EXPECT_EQ(contents, "stale");
+  ASSERT_TRUE(
+      base::ReadFileToString(v394.Append(FPL("locked.dll")), &contents));
+  EXPECT_EQ(contents, "locked");
+  int entry_count = 0;
+  base::FileEnumerator(
+      v394, /*recursive=*/true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES)
+      .ForEach([&entry_count](const base::FilePath&) { ++entry_count; });
+  EXPECT_EQ(entry_count, 2);
+}
+
+// Verifies that installation is aborted, without installing anything, when any
+// of the component's operations fails.
+TEST(InstallComponentTest, ComponentFailureAbortsInstallation) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+  const base::FilePath target_dir =
+      temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
+
+  auto install = [&installer_state](const FakeComponent::Results& results) {
+    return InstallComponentForTesting(
+        GetTestCrxPath(), installer_state,
+        [&results](const std::array<uint8_t, crypto::hash::kSha256Size>& hash)
+            -> std::unique_ptr<ComponentInterface> {
+          return hash == kTestDeveloperPublicKeySHA256
+                     ? std::make_unique<FakeComponent>(results)
+                     : nullptr;
+        },
+        crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF);
+  };
+
+  EXPECT_EQ(INSTALL_COMPONENT_INVALID_INPUT, install({.read_manifest = false}));
+  EXPECT_FALSE(base::PathExists(target_dir));
+
+  // The component's status is returned if it cannot determine its root.
+  for (const InstallStatus status :
+       {INSTALL_COMPONENT_INVALID_INPUT, INSTALL_COMPONENT_FAILED_INTERNAL}) {
+    SCOPED_TRACE(status);
+    EXPECT_EQ(status, install({.determine_destination_root_error = status}));
+    EXPECT_FALSE(base::PathExists(target_dir));
+  }
+
+  EXPECT_EQ(INSTALL_COMPONENT_FAILED_INTERNAL,
+            install({.initialize_destination_root = false}));
+  EXPECT_FALSE(base::PathExists(target_dir));
+
+  // Installation succeeds when all operations succeed.
+  EXPECT_EQ(INSTALL_COMPONENT_SUCCESS, install({}));
+  EXPECT_TRUE(base::PathExists(target_dir.Append(FPL("manifest.json"))));
 }
 
 }  // namespace installer
