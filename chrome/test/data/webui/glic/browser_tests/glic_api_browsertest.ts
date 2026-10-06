@@ -1069,23 +1069,58 @@ class ApiTests extends ApiTestFixtureBase {
     {
       const tabId = this.testParams as string;
       const obs = this.host.getTabById(tabId);
-      assertUndefined(obs.getCurrentValue());
-      const sequence = observeSequence(obs);
-      const tabData = await sequence.next();
-      assertEquals(tabId, tabData.tabId);
       assertTrue(
-          tabData.url.endsWith('test.html'), `unexpected url: ${tabData.url}`);
+          obs === this.host.getTabById(tabId),
+          'Should return the same observable instance while active');
+      assertUndefined(obs.getCurrentValue());
+
+      // 1. First subscriber connects to source over Mojo.
+      const sequence1 = observeSequence(obs);
+      const tabData1 = await sequence1.next();
+      assertEquals(tabId, tabData1.tabId);
+      assertTrue(
+          tabData1.url.endsWith('test.html'),
+          `unexpected url: ${tabData1.url}`);
+      assertEquals(obs.getCurrentValue()?.url, tabData1.url);
+
+      // 2. Late subscriber immediately receives the current cached value.
+      const sequence2 = observeSequence(obs);
+      const tabData2 = await sequence2.next();
+      assertEquals(tabData1.url, tabData2.url);
+
+      // 3. Unsubscribing one subscriber leaves the second subscriber active
+      // and connected over Mojo (deduplication & ref-counting).
+      sequence1.unsubscribe();
 
       // Navigate the tab in C++.
       await this.advanceToNextStep();
-      await sequence.waitFor(tabData => tabData.url.endsWith('test.html?q=hi'));
+      const updatedData =
+          await sequence2.waitFor(t => t.url.endsWith('test.html?q=hi'));
+      assertEquals(obs.getCurrentValue()?.url, updatedData.url);
 
-      // Close the tab in C++.
+      // 4. Unsubscribing the last subscriber starts the unsubscription timer.
+      // Resubscribing to the same cached observable reconnects to source.
+      sequence2.unsubscribe();
+      const sequence3 = observeSequence(obs);
+      const tabData3 = await sequence3.next();
+      assertEquals(updatedData.url, tabData3.url);
+      assertTrue(
+          obs === this.host.getTabById(tabId),
+          'Cached observable should remain in set while tab is open');
+      assertFalse((obs as any).isStopped());
+
+      // 5. Close the tab in C++.
       await this.advanceToNextStep();
-      await sequence.waitForComplete();
+      await sequence3.waitForComplete();
+      assertTrue((obs as any).isStopped());
 
-      // A new subscription should complete without receiving anything.
-      const newSeq = observeSequence(this.host.getTabById(tabId));
+      // 6. A new request for the closed tab should return a fresh observable
+      // that completes without receiving anything.
+      const newObs = this.host.getTabById(tabId);
+      assertTrue(
+          obs !== newObs,
+          'Expected a new observable instance after the previous completed');
+      const newSeq = observeSequence(newObs);
       await newSeq.waitForComplete();
       assertTrue(newSeq.isEmpty());
     }

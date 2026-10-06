@@ -89,6 +89,8 @@ suite('ObservableSetByTabId', () => {
     const env = createEnvironment();
     // Does nothing.
     env.obs.getObservableByTabId('4').assignAndSignal('HI');
+    assertEquals(env.delegate.observations.length, 0);
+    assertEquals(env.obs.getObservableByTabId('4').getCurrentValue(), 'HI');
   });
 
   test('subscribe to tab id', () => {
@@ -96,13 +98,51 @@ suite('ObservableSetByTabId', () => {
     const obs = env.obs.getObservableByTabId('123');
     assertEquals(
         obs.getCurrentValue(), undefined, 'Initial value is incorrect');
+    let notifiedCount = 0;
     obs.subscribe((value) => {
+      notifiedCount++;
       assertEquals(value, 'HI', 'Notified value is incorrect');
     });
     assertEquals(env.delegate.observations.length, 1);
     assertEquals(env.delegate.observations[0]!.tabId, '123');
     obs.assignAndSignal('HI');
+    assertEquals(notifiedCount, 1, 'Subscriber was not notified');
     assertEquals(obs.getCurrentValue(), 'HI', 'getCurrentValue() is incorrect');
+  });
+
+  test('emits updates to multiple and late subscribers', () => {
+    const env = createEnvironment();
+    const obs = env.obs.getObservableByTabId('123');
+
+    const received1: string[] = [];
+    const received2: string[] = [];
+    const received3: string[] = [];
+
+    const sub1 = obs.subscribe(v => received1.push(v));
+    const sub2 = obs.subscribe(v => received2.push(v));
+
+    obs.assignAndSignal('value1');
+    assertEquals(1, received1.length);
+    assertEquals('value1', received1[0]);
+    assertEquals(1, received2.length);
+    assertEquals('value1', received2[0]);
+
+    // Late subscriber should immediately receive current value.
+    const sub3 = obs.subscribe(v => received3.push(v));
+    assertEquals(1, received3.length);
+    assertEquals('value1', received3[0]);
+
+    obs.assignAndSignal('value2');
+    assertEquals(2, received1.length);
+    assertEquals('value2', received1[1]);
+    assertEquals(2, received2.length);
+    assertEquals('value2', received2[1]);
+    assertEquals(2, received3.length);
+    assertEquals('value2', received3[1]);
+
+    sub1.unsubscribe();
+    sub2.unsubscribe();
+    sub3.unsubscribe();
   });
 
   test('completeObservable removes subscription', async () => {
@@ -123,11 +163,19 @@ suite('ObservableSetByTabId', () => {
 
     obs.complete();
     assertTrue(completed, 'complete() was not called');
+    assertTrue(
+        obs.isStopped(), 'Observable should be stopped after complete()');
     // wait for prune
     await sleep(env.delegate.unsubscribeDelay + 1);
     await sleep(0);
     assertEquals(
         env.delegate.observations.length, 0, 'Subscription was not removed');
+
+    const newObs = env.obs.getObservableByTabId('123');
+    assertNotEquals(
+        obs, newObs,
+        'Subsequent lookup should yield a new observable instance');
+    assertTrue(!newObs.isStopped(), 'New observable must not be stopped');
   });
 
   test('subscribe after unsubscribe before prune', async () => {
@@ -149,6 +197,9 @@ suite('ObservableSetByTabId', () => {
     assertEquals(
         env.delegate.observations.length, 1,
         'just one observation after second subscribe');
+    assertTrue(
+        !obs.isStopped(),
+        'observable should not be stopped while resubscribed');
 
     sub2.unsubscribe();
 
@@ -156,6 +207,7 @@ suite('ObservableSetByTabId', () => {
     await sleep(0);
     assertEquals(
         env.delegate.observations.length, 0, 'observation should be removed');
+    assertTrue(obs.isStopped(), 'observable should be stopped after prune');
   });
 
   test('subscribe after prune', async () => {
@@ -173,10 +225,16 @@ suite('ObservableSetByTabId', () => {
     assertEquals(
         env.delegate.observations.length, 0,
         'first observation should be removed');
+    assertTrue(obs.isStopped(), 'observable must be stopped after prune');
 
     // Subscribe after the original subscription is pruned. This should create
     // a new observation.
-    const sub2 = env.obs.getObservableByTabId('123').subscribe(() => {});
+    const newObs = env.obs.getObservableByTabId('123');
+    assertNotEquals(
+        obs, newObs, 'Expected a new observable instance after prune');
+    assertTrue(!newObs.isStopped(), 'New observable must not be stopped');
+
+    const sub2 = newObs.subscribe(() => {});
     assertEquals(
         env.delegate.observations.length, 1,
         'second observation was not created');
@@ -187,6 +245,7 @@ suite('ObservableSetByTabId', () => {
     assertEquals(
         env.delegate.observations.length, 0,
         'second observation should be removed');
+    assertTrue(newObs.isStopped(), 'second observable should be stopped');
   });
 
   test('multiple concurrent subscribers (deduplication)', async () => {
@@ -291,6 +350,7 @@ suite('ObservableSetByTabId', () => {
     assertTrue(
         completed,
         'Observable should have completed when the receiver was closed');
+    assertTrue(obs.isStopped(), 'Observable should be stopped');
 
     // Wait for prune
     await sleep(env.delegate.unsubscribeDelay + 1);
@@ -298,6 +358,11 @@ suite('ObservableSetByTabId', () => {
     assertEquals(
         env.delegate.observations.length, 0,
         'Subscription should be cleaned up');
+
+    const newObs = env.obs.getObservableByTabId('123');
+    assertNotEquals(
+        obs, newObs, 'Expected a new observable instance after prune');
+    assertTrue(!newObs.isStopped(), 'New observable must not be stopped');
   });
 
   test(
