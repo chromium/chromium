@@ -85,15 +85,16 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
   }
 
  protected:
-  std::unique_ptr<base::Value> ValidDerivedFeatures() {
-    return std::make_unique<base::Value>(base::DictValue()
-                                             .Set("time", 10.0)
-                                             .Set("numElements", 0.0)
-                                             .Set("numAnchors", 0.0)
-                                             .Set("numForms", 0.0)
-                                             .Set("mozScore", 0.0)
-                                             .Set("mozScoreAllSqrt", 0.0)
-                                             .Set("mozScoreAllLinear", 0.0));
+  web::ScriptMessageValue ValidDerivedFeatures() {
+    return web::ScriptMessageValue(@{
+      @"time" : @(10.0),
+      @"numElements" : @(0.0),
+      @"numAnchors" : @(0.0),
+      @"numForms" : @(0.0),
+      @"mozScore" : @(0.0),
+      @"mozScoreAllSqrt" : @(0.0),
+      @"mozScoreAllLinear" : @(0.0),
+    });
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -134,9 +135,8 @@ TEST_F(ReaderModeJavaScriptFeatureTest, AboutUrlNotEligible) {
 // malformed response.
 TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseNotDict) {
   CommitNavigation();
-  auto invalid_body =
-      std::make_unique<base::Value>(base::Value("invalid_because_expect_dict"));
-  web::ScriptMessage script_message(std::move(invalid_body),
+  std::string value = "invalid_because_expect_dict";
+  web::ScriptMessage script_message(web::ScriptMessageValue(value),
                                     /*is_user_interacting=*/true,
                                     /*is_main_frame=*/true,
                                     /*request_url=*/valid_url(),
@@ -156,9 +156,7 @@ TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseNotDict) {
 // response.
 TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseMissingFeatures) {
   CommitNavigation();
-  auto invalid_body =
-      std::make_unique<base::Value>(base::Value(base::DictValue()));
-  web::ScriptMessage script_message(std::move(invalid_body),
+  web::ScriptMessage script_message(web::ScriptMessageValue(@{}),
                                     /*is_user_interacting=*/true,
                                     /*is_main_frame=*/true,
                                     /*request_url=*/valid_url(),

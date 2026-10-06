@@ -10,6 +10,7 @@
 
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 
 // A feature that extracts DOM attributes to use for web page distillation.
 class ReaderModeJavaScriptFeature : public web::JavaScriptFeature {
@@ -42,7 +43,7 @@ class ReaderModeJavaScriptFeature : public web::JavaScriptFeature {
   // whether the web page is distillable. Returns `std::nullopt` if any of the
   // parameters cannot be extracted.
   std::optional<std::vector<double>> TransformToDerivedFeatures(
-      const base::DictValue& body,
+      const web::ScriptMessageDictValue& body,
       const GURL& request_url);
 };
 

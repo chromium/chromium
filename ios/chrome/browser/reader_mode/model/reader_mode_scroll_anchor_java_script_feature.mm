@@ -49,14 +49,15 @@ void ReaderModeScrollAnchorJavaScriptFeature::ScriptMessageReceived(
   if (!tab_helper) {
     return;
   }
-  const base::DictValue* dict = message.legacy_body()->GetIfDict();
-  if (!dict) {
+  const web::ScriptMessageValue& body = message.body();
+  if (body.type() != base::Value::Type::DICT) {
     return;
   }
-  std::optional<double> hash = dict->FindDouble("hash");
-  std::optional<double> char_count = dict->FindDouble("charCount");
-  std::optional<double> progress = dict->FindDouble("progress");
-  std::optional<bool> is_scrolled_at_top = dict->FindBool("isScrolledAtTop");
+  const web::ScriptMessageDictValue& dict = body.GetDict();
+  std::optional<double> hash = dict.FindDouble("hash");
+  std::optional<double> char_count = dict.FindDouble("charCount");
+  std::optional<double> progress = dict.FindDouble("progress");
+  std::optional<bool> is_scrolled_at_top = dict.FindBool("isScrolledAtTop");
 
   if (is_scrolled_at_top.has_value() && is_scrolled_at_top.value()) {
     // If the original page is scrolled at the top, disable automatic scrolling

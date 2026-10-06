@@ -64,14 +64,15 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
+  const web::ScriptMessageValue& body = message.body();
+  if (body.type() != base::Value::Type::DICT) {
     ReaderModeHeuristicResultAvailable(
         web_state, ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
 
   std::optional<std::vector<double>> result =
-      TransformToDerivedFeatures(message.legacy_body()->GetDict(), url.value());
+      TransformToDerivedFeatures(body.GetDict(), url.value());
   if (!result.has_value()) {
     ReaderModeHeuristicResultAvailable(
         web_state, ReaderModeHeuristicResult::kMalformedResponse);
@@ -110,7 +111,7 @@ void ReaderModeJavaScriptFeature::TriggerReaderModeHeuristic(
 
 std::optional<std::vector<double>>
 ReaderModeJavaScriptFeature::TransformToDerivedFeatures(
-    const base::DictValue& body,
+    const web::ScriptMessageDictValue& body,
     const GURL& request_url) {
   std::optional<double> opt_num_elements = body.FindDouble("numElements");
   if (!opt_num_elements.has_value()) {
