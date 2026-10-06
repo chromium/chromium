@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "cc/layers/deadline_policy.h"
@@ -36,6 +37,8 @@
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 
 namespace content {
@@ -2003,6 +2006,41 @@ TEST_F(RenderWidgetHostViewAndroidTest, DeferredTeardownSafety) {
     manager->ShowContextMenu(gfx::Point());
     manager->SetNeedsAnimate();
     manager->OnSelectionEvent(ui::SELECTION_HANDLES_SHOWN);
+  }
+}
+
+// OS-level keyboard capture on Android also captures system shortcuts such as
+// Alt+Tab, so it should only be requested when all keys or a modifier key is
+// locked.
+TEST(RenderWidgetHostViewAndroidKeyboardLockTest, ShouldCaptureSystemKeys) {
+  using Codes = base::flat_set<ui::DomCode>;
+
+  // Locking all keys requires capture.
+  EXPECT_TRUE(
+      RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(std::nullopt));
+
+  // Non-modifier keys are handled in-browser and don't require capture.
+  EXPECT_FALSE(RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(Codes()));
+  EXPECT_FALSE(RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(
+      Codes({ui::DomCode::ESCAPE})));
+  EXPECT_FALSE(RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(
+      Codes({ui::DomCode::TAB})));
+  // Similar to the set of keys locked by GeForce NOW.
+  EXPECT_FALSE(RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(
+      Codes({ui::DomCode::ESCAPE, ui::DomCode::F11, ui::DomCode::US_W,
+             ui::DomCode::SPACE, ui::DomCode::ARROW_LEFT,
+             ui::DomCode::PRINT_SCREEN, ui::DomCode::DIGIT1})));
+
+  // Any modifier key requires capture, alone or mixed with other keys.
+  for (ui::DomCode modifier :
+       {ui::DomCode::ALT_LEFT, ui::DomCode::ALT_RIGHT,
+        ui::DomCode::CONTROL_LEFT, ui::DomCode::CONTROL_RIGHT,
+        ui::DomCode::META_LEFT, ui::DomCode::META_RIGHT}) {
+    SCOPED_TRACE(ui::KeycodeConverter::DomCodeToCodeString(modifier));
+    EXPECT_TRUE(RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(
+        Codes({modifier})));
+    EXPECT_TRUE(RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(
+        Codes({ui::DomCode::ESCAPE, modifier})));
   }
 }
 
