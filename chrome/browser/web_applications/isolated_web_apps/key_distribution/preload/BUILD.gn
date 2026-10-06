@@ -20,6 +20,7 @@ protoc_convert("key_distribution_binary") {
 }
 
 copy("generated_key_distribution_pb") {
+  visibility = [ ":*" ]
   sources = [ "$target_gen_dir/key_distribution.pb" ]
   outputs = [ "$target_gen_dir/iwa-key-distribution.pb" ]
   deps = [ ":key_distribution_binary" ]

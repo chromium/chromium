@@ -19,6 +19,7 @@ mojom("mojo_bindings") {
 }
 
 source_set("iwa_dev") {
+  visibility = [ "//chrome/browser/ui/*" ]
   sources = [
     "iwa_dev_page_handler.cc",
     "iwa_dev_page_handler.h",

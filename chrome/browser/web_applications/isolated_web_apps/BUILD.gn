@@ -58,6 +58,11 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
 
   assert_no_deps = [ "//chrome/browser/web_applications" ]
 
+  visibility = [
+    "//chrome/browser/ui/*",
+    "//chrome/browser/web_applications/*",
+  ]
+
   if (is_chromeos) {
     public_deps += [ "//ash/constants" ]
     deps += [
@@ -72,6 +77,11 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
 }
 
 source_set("isolated_web_apps") {
+  visibility = [
+    "//chrome/browser/*",
+    "//chrome/test/*",
+  ]
+
   sources = [
     "chrome_content_browser_client_isolated_web_apps_part.cc",
     "chrome_content_browser_client_isolated_web_apps_part.h",

@@ -4,6 +4,10 @@
 
 source_set("public") {
   defines = [ "IS_ISOLATED_WEB_APPS_IMPL" ]
+
+  # External targets must depend on the //components/webapps/isolated_web_apps
+  # umbrella component to avoid duplicate singletons in component builds.
+  visibility = [ "//components/webapps/isolated_web_apps/*" ]
   sources = [
     "header_utils.cc",
     "header_utils.h",

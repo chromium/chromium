@@ -5,6 +5,10 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
+  visibility = [
+    "//chrome/browser/web_applications/*",
+    "//components/webapps/isolated_web_apps/*",
+  ]
   sources = [ "key_distribution.proto" ]
   cc_generator_options = "lite=true:"
 }

@@ -10,6 +10,7 @@ assert(enable_extensions,
        "Cannot depend on controlled frame because enable_extensions=false.")
 
 function_registration("api_registration") {
+  visibility = [ "//chrome/browser/controlled_frame/*" ]
   sources = controlled_frame_api_schema_sources
   impl_dir = "//chrome/browser/controlled_frame/api"
   configs = [ "//build/config:precompiled_headers" ]

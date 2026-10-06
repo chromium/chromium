@@ -5,6 +5,7 @@
 import("//build/rust/rust_static_library.gni")
 
 rust_static_library("web_package_rust") {
+  visibility = [ "//components/web_package/*" ]
   crate_name = "web_package_rust"
   crate_root = "lib.rs"
   sources = [

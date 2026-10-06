@@ -11,9 +11,11 @@ component("isolated_web_apps") {
     ":sources",
     "//components/webapps/isolated_web_apps/public",
   ]
+  assert_no_deps = [ "//chrome/*" ]
 }
 
 group("sources") {
+  visibility = [ "//components/webapps/isolated_web_apps/*" ]
   public_deps = [
     ":iwa_client",
     ":scheme",
@@ -31,6 +33,7 @@ group("sources") {
 
 source_set("scheme") {
   sources = [ "scheme.h" ]
+  assert_no_deps = [ "//chrome/*" ]
 }
 
 source_set("iwa_client") {

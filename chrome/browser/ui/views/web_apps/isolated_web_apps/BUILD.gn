@@ -7,6 +7,10 @@ import("//build/config/ui.gni")
 assert(toolkit_views)
 
 source_set("installer_base") {
+  visibility = [
+    "//chrome/browser/ui/*",
+    "//chrome/test:*",
+  ]
   public = [
     "callback_delayer.h",
     "isolated_web_app_installer_model.h",
@@ -41,6 +45,10 @@ source_set("installer_base") {
 }
 
 source_set("isolated_web_app_identity_view") {
+  visibility = [
+    "//chrome/browser/ui/*",
+    "//chrome/test:*",
+  ]
   public = [ "isolated_web_app_identity_view.h" ]
   sources = [ "isolated_web_app_identity_view.cc" ]
   public_deps = [
@@ -55,6 +63,10 @@ source_set("isolated_web_app_identity_view") {
 }
 
 source_set("user_installability_checker") {
+  visibility = [
+    "//chrome/browser/ui/*",
+    "//chrome/test:*",
+  ]
   public = [ "isolated_web_app_user_installability_checker.h" ]
   sources = [ "isolated_web_app_user_installability_checker.cc" ]
   public_deps = [
@@ -67,6 +79,10 @@ source_set("user_installability_checker") {
 
 if (is_chromeos) {
   source_set("multi_capture_notification_details_view") {
+    visibility = [
+      "//chrome/browser/media/webrtc/*",
+      "//chrome/browser/ui/*",
+    ]
     public = [ "multi_capture_notification_details_view.h" ]
     sources = [ "multi_capture_notification_details_view.cc" ]
     public_deps = [
@@ -85,6 +101,10 @@ if (is_chromeos) {
 }
 
 source_set("isolated_web_app_installer_view_impl") {
+  visibility = [
+    "//chrome/browser/ui/*",
+    "//chrome/test:*",
+  ]
   public = [ "isolated_web_app_installer_view_impl.h" ]
   sources = [ "isolated_web_app_installer_view_impl.cc" ]
   public_deps = [
@@ -116,6 +136,11 @@ source_set("isolated_web_app_installer_view_impl") {
 }
 
 source_set("isolated_web_app_installer_view_controller") {
+  visibility = [
+    "//chrome/browser/ui/*",
+    "//chrome/browser/web_applications:web_applications_browser_tests",
+    "//chrome/test:*",
+  ]
   public = [ "isolated_web_app_installer_view_controller.h" ]
   sources = [ "isolated_web_app_installer_view_controller.cc" ]
   public_deps = [
@@ -155,6 +180,11 @@ source_set("isolated_web_app_installer_view_controller") {
 }
 
 source_set("isolated_web_app_installer_coordinator") {
+  visibility = [
+    "//chrome/browser/ui/*",
+    "//chrome/browser/web_applications:web_applications_browser_tests",
+    "//chrome/test:*",
+  ]
   public = [ "isolated_web_app_installer_coordinator.h" ]
   sources = [ "isolated_web_app_installer_coordinator.cc" ]
   public_deps = [

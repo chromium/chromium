@@ -21,11 +21,11 @@ identity verification, IWA key distribution, and core domain types.
   `DEPS`). All embedder-specific queries (such as locating installed bundles or
   runtime data) go through `IwaClient` (`client.h`) and `IwaRuntimeDataProvider`
   (`public/iwa_runtime_data_provider.h`).
-- **Subpackage Visibility Encapsulation:** Internal subpackage targets (all
-  subdirectories except `public/` and `test_support/`) restrict `visibility` to
-  `//components/webapps/isolated_web_apps/*`. External consumers must depend on
-  `//components/webapps/isolated_web_apps` or
-  `//components/webapps/isolated_web_apps/public`.
+- **Subpackage Visibility Encapsulation:** All subpackage `source_set` targets
+  (including `public/`, except `test_support/` and `:scheme`) restrict
+  `visibility` to `//components/webapps/isolated_web_apps/*` to prevent
+  duplicate singletons in component builds. External consumers must depend on
+  the `//components/webapps/isolated_web_apps` umbrella component.
 - **Rule of 2 & Memory-Safe Parsing:** Never parse untrusted CBOR or Web Bundle
   bytes in C++ or on the browser UI/IO thread. `SignedWebBundleReader` hosts
   `web_package::WebBundleParser` in the browser process on a `MayBlock()`

@@ -1,0 +1,9 @@
+include_rules = [
+  "-chrome/browser/ui/views",
+]
+
+specific_include_rules = {
+  r".*(browser|interactive_ui)test\.cc": [
+    "+chrome/browser/ui/views",
+  ],
+}
