@@ -150,7 +150,7 @@ class AndroidTelemetryService
   std::map<download::DownloadItem*, ReferrerChainResult> referrer_chain_result_;
 
   // The collection of `DownloadItem`s we're currently collecting reports for.
-  std::set<download::DownloadItem*> reports_in_progress_;
+  std::set<raw_ptr<download::DownloadItem>> reports_in_progress_;
 
   base::WeakPtrFactory<AndroidTelemetryService> weak_ptr_factory_{this};
 };
