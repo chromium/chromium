@@ -6,44 +6,90 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrToastElement} from 'chrome://settings/lazy_load.js';
-import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, SettingsPrefsElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode, TimePeriod} from 'chrome://settings/lazy_load.js';
+import type {CrLinkRowElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrefsBrowserProxy, PrefService, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {getInitialPrivacyGuideTestPrefs} from './privacy_guide_test_util.js';
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-
-
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    ...getInitialPrivacyGuideTestPrefs(),
+    {
+      key: 'browser.clear_data.time_period',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: TimePeriod.LAST_HOUR,
+    },
+    {
+      key: 'browser.clear_data.browsing_history',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'browser.clear_data.cache',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'browser.clear_data.cookies',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'browser.clear_data.form_data',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'browser.clear_data.site_settings',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'browser.clear_data.download_history',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'browser.clear_data.hosted_apps_data',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+  ];
+}
+
 suite('PrivacyPage', function() {
   let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
   });
 
   function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
 
     return flushTasks();
   }
 
-  setup(function() {
+  setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(
         testClearBrowsingDataBrowserProxy);
@@ -102,20 +148,20 @@ suite('PrivacyPage', function() {
 
 suite('CookiesSubpage', function() {
   let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -134,17 +180,18 @@ suite('CookiesSubpage', function() {
 
 suite('CookiesSubpageRedesignDisabled', function() {
   let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  function createPage() {
+  async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
 
     return flushTasks();
@@ -164,20 +211,20 @@ suite('CookiesSubpageRedesignDisabled', function() {
             page.i18n('thirdPartyCookiesLinkRowLabel'),
             thirdPartyCookiesLinkRow.label);
 
-        page.setPrefValue(
+        prefService.setPrefValue(
             'profile.cookie_controls_mode', CookieControlsMode.OFF);
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
             thirdPartyCookiesLinkRow.subLabel);
 
-        page.setPrefValue(
+        prefService.setPrefValue(
             'profile.cookie_controls_mode', CookieControlsMode.INCOGNITO_ONLY);
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
             thirdPartyCookiesLinkRow.subLabel,
         );
 
-        page.setPrefValue(
+        prefService.setPrefValue(
             'profile.cookie_controls_mode',
             CookieControlsMode.BLOCK_THIRD_PARTY);
         assertEquals(
@@ -206,17 +253,16 @@ suite('CookiesSubpageRedesignDisabled', function() {
 
 suite('PrivacyGuideRow', function() {
   let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({showPrivacyGuide: true});
     resetRouterForTesting();
+
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
 
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -227,7 +273,6 @@ suite('PrivacyGuideRow', function() {
   async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   }
@@ -303,22 +348,20 @@ suite('PrivacyGuideRow', function() {
 
 suite('HappinessTrackingSurveys', function() {
   let testHatsBrowserProxy: TestHatsBrowserProxy;
-  let settingsPrefs: SettingsPrefsElement;
   let page: SettingsPrivacyPageElement;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
 
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
     page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });

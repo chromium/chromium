@@ -42,7 +42,7 @@
 
   <template is="dom-if" if="[[renderPrivacyView_(currentRoute, inSearchMode)]]"
       update-when-false>
-    <settings-privacy-page slot="view" id="privacy" prefs="{{prefs}}"
+    <settings-privacy-page slot="view" id="privacy"
         route-path$="[[routes_.PRIVACY.path]]">
     </settings-privacy-page>
   </template>

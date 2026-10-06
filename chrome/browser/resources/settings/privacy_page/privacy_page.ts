@@ -7,7 +7,6 @@
  * 'settings-privacy-page' is the settings page containing privacy and
  * security settings.
  */
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -18,7 +17,7 @@ import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -48,8 +47,8 @@ export interface SettingsPrivacyPageElement {
 }
 
 const SettingsPrivacyPageElementBase =
-    PrivacyGuideAvailabilityMixin(SettingsViewMixin(
-        RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)))));
+    PrivacyGuideAvailabilityMixin(SettingsViewMixin(RouteObserverMixin(
+        I18nMixin(PrefServiceObserverMixin(PolymerElement)))));
 
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   static get is() {
@@ -92,7 +91,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: String,
         computed:
             'computeThirdPartyCookiesSublabel_(showUniversalOptOutSettings_, ' +
-                'prefs.profile.cookie_controls_mode.value)',
+            'cookieControlsModePref_)',
+      },
+
+      cookieControlsModePref_: {
+        type: Object,
       },
     };
   }
@@ -104,9 +107,17 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private showUniversalOptOutSettings_: boolean;
   declare private thirdPartyCookiesLabel_: string;
   declare private thirdPartyCookiesSublabel_: string;
+  declare private cookieControlsModePref_:
+      chrome.settingsPrivate.PrefObject<CookieControlsMode>;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.mirrorPref('profile.cookie_controls_mode', 'cookieControlsModePref_');
+  }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
@@ -201,13 +212,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       return this.i18n('thirdPartyCookiesAndSiteDataLinkRowSublabel');
     }
 
-    if (!this.prefs) {
+    if (!this.cookieControlsModePref_) {
       return '';
     }
 
-    const currentCookieSetting =
-        this.getPref('profile.cookie_controls_mode').value;
-    switch (currentCookieSetting) {
+    switch (this.cookieControlsModePref_.value) {
       case CookieControlsMode.OFF:
       case CookieControlsMode.INCOGNITO_ONLY:
         return this.i18n('thirdPartyCookiesLinkRowSublabelEnabled');
