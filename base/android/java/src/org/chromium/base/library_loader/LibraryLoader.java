@@ -314,11 +314,14 @@ public class LibraryLoader {
                 // 1. Running in a privileged process - very common
                 // 2. Running in a renderer process - App Zygote was disabled due to opt out on
                 //    low end devices - somewhat common
-                // To cover both cases start with FIND_RESERVED, and proceed with fallbacks built
-                // into the Linker initialization.
+                // 3. Running in renderer, APK was updated without restarting the App Zygote; a new
+                //    ClassLoader instantiated a new LibraryLoader
+                // 4. Running in SandboxedProcessService1 (which does not have
+                //    android:useAppZygote="true") after connecting to SandboxedProcessService0
+                //    times out
                 //
-                // TODO(pasko): Investigate whether searching with FIND_RESERVED affects startup
-                // speed on Go devices.
+                // To cover these cases start with FIND_RESERVED, and proceed with fallbacks built
+                // into the Linker initialization.
                 if (DEBUG) {
                     Log.i(
                             TAG,

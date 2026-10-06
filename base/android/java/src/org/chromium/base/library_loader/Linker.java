@@ -249,7 +249,10 @@ class Linker {
         assert !asRelroProducer || preference != PreferAddress.RESERVE_HINT
                 : "Producer does not accept hints from outside";
         synchronized (mLock) {
-            if (mState != State.UNINITIALIZED) return;
+            if (mState != State.UNINITIALIZED) {
+                if (DEBUG) Log.i(TAG, "ensureInitialized: early return");
+                return;
+            }
             chooseAndReserveMemoryRange(asRelroProducer, preference, addressHint);
             if (DEBUG) {
                 Log.i(

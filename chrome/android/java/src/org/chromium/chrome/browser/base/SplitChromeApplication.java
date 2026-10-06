@@ -205,6 +205,13 @@ public class SplitChromeApplication extends SplitCompatApplication {
             return;
         }
 
+        // Set up the Linker to load the library in the main process. Without it
+        // the LibraryLoader.ensureInitialized() will not use
+        // PreferAddress.FIND_RESERVED, which would silently disable some RELRO
+        // sharing.
+        LibraryLoader.getInstance().getMediator().ensureInitializedInMainProcess();
+
+        // Load the native library.
         LibraryLoader.getInstance().ensureInitialized();
 
         if (BuildConfig.IS_FOR_TEST) {

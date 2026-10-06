@@ -7,7 +7,12 @@
 #include <sys/prctl.h>
 #include <sys/utsname.h>
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
@@ -271,6 +276,94 @@ TEST_F(LinkerTest, LibraryRangesViaIteratePhdr) {
   EXPECT_EQ(finder.load_address(), lib_info2.load_address());
   EXPECT_EQ(finder.load_size(), lib_info2.get_load_size_for_testing());
   EXPECT_EQ(finder.relro_start(), lib_info2.get_relro_start_for_testing());
+}
+
+TEST_F(LinkerTest, CompareRelroAndReplaceCommonPrefix) {
+  constexpr size_t kMaxPageSize = 65536;
+  const size_t kPageSize = sysconf(_SC_PAGESIZE);
+  ASSERT_LE(kPageSize, kMaxPageSize);
+  const size_t kNumRelroPages = 3;
+  const size_t kRelroSize = kNumRelroPages * kPageSize;
+  const size_t kTotalSize = kPageSize + kRelroSize;
+
+  // Map more memory than required to avoid UNSAFE_BUFFERS for mapping_span.
+  using MappingBuffer =
+      std::array<uint8_t, (1 + kNumRelroPages) * kMaxPageSize>;
+  void* mapping = mmap(nullptr, sizeof(MappingBuffer), PROT_READ | PROT_WRITE,
+                       MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  ASSERT_NE(MAP_FAILED, mapping);
+  uintptr_t base_address = reinterpret_cast<uintptr_t>(mapping);
+  base::span<uint8_t> mapping_span =
+      base::span(*static_cast<MappingBuffer*>(mapping)).first(kTotalSize);
+
+  // Set up a minimal ELF header and program headers in the first page so
+  // FindRelroAndLibraryRangesInElf() succeeds on the synthetic mapping.
+  struct SyntheticElfHeader {
+    ElfW(Ehdr) ehdr;
+    std::array<ElfW(Phdr), 2> phdrs;
+  };
+  auto* elf = reinterpret_cast<SyntheticElfHeader*>(mapping_span.data());
+  base::span(elf->ehdr.e_ident)
+      .copy_prefix_from(base::byte_span_from_cstring(ELFMAG));
+  elf->ehdr.e_ident[EI_CLASS] = (sizeof(void*) == 8) ? ELFCLASS64 : ELFCLASS32;
+  elf->ehdr.e_phoff = offsetof(SyntheticElfHeader, phdrs);
+  elf->ehdr.e_phnum = elf->phdrs.size();
+  elf->phdrs[0] = {.p_type = PT_LOAD, .p_vaddr = 0, .p_memsz = kTotalSize};
+  elf->phdrs[1] = {
+      .p_type = PT_GNU_RELRO, .p_vaddr = kPageSize, .p_memsz = kRelroSize};
+
+  base::span<uint8_t> relro_span = mapping_span.subspan(kPageSize, kRelroSize);
+  base::span<uint8_t> third_page = relro_span.subspan(2 * kPageSize, kPageSize);
+  base::span<uint8_t> third_page_second_half =
+      third_page.subspan(kPageSize / 2);
+
+  // Fill all 3 RELRO pages with 0xEE, except the second half of the 3rd page
+  // which has 0xFF in the incoming shared RELRO.
+  std::ranges::fill(relro_span, 0xEE);
+  std::ranges::fill(third_page_second_half, 0xFF);
+
+  NativeLibInfo other_lib_info = {nullptr, nullptr};
+  other_lib_info.set_load_address(base_address);
+  ASSERT_TRUE(other_lib_info.FindRelroAndLibraryRangesInElfForTesting());
+  ASSERT_TRUE(other_lib_info.CreateSharedRelroFdForTesting());
+  int relro_fd = other_lib_info.get_relro_fd_for_testing();
+  ASSERT_NE(-1, relro_fd);
+  base::ScopedFD scoped_fd(relro_fd);
+
+  // Simulate process-specific relocations (e.g. R_AARCH64_TLSDESC) in the
+  // second half of the 3rd RELRO page of the local library.
+  std::ranges::fill(third_page_second_half, 0xAA);
+
+  NativeLibInfo lib_info = {nullptr, nullptr};
+  lib_info.set_load_address(base_address);
+  EXPECT_TRUE(lib_info.CompareRelroAndReplaceItBy(other_lib_info));
+
+  // The first two pages (common prefix truncated to page boundary) should now
+  // be backed by the sealed read-only shared memory FD, so mprotect(PROT_WRITE)
+  // must fail on them.
+  EXPECT_EQ(-1,
+            mprotect(relro_span.data(), 2 * kPageSize, PROT_READ | PROT_WRITE));
+  EXPECT_EQ(0xEE, relro_span[0]);
+
+  // The 3rd page should not have been replaced: it retains the local 0xAA data
+  // in its second half and remains private anonymous memory.
+  EXPECT_EQ(0xEE, third_page[0]);
+  EXPECT_EQ(0xAA, third_page_second_half[0]);
+  EXPECT_EQ(0, mprotect(third_page.data(), third_page.size(),
+                        PROT_READ | PROT_WRITE));
+
+  // If the very first page of RELRO differs, sharing should fail.
+  base::span<uint8_t> first_page = relro_span.first(kPageSize);
+  EXPECT_EQ(0, mprotect(mapping_span.data(), mapping_span.size(), PROT_READ));
+  void* private_first_page =
+      mmap(first_page.data(), first_page.size(), PROT_READ | PROT_WRITE,
+           MAP_FIXED | MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  ASSERT_NE(MAP_FAILED, private_first_page);
+  std::ranges::fill(first_page, 0x11);
+  EXPECT_FALSE(lib_info.CompareRelroAndReplaceItBy(other_lib_info));
+  EXPECT_EQ(0x11, first_page[0]);
+
+  munmap(mapping, sizeof(MappingBuffer));
 }
 
 }  // namespace chromium_android_linker
