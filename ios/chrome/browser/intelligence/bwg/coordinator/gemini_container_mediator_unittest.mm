@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -123,9 +124,10 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 @property(nonatomic, assign, getter=isZeroState) BOOL zeroState;
 @property(nonatomic, assign) NSInteger zeroStateChangeCount;
 @property(nonatomic, assign) BOOL dismissKeyboardCalled;
-@property(nonatomic, assign) BOOL worklogCompact;
+@property(nonatomic, assign) ActuationWorklogDisplayMode worklogDisplayMode;
 @property(nonatomic, assign, getter=isActuationActive) BOOL actuationActive;
 @property(nonatomic, assign) CGFloat contentHeight;
+@property(nonatomic, assign) CGFloat actuationMinimizedDetentHeight;
 @end
 
 @implementation FakeGeminiContainerConsumer
@@ -136,10 +138,6 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 
 - (void)dismissKeyboard {
   _dismissKeyboardCalled = YES;
-}
-
-- (void)setWorklogCompact:(BOOL)compact {
-  _worklogCompact = compact;
 }
 
 - (void)setActuationActive:(BOOL)active {
@@ -886,8 +884,38 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_FALSE(dismissed);
 }
 
-// Tests that container detent change updates consumer's worklog compact state.
-TEST_F(GeminiContainerMediatorTest, TestDidChangeDetentUpdatesWorklogCompact) {
+// Tests that container detent changes outside of actuation leave the
+// consumer's worklog display mode untouched, since the worklog is hidden.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidChangeDetentIgnoresWorklogDisplayModeOutsideActuation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  // Seed a non-default value so an unexpected update is detectable.
+  consumer.worklogDisplayMode = ActuationWorklogDisplayModeExpanded;
+  mediator_.consumer = consumer;
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_EQ(ActuationWorklogDisplayModeExpanded, consumer.worklogDisplayMode);
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMedium];
+  EXPECT_EQ(ActuationWorklogDisplayModeExpanded, consumer.worklogDisplayMode);
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kLarge];
+  EXPECT_EQ(ActuationWorklogDisplayModeExpanded, consumer.worklogDisplayMode);
+}
+
+// Tests that while actuating, the minimized detent shows only the header, the
+// medium detent shows the compact worklog and the large detent shows the full
+// timeline.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidChangeDetentUpdatesWorklogDisplayModeWhileActuating) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
@@ -896,13 +924,20 @@ TEST_F(GeminiContainerMediatorTest, TestDidChangeDetentUpdatesWorklogCompact) {
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
 
+  [mediator_ setActuationActive:YES];
+  EXPECT_EQ(ActuationWorklogDisplayModeCompact, consumer.worklogDisplayMode);
+
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMinimized];
-  EXPECT_TRUE(consumer.worklogCompact);
+  EXPECT_EQ(ActuationWorklogDisplayModeMinimized, consumer.worklogDisplayMode);
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kLarge];
+  EXPECT_EQ(ActuationWorklogDisplayModeExpanded, consumer.worklogDisplayMode);
 
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMedium];
-  EXPECT_FALSE(consumer.worklogCompact);
+  EXPECT_EQ(ActuationWorklogDisplayModeCompact, consumer.worklogDisplayMode);
 }
 
 // Tests that didSelectSuggestion calls UpdatePromptAction with the entry point
@@ -1071,30 +1106,36 @@ TEST_F(GeminiContainerMediatorTest, TestActuationLifecycle) {
 
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
+  consumer.actuationMinimizedDetentHeight = 80.0;
   mediator_.consumer = consumer;
 
-  // Actuation begins: sheet minimizes with grabber shown.
+  // Actuation begins: minimized detent shows only the header, the medium
+  // detent stays undimmed and the sheet lands on the compact worklog.
+  OCMExpect([mock_container_handler_ setAssistantContainerLargestUndimmedDetent:
+                                         AssistantContainerDetent::kMedium]);
+  OCMExpect(
+      [mock_container_handler_ setAssistantContainerMinimizedDetentHeight:80]);
   OCMExpect([mock_container_handler_
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized]);
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
   OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:NO
                                                                animated:YES]);
   [mediator_ setActuationActive:YES];
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
   EXPECT_TRUE(consumer.isActuationActive);
 
-  // Worklog reports height: minimized detent height updates.
-  OCMExpect(
-      [mock_container_handler_ setAssistantContainerMinimizedDetentHeight:120]);
+  // Worklog reports height: the sheet follows it at the medium detent.
   OCMExpect([mock_container_handler_
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized]);
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
   [mediator_ containerDidChangeActuationHeight:120];
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
 
-  // Actuation ends: detent height resets and expands to response.
+  // Actuation ends: detent configuration resets and expands to response.
   [mediator_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
                       sessionID:nil
                  conversationID:nil];
+  OCMExpect([mock_container_handler_ setAssistantContainerLargestUndimmedDetent:
+                                         AssistantContainerDetent::kMinimized]);
   OCMExpect(
       [mock_container_handler_ setAssistantContainerMinimizedDetentHeight:
                                    kAssistantContainerMinimizedDetentHeight]);
@@ -1150,6 +1191,44 @@ TEST_F(GeminiContainerMediatorTest, TestNonGeminiActuationTaskIgnored) {
 
   EXPECT_TRUE(delegate.startedTaskIDs.empty());
   EXPECT_TRUE(delegate.stoppedTaskIDs.empty());
+}
+
+// Tests that the reported actuation height drives the medium detent height and
+// is cleared once actuation ends.
+TEST_F(GeminiContainerMediatorTest, TestActuationMediumDetentHeight) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeAssistantContainerCommandsHandler* fake_handler =
+      [[FakeAssistantContainerCommandsHandler alloc] init];
+  mediator_.containerHandler = fake_handler;
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+
+  [mediator_ setActuationActive:YES];
+  [mediator_ containerDidChangeActuationHeight:119.5];
+  ASSERT_TRUE(fake_handler.mediumDetentHeight.has_value());
+  EXPECT_EQ(120, *fake_handler.mediumDetentHeight);
+
+  // Actuation ends: the medium detent falls back to its default height,
+  // regardless of the post-actuation state.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:nil
+                 conversationID:nil];
+  [mediator_ setActuationActive:NO];
+  EXPECT_FALSE(fake_handler.mediumDetentHeight.has_value());
+
+  // Entering actuation leaves the medium detent height untouched until the
+  // worklog reports its height.
+  [mediator_ setActuationActive:YES];
+  EXPECT_FALSE(fake_handler.mediumDetentHeight.has_value());
+
+  [mediator_ containerDidChangeActuationHeight:150];
+  ASSERT_TRUE(fake_handler.mediumDetentHeight.has_value());
+  EXPECT_EQ(150, *fake_handler.mediumDetentHeight);
 }
 
 // Test that switching the active `WebState` updates the page context via

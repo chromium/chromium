@@ -49,11 +49,28 @@ GeminiContainerUIState GeminiContainerUIState::Minimized(BOOL has_grabber) {
 // static
 GeminiContainerUIState GeminiContainerUIState::Actuating() {
   return {
-      .detent = AssistantContainerDetent::kMinimized,
+      .detent = AssistantContainerDetent::kMedium,
       .hasGrabber = YES,
       .zeroStateVisible = NO,
       .actuating = YES,
   };
+}
+
+std::optional<ActuationWorklogDisplayMode>
+GeminiContainerUIState::WorklogDisplayMode() const {
+  if (!actuating) {
+    return std::nullopt;
+  }
+  // The minimized detent only shows the header, the medium detent shows the
+  // compact worklog and the large detent shows the full timeline.
+  switch (detent) {
+    case AssistantContainerDetent::kMinimized:
+      return ActuationWorklogDisplayModeMinimized;
+    case AssistantContainerDetent::kMedium:
+      return ActuationWorklogDisplayModeCompact;
+    case AssistantContainerDetent::kLarge:
+      return ActuationWorklogDisplayModeExpanded;
+  }
 }
 
 #pragma mark - GeminiContainerUIStateManager

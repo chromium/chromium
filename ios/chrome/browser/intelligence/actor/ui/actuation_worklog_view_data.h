@@ -136,6 +136,16 @@ enum class ActuationWorklogItemStyle {
 
 @end
 
+// Presentation modes of the actuation worklog.
+typedef NS_ENUM(NSInteger, ActuationWorklogDisplayMode) {
+  // Only the header is visible.
+  ActuationWorklogDisplayModeMinimized,
+  // The header and the current step are visible.
+  ActuationWorklogDisplayModeCompact,
+  // The header and the full timeline are visible.
+  ActuationWorklogDisplayModeExpanded,
+};
+
 // Visual layouts for an interactive intervention in the actuation worklog.
 enum class ActuationInterventionType {
   // Card with `title`, optional `subtitle`, and a primary action button.

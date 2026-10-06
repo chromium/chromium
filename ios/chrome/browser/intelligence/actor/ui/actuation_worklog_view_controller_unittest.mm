@@ -39,8 +39,8 @@ namespace {
 using intelligence::actor::FindViewByAccessibilityIdentifier;
 using ActuationWorklogViewControllerTest = PlatformTest;
 
-// Test toggling compact mode updates subview visibility.
-TEST_F(ActuationWorklogViewControllerTest, ToggleCompact) {
+// Test that switching display modes updates subview visibility.
+TEST_F(ActuationWorklogViewControllerTest, TestSetDisplayMode) {
   ActuationWorklogViewController* view_controller =
       [[ActuationWorklogViewController alloc] init];
 
@@ -48,18 +48,28 @@ TEST_F(ActuationWorklogViewControllerTest, ToggleCompact) {
       view_controller.view, kCompactWorklogAccessibilityIdentifier);
   UIView* full_scroll_view = FindViewByAccessibilityIdentifier(
       view_controller.view, kFullWorklogScrollViewAccessibilityIdentifier);
+  UIView* header_view = FindViewByAccessibilityIdentifier(
+      view_controller.view, kActuationHeaderAccessibilityIdentifier);
+  ASSERT_NE(header_view, nil);
 
   // Expanded worklog.
-  view_controller.compact = NO;
-  EXPECT_FALSE(view_controller.isCompact);
+  view_controller.displayMode = ActuationWorklogDisplayModeExpanded;
+  EXPECT_EQ(ActuationWorklogDisplayModeExpanded, view_controller.displayMode);
   EXPECT_TRUE(compact_view.hidden);
   EXPECT_FALSE(full_scroll_view.hidden);
 
   // Compact worklog.
-  view_controller.compact = YES;
-  EXPECT_TRUE(view_controller.isCompact);
+  view_controller.displayMode = ActuationWorklogDisplayModeCompact;
+  EXPECT_EQ(ActuationWorklogDisplayModeCompact, view_controller.displayMode);
   EXPECT_FALSE(compact_view.hidden);
   EXPECT_TRUE(full_scroll_view.hidden);
+
+  // Minimized worklog only shows the header.
+  view_controller.displayMode = ActuationWorklogDisplayModeMinimized;
+  EXPECT_EQ(ActuationWorklogDisplayModeMinimized, view_controller.displayMode);
+  EXPECT_TRUE(compact_view.hidden);
+  EXPECT_TRUE(full_scroll_view.hidden);
+  EXPECT_FALSE(header_view.hidden);
 }
 
 // Test toggling actuation active updates container visibility.

@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
@@ -27,6 +30,10 @@ struct GeminiContainerUIState {
 
   // Returns an actuating state that takes over the UI until completed.
   static GeminiContainerUIState Actuating();
+
+  // Returns how the actuation worklog should be presented, or `std::nullopt`
+  // when the worklog is hidden (i.e. outside of actuation).
+  std::optional<ActuationWorklogDisplayMode> WorklogDisplayMode() const;
 
   bool operator==(const GeminiContainerUIState& other) const = default;
 

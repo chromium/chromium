@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
@@ -395,7 +396,7 @@ class GeminiContainerMediatorTabHelperObserver
   } else if ([_stateManager shouldBeDismissed]) {
     [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
   }
-  [self.consumer setWorklogCompact:minimized];
+  [self updateWorklogDisplayModeForUIState:_stateManager.currentUIState];
 }
 
 - (void)assistantContainerDidRequestDismissal:
@@ -509,9 +510,20 @@ class GeminiContainerMediatorTabHelperObserver
   if (_stateManager.currentUIState.actuating == actuationActive) {
     return;
   }
-  if (!actuationActive) {
+  if (actuationActive) {
+    [self.containerHandler setAssistantContainerLargestUndimmedDetent:kMedium];
+    [self.containerHandler
+        setAssistantContainerMinimizedDetentHeight:
+            ceil([self.consumer actuationMinimizedDetentHeight])];
+  } else {
+    [self.containerHandler
+        setAssistantContainerLargestUndimmedDetent:kMinimized];
     [self.containerHandler setAssistantContainerMinimizedDetentHeight:
                                kAssistantContainerMinimizedDetentHeight];
+    // The medium detent height is owned by actuation, so it must be reset
+    // before the post-actuation state applies its own height (if any).
+    [self.containerHandler
+        setAssistantContainerMediumDetentHeight:std::nullopt];
   }
   [_stateManager handleActuationStateChanged:actuationActive];
 }
@@ -631,7 +643,7 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)didChangeUIState:(GeminiContainerUIState)containerUIState {
   [self.consumer updateZeroStateVisibility:containerUIState.zeroStateVisible];
-  [self.consumer setWorklogCompact:(containerUIState.detent == kMinimized)];
+  [self updateWorklogDisplayModeForUIState:containerUIState];
   [self.consumer setActuationActive:containerUIState.actuating];
 
   if (containerUIState.zeroStateVisible) {
@@ -640,7 +652,9 @@ class GeminiContainerMediatorTabHelperObserver
       [self.containerHandler
           setAssistantContainerMediumDetentHeight:ceil(contentHeight)];
     }
-  } else {
+  } else if (!containerUIState.actuating) {
+    // While actuating, the medium detent height is owned by
+    // `containerDidChangeActuationHeight:`.
     [self.containerHandler
         setAssistantContainerMediumDetentHeight:std::nullopt];
   }
@@ -667,15 +681,26 @@ class GeminiContainerMediatorTabHelperObserver
     return;
   }
   [self.containerHandler
-      setAssistantContainerMinimizedDetentHeight:ceil(height)];
-  if (_stateManager.currentUIState.detent ==
-      AssistantContainerDetent::kMinimized) {
-    [self.containerHandler
-        animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
+      setAssistantContainerMediumDetentHeight:static_cast<NSInteger>(
+                                                  ceil(height))];
+  if (_stateManager.currentUIState.detent == kMedium) {
+    [self.containerHandler animateAssistantContainerToDetent:kMedium];
   }
 }
 
 #pragma mark - Private
+
+// Forwards the worklog presentation for `state` to the consumer. Non-actuating
+// states are ignored since the worklog is hidden and its mode is re-sent on
+// entering actuation.
+- (void)updateWorklogDisplayModeForUIState:
+    (const GeminiContainerUIState&)state {
+  std::optional<ActuationWorklogDisplayMode> mode = state.WorklogDisplayMode();
+  if (!mode) {
+    return;
+  }
+  [self.consumer setWorklogDisplayMode:*mode];
+}
 
 // Sets up the initial UI state for the container.
 - (void)setupInitialUIState {

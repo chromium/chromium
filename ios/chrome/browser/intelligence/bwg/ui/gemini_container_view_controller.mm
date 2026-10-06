@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -93,9 +94,8 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 
 - (void)worklogViewController:(ActuationWorklogViewController*)viewController
               didChangeHeight:(CGFloat)height {
-  CGFloat totalDetentHeight =
-      height + kWorklogContainerInsets.top + kWorklogContainerInsets.bottom;
-  [self.mutator containerDidChangeActuationHeight:totalDetentHeight];
+  [self.mutator containerDidChangeActuationHeight:
+                    [self containerHeightForWorklogHeight:height]];
 }
 
 #pragma mark - GeminiContainerConsumer
@@ -108,8 +108,8 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   [self.view endEditing:YES];
 }
 
-- (void)setWorklogCompact:(BOOL)compact {
-  [_worklogViewController setCompact:compact];
+- (void)setWorklogDisplayMode:(ActuationWorklogDisplayMode)displayMode {
+  _worklogViewController.displayMode = displayMode;
 }
 
 - (void)setActuationActive:(BOOL)active {
@@ -135,7 +135,25 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
       .height;
 }
 
+// TODO(crbug.com/532204179): Push the minimized height alongside the compact
+// height so the minimized detent stays in sync with header height changes.
+- (CGFloat)actuationMinimizedDetentHeight {
+  return
+      [self containerHeightForWorklogHeight:
+                [_worklogViewController
+                    heightForDisplayMode:ActuationWorklogDisplayModeMinimized]];
+}
+
 #pragma mark - Private
+
+// Returns the container height needed to fit `worklogHeight`, accounting for
+// the insets applied around the worklog in `addWorklogSubviews`.
+// TODO(crbug.com/532204179): Move `kWorklogContainerInsets` into
+// `ActuationWorklogViewController` so it reports padded heights directly.
+- (CGFloat)containerHeightForWorklogHeight:(CGFloat)worklogHeight {
+  return worklogHeight + kWorklogContainerInsets.top +
+         kWorklogContainerInsets.bottom;
+}
 
 // Adds the zero-state view controller to `containerStack`.
 - (void)addZeroStateToContainer:(UIStackView*)containerStack {

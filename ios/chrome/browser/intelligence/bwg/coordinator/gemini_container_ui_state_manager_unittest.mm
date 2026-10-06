@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
 
+#import <optional>
+
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -100,10 +103,34 @@ TEST_F(GeminiContainerUIStateManagerTest, TestUIStateFactoryMethods) {
   EXPECT_FALSE(minimized_with_grabber.actuating);
 
   GeminiContainerUIState actuating = GeminiContainerUIState::Actuating();
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, actuating.detent);
+  EXPECT_EQ(AssistantContainerDetent::kMedium, actuating.detent);
   EXPECT_TRUE(actuating.hasGrabber);
   EXPECT_FALSE(actuating.zeroStateVisible);
   EXPECT_TRUE(actuating.actuating);
+}
+
+// Tests that `WorklogDisplayMode()` maps each detent to its worklog
+// presentation while actuating, and is unset otherwise.
+TEST_F(GeminiContainerUIStateManagerTest, TestWorklogDisplayMode) {
+  GeminiContainerUIState state = GeminiContainerUIState::Actuating();
+
+  state.detent = AssistantContainerDetent::kMinimized;
+  EXPECT_EQ(std::make_optional(ActuationWorklogDisplayModeMinimized),
+            state.WorklogDisplayMode());
+  state.detent = AssistantContainerDetent::kMedium;
+  EXPECT_EQ(std::make_optional(ActuationWorklogDisplayModeCompact),
+            state.WorklogDisplayMode());
+  state.detent = AssistantContainerDetent::kLarge;
+  EXPECT_EQ(std::make_optional(ActuationWorklogDisplayModeExpanded),
+            state.WorklogDisplayMode());
+
+  state.actuating = NO;
+  state.detent = AssistantContainerDetent::kMinimized;
+  EXPECT_FALSE(state.WorklogDisplayMode().has_value());
+  state.detent = AssistantContainerDetent::kMedium;
+  EXPECT_FALSE(state.WorklogDisplayMode().has_value());
+  state.detent = AssistantContainerDetent::kLarge;
+  EXPECT_FALSE(state.WorklogDisplayMode().has_value());
 }
 
 // Tests that initial state properties are correctly set upon initialization.
@@ -557,7 +584,7 @@ TEST_F(GeminiContainerUIStateManagerTest, TestActuationDefersExpansion) {
   [state_manager_ handleActuationStateChanged:YES];
   EXPECT_EQ(1, delegate_.changeCount);
   EXPECT_TRUE(state_manager_.currentUIState.actuating);
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, delegate_.lastUIState.detent);
+  EXPECT_EQ(AssistantContainerDetent::kMedium, delegate_.lastUIState.detent);
   EXPECT_TRUE(delegate_.lastUIState.actuating);
 
   // Transitioning processing status while actuating should not notify delegate.
@@ -590,6 +617,7 @@ TEST_F(GeminiContainerUIStateManagerTest, TestShouldBeDismissedWhileActuating) {
   EXPECT_TRUE([state_manager_ shouldBeDismissed]);
 
   [state_manager_ handleActuationStateChanged:YES];
+  [state_manager_ updateDetent:AssistantContainerDetent::kMinimized];
   EXPECT_FALSE([state_manager_ shouldBeDismissed]);
 }
 

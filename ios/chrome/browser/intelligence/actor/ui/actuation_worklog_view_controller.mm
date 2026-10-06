@@ -35,19 +35,19 @@ using intelligence::actor::kSpacingLarge;
 @implementation ActuationWorklogViewController {
   // Header view that sits right above the worklog.
   ActuationHeaderView* _headerView;
-  // Current step layout. Visible when `_compact` is true.
+  // Current step layout. Visible in `ActuationWorklogDisplayModeCompact`.
   ActuationWorklogCompactView* _compactView;
   // Timeline view embedded inside a scrollview to support vertical growth as
   // steps are added.
   ActuationWorklogView* _fullView;
-  // Scrollable container for the `_fullView`. Visible when `_compact` is false.
+  // Scrollable container for the `_fullView`. Visible in
+  // `ActuationWorklogDisplayModeExpanded`.
   UIScrollView* _scrollView;
   // Interactive intervention UI pinned to the bottom of the worklog.
   ActuationInterventionView* _interventionView;
   // Height of `_compactView`. Adjusted dynamically when its content changes.
   NSLayoutConstraint* _compactHeightConstraint;
 
-  BOOL _compact;
   BOOL _actuationActive;
 }
 
@@ -56,18 +56,39 @@ using intelligence::actor::kSpacingLarge;
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _compact = YES;
+    _displayMode = ActuationWorklogDisplayModeCompact;
     _actuationActive = NO;
   }
   return self;
 }
 
-- (void)setCompact:(BOOL)compact {
-  if (_compact == compact) {
+- (void)setDisplayMode:(ActuationWorklogDisplayMode)displayMode {
+  if (_displayMode == displayMode) {
     return;
   }
-  _compact = compact;
+  _displayMode = displayMode;
   [self updateVisibility];
+}
+
+- (CGFloat)heightForDisplayMode:(ActuationWorklogDisplayMode)mode {
+  CGFloat width = self.view.bounds.size.width;
+  // `_interventionView` owns its padding and collapses to zero height when no
+  // intervention is active.
+  CGFloat interventionHeight = [self fittingHeightForView:_interventionView
+                                              targetWidth:width];
+  switch (mode) {
+    case ActuationWorklogDisplayModeMinimized:
+      return [self headerHeight];
+    case ActuationWorklogDisplayModeCompact:
+      return [self headerHeight] + _compactHeightConstraint.constant +
+             interventionHeight;
+    case ActuationWorklogDisplayModeExpanded:
+      // Height needed to show the full timeline without scrolling, including
+      // the bottom inset applied to `_fullView` in its scroll view.
+      return [self headerHeight] +
+             [self fittingHeightForView:_fullView targetWidth:width] +
+             kSpacingLarge + interventionHeight;
+  }
 }
 
 #pragma mark - UIViewController
@@ -210,29 +231,39 @@ using intelligence::actor::kSpacingLarge;
   ]];
 }
 
-// Updates visibility of the view and switches between compact and full mode.
+// Updates visibility of the view and its subviews for `_displayMode`.
 - (void)updateVisibility {
   self.view.hidden = !_actuationActive;
-  _compactView.hidden = !_compact;
-  _scrollView.hidden = _compact;
+  _compactView.hidden = _displayMode != ActuationWorklogDisplayModeCompact;
+  _scrollView.hidden = _displayMode != ActuationWorklogDisplayModeExpanded;
+  // `_interventionView` drives its own `hidden` state from its data, so it is
+  // concealed through `alpha` instead while minimized.
+  // TODO(crbug.com/532204179): Handle interventions that arrive while
+  // minimized.
+  BOOL minimized = _displayMode == ActuationWorklogDisplayModeMinimized;
+  _interventionView.alpha = minimized ? 0.0 : 1.0;
+  _interventionView.accessibilityElementsHidden = minimized;
 }
 
-// Calculates current fitting height and notifies the delegate.
+// Calculates current fitting height and notifies the delegate. The reported
+// height always reflects the compact layout, regardless of `_displayMode`,
+// since only the compact layout has a dynamic height.
 - (void)notifyHeightDidChange {
-  CGFloat viewWidth = self.view.bounds.size.width;
+  [self.delegate
+      worklogViewController:self
+            didChangeHeight:
+                [self heightForDisplayMode:ActuationWorklogDisplayModeCompact]];
+}
+
+// Returns the height of `_headerView`, falling back to its fitting height
+// before the first layout pass.
+- (CGFloat)headerHeight {
   CGFloat headerHeight = _headerView.bounds.size.height;
-  if (headerHeight <= 0) {
-    headerHeight = [self fittingHeightForView:_headerView
-                                  targetWidth:viewWidth];
+  if (headerHeight > 0) {
+    return headerHeight;
   }
-
-  CGFloat totalHeight = headerHeight + _compactHeightConstraint.constant;
-  // `_interventionView` owns its padding and collapses to zero height when no
-  // intervention is active, so its fitting height needs no special casing.
-  totalHeight += [self fittingHeightForView:_interventionView
-                                targetWidth:viewWidth];
-
-  [self.delegate worklogViewController:self didChangeHeight:totalHeight];
+  return [self fittingHeightForView:_headerView
+                        targetWidth:self.view.bounds.size.width];
 }
 
 // Calculates fitting height for `view` constrained to `targetWidth`.

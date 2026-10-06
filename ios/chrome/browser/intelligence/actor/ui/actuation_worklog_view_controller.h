@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 
 @class ActuationWorklogViewController;
 @protocol ActuationWorklogMutator;
@@ -31,8 +32,13 @@
 // Mutator for dispatching user actions.
 @property(nonatomic, weak) id<ActuationWorklogMutator> mutator;
 
-// Whether the worklog is presented in compact mode or full timeline mode.
-@property(nonatomic, assign, getter=isCompact) BOOL compact;
+// How the worklog is presented. Defaults to
+// `ActuationWorklogDisplayModeCompact`.
+@property(nonatomic, assign) ActuationWorklogDisplayMode displayMode;
+
+// Returns the fitting height of the worklog when presented in `mode`,
+// regardless of the currently active `displayMode`.
+- (CGFloat)heightForDisplayMode:(ActuationWorklogDisplayMode)mode;
 
 // Calculates the current fitting height and reports it to `delegate`. Use this
 // when `delegate` may have ignored a previous report.
