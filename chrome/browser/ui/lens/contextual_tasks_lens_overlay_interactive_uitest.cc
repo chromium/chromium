@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -75,10 +76,11 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
 
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
-                              {contextual_tasks::
-                                   kContextualTasksForceEntryPointEligibility,
-                               {}}},
+        /*enabled_features=*/
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {lens::features::kLensOverlayTextSelectionContextMenuEntrypoint,
+          {{"contextualize", "true"}}}},
         /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 
@@ -816,6 +818,79 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 
       // Step 6: The region query opens the Contextual Tasks side panel.
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a webpage and selects text on the page.
+//  (2) User right-clicks the selected text to open the context menu.
+//  (3) User selects the "Search Google for <text>" item from the context menu.
+//  (4) A contextual text search request is issued from the text selection
+//      context menu and the Contextual Tasks side panel opens.
+// Disabled on Mac because the Mac interaction test util implementation does
+// not support selecting an item in the native context menu.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TextSelectionContextMenuClick \
+  DISABLED_TextSelectionContextMenuClick
+#else
+#define MAYBE_TextSelectionContextMenuClick TextSelectionContextMenuClick
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       MAYBE_TextSelectionContextMenuClick) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+  // Disable asynchronous link-to-text selector generation so
+  // LinkToTextMenuObserver does not rebuild all MenuItemViews mid-step while
+  // the context menu is open.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kScrollToTextFragmentEnabled, false);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToParagraph{"p"};
+
+  RunTestSequence(
+      // Step 1: Navigate the active tab to a webpage and select text.
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToParagraph),
+      WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+      CheckJsResultAt(kTabId, kPathToParagraph,
+                      "(el) => {"
+                      "  el.style.display = 'inline';"
+                      "  const range = document.createRange();"
+                      "  range.selectNodeContents(el);"
+                      "  const selection = window.getSelection();"
+                      "  selection.removeAllRanges();"
+                      "  selection.addRange(range);"
+                      "  return selection.toString().trim().length > 0;"
+                      "}",
+                      true),
+
+      // Steps 2-3: Right-click the selected text and select the search item
+      // from the context menu.
+      MoveMouseTo(kTabId, kPathToParagraph), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(RenderViewContextMenu::kSearchForTextItem),
+      SelectMenuItem(RenderViewContextMenu::kSearchForTextItem,
+                     InputType::kMouse),
+
+      // Step 4: The text selection search opens the Contextual Tasks side
+      // panel via the Lens text selection context menu entrypoint.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() {
+            return LensSearchController::FromTabWebContents(
+                       browser()->GetTabStripModel()->GetWebContentsAt(0))
+                ->invocation_source();
+          },
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kContentAreaContextMenuText),
+          "Text query was issued from the text selection context menu"),
       CheckResult(
           [this]() {
             return SidePanelUI::From(browser())->IsSidePanelShowing();

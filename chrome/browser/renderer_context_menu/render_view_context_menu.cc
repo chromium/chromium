@@ -1089,6 +1089,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kSearchForImageItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kSearchForTextItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kSearchForVideoFrameItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kVideoFrameSubmenuItem);
@@ -2992,6 +2994,10 @@ void RenderViewContextMenu::AppendSearchProvider() {
           l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
                                      default_provider->short_name(),
                                      printable_selection_text));
+      menu_model_.SetElementIdentifierAt(
+          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_SEARCHWEBFOR)
+              .value(),
+          kSearchForTextItem);
       if (features::IsMenuSimplificationEnabled()) {
         menu_model_.SetIconForCommandId(
             IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
@@ -4241,12 +4247,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR: {
       RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_WEB_FOR);
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
       if (ShouldOpenTextQueryInLens()) {
         OpenTextQueryInLens();
         break;
       }
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
       [[fallthrough]];
     }
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB: {
@@ -4495,6 +4499,7 @@ bool RenderViewContextMenu::ShouldOpenTextQueryInLens() const {
   return lens::features::
              IsLensOverlayTextSelectionContextMenuEntrypointEnabled() &&
          browser &&
+         LensSearchController::FromTabWebContents(source_web_contents_) &&
          lens::LensOverlayEntryPointController::From(browser)->IsEnabled();
 }
 
