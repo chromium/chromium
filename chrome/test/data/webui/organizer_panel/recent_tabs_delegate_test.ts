@@ -5,7 +5,8 @@
 import {browserProxyFactory, PageHandlerRemote, RecentTabsDelegate} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -93,7 +94,9 @@ suite('RecentTabsDelegateTest', () => {
   };
 
   setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
+      noRecentlyClosedTabs: 'No recently closed tabs',
       recentlyClosed: 'Recently Closed',
       oneTab: '1 tab',
       tabCount: '$1 tabs',
@@ -417,4 +420,17 @@ suite('RecentTabsDelegateTest', () => {
         const arg = mockPageHandler.getArgs('openRecentlyClosedEntry')[0];
         assertEquals(tabGroup.sessionId, arg);
       });
+
+  test('returns zero state', () => {
+    const zeroState = delegate.getZeroState();
+    assertTrue(!!zeroState);
+
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    render(zeroState, container);
+
+    const zeroStateText = container.querySelector('.zero-state-text');
+    assertTrue(!!zeroStateText);
+    assertEquals('No recently closed tabs', zeroStateText.textContent.trim());
+  });
 });

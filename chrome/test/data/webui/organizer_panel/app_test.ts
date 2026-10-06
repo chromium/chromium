@@ -26,6 +26,7 @@ suite('OrganizerPanelAppTest', () => {
       createTabGroup: 'Create tab group',
       crossDeviceTabsEnabled: false,
       isIncognitoMode: false,
+      noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
       openTabs: 'Open Tabs',
       recentlyClosed: 'Recently Closed',

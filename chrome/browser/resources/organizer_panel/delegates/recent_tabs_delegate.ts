@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
@@ -54,6 +56,12 @@ export class RecentTabsDelegate implements
       Promise<Array<OrganizerListSectionItem<RecentlyClosedItem>>> {
     await this.updateItems_();
     return this.items_.map(item => this.toSectionItem_(item));
+  }
+
+  getZeroState(): TemplateResult {
+    return html`<div class="zero-state-text">
+      ${loadTimeData.getString('noRecentlyClosedTabs')}
+    </div>`;
   }
 
   onItemClick(item: OrganizerListSectionItem<RecentlyClosedItem>) {

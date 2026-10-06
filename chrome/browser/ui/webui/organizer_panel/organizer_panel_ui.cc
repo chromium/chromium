@@ -50,6 +50,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"closeTab", IDS_TAB_SEARCH_CLOSE_TAB},
       {"createTabGroup", IDS_ORGANIZER_PANEL_CREATE_TAB_GROUP},
+      {"noRecentlyClosedTabs", IDS_ORGANIZER_PANEL_NO_RECENTLY_CLOSED_TABS},
       {"noResults", IDS_ORGANIZER_PANEL_NO_RESULTS},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
