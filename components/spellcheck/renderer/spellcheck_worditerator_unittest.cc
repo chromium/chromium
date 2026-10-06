@@ -597,3 +597,12 @@ TEST(SpellcheckCharAttributeTest, IsTextInSameScript) {
     }
   }
 }
+
+// Arabic Nastaliq (Aran) uses the Arabic Unicode script block.
+TEST(SpellcheckCharAttributeTest, ArabicNastaliq) {
+  SpellcheckCharAttribute attribute;
+  attribute.SetDefaultLanguage("ur-Aran");
+  EXPECT_TRUE(attribute.IsTextInSameScript(u"\x0627\x0631\x062f\x0648"));
+  SpellcheckWordIterator iterator;
+  EXPECT_TRUE(iterator.Initialize(&attribute, true));
+}

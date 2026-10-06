@@ -159,8 +159,13 @@ void SpellcheckCharAttribute::CreateRuleSets(const std::string& language) {
   UScriptCode script_code[8];
   int scripts = uscript_getCode(language.c_str(), script_code,
                                 std::size(script_code), &error);
-  if (U_SUCCESS(error) && scripts >= 1)
+  if (U_SUCCESS(error) && scripts >= 1) {
     script_code_ = script_code[0];
+    if (script_code_ == USCRIPT_ARABIC_NASTALIQ) [[unlikely]] {
+      // Normalize Arabic stylish variants to Arabic.
+      script_code_ = USCRIPT_ARABIC;
+    }
+  }
 
   // Retrieve the values for $ALetter and $ALetterPlus. We use the dictionary
   // only for the languages which need it (i.e. Korean and Thai) to prevent ICU
