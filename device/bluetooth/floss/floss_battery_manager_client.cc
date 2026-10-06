@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/floss/floss_battery_manager_client.h"
 
+#include "base/no_destructor.h"
 namespace floss {
 
 // Template specializations for dbus parsing
@@ -11,17 +12,18 @@ namespace floss {
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     Battery* battery) {
-  static FlossDBusClient::StructReader<Battery> struct_reader(
-      {{"percentage", CreateFieldReader(&Battery::percentage)},
-       {"variant", CreateFieldReader(&Battery::variant)}});
+  static base::NoDestructor<FlossDBusClient::StructReader<Battery>>
+      struct_reader(FlossDBusClient::StructReader<Battery>(
+          {{"percentage", CreateFieldReader(&Battery::percentage)},
+           {"variant", CreateFieldReader(&Battery::variant)}}));
 
-  return struct_reader.ReadDBusParam(reader, battery);
+  return struct_reader->ReadDBusParam(reader, battery);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const Battery*) {
-  static DBusTypeInfo info{"a{sv}", "Battery"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "Battery"}};
+  return *info;
 }
 
 template <>
@@ -39,19 +41,20 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BatterySet* battery_set) {
-  static FlossDBusClient::StructReader<BatterySet> struct_reader(
-      {{"address", CreateFieldReader(&BatterySet::address)},
-       {"source_uuid", CreateFieldReader(&BatterySet::source_uuid)},
-       {"source_info", CreateFieldReader(&BatterySet::source_info)},
-       {"batteries", CreateFieldReader(&BatterySet::batteries)}});
+  static base::NoDestructor<FlossDBusClient::StructReader<BatterySet>>
+      struct_reader(FlossDBusClient::StructReader<BatterySet>(
+          {{"address", CreateFieldReader(&BatterySet::address)},
+           {"source_uuid", CreateFieldReader(&BatterySet::source_uuid)},
+           {"source_info", CreateFieldReader(&BatterySet::source_info)},
+           {"batteries", CreateFieldReader(&BatterySet::batteries)}}));
 
-  return struct_reader.ReadDBusParam(reader, battery_set);
+  return struct_reader->ReadDBusParam(reader, battery_set);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const BatterySet*) {
-  static DBusTypeInfo info{"a{sv}", "BatterySet"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "BatterySet"}};
+  return *info;
 }
 
 template <>

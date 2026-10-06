@@ -793,12 +793,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // template <>
   // bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
   //                                     ScanResult* scan_result) {
-  //   static StructReader<ScanResult> struct_reader({
-  //       {"address", CreateFieldReader(&ScanResult::address)},
-  //       {"addr_type", CreateFieldReader(&ScanResult::addr_type)},
-  //       <just define more fields here>
-  //   });
-  //   return struct_reader.ReadDBusParam(reader, scan_result);
+  //   static base::NoDestructor<StructReader<ScanResult>> struct_reader(
+  //       StructReader<ScanResult>({
+  //           {"address", CreateFieldReader(&ScanResult::address)},
+  //           {"addr_type", CreateFieldReader(&ScanResult::addr_type)},
+  //           <just define more fields here>
+  //       }));
+  //   return struct_reader->ReadDBusParam(reader, scan_result);
   // }
   template <typename T>
   class StructReader {

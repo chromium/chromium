@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "dbus/bus.h"
@@ -275,61 +276,66 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     ScanResult* scan_result) {
-  static StructReader<ScanResult> struct_reader({
-      {"name", CreateFieldReader(&ScanResult::name)},
-      {"address", CreateFieldReader(&ScanResult::address)},
-      {"addr_type", CreateFieldReader(&ScanResult::addr_type)},
-      {"event_type", CreateFieldReader(&ScanResult::event_type)},
-      {"primary_phy", CreateFieldReader(&ScanResult::primary_phy)},
-      {"secondary_phy", CreateFieldReader(&ScanResult::secondary_phy)},
-      {"advertising_sid", CreateFieldReader(&ScanResult::advertising_sid)},
-      {"tx_power", CreateFieldReader(&ScanResult::tx_power)},
-      {"rssi", CreateFieldReader(&ScanResult::rssi)},
-      {"periodic_adv_int", CreateFieldReader(&ScanResult::periodic_adv_int)},
-      {"flags", CreateFieldReader(&ScanResult::flags)},
-      {"service_uuids", CreateFieldReader(&ScanResult::service_uuids)},
-      {"service_data", CreateFieldReader(&ScanResult::service_data)},
-      {"manufacturer_data", CreateFieldReader(&ScanResult::manufacturer_data)},
-      {"adv_data", CreateFieldReader(&ScanResult::adv_data)},
-  });
+  static base::NoDestructor<StructReader<ScanResult>> struct_reader(
+      StructReader<ScanResult>({
+          {"name", CreateFieldReader(&ScanResult::name)},
+          {"address", CreateFieldReader(&ScanResult::address)},
+          {"addr_type", CreateFieldReader(&ScanResult::addr_type)},
+          {"event_type", CreateFieldReader(&ScanResult::event_type)},
+          {"primary_phy", CreateFieldReader(&ScanResult::primary_phy)},
+          {"secondary_phy", CreateFieldReader(&ScanResult::secondary_phy)},
+          {"advertising_sid", CreateFieldReader(&ScanResult::advertising_sid)},
+          {"tx_power", CreateFieldReader(&ScanResult::tx_power)},
+          {"rssi", CreateFieldReader(&ScanResult::rssi)},
+          {"periodic_adv_int",
+           CreateFieldReader(&ScanResult::periodic_adv_int)},
+          {"flags", CreateFieldReader(&ScanResult::flags)},
+          {"service_uuids", CreateFieldReader(&ScanResult::service_uuids)},
+          {"service_data", CreateFieldReader(&ScanResult::service_data)},
+          {"manufacturer_data",
+           CreateFieldReader(&ScanResult::manufacturer_data)},
+          {"adv_data", CreateFieldReader(&ScanResult::adv_data)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, scan_result);
+  return struct_reader->ReadDBusParam(reader, scan_result);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const ScanSettings*) {
-  static DBusTypeInfo info{"a{sv}", "ScanSettings"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "ScanSettings"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const ScanType*) {
-  static DBusTypeInfo info{"u", "ScanType"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"u", "ScanType"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const ScanFilterPattern*) {
-  static DBusTypeInfo info{"a{sv}", "ScanFilterPattern"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "ScanFilterPattern"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const ScanFilterCondition*) {
-  static DBusTypeInfo info{"a{sv}", "ScanFilterCondition"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "ScanFilterCondition"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const ScanFilter*) {
-  static DBusTypeInfo info{"a{sv}", "ScanFilter"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "ScanFilter"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const ScanResult*) {
-  static DBusTypeInfo info{"a{sv}", "ScanResult"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "ScanResult"}};
+  return *info;
 }
 
 }  // namespace floss

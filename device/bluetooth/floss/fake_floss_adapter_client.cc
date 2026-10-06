@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
@@ -20,55 +21,56 @@ namespace {
 const int kDelayedTaskMs = 100;
 
 FlossDeviceId ConvertAddressToDevice(const std::string& address) {
-  static const base::flat_map<std::string, FlossDeviceId> address_to_device{
-      {FakeFlossAdapterClient::kClassicAddress,
-       FlossDeviceId{FakeFlossAdapterClient::kClassicAddress,
-                     FakeFlossAdapterClient::kClassicName}},
-      {FakeFlossAdapterClient::kPinCodeDisplayAddress,
-       FlossDeviceId{FakeFlossAdapterClient::kPinCodeDisplayAddress,
-                     FakeFlossAdapterClient::kPinCodeDisplayName}},
-      {FakeFlossAdapterClient::kPasskeyDisplayAddress,
-       FlossDeviceId{FakeFlossAdapterClient::kPasskeyDisplayAddress,
-                     FakeFlossAdapterClient::kPasskeyDisplayName}},
-      {FakeFlossAdapterClient::kPinCodeRequestAddress,
-       FlossDeviceId{FakeFlossAdapterClient::kPinCodeRequestAddress,
-                     FakeFlossAdapterClient::kPinCodeRequestName}},
-      {FakeFlossAdapterClient::kPhoneAddress,
-       FlossDeviceId{FakeFlossAdapterClient::kPhoneAddress,
-                     FakeFlossAdapterClient::kPhoneName}},
-      {FakeFlossAdapterClient::kPasskeyRequestAddress,
-       FlossDeviceId{FakeFlossAdapterClient::kPasskeyRequestAddress,
-                     FakeFlossAdapterClient::kPasskeyRequestName}},
-      {FakeFlossAdapterClient::kJustWorksAddress,
-       FlossDeviceId{FakeFlossAdapterClient::kJustWorksAddress,
-                     FakeFlossAdapterClient::kJustWorksName}}};
+  static const base::NoDestructor<base::flat_map<std::string, FlossDeviceId>>
+      address_to_device(
+          {{FakeFlossAdapterClient::kClassicAddress,
+            FlossDeviceId{FakeFlossAdapterClient::kClassicAddress,
+                          FakeFlossAdapterClient::kClassicName}},
+           {FakeFlossAdapterClient::kPinCodeDisplayAddress,
+            FlossDeviceId{FakeFlossAdapterClient::kPinCodeDisplayAddress,
+                          FakeFlossAdapterClient::kPinCodeDisplayName}},
+           {FakeFlossAdapterClient::kPasskeyDisplayAddress,
+            FlossDeviceId{FakeFlossAdapterClient::kPasskeyDisplayAddress,
+                          FakeFlossAdapterClient::kPasskeyDisplayName}},
+           {FakeFlossAdapterClient::kPinCodeRequestAddress,
+            FlossDeviceId{FakeFlossAdapterClient::kPinCodeRequestAddress,
+                          FakeFlossAdapterClient::kPinCodeRequestName}},
+           {FakeFlossAdapterClient::kPhoneAddress,
+            FlossDeviceId{FakeFlossAdapterClient::kPhoneAddress,
+                          FakeFlossAdapterClient::kPhoneName}},
+           {FakeFlossAdapterClient::kPasskeyRequestAddress,
+            FlossDeviceId{FakeFlossAdapterClient::kPasskeyRequestAddress,
+                          FakeFlossAdapterClient::kPasskeyRequestName}},
+           {FakeFlossAdapterClient::kJustWorksAddress,
+            FlossDeviceId{FakeFlossAdapterClient::kJustWorksAddress,
+                          FakeFlossAdapterClient::kJustWorksName}}});
 
-  auto iter = address_to_device.find(address);
-  if (iter != address_to_device.end()) {
+  auto iter = address_to_device->find(address);
+  if (iter != address_to_device->end()) {
     return iter->second;
   }
   return FlossDeviceId{address, ""};
 }
 
 uint32_t ConvertAddressToClassOfDevice(const std::string& address) {
-  static const base::flat_map<std::string, uint32_t> address_to_cod{
-      {FakeFlossAdapterClient::kClassicAddress,
-       FakeFlossAdapterClient::kClassicClassOfDevice},
-      {FakeFlossAdapterClient::kPinCodeDisplayAddress,
-       FakeFlossAdapterClient::kPinCodeDisplayClassOfDevice},
-      {FakeFlossAdapterClient::kPasskeyDisplayAddress,
-       FakeFlossAdapterClient::kPasskeyDisplayClassOfDevice},
-      {FakeFlossAdapterClient::kPinCodeRequestAddress,
-       FakeFlossAdapterClient::kPinCodeRequestClassOfDevice},
-      {FakeFlossAdapterClient::kPhoneAddress,
-       FakeFlossAdapterClient::kPhoneClassOfDevice},
-      {FakeFlossAdapterClient::kPasskeyRequestAddress,
-       FakeFlossAdapterClient::kPasskeyRequestClassOfDevice},
-      {FakeFlossAdapterClient::kJustWorksAddress,
-       FakeFlossAdapterClient::kJustWorksClassOfDevice}};
+  static const base::NoDestructor<base::flat_map<std::string, uint32_t>>
+      address_to_cod({{FakeFlossAdapterClient::kClassicAddress,
+                       FakeFlossAdapterClient::kClassicClassOfDevice},
+                      {FakeFlossAdapterClient::kPinCodeDisplayAddress,
+                       FakeFlossAdapterClient::kPinCodeDisplayClassOfDevice},
+                      {FakeFlossAdapterClient::kPasskeyDisplayAddress,
+                       FakeFlossAdapterClient::kPasskeyDisplayClassOfDevice},
+                      {FakeFlossAdapterClient::kPinCodeRequestAddress,
+                       FakeFlossAdapterClient::kPinCodeRequestClassOfDevice},
+                      {FakeFlossAdapterClient::kPhoneAddress,
+                       FakeFlossAdapterClient::kPhoneClassOfDevice},
+                      {FakeFlossAdapterClient::kPasskeyRequestAddress,
+                       FakeFlossAdapterClient::kPasskeyRequestClassOfDevice},
+                      {FakeFlossAdapterClient::kJustWorksAddress,
+                       FakeFlossAdapterClient::kJustWorksClassOfDevice}});
 
-  auto iter = address_to_cod.find(address);
-  if (iter != address_to_cod.end()) {
+  auto iter = address_to_cod->find(address);
+  if (iter != address_to_cod->end()) {
     return iter->second;
   }
   return FakeFlossAdapterClient::kDefaultClassOfDevice;

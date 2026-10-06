@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "device/bluetooth/floss/floss_admin_client.h"
 
+#include "base/no_destructor.h"
 namespace floss {
 PolicyEffect::PolicyEffect() = default;
 
@@ -14,18 +15,20 @@ PolicyEffect::~PolicyEffect() = default;
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     PolicyEffect* effect) {
-  static FlossDBusClient::StructReader<PolicyEffect> struct_reader({
-      {"service_blocked", CreateFieldReader(&PolicyEffect::service_blocked)},
-      {"affected", CreateFieldReader(&PolicyEffect::affected)},
-  });
+  static base::NoDestructor<FlossDBusClient::StructReader<PolicyEffect>>
+      struct_reader(FlossDBusClient::StructReader<PolicyEffect>({
+          {"service_blocked",
+           CreateFieldReader(&PolicyEffect::service_blocked)},
+          {"affected", CreateFieldReader(&PolicyEffect::affected)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, effect);
+  return struct_reader->ReadDBusParam(reader, effect);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const PolicyEffect*) {
-  static DBusTypeInfo info{"a{sv}", "PolicyEffect"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "PolicyEffect"}};
+  return *info;
 }
 
 std::unique_ptr<FlossAdminClient> FlossAdminClient::Create() {

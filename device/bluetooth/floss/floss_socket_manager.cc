@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "device/bluetooth/floss/floss_socket_manager.h"
 
+#include "base/no_destructor.h"
 #include "base/types/expected.h"
 
 namespace floss {
@@ -282,14 +283,14 @@ void FlossDBusClient::WriteDBusParam(
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const FlossSocketManager::SocketType*) {
-  static DBusTypeInfo info{"u", "SocketType"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"u", "SocketType"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const FlossSocketManager::FlossSocket*) {
-  static DBusTypeInfo info{"a{sv}", "FlossSocket"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "FlossSocket"}};
+  return *info;
 }
 
 int FlossSocketManager::GetRawFlossFlagsFromBluetoothFlags(bool encrypt,

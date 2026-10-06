@@ -5,6 +5,7 @@
 #include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 
 namespace floss {
@@ -55,8 +56,9 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const LeDiscoverableMode*) {
-  static DBusTypeInfo info{"u", "LeDiscoverableMode"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"u", "LeDiscoverableMode"}};
+  return *info;
 }
 
 template <>
@@ -79,8 +81,8 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader, LePhy* phy) {
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const LePhy*) {
-  static DBusTypeInfo info{"u", "LePhy"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"u", "LePhy"}};
+  return *info;
 }
 
 template <>
@@ -111,8 +113,8 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const GattStatus*) {
-  static DBusTypeInfo info{"u", "GattStatus"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"u", "GattStatus"}};
+  return *info;
 }
 
 template <>
@@ -129,8 +131,9 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const GattWriteRequestStatus*) {
-  static DBusTypeInfo info{"u", "GattWriteRequestStatus"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"u", "GattWriteRequestStatus"}};
+  return *info;
 }
 
 template <>
@@ -154,8 +157,8 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const WriteType*) {
-  static DBusTypeInfo info{"u", "WriteType"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"u", "WriteType"}};
+  return *info;
 }
 
 template <>
@@ -210,60 +213,66 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     GattDescriptor* descriptor) {
-  static FlossDBusClient::StructReader<GattDescriptor> struct_reader({
-      {kUuid, CreateFieldReader(&GattDescriptor::uuid)},
-      {kInstanceId, CreateFieldReader(&GattDescriptor::instance_id)},
-      {kPermissions, CreateFieldReader(&GattDescriptor::permissions)},
-  });
+  static base::NoDestructor<FlossDBusClient::StructReader<GattDescriptor>>
+      struct_reader(FlossDBusClient::StructReader<GattDescriptor>({
+          {kUuid, CreateFieldReader(&GattDescriptor::uuid)},
+          {kInstanceId, CreateFieldReader(&GattDescriptor::instance_id)},
+          {kPermissions, CreateFieldReader(&GattDescriptor::permissions)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, descriptor);
+  return struct_reader->ReadDBusParam(reader, descriptor);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const GattDescriptor*) {
-  static DBusTypeInfo info{"a{sv}", "GattDescriptor"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "GattDescriptor"}};
+  return *info;
 }
 
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     GattCharacteristic* characteristic) {
-  static FlossDBusClient::StructReader<GattCharacteristic> struct_reader({
-      {kUuid, CreateFieldReader(&GattCharacteristic::uuid)},
-      {kInstanceId, CreateFieldReader(&GattCharacteristic::instance_id)},
-      {kProperties, CreateFieldReader(&GattCharacteristic::properties)},
-      {kKeySize, CreateFieldReader(&GattCharacteristic::key_size)},
-      {kWriteType, CreateFieldReader(&GattCharacteristic::write_type)},
-      {kDescriptors, CreateFieldReader(&GattCharacteristic::descriptors)},
-  });
+  static base::NoDestructor<FlossDBusClient::StructReader<GattCharacteristic>>
+      struct_reader(FlossDBusClient::StructReader<GattCharacteristic>({
+          {kUuid, CreateFieldReader(&GattCharacteristic::uuid)},
+          {kInstanceId, CreateFieldReader(&GattCharacteristic::instance_id)},
+          {kProperties, CreateFieldReader(&GattCharacteristic::properties)},
+          {kKeySize, CreateFieldReader(&GattCharacteristic::key_size)},
+          {kWriteType, CreateFieldReader(&GattCharacteristic::write_type)},
+          {kDescriptors, CreateFieldReader(&GattCharacteristic::descriptors)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, characteristic);
+  return struct_reader->ReadDBusParam(reader, characteristic);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const GattCharacteristic*) {
-  static DBusTypeInfo info{"a{sv}", "GattCharacteristic"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "GattCharacteristic"}};
+  return *info;
 }
 
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     GattService* service) {
-  static FlossDBusClient::StructReader<GattService> struct_reader({
-      {kUuid, CreateFieldReader(&GattService::uuid)},
-      {kInstanceId, CreateFieldReader(&GattService::instance_id)},
-      {kServiceType, CreateFieldReader(&GattService::service_type)},
-      {kCharacteristics, CreateFieldReader(&GattService::characteristics)},
-      {kIncludedServices, CreateFieldReader(&GattService::included_services)},
-  });
+  static base::NoDestructor<FlossDBusClient::StructReader<GattService>>
+      struct_reader(FlossDBusClient::StructReader<GattService>({
+          {kUuid, CreateFieldReader(&GattService::uuid)},
+          {kInstanceId, CreateFieldReader(&GattService::instance_id)},
+          {kServiceType, CreateFieldReader(&GattService::service_type)},
+          {kCharacteristics, CreateFieldReader(&GattService::characteristics)},
+          {kIncludedServices,
+           CreateFieldReader(&GattService::included_services)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, service);
+  return struct_reader->ReadDBusParam(reader, service);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const GattService*) {
-  static DBusTypeInfo info{"a{sv}", "GattService"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"a{sv}", "GattService"}};
+  return *info;
 }
 
 GattDescriptor::GattDescriptor() = default;

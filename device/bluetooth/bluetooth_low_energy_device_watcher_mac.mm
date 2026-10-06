@@ -23,11 +23,6 @@ namespace {
 constexpr char kBluetoothPlistFilePath[] =
     "/Library/Preferences/com.apple.Bluetooth.plist";
 
-const base::FilePath& BluetoothPlistFilePath() {
-  static const base::FilePath file_path(kBluetoothPlistFilePath);
-  return file_path;
-}
-
 }  // namespace
 
 // static
@@ -116,7 +111,7 @@ void BluetoothLowEnergyDeviceWatcherMac::Init() {
   // watch for changes to the bluetooth property list file.
   property_list_watcher_
       .AsyncCall(base::IgnoreResult(&base::FilePathWatcher::Watch))
-      .WithArgs(BluetoothPlistFilePath(),
+      .WithArgs(base::FilePath(kBluetoothPlistFilePath),
                 base::FilePathWatcher::Type::kNonRecursive,
                 base::BindRepeating(&BluetoothLowEnergyDeviceWatcherMac::
                                         OnPropertyListFileChangedAndRunCallback,
@@ -132,7 +127,8 @@ void BluetoothLowEnergyDeviceWatcherMac::ReadBluetoothPropertyListFile() {
       FROM_HERE,
       base::BindOnce(&BluetoothLowEnergyDeviceWatcherMac::
                          OnPropertyListFileChangedOnFileThread,
-                     BluetoothPlistFilePath(), false /* error */),
+                     base::FilePath(kBluetoothPlistFilePath),
+                     false /* error */),
       base::BindOnce(&BluetoothLowEnergyDeviceWatcherMac::
                          RunLowEnergyDeviceListUpdatedCallback,
                      weak_ptr_factory_.GetWeakPtr()));

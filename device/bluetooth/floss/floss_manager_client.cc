@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
@@ -33,19 +34,21 @@ using internal::AdapterWithEnabled;
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     AdapterWithEnabled* adapter) {
-  static FlossDBusClient::StructReader<AdapterWithEnabled> struct_reader({
-      {"hci_interface", CreateFieldReader(&AdapterWithEnabled::adapter)},
-      {"enabled", CreateFieldReader(&AdapterWithEnabled::enabled)},
-  });
+  static base::NoDestructor<FlossDBusClient::StructReader<AdapterWithEnabled>>
+      struct_reader(FlossDBusClient::StructReader<AdapterWithEnabled>({
+          {"hci_interface", CreateFieldReader(&AdapterWithEnabled::adapter)},
+          {"enabled", CreateFieldReader(&AdapterWithEnabled::enabled)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, adapter);
+  return struct_reader->ReadDBusParam(reader, adapter);
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo<AdapterWithEnabled>(
     const AdapterWithEnabled* unused) {
-  static DBusTypeInfo info{"a{sv}", "AdapterWithEnabled"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "AdapterWithEnabled"}};
+  return *info;
 }
 
 // static

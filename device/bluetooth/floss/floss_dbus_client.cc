@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "dbus/message.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
@@ -51,100 +52,102 @@ std::string Error::ToString() {
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const bool*) {
-  static DBusTypeInfo info{"b", "bool"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"b", "bool"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const uint8_t*) {
-  static DBusTypeInfo info{"y", "uint8_t"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"y", "uint8_t"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const int8_t*) {
-  static DBusTypeInfo info{"n", "int8"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"n", "int8"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const uint16_t*) {
-  static DBusTypeInfo info{"q", "uint16"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"q", "uint16"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const int16_t*) {
-  static DBusTypeInfo info{"n", "int16"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"n", "int16"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const uint32_t*) {
-  static DBusTypeInfo info{"u", "uint32"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"u", "uint32"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const int32_t*) {
-  static DBusTypeInfo info{"i", "int32"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"i", "int32"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const uint64_t*) {
-  static DBusTypeInfo info{"t", "uint64"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"t", "uint64"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const int64_t*) {
-  static DBusTypeInfo info{"x", "int64"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"x", "int64"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const double*) {
-  static DBusTypeInfo info{"d", "double"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"d", "double"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const std::string*) {
-  static DBusTypeInfo info{"s", "string"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"s", "string"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const dbus::ObjectPath*) {
-  static DBusTypeInfo info{"o", "object_path"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"o", "object_path"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const base::ScopedFD*) {
-  static DBusTypeInfo info{"h", "FD"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"h", "FD"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const FlossDeviceId*) {
-  static DBusTypeInfo info{"a{sv}", "FlossDeviceId"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "FlossDeviceId"}};
+  return *info;
 }
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(
     const FlossAdapterClient::VendorProductInfo*) {
-  static DBusTypeInfo info{"a{sv}", "VendorProductInfo"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "VendorProductInfo"}};
+  return *info;
 }
 
 template <>
 DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo& GetDBusTypeInfo(
     const device::BluetoothUUID*) {
-  static DBusTypeInfo info{"ay", "BluetoothUUID"};
-  return info;
+  static const base::NoDestructor<DBusTypeInfo> info{{"ay", "BluetoothUUID"}};
+  return *info;
 }
 
 FlossDBusClient::FlossDBusClient() = default;
@@ -420,12 +423,13 @@ template bool FlossDBusClient::ReadDBusParam<base::ScopedFD>(
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     FlossDeviceId* device) {
-  static StructReader<FlossDeviceId> struct_reader({
-      {"address", CreateFieldReader(&FlossDeviceId::address)},
-      {"name", CreateFieldReader(&FlossDeviceId::name)},
-  });
+  static base::NoDestructor<StructReader<FlossDeviceId>> struct_reader(
+      StructReader<FlossDeviceId>({
+          {"address", CreateFieldReader(&FlossDeviceId::address)},
+          {"name", CreateFieldReader(&FlossDeviceId::name)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, device);
+  return struct_reader->ReadDBusParam(reader, device);
 }
 
 // static
@@ -433,18 +437,21 @@ template <>
 bool FlossDBusClient::ReadDBusParam(
     dbus::MessageReader* reader,
     FlossAdapterClient::VendorProductInfo* vpi) {
-  static StructReader<FlossAdapterClient::VendorProductInfo> struct_reader({
-      {"vendor_id_src",
-       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::vendorIdSrc)},
-      {"vendor_id",
-       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::vendorId)},
-      {"product_id",
-       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::productId)},
-      {"version",
-       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::version)},
-  });
+  static base::NoDestructor<StructReader<FlossAdapterClient::VendorProductInfo>>
+      struct_reader(StructReader<FlossAdapterClient::VendorProductInfo>({
+          {"vendor_id_src",
+           CreateFieldReader(
+               &FlossAdapterClient::VendorProductInfo::vendorIdSrc)},
+          {"vendor_id",
+           CreateFieldReader(&FlossAdapterClient::VendorProductInfo::vendorId)},
+          {"product_id",
+           CreateFieldReader(
+               &FlossAdapterClient::VendorProductInfo::productId)},
+          {"version",
+           CreateFieldReader(&FlossAdapterClient::VendorProductInfo::version)},
+      }));
 
-  return struct_reader.ReadDBusParam(reader, vpi);
+  return struct_reader->ReadDBusParam(reader, vpi);
 }
 
 // static
