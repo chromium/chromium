@@ -22,6 +22,7 @@ using ToolRequestVariant = std::variant<
     AttemptLoginToolRequest,
     AttemptFormFillingToolRequest,
     AttemptOtpFillingToolRequest,
+    ChangePasswordToolRequest,
     ClickToolRequest,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     CloseTabToolRequest,

@@ -39,6 +39,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const AttemptOtpFillingToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
+  void Apply(const ChangePasswordToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
   void Apply(const ClickToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }

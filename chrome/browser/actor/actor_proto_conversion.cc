@@ -31,6 +31,7 @@
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/change_password_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
@@ -70,6 +71,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -99,6 +101,7 @@ using apc::ActivateWindowAction;
 using apc::AttemptFormFillingAction;
 using apc::AttemptLoginAction;
 using apc::AttemptOtpFillingAction;
+using apc::ChangePasswordAction;
 using apc::ClickAction;
 using apc::ClickToUploadAction;
 using apc::CloseTabAction;
@@ -722,6 +725,20 @@ std::unique_ptr<ToolRequest> CreateAttemptOtpFillingRequest(
       ToActorOtpType(action.predicted_otp_type()));
 }
 
+std::unique_ptr<ToolRequest> CreateChangePasswordRequest(
+    const ChangePasswordAction& action) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kChangePasswordTool)) {
+    return nullptr;
+  }
+
+  const tabs::TabHandle tab_handle = GetTabHandle(action);
+  if (tab_handle == TabHandle::Null()) {
+    return nullptr;
+  }
+  return std::make_unique<ChangePasswordToolRequest>(tab_handle);
+}
+
 std::unique_ptr<ToolRequest> CreateScriptToolRequest(
     const ScriptToolAction& action) {
   if (!base::FeatureList::IsEnabled(actor::kGlicActorEnableScriptTools)) {
@@ -903,6 +920,11 @@ CreateToolRequest(const optimization_guide::proto::Action& action) {
       const AttemptOtpFillingAction& attempt_otp_fill_action =
           action.attempt_otp_filling();
       return CreateAttemptOtpFillingRequest(attempt_otp_fill_action);
+    }
+    case optimization_guide::proto::Action::kChangePassword: {
+      const ChangePasswordAction& change_password_action =
+          action.change_password();
+      return CreateChangePasswordRequest(change_password_action);
     }
     case optimization_guide::proto::Action::kScriptTool: {
       const ScriptToolAction& script_tool_action = action.script_tool();

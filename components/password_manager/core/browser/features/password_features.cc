@@ -152,6 +152,9 @@ BASE_FEATURE(kPasswordCompromiseWarningInDetailsCard,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// Enables the actor PasswordChangeTool.
+BASE_FEATURE(kChangePasswordTool, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Temporarily disabled as mitigation for crbug.com/485895402.
 BASE_FEATURE(kPasswordDateLastFilled, base::FEATURE_DISABLED_BY_DEFAULT);
 

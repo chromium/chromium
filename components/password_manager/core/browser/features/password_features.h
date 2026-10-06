@@ -166,6 +166,9 @@ extern const base::FeatureParam<int> kPassDeletionOriginMinGmsVersion;
 BASE_DECLARE_FEATURE(kPasswordCompromiseWarningInDetailsCard);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// Enables the actor PasswordChangeTool.
+BASE_DECLARE_FEATURE(kChangePasswordTool);
+
 // Populate the `date_last_filled` timestamp for passwords.
 BASE_DECLARE_FEATURE(kPasswordDateLastFilled);
 

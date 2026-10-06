@@ -245,6 +245,9 @@ ExperimentalActorPerformActionsFunction::Run() {
         ConvertActionTabId(action.mutable_attempt_otp_filling(),
                            browser_context());
         break;
+      case optimization_guide::proto::Action::kChangePassword:
+        ConvertActionTabId(action.mutable_change_password(), browser_context());
+        break;
       case optimization_guide::proto::Action::kTranslatePage:
         ConvertActionTabId(action.mutable_translate_page(), browser_context());
         break;

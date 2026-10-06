@@ -99,6 +99,11 @@ void SetTabIdIfMissing(optimization_guide::proto::Action& action,
         action.mutable_attempt_otp_filling()->set_tab_id(tab_id);
       }
       break;
+    case optimization_guide::proto::Action::kChangePassword:
+      if (!action.change_password().has_tab_id()) {
+        action.mutable_change_password()->set_tab_id(tab_id);
+      }
+      break;
     case optimization_guide::proto::Action::kTranslatePage:
       if (!action.translate_page().has_tab_id()) {
         action.mutable_translate_page()->set_tab_id(tab_id);
