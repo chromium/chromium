@@ -2405,8 +2405,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       CreateOrderProto({.id = u"INVALID_URL_SOURCE",
                         .date = u"2025-06-01",
                         .merchant_name = u"Store"});
-  invalid_url_order.add_source_references()->mutable_gmail()->set_message_url(
-      "invalid_url");
+  personal_context::proto::GmailReference* invalid_gmail =
+      invalid_url_order.add_source_references()->mutable_gmail();
+  invalid_gmail->mutable_message_urls()->set_desktop_web_url("invalid_url");
+  invalid_gmail->mutable_message_urls()->set_mobile_web_url("invalid_url");
   *response.add_entities() = std::move(invalid_url_order);
 
   // 4. Order with a valid Gmail source reference -> kValid
@@ -2416,7 +2418,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
                         .merchant_name = u"Store"});
   personal_context::proto::GmailReference* valid_gmail =
       valid_order.add_source_references()->mutable_gmail();
-  valid_gmail->set_message_url("https://mail.google.com/mail/u/0/#inbox/123");
+  valid_gmail->mutable_message_urls()->set_desktop_web_url(
+      "https://mail.google.com/mail/#inbox/123");
+  valid_gmail->mutable_message_urls()->set_mobile_web_url(
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/123");
   valid_gmail->set_subject("Order Confirmation");
   *response.add_entities() = std::move(valid_order);
 
