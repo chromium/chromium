@@ -194,6 +194,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAiOverlayDialog,
     &features::kAndroidAnimatedProgressBarInBrowser,
     &features::kBackForwardCache,
+    &features::kBrowserControlsExtraHideGestures,
     &features::kBrowserControlsScrollSnapAnimation,
     &features::kDisplayEdgeToEdgeFullscreen,
     &features::kElasticOverscroll,

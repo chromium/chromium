@@ -1559,6 +1559,15 @@
     "expiry_milestone": 160
   },
   {
+    "name": "browser-controls-extra-hide-gestures",
+    "owners": [
+      "mfiaz@google.com",
+      "ckitagawa@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "browser-controls-scroll-snap-animation",
     "owners": [
       "anandrv@google.com",

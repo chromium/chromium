@@ -13773,6 +13773,7 @@ from previous Chrome versions.
       label="AutofillAiWalletPrivatePassesDeepLink:enabled"/>
   <int value="-353182790" label="ConsistentOmniboxGeolocation:disabled"/>
   <int value="-353180213" label="DevicePosture:disabled"/>
+  <int value="-352848299" label="BrowserControlsExtraHideGestures:disabled"/>
   <int value="-352731236" label="DIPS:enabled"/>
   <int value="-352377362" label="FedCmIframeOrigin:disabled"/>
   <int value="-352196997" label="CCTGoogleBottomBar:enabled"/>
@@ -21884,6 +21885,7 @@ from previous Chrome versions.
   <int value="2110109003" label="WebAssemblyRelaxedSimd:disabled"/>
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
   <int value="2111225495" label="NewTabPageTriggerForPrerender2:enabled"/>
+  <int value="2111765521" label="BrowserControlsExtraHideGestures:enabled"/>
   <int value="2112289297" label="DiacriticsUseReplaceSurroundingText:disabled"/>
   <int value="2112312086" label="EditContext:disabled"/>
   <int value="2112534003" label="GtsCloseTabAnimation:disabled"/>

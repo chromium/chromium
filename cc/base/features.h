@@ -332,6 +332,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizHitTestRoundedCorners);
 // alignment offsets for snapshot textures.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionsNewRoundingChange);
 
+// When enabled, allows hiding browser controls via additional swipe and scroll
+// gestures, such as swiping on the toolbar or scrolling on non-scrollable
+// pages.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsExtraHideGestures);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

@@ -4195,6 +4195,13 @@ inline constexpr char kBrowserControlsScrollSnapAnimationDialogDescription[] =
     "with the user's finger during scroll. They will instead snap to fully "
     "show or hide";
 
+inline constexpr char kBrowserControlsExtraHideGesturesName[] =
+    "Browser controls extra hide gestures";
+inline constexpr char kBrowserControlsExtraHideGesturesDescription[] =
+    "When enabled, allows hiding browser controls via additional swipe and "
+    "scroll gestures, such as swiping on the toolbar or scrolling on "
+    "non-scrollable pages.";
+
 inline constexpr char kGlobalCacheListForGatingNotificationProtectionsName[] =
     "Global cache list for gating notification protections";
 inline constexpr char
