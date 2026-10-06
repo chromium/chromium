@@ -66,6 +66,16 @@
   testRunner.log(await request('resources/a.html', ruleIds));
   testRunner.log(await request('resources/a.html?foobar', ruleIds));
 
+  testRunner.log('Applies conditions with named port group:');
+  ruleIds.push(...await setConditions([
+    {
+      urlPattern: '*://127.0.0.1::port/*/a.html',
+      latency: 0.5,
+    },
+  ]));
+  testRunner.log(await request('resources/a.html', ruleIds));
+  testRunner.log(await request('resources/b.html', ruleIds));
+
   testRunner.log('Applies global condtitions when no pattern is matching:');
   ruleIds.push(...await setConditions([{
     urlPattern: '',
@@ -74,11 +84,25 @@
   testRunner.log(await request('resources/a.html', ruleIds));
   testRunner.log(await request('resources/b.html', ruleIds));
 
-  testRunner.log('Ignores invalid patterns:');
-  ruleIds.push(...await setConditions([{
-    urlPattern: 'ht tp://*:*/*/a.html',
-    latency: 0.5,
-  }]));
+  testRunner.log('Rejects invalid patterns:');
+  testRunner.log(await dp.Network.emulateNetworkConditionsByRule({
+    matchedNetworkConditions: [{
+      urlPattern: 'ht tp://*:*/*/a.html',
+      offline: false,
+      latency: 0.5,
+      downloadThroughput: 0,
+      uploadThroughput: 0,
+    }],
+  }));
+  testRunner.log(await dp.Network.emulateNetworkConditionsByRule({
+    matchedNetworkConditions: [{
+      urlPattern: '*.html',
+      offline: false,
+      latency: 0.5,
+      downloadThroughput: 0,
+      uploadThroughput: 0,
+    }],
+  }));
   testRunner.log(await request('resources/a.html', ruleIds));
   testRunner.log(await request('resources/b.html', ruleIds));
 

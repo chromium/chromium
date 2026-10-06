@@ -611,6 +611,50 @@ TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
        .match_urls = {"https://example.com", "https://example.com/"},
        .non_match_urls = {"https://example.net/", "https://example.com/piyo/"}},
 
+      // Named group in port with wildcard pathname
+      {.constructor_string = "*://127.0.0.1::port/*",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"*", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"127.0.0.1",
+           /*port=*/":port", /*pathname=*/"/*",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"http://127.0.0.1:8080/", "http://127.0.0.1:8080/secret",
+                      "https://127.0.0.1:8443/foo/bar"},
+       .non_match_urls = {"http://127.0.0.1/", "https://127.0.0.1:443/",
+                          "http://example.com:8080/"}},
+
+      // Named group in port with specific pathname
+      {.constructor_string = "*://127.0.0.1::port/secret",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/"*", /*username=*/std::nullopt,
+           /*password=*/std::nullopt, /*hostname=*/"127.0.0.1",
+           /*port=*/":port", /*pathname=*/"/secret",
+           /*search=*/std::nullopt,
+           /*hash=*/std::nullopt),
+       .match_urls = {"http://127.0.0.1:8080/secret",
+                      "https://127.0.0.1:8443/secret?query=1"},
+       .non_match_urls = {"http://127.0.0.1:8080/public",
+                          "http://127.0.0.1/secret"}},
+
+      // Named groups in delimiter-less components (protocol, username,
+      // password, port, search, hash)
+      {.constructor_string =
+           ":proto://:user::pass@example.com::port/path?foo=:bar#section-:id",
+       .expected_pattern = ExpectPatternInit(
+           /*protocol=*/":proto", /*username=*/":user",
+           /*password=*/":pass", /*hostname=*/"example.com",
+           /*port=*/":port", /*pathname=*/"/path",
+           /*search=*/"foo=:bar",
+           /*hash=*/"section-:id"),
+       .match_urls =
+           {"https://alice:secret@example.com:8443/path?foo=baz#section-42"},
+       .non_match_urls =
+           {"https://example.com:8443/path?foo=baz#section-42",
+            "https://alice:secret@example.com/path?foo=baz#section-42",
+            "https://alice:secret@example.com:8443/path?foo=#section-42",
+            "https://alice:secret@example.com:8443/path?foo=baz#section-"}},
+
       // Test cases for SimpleUrlPatternMatcher creation failure
 
       // Relative path with a query string with a non-standard protocol
@@ -653,9 +697,13 @@ TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
       {.constructor_string = "\t://example.com/",
        .expected_error = "Failed to parse pattern for protocol"},
 
-      // Unsupported regexp group
+      // Unsupported regexp group (pathname)
       {.constructor_string = "https://example.com/(\\d+)/",
-       .expected_error = "Regexp groups are not supported for pathname"}};
+       .expected_error = "Regexp groups are not supported for pathname"},
+
+      // Unsupported regexp group (port)
+      {.constructor_string = "https://example.com:(\\d+)/",
+       .expected_error = "Regexp groups are not supported for port"}};
 
   for (const auto& test : test_cases) {
     SCOPED_TRACE(base::StrCat(

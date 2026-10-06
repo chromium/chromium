@@ -138,7 +138,17 @@ SimpleUrlPatternMatcher::Component::Create(
   }
   std::unique_ptr<re2::RE2> regex;
   if (!parse_result->CanDirectMatch()) {
-    const std::string regex_string = parse_result->GenerateRegexString();
+    std::string regex_string = parse_result->GenerateRegexString();
+    if (options.delimiter_list.empty()) {
+      // When `delimiter_list` is empty, `liburlpattern` generates the
+      // ECMAScript segment wildcard regexp `[^]+?`, which is invalid in RE2
+      // (where `[^]` treats `]` as a literal character inside an unclosed
+      // character class). Since custom regexp groups are rejected above and
+      // fixed text is escaped, `[^]+?` can only originate from a segment
+      // wildcard part. Replace it with `.+?` for RE2 compatibility (matching
+      // `kFullWildcardRegex` which uses `.*`).
+      base::ReplaceSubstringsAfterOffset(&regex_string, 0, "[^]+?", ".+?");
+    }
     regex = std::make_unique<RE2>(regex_string);
     if (!regex->ok()) {
       return base::unexpected(

@@ -33,6 +33,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_io_context.h"
@@ -2673,12 +2674,20 @@ Response NetworkHandler::EmulateNetworkConditionsByRule(
         matched_network_conditions,
     std::unique_ptr<protocol::Array<String>>* rule_ids_result) {
   std::vector<network::mojom::MatchedNetworkConditionsPtr> matched_conditions;
-  *rule_ids_result = std::make_unique<protocol::Array<String>>();
+  auto rule_ids = std::make_unique<protocol::Array<String>>();
   for (auto& matched_condition : *matched_network_conditions) {
+    const std::string& pattern = matched_condition->GetUrlPattern();
+    if (!pattern.empty() &&
+        !url_pattern::SimpleUrlPatternMatcher::Create(pattern,
+                                                      /*base_url=*/nullptr)
+             .has_value()) {
+      return Response::InvalidParams(base::StrCat(
+          {"Pattern \"", pattern, "\" failed to parse as a URLPattern."}));
+    }
     auto rule_id = base::UnguessableToken::Create();
     network::mojom::MatchedNetworkConditionsPtr conditions =
         network::mojom::MatchedNetworkConditions::New();
-    conditions->pattern = matched_condition->GetUrlPattern();
+    conditions->pattern = pattern;
     conditions->conditions = network::mojom::NetworkConditions::New();
     conditions->conditions->offline =
         offline.has_value() ? offline.value()
@@ -2695,9 +2704,10 @@ Response NetworkHandler::EmulateNetworkConditionsByRule(
     conditions->conditions->packet_reordering =
         matched_condition->GetPacketReordering(false);
     conditions->conditions->rule_id = rule_id;
-    rule_ids_result->get()->push_back(rule_id.ToString());
+    rule_ids->push_back(rule_id.ToString());
     matched_conditions.emplace_back(std::move(conditions));
   }
+  *rule_ids_result = std::move(rule_ids);
   SetNetworkConditions(
       std::move(matched_conditions),
       emulate_offline_service_worker.value_or(offline.value_or(false)));

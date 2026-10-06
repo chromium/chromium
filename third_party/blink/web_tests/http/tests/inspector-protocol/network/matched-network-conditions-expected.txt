@@ -20,22 +20,47 @@ Applies condtitions only to matching requests:
     appliedNetworkConditionsId : 0
     url : undefined
 }
+Applies conditions with named port group:
+{
+    appliedNetworkConditionsId : 2
+    url : undefined
+}
+{
+    appliedNetworkConditionsId : -1
+    url : undefined
+}
 Applies global condtitions when no pattern is matching:
 {
-    appliedNetworkConditionsId : 2
+    appliedNetworkConditionsId : 3
     url : undefined
 }
 {
-    appliedNetworkConditionsId : 2
+    appliedNetworkConditionsId : 3
     url : undefined
 }
-Ignores invalid patterns:
+Rejects invalid patterns:
 {
-    appliedNetworkConditionsId : -1
+    error : {
+        code : -32602
+        message : Pattern "ht tp://*:*/*/a.html" failed to parse as a URLPattern.
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Pattern "*.html" failed to parse as a URLPattern.
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    appliedNetworkConditionsId : 3
     url : undefined
 }
 {
-    appliedNetworkConditionsId : -1
+    appliedNetworkConditionsId : 3
     url : undefined
 }
 
