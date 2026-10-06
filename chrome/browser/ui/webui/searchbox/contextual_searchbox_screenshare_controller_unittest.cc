@@ -694,6 +694,38 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
   EXPECT_FALSE(future.Get().has_value());
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(ContextualSearchboxScreenshareControllerTest,
+       CaptureRegionScreenshot_NoPickerDelayOnWindows) {
+  // Restore production delay behavior (no testing override).
+  controller().set_screen_capture_delay_for_testing(std::nullopt);
+
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  bool overlay_shown = false;
+  EXPECT_CALL(delegate(), ShowRegionSelectOverlay)
+      .WillOnce([&](const SkBitmap& screenshot,
+                    const ContextualSearchboxScreenshareController::
+                        RegionCaptureSource& source,
+                    ContextualSearchboxScreenshareController::Delegate::
+                        RegionSelectedCallback callback) {
+        overlay_shown = true;
+        std::move(callback).Run(SkBitmap());
+      });
+
+  content::desktop_capture::ScopedDesktopCapturerForTesting scoped_capturer(
+      std::make_unique<FakeDesktopCapturer>(webrtc::DesktopSize(1000, 800)));
+
+  base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
+  controller().CaptureRegionScreenshot(future.GetCallback());
+
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_TRUE(overlay_shown);
+  // Under TimeSource::MOCK_TIME, `future.Get()` only advances mock time if a
+  // delayed task was posted. Verify that no 500ms picker close delay elapsed.
+  EXPECT_EQ(base::TimeTicks::Now() - start_time, base::TimeDelta());
+}
+#endif
+
 #if BUILDFLAG(IS_MAC)
 using content::desktop_capture::ScopedNativePickerForTesting;
 
