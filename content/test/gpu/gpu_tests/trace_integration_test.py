@@ -926,6 +926,7 @@ WHERE
   category = '{category}'
   AND name = '{_SWAP_CHAIN_PRESENT_EVENT_NAME}'
   AND args.arg_set_id = slices.arg_set_id
+ORDER BY slices.id
 """
     for row in trace_processor.query(swap_event_query):
       value = None
@@ -950,7 +951,14 @@ WHERE
         return
       self.fail(f'No {_SWAP_CHAIN_PRESENT_EVENT_NAME} events found')
 
-    for event_id, event_args in swap_events.items():
+    # Skip the first swap event when multiple events are recorded, as the very
+    # first presented frame can occur during initial layout/overlay transition
+    # before steady-state presentation settles.
+    events_to_check = list(swap_events.items())
+    if len(events_to_check) > 1:
+      events_to_check = events_to_check[1:]
+
+    for event_id, event_args in events_to_check:
       detected_pixel_format = event_args.get(pixel_format_key, None)
       if detected_pixel_format is None:
         self.fail(

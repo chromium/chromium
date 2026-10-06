@@ -26,7 +26,12 @@ const parsedString = (function (names) {
   return pairs;
 })(window.location.search.substr(1).split('&'));
 
+var videoSizeSet = false;
+
 function setVideoSize() {
+  if (videoSizeSet)
+    return;
+  videoSizeSet = true;
   let width = '240';
   let height = '135';
 
@@ -41,6 +46,16 @@ function setVideoSize() {
   video.height = height;
   logOutput(`Video size:${video.width}x${video.height}`);
 }
+
+// Apply the target video size as soon as the DOM is parsed so the initial
+// layout does not transiently use the video's intrinsic dimensions before
+// window.onload fires.
+window.addEventListener('DOMContentLoaded', () => {
+  video = document.getElementById('video');
+  if (video) {
+    setVideoSize();
+  }
+});
 
 function getParametersTesting() {
   let swapsString = parsedString['swaps'];
