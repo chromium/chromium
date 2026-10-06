@@ -5,18 +5,13 @@
 #import "ios/chrome/browser/settings/autofill/payments/ui/autofill_add_credit_card_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_settings_util.h"
 #import "ios/chrome/browser/settings/autofill/payments/ui/autofill_add_credit_card_view_controller_delegate.h"
-#import "ios/chrome/browser/settings/autofill/payments/ui/autofill_add_credit_card_view_controller_presentation_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -34,7 +29,6 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierName = kSectionIdentifierEnumZero,
   SectionIdentifierCreditCardDetails,
-  SectionIdentifierCameraButton,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -44,7 +38,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeExpirationYear,
   ItemTypeCardNickname,
   ItemTypeCardCvc,
-  ItemTypeUseCameraButton,
 };
 
 }  // namespace
@@ -157,43 +150,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
   [model addItem:cardCvcItem
       toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillCreditCardScannerIos)) {
-    TableViewTextItem* cameraButtonItem =
-        [[TableViewTextItem alloc] initWithType:ItemTypeUseCameraButton];
-    cameraButtonItem.textColor = [UIColor colorNamed:kBlueColor];
-    cameraButtonItem.text = l10n_util::GetNSString(
-        IDS_IOS_AUTOFILL_ADD_CREDIT_CARD_OPEN_CAMERA_BUTTON_LABEL);
-    cameraButtonItem.accessibilityTraits |= UIAccessibilityTraitButton;
-
-    [model addSectionWithIdentifier:SectionIdentifierCameraButton];
-    [model addItem:cameraButtonItem
-        toSectionWithIdentifier:SectionIdentifierCameraButton];
-  }
-}
-
-#pragma mark - UITableViewDelegate
-
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
-          ItemTypeUseCameraButton &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillCreditCardScannerIos)) {
-    [self.presentationDelegate
-        addCreditCardViewControllerRequestedCameraScan:self];
-  }
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (NSIndexPath*)tableView:(UITableView*)tableView
-    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
-      ItemTypeUseCameraButton) {
-    return indexPath;
-  }
-  return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -278,46 +234,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
-#pragma mark - CreditCardScannerConsumer
-
-- (void)setCreditCardNumber:(NSString*)cardNumber
-            expirationMonth:(NSString*)expirationMonth
-             expirationYear:(NSString*)expirationYear {
-  if (cardNumber) {
-    [self updateCellForItemType:ItemTypeCardNumber
-            inSectionIdentifier:SectionIdentifierCreditCardDetails
-                       withText:cardNumber];
-  }
-
-  if (expirationMonth) {
-    [self updateCellForItemType:ItemTypeExpirationMonth
-            inSectionIdentifier:SectionIdentifierCreditCardDetails
-                       withText:expirationMonth];
-  }
-
-  if (expirationYear) {
-    [self updateCellForItemType:ItemTypeExpirationYear
-            inSectionIdentifier:SectionIdentifierCreditCardDetails
-                       withText:expirationYear];
-  }
-}
-
 #pragma mark - AutofillEditTableViewController
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
-  switch (itemType) {
-    case ItemTypeName:
-    case ItemTypeCardNumber:
-    case ItemTypeExpirationMonth:
-    case ItemTypeExpirationYear:
-    case ItemTypeCardNickname:
-    case ItemTypeCardCvc:
-      return YES;
-    case ItemTypeUseCameraButton:
-      return NO;
-  }
-  NOTREACHED();
+  return YES;
 }
 
 #pragma mark - Private
@@ -371,20 +291,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
           [self.tableViewModel itemAtIndexPath:path]);
   NSString* text = item.textFieldValue;
   return text;
-}
-
-// Updates TableView cell of `itemType` in `sectionIdentifier` textfieldValue
-// with `text`.
-- (void)updateCellForItemType:(NSInteger)itemType
-          inSectionIdentifier:(NSInteger)sectionIdentifier
-                     withText:(NSString*)text {
-  NSIndexPath* path =
-      [self.tableViewModel indexPathForItemType:itemType
-                              sectionIdentifier:sectionIdentifier];
-  AutofillCreditCardEditItem* item =
-      base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(
-          [self.tableViewModel itemAtIndexPath:path]);
-  [item updateTextFieldValue:text];
 }
 
 // Dimisses this view controller when Cancel button is tapped.

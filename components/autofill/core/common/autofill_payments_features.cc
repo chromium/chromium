@@ -17,12 +17,6 @@ BASE_FEATURE(kAllowReentryFromRespondToDelegate,
 BASE_FEATURE(kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_IOS)
-// When enabled, users are given the option to use their phone camera to scan
-// their credit card when adding it via Autofill iOS settings.
-BASE_FEATURE(kAutofillCreditCardScannerIos, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Enables testing BNPL in countries where it would otherwise be disabled. This
 // is a testing flag that should never be enabled.
 BASE_FEATURE(kAutofillDisableBnplCountryCheckForTesting,

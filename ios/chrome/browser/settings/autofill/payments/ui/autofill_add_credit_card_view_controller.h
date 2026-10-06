@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/settings/autofill/ui/autofill_edit_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
 
 // Accessibility identifier for the 'Add Credit Card' view.
 extern NSString* const kAddCreditCardViewID;
@@ -18,11 +17,9 @@ extern NSString* const kSettingsAddCreditCardButtonID;
 extern NSString* const kSettingsAddCreditCardCancelButtonID;
 
 @protocol AddCreditCardViewControllerDelegate;
-@protocol AddCreditCardViewControllerPresentationDelegate;
 
 // The view controller for adding new credit card.
-@interface AutofillAddCreditCardViewController
-    : AutofillEditTableViewController <CreditCardScannerConsumer>
+@interface AutofillAddCreditCardViewController : AutofillEditTableViewController
 
 // Initializes a AutofillAddCreditCardViewController with passed delegate.
 - (instancetype)initWithDelegate:
@@ -33,9 +30,6 @@ extern NSString* const kSettingsAddCreditCardCancelButtonID;
 // Returns "YES" if any of tableview cells has user input.
 @property(nonatomic, getter=tableViewHasUserInput, readonly)
     BOOL tableViewHasUserInput;
-
-@property(nonatomic, weak) id<AddCreditCardViewControllerPresentationDelegate>
-    presentationDelegate;
 
 @end
 

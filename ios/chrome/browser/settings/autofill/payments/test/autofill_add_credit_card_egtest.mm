@@ -3,19 +3,16 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::IconViewForCellWithLabelId;
 using chrome_test_util::PaymentMethodsButton;
 using chrome_test_util::SettingsToolbarAddButton;
@@ -58,12 +55,6 @@ id<GREYMatcher> CvcField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_SECURITY_CODE);
 }
 
-// Matcher for the 'Use Camera' button in the add credit card view.
-id<GREYMatcher> UseCameraButton() {
-  return ButtonWithAccessibilityLabelId(
-      IDS_IOS_AUTOFILL_ADD_CREDIT_CARD_OPEN_CAMERA_BUTTON_LABEL);
-}
-
 // Matcher for the 'Card Number' text field in the add credit card view.
 id<GREYMatcher> CardNumberTextField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_CARD_NUMBER);
@@ -101,17 +92,6 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 @end
 
 @implementation AutofillAddCreditCardTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  // Add feature configs here.
-  if ([self isRunningTest:@selector(
-                              testUseCameraButtonShownWhenFeatureEnabled)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillCreditCardScannerIos);
-  }
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -151,20 +131,10 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:CvcField()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  // The 'Use Camera' button is currently behind a flag and should not be shown
-  // by default.
-  [[EarlGrey selectElementWithMatcher:UseCameraButton()]
-      assertWithMatcher:grey_nil()];
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::AddCreditCardCancelButton()]
       performAction:grey_tap()];
-}
-
-// This test is run with the kAutofillCreditCardScannerIos feature enabled.
-- (void)testUseCameraButtonShownWhenFeatureEnabled {
-  [[EarlGrey selectElementWithMatcher:UseCameraButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Test top toolbar buttons

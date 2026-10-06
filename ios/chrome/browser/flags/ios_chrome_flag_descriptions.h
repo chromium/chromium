@@ -228,12 +228,6 @@ inline constexpr char kAutofillBottomSheetNewBlurDescription[] =
     "Enables a new method for blurring the autofill bottom sheet to prevent "
     "the keyboard from showing up. This uses `mousedown` instead of `focus`.";
 
-inline constexpr char kAutofillCreditCardScannerIosName[] =
-    "Enable the credit card scanner for Autofill";
-inline constexpr char kAutofillCreditCardScannerIosDescription[] =
-    "When enabled, users are offered the ability to use their phone camera to "
-    "scan their credit card when adding it to Chrome Autofill";
-
 inline constexpr char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 inline constexpr char kAutofillCreditCardUploadDescription[] =
