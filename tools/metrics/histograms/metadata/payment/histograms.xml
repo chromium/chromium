@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.GetSecurePaymentConfirmationCapabilities.BrowserBoundKeyHardware"
-    enum="Boolean" expires_after="2027-03-01">
+    enum="Boolean" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyInclusion"
     enum="SecurePaymentConfirmationBrowserBoundKeyInclusionResult"
-    expires_after="2027-03-21">
+    expires_after="2027-09-01">
   <owner>slobodan@chromium.org</owner>
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.DeviceSupportsHardwareKeysLatency.{DeviceSupportsHardwareKeysResult}"
-    units="ms" expires_after="2027-03-01">
+    units="ms" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
-    expires_after="2027-03-07">
+    expires_after="2027-09-01">
   <owner>slobodan@chromium.org</owner>
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
@@ -508,7 +508,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
-    expires_after="2027-03-21">
+    expires_after="2027-09-01">
   <owner>slobodan@chromium.org</owner>
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
@@ -552,7 +552,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Fallback.NoAuthenticator"
-    enum="Boolean" expires_after="2027-07-01">
+    enum="Boolean" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Fallback.NoCredential"
-    enum="Boolean" expires_after="2027-07-01">
+    enum="Boolean" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -591,7 +591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.SecurePaymentConfirmation.LocaleOutcome"
-    enum="SecurePaymentConfirmationLocaleOutcome" expires_after="2027-08-01">
+    enum="SecurePaymentConfirmationLocaleOutcome" expires_after="2027-09-01">
   <owner>nikifork@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.SecurePaymentConfirmation.Transaction.Outcome"
-    enum="SecurePaymentRequestOutcome" expires_after="2027-03-21">
+    enum="SecurePaymentRequestOutcome" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -621,7 +621,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.UserVerifyingPlatformAuthenticatorAvailable"
-    enum="Boolean" expires_after="2027-07-01">
+    enum="Boolean" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
