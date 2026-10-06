@@ -43,18 +43,54 @@ def _SqlString(s):
   return "'%s'" % s.replace("'", "''")
 
 
+def _FindLocalTraceProcessor():
+  """Find a locally built trace_processor_shell binary if available."""
+  executable_names = [TP_BINARY_NAME, TP_BINARY_NAME + '.exe']
+  search_dirs = [os.getcwd()]
+  chromium_output_dir = os.environ.get('CHROMIUM_OUTPUT_DIR')
+  if chromium_output_dir:
+    search_dirs.insert(0, chromium_output_dir)
+
+  for directory in search_dirs:
+    for executable_name in executable_names:
+      candidate_path = os.path.abspath(os.path.join(directory, executable_name))
+      if os.path.isfile(candidate_path):
+        return candidate_path
+  return None
+
+
+def _CanRunTraceProcessor(trace_processor_path):
+  """Check if the trace processor executable can run on the current host."""
+  try:
+    _RunTraceProcessor(trace_processor_path, '--version')
+    return True
+  except (OSError, RuntimeError):
+    return False
+
+
 def _EnsureTraceProcessor(trace_processor_path):
   global _fetched_trace_processor
 
   if trace_processor_path is None:
     with _fetch_lock:
       if not _fetched_trace_processor:
-        _fetched_trace_processor = binary_deps_manager.FetchHostBinary(
+        fetched_path = binary_deps_manager.FetchHostBinary(
           TP_BINARY_NAME
         )
         logging.info(
-          'Trace processor binary downloaded to %s', _fetched_trace_processor
+          'Trace processor binary downloaded to %s', fetched_path
         )
+        if not _CanRunTraceProcessor(fetched_path):
+          local_path = _FindLocalTraceProcessor()
+          if local_path and _CanRunTraceProcessor(local_path):
+            logging.warning(
+              'Downloaded trace processor at %s cannot run on this host; '
+              'falling back to local binary at %s',
+              fetched_path,
+              local_path,
+            )
+            fetched_path = local_path
+        _fetched_trace_processor = fetched_path
     trace_processor_path = _fetched_trace_processor
 
   if not os.path.isfile(trace_processor_path):
