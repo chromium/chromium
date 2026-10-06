@@ -41,12 +41,13 @@
 
 namespace {
 
-class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
+class AppMenuDragAndDropInteractiveTest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   AppMenuDragAndDropInteractiveTest() {
-    // TODO(crbug.com/562058660): Re-enable kAppMenuGlowUp once bookmarks drag
-    // and drop is implemented in the action app menu.
-    scoped_feature_list_.InitAndDisableFeature(features::kAppMenuGlowUp);
+    scoped_feature_list_.InitWithFeatureState(features::kAppMenuGlowUp,
+                                              GetParam());
   }
   ~AppMenuDragAndDropInteractiveTest() override = default;
 
@@ -115,7 +116,7 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AppMenuDragAndDropInteractiveTest,
                        BookmarksDragAndDrop) {
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
     GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       CheckMenuItemBefore(kANodeMenuId, u"b"));
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AppMenuDragAndDropInteractiveTest,
                        BookmarksDragAndDropToNestedFolder) {
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
     GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
@@ -180,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       CheckViewProperty("a_in_b", &views::MenuItemView::title, u"a"));
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AppMenuDragAndDropInteractiveTest,
                        BookmarksDragAndDropFromNestedFolder) {
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
     GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
@@ -214,6 +215,10 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
       CheckMenuItemBefore(kANodeMenuId, u"b"));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppMenuDragAndDropInteractiveTest,
+                         testing::Bool());
 
 }  // namespace
 
