@@ -21,6 +21,8 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/local_data_description.h"
@@ -87,8 +89,10 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 }  // namespace
 
-@interface ManageSyncSettingsMediator () <AuthenticationServiceObserving,
-                                          IdentityManagerObserving>
+@interface ManageSyncSettingsMediator () <
+    AuthenticationServiceObserving,
+    IdentityManagerObserving,
+    SubscriptionEligibilityServiceObserving>
 
 // Model item for each data types.
 @property(nonatomic, strong) NSArray<TableViewItem*>* syncSwitchItems;
@@ -128,21 +132,35 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   raw_ptr<ChromeAccountManagerService> _chromeAccountManagerService;
   // The pref service.
   raw_ptr<PrefService> _prefService;
+  // Subscription eligibility service.
+  raw_ptr<subscription_eligibility::SubscriptionEligibilityService>
+      _subscriptionEligibilityService;
+  // Observer for `SubscriptionEligibilityService`.
+  std::unique_ptr<
+      subscription_eligibility::SubscriptionEligibilityObserverBridge>
+      _subscriptionEligibilityObserver;
   // Signed-in identity. Note: may be nil while signing out.
   id<SystemIdentity> _signedInIdentity;
+  // The currently displayed AI subscription tier.
+  NSInteger _displayedAITier;
 }
 
-- (instancetype)
-      initWithSyncService:(syncer::SyncService*)syncService
-          identityManager:(signin::IdentityManager*)identityManager
-    authenticationService:(AuthenticationService*)authenticationService
-    accountManagerService:(ChromeAccountManagerService*)accountManagerService
-              prefService:(PrefService*)prefService {
+- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
+                    identityManager:(signin::IdentityManager*)identityManager
+              authenticationService:
+                  (AuthenticationService*)authenticationService
+              accountManagerService:
+                  (ChromeAccountManagerService*)accountManagerService
+                        prefService:(PrefService*)prefService
+     subscriptionEligibilityService:
+         (subscription_eligibility::SubscriptionEligibilityService*)
+             subscriptionEligibilityService {
   self = [super init];
   if (self) {
     CHECK(syncService, base::NotFatalUntil::M155);
     CHECK(authenticationService, base::NotFatalUntil::M155);
     CHECK(authenticationService->SigninEnabled());
+    CHECK(subscriptionEligibilityService, base::NotFatalUntil::M156);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _identityManager = identityManager;
@@ -157,6 +175,10 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     _signedInIdentity = _authenticationService->GetPrimaryIdentity();
     CHECK(_signedInIdentity, base::NotFatalUntil::M155);
     _prefService = prefService;
+    _subscriptionEligibilityService = subscriptionEligibilityService;
+    _subscriptionEligibilityObserver = std::make_unique<
+        subscription_eligibility::SubscriptionEligibilityObserverBridge>(
+        subscriptionEligibilityService, self);
     // Register for font size change notifications
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -183,6 +205,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   self.syncErrorHandler = nullptr;
   _chromeAccountManagerService = nullptr;
   _prefService = nullptr;
+  _subscriptionEligibilityObserver.reset();
+  _subscriptionEligibilityService = nullptr;
   _signedInIdentity = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -243,8 +267,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 }
 
 // Updates the consumer when the primary account is updated.
-- (void)updatePrimaryAccountDetails {
+- (void)updatePrimaryAccountDetailsAndReload {
   if (!self.accountStateSignedIn) {
+    [self.consumer reloadTableData];
     return;
   }
   UIImage* avatarImage =
@@ -252,11 +277,14 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           _signedInIdentity, IdentityAvatarSize::Large);
   NSString* managementDescription =
       GetManagementDescription([self managementState]);
+  _displayedAITier = [self AITier];
   [self.consumer
-      updatePrimaryAccountWithAvatarImage:avatarImage
-                                     name:_signedInIdentity.userFullName
-                                    email:_signedInIdentity.userEmail
-                    managementDescription:managementDescription];
+      updateAndReloadPrimaryAccountWithAvatarImage:avatarImage
+                                   displayedAiTier:_displayedAITier
+                                              name:_signedInIdentity
+                                                       .userFullName
+                                             email:_signedInIdentity.userEmail
+                             managementDescription:managementDescription];
 }
 
 // Updates all the sync data type items, and notify the consumer if
@@ -852,7 +880,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 // Updates the consumer when the content size is updated.
 - (void)preferredContentSizeChanged:(NSNotification*)notification {
-  [self updatePrimaryAccountDetails];
+  [self updatePrimaryAccountDetailsAndReload];
 }
 
 // Called when the user taps on the button of an info cell.
@@ -1020,7 +1048,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:YES];
   // Loading the header asks the consumer to reload the data, so it should be
   // done after all sections are initially loaded.
-  [self updatePrimaryAccountDetails];
+  [self updatePrimaryAccountDetailsAndReload];
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -1042,8 +1070,23 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self updateSyncItemsNotifyConsumer:NO];
   [self updateEncryptionItemWithNotifyConsumer:NO];
   [self updateSignOutSectionWithNotifyConsumer:NO];
-  [self.consumer reloadTableData];
+  if ([self AITier] != _displayedAITier) {
+    // `updatePrimaryAccountDetailsAndReload` already asks the consumer to
+    // reload the table data, so `[self.consumer reloadTableData]` is not needed
+    // here.
+    [self updatePrimaryAccountDetailsAndReload];
+  } else {
+    [self.consumer reloadTableData];
+  }
   [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
+}
+
+#pragma mark - SubscriptionEligibilityServiceObserving
+
+- (void)aiSubscriptionTierDidUpdate:(int32_t)newSubscriptionTier {
+  if ([self AITier] != _displayedAITier) {
+    [self updatePrimaryAccountDetailsAndReload];
+  }
 }
 
 #pragma mark - IdentityManagerObserving
@@ -1053,7 +1096,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       _chromeAccountManagerService->GetIdentityOnDeviceWithGaiaID(
           info.GetGaiaId());
   if ([_signedInIdentity isEqual:identity]) {
-    [self updatePrimaryAccountDetails];
+    [self updatePrimaryAccountDetailsAndReload];
     // Update the model without notifying the consumer, then reload atomically.
     [self updateSyncItemsNotifyConsumer:NO];
     [self updateSyncErrorsSectionWithNotifyConsumer:NO];
@@ -1075,7 +1118,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     return;
   }
   _signedInIdentity = signedInIdentity;
-  [self updatePrimaryAccountDetails];
+  [self updatePrimaryAccountDetailsAndReload];
 }
 
 #pragma mark - ManageSyncSettingsServiceDelegate
@@ -1369,6 +1412,22 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (BOOL)isSyncDisabledByAdministrator {
   return _syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+}
+
+// Returns the AI subscription tier to display, or 0 if none should be
+// displayed.
+- (NSInteger)AITier {
+  if (!IsAiSubscriptionAvatarRingFollowupIOSEnabled()) {
+    return 0;
+  }
+  if (GetAccountErrorUIInfo(_syncService)) {
+    // In case of error, we do not want to display any AI Tier information. Even
+    // in the case where the error does not impact the tier feature access. That
+    // ensures the Account Settings and the NTP displays are consistent.
+    return 0;
+  }
+  return std::max<NSInteger>(
+      _subscriptionEligibilityService->GetAiSubscriptionTier(), 0);
 }
 
 @end

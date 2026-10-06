@@ -22,10 +22,12 @@
 
 // Updates the primary account details. `name` and `managementDescription` can
 // be nil, `avatarImage` and `email` can’t.
-- (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
-                                       name:(NSString*)name
-                                      email:(NSString*)email
-                      managementDescription:(NSString*)managementDescription;
+- (void)updateAndReloadPrimaryAccountWithAvatarImage:(UIImage*)avatarImage
+                                     displayedAiTier:(NSInteger)displayedAiTier
+                                                name:(NSString*)name
+                                               email:(NSString*)email
+                               managementDescription:
+                                   (NSString*)managementDescription;
 
 // Shows the managed UI info bubble for the `button`.
 - (void)showManagedUIInfoForButton:(UIButton*)button;

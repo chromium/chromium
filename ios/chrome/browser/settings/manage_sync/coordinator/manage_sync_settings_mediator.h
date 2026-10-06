@@ -20,6 +20,9 @@ class PrefService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+namespace subscription_eligibility {
+class SubscriptionEligibilityService;
+}  // namespace subscription_eligibility
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -54,12 +57,16 @@ class SyncService;
 
 // Designated initializer.
 // `syncService`: Sync service. Should not be null.
-- (instancetype)
-      initWithSyncService:(syncer::SyncService*)syncService
-          identityManager:(signin::IdentityManager*)identityManager
-    authenticationService:(AuthenticationService*)authenticationService
-    accountManagerService:(ChromeAccountManagerService*)accountManagerService
-              prefService:(PrefService*)prefService NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
+                    identityManager:(signin::IdentityManager*)identityManager
+              authenticationService:
+                  (AuthenticationService*)authenticationService
+              accountManagerService:
+                  (ChromeAccountManagerService*)accountManagerService
+                        prefService:(PrefService*)prefService
+     subscriptionEligibilityService:
+         (subscription_eligibility::SubscriptionEligibilityService*)
+             subscriptionEligibilityService NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator to all observers and services.

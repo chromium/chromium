@@ -11,6 +11,7 @@ source_set("ui") {
     "manage_sync_settings_table_view_controller_model_delegate.h",
   ]
   deps = [
+    "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/net/model:crurl",

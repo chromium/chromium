@@ -9,17 +9,22 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/subscription_eligibility/subscription_eligibility_prefs.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync/test/test_sync_user_settings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/settings/manage_sync/coordinator/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/settings/manage_sync/public/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/manage_sync/public/sync_error_settings_command_handler.h"
@@ -41,9 +46,11 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -64,6 +71,24 @@
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+
+namespace {
+
+// Returns whether `view` or any of its subviews has `accessibility_id`.
+bool HasSubviewWithAccessibilityIdentifier(UIView* view,
+                                           NSString* accessibility_id) {
+  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
+    return true;
+  }
+  for (UIView* subview in view.subviews) {
+    if (HasSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 class ManageSyncSettingsMediatorTest : public PlatformTest {
  public:
@@ -100,13 +125,16 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         initWithStyle:UITableViewStyleGrouped];
     [consumer_ loadModel];
     mediator_ = [[ManageSyncSettingsMediator alloc]
-          initWithSyncService:sync_service_
-              identityManager:IdentityManagerFactory::GetForProfile(profile_)
-        authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                  profile_)
-        accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
-                                  profile_)
-                  prefService:profile_->GetPrefs()];
+                   initWithSyncService:sync_service_
+                       identityManager:IdentityManagerFactory::GetForProfile(
+                                           profile_)
+                 authenticationService:AuthenticationServiceFactory::
+                                           GetForProfile(profile_)
+                 accountManagerService:ChromeAccountManagerServiceFactory::
+                                           GetForProfile(profile_)
+                           prefService:profile_->GetPrefs()
+        subscriptionEligibilityService:SubscriptionEligibilityServiceFactory::
+                                           GetForProfile(profile_)];
     mediator_.consumer = consumer_;
   }
 
@@ -712,4 +740,111 @@ TEST_F(ManageSyncSettingsMediatorTest,
   [mediator_ didSelectItem:item cellRect:CGRectZero];
 
   EXPECT_OCMOCK_VERIFY(mockCommandHandler);
+}
+
+// Test that the AI tier avatar ring and subscription chip are shown in the
+// central account view only when `kAiSubscriptionAvatarRingFollowupIOS` is
+// enabled, the AI subscription tier is positive, and there is no sync error.
+TEST_F(ManageSyncSettingsMediatorTest, TestAITierRingAndChip) {
+  CreateManageSyncSettingsMediator();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+
+  // Feature disabled, even if tier is positive.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        kAiSubscriptionAvatarRingFollowupIOS);
+    profile_->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+    [mediator_
+        manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+    UIView* headerView = consumer_.tableView.tableHeaderView;
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
+        headerView, kPremiumAvatarRingAccessibilityIdentifier));
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
+                                                       kAISubscriptionChipId));
+  }
+
+  // Feature enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        kAiSubscriptionAvatarRingFollowupIOS);
+
+    // Tier is non-positive (0); ring and chip should be hidden.
+    profile_->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, 0);
+
+    UIView* headerView = consumer_.tableView.tableHeaderView;
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
+        headerView, kPremiumAvatarRingAccessibilityIdentifier));
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
+                                                       kAISubscriptionChipId));
+
+    // Tier changes to positive (1); ring and chip should appear.
+    profile_->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+    headerView = consumer_.tableView.tableHeaderView;
+    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
+        headerView, kPremiumAvatarRingAccessibilityIdentifier));
+    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(headerView,
+                                                      kAISubscriptionChipId));
+
+    // Tier changes back to 0; ring and chip should disappear.
+    profile_->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, 0);
+
+    headerView = consumer_.tableView.tableHeaderView;
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
+        headerView, kPremiumAvatarRingAccessibilityIdentifier));
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
+                                                       kAISubscriptionChipId));
+
+    // Tier changes to 1 again; ring and chip should appear.
+    profile_->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+    headerView = consumer_.tableView.tableHeaderView;
+    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
+        headerView, kPremiumAvatarRingAccessibilityIdentifier));
+    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(headerView,
+                                                      kAISubscriptionChipId));
+
+    // Trigger a sync error; ring and chip should be hidden.
+    sync_service_->SetPersistentAuthError();
+    [mediator_ onSyncStateChanged];
+
+    headerView = consumer_.tableView.tableHeaderView;
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
+        headerView, kPremiumAvatarRingAccessibilityIdentifier));
+    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
+                                                       kAISubscriptionChipId));
+
+    // Resolve the sync error; ring and chip should be shown again.
+    sync_service_->ClearAuthError();
+    [mediator_ onSyncStateChanged];
+
+    headerView = consumer_.tableView.tableHeaderView;
+    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
+        headerView, kPremiumAvatarRingAccessibilityIdentifier));
+    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(headerView,
+                                                      kAISubscriptionChipId));
+  }
+}
+
+// Test the effect of `centralAccountViewDidTapAISubscriptionChip:`.
+TEST_F(ManageSyncSettingsMediatorTest,
+       TestCentralAccountViewDidTapAISubscriptionChip) {
+  CreateManageSyncSettingsMediator();
+  base::UserActionTester user_actions;
+  EXPECT_EQ(
+      user_actions.GetActionCount("Signin_AccountSettings_SubscriptionChip"),
+      0);
+  [(id<CentralAccountViewDelegate>)consumer_
+      centralAccountViewDidTapAISubscriptionChip:nil];
+  EXPECT_EQ(
+      user_actions.GetActionCount("Signin_AccountSettings_SubscriptionChip"),
+      1);
 }

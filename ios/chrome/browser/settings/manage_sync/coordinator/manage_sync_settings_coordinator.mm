@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -174,12 +175,15 @@ enum class ActionAfterReauth {
   ProfileIOS* profile = self.profile;
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
-        initWithSyncService:self.syncService
-            identityManager:IdentityManagerFactory::GetForProfile(profile)
-      authenticationService:self.authService
-      accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
-                                profile)
-                prefService:profile->GetPrefs()];
+                 initWithSyncService:self.syncService
+                     identityManager:IdentityManagerFactory::GetForProfile(
+                                         profile)
+               authenticationService:self.authService
+               accountManagerService:ChromeAccountManagerServiceFactory::
+                                         GetForProfile(profile)
+                         prefService:profile->GetPrefs()
+      subscriptionEligibilityService:SubscriptionEligibilityServiceFactory::
+                                         GetForProfile(profile)];
   self.mediator.commandHandler = self;
   self.mediator.syncErrorHandler = self;
   self.mediator.forcedSigninEnabled =

@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/subscription_eligibility",
   "+components/trusted_vault/trusted_vault_server_constants.h",
   "+ios/chrome/browser/authentication",
   "+ios/chrome/browser/composebox/public",
@@ -7,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/policy/ui_bundled",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/subscription_eligibility/model",
   "+ios/chrome/browser/sync/model",
   # keep-sorted end
 ]

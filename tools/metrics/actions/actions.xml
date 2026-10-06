@@ -35211,7 +35211,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
     Recorded when the user taps on the AI subscription chip in the account menu.
-    iOS only.
+    This chip is non-interactable, this is a no-op. iOS only.
   </description>
 </action>
 
@@ -35253,6 +35253,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user clicks the &quot;Personalize Google Services&quot;
     link row in the account settings page. Only on Android and iOS.
+  </description>
+</action>
+
+<action name="Signin_AccountSettings_SubscriptionChip">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user taps the AI subscription chip in the account settings
+    page. This chip is non-interactable, this is a no-op. iOS only.
   </description>
 </action>
 

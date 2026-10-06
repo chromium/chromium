@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/settings/manage_sync/ui/manage_sync_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
@@ -34,6 +36,7 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 }  // namespace
 
 @interface ManageSyncSettingsTableViewController () <
+    CentralAccountViewDelegate,
     PopoverLabelViewControllerDelegate>
 @end
 
@@ -119,25 +122,25 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   }];
 }
 
-- (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
-                                       name:(NSString*)name
-                                      email:(NSString*)email
-                      managementDescription:(NSString*)managementDescription {
+- (void)updateAndReloadPrimaryAccountWithAvatarImage:(UIImage*)avatarImage
+                                     displayedAiTier:(NSInteger)displayedAiTier
+                                                name:(NSString*)name
+                                               email:(NSString*)email
+                               managementDescription:
+                                   (NSString*)managementDescription {
   CHECK(email);
   CHECK(avatarImage);
   // Put a small non-empty frame to avoid layout constraint error during
   // initialization. The actual frame size is changed by the CentralAccountView.
-  // The AITier is not displayed in this view.
   CentralAccountView* identityAccountItem =
       [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
                                     avatarImage:avatarImage
-                                displayedAiTier:0
+                                displayedAiTier:displayedAiTier
                                            name:name
                                           email:email
                           managementDescription:managementDescription
                                 useLargeMargins:YES];
-  // The delegate is not set, as the subscription chip should not be displayed,
-  // and so it can’t be tapped.
+  identityAccountItem.delegate = self;
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }
@@ -152,6 +155,13 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     return;
   }
   [self.tableView reloadData];
+}
+
+#pragma mark - CentralAccountViewDelegate
+
+- (void)centralAccountViewDidTapAISubscriptionChip:(CentralAccountView*)view {
+  base::RecordAction(
+      base::UserMetricsAction("Signin_AccountSettings_SubscriptionChip"));
 }
 
 #pragma mark - UITableViewDelegate
