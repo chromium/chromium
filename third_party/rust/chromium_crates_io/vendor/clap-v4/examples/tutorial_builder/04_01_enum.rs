@@ -9,13 +9,13 @@ enum Mode {
 // Can also be derived with feature flag `derive`
 impl ValueEnum for Mode {
     fn value_variants<'a>() -> &'a [Self] {
-        &[Mode::Fast, Mode::Slow]
+        &[Self::Fast, Self::Slow]
     }
 
     fn to_possible_value(&self) -> Option<PossibleValue> {
         Some(match self {
-            Mode::Fast => PossibleValue::new("fast").help("Run swiftly"),
-            Mode::Slow => PossibleValue::new("slow").help("Crawl slowly but steadily"),
+            Self::Fast => PossibleValue::new("fast").help("Run swiftly"),
+            Self::Slow => PossibleValue::new("slow").help("Crawl slowly but steadily"),
         })
     }
 }

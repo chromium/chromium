@@ -21,7 +21,7 @@ pub(crate) struct ArgMatcher {
 
 impl ArgMatcher {
     pub(crate) fn new(_cmd: &Command) -> Self {
-        ArgMatcher {
+        Self {
             matches: ArgMatches {
                 #[cfg(debug_assertions)]
                 valid_args: {
@@ -77,7 +77,7 @@ impl ArgMatcher {
             }
         }
         if let Some(ref mut sc) = self.matches.subcommand {
-            let mut am = ArgMatcher {
+            let mut am = Self {
                 matches: mem::take(&mut sc.matches),
                 pending: None,
             };

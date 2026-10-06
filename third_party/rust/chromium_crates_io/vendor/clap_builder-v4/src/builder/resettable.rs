@@ -140,31 +140,31 @@ impl IntoResettable<Str> for Option<&'static str> {
 }
 
 impl<T> IntoResettable<T> for Resettable<T> {
-    fn into_resettable(self) -> Resettable<T> {
+    fn into_resettable(self) -> Self {
         self
     }
 }
 
-impl IntoResettable<char> for char {
-    fn into_resettable(self) -> Resettable<char> {
+impl IntoResettable<Self> for char {
+    fn into_resettable(self) -> Resettable<Self> {
         Resettable::Value(self)
     }
 }
 
-impl IntoResettable<usize> for usize {
-    fn into_resettable(self) -> Resettable<usize> {
+impl IntoResettable<Self> for usize {
+    fn into_resettable(self) -> Resettable<Self> {
         Resettable::Value(self)
     }
 }
 
-impl IntoResettable<ArgAction> for ArgAction {
-    fn into_resettable(self) -> Resettable<ArgAction> {
+impl IntoResettable<Self> for ArgAction {
+    fn into_resettable(self) -> Resettable<Self> {
         Resettable::Value(self)
     }
 }
 
-impl IntoResettable<ValueHint> for ValueHint {
-    fn into_resettable(self) -> Resettable<ValueHint> {
+impl IntoResettable<Self> for ValueHint {
+    fn into_resettable(self) -> Resettable<Self> {
         Resettable::Value(self)
     }
 }

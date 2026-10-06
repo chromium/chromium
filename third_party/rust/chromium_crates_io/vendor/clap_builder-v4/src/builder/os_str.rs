@@ -47,8 +47,8 @@ impl OsStr {
     }
 }
 
-impl From<&'_ OsStr> for OsStr {
-    fn from(id: &'_ OsStr) -> Self {
+impl From<&'_ Self> for OsStr {
+    fn from(id: &'_ Self) -> Self {
         id.clone()
     }
 }
@@ -315,7 +315,7 @@ impl Default for Inner {
 }
 
 impl PartialEq for Inner {
-    fn eq(&self, other: &Inner) -> bool {
+    fn eq(&self, other: &Self) -> bool {
         self.as_os_str() == other.as_os_str()
     }
 }
@@ -327,7 +327,7 @@ impl PartialOrd for Inner {
 }
 
 impl Ord for Inner {
-    fn cmp(&self, other: &Inner) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.as_os_str().cmp(other.as_os_str())
     }
 }

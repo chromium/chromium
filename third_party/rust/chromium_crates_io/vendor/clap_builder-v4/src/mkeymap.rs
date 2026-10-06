@@ -30,14 +30,14 @@ pub(crate) enum KeyType {
 
 impl KeyType {
     pub(crate) fn is_position(&self) -> bool {
-        matches!(self, KeyType::Position(_))
+        matches!(self, Self::Position(_))
     }
 }
 
 impl PartialEq<usize> for KeyType {
     fn eq(&self, rhs: &usize) -> bool {
         match self {
-            KeyType::Position(x) => x == rhs,
+            Self::Position(x) => x == rhs,
             _ => false,
         }
     }
@@ -46,7 +46,7 @@ impl PartialEq<usize> for KeyType {
 impl PartialEq<&str> for KeyType {
     fn eq(&self, rhs: &&str) -> bool {
         match self {
-            KeyType::Long(l) => l == rhs,
+            Self::Long(l) => l == rhs,
             _ => false,
         }
     }
@@ -55,7 +55,7 @@ impl PartialEq<&str> for KeyType {
 impl PartialEq<str> for KeyType {
     fn eq(&self, rhs: &str) -> bool {
         match self {
-            KeyType::Long(l) => l == rhs,
+            Self::Long(l) => l == rhs,
             _ => false,
         }
     }
@@ -64,7 +64,7 @@ impl PartialEq<str> for KeyType {
 impl PartialEq<OsStr> for KeyType {
     fn eq(&self, rhs: &OsStr) -> bool {
         match self {
-            KeyType::Long(l) => l == rhs,
+            Self::Long(l) => l == rhs,
             _ => false,
         }
     }
@@ -73,7 +73,7 @@ impl PartialEq<OsStr> for KeyType {
 impl PartialEq<char> for KeyType {
     fn eq(&self, rhs: &char) -> bool {
         match self {
-            KeyType::Short(c) => c == rhs,
+            Self::Short(c) => c == rhs,
             _ => false,
         }
     }

@@ -29,8 +29,8 @@ impl Id {
     }
 }
 
-impl From<&'_ Id> for Id {
-    fn from(id: &'_ Id) -> Self {
+impl From<&'_ Self> for Id {
+    fn from(id: &'_ Self) -> Self {
         id.clone()
     }
 }

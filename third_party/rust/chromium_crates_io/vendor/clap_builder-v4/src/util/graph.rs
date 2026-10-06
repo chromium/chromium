@@ -6,7 +6,7 @@ struct Child<T> {
 
 impl<T> Child<T> {
     fn new(id: T) -> Self {
-        Child {
+        Self {
             id,
             children: vec![],
         }
@@ -21,7 +21,7 @@ where
     T: Sized + PartialEq + Clone,
 {
     pub(crate) fn with_capacity(s: usize) -> Self {
-        ChildGraph(Vec::with_capacity(s))
+        Self(Vec::with_capacity(s))
     }
 
     pub(crate) fn insert(&mut self, req: T) -> usize {

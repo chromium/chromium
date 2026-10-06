@@ -817,13 +817,13 @@ impl<F: ErrorFormatter> Error<F> {
 
 impl<F: ErrorFormatter> From<io::Error> for Error<F> {
     fn from(e: io::Error) -> Self {
-        Error::raw(ErrorKind::Io, e)
+        Self::raw(ErrorKind::Io, e)
     }
 }
 
 impl<F: ErrorFormatter> From<fmt::Error> for Error<F> {
     fn from(e: fmt::Error) -> Self {
-        Error::raw(ErrorKind::Format, e)
+        Self::raw(ErrorKind::Format, e)
     }
 }
 
@@ -862,7 +862,7 @@ pub(crate) enum Message {
 impl Message {
     fn format(&mut self, cmd: &Command, usage: Option<StyledStr>) {
         match self {
-            Message::Raw(s) => {
+            Self::Raw(s) => {
                 let mut message = String::new();
                 std::mem::swap(s, &mut message);
 
@@ -875,18 +875,18 @@ impl Message {
 
                 *self = Self::Formatted(styled);
             }
-            Message::Formatted(_) => {}
+            Self::Formatted(_) => {}
         }
     }
 
     fn formatted(&self, styles: &Styles) -> Cow<'_, StyledStr> {
         match self {
-            Message::Raw(s) => {
+            Self::Raw(s) => {
                 let styled = format::format_error_message(s, styles, None, None);
 
                 Cow::Owned(styled)
             }
-            Message::Formatted(s) => Cow::Borrowed(s),
+            Self::Formatted(s) => Cow::Borrowed(s),
         }
     }
 }

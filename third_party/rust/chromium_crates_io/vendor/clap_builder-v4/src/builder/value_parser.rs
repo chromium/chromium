@@ -1197,7 +1197,7 @@ pub struct PossibleValuesParser(Vec<super::PossibleValue>);
 
 impl PossibleValuesParser {
     /// Verify the value is from an enumerated set of [`PossibleValue`][crate::builder::PossibleValue].
-    pub fn new(values: impl Into<PossibleValuesParser>) -> Self {
+    pub fn new(values: impl Into<Self>) -> Self {
         values.into()
     }
 }
@@ -2290,7 +2290,7 @@ impl ValueParserFactory for String {
     }
 }
 impl ValueParserFactory for Box<str> {
-    type Parser = MapValueParser<StringValueParser, fn(String) -> Box<str>>;
+    type Parser = MapValueParser<StringValueParser, fn(String) -> Self>;
     fn value_parser() -> Self::Parser {
         StringValueParser::new().map(String::into_boxed_str)
     }
@@ -2302,8 +2302,7 @@ impl ValueParserFactory for std::ffi::OsString {
     }
 }
 impl ValueParserFactory for Box<std::ffi::OsStr> {
-    type Parser =
-        MapValueParser<OsStringValueParser, fn(std::ffi::OsString) -> Box<std::ffi::OsStr>>;
+    type Parser = MapValueParser<OsStringValueParser, fn(std::ffi::OsString) -> Self>;
     fn value_parser() -> Self::Parser {
         OsStringValueParser::new().map(std::ffi::OsString::into_boxed_os_str)
     }
@@ -2315,8 +2314,7 @@ impl ValueParserFactory for std::path::PathBuf {
     }
 }
 impl ValueParserFactory for Box<std::path::Path> {
-    type Parser =
-        MapValueParser<PathBufValueParser, fn(std::path::PathBuf) -> Box<std::path::Path>>;
+    type Parser = MapValueParser<PathBufValueParser, fn(std::path::PathBuf) -> Self>;
     fn value_parser() -> Self::Parser {
         PathBufValueParser::new().map(std::path::PathBuf::into_boxed_path)
     }
@@ -2328,61 +2326,61 @@ impl ValueParserFactory for bool {
     }
 }
 impl ValueParserFactory for u8 {
-    type Parser = RangedI64ValueParser<u8>;
+    type Parser = RangedI64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
-        let start: i64 = u8::MIN.into();
-        let end: i64 = u8::MAX.into();
+        let start: i64 = Self::MIN.into();
+        let end: i64 = Self::MAX.into();
         RangedI64ValueParser::new().range(start..=end)
     }
 }
 impl ValueParserFactory for i8 {
-    type Parser = RangedI64ValueParser<i8>;
+    type Parser = RangedI64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
-        let start: i64 = i8::MIN.into();
-        let end: i64 = i8::MAX.into();
+        let start: i64 = Self::MIN.into();
+        let end: i64 = Self::MAX.into();
         RangedI64ValueParser::new().range(start..=end)
     }
 }
 impl ValueParserFactory for u16 {
-    type Parser = RangedI64ValueParser<u16>;
+    type Parser = RangedI64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
-        let start: i64 = u16::MIN.into();
-        let end: i64 = u16::MAX.into();
+        let start: i64 = Self::MIN.into();
+        let end: i64 = Self::MAX.into();
         RangedI64ValueParser::new().range(start..=end)
     }
 }
 impl ValueParserFactory for i16 {
-    type Parser = RangedI64ValueParser<i16>;
+    type Parser = RangedI64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
-        let start: i64 = i16::MIN.into();
-        let end: i64 = i16::MAX.into();
+        let start: i64 = Self::MIN.into();
+        let end: i64 = Self::MAX.into();
         RangedI64ValueParser::new().range(start..=end)
     }
 }
 impl ValueParserFactory for u32 {
-    type Parser = RangedI64ValueParser<u32>;
+    type Parser = RangedI64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
-        let start: i64 = u32::MIN.into();
-        let end: i64 = u32::MAX.into();
+        let start: i64 = Self::MIN.into();
+        let end: i64 = Self::MAX.into();
         RangedI64ValueParser::new().range(start..=end)
     }
 }
 impl ValueParserFactory for i32 {
-    type Parser = RangedI64ValueParser<i32>;
+    type Parser = RangedI64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
-        let start: i64 = i32::MIN.into();
-        let end: i64 = i32::MAX.into();
+        let start: i64 = Self::MIN.into();
+        let end: i64 = Self::MAX.into();
         RangedI64ValueParser::new().range(start..=end)
     }
 }
 impl ValueParserFactory for u64 {
-    type Parser = RangedU64ValueParser<u64>;
+    type Parser = RangedU64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
         RangedU64ValueParser::new()
     }
 }
 impl ValueParserFactory for i64 {
-    type Parser = RangedI64ValueParser<i64>;
+    type Parser = RangedI64ValueParser<Self>;
     fn value_parser() -> Self::Parser {
         RangedI64ValueParser::new()
     }
@@ -2393,8 +2391,7 @@ where
     <T as ValueParserFactory>::Parser: TypedValueParser<Value = T>,
     T: Send + Sync + Clone,
 {
-    type Parser =
-        MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> std::num::Saturating<T>>;
+    type Parser = MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> Self>;
     fn value_parser() -> Self::Parser {
         T::value_parser().map(std::num::Saturating)
     }
@@ -2405,7 +2402,7 @@ where
     <T as ValueParserFactory>::Parser: TypedValueParser<Value = T>,
     T: Send + Sync + Clone,
 {
-    type Parser = MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> std::num::Wrapping<T>>;
+    type Parser = MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> Self>;
     fn value_parser() -> Self::Parser {
         T::value_parser().map(std::num::Wrapping)
     }
@@ -2416,9 +2413,9 @@ where
     <T as ValueParserFactory>::Parser: TypedValueParser<Value = T>,
     T: Send + Sync + Clone,
 {
-    type Parser = MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> Box<T>>;
+    type Parser = MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> Self>;
     fn value_parser() -> Self::Parser {
-        T::value_parser().map(Box::new)
+        T::value_parser().map(Self::new)
     }
 }
 impl<T> ValueParserFactory for std::sync::Arc<T>
@@ -2427,9 +2424,9 @@ where
     <T as ValueParserFactory>::Parser: TypedValueParser<Value = T>,
     T: Send + Sync + Clone,
 {
-    type Parser = MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> std::sync::Arc<T>>;
+    type Parser = MapValueParser<<T as ValueParserFactory>::Parser, fn(T) -> Self>;
     fn value_parser() -> Self::Parser {
-        T::value_parser().map(std::sync::Arc::new)
+        T::value_parser().map(Self::new)
     }
 }
 

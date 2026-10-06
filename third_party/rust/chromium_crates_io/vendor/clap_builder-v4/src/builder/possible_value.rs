@@ -70,7 +70,7 @@ impl PossibleValue {
     /// [possible value]: crate::builder::PossibleValuesParser
     /// [`Arg::hide_possible_values(true)`]: crate::Arg::hide_possible_values()
     pub fn new(name: impl Into<Str>) -> Self {
-        PossibleValue {
+        Self {
             name: name.into(),
             ..Default::default()
         }

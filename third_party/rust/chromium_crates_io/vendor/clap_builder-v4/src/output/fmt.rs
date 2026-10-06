@@ -17,7 +17,7 @@ pub(crate) struct Colorizer {
 
 impl Colorizer {
     pub(crate) fn new(stream: Stream, color_when: ColorChoice) -> Self {
-        Colorizer {
+        Self {
             stream,
             color_when,
             content: Default::default(),

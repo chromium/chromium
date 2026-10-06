@@ -120,7 +120,7 @@ impl Arg {
     /// ```
     /// [`Arg::action(ArgAction::Set)`]: Arg::action()
     pub fn new(id: impl Into<Id>) -> Self {
-        Arg::default().id(id)
+        Self::default().id(id)
     }
 
     /// Set the identifier used for referencing this argument in the clap API.
@@ -4761,14 +4761,14 @@ impl Arg {
     }
 }
 
-impl From<&'_ Arg> for Arg {
-    fn from(a: &Arg) -> Self {
+impl From<&'_ Self> for Arg {
+    fn from(a: &Self) -> Self {
         a.clone()
     }
 }
 
 impl PartialEq for Arg {
-    fn eq(&self, other: &Arg) -> bool {
+    fn eq(&self, other: &Self) -> bool {
         self.get_id() == other.get_id()
     }
 }
@@ -4780,7 +4780,7 @@ impl PartialOrd for Arg {
 }
 
 impl Ord for Arg {
-    fn cmp(&self, other: &Arg) -> Ordering {
+    fn cmp(&self, other: &Self) -> Ordering {
         self.get_id().cmp(other.get_id())
     }
 }

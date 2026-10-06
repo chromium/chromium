@@ -19,10 +19,10 @@ pub(crate) enum TargetVersion {
 impl std::fmt::Display for TargetVersion {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
-            TargetVersion::Relative(bump_level) => {
+            Self::Relative(bump_level) => {
                 write!(f, "{bump_level}")
             }
-            TargetVersion::Absolute(version) => {
+            Self::Absolute(version) => {
                 write!(f, "{version}")
             }
         }
@@ -34,9 +34,9 @@ impl std::str::FromStr for TargetVersion {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if let Ok(bump_level) = BumpLevel::from_str(s) {
-            Ok(TargetVersion::Relative(bump_level))
+            Ok(Self::Relative(bump_level))
         } else {
-            Ok(TargetVersion::Absolute(
+            Ok(Self::Absolute(
                 semver::Version::parse(s).map_err(|e| e.to_string())?,
             ))
         }

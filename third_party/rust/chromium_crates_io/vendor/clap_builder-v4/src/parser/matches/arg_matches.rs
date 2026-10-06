@@ -919,7 +919,7 @@ impl ArgMatches {
     /// ```
     /// [subcommand]: crate::Command::subcommand
     #[inline]
-    pub fn subcommand(&self) -> Option<(&str, &ArgMatches)> {
+    pub fn subcommand(&self) -> Option<(&str, &Self)> {
         self.subcommand.as_ref().map(|sc| (&*sc.name, &sc.matches))
     }
 
@@ -979,7 +979,7 @@ impl ArgMatches {
     /// }
     /// ```
     /// [subcommand]: crate::Command::subcommand
-    pub fn remove_subcommand(&mut self) -> Option<(String, ArgMatches)> {
+    pub fn remove_subcommand(&mut self) -> Option<(String, Self)> {
         self.subcommand.take().map(|sc| (sc.name, sc.matches))
     }
 
@@ -1023,7 +1023,7 @@ impl ArgMatches {
     ///
     /// [subcommand]: crate::Command::subcommand
     /// [`Command`]: crate::Command
-    pub fn subcommand_matches(&self, name: &str) -> Option<&ArgMatches> {
+    pub fn subcommand_matches(&self, name: &str) -> Option<&Self> {
         self.get_subcommand(name).map(|sc| &sc.matches)
     }
 
@@ -1464,7 +1464,7 @@ impl<T> ExactSizeIterator for Values<T> {}
 impl<T> Default for Values<T> {
     fn default() -> Self {
         let empty: Vec<Vec<AnyValue>> = Default::default();
-        Values {
+        Self {
             iter: empty.into_iter().flatten().map(|_| unreachable!()),
             len: 0,
         }
@@ -1646,7 +1646,7 @@ impl<T> ExactSizeIterator for Occurrences<T> {}
 impl<T> Default for Occurrences<T> {
     fn default() -> Self {
         let empty: Vec<Vec<AnyValue>> = Default::default();
-        Occurrences {
+        Self {
             iter: empty.into_iter().map(|_| unreachable!()),
         }
     }

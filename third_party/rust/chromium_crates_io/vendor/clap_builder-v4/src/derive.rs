@@ -315,11 +315,11 @@ pub trait ValueEnum: Sized + Clone {
 
 impl<T: Parser> Parser for Box<T> {
     fn parse() -> Self {
-        Box::new(<T as Parser>::parse())
+        Self::new(<T as Parser>::parse())
     }
 
     fn try_parse() -> Result<Self, Error> {
-        <T as Parser>::try_parse().map(Box::new)
+        <T as Parser>::try_parse().map(Self::new)
     }
 
     fn parse_from<I, It>(itr: I) -> Self
@@ -327,7 +327,7 @@ impl<T: Parser> Parser for Box<T> {
         I: IntoIterator<Item = It>,
         It: Into<OsString> + Clone,
     {
-        Box::new(<T as Parser>::parse_from(itr))
+        Self::new(<T as Parser>::parse_from(itr))
     }
 
     fn try_parse_from<I, It>(itr: I) -> Result<Self, Error>
@@ -335,7 +335,7 @@ impl<T: Parser> Parser for Box<T> {
         I: IntoIterator<Item = It>,
         It: Into<OsString> + Clone,
     {
-        <T as Parser>::try_parse_from(itr).map(Box::new)
+        <T as Parser>::try_parse_from(itr).map(Self::new)
     }
 }
 
@@ -350,10 +350,10 @@ impl<T: CommandFactory> CommandFactory for Box<T> {
 
 impl<T: FromArgMatches> FromArgMatches for Box<T> {
     fn from_arg_matches(matches: &ArgMatches) -> Result<Self, Error> {
-        <T as FromArgMatches>::from_arg_matches(matches).map(Box::new)
+        <T as FromArgMatches>::from_arg_matches(matches).map(Self::new)
     }
     fn from_arg_matches_mut(matches: &mut ArgMatches) -> Result<Self, Error> {
-        <T as FromArgMatches>::from_arg_matches_mut(matches).map(Box::new)
+        <T as FromArgMatches>::from_arg_matches_mut(matches).map(Self::new)
     }
     fn update_from_arg_matches(&mut self, matches: &ArgMatches) -> Result<(), Error> {
         <T as FromArgMatches>::update_from_arg_matches(self, matches)
