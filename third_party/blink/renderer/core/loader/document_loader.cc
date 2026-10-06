@@ -2942,16 +2942,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       HeapMojoRemote<mojom::blink::ContentSecurityNotifier>(
           frame_->DomWindow());
 
-  base::UmaHistogramBoolean("API.StorageAccess.DocumentLoadedWithStorageAccess",
-                            [this]() -> bool {
-                              switch (storage_access_api_status_) {
-                                case net::StorageAccessApiStatus::kNone:
-                                  return false;
-                                case net::StorageAccessApiStatus::kAccessViaAPI:
-                                  return true;
-                              }
-                              NOTREACHED();
-                            }());
   base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
                             inherited_has_storage_access);
 

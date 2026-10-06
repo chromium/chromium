@@ -711,9 +711,6 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
                   ->LastNavigationHadTrustedInitiator());
 
   histogram_tester.ExpectUniqueSample(
-      "API.StorageAccess.DocumentLoadedWithStorageAccess", /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
       "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/true,
       /*expected_bucket_count=*/1);
 }
@@ -744,9 +741,6 @@ TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
                    .GetDocumentLoader()
                    ->LastNavigationHadTrustedInitiator());
 
-  histogram_tester.ExpectUniqueSample(
-      "API.StorageAccess.DocumentLoadedWithStorageAccess", /*sample=*/false,
-      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/false,
       /*expected_bucket_count=*/1);
