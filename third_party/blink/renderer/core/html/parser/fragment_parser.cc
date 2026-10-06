@@ -247,7 +247,7 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
   }
 
   StreamingSanitizer* streaming_sanitizer = nullptr;
-  if (should_sanitize && RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
+  if (should_sanitize) {
     streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
         config.sanitizer_mode, options, exception_state);
   }

@@ -4532,7 +4532,7 @@
       // streamHTML, appendHTML, etc.
       name: "NewHTMLSettingMethods",
       status: "stable",
-      depends_on: ["SetHTMLCanRunScripts", "StreamingSanitizer", "TrustedTypesCreateParserOptions"]
+      depends_on: ["SetHTMLCanRunScripts", "TrustedTypesCreateParserOptions"]
     },
     {
       // Fix for https://crbug.com/482862753
@@ -6295,12 +6295,6 @@
       // Gates the `locks()` method on a storage bucket.
       name: "StorageBucketsLocks",
       status: "experimental",
-    },
-    {
-      // Performs sanitization while parsing instead of post-processing a parsed
-      // fragment. https://crbug.com/498272014
-      name: "StreamingSanitizer",
-      status: "stable",
     },
     {
       name: "StrictMimeTypesForWorkers",

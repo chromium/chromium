@@ -298,10 +298,6 @@ Sanitizer::Action HTMLConstructionSite::SanitizeAndReturnAction(
 
 StreamingSanitizer* HTMLConstructionSite::ActiveSanitizer(
     Node* node_being_inserted) const {
-  if (!RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
-    return nullptr;
-  }
-
   auto* default_sanitizer = sanitizer_.Get();
 
   if (!RuntimeEnabledFeatures::DeclarativeFragmentEnabled() || IsEmpty()) {
@@ -754,9 +750,6 @@ static bool IsUnwrappedBySanitizer(StreamingSanitizer* sanitizer,
 
 HTMLConstructionSite::InsertionLocation
 HTMLConstructionSite::AdjustInsertionLocation(InsertionLocation location) {
-  if (!RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
-    return location;
-  }
   if (IsEmpty()) {
     return location;
   }

@@ -10296,11 +10296,8 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
     return nullptr;
   }
 
-  auto* streaming_sanitizer =
-      RuntimeEnabledFeatures::StreamingSanitizerEnabled()
-          ? SanitizerAPI::CreateStreamingSanitizer(
-                Sanitizer::Mode::kUnsafe, fragment_options, exception_state)
-          : nullptr;
+  auto* streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
+      Sanitizer::Mode::kUnsafe, fragment_options, exception_state);
 
   if (exception_state.HadException()) {
     return nullptr;
@@ -10308,15 +10305,6 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
 
   Document* doc = parseHTMLInternal(context, compliant_html,
                                     streaming_sanitizer, exception_state);
-  if (exception_state.HadException()) {
-    return nullptr;
-  }
-  if (!streaming_sanitizer) {
-    SanitizerAPI::SanitizeInternal(Sanitizer::Mode::kUnsafe,
-                                   /*context_element*/ doc,
-                                   /*root_element*/ doc, fragment_options,
-                                   exception_state);
-  }
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -10338,24 +10326,14 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
     return nullptr;
   }
 
-  auto* streaming_sanitizer =
-      RuntimeEnabledFeatures::StreamingSanitizerEnabled()
-          ? SanitizerAPI::CreateStreamingSanitizer(
-                Sanitizer::Mode::kUnsafe, fragment_options, exception_state)
-          : nullptr;
+  auto* streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
+      Sanitizer::Mode::kUnsafe, fragment_options, exception_state);
 
   if (exception_state.HadException()) {
     return nullptr;
   }
   Document* doc = parseHTMLInternal(context, compliant_html,
                                     streaming_sanitizer, exception_state);
-  if (!RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
-    CHECK(!streaming_sanitizer);
-    SanitizerAPI::SanitizeInternal(Sanitizer::Mode::kUnsafe,
-                                   /*context_element*/ doc,
-                                   /*root_element*/ doc, fragment_options,
-                                   exception_state);
-  }
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -10378,11 +10356,8 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
 
   FragmentParserOptions fragment_options(options);
 
-  auto* streaming_sanitizer =
-      RuntimeEnabledFeatures::StreamingSanitizerEnabled()
-          ? SanitizerAPI::CreateStreamingSanitizer(
-                Sanitizer::Mode::kUnsafe, fragment_options, exception_state)
-          : nullptr;
+  auto* streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
+      Sanitizer::Mode::kUnsafe, fragment_options, exception_state);
 
   if (exception_state.HadException()) {
     return nullptr;
@@ -10390,15 +10365,6 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
 
   Document* doc = parseHTMLInternal(context, compliant_html,
                                     streaming_sanitizer, exception_state);
-  if (exception_state.HadException()) {
-    return nullptr;
-  }
-  if (!streaming_sanitizer) {
-    SanitizerAPI::SanitizeInternal(Sanitizer::Mode::kUnsafe,
-                                   /*context_element*/ doc,
-                                   /*root_element*/ doc, fragment_options,
-                                   exception_state);
-  }
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -10411,20 +10377,13 @@ Document* Document::parseHTML(ExecutionContext* context,
                               SetHTMLOptions* options,
                               ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-  auto* streaming_sanitizer =
-      RuntimeEnabledFeatures::StreamingSanitizerEnabled()
-          ? SanitizerAPI::CreateStreamingSanitizer(
-                Sanitizer::Mode::kSafe, FragmentParserOptions(options),
-                exception_state)
-          : nullptr;
+  auto* streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
+      Sanitizer::Mode::kSafe, FragmentParserOptions(options), exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
   Document* doc =
       parseHTMLInternal(context, html, streaming_sanitizer, exception_state);
-  if (!streaming_sanitizer) {
-    SanitizerAPI::SanitizeInternal(
-        Sanitizer::Mode::kSafe,
-        /*context_element*/ doc, /*root_element*/ doc,
-        FragmentParserOptions(options), exception_state);
-  }
   if (exception_state.HadException()) {
     return nullptr;
   }
