@@ -91,7 +91,7 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
       GeminiTabHelper::FromWebState(activeWebState);
 
   HostContentSettingsMap* hostContentSettingsMap =
-      ios::HostContentSettingsMapFactory::GetForProfile(self.profile);
+      ios::HostContentSettingsMapFactory::GetForProfile(self.profile).get();
   _mediator = [[PageActionMenuMediator alloc]
             initWithWebState:activeWebState
        authenticationService:AuthenticationServiceFactory::GetForProfile(

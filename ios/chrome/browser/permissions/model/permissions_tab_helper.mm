@@ -52,7 +52,7 @@ void CommitPermissionDecisionToHostContentSettingsMap(
   if (!profile) {
     return;
   }
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile);
   if (!settings_map) {
     return;
@@ -241,7 +241,7 @@ void PermissionsTabHelper::OnContentSettingChanged(
   if (!url.is_valid() || !primary_pattern.Matches(url)) {
     return;
   }
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       content_settings_scoped_observation_.GetSource();
   if (!settings_map) {
     return;
@@ -328,9 +328,9 @@ void PermissionsTabHelper::EnsureObservingContentSettings() {
   if (!profile) {
     return;
   }
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile);
   if (settings_map) {
-    content_settings_scoped_observation_.Observe(settings_map);
+    content_settings_scoped_observation_.Observe(settings_map.get());
   }
 }

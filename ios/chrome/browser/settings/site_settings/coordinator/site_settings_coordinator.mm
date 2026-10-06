@@ -56,7 +56,8 @@ constexpr std::string_view kCategoryOpenedHistogram =
 
   _mediator = [[SiteSettingsMediator alloc]
       initWithHostContentSettingsMap:ios::HostContentSettingsMapFactory::
-                                         GetForProfile(self.profile)];
+                                         GetForProfile(self.profile)
+                                             .get()];
   _mediator.consumer = _viewController;
 
   [self.baseNavigationController pushViewController:_viewController

@@ -43,7 +43,7 @@ class ContentSettingsTableViewControllerTest
 
   LegacyChromeTableViewController* InstantiateController() override {
     HostContentSettingsMap* settingsMap =
-        ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+        ios::HostContentSettingsMapFactory::GetForProfile(profile_.get()).get();
     MailtoHandlerService* mailtoHandlerService =
         MailtoHandlerServiceFactory::GetForProfile(profile_.get());
     return [[ContentSettingsTableViewController alloc]

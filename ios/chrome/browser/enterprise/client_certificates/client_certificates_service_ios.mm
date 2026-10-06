@@ -27,7 +27,7 @@ namespace {
 // AutoSelectCertificateForUrls policy as documented at policy_templates.json.
 base::ListValue GetCertAutoSelectionFilters(ProfileIOS* profile,
                                             const GURL& requesting_url) {
-  HostContentSettingsMap* host_content_settings_map =
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value setting = host_content_settings_map->GetWebsiteSetting(
       requesting_url, requesting_url,

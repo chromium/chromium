@@ -12,7 +12,7 @@ namespace chrome_test_util {
 
 void SetContentSettingsBlockPopups(ContentSetting setting) {
   ProfileIOS* profile = GetOriginalProfile();
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile);
   settings_map->SetDefaultContentSetting(ContentSettingsType::POPUPS, setting);
 }

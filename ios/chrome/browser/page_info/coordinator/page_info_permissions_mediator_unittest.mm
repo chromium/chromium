@@ -47,10 +47,9 @@ class PageInfoPermissionsTest : public PlatformTest {
     web_state_->SetStateForPermission(web::PermissionStateNotAccessible,
                                       web::PermissionMicrophone);
 
-    mediator_ = [[PageInfoPermissionsMediator alloc]
-              initWithWebState:web_state_
-        hostContentSettingsMap:ios::HostContentSettingsMapFactory::
-                                   GetForProfile(profile_.get())];
+    mediator_ =
+        [[PageInfoPermissionsMediator alloc] initWithWebState:web_state_
+                                       hostContentSettingsMap:settings_map()];
   }
 
   PageInfoPermissionsMediator* mediator() { return mediator_; }
@@ -58,7 +57,8 @@ class PageInfoPermissionsTest : public PlatformTest {
   web::WebState* web_state() { return fake_web_state_.get(); }
 
   HostContentSettingsMap* settings_map() {
-    return ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+    return ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
+        .get();
   }
 
  private:

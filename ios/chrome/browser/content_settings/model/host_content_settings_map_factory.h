@@ -7,6 +7,7 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
 class HostContentSettingsMap;
@@ -18,7 +19,8 @@ namespace ios {
 class HostContentSettingsMapFactory
     : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
-  static HostContentSettingsMap* GetForProfile(ProfileIOS* profile);
+  static scoped_refptr<HostContentSettingsMap> GetForProfile(
+      ProfileIOS* profile);
   static HostContentSettingsMapFactory* GetInstance();
 
  private:

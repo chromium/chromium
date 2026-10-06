@@ -141,7 +141,7 @@
     case InProductHelpType::kDefaultSiteView: {
       [_presenter
           presentDefaultSiteViewTipBubbleWithSettingsMap:
-              ios::HostContentSettingsMapFactory::GetForProfile(profile)
+              ios::HostContentSettingsMapFactory::GetForProfile(profile).get()
                                         popupMenuHandler:popupMenuHandler];
       break;
     }

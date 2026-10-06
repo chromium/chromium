@@ -342,7 +342,7 @@ TEST_F(PermissionsTabHelperTest,
       kPermissionsPromptVideoCaptureModalDialogActionHistogram,
       PermissionPromptAction::kGranted, 1);
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -385,7 +385,7 @@ TEST_F(PermissionsTabHelperTest,
       kPermissionsPromptAudioCaptureModalDialogActionHistogram,
       PermissionPromptAction::kDenied, 1);
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, settings_map->GetContentSetting(
                                        GURL(kTestURL), GURL(kTestURL),
@@ -424,7 +424,7 @@ TEST_F(PermissionsTabHelperTest,
       kPermissionsPromptVideoCaptureModalDialogActionHistogram,
       PermissionPromptAction::kGrantedOnce, 1);
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
                                      GURL(kTestURL), GURL(kTestURL),
@@ -495,7 +495,7 @@ TEST_F(PermissionsTabHelperTest,
       kPermissionsPromptVideoCaptureModalDialogActionHistogram,
       PermissionPromptAction::kGrantedOnce, 1);
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
                                      GURL(kTestURL), GURL(kTestURL),
@@ -516,7 +516,7 @@ TEST_F(PermissionsTabHelperTest,
   web_state_.SetStateForPermission(web::PermissionStateAllowed,
                                    web::PermissionCamera);
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
@@ -548,7 +548,7 @@ TEST_F(PermissionsTabHelperTest,
   web_state_.SetStateForPermission(web::PermissionStateAllowed,
                                    web::PermissionMicrophone);
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   settings_map->SetDefaultContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
                                          CONTENT_SETTING_BLOCK);
@@ -566,7 +566,7 @@ TEST_F(PermissionsTabHelperTest,
 
   GURL url(kTestURL);
   web_state_.SetCurrentURL(url);
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
 
   settings_map->SetContentSettingDefaultScope(

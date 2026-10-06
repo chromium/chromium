@@ -461,7 +461,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   web_state->SetBrowserState(profile_.get());
   web_state->SetCurrentURL(GURL(kURL1));
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   settings_map->SetContentSettingDefaultScope(
       GURL(kURL1), GURL(kURL1), ContentSettingsType::MEDIASTREAM_CAMERA,
@@ -490,7 +490,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   web_state->SetBrowserState(profile_.get());
   web_state->SetCurrentURL(GURL(kURL1));
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   settings_map->SetContentSettingDefaultScope(
       GURL(kURL1), GURL(kURL1), ContentSettingsType::MEDIASTREAM_MIC,
@@ -521,7 +521,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   OverlayRequestQueue::CreateForWebState(web_state.get());
   PermissionsTabHelper::CreateForWebState(web_state.get());
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   settings_map->SetContentSettingDefaultScope(
       GURL(kURL1), GURL(kURL1), ContentSettingsType::MEDIASTREAM_CAMERA,
@@ -559,7 +559,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   OverlayRequestQueue::CreateForWebState(web_state.get());
   PermissionsTabHelper::CreateForWebState(web_state.get());
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   settings_map->SetContentSettingDefaultScope(
       GURL(kURL1), GURL(kURL1), ContentSettingsType::MEDIASTREAM_CAMERA,
@@ -593,7 +593,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   OverlayRequestQueue::CreateForWebState(web_state.get());
   PermissionsTabHelper::CreateForWebState(web_state.get());
 
-  HostContentSettingsMap* settings_map =
+  scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   settings_map->SetContentSettingDefaultScope(
       GURL(kURL1), GURL(kURL1), ContentSettingsType::MEDIASTREAM_CAMERA,

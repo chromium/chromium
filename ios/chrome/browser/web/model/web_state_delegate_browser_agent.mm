@@ -117,7 +117,7 @@ bool IsMicOrCameraAccessSubjectToParentalControls(
     return false;
   }
 
-  HostContentSettingsMap* host_content_settings_map =
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile);
   CHECK(host_content_settings_map);
 
@@ -398,12 +398,12 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
   }
 
   if (IsDomainLevelSitePermissionsEnabled()) {
-    HostContentSettingsMap* settings_map =
+    scoped_refptr<HostContentSettingsMap> settings_map =
         ios::HostContentSettingsMapFactory::GetForProfile(profile);
     GURL url = source->GetLastCommittedURL();
 
     std::optional<web::PermissionDecision> decision =
-        DetermineDomainLevelDecision(settings_map, url, permissions);
+        DetermineDomainLevelDecision(settings_map.get(), url, permissions);
     if (decision) {
       RecordPermissionRequestResolution(
           permissions,

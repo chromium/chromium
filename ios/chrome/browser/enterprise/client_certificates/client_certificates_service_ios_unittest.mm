@@ -82,13 +82,13 @@ class ClientCertificatesServiceIOSImplTest : public PlatformTest {
   }
 
   void TearDown() override {
-    HostContentSettingsMap* m =
+    scoped_refptr<HostContentSettingsMap> m =
         ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
     m->ClearSettingsForOneType(ContentSettingsType::AUTO_SELECT_CERTIFICATE);
   }
 
   void SetPolicyValueInContentSettings(base::ListValue filters) {
-    HostContentSettingsMap* m =
+    scoped_refptr<HostContentSettingsMap> m =
         ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
 
     base::DictValue root;

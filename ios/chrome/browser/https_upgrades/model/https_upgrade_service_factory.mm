@@ -32,5 +32,5 @@ std::unique_ptr<KeyedService>
 HttpsUpgradeServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<HttpsUpgradeServiceImpl>(
       profile->IsOffTheRecord(),
-      ios::HostContentSettingsMapFactory::GetForProfile(profile));
+      ios::HostContentSettingsMapFactory::GetForProfile(profile).get());
 }

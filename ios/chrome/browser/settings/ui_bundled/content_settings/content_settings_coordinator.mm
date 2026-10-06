@@ -49,7 +49,7 @@
 
 - (void)start {
   HostContentSettingsMap* settingsMap =
-      ios::HostContentSettingsMapFactory::GetForProfile(self.profile);
+      ios::HostContentSettingsMapFactory::GetForProfile(self.profile).get();
   MailtoHandlerService* mailtoHandlerService =
       MailtoHandlerServiceFactory::GetForProfile(self.profile);
   PrefService* prefService = self.profile->GetPrefs();

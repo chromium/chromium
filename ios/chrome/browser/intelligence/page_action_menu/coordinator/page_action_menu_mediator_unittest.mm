@@ -132,7 +132,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
     TemplateURLService* template_url_service =
         search_engines_test_environment_.template_url_service();
     settings_map_ =
-        ios::HostContentSettingsMapFactory::GetForProfile(browser_state_);
+        ios::HostContentSettingsMapFactory::GetForProfile(browser_state_).get();
     ASSERT_TRUE(settings_map_);
 
     // Attach required tab helpers to the fake web state.

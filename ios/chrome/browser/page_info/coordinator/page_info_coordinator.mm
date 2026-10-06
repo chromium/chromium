@@ -93,7 +93,8 @@
   self.permissionsMediator = [[PageInfoPermissionsMediator alloc]
             initWithWebState:webState
       hostContentSettingsMap:ios::HostContentSettingsMapFactory::GetForProfile(
-                                 self.profile)];
+                                 self.profile)
+                                 .get()];
   self.viewController.permissionsDelegate = self.permissionsMediator;
   self.permissionsMediator.consumer = self.viewController;
 

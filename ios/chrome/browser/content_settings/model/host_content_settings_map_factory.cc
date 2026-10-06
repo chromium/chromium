@@ -12,11 +12,10 @@
 namespace ios {
 
 // static
-HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<HostContentSettingsMap>(profile, /*create=*/true)
-      .get();
+scoped_refptr<HostContentSettingsMap>
+HostContentSettingsMapFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<HostContentSettingsMap>(
+      profile, /*create=*/true);
 }
 
 // static

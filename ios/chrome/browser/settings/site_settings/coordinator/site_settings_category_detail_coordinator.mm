@@ -46,8 +46,8 @@
 
   ProfileIOS* profile = self.profile;
   _mediator = [[SiteSettingsCategoryDetailMediator alloc]
-      initWithHostContentSettingsMap:ios::HostContentSettingsMapFactory::
-                                         GetForProfile(profile)
+      initWithHostContentSettingsMap:
+          ios::HostContentSettingsMapFactory::GetForProfile(profile).get()
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile)
                  contentSettingsType:type];

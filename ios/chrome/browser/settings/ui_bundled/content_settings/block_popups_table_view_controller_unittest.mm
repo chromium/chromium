@@ -63,12 +63,13 @@ class BlockPopupsTableViewControllerTest
         allowed_pattern, ContentSettingsPattern::Wildcard(),
         ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
-                  ->GetContentSetting(url, url, ContentSettingsType::POPUPS));
+              settings_map()->GetContentSetting(url, url,
+                                                ContentSettingsType::POPUPS));
   }
 
   HostContentSettingsMap* settings_map() {
-    return ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+    return ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
+        .get();
   }
 
   PrefService* pref_service() { return profile_->GetPrefs(); }

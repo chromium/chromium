@@ -602,7 +602,7 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForProfile(profile);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile).get();
 
   bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   return use_desktop_agent ? web::UserAgentType::DESKTOP
@@ -614,7 +614,7 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForProfile(profile);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile).get();
   bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
                             !use_desktop_agent);

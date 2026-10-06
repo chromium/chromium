@@ -36,7 +36,7 @@
 
 - (void)start {
   HostContentSettingsMap* settingsMap =
-      ios::HostContentSettingsMapFactory::GetForProfile(self.profile);
+      ios::HostContentSettingsMapFactory::GetForProfile(self.profile).get();
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
 
