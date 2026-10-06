@@ -4,6 +4,9 @@
 
 #include "services/network/pervasive_resources/shared_resource_checker.h"
 
+#include <string_view>
+
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -32,6 +35,28 @@ static const int64_t kMatchWindowSeconds = 1 * base::Time::kSecondsPerHour;
 static constexpr base::TimeDelta kUserGestureTimeout = base::Minutes(10);
 
 namespace network {
+
+namespace {
+
+// Ensure patterns only use bracket-enclosed named segments (e.g. "{:v}") and
+// do not contain literal '*' wildcards or bare ':name' segments.
+bool IsValidPervasivePattern(std::string_view entry) {
+  constexpr std::string_view kHttpsPrefix = "https://";
+  if (!entry.starts_with(kHttpsPrefix) ||
+      entry.find('*') != std::string_view::npos) {
+    return false;
+  }
+  std::string_view after_scheme = entry.substr(kHttpsPrefix.size());
+  for (size_t pos = after_scheme.find(':'); pos != std::string_view::npos;
+       pos = after_scheme.find(':', pos + 1)) {
+    if (pos == 0 || after_scheme[pos - 1] != '{') {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 // This class encapsulates the matching logic and restrictions for a single
 // URLPattern (limiting the number of URLs allowed within a given period).
@@ -143,6 +168,7 @@ void SharedResourceChecker::LoadPervasivePatterns(
   std::vector<std::string> lines = base::SplitString(
       patterns, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const std::string& entry : lines) {
+    CHECK(IsValidPervasivePattern(entry));
     GURL pattern_as_url(entry);
     CHECK(pattern_as_url.is_valid());
 

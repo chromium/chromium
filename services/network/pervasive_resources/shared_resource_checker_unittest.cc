@@ -14,6 +14,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/cookie_settings.h"
+#include "services/network/pervasive_resources/shared_resource_checker_patterns.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,23 +70,26 @@ static ResourceRequest CreateResourceRequest(const char* url,
 
 // Zstandard-compressed list of newline-delimited URL patterns:
 // https://www.example.test/exact
-// https://www.example.test/wildcard/end/*
-// https://www.example.test/wildcard/:v/middle
-// https://www.example.test/wildcard/:v1/:v2/two
+// https://www.example.test/wildcard/end/{:v}
+// https://www.example.test/wildcard/prefix-{:v}.js
+// https://www.example.test/wildcard/{:v}/middle
+// https://www.example.test/wildcard/{:v1}/{:v2}/two
 // https://www2.example.test/exact
 static constexpr uint8_t kTestUrlPatternsZstd[] = {
-    0x28, 0xb5, 0x2f, 0xfd, 0x24, 0xc0, 0x55, 0x02, 0x00, 0x12, 0x84,
-    0x0d, 0x11, 0xa0, 0xed, 0x08, 0xda, 0xf8, 0xd1, 0x4b, 0x91, 0xd6,
-    0x3f, 0xaa, 0xed, 0x81, 0xfd, 0xeb, 0x61, 0x05, 0x39, 0x58, 0xf3,
-    0x07, 0x24, 0x17, 0x9b, 0x54, 0x91, 0x3a, 0x24, 0xe1, 0xba, 0xf6,
-    0xea, 0x8a, 0xd1, 0x84, 0x1a, 0xb0, 0x29, 0x71, 0xcf, 0x6f, 0x39,
-    0x37, 0x35, 0x55, 0xe2, 0x66, 0x77, 0xff, 0xe4, 0x35, 0xe6, 0x13,
-    0x05, 0x00, 0x25, 0xe3, 0xe1, 0xa8, 0xb8, 0xe3, 0xa9, 0xe7, 0xb0,
-    0x14, 0xa9, 0x16, 0x8b, 0x72, 0x02, 0x80, 0xa1, 0x96, 0xdb};
+    0x28, 0xb5, 0x2f, 0xfd, 0x24, 0xfa, 0xdd, 0x02, 0x00, 0xb2, 0x84, 0x0f,
+    0x11, 0xa0, 0x6f, 0xb8, 0xed, 0xcc, 0xf4, 0xfc, 0xce, 0x6f, 0x56, 0x35,
+    0x6c, 0x69, 0xa3, 0x9a, 0x1a, 0x1e, 0x82, 0x3c, 0xfa, 0x7c, 0xc9, 0x1d,
+    0xce, 0xba, 0x55, 0x63, 0xb9, 0x44, 0xa8, 0x0a, 0x79, 0x84, 0x77, 0x16,
+    0xcb, 0xed, 0x9c, 0x3b, 0x9a, 0xd3, 0x4c, 0x51, 0xf0, 0xc7, 0x54, 0xe7,
+    0x97, 0xfe, 0xc2, 0x19, 0x6c, 0xa6, 0xba, 0xa0, 0x94, 0x32, 0x17, 0x09,
+    0xff, 0x53, 0x09, 0x00, 0x5f, 0xe3, 0xe1, 0xaa, 0xb8, 0xa4, 0x58, 0xf8,
+    0xfb, 0xd6, 0x54, 0x00, 0x50, 0x45, 0x23, 0xaa, 0xd5, 0xe4, 0x14, 0xb9,
+    0x16, 0x8b, 0x72, 0x02, 0x17, 0xa8, 0x37, 0x7f};
 
 static const char* kPatternMatches[] = {
     "https://www.example.test/exact",
     "https://www.example.test/wildcard/end/match",
+    "https://www.example.test/wildcard/prefix-123.js",
     "https://www.example.test/wildcard/match/middle",
     "https://www.example.test/wildcard/match/both/two",
     "https://www2.example.test/exact"};
@@ -95,6 +99,9 @@ static const char* kPatternMatchFails[] = {
     "https://www.example.test/wildcard/end/query?hello=world",
     "https://www.example.test/exact2",
     "https://www.example.test/wildcard/end",
+    "https://www.example.test/wildcard/end/match/not",
+    "https://www.example.test/wildcard/prefix-123/extra.js",
+    "https://www.example.test/wildcard/prefix-.js",
     "https://www.example.test/wildcard/not/middl",
     "https://www.example.test/wildcard/match/not/middle",
     "https://www.example.test/wildcard/match/not/three/two",
@@ -135,6 +142,15 @@ class SharedResourceCheckerTest : public testing::Test,
   void LoadPervasivePatterns(base::Time::Exploded& expiration) const {
     shared_resource_checker_->LoadPervasivePatterns(
         kTestUrlPatternsZstd, sizeof(kTestUrlPatternsZstd), expiration);
+  }
+  bool LoadDefaultPervasivePatterns() const {
+    base::Time expires = base::Time::Now() + base::Days(1);
+    base::Time::Exploded expiration;
+    expires.UTCExplode(&expiration);
+    shared_resource_checker_->LoadPervasivePatterns(
+        internal::kPervasivePatternsZstd,
+        sizeof(internal::kPervasivePatternsZstd), expiration);
+    return !shared_resource_checker_->patterns_.empty();
   }
 
  private:
@@ -350,6 +366,10 @@ TEST_P(SharedResourceCheckerTest, UserGestureExpired) {
   task_environment.AdvanceClock(base::Minutes(2));
   EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request2, origin,
                                                            std::nullopt));
+}
+
+TEST_P(SharedResourceCheckerTest, DefaultPatternsAreValid) {
+  EXPECT_TRUE(LoadDefaultPervasivePatterns());
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
