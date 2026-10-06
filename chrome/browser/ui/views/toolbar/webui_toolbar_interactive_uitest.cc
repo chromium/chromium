@@ -268,7 +268,15 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, Basic) {
   BasicPixelTest(browser(), "Basic");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, IncognitoBasic) {
+// TODO(crbug.com/570164242): Failing on ChromeOS debug because WebContents
+// remains in loading state.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_IncognitoBasic DISABLED_IncognitoBasic
+#else
+#define MAYBE_IncognitoBasic IncognitoBasic
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest,
+                       MAYBE_IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
 }
 
