@@ -9,15 +9,17 @@ import static org.junit.Assert.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -36,12 +38,10 @@ import java.util.List;
 
 /** Unit tests for {@link BottomSheetListContainerView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomSheetListContainerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ListContainerViewDelegate mDelegate;
-    @Mock private BottomSheetListItemView mListItemView;
     private BottomSheetListContainerView mContainerView;
     private Context mContext;
 
@@ -50,16 +50,13 @@ public class BottomSheetListContainerViewUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mContainerView =
-                new BottomSheetListContainerView(mContext, null) {
-                    @Override
-                    public BottomSheetListItemView createListItemView() {
-                        return mListItemView;
-                    }
-                };
+        mContainerView = new BottomSheetListContainerView(mContext, null);
 
         mListContent = List.of(NTP_CARDS, FEED);
         when(mDelegate.getListItems()).thenReturn(mListContent);
+        // Mockito would otherwise return 0 for these Integer-returning methods.
+        when(mDelegate.getTrailingIcon(anyInt())).thenReturn(null);
+        when(mDelegate.getTrailingIconDescriptionResId(anyInt())).thenReturn(null);
     }
 
     @Test
@@ -82,21 +79,48 @@ public class BottomSheetListContainerViewUnitTest {
     public void testRenderAllListItems() {
         View.OnClickListener listener = ViewUtils.emptyClickListener();
         for (int type : mListContent) {
+            when(mDelegate.getListItemId(type)).thenReturn(100 + type);
+            when(mDelegate.getListItemTitle(eq(type), any(Context.class)))
+                    .thenReturn("Title " + type);
+            when(mDelegate.getListItemSubtitle(eq(type), any(Context.class)))
+                    .thenReturn("Subtitle " + type);
             when(mDelegate.getListener(type)).thenReturn(listener);
         }
+        // Only NTP_CARDS has a trailing icon.
+        when(mDelegate.getTrailingIcon(NTP_CARDS)).thenReturn(R.drawable.forward_arrow_icon);
+        when(mDelegate.getTrailingIconDescriptionResId(NTP_CARDS))
+                .thenReturn(R.string.ntp_customization_theme_title);
 
         mContainerView.renderAllListItems(mDelegate);
 
-        // Verifies that titles, subtitles, backgrounds, trailing icons are set.
+        // Verifies that ids, titles, subtitles, backgrounds, trailing icons and listeners are set.
         int itemListSize = mListContent.size();
-        verify(mListItemView, times(itemListSize)).setId(anyInt());
-        verify(mListItemView, times(itemListSize)).setTitle(any());
-        verify(mListItemView, times(itemListSize)).setSubtitle(any());
-        verify(mListItemView, times(itemListSize)).setBackground(anyInt());
-        verify(mListItemView, times(itemListSize)).setTrailingIcon(anyInt());
-
-        // Verifies that if the listener is not null, it is set on the listItemView.
-        verify(mListItemView, times(itemListSize)).setOnClickListener(eq(listener));
+        assertEquals(itemListSize, mContainerView.getChildCount());
+        for (int i = 0; i < itemListSize; i++) {
+            int type = mListContent.get(i);
+            View listItemView = mContainerView.getChildAt(i);
+            assertEquals(100 + type, listItemView.getId());
+            TextView title = listItemView.findViewById(R.id.title);
+            assertEquals("Title " + type, title.getText().toString());
+            TextView subtitle = listItemView.findViewById(R.id.subtitle);
+            assertEquals("Subtitle " + type, subtitle.getText().toString());
+            assertEquals(
+                    NtpCustomizationUtils.getBackground(itemListSize, i),
+                    shadowOf(listItemView.getBackground()).getCreatedFromResId());
+            ImageView trailingIcon = listItemView.findViewById(R.id.trailing_icon);
+            if (type == NTP_CARDS) {
+                assertEquals(View.VISIBLE, trailingIcon.getVisibility());
+                assertEquals(
+                        R.drawable.forward_arrow_icon,
+                        shadowOf(trailingIcon.getDrawable()).getCreatedFromResId());
+                assertEquals(
+                        mContext.getString(R.string.ntp_customization_theme_title),
+                        trailingIcon.getContentDescription());
+            } else {
+                assertEquals(View.GONE, trailingIcon.getVisibility());
+            }
+            assertEquals(listener, shadowOf(listItemView).getOnClickListener());
+        }
     }
 
     @Test

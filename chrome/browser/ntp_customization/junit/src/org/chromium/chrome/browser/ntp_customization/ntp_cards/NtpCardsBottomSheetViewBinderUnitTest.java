@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
-import android.view.View;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,38 +34,36 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link NtpCardsBottomSheetViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpCardsBottomSheetViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mParentView;
-    @Mock private MaterialSwitchWithText mMaterialSwitch;
     @Mock private OnCheckedChangeListener mListener;
 
-    private Context mContext;
     private PropertyModel mPropertyModel;
     private MaterialSwitchWithText mAllCardsSwitch;
-    private MaterialSwitchWithTextListContainerView mMaterialSwitchWithTextListContainerView;
+    private MaterialSwitchWithText mMaterialSwitch;
 
     @Before
     public void setUp() {
-        mContext =
+        Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
-        mMaterialSwitchWithTextListContainerView =
-                spy(new MaterialSwitchWithTextListContainerView(mContext, /* attrs= */ null));
-        mAllCardsSwitch = spy(new MaterialSwitchWithText(mContext, /* attrs= */ null));
+        MaterialSwitchWithTextListContainerView containerView =
+                new MaterialSwitchWithTextListContainerView(context, /* attrs= */ null);
+        containerView.setId(R.id.ntp_cards_container);
+        mMaterialSwitch = new MaterialSwitchWithText(context, /* attrs= */ null);
+        containerView.addView(mMaterialSwitch);
+        mAllCardsSwitch = new MaterialSwitchWithText(context, /* attrs= */ null);
+        mAllCardsSwitch.setId(R.id.cards_switch_button);
 
-        when(mParentView.findViewById(R.id.cards_switch_button)).thenReturn(mAllCardsSwitch);
-        when(mParentView.findViewById(R.id.ntp_cards_container))
-                .thenReturn(mMaterialSwitchWithTextListContainerView);
-        when(mMaterialSwitchWithTextListContainerView.getChildCount()).thenReturn(1);
-        when(mMaterialSwitchWithTextListContainerView.getChildAt(0)).thenReturn(mMaterialSwitch);
+        FrameLayout parentView = new FrameLayout(context);
+        parentView.addView(mAllCardsSwitch);
+        parentView.addView(containerView);
 
         mPropertyModel = new PropertyModel(NtpCustomizationViewProperties.NTP_CARD_SETTINGS_KEYS);
         PropertyModelChangeProcessor.create(
-                mPropertyModel, mParentView, NtpCardsBottomSheetViewBinder::bind);
+                mPropertyModel, parentView, NtpCardsBottomSheetViewBinder::bind);
     }
 
     @Test
@@ -79,14 +77,12 @@ public class NtpCardsBottomSheetViewBinderUnitTest {
 
     @Test
     public void testBindAreCardSwitchesEnabled() {
-        mPropertyModel.set(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED, false);
-        verify(mAllCardsSwitch).setChecked(false);
-        verify(mMaterialSwitchWithTextListContainerView).setAllModuleSwitchesEnabled(false);
-        verify(mMaterialSwitch).setEnabled(false);
-
         mPropertyModel.set(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED, true);
-        verify(mAllCardsSwitch).setChecked(true);
-        verify(mMaterialSwitchWithTextListContainerView).setAllModuleSwitchesEnabled(true);
-        verify(mMaterialSwitch).setEnabled(true);
+        assertTrue(mAllCardsSwitch.isChecked());
+        assertTrue(mMaterialSwitch.isEnabled());
+
+        mPropertyModel.set(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED, false);
+        assertFalse(mAllCardsSwitch.isChecked());
+        assertFalse(mMaterialSwitch.isEnabled());
     }
 }

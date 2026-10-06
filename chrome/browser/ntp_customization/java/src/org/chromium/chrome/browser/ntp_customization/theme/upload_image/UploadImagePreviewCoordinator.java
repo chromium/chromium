@@ -411,8 +411,4 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                 !Objects.equals(currentBackgroundData, uploadImageData));
         dialog.dismiss();
     }
-
-    void setCropImageViewForTesting(CropImageView view) {
-        mCropImageView = view;
-    }
 }

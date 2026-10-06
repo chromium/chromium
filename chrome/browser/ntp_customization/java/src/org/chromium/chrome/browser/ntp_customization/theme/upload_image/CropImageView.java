@@ -436,6 +436,22 @@ public class CropImageView extends AppCompatImageView {
         mIsLandscapeInitialized = isInitialized;
     }
 
+    void setWindowSizeForTesting(int orientation, Point windowSize) {
+        mImageInfo.setWindowSize(orientation, windowSize);
+    }
+
+    void setIsScaledForTesting(boolean isScaled) {
+        mIsScaled = isScaled;
+    }
+
+    void setIsScrolledForTesting(boolean isScrolled) {
+        mIsScrolled = isScrolled;
+    }
+
+    void setIsScreenRotatedForTesting(boolean isScreenRotated) {
+        mIsScreenRotated = isScreenRotated;
+    }
+
     boolean getIsScaled() {
         return mIsScaled;
     }

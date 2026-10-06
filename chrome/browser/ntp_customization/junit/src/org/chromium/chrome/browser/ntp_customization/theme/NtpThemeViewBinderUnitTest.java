@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -33,12 +35,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link NtpThemeViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeViewBinderUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View.OnClickListener mOnClickListener;
-    @Mock private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -74,31 +74,35 @@ public class NtpThemeViewBinderUnitTest {
     @Test
     public void testIsSectionSelected() {
         PropertyModelChangeProcessor.create(
-                mModel, mNtpThemeBottomSheetView, NtpThemeViewBinder::bindThemeBottomSheet);
+                mModel, mView, NtpThemeViewBinder::bindThemeBottomSheet);
+
+        View trailingIcon = mView.getItemBySectionType(DEFAULT).findViewById(R.id.trailing_icon);
 
         Pair<Integer, Boolean> pair = new Pair<>(DEFAULT, true);
         mModel.set(NtpThemeProperty.IS_SECTION_SELECTED, pair);
-        verify(mNtpThemeBottomSheetView).updateSectionTrailingIcon(DEFAULT, true);
+        assertEquals(View.VISIBLE, trailingIcon.getVisibility());
 
         pair = new Pair<>(DEFAULT, false);
         mModel.set(NtpThemeProperty.IS_SECTION_SELECTED, pair);
-        verify(mNtpThemeBottomSheetView).updateSectionTrailingIcon(DEFAULT, false);
+        assertEquals(View.INVISIBLE, trailingIcon.getVisibility());
     }
 
     @Test
     public void testSectionOnClickListener() {
         PropertyModelChangeProcessor.create(
-                mModel, mNtpThemeBottomSheetView, NtpThemeViewBinder::bindThemeBottomSheet);
+                mModel, mView, NtpThemeViewBinder::bindThemeBottomSheet);
 
         final Pair<Integer, View.OnClickListener> pair = new Pair<>(DEFAULT, mOnClickListener);
         mModel.set(NtpThemeProperty.SECTION_ON_CLICK_LISTENER, pair);
-        verify(mNtpThemeBottomSheetView).setSectionOnClickListener(DEFAULT, mOnClickListener);
+        View defaultSection = mView.getItemBySectionType(DEFAULT);
+        defaultSection.performClick();
+        verify(mOnClickListener).onClick(defaultSection);
     }
 
     @Test
     public void testLeadingIconForThemeCollections() {
         PropertyModelChangeProcessor.create(
-                mModel, mNtpThemeBottomSheetView, NtpThemeViewBinder::bindThemeBottomSheet);
+                mModel, mView, NtpThemeViewBinder::bindThemeBottomSheet);
 
         Drawable primaryDrawable =
                 mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
@@ -106,6 +110,11 @@ public class NtpThemeViewBinderUnitTest {
                 mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
         final Pair<Drawable, Drawable> pair = new Pair<>(primaryDrawable, secondaryDrawable);
         mModel.set(NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS, pair);
-        verify(mNtpThemeBottomSheetView).setLeadingIconForThemeCollections(pair);
+        View leadingIcon =
+                mView.getItemBySectionType(THEME_COLLECTION).findViewById(R.id.leading_icon);
+        ImageView primaryImage = leadingIcon.findViewById(R.id.primary_image);
+        ImageView secondaryImage = leadingIcon.findViewById(R.id.secondary_image);
+        assertEquals(primaryDrawable, primaryImage.getDrawable());
+        assertEquals(secondaryDrawable, secondaryImage.getDrawable());
     }
 }

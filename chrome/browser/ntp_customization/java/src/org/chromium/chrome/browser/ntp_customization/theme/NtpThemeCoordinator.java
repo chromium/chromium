@@ -61,7 +61,7 @@ public class NtpThemeCoordinator {
     private final CallbackController mCallbackController = new CallbackController();
     private final boolean mIsNtpThemeSyncEnabled;
     private NtpThemeMediator mMediator;
-    private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
+    private final NtpThemeBottomSheetView mNtpThemeBottomSheetView;
     private @Nullable UploadImagePreviewCoordinator mUploadPreviewCoordinator;
     private @Nullable NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
     private @Nullable NtpChromeColorsCoordinator mNtpChromeColorsCoordinator;
@@ -329,10 +329,6 @@ public class NtpThemeCoordinator {
         var oldValue = mMediator;
         mMediator = mediator;
         ResettersForTesting.register(() -> mMediator = oldValue);
-    }
-
-    void setNtpThemeBottomSheetViewForTesting(NtpThemeBottomSheetView ntpThemeBottomSheetView) {
-        mNtpThemeBottomSheetView = ntpThemeBottomSheetView;
     }
 
     NtpThemeCollectionManager getNtpThemeManagerForTesting() {

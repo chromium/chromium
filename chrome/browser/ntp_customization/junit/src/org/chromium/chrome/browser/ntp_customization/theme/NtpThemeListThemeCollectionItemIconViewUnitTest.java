@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -21,11 +19,8 @@ import android.widget.ImageView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -33,11 +28,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Unit tests for {@link NtpThemeListThemeCollectionItemIconView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeListThemeCollectionItemIconViewUnitTest {
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private Context mContext;
     private NtpThemeListThemeCollectionItemIconView mView;
 
@@ -108,13 +99,13 @@ public class NtpThemeListThemeCollectionItemIconViewUnitTest {
 
     @Test
     public void testSetImageDrawablePair() {
-        NtpThemeListThemeCollectionItemIconView spiedView = spy(mView);
         Drawable primaryDrawable = new ColorDrawable();
         Drawable secondaryDrawable = new ColorDrawable();
         Pair<Drawable, Drawable> drawablePair = new Pair<>(primaryDrawable, secondaryDrawable);
 
-        spiedView.setImageDrawablePair(drawablePair);
+        mView.setImageDrawablePair(drawablePair);
 
-        verify(spiedView).setImageDrawables(primaryDrawable, secondaryDrawable);
+        assertEquals(primaryDrawable, mPrimaryImage.getDrawable());
+        assertEquals(secondaryDrawable, mSecondaryImage.getDrawable());
     }
 }
