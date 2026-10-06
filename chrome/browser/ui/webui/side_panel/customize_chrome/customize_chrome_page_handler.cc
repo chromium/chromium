@@ -41,7 +41,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/ntp_tiles/features.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -166,13 +166,11 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
-#if !BUILDFLAG(IS_ANDROID)
-  pref_change_registrar_.Add(
-      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+  ntp_tiles::MostVisitedSites::AddEnterpriseShortcutsObserver(
+      pref_change_registrar_,
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
-#endif
   pref_change_registrar_.Add(
       prefs::kNtpHiddenModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
@@ -777,13 +775,8 @@ bool CustomizeChromePageHandler::IsEnterpriseShortcutsVisible() const {
 }
 
 bool CustomizeChromePageHandler::IsEnterpriseShortcutsEmpty() const {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
-  return profile_->GetPrefs()
-      ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
-      .empty();
-#endif
+  return !ntp_tiles::MostVisitedSites::HasEnterpriseShortcuts(
+      *profile_->GetPrefs());
 }
 
 void CustomizeChromePageHandler::OnNativeThemeUpdated(

@@ -23,9 +23,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_observer.h"
@@ -38,6 +40,7 @@
 #include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/switches.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/search/ntp_features.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -436,6 +439,75 @@ TEST(CustomLinksCacheTest, Main) {
   EXPECT_FALSE(cache.HasUrl(GURL(kTestUrl1)));
   EXPECT_FALSE(cache.HasUrl(GURL(kTestUrl2)));
 }
+
+TEST(MostVisitedSitesStaticHelpersTest, AddCustomLinksObserverWatchesScope) {
+  sync_preferences::TestingPrefServiceSyncable pref_service;
+  pref_service.registry()->RegisterListPref(prefs::kCustomLinksList);
+  pref_service.registry()->RegisterBooleanPref(prefs::kCustomLinksInitialized,
+                                               false);
+  pref_service.registry()->RegisterListPref(prefs::kCustomLinksListMobile);
+  pref_service.registry()->RegisterBooleanPref(
+      prefs::kCustomLinksInitializedMobile, false);
+
+  PrefChangeRegistrar registrar;
+  registrar.Init(&pref_service);
+  base::MockCallback<base::RepeatingClosure> callback;
+  MostVisitedSites::AddCustomLinksObserver(
+      registrar, CustomLinksScope::kDesktop, callback.Get());
+
+  EXPECT_CALL(callback, Run()).Times(2);
+  pref_service.SetList(prefs::kCustomLinksList,
+                       base::ListValue().Append("https://example.com/"));
+  pref_service.SetBoolean(prefs::kCustomLinksInitialized, true);
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Changes to another scope's keys are ignored.
+  EXPECT_CALL(callback, Run()).Times(0);
+  pref_service.SetList(prefs::kCustomLinksListMobile,
+                       base::ListValue().Append("https://example.com/"));
+  pref_service.SetBoolean(prefs::kCustomLinksInitializedMobile, true);
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+TEST(MostVisitedSitesStaticHelpersTest, HasEnterpriseShortcuts) {
+  sync_preferences::TestingPrefServiceSyncable pref_service;
+  pref_service.registry()->RegisterListPref(
+      prefs::kEnterpriseShortcutsPolicyList);
+  EXPECT_FALSE(MostVisitedSites::HasEnterpriseShortcuts(pref_service));
+
+  pref_service.SetList(
+      prefs::kEnterpriseShortcutsPolicyList,
+      base::ListValue().Append(base::DictValue()
+                                   .Set("url", "https://corp.example.com/")
+                                   .Set("title", "Corp")));
+  EXPECT_TRUE(MostVisitedSites::HasEnterpriseShortcuts(pref_service));
+
+  // Invalid policy entries (e.g. without a URL) do not count as shortcuts.
+  pref_service.SetList(
+      prefs::kEnterpriseShortcutsPolicyList,
+      base::ListValue().Append(base::DictValue().Set("title", "No URL")));
+  EXPECT_FALSE(MostVisitedSites::HasEnterpriseShortcuts(pref_service));
+}
+
+TEST(MostVisitedSitesStaticHelpersTest, AddEnterpriseShortcutsObserver) {
+  sync_preferences::TestingPrefServiceSyncable pref_service;
+  pref_service.registry()->RegisterListPref(
+      prefs::kEnterpriseShortcutsPolicyList);
+
+  PrefChangeRegistrar registrar;
+  registrar.Init(&pref_service);
+  base::MockCallback<base::RepeatingClosure> callback;
+  MostVisitedSites::AddEnterpriseShortcutsObserver(registrar, callback.Get());
+
+  EXPECT_CALL(callback, Run());
+  pref_service.SetList(
+      prefs::kEnterpriseShortcutsPolicyList,
+      base::ListValue().Append(base::DictValue()
+                                   .Set("url", "https://corp.example.com/")
+                                   .Set("title", "Corp")));
+}
+#endif
 
 // Param specifies whether Popular Sites is enabled via variations.
 class MostVisitedSitesTest : public ::testing::Test {

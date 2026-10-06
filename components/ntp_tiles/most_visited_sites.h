@@ -54,6 +54,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+class PrefChangeRegistrar;
 class PrefService;
 
 namespace ntp_tiles {
@@ -355,6 +356,29 @@ class MostVisitedSites :
 
   // Verifies if NTPTile App comes from a PreInstalledApp.
   static bool IsNtpTileFromPreinstalledApp(GURL url);
+
+  // Read-only helpers for code outside //components/ntp_tiles that needs to
+  // react to custom links or enterprise shortcuts without owning a
+  // MostVisitedSites. Unlike CustomLinksManager and EnterpriseShortcutsManager,
+  // these never modify prefs.
+
+  // Returns whether the enterprise shortcuts policy in `prefs` provides at
+  // least one valid shortcut. Always false on platforms without enterprise
+  // shortcuts.
+  static bool HasEnterpriseShortcuts(const PrefService& prefs);
+
+  // Adds `callback` to the initialized `registrar` so that it runs whenever the
+  // enterprise shortcuts policy changes. No-op on platforms without enterprise
+  // shortcuts.
+  static void AddEnterpriseShortcutsObserver(
+      PrefChangeRegistrar& registrar,
+      const base::RepeatingClosure& callback);
+
+  // Adds `callback` to the initialized `registrar` so that it runs whenever the
+  // custom links stored for `scope` change.
+  static void AddCustomLinksObserver(PrefChangeRegistrar& registrar,
+                                     CustomLinksScope scope,
+                                     const base::RepeatingClosure& callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesTest,

@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -344,7 +344,7 @@ bool AreShortcutsAvailableForProfile(Profile* profile) {
   }
   PrefService* prefs = profile->GetPrefs();
   const bool has_enterprise_shortcuts =
-      !prefs->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList).empty();
+      ntp_tiles::MostVisitedSites::HasEnterpriseShortcuts(*prefs);
   if (!has_enterprise_shortcuts) {
     return true;
   }

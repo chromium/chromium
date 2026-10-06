@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -98,7 +99,9 @@ TEST_F(OmniboxEverywherePrefsTest,
   {
     ScopedListPrefUpdate update(
         profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
-    update->Append("https://corp.example.com");
+    update->Append(base::DictValue()
+                       .Set("url", "https://corp.example.com")
+                       .Set("title", "Corp"));
   }
 
   // Top toggle is ON, but both enterprise and personal shortcuts are OFF.
@@ -126,7 +129,9 @@ TEST_F(OmniboxEverywherePrefsTest,
   {
     ScopedListPrefUpdate update(
         profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
-    update->Append("https://corp.example.com");
+    update->Append(base::DictValue()
+                       .Set("url", "https://corp.example.com")
+                       .Set("title", "Corp"));
   }
 
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
@@ -146,7 +151,9 @@ TEST_F(OmniboxEverywherePrefsTest,
   {
     ScopedListPrefUpdate update(
         profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
-    update->Append("https://corp.example.com");
+    update->Append(base::DictValue()
+                       .Set("url", "https://corp.example.com")
+                       .Set("title", "Corp"));
   }
 
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
@@ -178,6 +185,29 @@ TEST_F(OmniboxEverywherePrefsTest,
   profile_.GetPrefs()->SetInteger(
       kOmniboxEverywhereShowShortcuts,
       std::to_underlying(ShowShortcutsPrefValue::kEnabled));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
+}
+
+TEST_F(OmniboxEverywherePrefsTest,
+       ShortcutsVisible_MalformedEnterprisePolicyTreatedAsNoPolicy) {
+  // A policy entry without a URL is not a valid enterprise shortcut, so it
+  // must not gate shortcut availability on the enterprise checkboxes.
+  {
+    ScopedListPrefUpdate update(
+        profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
+    update->Append(base::DictValue().Set("title", "Missing URL"));
+  }
+
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                  false);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                  false);
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
+
+  EXPECT_TRUE(AreShortcutsAvailableForProfile(&profile_));
   EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 

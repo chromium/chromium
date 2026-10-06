@@ -116,7 +116,7 @@ if (!is_android || enable_webui_ntp) {
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
       "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
       "//chrome/common",
-      "//components/ntp_tiles:pref_names",
+      "//components/ntp_tiles",
       "//components/prefs",
       "//components/strings:components_strings",
       "//extensions/strings",

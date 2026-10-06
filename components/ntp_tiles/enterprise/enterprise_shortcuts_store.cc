@@ -86,18 +86,26 @@ std::vector<EnterpriseShortcut> EnterpriseShortcutsStore::RetrieveLinks() {
 }
 
 std::vector<EnterpriseShortcut> EnterpriseShortcutsStore::RetrieveUserLinks() {
-  return RetrieveLinksFromPrefs(prefs::kEnterpriseShortcutsUserList);
+  return RetrieveLinksFromPrefs(*prefs_, prefs::kEnterpriseShortcutsUserList);
 }
 
 std::vector<EnterpriseShortcut>
 EnterpriseShortcutsStore::RetrievePolicyLinks() {
-  return RetrieveLinksFromPrefs(prefs::kEnterpriseShortcutsPolicyList);
+  return RetrieveLinksFromPrefs(*prefs_, prefs::kEnterpriseShortcutsPolicyList);
 }
 
+// static
+bool EnterpriseShortcutsStore::HasPolicyLinks(const PrefService& prefs) {
+  return !RetrieveLinksFromPrefs(prefs, prefs::kEnterpriseShortcutsPolicyList)
+              .empty();
+}
+
+// static
 std::vector<EnterpriseShortcut>
-EnterpriseShortcutsStore::RetrieveLinksFromPrefs(std::string_view pref_path) {
+EnterpriseShortcutsStore::RetrieveLinksFromPrefs(const PrefService& prefs,
+                                                 std::string_view pref_path) {
   std::vector<EnterpriseShortcut> links;
-  const base::ListValue& stored_links = prefs_->GetList(pref_path);
+  const base::ListValue& stored_links = prefs.GetList(pref_path);
   for (const base::Value& link : stored_links) {
     std::optional<EnterpriseShortcut> link_to_add =
         EnterpriseShortcutFromDict(link.GetDict());

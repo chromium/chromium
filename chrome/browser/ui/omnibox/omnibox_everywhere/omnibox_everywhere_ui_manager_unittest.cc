@@ -2137,7 +2137,9 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   {
     ScopedListPrefUpdate update(
         profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
-    update->Append("https://corp.example.com");
+    update->Append(base::DictValue()
+                       .Set("url", "https://corp.example.com")
+                       .Set("title", "Corp"));
   }
 
   // When both checkboxes are unchecked, no shortcuts can be shown at all.

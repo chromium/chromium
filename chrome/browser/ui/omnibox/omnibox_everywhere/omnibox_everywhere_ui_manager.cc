@@ -42,7 +42,8 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/custom_links_manager.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -342,18 +343,13 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
           base::BindRepeating(
               &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
               base::Unretained(this)));
-      profile_pref_change_registrar_.Add(
-          ntp_tiles::prefs::kCustomLinksList,
+      ntp_tiles::MostVisitedSites::AddCustomLinksObserver(
+          profile_pref_change_registrar_, ntp_tiles::CustomLinksScope::kDesktop,
           base::BindRepeating(
               &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
               base::Unretained(this)));
-      profile_pref_change_registrar_.Add(
-          ntp_tiles::prefs::kCustomLinksInitialized,
-          base::BindRepeating(
-              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
-              base::Unretained(this)));
-      profile_pref_change_registrar_.Add(
-          ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+      ntp_tiles::MostVisitedSites::AddEnterpriseShortcutsObserver(
+          profile_pref_change_registrar_,
           base::BindRepeating(
               &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
               base::Unretained(this)));
