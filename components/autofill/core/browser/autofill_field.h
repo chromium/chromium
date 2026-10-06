@@ -97,7 +97,7 @@ class Section {
                            const FieldIdentifier& rhs) = default;
 
     std::string field_name;
-    size_t local_frame_id;
+    size_t local_frame_id = 0;
     FieldRendererId field_renderer_id;
   };
 
