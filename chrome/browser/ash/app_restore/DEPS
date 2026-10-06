@@ -58,9 +58,6 @@ specific_include_rules = {
     "+chrome/browser/custom_handlers/protocol_handler_registry_factory.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/create_browser_window.h",
-    "+chrome/browser/ui/navigator/browser_navigator.h",
-    "+chrome/browser/ui/navigator/browser_navigator_params.h",
-    "+chrome/browser/ui/tabs/tab_enums.h",
   ],
 
   "full_restore_app_launch_handler_browsertest\\.cc": [

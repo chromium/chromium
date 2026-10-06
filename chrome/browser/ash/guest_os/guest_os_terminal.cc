@@ -51,6 +51,7 @@
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
@@ -134,7 +135,8 @@ void LaunchTerminalImpl(Profile* profile,
   }
   if (url != home) {
     browser->AddTab(url, /*index=*/1,
-                    ash::BrowserDelegate::TabDisposition::kForeground);
+                    ash::BrowserDelegate::TabDisposition::kForeground,
+                    ui::PAGE_TRANSITION_TYPED);
   }
   auto info = std::make_unique<app_restore::AppLaunchInfo>(
       kTerminalSystemAppId, browser->GetSessionID().id(), params.container,

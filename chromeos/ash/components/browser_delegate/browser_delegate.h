@@ -15,6 +15,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/common/web_app_id.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 class BrowserWindowInterface;
@@ -179,14 +180,15 @@ class BrowserDelegate {
   // download warnings) when closing.
   virtual void SetSkipWarningUserOnClose(bool skip) = 0;
 
-  // Loads the given URL in a new tab.
+  // Loads the given URL in a new tab with the given page transition.
   // If the `url` is empty the new tab-page is loaded.
   // If an `index` is given, the tab is placed at the corresponding position in
   // the tab strip. Otherwise it is added to the end.
   enum class TabDisposition { kForeground, kBackground };
   virtual void AddTab(const GURL& url,
                       std::optional<size_t> index,
-                      TabDisposition disposition) = 0;
+                      TabDisposition disposition,
+                      ui::PageTransition transition) = 0;
 
   // Closes the contents at the given index, triggering its destruction.
   // Runs any beforeunload/unload handlers, which may prompt the user and can

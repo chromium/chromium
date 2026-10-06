@@ -22,6 +22,7 @@ static_library("browser_delegate") {
     "//components/tabs:public",
     "//components/webapps/browser",
     "//components/webapps/common",
+    "//ui/base",
     "//ui/gfx/geometry",
     "//ui/views/controls/webview",
     "//url",

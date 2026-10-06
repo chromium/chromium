@@ -36,6 +36,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "extensions/common/extension.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 
@@ -273,12 +274,12 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       std::optional<int32_t> active_tab_index =
           browser_extra_info.active_tab_index;
       for (size_t i = 0; i < urls.size(); i++) {
-        browser->AddTab(
-            urls[i], /*index=*/std::nullopt,
-            (active_tab_index &&
-             base::checked_cast<int32_t>(i) == *active_tab_index)
-                ? ash::BrowserDelegate::TabDisposition::kForeground
-                : ash::BrowserDelegate::TabDisposition::kBackground);
+        browser->AddTab(urls[i], /*index=*/std::nullopt,
+                        (active_tab_index &&
+                         base::checked_cast<int32_t>(i) == *active_tab_index)
+                            ? ash::BrowserDelegate::TabDisposition::kForeground
+                            : ash::BrowserDelegate::TabDisposition::kBackground,
+                        ui::PAGE_TRANSITION_TYPED);
       }
 
       if (!browser_extra_info.tab_group_infos.empty()) {

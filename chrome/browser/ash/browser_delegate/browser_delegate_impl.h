@@ -56,7 +56,8 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void SetSkipWarningUserOnClose(bool skip) override;
   void AddTab(const GURL& url,
               std::optional<size_t> index,
-              TabDisposition disposition) override;
+              TabDisposition disposition,
+              ui::PageTransition transition) override;
   void CloseWebContentsAt(size_t index, UserGesture user_gesture) override;
   void ForceCloseWebContentsAt(size_t index) override;
   content::WebContents* NavigateWebApp(
