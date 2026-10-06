@@ -455,6 +455,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method contains
 [Worker]     method item
+[Worker] interface DecisionModel
+[Worker]     static method availability
+[Worker]     static method create
+[Worker]     attribute @@toStringTag
+[Worker]     getter preference
+[Worker]     method constructor
+[Worker]     method decide
+[Worker]     method destroy
 [Worker] interface DecompressionStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter readable

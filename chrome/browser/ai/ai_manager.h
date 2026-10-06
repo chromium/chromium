@@ -31,6 +31,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_decision_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
@@ -123,6 +124,15 @@ class AIManager : public base::SupportsUserData::Data,
   void CreateSemanticEmbedder(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
           client,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor)
+      override;
+  void CanCreateDecisionModel(
+      blink::mojom::AIDecisionModelCreateOptionsPtr options,
+      CanCreateDecisionModelCallback callback) override;
+  void CreateDecisionModel(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client,
+      blink::mojom::AIDecisionModelCreateOptionsPtr options,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor)
       override;
 

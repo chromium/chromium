@@ -3714,6 +3714,37 @@ if (!target_os_is_android) {
   ]
 }
 
+# DecisionModel
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for android. When
+# generating the snapshot for android, blink is compiled with
+# current_os="linux" and target_os="android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os="android".
+if (!target_os_is_android) {
+  generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_create_core_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_create_core_options.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_create_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_create_options.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decide_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decide_options.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decision.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decision.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_option.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_option.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_question.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_question.h",
+  ]
+  generated_enumeration_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_question_type.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model_question_type.h",
+  ]
+  generated_interface_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decision_model.h",
+  ]
+}
+
 generated_interface_extra_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces.h",

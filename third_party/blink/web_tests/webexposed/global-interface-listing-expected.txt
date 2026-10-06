@@ -1910,6 +1910,14 @@ interface DataTransferItemList
     method clear
     method constructor
     method remove
+interface DecisionModel
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter preference
+    method constructor
+    method decide
+    method destroy
 interface DecompressionStream
     attribute @@toStringTag
     getter readable

@@ -710,6 +710,7 @@ source_set("unit_tests") {
       # Inline text box tests do not apply to Android, which only loads
       # AXInlineTextBox tests for the focused node.
       "accessibility/ax_inline_text_box_test.cc",
+      "ai/decision_model_test.cc",
     ]
   }
 

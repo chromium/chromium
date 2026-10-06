@@ -28,7 +28,8 @@ class MODULES_EXPORT AIMetrics {
     kProofreader = 6,
     // kClassifier = 7,  // Classifier API is deprecated.
     kSemanticEmbedder = 8,
-    kMaxValue = kSemanticEmbedder,
+    kDecisionModel = 9,
+    kMaxValue = kDecisionModel,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histograms.xml:SessionType)
 

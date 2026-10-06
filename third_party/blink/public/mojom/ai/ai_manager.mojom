@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "services/on_device_model/public/mojom/download_observer.mojom";
 import "third_party/blink/public/mojom/ai/ai_common.mojom";
+import "third_party/blink/public/mojom/ai/ai_decision_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom";
 import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_proofreader.mojom";
@@ -140,6 +141,17 @@ interface AIManagerCreateSemanticEmbedderClient {
   OnError(AIManagerCreateClientError error);
 };
 
+// The client interface that receives an AIDecisionModel from an AIManager.
+interface AIManagerCreateDecisionModelClient {
+  // Called with a created decision model's mojo interface as a result for the
+  // CreateDecisionModel() method of the AIManager.
+  OnSessionCreated(pending_remote<blink.mojom.AIDecisionModel> decision_model);
+
+  // Called when the manager cannot create an AIDecisionModel.
+  // `quota_error_info` may provide additional info for kInitialInputTooLarge.
+  OnError(AIManagerCreateClientError error, QuotaErrorInfo? quota_error_info);
+};
+
 // The manager that could create a new session for the model.
 //
 // This interface is implemented by the browser process and called by the
@@ -212,4 +224,14 @@ interface AIManager {
     // notified upon completion or failure via the `client` interface.
     pending_remote<on_device_model.mojom.DownloadObserver>? monitor
   );
+
+  // Returns decision model availability info from the underlying service.
+  CanCreateDecisionModel(AIDecisionModelCreateOptions options) =>
+      (ModelAvailabilityCheckResult result);
+  // Creates a decision model session, passing the result or error to the
+  // client. Creation will be aborted if the client is disconnected.
+  CreateDecisionModel(
+      pending_remote<AIManagerCreateDecisionModelClient> client,
+      AIDecisionModelCreateOptions options,
+      pending_remote<on_device_model.mojom.DownloadObserver>? monitor);
 };

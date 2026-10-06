@@ -51,9 +51,7 @@ bool ContainsNoneType(const base::Value& value) {
   return false;
 }
 
-namespace {
-
-mojom::blink::PerformancePreference ToMojoSummarizerPreference(
+mojom::blink::PerformancePreference ToMojoPerformancePreference(
     V8PerformancePreference preference) {
   switch (preference.AsEnum()) {
     case V8PerformancePreference::Enum::kAuto:
@@ -64,6 +62,8 @@ mojom::blink::PerformancePreference ToMojoSummarizerPreference(
       return mojom::blink::PerformancePreference::kCapability;
   }
 }
+
+namespace {
 
 mojom::blink::AISummarizerType ToMojoSummarizerType(V8SummarizerType type) {
   switch (type.AsEnum()) {
@@ -171,7 +171,7 @@ mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptionsImpl(
       shared_context, ToMojoSummarizerType(options->type()),
       ToMojoSummarizerFormat(options->format()),
       ToMojoSummarizerLength(options->length()),
-      ToMojoSummarizerPreference(options->preference()),
+      ToMojoPerformancePreference(options->preference()),
       ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
       ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
       mojom::blink::AILanguageCode::New(

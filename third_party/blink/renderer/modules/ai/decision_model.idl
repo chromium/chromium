@@ -1,0 +1,108 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/decisions-api
+
+// Type of structured decision question
+// (`blink.mojom.AIDecisionModelQuestionType`).
+enum DecisionModelQuestionType {
+  "boolean",
+  "choice",
+  "score"
+};
+
+// Candidate option within a choice or score question
+// (`blink.mojom.AIDecisionModelOption`).
+dictionary DecisionModelOption {
+  required DOMString label;
+  DOMString description;
+};
+
+// Single structured question in a decision schema
+// (`blink.mojom.AIDecisionModelQuestion`).
+dictionary DecisionModelQuestion {
+  required DOMString id;
+  required DOMString prompt;
+  required DecisionModelQuestionType type;
+  sequence<DecisionModelOption> options;
+};
+
+// Core schema options shared by DecisionModel.availability() and
+// DecisionModel.create() (`blink.mojom.AIDecisionModelCreateOptions`).
+dictionary DecisionModelCreateCoreOptions {
+  DOMString context;
+  sequence<LanguageModelExpected> expectedInputs;
+  sequence<DecisionModelQuestion> questions;
+  PerformancePreference preference = "auto";
+};
+
+// Creation options for DecisionModel.create().
+dictionary DecisionModelCreateOptions : DecisionModelCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+};
+
+// Per-invocation options for DecisionModel.decide().
+dictionary DecisionModelDecideOptions {
+  AbortSignal signal;
+};
+
+// Calibrated decision output for a single question slot
+// (`blink.mojom.AIDecisionModelDecision`).
+dictionary DecisionModelDecision {
+  DOMString id;
+  DOMString label;
+  float expectedScore;
+  float confidence;
+  // Per-option probabilities in [0.0, 1.0], keyed by option label.
+  record<DOMString, float> probabilities;
+};
+
+// Record mapping each question id to its evaluated DecisionModelDecision.
+typedef record<DOMString, DecisionModelDecision> DecisionModelResult;
+
+// Built-In AI DecisionModel session (`blink.mojom.AIDecisionModel`).
+[
+  Exposed(Window AIDecisionModelAPI, Worker AIDecisionModelAPIForWorkers),
+  RuntimeEnabled=AIDecisionModelAPI,
+  SecureContext
+]
+interface DecisionModel {
+  [
+    MeasureAs=DecisionModel_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional DecisionModelCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=DecisionModel_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<DecisionModel> create(
+    optional DecisionModelCreateOptions options = {}
+  );
+
+  [
+    MeasureAs=DecisionModel_Decide,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DecisionModelResult> decide(
+    DOMString input,
+    optional DecisionModelDecideOptions options = {}
+  );
+
+  [
+    MeasureAs=DecisionModel_Destroy,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  undefined destroy();
+
+  readonly attribute PerformancePreference preference;
+};

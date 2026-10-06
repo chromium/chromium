@@ -66,6 +66,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_decision_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_proofreader.mojom.h"
@@ -1925,6 +1926,25 @@ void AIManager::OnSemanticEmbedderModelReady(
           context_bound_object_set_,
           pending_remote.InitWithNewPipeAndPassReceiver()));
   client_remote->OnResult(std::move(pending_remote));
+}
+
+void AIManager::CanCreateDecisionModel(
+    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    CanCreateDecisionModelCallback callback) {
+  std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableFeatureNotEnabled);
+}
+
+void AIManager::CreateDecisionModel(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client,
+    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
+  mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient> client_remote(
+      std::move(client));
+  on_device_ai::SendClientRemoteError(
+      client_remote,
+      blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
 void AIManager::RenderWidgetHostVisibilityChanged(

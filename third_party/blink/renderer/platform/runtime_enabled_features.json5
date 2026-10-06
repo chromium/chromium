@@ -337,7 +337,7 @@
       base_feature: "none",
     },
     {
-      name: "AIClassifierAPI",
+      name: "AIDecisionModelAPI",
       status: {
         "Win": "experimental",
         "Mac": "experimental",
@@ -345,6 +345,10 @@
         "ChromeOS": "experimental",
         "default": "",
       },
+    },
+    {
+      name: "AIDecisionModelAPIForWorkers",
+      status: "test",
     },
     {
       name: "AIEmbeddingsAPI",

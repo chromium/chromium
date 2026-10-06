@@ -499,6 +499,14 @@ interface DOMStringList
     method constructor
     method contains
     method item
+interface DecisionModel
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter preference
+    method constructor
+    method decide
+    method destroy
 interface DecompressionStream
     attribute @@toStringTag
     getter readable

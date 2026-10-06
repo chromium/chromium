@@ -43,3 +43,10 @@ enum AIManagerCreateClientError {
 
   // Append new line here
 };
+
+// The performance preference for selecting the underlying model.
+enum PerformancePreference {
+  kAuto,
+  kSpeed,
+  kCapability,
+};

@@ -58,6 +58,7 @@ mojom("mojom_platform") {
   sources = [
     "ad_tagging/ad_evidence.mojom",
     "ai/ai_common.mojom",
+    "ai/ai_decision_model.mojom",
     "ai/ai_language_model.mojom",
     "ai/ai_manager.mojom",
     "ai/ai_proofreader.mojom",

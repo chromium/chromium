@@ -25,6 +25,9 @@ external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.ht
 # Temporarily skip semantic embedder WPTs
 crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
 
+# Temporarily skip decision model WPTs until browser implementation is enabled.
+crbug.com/499322156 external/wpt/ai/decision-model/* [ Skip ]
+
 # These tests fail on Low-Tier because the low-tier model does not support audio inputs.
 crbug.com/534759859 external/wpt/ai/language-model/prompt/multimodal/audio/* [ Failure ]
 crbug.com/534759859 external/wpt/ai/language-model/prompt/multimodal/mix-post-abort.tentative.https.window.html [ Failure ]

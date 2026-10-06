@@ -1,0 +1,108 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
+// The type of structured decision question evaluated by AIDecisionModel.
+enum AIDecisionModelQuestionType {
+  // Binary yes/no decision with calibrated probability P("true") in [0.0, 1.0].
+  kBoolean,
+  // Categorical selection over N developer-defined options for N=[2..26]
+  // (bounded by single-token 'A'..'Z' option keys in the prompt compiler).
+  kChoice,
+  // Ordered rating scale over N developer-defined options for N=[2..9]
+  // (bounded by single-digit '1'..'9' token keys; default scale is "1".."5"),
+  // yields a continuous score (e.g. `3.7`).
+  kScore,
+};
+
+// A single candidate option for a question in an AIDecisionModel schema.
+// `label` must be non-empty and unique within its question. For `kScore`
+// questions, if all option `label`s in a question parse via
+// `base::StringToDouble` as finite numbers, the browser weights `score` by
+// those numeric values; otherwise it uses 1-based ordinal weights (1..N).
+// TODO(crbug.com/565849508): Consider a typed union or dedicated numeric
+// weight field (or separate ordinal vs weighted score types) instead of
+// parsing numeric strings in the browser.
+struct AIDecisionModelOption {
+  string label;
+  string? description;
+};
+
+// A structured decision question evaluated by an AIDecisionModel session.
+struct AIDecisionModelQuestion {
+  string id;
+  string prompt;
+  AIDecisionModelQuestionType type;
+  // Candidate options validated by both renderer (`TypeError`) and browser:
+  // - `kBoolean`: must be empty (implicitly evaluates ["true", "false"]).
+  // - `kChoice`: requires N=[2..26] options with unique non-empty `label`s.
+  // - `kScore`: accepts 0 options (defaults to "1".."5") or N=[2..9] options
+  //   with unique non-empty `label`s. If all N labels parse as finite numbers
+  //   (including negative or float scales), those values weight `score`; if
+  //   any label is non-numeric (e.g. mixed ("3", "4", "a")), all N options
+  //   use 1-based ordinal weights (1..N).
+  array<AIDecisionModelOption> options;
+};
+
+// Options for creating an AIDecisionModel session.
+// Sent from an untrusted renderer to the browser process (`AIManager`). Both
+// the renderer and browser validate that `questions` has [1..16] entries for
+// `CreateDecisionModel` (bounding prompt context size and sequential
+// `ScoreOptions` steps), with unique non-empty question IDs and valid per-type
+// `options`, rejecting schemas that violate these bounds.
+struct AIDecisionModelCreateOptions {
+  string? context;
+  array<AILanguageCode>? expected_input_languages;
+  array<AIDecisionModelQuestion> questions;
+  PerformancePreference preference = PerformancePreference.kAuto;
+};
+
+// Normalized probability in [0.0, 1.0] (inclusive) for a single candidate
+// option in a question slot.
+struct AIDecisionModelOptionProbability {
+  string label;
+  float probability;
+};
+
+// Calibrated decision output for a single question slot in the schema.
+struct AIDecisionModelDecision {
+  string question_id;
+  string top_label;
+  // Confidence in the decision in [0.0, 1.0] (inclusive).
+  float confidence;
+  // Populated only for `kScore` questions: expected rating scale value
+  // `sum(v_i * p_i)` where `v_i` is the parsed numeric option value (or
+  // 1-based ordinal index 1..N when any option label is non-numeric).
+  float? score;
+  // Full normalized probability distribution over options, in schema order
+  // (exposed to script as a record<DOMString, float> keyed by option label).
+  array<AIDecisionModelOptionProbability> probabilities;
+};
+
+// Result returned by AIDecisionModel::Decide().
+struct AIDecisionModelResult {
+  array<AIDecisionModelDecision> decisions;
+};
+
+// Error returned when AIDecisionModel::Decide() fails.
+struct AIDecisionModelDecideError {
+  ModelStreamingResponseStatus status;
+  // Populated when `status` is `kErrorInputTooLarge`.
+  QuotaErrorInfo? quota_error_info;
+};
+
+// A structured multi-question decision model backed by on-device AI inference.
+// Implemented in the browser process (`AIDecisionModel` /
+// `EchoAIDecisionModel`) and called by an untrusted renderer process
+// (`blink::DecisionModel`). If the backing model service crashes or the
+// session is terminated, the Mojo pipe is closed.
+interface AIDecisionModel {
+  // Evaluates all schema questions over `input`, which must not be empty.
+  Decide(string input)
+      => result<AIDecisionModelResult, AIDecisionModelDecideError>;
+};

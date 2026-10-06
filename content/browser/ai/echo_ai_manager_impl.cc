@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_language_model.h"
@@ -22,6 +23,10 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/ai/echo_ai_decision_model.h"
+#endif
 
 namespace content {
 
@@ -345,6 +350,59 @@ void EchoAIManagerImpl::CreateSemanticEmbedder(
       std::move(client_remote));
 }
 
+void EchoAIManagerImpl::CanCreateDecisionModel(
+    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    CanCreateDecisionModelCallback callback) {
+  if (options && options->expected_input_languages.has_value() &&
+      !IsLanguagesSupported(options->expected_input_languages.value())) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
+    return;
+  }
+  CanCreateClient<CanCreateDecisionModelCallback>(std::move(callback));
+}
+
+void EchoAIManagerImpl::CreateDecisionModel(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client,
+    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
+  mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient> client_remote(
+      std::move(client));
+  if (!options ||
+      (options->expected_input_languages.has_value() &&
+       !IsLanguagesSupported(options->expected_input_languages.value()))) {
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession,
+        /*quota_error_info=*/nullptr);
+    return;
+  }
+  if (monitor.is_valid()) {
+    download_progress_observers_.Add(std::move(monitor));
+  }
+  RunAfterMockDownload(
+      base::BindOnce(&EchoAIManagerImpl::ReturnAIDecisionModelCreationResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
+                     std::move(options->questions)));
+}
+
+void EchoAIManagerImpl::ReturnAIDecisionModelCreationResult(
+    mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client_remote,
+    std::vector<blink::mojom::AIDecisionModelQuestionPtr> questions) {
+#if !BUILDFLAG(IS_ANDROID)
+  mojo::PendingRemote<blink::mojom::AIDecisionModel> pending_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<EchoAIDecisionModel>(std::move(questions)),
+      pending_remote.InitWithNewPipeAndPassReceiver());
+  client_remote->OnSessionCreated(std::move(pending_remote));
+#else
+  client_remote->OnError(
+      blink::mojom::AIManagerCreateClientError::kUnableToCreateSession,
+      /*quota_error_info=*/nullptr);
+#endif
+}
+
 template <typename CanCreateCallback>
 void EchoAIManagerImpl::CanCreateClient(CanCreateCallback callback) {
   std::move(callback).Run(
@@ -358,10 +416,13 @@ template <typename AIClientRemote,
           typename EchoAIClient>
 void EchoAIManagerImpl::CreateClient(
     mojo::Remote<AIClientRemote> client_remote) {
-  auto return_task =
+  RunAfterMockDownload(
       base::BindOnce(&EchoAIManagerImpl::ReturnAIClientCreationResult<
                          AIClientRemote, AIPendingRemote, EchoAIClient>,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote)));
+}
+
+void EchoAIManagerImpl::RunAfterMockDownload(base::OnceClosure return_task) {
   if (!IsModelDownloadedForCurrentReciever()) {
     // Simulate downloading the model; cache state for the current receiver.
     model_downloaded_receivers_.insert(receivers_.current_receiver());

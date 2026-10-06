@@ -25,5 +25,8 @@ external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.ht
 # Temporarily skip semantic embedder WPTs
 crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
 
+# Temporarily skip decision model WPTs until browser implementation is enabled.
+crbug.com/499322156 external/wpt/ai/decision-model/* [ Skip ]
+
 # There is no TranslateKit component for Win ARM64.
 crbug.com/379233932 [ win arm64 ] external/wpt/ai/translator/* [ Skip ]
