@@ -1,6 +1,19 @@
-twellington@chromium.org
-bsazonov@chromium.org
-jinsukkim@chromium.org
-agazal@google.com
-adelm@google.com
-josefraska@google.com
+# Unless you want a specific reviewer's expertise, send to the email below.
+# CLs will be automatically reassigned to a reviewer within
+# about 5 minutes. This approach helps our team to load-balance incoming
+# reviews. Googlers can read more about this at go/gwsq-gerrit.
+
+chrome-settings-android-reviews@google.com
+
+# Note: When adding owners here, remember to also update the gwsq config for
+# chrome-settings-android-reviews@google.com!
+
+# Default Reviewers - prefer these if choosing manually:
+adelm@google.com            #{LAST_RESORT_SUGGESTION}
+jinsukkim@chromium.org      #{LAST_RESORT_SUGGESTION}
+josefraska@google.com       #{LAST_RESORT_SUGGESTION}
+
+# Fallback Reviewers:
+agazal@google.com           #{LAST_RESORT_SUGGESTION}
+bsazonov@chromium.org       #{LAST_RESORT_SUGGESTION}
+twellington@chromium.org    #{LAST_RESORT_SUGGESTION}
