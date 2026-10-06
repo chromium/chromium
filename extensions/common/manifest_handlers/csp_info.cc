@@ -5,11 +5,11 @@
 #include "extensions/common/manifest_handlers/csp_info.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -125,7 +125,7 @@ const base::Value* GetManifestPath(const Extension* extension,
   return extension->manifest()->FindPath(path);
 }
 
-const char* GetDefaultExtensionPagesCSP(const Extension& extension) {
+std::string_view GetDefaultExtensionPagesCSP(const Extension& extension) {
   if (extension.manifest_version() >= 3) {
     return kDefaultMV3CSP;
   }
@@ -138,7 +138,7 @@ const char* GetDefaultExtensionPagesCSP(const Extension& extension) {
 }
 
 // Returns the minimum CSP to apply for the given MV3 extension.
-const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
+std::string_view GetMinimumMV3CSPForExtension(const Extension& extension) {
   CHECK_GE(extension.manifest_version(), 3);
 
   if (csp_validator::IsExtensionAllowedToUseChromeResources(extension.id()) &&
@@ -146,18 +146,12 @@ const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
     // The minimum CSP for these extensions should include access to
     // chrome://resources. This is okay because they are built into the browser
     // as component extensions.
-    static const base::NoDestructor<std::string> csp_with_resources(
-        kMinimumMV3CSPWithChromeResources);
-    return csp_with_resources.get();
+    return kMinimumMV3CSPWithChromeResources;
   }
 
-  static const base::NoDestructor<std::string> default_csp(kMinimumMV3CSP);
-  static const base::NoDestructor<std::string> default_unpacked_csp(
-      kMinimumUnpackedMV3CSP);
-
   return Manifest::IsUnpackedLocation(extension.location())
-             ? default_unpacked_csp.get()
-             : default_csp.get();
+             ? kMinimumUnpackedMV3CSP
+             : kMinimumMV3CSP;
 }
 
 }  // namespace
@@ -178,12 +172,12 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 }
 
 // static
-const std::string* CSPInfo::GetMinimumCSPToAppend(
+std::optional<std::string_view> CSPInfo::GetMinimumCSPToAppend(
     const Extension& extension,
     const std::string& relative_path,
     bool is_service_worker) {
   if (!extension.is_extension()) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // For sandboxed pages and manifest V2 extensions, append the parsed CSP. This
@@ -193,11 +187,11 @@ const std::string* CSPInfo::GetMinimumCSPToAppend(
   // always be subject to the stricter extension CSP.
   if (!is_service_worker &&
       SandboxedPageInfo::IsSandboxedPage(&extension, relative_path)) {
-    return &GetSandboxContentSecurityPolicy(&extension);
+    return GetSandboxContentSecurityPolicy(&extension);
   }
 
   if (extension.manifest_version() <= 2) {
-    return &GetExtensionPagesCSP(&extension);
+    return GetExtensionPagesCSP(&extension);
   }
 
   // For manifest V3 extensions, append the minimum secure CSP. This
@@ -364,7 +358,7 @@ bool CSPHandler::ParseExtensionPagesCSP(
   CHECK(error->empty());
 
   if (!content_security_policy) {
-    const char* default_extension_pages_csp =
+    std::string_view default_extension_pages_csp =
         GetDefaultExtensionPagesCSP(*extension);
     ValidateExtensionPagesCSP(*extension, manifest_key,
                               default_extension_pages_csp);
@@ -447,7 +441,7 @@ bool CSPHandler::ParseSandboxCSP(Extension* extension,
 void CSPHandler::ValidateExtensionPagesCSP(
     const Extension& extension,
     std::string_view manifest_key,
-    const std::string& content_security_policy) {
+    std::string_view content_security_policy) {
   if (extension.manifest_version() >= 3) {
     std::u16string error;
     CHECK(csp_validator::DoesCSPDisallowRemoteCode(

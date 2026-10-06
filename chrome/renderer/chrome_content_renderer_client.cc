@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/current_process.h"
 #include "base/profiler/thread_group_profiler.h"
@@ -1726,11 +1725,13 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
 
   // Append a minimum CSP to ensure the extension can't relax the default
   // applied CSP through means like Service Worker.
-  const std::string* default_csp = extensions::CSPInfo::GetMinimumCSPToAppend(
-      *extension, gurl.GetPath(),
-      /*is_service_worker=*/content::WorkerThread::GetCurrentId() != 0);
-  if (!default_csp)
+  std::optional<std::string_view> default_csp =
+      extensions::CSPInfo::GetMinimumCSPToAppend(
+          *extension, gurl.GetPath(),
+          /*is_service_worker=*/content::WorkerThread::GetCurrentId() != 0);
+  if (!default_csp) {
     return;
+  }
 
   csp->push_back({blink::WebString::FromUtf8(*default_csp),
                   network::mojom::ContentSecurityPolicyType::kEnforce,

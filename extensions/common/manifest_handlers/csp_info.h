@@ -42,7 +42,7 @@ struct CSPInfo : public Extension::ManifestData {
   // Returns the minimum CSP (if any) to append for the `extension`'s resource
   // at the given `relative_path`. `is_service_worker` should be true if the
   // resource is being loaded as a service worker.
-  static const std::string* GetMinimumCSPToAppend(
+  static std::optional<std::string_view> GetMinimumCSPToAppend(
       const Extension& extension,
       const std::string& relative_path,
       bool is_service_worker);
@@ -109,7 +109,7 @@ class CSPHandler : public ManifestHandler {
   // Helper to CHECK() the extension pages content security policy.
   void ValidateExtensionPagesCSP(const Extension& extension,
                                  std::string_view manifest_key,
-                                 const std::string& content_security_policy);
+                                 std::string_view content_security_policy);
 
   // ManifestHandler overrides:
   bool AlwaysParseForType(Manifest::Type type) const override;

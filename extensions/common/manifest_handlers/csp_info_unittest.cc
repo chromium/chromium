@@ -4,6 +4,7 @@
 
 #include "extensions/common/manifest_handlers/csp_info.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/strings/stringprintf.h"
@@ -566,7 +567,7 @@ TEST_F(CSPInfoUnitTest, UserScriptStrictCSP) {
   // also get a "minimum CSP" to append to the list of CSPs. This ensures every
   // item has at least a minimally-strict CSP that rejects remotely-hosted
   // code.
-  EXPECT_NE(nullptr,
+  EXPECT_NE(std::nullopt,
             CSPInfo::GetMinimumCSPToAppend(*extension, "page.html", false));
 }
 
