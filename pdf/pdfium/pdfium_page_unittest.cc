@@ -622,6 +622,65 @@ TEST_P(PDFiumPageHeuristicEnhancementsTest, AnnotLinkReplacesDuplicateWebLink) {
   EXPECT_THAT(actual_urls, testing::UnorderedElementsAreArray(expected_urls));
 }
 
+TEST_P(PDFiumPageHeuristicEnhancementsTest, GetGraphicInfo) {
+  TestClient client(/*use_skia_renderer=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("graphic_with_text.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  std::vector<AccessibilityFormGraphicInfo> graphics =
+      page.GetFormGraphicInfo();
+  if (!HeuristicEnhancementsEnabled()) {
+    EXPECT_TRUE(graphics.empty());
+    return;
+  }
+
+  // Only /Fm1 (combining a nested path form and visible text) is returned;
+  // /Fm2 (text-only) and /Fm3 (invisible text) are excluded.
+  ASSERT_EQ(1u, graphics.size());
+  EXPECT_EQ(1u, graphics[0].text_range.index);
+  EXPECT_EQ(1u, graphics[0].text_range.count);
+  EXPECT_EQ(gfx::RectF(70.0f, 188.0f, 164.0f, 84.0f), graphics[0].bounds);
+
+  std::vector<AccessibilityTextRunInfo> text_runs = page.GetTextRunInfo();
+  ASSERT_GE(text_runs.size(), 2u);
+  EXPECT_EQ(0u, text_runs[0].start_index);
+  EXPECT_EQ(16u, text_runs[0].len);
+  EXPECT_EQ(16u, text_runs[1].start_index);
+  EXPECT_EQ(16u, text_runs[1].len);
+}
+
+// Malformed PDFs can nest Form XObjects arbitrarily deep or have them invoke
+// themselves. Neither should hang or crash graphic detection.
+TEST_P(PDFiumPageHeuristicEnhancementsTest, GetGraphicInfoWithRecursiveForms) {
+  TestClient client(/*use_skia_renderer=*/false);
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("graphic_with_recursive_forms.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_EQ(
+      u"Before graphic\r\nToo deep graphic\r\nDeep graphic\r\nAfter graphic",
+      engine->GetPageText(/*page_index=*/0));
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  std::vector<AccessibilityFormGraphicInfo> graphics =
+      page.GetFormGraphicInfo();
+  if (!HeuristicEnhancementsEnabled()) {
+    EXPECT_TRUE(graphics.empty());
+    return;
+  }
+
+  // /FmDeep and /FmTooDeep both have visible text and reach the same path
+  // through a chain of nested forms, 31 and 32 levels down respectively. Only
+  // the former is within the maximum form depth. /FmLoop (self-referencing)
+  // has no text.
+  ASSERT_EQ(1u, graphics.size());
+  EXPECT_EQ(2u, graphics[0].text_range.index);
+  EXPECT_EQ(1u, graphics[0].text_range.count);
+  EXPECT_EQ(gfx::RectF(70.0f, 321.0f, 164.0f, 84.0f), graphics[0].bounds);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFiumPageHeuristicEnhancementsTest,
                          testing::Bool());

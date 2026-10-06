@@ -1,0 +1,166 @@
+%PDF-1.7
+% ò¤ô
+% Exercises detection of Form XObjects that combine graphics and visible text.
+%
+% The page contains:
+% - Plain body text before the form ("Before graphic")
+% - /Fm1: A Form XObject with a nested form drawing a rectangle path (/Fm1Box)
+%   and visible text ("Inside graphic"), which qualifies as a graphic.
+% - /Fm2: A Form XObject with text only ("Text only form"), which does not
+%   qualify as a graphic.
+% - /Fm3: A Form XObject with a path and invisible text (3 Tr), which does not
+%   qualify as a graphic.
+% - Plain body text after the forms ("After graphic")
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 400 400]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+    /XObject <<
+      /Fm1 6 0 R
+      /Fm2 7 0 R
+      /Fm3 8 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+5 0 obj <<
+  /Length 125
+>>
+stream
+BT
+/F1 12 Tf
+20 350 Td
+(Before graphic) Tj
+ET
+q
+/Fm1 Do
+Q
+q
+/Fm2 Do
+Q
+q
+/Fm3 Do
+Q
+BT
+/F1 12 Tf
+20 50 Td
+(After graphic) Tj
+ET
+endstream
+endobj
+6 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 200 100]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+    /XObject <<
+      /Fm1Box 9 0 R
+    >>
+  >>
+  /Length 60
+>>
+stream
+q
+/Fm1Box Do
+Q
+BT
+/F1 12 Tf
+60 220 Td
+(Inside graphic) Tj
+ET
+endstream
+endobj
+7 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 200 100]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Length 45
+>>
+stream
+BT
+/F1 12 Tf
+20 150 Td
+(Text only form) Tj
+ET
+endstream
+endobj
+8 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 200 100]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Length 67
+>>
+stream
+50 70 120 20 re S
+BT
+/F1 12 Tf
+3 Tr
+60 75 Td
+(Invisible text) Tj
+ET
+endstream
+endobj
+9 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 200 100]
+  /Length 18
+>>
+stream
+50 200 120 60 re S
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000582 00000 n 
+0000000635 00000 n 
+0000000724 00000 n 
+0000000924 00000 n 
+0000001002 00000 n 
+0000001180 00000 n 
+0000001448 00000 n 
+0000001658 00000 n 
+0000001890 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 10
+>>
+startxref
+2016
+%%EOF

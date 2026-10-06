@@ -240,6 +240,16 @@ struct AccessibilityHighlightInfo {
   AccessibilityTextRunRangeInfo text_range;
 };
 
+// Represents a composite graphic (a PDF Form XObject, such as a chart or
+// diagram) that combines graphical primitives with embedded visible text, as
+// opposed to `AccessibilityImageInfo`, which represents a single bitmap image
+// object.
+struct AccessibilityFormGraphicInfo {
+  // Bounding box of the graphic.
+  gfx::RectF bounds;
+  AccessibilityTextRunRangeInfo text_range;
+};
+
 struct AccessibilityPageObjects {
   AccessibilityPageObjects();
   AccessibilityPageObjects(
@@ -252,6 +262,7 @@ struct AccessibilityPageObjects {
   std::vector<AccessibilityLinkInfo> links;
   std::vector<AccessibilityImageInfo> images;
   std::vector<AccessibilityHighlightInfo> highlights;
+  std::vector<AccessibilityFormGraphicInfo> graphics;
 };
 
 enum class FocusObjectType {

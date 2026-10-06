@@ -81,6 +81,10 @@ constexpr float kPointsToPixels = static_cast<float>(printing::kPixelsPerInch) /
 
 constexpr float kFontSizeMinimumFactor = 3.0f;
 
+// Caps recursion into nested Form XObjects, which malformed PDFs can nest
+// arbitrarily deep. Real documents rarely nest more than a few levels.
+constexpr int kMaxFormDepth = 32;
+
 gfx::SizeF GetPageSizeInPoints(FPDF_PAGE page) {
   return gfx::SizeF(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
 }
@@ -461,6 +465,50 @@ gfx::Range GetLinkTextRange(int32_t start_char_index, int32_t char_count) {
   return gfx::Range(start_char_index, start_char_index + char_count);
 }
 
+// Recursively checks whether `form_object` contains both visible text and at
+// least one graphical primitive (path, image, or shading).
+void CheckFormObjectContentsForGraphics(
+    FPDF_PAGEOBJECT form_object,
+    std::set<FPDF_PAGEOBJECT>& visited_forms,
+    int depth,
+    bool* has_visible_text,
+    bool* has_graphics) {
+  if (depth >= kMaxFormDepth) {
+    return;
+  }
+
+  CHECK(form_object);
+  if (!visited_forms.insert(form_object).second) {
+    return;
+  }
+
+  int count = FPDFFormObj_CountObjects(form_object);
+  for (int i = 0; i < count && (!*has_visible_text || !*has_graphics); ++i) {
+    FPDF_PAGEOBJECT child = FPDFFormObj_GetObject(form_object, i);
+    if (!child) {
+      continue;
+    }
+
+    switch (FPDFPageObj_GetType(child)) {
+      case FPDF_PAGEOBJ_TEXT:
+        if (FPDFTextObj_GetTextRenderMode(child) !=
+            FPDF_TEXTRENDERMODE_INVISIBLE) {
+          *has_visible_text = true;
+        }
+        break;
+      case FPDF_PAGEOBJ_PATH:
+      case FPDF_PAGEOBJ_IMAGE:
+      case FPDF_PAGEOBJ_SHADING:
+        *has_graphics = true;
+        break;
+      case FPDF_PAGEOBJ_FORM:
+        CheckFormObjectContentsForGraphics(child, visited_forms, depth + 1,
+                                           has_visible_text, has_graphics);
+        break;
+    }
+  }
+}
+
 }  // namespace
 
 PDFiumPage::LinkTarget::LinkTarget() : page(-1) {}
@@ -536,6 +584,8 @@ void PDFiumPage::ReloadTextPage() {
   associated_text_run_indices_.clear();
   calculated_links_ = false;
   links_.clear();
+  calculated_graphics_ = false;
+  graphics_.clear();
   calculated_annotations_ = false;
   highlights_.clear();
   calculated_page_object_text_run_breaks_ = false;
@@ -574,6 +624,24 @@ void PDFiumPage::CalculatePageObjectTextRunBreaks() {
       // Don't insert a break if the highlight is at the end of the page text.
       if (next_text_run_break_index < chars_count) {
         page_object_text_run_breaks_.insert(next_text_run_break_index);
+      }
+    }
+  }
+
+  // Split text runs at graphic boundaries so surrounding text is not merged
+  // with text inside a graphic.
+  if (::features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    CalculateGraphics();
+    for (const auto& graphic : graphics_) {
+      if (graphic.start_char_index >= 0 &&
+          graphic.start_char_index < chars_count) {
+        page_object_text_run_breaks_.insert(graphic.start_char_index);
+        int next_text_run_break_index =
+            graphic.start_char_index + graphic.char_count;
+        // Don't insert a break if the graphic is at the end of the page text.
+        if (next_text_run_break_index < chars_count) {
+          page_object_text_run_breaks_.insert(next_text_run_break_index);
+        }
       }
     }
   }
@@ -1043,6 +1111,29 @@ std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo() {
   std::sort(highlight_info.begin(), highlight_info.end(),
             CompareTextRuns<AccessibilityHighlightInfo>);
   return highlight_info;
+}
+
+std::vector<AccessibilityFormGraphicInfo> PDFiumPage::GetFormGraphicInfo() {
+  std::vector<AccessibilityFormGraphicInfo> graphic_info;
+  if (!::features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
+      !available_) {
+    return graphic_info;
+  }
+
+  CalculateTextRuns();
+  CalculateGraphics();
+
+  graphic_info.reserve(graphics_.size());
+  for (const Graphic& graphic : graphics_) {
+    graphic_info.push_back(
+        {.bounds = gfx::RectF(graphic.bounding_rect),
+         .text_range = GetEnclosingTextRunRangeForCharRange(
+             text_runs_, graphic.start_char_index, graphic.char_count)});
+  }
+
+  std::ranges::sort(graphic_info,
+                    CompareTextRuns<AccessibilityFormGraphicInfo>);
+  return graphic_info;
 }
 
 PDFiumPage::Area PDFiumPage::GetLinkTargetAtIndex(int link_index,
@@ -1733,6 +1824,49 @@ void PDFiumPage::CalculateImages() {
       }
     }
     images_.push_back(image);
+  }
+}
+
+void PDFiumPage::CalculateGraphics() {
+  if (!::features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
+      calculated_graphics_) {
+    return;
+  }
+
+  calculated_graphics_ = true;
+  FPDF_PAGE page = GetPage();
+  int page_object_count = FPDFPage_CountObjects(page);
+  for (int i = 0; i < page_object_count; ++i) {
+    FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, i);
+    if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_FORM) {
+      continue;
+    }
+
+    const PdfRect bounds = GetPageObjectBounds(page_object).value_or(PdfRect());
+    if (bounds.IsEmpty()) {
+      continue;
+    }
+
+    // Only treat the form as a graphic if it combines graphical primitives with
+    // visible text (excluding text-only forms and decorative shapes).
+    bool has_visible_text = false;
+    bool has_graphics = false;
+    std::set<FPDF_PAGEOBJECT> visited_forms;
+    CheckFormObjectContentsForGraphics(page_object, visited_forms, /*depth=*/0,
+                                       &has_visible_text, &has_graphics);
+    if (!has_visible_text || !has_graphics) {
+      continue;
+    }
+
+    // Calculate underlying text range of graphic.
+    Graphic graphic;
+    if (GetUnderlyingTextRangeForRect(bounds.AsGfxRectF(),
+                                      &graphic.start_char_index,
+                                      &graphic.char_count)) {
+      graphic.bounding_rect = PageToScreen(gfx::Point(), /*zoom=*/1.0, bounds,
+                                           PageOrientation::kOriginal);
+      graphics_.push_back(std::move(graphic));
+    }
   }
 }
 

@@ -42,6 +42,7 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   page_info.text_run_count = text_runs.size();
   page_objects.links = page->GetLinkInfo();
   page_objects.highlights = page->GetHighlightInfo();
+  page_objects.graphics = page->GetFormGraphicInfo();
 }
 
 }  // namespace chrome_pdf

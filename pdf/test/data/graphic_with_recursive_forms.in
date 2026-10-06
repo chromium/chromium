@@ -1,0 +1,616 @@
+{{header}}
+% Exercises graphic detection on pathological Form XObject nesting.
+%
+% /FmDeep1 through /FmDeep32 form a chain in which each form only invokes
+% the next, and /FmDeep32 draws a rectangle path. The page contains:
+% - Plain body text before the forms ("Before graphic")
+% - /FmTooDeep: A Form XObject with visible text ("Too deep graphic") that
+%   enters the chain at /FmDeep1, putting the path 32 levels down, beyond
+%   kMaxFormDepth in pdfium_page.cc. This does not qualify as a graphic.
+% - /FmDeep: A Form XObject with visible text ("Deep graphic") that enters the
+%   chain at /FmDeep2, putting the path 31 levels down. This qualifies as a
+%   graphic.
+% - /FmLoop: A Form XObject drawing a rectangle path and invoking itself. It
+%   has no text, so it does not qualify as a graphic, but it must not hang.
+% - Plain body text after the forms ("After graphic")
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 400 400]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+    /XObject <<
+      /FmLoop 6 0 R
+      /FmDeep 7 0 R
+      /FmTooDeep 8 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+/F1 12 Tf
+20 350 Td
+(Before graphic) Tj
+ET
+q
+/FmTooDeep Do
+Q
+q
+/FmDeep Do
+Q
+q
+/FmLoop Do
+Q
+BT
+/F1 12 Tf
+20 50 Td
+(After graphic) Tj
+ET
+endstream
+endobj
+{{object 6 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmLoop 6 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+250 100 120 60 re S
+/FmLoop Do
+endstream
+endobj
+{{object 7 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+    /XObject <<
+      /FmDeep2 10 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+BT
+/F1 12 Tf
+60 120 Td
+(Deep graphic) Tj
+ET
+/FmDeep2 Do
+endstream
+endobj
+{{object 8 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+    /XObject <<
+      /FmDeep1 9 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+BT
+/F1 12 Tf
+60 220 Td
+(Too deep graphic) Tj
+ET
+1 0 0 1 0 100 cm
+/FmDeep1 Do
+endstream
+endobj
+{{object 9 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep2 10 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep2 Do
+endstream
+endobj
+{{object 10 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep3 11 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep3 Do
+endstream
+endobj
+{{object 11 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep4 12 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep4 Do
+endstream
+endobj
+{{object 12 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep5 13 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep5 Do
+endstream
+endobj
+{{object 13 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep6 14 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep6 Do
+endstream
+endobj
+{{object 14 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep7 15 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep7 Do
+endstream
+endobj
+{{object 15 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep8 16 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep8 Do
+endstream
+endobj
+{{object 16 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep9 17 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep9 Do
+endstream
+endobj
+{{object 17 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep10 18 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep10 Do
+endstream
+endobj
+{{object 18 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep11 19 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep11 Do
+endstream
+endobj
+{{object 19 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep12 20 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep12 Do
+endstream
+endobj
+{{object 20 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep13 21 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep13 Do
+endstream
+endobj
+{{object 21 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep14 22 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep14 Do
+endstream
+endobj
+{{object 22 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep15 23 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep15 Do
+endstream
+endobj
+{{object 23 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep16 24 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep16 Do
+endstream
+endobj
+{{object 24 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep17 25 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep17 Do
+endstream
+endobj
+{{object 25 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep18 26 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep18 Do
+endstream
+endobj
+{{object 26 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep19 27 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep19 Do
+endstream
+endobj
+{{object 27 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep20 28 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep20 Do
+endstream
+endobj
+{{object 28 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep21 29 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep21 Do
+endstream
+endobj
+{{object 29 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep22 30 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep22 Do
+endstream
+endobj
+{{object 30 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep23 31 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep23 Do
+endstream
+endobj
+{{object 31 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep24 32 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep24 Do
+endstream
+endobj
+{{object 32 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep25 33 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep25 Do
+endstream
+endobj
+{{object 33 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep26 34 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep26 Do
+endstream
+endobj
+{{object 34 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep27 35 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep27 Do
+endstream
+endobj
+{{object 35 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep28 36 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep28 Do
+endstream
+endobj
+{{object 36 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep29 37 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep29 Do
+endstream
+endobj
+{{object 37 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep30 38 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep30 Do
+endstream
+endobj
+{{object 38 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep31 39 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep31 Do
+endstream
+endobj
+{{object 39 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  /Resources <<
+    /XObject <<
+      /FmDeep32 40 0 R
+    >>
+  >>
+  {{streamlen}}
+>>
+stream
+/FmDeep32 Do
+endstream
+endobj
+{{object 40 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [0 0 400 400]
+  {{streamlen}}
+>>
+stream
+50 100 120 60 re S
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF
