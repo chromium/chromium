@@ -56,9 +56,8 @@ void SessionJournal::HandleServerJournalEvent(const ServerJournalEvent& event) {
     details_builder.Add(detail.key, detail.value);
   }
   // TODO(bokan): Use server provided time.
-  // TODO(bokan): Put these into a separate track.
   // TODO(bokan): Implement async events
-  journal_->Log(GURL(), task_id_, actor::MakeFrontEndTrackUUID(task_id_),
+  journal_->Log(GURL(), task_id_, actor::MakeTtcBackendTrackUUID(task_id_),
                 event.name, std::move(details_builder).Build());
 }
 

@@ -95,6 +95,12 @@ inline uint64_t MakeFrontEndTrackUUID(TaskId task_id) {
   return kFrontEndTrack + task_id.value();
 }
 
+// A specific TTC backend track for a task.
+inline uint64_t MakeTtcBackendTrackUUID(TaskId task_id) {
+  constexpr uint64_t kTtcBackendTrack = 0xda00000400000000LL;
+  return kTtcBackendTrack + task_id.value();
+}
+
 // A specific Glic Experimental Triggering track for a context ID.
 inline uint64_t MakeGlicExperimentalTriggeringTrackUUID(
     std::string_view context_id) {
