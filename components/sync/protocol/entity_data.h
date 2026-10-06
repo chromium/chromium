@@ -7,14 +7,16 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/protocol/attachment_metadata.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/collaboration_metadata.h"
 
 namespace syncer {
 
@@ -98,6 +100,10 @@ struct EntityData {
   // Optionally populated for outgoing deletions. See corresponding field in
   // SyncEntity for details.
   std::optional<sync_pb::DeletionOrigin> deletion_origin;
+
+  // Optional attachment metadata referencing a blob payload associated with
+  // this entity. See corresponding field in SyncEntity for details.
+  std::optional<AttachmentMetadata> attachment_metadata;
 
   // Dumps all info into a base::DictValue and returns it.
   base::DictValue ToDictionaryValue() const;

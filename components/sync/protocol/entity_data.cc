@@ -77,6 +77,9 @@ size_t EntityData::EstimateMemoryUsage() const {
   if (deletion_origin.has_value()) {
     memory_usage += EstimateMemoryUsage(*deletion_origin);
   }
+  if (attachment_metadata.has_value()) {
+    memory_usage += EstimateMemoryUsage(*attachment_metadata);
+  }
   return memory_usage;
 }
 
@@ -94,6 +97,10 @@ void PrintTo(const EntityData& entity_data, std::ostream* os) {
   if (entity_data.collaboration_metadata.has_value()) {
     *os << ", collaboration_metadata: ";
     PrintTo(entity_data.collaboration_metadata.value(), os);
+  }
+  if (entity_data.attachment_metadata.has_value()) {
+    *os << ", attachment_metadata: ";
+    PrintTo(entity_data.attachment_metadata.value(), os);
   }
   *os << "}";
 }

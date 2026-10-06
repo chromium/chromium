@@ -278,6 +278,10 @@ void CommitContributionImpl::PopulateCommitProto(
     }
     commit_proto->set_ctime(TimeToProtoTime(entity_data.creation_time));
     commit_proto->mutable_specifics()->CopyFrom(entity_data.specifics);
+    if (entity_data.attachment_metadata.has_value()) {
+      *commit_proto->mutable_attachment() =
+          entity_data.attachment_metadata->ToProto();
+    }
   }
 }
 
