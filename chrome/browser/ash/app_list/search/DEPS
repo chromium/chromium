@@ -53,11 +53,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # SearchControllerFactory resolves the bookmarks::BookmarkModel that
-  # OmniboxProvider takes by constructor.
-  "search_controller_factory\\.cc": [
-    "+chrome/browser/bookmarks/bookmark_model_factory.h",
-  ],
+  # Only the omnibox tests still create the BookmarkModel via
+  # chrome/browser/bookmarks's factory; production receives it as a
+  # CreateSearchController parameter, resolved by AppListClientImpl through
+  # ash::BookmarkModelProvider.
   "omnibox_(result|provider)_unittest\\.cc": [
     "+chrome/browser/bookmarks/bookmark_model_factory.h",
   ],

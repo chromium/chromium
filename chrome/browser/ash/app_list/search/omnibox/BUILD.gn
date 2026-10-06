@@ -85,6 +85,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/search_engines",

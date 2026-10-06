@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/files/file_enumerator.h"
 #include "base/metrics/field_trial_params.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/favicon/favicon_service_provider.h"
@@ -57,7 +57,9 @@ std::unique_ptr<SearchController> CreateSearchController(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier,
-    TemplateURLService* template_url_service) {
+    TemplateURLService* template_url_service,
+    bookmarks::BookmarkModel* bookmark_model) {
+  CHECK(bookmark_model);
   auto controller = std::make_unique<SearchController>(
       local_state, model_updater, list_controller, notifier, profile);
   controller->Initialize();
@@ -72,8 +74,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   const AccountId& account_id =
       CHECK_DEREF(ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()));
   controller->AddProvider(std::make_unique<OmniboxProvider>(
-      profile, list_controller, template_url_service,
-      BookmarkModelFactory::GetForBrowserContext(profile),
+      profile, list_controller, template_url_service, bookmark_model,
       ash::FaviconServiceProvider::Get().Find(account_id),
       ash::HistoryServiceProvider::Get().Find(account_id),
       LauncherSearchProviderTypes()));

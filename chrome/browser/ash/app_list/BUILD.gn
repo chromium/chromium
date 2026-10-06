@@ -84,6 +84,7 @@ static_library("app_list") {
     "//chrome/browser/ui/navigator",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/bookmarks:bookmark_model_provider",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/feature_engagement:feature_engagement_tracker_provider",

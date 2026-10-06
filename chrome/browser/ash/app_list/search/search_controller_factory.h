@@ -18,6 +18,10 @@ namespace ash {
 class AppListNotifier;
 }  // namespace ash
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace app_list {
 
 class SearchController;
@@ -25,6 +29,8 @@ class SearchController;
 // Build a SearchController instance with the profile.
 // `local_state` must be non-null and must outlive the returned object.
 // `template_url_service` must not be nullptr and must outlive the returned
+// SearchController. `bookmark_model` is the BookmarkModel for `profile`'s
+// account; it likewise must not be nullptr and must outlive the returned
 // SearchController.
 std::unique_ptr<SearchController> CreateSearchController(
     PrefService* local_state,
@@ -32,7 +38,8 @@ std::unique_ptr<SearchController> CreateSearchController(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier,
-    TemplateURLService* template_url_service);
+    TemplateURLService* template_url_service,
+    bookmarks::BookmarkModel* bookmark_model);
 
 // Returns a bitmask of `AutocompleteProvider::Type` for Launcher's
 // `SearchController`.

@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/bookmarks/bookmark_model_provider.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
@@ -536,7 +537,9 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 void AppListClientImpl::SetUpSearchUI() {
   search_controller_ = app_list::CreateSearchController(
       &local_state_.get(), profile_, current_model_updater_, this,
-      GetNotifier(), template_url_service_);
+      GetNotifier(), template_url_service_,
+      ash::BookmarkModelProvider::Get().Find(CHECK_DEREF(
+          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile()))));
 
   // Refresh the results used for the suggestion chips with empty query.
   // This fixes crbug.com/40642741.
