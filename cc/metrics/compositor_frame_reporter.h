@@ -39,12 +39,6 @@ class FrameTimingDetails;
 namespace cc {
 class FrameSorter;
 
-struct GlobalMetricsTrackers {
-  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-  // stacks.
-  RAW_PTR_EXCLUSION FrameSorter* frame_sorter = nullptr;
-};
-
 // This is used for tracing and reporting the duration of pipeline stages within
 // a single frame.
 //
@@ -325,7 +319,7 @@ class CC_EXPORT CompositorFrameReporter {
                           SmoothThread smooth_thread,
                           FrameInfo::SmoothEffectDrivingThread scrolling_thread,
                           int layer_tree_host_id,
-                          const GlobalMetricsTrackers& trackers);
+                          FrameSorter* frame_sorter);
   ~CompositorFrameReporter();
 
   CompositorFrameReporter(const CompositorFrameReporter& reporter) = delete;
@@ -702,7 +696,9 @@ class CC_EXPORT CompositorFrameReporter {
   // metrics
   std::optional<FrameSkippedReason> frame_skipped_reason_v4_;
 
-  const GlobalMetricsTrackers global_trackers_;
+  // Not null. Must outlive `this`, since the destructor reports the final
+  // `FrameInfo` to it.
+  const raw_ptr<FrameSorter> frame_sorter_;
 
   ReporterType reporter_type_;
 

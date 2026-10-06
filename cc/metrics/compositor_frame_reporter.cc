@@ -629,7 +629,7 @@ CompositorFrameReporter::CompositorFrameReporter(
     SmoothThread smooth_thread,
     FrameInfo::SmoothEffectDrivingThread scrolling_thread,
     int layer_tree_host_id,
-    const GlobalMetricsTrackers& trackers)
+    FrameSorter* frame_sorter)
     : should_report_histograms_(should_report_histograms),
       report_event_latency_to_custom_recorder_(
           report_event_latency_to_custom_recorder),
@@ -638,10 +638,10 @@ CompositorFrameReporter::CompositorFrameReporter(
       scrolling_thread_(scrolling_thread),
       smooth_thread_(smooth_thread),
       layer_tree_host_id_(layer_tree_host_id),
-      global_trackers_(trackers) {
-  DCHECK(global_trackers_.frame_sorter);
-  if (global_trackers_.frame_sorter->first_contentful_paint_received()) {
-    global_trackers_.frame_sorter->AddNewFrame(args);
+      frame_sorter_(frame_sorter) {
+  DCHECK(frame_sorter_);
+  if (frame_sorter_->first_contentful_paint_received()) {
+    frame_sorter_->AddNewFrame(args);
   }
   if (scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     DCHECK(smooth_thread_ == SmoothThread::kSmoothCompositor ||
@@ -905,7 +905,7 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers_, args_, should_report_histograms_,
       report_event_latency_to_custom_recorder_, smooth_thread_,
-      scrolling_thread_, layer_tree_host_id_, global_trackers_);
+      scrolling_thread_, layer_tree_host_id_, frame_sorter_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
   new_reporter->main_frame_abort_time_ = main_frame_abort_time_;
@@ -1209,9 +1209,9 @@ void CompositorFrameReporter::TerminateReporter() {
     ReportPaintMetric();
   }
 
-  global_trackers_.frame_sorter->AddFrameInfoToBuffer(frame_info);
-  if (global_trackers_.frame_sorter->first_contentful_paint_received()) {
-    global_trackers_.frame_sorter->AddFrameResult(args_, frame_info);
+  frame_sorter_->AddFrameInfoToBuffer(frame_info);
+  if (frame_sorter_->first_contentful_paint_received()) {
+    frame_sorter_->AddFrameResult(args_, frame_info);
   }
 }
 

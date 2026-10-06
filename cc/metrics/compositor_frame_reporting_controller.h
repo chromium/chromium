@@ -106,22 +106,22 @@ class CC_EXPORT CompositorFrameReportingController {
   }
 
   void SetFrameSorter(FrameSorter* frame_sorter) {
-    global_trackers_.frame_sorter = frame_sorter;
+    frame_sorter_ = frame_sorter;
   }
 
   void SetScrollJankOsReporter(base::WeakPtr<ScrollJankOsReporter> os_reporter);
 
   void SetFrameSequenceTrackerCollection(
       FrameSequenceTrackerCollection* frame_sequence_trackers) {
-    if (global_trackers_.frame_sorter) {
-      global_trackers_.frame_sorter->AddObserver(frame_sequence_trackers);
+    if (frame_sorter_) {
+      frame_sorter_->AddObserver(frame_sequence_trackers);
     }
     frame_sequence_trackers_ = frame_sequence_trackers;
   }
 
   void ClearFrameSequenceTrackerCollection() {
-    if (global_trackers_.frame_sorter && frame_sequence_trackers_) {
-      global_trackers_.frame_sorter->RemoveObserver(frame_sequence_trackers_);
+    if (frame_sorter_ && frame_sequence_trackers_) {
+      frame_sorter_->RemoveObserver(frame_sequence_trackers_);
     }
     frame_sequence_trackers_ = nullptr;
   }
@@ -212,10 +212,10 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool next_activate_has_invalidation_ = false;
 
-  // Must outlive `reporters_` and `submitted_compositor_frames_` (which also
-  // have reporters), since destroying the reporters can flush frames to
-  // `global_trackers_`.
-  GlobalMetricsTrackers global_trackers_;
+  // The pointee must outlive `reporters_` and `submitted_compositor_frames_`
+  // (which also have reporters), since destroying the reporters can flush
+  // frames to it.
+  raw_ptr<FrameSorter> frame_sorter_ = nullptr;
   raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers_ = nullptr;
 
   PredictorJankTracker predictor_jank_tracker_;

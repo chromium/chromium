@@ -53,9 +53,9 @@ CompositorFrameReportingController::~CompositorFrameReportingController() {
                                   Now());
   }
 
-  if (global_trackers_.frame_sorter) {
+  if (frame_sorter_) {
     if (frame_sequence_trackers_) {
-      global_trackers_.frame_sorter->RemoveObserver(frame_sequence_trackers_);
+      frame_sorter_->RemoveObserver(frame_sequence_trackers_);
     }
   }
 }
@@ -164,7 +164,7 @@ void CompositorFrameReportingController::WillBeginImplFrame(
   auto reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers, args, should_report_histograms_,
       report_event_latency_to_custom_recorder_, smooth_thread, scrolling_thread,
-      layer_tree_host_id_, global_trackers_);
+      layer_tree_host_id_, frame_sorter_);
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
@@ -211,7 +211,7 @@ void CompositorFrameReportingController::WillBeginMainFrame(
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers, args, should_report_histograms_,
         report_event_latency_to_custom_recorder_, smooth_thread,
-        scrolling_thread, layer_tree_host_id_, global_trackers_);
+        scrolling_thread, layer_tree_host_id_, frame_sorter_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
     reporters_[PipelineStage::kBeginMainFrame] = std::move(reporter);
@@ -949,7 +949,7 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers, args, should_report_histograms_,
         report_event_latency_to_custom_recorder_, smooth_thread,
-        scrolling_thread, layer_tree_host_id_, global_trackers_);
+        scrolling_thread, layer_tree_host_id_, frame_sorter_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                          timestamp);
