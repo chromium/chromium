@@ -6,14 +6,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -29,7 +27,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/script_executor.h"
-#include "extensions/browser/state_store.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -68,26 +65,6 @@ constexpr char kGetDivIds[] =
          childIds.push(child.id);
        }
        JSON.stringify(childIds.sort());)";
-
-// Synchronously writes any pending extension state for `profile` to disk, so
-// it is available after a restart. On Android, the browser isn't shut down
-// gracefully after a PRE_ test; the test process is just killed, so pending
-// writes (which are normally flushed on profile destruction) can otherwise be
-// lost. Installed extensions and the URL patterns of persistent dynamic scripts
-// are stored in prefs, while the scripts themselves are stored in the dynamic
-// user scripts store.
-void FlushExtensionStateToDisk(Profile* profile) {
-  base::test::TestFuture<void> prefs_committed;
-  profile->GetPrefs()->CommitPendingWrite(prefs_committed.GetCallback());
-  ASSERT_TRUE(prefs_committed.Wait())
-      << "Timed out waiting for prefs to be committed to disk.";
-
-  base::test::TestFuture<void> dynamic_scripts_flushed;
-  ExtensionSystem::Get(profile)->dynamic_user_scripts_store()->FlushForTesting(
-      dynamic_scripts_flushed.GetCallback());
-  ASSERT_TRUE(dynamic_scripts_flushed.Wait())
-      << "Timed out waiting for the dynamic user scripts store to flush.";
-}
 
 }  // namespace
 
@@ -662,60 +639,51 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 // Regression test for https://crbug.com/40286428.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        PRE_DynamicContentScriptsInjectInIncognito) {
-  // Scope the test body so that `allow_http` clears the HTTP allowlist before
-  // prefs are committed below. Otherwise the allowlist would be persisted and
-  // the post-restart test would start with it already set.
-  {
-    // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
-    ScopedAllowHttpForHostnamesForTesting allow_http({"example.com"},
-                                                     profile()->GetPrefs());
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"example.com"},
+                                                   profile()->GetPrefs());
 
-    // Load up two extensions, one that's allowed in incognito and one that's
-    // not.
-    const Extension* incognito_allowed =
-        LoadExtension(test_data_dir_.AppendASCII("scripting/incognito_allowed"),
-                      {.allow_in_incognito = true});
-    const Extension* incognito_disallowed = LoadExtension(
-        test_data_dir_.AppendASCII("scripting/incognito_disallowed"),
-        {.allow_in_incognito = false});
-    ASSERT_TRUE(incognito_allowed);
-    ASSERT_TRUE(incognito_disallowed);
+  // Load up two extensions, one that's allowed in incognito and one that's
+  // not.
+  const Extension* incognito_allowed =
+      LoadExtension(test_data_dir_.AppendASCII("scripting/incognito_allowed"),
+                    {.allow_in_incognito = true});
+  const Extension* incognito_disallowed = LoadExtension(
+      test_data_dir_.AppendASCII("scripting/incognito_disallowed"),
+      {.allow_in_incognito = false});
+  ASSERT_TRUE(incognito_allowed);
+  ASSERT_TRUE(incognito_disallowed);
 
-    auto register_scripts = [this](const ExtensionId& extension_id) {
-      ResultCatcher result_catcher;
-      BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension_id,
-                                                   "registerScript();");
-      ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-    };
+  auto register_scripts = [this](const ExtensionId& extension_id) {
+    ResultCatcher result_catcher;
+    BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension_id,
+                                                 "registerScript();");
+    ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  };
 
-    // In each extension, register a script that will inject a div with a given
-    // ID indicating if it injected.
-    register_scripts(incognito_allowed->id());
-    register_scripts(incognito_disallowed->id());
+  // In each extension, register a script that will inject a div with a given
+  // ID indicating if it injected.
+  register_scripts(incognito_allowed->id());
+  register_scripts(incognito_disallowed->id());
 
-    // Navigate to a page in the on-the-record profile. Both extensions should
-    // inject.
-    auto* web_contents = GetActiveWebContents();
-    const GURL page_url =
-        embedded_test_server()->GetURL("example.com", "/simple.html");
-    ASSERT_TRUE(NavigateToURL(web_contents, page_url));
-    content::RenderFrameHost* regular_page =
-        web_contents->GetPrimaryMainFrame();
-    EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
-              content::EvalJs(regular_page, kGetDivIds));
+  // Navigate to a page in the on-the-record profile. Both extensions should
+  // inject.
+  auto* web_contents = GetActiveWebContents();
+  const GURL page_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
+  content::RenderFrameHost* regular_page = web_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
+            content::EvalJs(regular_page, kGetDivIds));
 
-    // Now, navigate to a page in incognito. Only the incognito-allowed
-    // extension should inject.
-    content::WebContents* incognito_web_contents =
-        PlatformOpenURLOffTheRecord(profile(), page_url);
-    content::WaitForLoadStop(incognito_web_contents);
+  // Now, navigate to a page in incognito. Only the incognito-allowed extension
+  // should inject.
+  content::WebContents* incognito_web_contents =
+      PlatformOpenURLOffTheRecord(profile(), page_url);
+  content::WaitForLoadStop(incognito_web_contents);
 
-    EXPECT_EQ(R"(["incognito-allowed"])",
-              content::EvalJs(incognito_web_contents, kGetDivIds));
-  }
-
-  // Make sure the state needed by the post-restart test is written to disk.
-  FlushExtensionStateToDisk(profile());
+  EXPECT_EQ(R"(["incognito-allowed"])",
+            content::EvalJs(incognito_web_contents, kGetDivIds));
 }
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,

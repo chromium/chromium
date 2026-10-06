@@ -108,6 +108,11 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   void TearDown() override;
   void TearDownOnMainThread() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  // AndroidBrowserTest:
+  void PostRunTestOnMainThread() override;
+#endif
+
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;

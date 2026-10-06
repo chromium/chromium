@@ -66,12 +66,17 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_launcher.h"
+#include "extensions/browser/state_store.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -165,6 +170,37 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
     }
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Waits for pending writes to `profile`'s prefs (which include ExtensionPrefs)
+// and its extension StateStores to complete. On Android, the browser test
+// process exits without an orderly browser shutdown (the profile isn't
+// destroyed and nothing waits on background file writes), so writes still
+// pending at the end of a PRE_ test can be lost before the next stage reads
+// them from disk.
+void FlushPersistentExtensionState(Profile* profile) {
+  base::test::TestFuture<void> prefs_committed;
+  profile->GetPrefs()->CommitPendingWrite(prefs_committed.GetCallback());
+  ASSERT_TRUE(prefs_committed.Wait())
+      << "Timed out waiting for prefs to be committed to disk.";
+
+  ExtensionSystem* extension_system = ExtensionSystem::Get(profile);
+  if (!extension_system) {
+    return;
+  }
+  for (StateStore* store :
+       {extension_system->state_store(), extension_system->rules_store(),
+        extension_system->dynamic_user_scripts_store()}) {
+    if (!store) {
+      continue;
+    }
+    base::test::TestFuture<void> store_flushed;
+    store->FlushForTesting(store_flushed.GetCallback());
+    ASSERT_TRUE(store_flushed.Wait())
+        << "Timed out waiting for an extension StateStore to flush.";
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -318,6 +354,23 @@ void ExtensionBrowserTest::TearDownOnMainThread() {
   registry_observation_.Reset();
   PlatformBrowserTest::TearDownOnMainThread();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ExtensionBrowserTest::PostRunTestOnMainThread() {
+  PlatformBrowserTest::PostRunTestOnMainThread();
+
+  // Flushing after the base class also covers state changes made during
+  // subclass teardown and tab closing. GetLoadedProfiles() excludes incognito
+  // profiles, whose persisted prefs and extension StateStores belong to their
+  // original profile.
+  if (content::IsPreTest()) {
+    for (Profile* loaded_profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      FlushPersistentExtensionState(loaded_profile);
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ExtensionBrowserTest::OnExtensionLoaded(
     content::BrowserContext* browser_context,
