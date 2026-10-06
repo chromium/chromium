@@ -12,9 +12,11 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
@@ -233,4 +235,25 @@ TEST_F(UntrustedSourceTest, BackgroundRequest_DirectoryTraversal) {
            "background.jpg"),
       test_web_contents_getter_, callback.Get());
   run_loop.Run();
+}
+
+TEST_F(UntrustedSourceTest, ExpandedLhs_ShouldServiceRequest) {
+  EXPECT_TRUE(untrusted_source_->ShouldServiceRequest(
+      GURL("chrome-untrusted://new-tab-page/expanded-lhs"), profile_.get(),
+      /*render_process_id=*/0));
+}
+
+TEST_F(UntrustedSourceTest, ExpandedLhs_ServesHtmlEmbeddingLhsUrl) {
+  const GURL url("chrome-untrusted://new-tab-page/expanded-lhs");
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
+
+  untrusted_source_->StartDataRequest(url, test_web_contents_getter_,
+                                      future.GetCallback());
+
+  scoped_refptr<base::RefCountedMemory> data = future.Take();
+  ASSERT_TRUE(data);
+  EXPECT_THAT(base::as_string_view(*data),
+              testing::HasSubstr(
+                  R"(<iframe src="https://www.google.com/search?nem=341">)"));
+  EXPECT_EQ("text/html", untrusted_source_->GetMimeType(url));
 }

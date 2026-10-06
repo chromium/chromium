@@ -50,6 +50,9 @@ namespace {
 
 constexpr int kMaxUriDecodeLen = 2048;
 
+// Google Search page shown in the NTP's left-hand side (LHS) panel.
+constexpr char kLhsUrl[] = "https://www.google.com/search?nem=341";
+
 std::string FormatTemplate(int resource_id,
                            const ui::TemplateReplacements& replacements) {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -238,6 +241,14 @@ void UntrustedSource::StartDataRequest(
         FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_IMAGE_HTML, replacements)));
     return;
   }
+  if (path == "expanded-lhs") {
+    ui::TemplateReplacements replacements;
+    replacements["url"] = kLhsUrl;
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(FormatTemplate(
+            IDR_NEW_TAB_PAGE_UNTRUSTED_EXPANDED_LHS_HTML, replacements)));
+    return;
+  }
   if (path == "background_image") {
     ServeBackgroundImage(url_param, GURL(), "cover", "no-repeat", "no-repeat",
                          "center", "center", "inherit", std::move(callback));
@@ -320,8 +331,9 @@ bool UntrustedSource::ShouldServiceRequest(
   const std::string path = url.GetPath().substr(1);
   return path == "one-google-bar" || path == "one_google_bar.js" ||
          path == "one_google_bar_api.js" || path == "image" ||
-         path == "background_image" || path == "custom_background_image" ||
-         path == "background_image.js" || IsValidBackgroundImagePath(path);
+         path == "expanded-lhs" || path == "background_image" ||
+         path == "custom_background_image" || path == "background_image.js" ||
+         IsValidBackgroundImagePath(path);
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {
