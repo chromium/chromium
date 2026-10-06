@@ -187,6 +187,22 @@ public class ActorForegroundServiceControllerImplTest {
     }
 
     @Test
+    public void testHasBackgroundSessionForTask_DelegatesToBackgroundManager() {
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+        when(mMockBackgroundManager.hasBackgroundSessionForTask(123)).thenReturn(true);
+
+        assertTrue(mController.hasBackgroundSessionForTask(123));
+        verify(mMockBackgroundManager).hasBackgroundSessionForTask(123);
+    }
+
+    @Test
+    public void testHasBackgroundSessionForTask_NullBackgroundManager() {
+        mController.setBackgroundManagerForTesting(null);
+
+        assertFalse(mController.hasBackgroundSessionForTask(123));
+    }
+
+    @Test
     public void testGetWindowIdForTask_DelegatesToBackgroundManager() {
         mController.setBackgroundManagerForTesting(mMockBackgroundManager);
         when(mMockBackgroundManager.getWindowIdForTask(456)).thenReturn(3);

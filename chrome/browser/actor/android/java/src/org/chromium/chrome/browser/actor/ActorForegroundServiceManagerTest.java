@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -31,6 +32,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -199,8 +201,11 @@ public class ActorForegroundServiceManagerTest {
         ProfileManager.onProfileAdded(mProfile);
         ShadowLooper.idleMainLooper();
 
-        // Manager should start observing the keyed service
-        verify(mKeyedService, atLeastOnce()).addObserver(mManager);
+        // ActorMetrics must be registered before the manager so it observes completion events
+        // before background session cleanup.
+        InOrder inOrder = inOrder(mKeyedService);
+        inOrder.verify(mKeyedService).addObserver(ActorMetrics.getInstance());
+        inOrder.verify(mKeyedService).addObserver(mManager);
 
         ProfileManager.onProfileDestroyed(mProfile);
         verify(mKeyedService, atLeastOnce()).removeObserver(mManager);

@@ -315,6 +315,57 @@ public class ActorBackgroundActuationManager {
     }
 
     /**
+     * Returns whether the given task currently has an active background actuation session.
+     *
+     * @param taskId The ID of the task to check.
+     * @return True if the task has an active background session, false otherwise.
+     */
+    public boolean hasBackgroundSessionForTask(int taskId) {
+        ThreadUtils.assertOnUiThread();
+        if (BackgroundSession.getSessionForTask(mBackgroundSessions, taskId) != null) {
+            return true;
+        }
+        // TODO(crbug.com/570050447): Bind message-scoped BackgroundSessions to their taskId once
+        // the task is created so this tab-ID fallback can be replaced by
+        // BackgroundSession.getSessionForTask.
+        Map<Profile, @Nullable Set<Integer>> taskTabIdsByProfile = new ArrayMap<>();
+        for (BackgroundSession session : mBackgroundSessions) {
+            if (session.getTaskId() != null) continue;
+            for (Tab tab : session.getTabs()) {
+                if (tab == null || tab.isDestroyed()) continue;
+                Profile profile = tab.getProfile();
+                if (profile == null) continue;
+                Profile originalProfile = profile.getOriginalProfile();
+                Set<Integer> taskTabIds;
+                if (taskTabIdsByProfile.containsKey(originalProfile)) {
+                    taskTabIds = taskTabIdsByProfile.get(originalProfile);
+                } else {
+                    taskTabIds = getTaskTabIdsForProfile(originalProfile, taskId);
+                    taskTabIdsByProfile.put(originalProfile, taskTabIds);
+                }
+                if (taskTabIds != null && taskTabIds.contains(tab.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static @Nullable Set<Integer> getTaskTabIdsForProfile(Profile profile, int taskId) {
+        ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
+        ActorTask task = service != null ? service.getTask(taskId) : null;
+        if (task == null) {
+            return null;
+        }
+        Set<Integer> tabIds = new HashSet<>(task.getTabs());
+        int lastActuatedTabId = task.getLastActuatedTabId();
+        if (lastActuatedTabId != Tab.INVALID_TAB_ID) {
+            tabIds.add(lastActuatedTabId);
+        }
+        return tabIds;
+    }
+
+    /**
      * Handles task completion by restoring any warm background sessions for the task and stopping
      * offscreen rendering.
      *

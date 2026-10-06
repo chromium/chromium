@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1206,5 +1207,42 @@ public class ActorBackgroundActuationManagerTest {
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
         // Session should be retained in memory so when an activity is launched, it can restore
         assertEquals(1, mManager.getBackgroundSessions().size());
+    }
+
+    @Test
+    public void testHasBackgroundSessionForTask_TaskScopedSession() {
+        @SuppressWarnings("unchecked")
+        Callback<Tab> callback = mock(Callback.class);
+        mManager.provisionBackgroundTabForTask(mProfile, 500, callback);
+        triggerPageLoadFinished();
+
+        assertTrue(mManager.hasBackgroundSessionForTask(500));
+        assertFalse(mManager.hasBackgroundSessionForTask(999));
+    }
+
+    @Test
+    public void testHasBackgroundSessionForTask_MessageScopedSession() {
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        mManager.startBackgroundActuation(mProfile, "msg_session_test");
+        triggerPageLoadFinished();
+
+        Tab secondTab = mock(Tab.class);
+        when(secondTab.getId()).thenReturn(101);
+        when(secondTab.getProfile()).thenReturn(mProfile);
+        mManager.getBackgroundSessions().get(0).addTab(secondTab);
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(600);
+        when(task.getTabs()).thenReturn(Collections.emptySet());
+        when(task.getLastActuatedTabId()).thenReturn(101);
+        when(mActorKeyedService.getTask(600)).thenReturn(task);
+
+        assertTrue(mManager.hasBackgroundSessionForTask(600));
+        verify(mActorKeyedService).getTask(600);
+        assertFalse(mManager.hasBackgroundSessionForTask(999));
+        verify(mActorKeyedService).getTask(999);
     }
 }
