@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.ArrayMap;
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -342,10 +344,7 @@ public class SettingsFragmentRegistry {
         // The page only exists on devices eligible for vertical tabs, and asserts as much. A URL
         // can still be typed or replayed from history elsewhere, so send it back to Appearance.
         registerMapping("/tabPosition", TabPositionSettingsFragment.class)
-                .availableWhen(
-                        profile ->
-                                VerticalTabUtils.isVerticalTabsEligible(
-                                        ContextUtils.getApplicationContext()))
+                .availableWhen(SettingsFragmentRegistry::isVerticalTabsEligible)
                 .fallback("/appearance");
 
         // Accessibility
@@ -756,6 +755,18 @@ public class SettingsFragmentRegistry {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         return identityManager != null && identityManager.hasPrimaryAccount();
+    }
+
+    /** Returns whether the device is eligible for the vertical tabs setting page. */
+    private static boolean isVerticalTabsEligible(Profile profile) {
+        // Use an Activity context when available because getApplicationContext() does not have
+        // ChromeBaseAppCompatActivity's smallestScreenWidthDp override, so it loses its tablet
+        // screen width qualifiers (-sw600dp) in portrait multi-window mode and after theme changes.
+        Context context = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+        }
+        return VerticalTabUtils.isVerticalTabsEligible(context);
     }
 
     /** Returns the settings URL for a registered path, defaulting to the settings root. */

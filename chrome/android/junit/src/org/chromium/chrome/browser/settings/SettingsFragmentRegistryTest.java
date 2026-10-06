@@ -12,14 +12,21 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
@@ -910,6 +917,39 @@ public class SettingsFragmentRegistryTest {
         VerticalTabUtils.setIsVerticalTabsEligibleForTesting(false);
 
         assertRedirects("chrome://settings/tabPosition", "chrome://settings/appearance");
+    }
+
+    /** Activity that pins smallestScreenWidthDp to 600dp like ChromeBaseAppCompatActivity. */
+    public static class TabletOverrideActivity extends Activity {
+        @Override
+        protected void attachBaseContext(Context newBase) {
+            super.attachBaseContext(newBase);
+            Configuration overrideConfig = new Configuration();
+            overrideConfig.smallestScreenWidthDp = 600;
+            applyOverrideConfiguration(overrideConfig);
+        }
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    public void testResolveTabPositionUsesTrackedActivityContext() {
+        // In portrait multi-window mode on a tablet, the application context loses its -sw600dp
+        // qualifier while ChromeBaseAppCompatActivity overrides smallestScreenWidthDp to retain it.
+        assertFalse(VerticalTabUtils.isVerticalTabsEligible(ContextUtils.getApplicationContext()));
+
+        Activity activity =
+                Robolectric.buildActivity(TabletOverrideActivity.class)
+                        .create()
+                        .start()
+                        .resume()
+                        .get();
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+        assertTrue(VerticalTabUtils.isVerticalTabsEligible(activity));
+
+        SettingsFragmentRegistry.Resolution resolution = resolve("chrome://settings/tabPosition");
+        assertNull(resolution.redirectUrl);
+        assertEquals(TabPositionSettingsFragment.class, resolution.fragmentClass);
     }
 
     /** Resolves a URL for the cases that do not depend on browser state. */
