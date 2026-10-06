@@ -92,6 +92,7 @@ void WaitForDetent(AssistantContainerDetent detent) {
 // Opens the composebox, attaches the current tab, and waits for the send button
 // to be enabled.
 void OpenCoBrowse(const GURL& url) {
+  [ComposeboxAppInterface enableAllTools];
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
 
