@@ -253,11 +253,11 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
   if (!resource) {
     return nullptr;
   }
-  resource->Initialize(/*client=*/nullptr, context_provider_wrapper,
-                       hdr_metadata, /*is_accelerated=*/true);
-
   auto shared_image = resource->GetSharedImage();
-  gpu::SyncToken sync_token = resource->acquire_sync_token();
+  gpu::SyncToken sync_token = shared_image->creation_sync_token();
+  if (sync_token.HasData()) {
+    shared_image->UpdateDestructionSyncToken(sync_token);
+  }
   MemoryManagedPaintRecorder recorder(size, /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
