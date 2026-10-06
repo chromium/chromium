@@ -454,8 +454,9 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
     const proto::CacheHeaderMap header = metadata.response().headers(i);
     CHECK_EQ(std::string::npos, header.name().find('\0'),
              base::NotFatalUntil::M158);
-    CHECK_EQ(std::string::npos, header.value().find('\0'),
-             base::NotFatalUntil::M158);
+    // TODO(crbug.com/568108704): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(std::string::npos, header.value().find('\0'));
     headers.insert(std::make_pair(header.name(), header.value()));
   }
 
