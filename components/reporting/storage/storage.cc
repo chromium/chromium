@@ -5,11 +5,11 @@
 #include "components/reporting/storage/storage.h"
 
 #include <cstdint>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -434,7 +434,8 @@ class Storage::KeyInStorage {
   LocateValidKeyAndParse(
       const base::flat_map<uint64_t, base::FilePath>& found_key_files) {
     // Try to unserialize the key from each found file (latest first).
-    for (const auto& [index, file_path] : base::Reversed(found_key_files)) {
+    for (const auto& [index, file_path] :
+         std::views::reverse(found_key_files)) {
       base::File key_file(file_path,
                           base::File::FLAG_OPEN | base::File::FLAG_READ);
       if (!key_file.IsValid()) {

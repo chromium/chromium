@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -336,7 +336,7 @@ HistoryURLProvider::VisitClassifier::VisitClassifier(
   // empty prefix to those that have most components).
   const std::string& desired_tld = input.desired_tld();
   const URLPrefixes& url_prefixes = URLPrefix::GetURLPrefixes();
-  for (const URLPrefix& url_prefix : base::Reversed(url_prefixes)) {
+  for (const URLPrefix& url_prefix : std::views::reverse(url_prefixes)) {
     const GURL url_with_prefix = url_formatter::FixupURL(
         base::UTF16ToUTF8(url_prefix.prefix + input.text()), desired_tld);
     if (url_with_prefix.is_valid() &&

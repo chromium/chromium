@@ -5,6 +5,7 @@
 #include "components/exo/shell_surface.h"
 
 #include <optional>
+#include <ranges>
 
 #include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -13,7 +14,6 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
-#include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -522,7 +522,7 @@ const ui::Layer* ShellSurface::GetCommitTargetLayer() const {
     return old_layer_.get();
   }
 
-  for (const auto& config : base::Reversed(pending_configs_)) {
+  for (const auto& config : std::views::reverse(pending_configs_)) {
     if (config->old_layer &&
         config->old_layer->AsSurface()
                 ->GetSurfaceId()

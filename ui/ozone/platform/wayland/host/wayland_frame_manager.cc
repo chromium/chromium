@@ -8,9 +8,9 @@
 #include <sync/sync.h>
 
 #include <cstdint>
+#include <ranges>
 #include <variant>
 
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -347,7 +347,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   // frame_callback and presentation_feedback on the top-most possible surface.
   WaylandSubsurface* reference_above = nullptr;
   for (auto& [subsurface, config] :
-       base::Reversed(frame->subsurfaces_to_overlays)) {
+       std::views::reverse(frame->subsurfaces_to_overlays)) {
     DCHECK(subsurface);
     auto* surface = subsurface->wayland_surface();
     if (empty_frame || !config.buffer_id ||

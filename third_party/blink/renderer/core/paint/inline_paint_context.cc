@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 
 namespace blink {
@@ -289,7 +290,7 @@ void InlinePaintContext::PushDecoratingBoxAncestors(
     if (current.IsLineBox()) {
       SetLineBox(cursor);
       DecoratingBoxList saved_decorating_boxes;
-      for (const FragmentItem* item : base::Reversed(ancestor_items)) {
+      for (const FragmentItem* item : std::views::reverse(ancestor_items)) {
         SyncDecoratingBox(*item, saved_decorating_boxes);
       }
       return;

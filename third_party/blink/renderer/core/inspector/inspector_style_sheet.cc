@@ -27,8 +27,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
@@ -206,7 +206,8 @@ BuildSpecificityComponents(const CSSSelector* selector) {
   }
   auto components =
       std::make_unique<protocol::Array<protocol::CSS::SpecificityComponent>>();
-  for (const Vector<const CSSSelector*>& compound : base::Reversed(compounds)) {
+  for (const Vector<const CSSSelector*>& compound :
+       std::views::reverse(compounds)) {
     for (const CSSSelector* simple_selector : compound) {
       std::array<uint8_t, 3> tuple =
           simple_selector->SimpleSelectorSpecificityTuple();

@@ -23,13 +23,13 @@
 #include <iomanip>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string_view>
 
 #include "base/base_export.h"
 #include "base/base_switches.h"
 #include "base/bits.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/stack.h"
@@ -1253,7 +1253,7 @@ bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
   }
 
   // Iterate through the missing directories and create.
-  for (const FilePath& subpath : base::Reversed(missing_subpaths)) {
+  for (const FilePath& subpath : std::views::reverse(missing_subpaths)) {
     mode_t mode = S_IRWXU;
 
 #if BUILDFLAG(IS_CHROMEOS)

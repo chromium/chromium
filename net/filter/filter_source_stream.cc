@@ -4,11 +4,11 @@
 
 #include "net/filter/filter_source_stream.h"
 
+#include <ranges>
 #include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -139,7 +139,7 @@ std::vector<SourceStreamType> FilterSourceStream::GetContentEncodingTypes(const 
 std::unique_ptr<SourceStream> FilterSourceStream::CreateDecodingSourceStream(
     std::unique_ptr<SourceStream> upstream,
     const std::vector<SourceStreamType>& types) {
-  for (const auto& type : base::Reversed(types)) {
+  for (const auto& type : std::views::reverse(types)) {
     std::unique_ptr<FilterSourceStream> downstream;
     switch (type) {
       case SourceStreamType::kBrotli:

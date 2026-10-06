@@ -4,7 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
@@ -45,7 +46,7 @@ bool HasRepeatingSuffix(std::string_view text) {
 
 size_t GetNumTrailingNewlines(std::string_view text) {
   size_t num_trailing_newlines = 0;
-  for (const char it : base::Reversed(text)) {
+  for (const char it : std::views::reverse(text)) {
     if (it == '\n') {
       num_trailing_newlines++;
     } else {

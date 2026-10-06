@@ -26,7 +26,8 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -583,7 +584,7 @@ void HTMLElementStack::RemoveNonTopCommon(Element* element) {
 // it, so recompute bottom-up from there.
 void HTMLElementStack::UpdatePElementInButtonScope(
     const HeapVector<Member<HTMLStackItem>>& items_above) {
-  for (const auto& it : base::Reversed(items_above)) {
+  for (const auto& it : std::views::reverse(items_above)) {
     HTMLStackItem* item = it.Get();
     HTMLStackItem* below = item->NextItemInStack();
     item->has_p_element_in_button_scope_ =

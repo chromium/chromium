@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -114,7 +115,7 @@ std::u16string MatchHit(const std::u16string& text,
                         const FuzzyTokenizedStringMatch::Hits& hits) {
   std::u16string marked = text;
 
-  for (const gfx::Range& hit : base::Reversed(hits)) {
+  for (const gfx::Range& hit : std::views::reverse(hits)) {
     marked.insert(hit.end(), 1, u']');
     marked.insert(hit.start(), 1, u'[');
   }

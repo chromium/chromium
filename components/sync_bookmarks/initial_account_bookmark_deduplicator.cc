@@ -4,6 +4,7 @@
 
 #include "components/sync_bookmarks/initial_account_bookmark_deduplicator.h"
 
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -115,7 +116,7 @@ void InitialAccountBookmarkDeduplicator::RemoveChildrenAt(
   // lead to quadratic behavior. However, A/B experiments via variations led to
   // the conclusion that this simple implementation isn't slower than more
   // sophisticated variants, even at high percentiles.
-  for (size_t index : base::Reversed(indices_to_remove)) {
+  for (size_t index : std::views::reverse(indices_to_remove)) {
     const bookmarks::BookmarkNode* child = parent->children().at(index).get();
     bookmark_model_->Remove(
         child, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -1018,7 +1018,7 @@ bool Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
       return false;
     }
   }
-  for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
+  for (const auto& sub_surface_entry : std::views::reverse(sub_surfaces_)) {
     auto* sub_surface = sub_surface_entry.first;
     if (!sub_surface->UpdateDisplay(old_display, new_display))
       return false;
@@ -1223,7 +1223,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
   surface_hierarchy_content_bounds_ =
       gfx::Rect(gfx::ToCeiledSize(content_size_));
 
-  for (const auto& render_layer_entry : base::Reversed(render_layers_)) {
+  for (const auto& render_layer_entry : std::views::reverse(render_layers_)) {
     auto* render_layer = render_layer_entry.first;
     render_layer->CommitSurfaceHierarchy(synchronized);
   }
@@ -1243,7 +1243,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       hit_test_region_ = input_rect;
     }
 
-    for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
+    for (const auto& sub_surface_entry : std::views::reverse(sub_surfaces_)) {
       auto* sub_surface = sub_surface_entry.first;
       gfx::Vector2d offset =
           gfx::ToRoundedPoint(sub_surface_entry.second).OffsetFromOrigin();
@@ -1266,13 +1266,13 @@ void Surface::AppendSurfaceHierarchyCallbacks(
   presentation_callbacks->splice(presentation_callbacks->end(),
                                  state_.presentation_callbacks);
 
-  for (const auto& render_layer_entry : base::Reversed(render_layers_)) {
+  for (const auto& render_layer_entry : std::views::reverse(render_layers_)) {
     auto* render_layer = render_layer_entry.first;
     render_layer->AppendSurfaceHierarchyCallbacks(frame_callbacks,
                                                   presentation_callbacks);
   }
 
-  for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
+  for (const auto& sub_surface_entry : std::views::reverse(sub_surfaces_)) {
     auto* sub_surface = sub_surface_entry.first;
     sub_surface->AppendSurfaceHierarchyCallbacks(frame_callbacks,
                                                  presentation_callbacks);
@@ -1288,7 +1288,7 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
     viz::CompositorFrame* frame) {
   // The top most sub-surface is at the front of the RenderPass's quad_list,
   // so we need composite sub-surface in reversed order.
-  for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
+  for (const auto& sub_surface_entry : std::views::reverse(sub_surfaces_)) {
     auto* sub_surface = sub_surface_entry.first;
     // Synchronously commit all pending state of the sub-surface and its
     // descendents.
@@ -1303,7 +1303,7 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
 
   // Make sure the sub_surfaces are rendered before render_layers for this
   // surface s.t. sub_surfaces are rendered above the render_layers.
-  for (const auto& render_layer_entry : base::Reversed(render_layers_)) {
+  for (const auto& render_layer_entry : std::views::reverse(render_layers_)) {
     auto* render_layer = render_layer_entry.first;
     // Synchronously commit all pending state of the layer and its descendents.
     gfx::PointF to_root_px =

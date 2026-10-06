@@ -6,12 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <ranges>
 #import <set>
 #import <string_view>
 #import <utility>
 
 #import "base/base64.h"
-#import "base/containers/adapters.h"
 #import "base/feature_list.h"
 #import "base/logging.h"
 #import "base/strings/string_number_conversions.h"
@@ -203,7 +203,7 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
   // recently_used_backgrounds_ is an LRU cache, so the items need to be added
   // in reverse order, so the oldest item is added first.
   for (const base::Value& background_value :
-       base::Reversed(recently_used_backgrounds_list)) {
+       std::views::reverse(recently_used_backgrounds_list)) {
     if (background_value.is_string()) {
       recently_used_backgrounds_.Put(
           DecodeThemeIosSpecifics(background_value.GetString()));
@@ -797,8 +797,8 @@ void HomeBackgroundCustomizationService::DefaultRecentlyUsedBackgroundsLoaded(
   // Iterate backwards so the items at the end of the list are pushed into the
   // cache first, ending up at the end of the cache.
   for (const auto& [collection_name, collection_images] :
-       base::Reversed(collection_map)) {
-    for (const auto& image : base::Reversed(collection_images)) {
+       std::views::reverse(collection_map)) {
+    for (const auto& image : std::views::reverse(collection_images)) {
       std::string attribution_line_1;
       std::string attribution_line_2;
       // Set attribution lines if available.

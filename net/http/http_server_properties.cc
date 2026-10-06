@@ -4,10 +4,10 @@
 
 #include "net/http/http_server_properties.h"
 
+#include <ranges>
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -722,7 +722,8 @@ void HttpServerProperties::SetMaxServerConfigsStoredInProperties(
   // Update the |canonical_server_info_map_| as well, so it stays in sync with
   // |quic_server_info_map_|.
   canonical_server_info_map_ = QuicCanonicalMap();
-  for (const auto& [key, server_info] : base::Reversed(quic_server_info_map_)) {
+  for (const auto& [key, server_info] :
+       std::views::reverse(quic_server_info_map_)) {
     temp_map.Put(key, server_info);
     UpdateCanonicalServerInfoMap(key);
   }
@@ -1316,7 +1317,7 @@ void HttpServerProperties::OnServerInfoLoaded(
   server_info_map_.Swap(*server_info_map);
 
   // Add the entries from the memory cache.
-  for (auto& [key, server_info] : base::Reversed(*server_info_map)) {
+  for (auto& [key, server_info] : std::views::reverse(*server_info_map)) {
     // If there's no corresponding old entry, add the new entry directly.
     auto old_entry = server_info_map_.Get(key);
     if (old_entry == server_info_map_.end()) {
@@ -1375,7 +1376,8 @@ void HttpServerProperties::OnQuicServerInfoMapLoaded(
   quic_server_info_map_.Swap(*quic_server_info_map);
 
   // Add the entries from the memory cache.
-  for (const auto& [key, server_info] : base::Reversed(*quic_server_info_map)) {
+  for (const auto& [key, server_info] :
+       std::views::reverse(*quic_server_info_map)) {
     if (quic_server_info_map_.Get(key) == quic_server_info_map_.end()) {
       quic_server_info_map_.Put(key, server_info);
     }
@@ -1384,7 +1386,8 @@ void HttpServerProperties::OnQuicServerInfoMapLoaded(
   // Repopulate |canonical_server_info_map_| to stay in sync with
   // |quic_server_info_map_|.
   canonical_server_info_map_.clear();
-  for (const auto& [key, server_info] : base::Reversed(quic_server_info_map_)) {
+  for (const auto& [key, server_info] :
+       std::views::reverse(quic_server_info_map_)) {
     UpdateCanonicalServerInfoMap(key);
   }
 }

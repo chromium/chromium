@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <map>
+#include <ranges>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -435,7 +435,7 @@ gfx::NativeViewAccessible AXVirtualView::HitTestSync(
   // deepest child, since it does not support relative bounds.
   // Search the greater indices first, since they're on top in the z-order.
   for (const std::unique_ptr<AXVirtualView>& child :
-       base::Reversed(virtual_children_)) {
+       std::views::reverse(virtual_children_)) {
     gfx::NativeViewAccessible result =
         child->HitTestSync(screen_physical_pixel_x, screen_physical_pixel_y);
     if (result) {

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/justification_utils.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
@@ -93,7 +94,7 @@ void SetupJustificationOpportunity(
                                        results.back().hyphen.Text(),
                                        base_direction);
     }
-    for (const auto& item_result : base::Reversed(results)) {
+    for (const auto& item_result : std::views::reverse(results)) {
       SetupItemJustificationOpportunity(item_result, end_offset, base_direction,
                                         spacing_setup);
     }

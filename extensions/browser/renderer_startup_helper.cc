@@ -4,12 +4,12 @@
 
 #include "extensions/browser/renderer_startup_helper.h"
 
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_is_test.h"
-#include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -744,7 +744,8 @@ void RendererStartupHelper::GetMessageBundle(
   // Iterate through the imports in reverse.  This will allow later imported
   // modules to override earlier imported modules, as the list order is
   // maintained from the definition in manifest.json of the imports.
-  for (const SharedModuleInfo::ImportInfo& import : base::Reversed(imports)) {
+  for (const SharedModuleInfo::ImportInfo& import :
+       std::views::reverse(imports)) {
     const Extension* imported_extension =
         extension_set.GetByID(import.extension_id);
     if (!imported_extension) {

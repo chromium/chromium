@@ -6,7 +6,8 @@
 
 #include <limits.h>
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view.h"
@@ -45,7 +46,7 @@ View* ViewTargeterDelegate::TargetForRect(View* root, const gfx::Rect& rect) {
 
   View::Views children = root->GetChildrenInZOrder();
   DCHECK_EQ(root->children().size(), children.size());
-  for (views::View* child : base::Reversed(children)) {
+  for (views::View* child : std::views::reverse(children)) {
     if (!child->GetCanProcessEventsWithinSubtree()) {
       continue;
     }

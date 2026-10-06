@@ -4,7 +4,8 @@
 
 #include "components/app_restore/desk_template_read_handler.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -266,7 +267,7 @@ ArcReadHandler* DeskTemplateReadHandler::GetArcReadHandlerForLaunch(
 RestoreData* DeskTemplateReadHandler::GetMostRecentRestoreDataForApp(
     const std::string& app_id) {
   // Go from newest to oldest.
-  for (const auto& entry : base::Reversed(restore_data_)) {
+  for (const auto& entry : std::views::reverse(restore_data_)) {
     const std::unique_ptr<RestoreData>& restore_data = entry.second;
     if (restore_data->app_id_to_launch_list().count(app_id)) {
       return restore_data.get();

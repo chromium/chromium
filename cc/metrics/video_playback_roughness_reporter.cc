@@ -5,8 +5,8 @@
 #include "cc/metrics/video_playback_roughness_reporter.h"
 
 #include <algorithm>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -95,7 +95,7 @@ void VideoPlaybackRoughnessReporter::FrameSubmitted(
 void VideoPlaybackRoughnessReporter::FramePresented(TokenType token,
                                                     base::TimeTicks timestamp,
                                                     bool reliable_timestamp) {
-  for (auto& frame : base::Reversed(frames_)) {
+  for (auto& frame : std::views::reverse(frames_)) {
     if (token == frame.token) {
       if (frame.decode_time.has_value()) {
         auto time_since_decode = timestamp - frame.decode_time.value();

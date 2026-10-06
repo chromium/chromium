@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <ranges>
 
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -447,7 +448,7 @@ Position OffsetMapping::EndOfLastNonCollapsedContent(
   const unsigned offset = node_and_offset.second;
   auto unit_span = base::span(units_).subspan(
       0u, base::checked_cast<size_t>(std::distance(units_.data(), unit) + 1));
-  for (const auto& u : base::Reversed(unit_span)) {
+  for (const auto& u : std::views::reverse(unit_span)) {
     if (u.AssociatedNode() != node) {
       break;
     }

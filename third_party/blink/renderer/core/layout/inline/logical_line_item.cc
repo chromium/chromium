@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/used_font.h"
 
@@ -82,7 +83,7 @@ LogicalLineItem* LogicalLineItems::FirstInFlowChild() {
 }
 
 LogicalLineItem* LogicalLineItems::LastInFlowChild() {
-  for (auto& child : base::Reversed(*this)) {
+  for (auto& child : std::views::reverse(*this)) {
     if (child.HasInFlowFragment())
       return &child;
   }

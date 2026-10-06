@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 
 #include <algorithm>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
@@ -788,7 +788,7 @@ LayoutUnit LineBreaker::RemoveHyphen(InlineItemResults* item_results) {
 void LineBreaker::RestoreLastHyphen(InlineItemResults* item_results) {
   DCHECK(!hyphen_index_);
   DCHECK(has_any_hyphens_);
-  for (InlineItemResult& item_result : base::Reversed(*item_results)) {
+  for (InlineItemResult& item_result : std::views::reverse(*item_results)) {
     DCHECK(item_result.item);
     if (item_result.hyphen) {
       AddHyphen(item_results, &item_result);
@@ -1902,7 +1902,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
     DCHECK_EQ(item_result, &results.back());
     results = results.first(results.size() - 1);
     bool is_at_mid_word = false;
-    for (const InlineItemResult& result : base::Reversed(results)) {
+    for (const InlineItemResult& result : std::views::reverse(results)) {
       DCHECK(!result.can_break_after);
       if (result.inline_size) {
         is_at_mid_word = true;
@@ -2269,7 +2269,7 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
         const float hyphen_penalty = context.HyphenPenalty();
         InlineItemTextIndex hyphen_offset = {item_index, 0};
-        for (const wtf_size_t location : base::Reversed(locations)) {
+        for (const wtf_size_t location : std::views::reverse(locations)) {
           hyphen_offset.text_offset = offset.start + location;
           const float position =
               shape_result.PositionForOffset(hyphen_offset.text_offset);
@@ -2550,7 +2550,8 @@ void LineBreaker::RewindTrailingOpenTags(LineInfo* line_info) {
   // but the current code supports only one trailing space item. Multiple
   // trailing space items and interleaved open/close tags should be supported.
   const InlineItemResults& item_results = line_info->Results();
-  for (const InlineItemResult& item_result : base::Reversed(item_results)) {
+  for (const InlineItemResult& item_result :
+       std::views::reverse(item_results)) {
     DCHECK(item_result.item);
     if (item_result.item->Type() != InlineItem::kOpenTag) {
       unsigned end_index =
@@ -2677,7 +2678,7 @@ void LineBreaker::ComputeTrailingCollapsibleSpace(LineInfo* line_info) {
 // Returns true if trailing_whitespace_ is determined.
 bool LineBreaker::ComputeTrailingCollapsibleSpaceHelper(LineInfo& line_info) {
   const String& text = Text();
-  for (auto& item_result : base::Reversed(*line_info.MutableResults())) {
+  for (auto& item_result : std::views::reverse(*line_info.MutableResults())) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
     if (item_result.IsRubyColumn()) {
@@ -2792,7 +2793,7 @@ void LineBreaker::SplitTrailingBidiPreservedSpace(LineInfo* line_info) {
 
   const String& text = Text();
   wtf_size_t result_index = line_info->Results().size();
-  for (auto& item_result : base::Reversed(*line_info->MutableResults())) {
+  for (auto& item_result : std::views::reverse(*line_info->MutableResults())) {
     result_index--;
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;

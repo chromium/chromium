@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_algorithm.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -772,7 +773,7 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
           // The 'current text position' should be at the next to the last
           // drawn character.
           auto result_range = base::span(result_).subspan(index);
-          auto reverse_result_range = base::Reversed(result_range);
+          auto reverse_result_range = std::views::reverse(result_range);
           const auto iter = std::ranges::find_if(
               reverse_result_range,
               [](const auto& info) { return !info.hidden && !info.middle; });

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/line_truncator.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
@@ -228,7 +229,7 @@ LayoutUnit LineTruncator::TruncateLine(LayoutUnit line_width,
   std::optional<LogicalLineItem> truncated_child;
   if (IsLtr(line_direction_)) {
     LogicalLineItem* first_child = line_box->FirstInFlowChild();
-    for (auto& child : base::Reversed(*line_box)) {
+    for (auto& child : std::views::reverse(*line_box)) {
       if (EllipsizeChild(line_width, ellipsis_width_, &child == first_child,
                          &child, &truncated_child)) {
         ellipsized_child = &child;

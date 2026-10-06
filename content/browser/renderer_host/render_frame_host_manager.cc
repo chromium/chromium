@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <unordered_set>
@@ -17,7 +18,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -4832,7 +4832,7 @@ void RenderFrameHostManager::CreateRenderFrameProxyAndAncestorChainIfNeeded(
   // Create proxies, from the top-level frame down to the initially specified
   // subframe. TODO(crbug.com/40186710): Verify that the behavior is
   // correct if the frame is pending deletion.
-  for (FrameTreeNode* node : base::Reversed(ancestor_chain)) {
+  for (FrameTreeNode* node : std::views::reverse(ancestor_chain)) {
     node->render_manager()->CreateRenderFrameProxy(
         group, node->current_frame_host()->browsing_context_state(),
         /*navigation_metrics_token=*/std::nullopt);
@@ -6010,7 +6010,7 @@ void RenderFrameHostManager::CreateOpenerProxies(
   // this node first and this node last.  In the common case without cycles,
   // this will ensure that each tree's openers are created before the tree's
   // nodes need to reference them.
-  for (FrameTree* tree : base::Reversed(opener_frame_trees)) {
+  for (FrameTree* tree : std::views::reverse(opener_frame_trees)) {
     tree->root()->render_manager()->CreateOpenerProxiesForFrameTree(
         group, skip_this_node, browsing_context_state,
         navigation_metrics_token);

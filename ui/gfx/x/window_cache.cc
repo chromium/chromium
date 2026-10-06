@@ -5,9 +5,9 @@
 #include "ui/gfx/x/window_cache.h"
 
 #include <algorithm>
+#include <ranges>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -157,7 +157,7 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
     }
   }
 
-  for (Window child : base::Reversed(info->children)) {
+  for (Window child : std::views::reverse(info->children)) {
     Window ret = GetWindowAtPoint(point_px, child, ignore);
     if (ret != Window::None) {
       return ret;

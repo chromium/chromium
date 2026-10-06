@@ -18,7 +18,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -209,7 +208,7 @@ SkColor PickGoogleColor(const std::array<SkColor, kNumGoogleColors>& colors,
           return begin + std::ranges::distance(subspan.begin(), it);
         }
         auto subspan = lum_colors_span.subspan(end + 1, begin - end);
-        auto reversed = base::Reversed(subspan);
+        auto reversed = std::views::reverse(subspan);
         auto it = std::ranges::lower_bound(reversed, threshold, comp, proj);
         return begin - std::ranges::distance(reversed.begin(), it);
       };

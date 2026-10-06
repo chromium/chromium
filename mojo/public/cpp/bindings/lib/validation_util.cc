@@ -6,7 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
@@ -69,7 +70,7 @@ bool ValidateStructHeaderAndVersionSizeAndClaimMemory(
   const auto& header = *static_cast<const StructHeader*>(data);
   if (header.version <= version_sizes.back().version) {
     // Scan in reverse order to optimize for more recent versions.
-    for (const auto& version_size : base::Reversed(version_sizes)) {
+    for (const auto& version_size : std::views::reverse(version_sizes)) {
       if (header.version >= version_size.version) {
         if (header.num_bytes == version_size.num_bytes) {
           break;

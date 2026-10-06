@@ -46,8 +46,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -304,7 +304,8 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
   // stacking context. Note that these are appended in reverse order to match
   // the overscroll chaining order (last one is one overscrolls first and is on
   // the bottom of a stack).
-  for (auto& overscroll_area_parent : base::Reversed(overscroll_area_parents)) {
+  for (auto& overscroll_area_parent :
+       std::views::reverse(overscroll_area_parents)) {
     pos_z_order_list_.push_back(overscroll_area_parent);
   }
 

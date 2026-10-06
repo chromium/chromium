@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "semantic_provider_impl.h"
-
 #include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
 #include <fidl/fuchsia.ui.views/cpp/hlcpp_conversion.h>
 #include <lib/async/default.h>
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/fuchsia/fidl_event_handler.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "semantic_provider_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -301,7 +300,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromRootToLeaves) {
 
 TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromLeavesToRoot) {
   auto nodes = TreeNodes();
-  for (auto& node : base::Reversed(nodes)) {
+  for (auto& node : std::views::reverse(nodes)) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
 

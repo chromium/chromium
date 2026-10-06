@@ -29,7 +29,8 @@
 
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/time/time.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -612,7 +613,7 @@ Element* Fullscreen::FullscreenElementFrom(Document& document) {
   // whose fullscreen flag is set, if any, and null otherwise.
 
   const auto& elements = document.TopLayerElements();
-  for (const auto& element : base::Reversed(elements)) {
+  for (const auto& element : std::views::reverse(elements)) {
     if (HasFullscreenFlag(*element))
       return element.Get();
   }

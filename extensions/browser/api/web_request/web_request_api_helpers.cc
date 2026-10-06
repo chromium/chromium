@@ -10,11 +10,11 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <tuple>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -1025,7 +1025,7 @@ static bool MergeAddRequestCookieModifications(
   bool modified = false;
   // We assume here that the deltas are sorted in decreasing extension
   // precedence (i.e. decreasing extension installation time).
-  for (const auto& delta : base::Reversed(deltas)) {
+  for (const auto& delta : std::views::reverse(deltas)) {
     const RequestCookieModifications& modifications =
         delta.request_cookie_modifications;
     for (auto mod = modifications.cbegin(); mod != modifications.cend();
@@ -1069,7 +1069,7 @@ static bool MergeEditRequestCookieModifications(
   bool modified = false;
   // We assume here that the deltas are sorted in decreasing extension
   // precedence (i.e. decreasing extension installation time).
-  for (const auto& delta : base::Reversed(deltas)) {
+  for (const auto& delta : std::views::reverse(deltas)) {
     const RequestCookieModifications& modifications =
         delta.request_cookie_modifications;
     for (auto mod = modifications.cbegin(); mod != modifications.cend();
@@ -1108,7 +1108,7 @@ static bool MergeRemoveRequestCookieModifications(
   bool modified = false;
   // We assume here that the deltas are sorted in decreasing extension
   // precedence (i.e. decreasing extension installation time).
-  for (const auto& delta : base::Reversed(deltas)) {
+  for (const auto& delta : std::views::reverse(deltas)) {
     const RequestCookieModifications& modifications =
         delta.request_cookie_modifications;
     for (auto mod = modifications.cbegin(); mod != modifications.cend();
@@ -1473,7 +1473,7 @@ static bool MergeAddResponseCookieModifications(
   bool modified = false;
   // We assume here that the deltas are sorted in decreasing extension
   // precedence (i.e. decreasing extension installation time).
-  for (const auto& delta : base::Reversed(deltas)) {
+  for (const auto& delta : std::views::reverse(deltas)) {
     const ResponseCookieModifications& modifications =
         delta.response_cookie_modifications;
     for (const auto& mod : modifications) {
@@ -1500,7 +1500,7 @@ static bool MergeEditResponseCookieModifications(
   bool modified = false;
   // We assume here that the deltas are sorted in decreasing extension
   // precedence (i.e. decreasing extension installation time).
-  for (const auto& delta : base::Reversed(deltas)) {
+  for (const auto& delta : std::views::reverse(deltas)) {
     const ResponseCookieModifications& modifications =
         delta.response_cookie_modifications;
     for (const auto& mod : modifications) {
@@ -1527,7 +1527,7 @@ static bool MergeRemoveResponseCookieModifications(
   bool modified = false;
   // We assume here that the deltas are sorted in decreasing extension
   // precedence (i.e. decreasing extension installation time).
-  for (const auto& delta : base::Reversed(deltas)) {
+  for (const auto& delta : std::views::reverse(deltas)) {
     const ResponseCookieModifications& modifications =
         delta.response_cookie_modifications;
     for (auto mod = modifications.cbegin(); mod != modifications.cend();
@@ -1557,7 +1557,7 @@ void MergeCookiesInOnHeadersReceivedResponses(
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers) {
   // Skip all work if there are no registered cookie modifications.
   bool cookie_modifications_exist = false;
-  for (const auto& delta : base::Reversed(deltas)) {
+  for (const auto& delta : std::views::reverse(deltas)) {
     cookie_modifications_exist |= !delta.response_cookie_modifications.empty();
   }
 

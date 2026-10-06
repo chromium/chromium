@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/editing/state_machines/backward_grapheme_boundary_state_machine.h"
 #include "third_party/blink/renderer/core/editing/state_machines/forward_grapheme_boundary_state_machine.h"
 #include "third_party/blink/renderer/core/editing/state_machines/text_segmentation_machine_state.h"
@@ -49,7 +49,7 @@ String ProcessSequence(StateMachine* machine,
   StringBuilder out;
   TextSegmentationMachineState state = TextSegmentationMachineState::kInvalid;
   Vector<UChar> preceding_code_units = CodePointsToCodeUnits(preceding);
-  for (const auto& code_unit : base::Reversed(preceding_code_units)) {
+  for (const auto& code_unit : std::views::reverse(preceding_code_units)) {
     state = machine->FeedPrecedingCodeUnit(code_unit);
     out.Append(MachineStateToChar(state));
     switch (state) {

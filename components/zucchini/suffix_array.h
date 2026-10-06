@@ -5,14 +5,18 @@
 #ifndef COMPONENTS_ZUCCHINI_SUFFIX_ARRAY_H_
 #define COMPONENTS_ZUCCHINI_SUFFIX_ARRAY_H_
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <ranges>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 
 namespace zucchini {
 
@@ -212,7 +216,7 @@ class InducedSuffixSort {
 
       // Process each |lms_indices| backward, and assign them to the end of
       // their respective buckets, so relative order is preserved.
-      for (size_t lms_index : base::Reversed(lms_indices)) {
+      for (size_t lms_index : std::views::reverse(lms_indices)) {
         key_type key = str[lms_index];
         suffix_array[--bucket_bounds[key]] = lms_index;
       }

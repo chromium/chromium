@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/optimization_guide/model/tab_url_provider_impl.h"
 
-#import "base/containers/adapters.h"
+#import <ranges>
+
 #import "base/time/clock.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -49,7 +50,7 @@ const std::vector<GURL> TabUrlProviderImpl::GetUrlsOfActiveTabs(
 
   // Output the URLs from sorted map in desending order.
   std::vector<GURL> res;
-  for (const auto& [navigation_time, url] : base::Reversed(urls)) {
+  for (const auto& [navigation_time, url] : std::views::reverse(urls)) {
     res.push_back(url);
   }
 

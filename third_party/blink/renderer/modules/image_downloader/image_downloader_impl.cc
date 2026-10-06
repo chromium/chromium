@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -50,7 +49,7 @@ Vector<SkBitmap> DecodeImageData(const std::string& data,
     std::vector<SkBitmap> original_bitmaps =
         blink::WebImage::FramesFromData(buffer);
     bitmaps.append_range(
-        base::Reversed(std::views::as_rvalue(original_bitmaps)));
+        std::views::reverse(std::views::as_rvalue(original_bitmaps)));
   }
   return bitmaps;
 }

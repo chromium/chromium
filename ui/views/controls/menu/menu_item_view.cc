@@ -11,11 +11,11 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/adapters.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -916,7 +916,7 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
     int child_end =
         layout.host_size.width() -
         (children_use_full_width_ ? 0 : submenu->trailing_padding());
-    for (View* child : base::Reversed(children())) {
+    for (View* child : std::views::reverse(children())) {
       if (icon_view_ == child) {
         continue;
       }

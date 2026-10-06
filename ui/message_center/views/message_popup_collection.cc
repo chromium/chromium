@@ -5,10 +5,10 @@
 #include "ui/message_center/views/message_popup_collection.h"
 
 #include <algorithm>
+#include <ranges>
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -617,7 +617,7 @@ bool MessagePopupCollection::AddPopup() {
   auto notifications = GetPopupNotifications();
   Notification* new_notification = nullptr;
   // Reverse iterating because notifications are in reverse chronological order.
-  for (Notification* notification : base::Reversed(notifications)) {
+  for (Notification* notification : std::views::reverse(notifications)) {
     if (!existing_ids.contains(notification->id())) {
       new_notification = notification;
       break;

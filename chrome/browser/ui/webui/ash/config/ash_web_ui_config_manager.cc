@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/config/ash_web_ui_config_manager.h"
 
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -45,7 +46,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
@@ -573,7 +573,7 @@ void AshWebUIConfigManager::AddUntrustedWebUIConfig(
 
 void AshWebUIConfigManager::Unregister() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& url : base::Reversed(registered_urls_to_unregister_)) {
+  for (const auto& url : std::views::reverse(registered_urls_to_unregister_)) {
     CHECK(content::WebUIConfigMap::GetInstance().RemoveConfig(url));
   }
   registered_urls_to_unregister_.clear();
