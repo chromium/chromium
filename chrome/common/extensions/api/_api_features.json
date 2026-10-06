@@ -51,6 +51,20 @@
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:experimentalAiData"]
   },
+  "experimentalAiData.getNodeForDomNodeId": {
+    "contexts": ["content_script"],
+    "component_extensions_auto_granted": false,
+    "allowlist": [
+      "C01350F1D6603DCC4F1340831ABBB089BF7E56E0"  // APC Debugging Extension
+    ]
+  },
+  "experimentalAiData.getDomNodeId": {
+    "contexts": ["content_script"],
+    "component_extensions_auto_granted": false,
+    "allowlist": [
+      "C01350F1D6603DCC4F1340831ABBB089BF7E56E0"  // APC Debugging Extension
+    ]
+  },
   "glicPrivate": {
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:glicPrivate"],

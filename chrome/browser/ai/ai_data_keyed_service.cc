@@ -81,6 +81,8 @@
 
 namespace {
 
+constexpr char kApcDebuggingExtensionId[] = "bbnmkciocedkjdlapchelmdflhahacpa";
+
 #if BUILDFLAG(ENABLE_PDF)
 constexpr size_t kBytesPerMegabyte = 1'000'000;
 constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
@@ -787,7 +789,7 @@ bool AiDataKeyedService::IsExtensionAllowlistedForData(
                                        "mofldjifenhadohlkkngamgbifiofbnd",
                                        // APC Debugging Extension.
                                        // https://issues.chromium.org/555303047
-                                       "bbnmkciocedkjdlapchelmdflhahacpa"});
+                                       kApcDebuggingExtensionId});
   if (std::ranges::contains(*kHardcodedAllowlistedExtensions, extension_id)) {
     return true;
   }
@@ -833,7 +835,12 @@ bool AiDataKeyedService::IsExtensionAllowlistedForActions(
 
 bool AiDataKeyedService::IsExtensionAllowlistedForStable(
     const std::string& extension_id) {
-  // Stable channel always requires --experimental-ai-stable-channel flag.
+  // APC debugging must work on the same Stable pages that users encounter.
+  if (extension_id == kApcDebuggingExtensionId) {
+    return true;
+  }
+
+  // Other extensions still require --experimental-ai-stable-channel.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(::switches::kExperimentalAiStableChannel)) {
     return false;

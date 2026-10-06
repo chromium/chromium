@@ -9,6 +9,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/grit/renderer_resources_resources.h"
+#include "chrome/renderer/extensions/api/experimental_ai_data_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/identity_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/notifications_native_handler.h"
@@ -103,6 +104,9 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
     NativeExtensionBindingsSystem* bindings_system) const {
   // Bindings are stored in a map so the order of registration doesn't matter.
   APIBindingsSystem* bindings = bindings_system->api_system();
+  bindings->RegisterHooksDelegate(
+      "experimentalAiData",
+      std::make_unique<ExperimentalAiDataHooksDelegate>());
   bindings->RegisterHooksDelegate(
       "extension", std::make_unique<extensions::ExtensionHooksDelegate>(
                        bindings_system->messaging_service()));
