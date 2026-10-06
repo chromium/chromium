@@ -691,10 +691,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return std::nullopt;
 #endif
     case Suggestion::Icon::kOfferTag:
-      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
-                                          ? vector_icons::kShoppingmodeIcon
-                                          : vector_icons::kShoppingmodeOldIcon,
-                                      kIconSize);
+      return ImageModelFromVectorIcon(vector_icons::kSellIcon, kIconSize);
     case Suggestion::Icon::kIban:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kCardGeneric:

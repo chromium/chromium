@@ -401,6 +401,7 @@ if (current_toolchain == default_toolchain) {
       "select_window_off.icon",
       "select_window_off_chrome_refresh_old.icon",
       "select_window_old.icon",
+      "sell.icon",
       "send.icon",
       "send_old.icon",
       "sensors.icon",
