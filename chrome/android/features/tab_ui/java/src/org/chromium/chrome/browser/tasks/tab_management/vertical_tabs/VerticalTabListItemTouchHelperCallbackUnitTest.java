@@ -590,9 +590,12 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Test
     public void testClearView_AbortedByEsc_RevertsTabGroup() {
         Token groupId = new Token(1L, 2L);
+        when(mTab1.getId()).thenReturn(1);
         when(mTab1.getTabGroupId()).thenReturn(groupId);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1));
         when(mTabModel.indexOf(mTab1)).thenReturn(2);
 
         // Mimic a drag -> cancel (ESC key).
@@ -912,7 +915,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testCanDropOver_GroupHeaderOnChild() {
         // Current is a group header.
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        mPropertyModel.set(TabProperties.TAB_ID, 1);
         Token groupId = new Token(1L, 2L);
         mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
 
@@ -1006,15 +1008,15 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     public void testOnSelectedChanged_DragGroupHeader_PreservesSelection() {
+        Token groupId = new Token(1L, 2L);
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
 
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
 
-        when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
 
         // Setup mModel indices.
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
@@ -1052,7 +1054,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mItemView.getLeft()).thenReturn(0);
 
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        mPropertyModel.set(TabProperties.TAB_ID, 1);
         Token groupId = new Token(1L, 2L);
         mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
 
@@ -1105,7 +1106,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // Header view.
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        mPropertyModel.set(TabProperties.TAB_ID, 1);
         mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
 
         attachRecyclerViewChildren(childVH1);
@@ -1296,7 +1296,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // Mock TabModel to target the lowest tab.
         when(mTab2.getId()).thenReturn(2);
-        when(mTabModel.getRelatedTabList(2))
+        when(mTabModel.getTabsInGroup(groupId))
                 .thenReturn(List.of(mTab1, mTab2)); // last item is target.
 
         List<RecyclerView.ViewHolder> targets = List.of(mTargetViewHolder);
@@ -1339,7 +1339,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1));
 
         assertFalse(mCallback.hasDragEscapedBounds(mRecyclerView, mViewHolder, 0, 0, 0, 0));
     }
@@ -1356,7 +1356,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
 
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
         when(mViewHolder.itemView.getTop()).thenReturn(200);
@@ -1379,7 +1379,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
 
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
         when(mViewHolder.itemView.getTop()).thenReturn(200);
@@ -1400,7 +1400,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab1, mTab2)); // tab2 is last.
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2)); // tab2 is last.
 
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
         when(mViewHolder.itemView.getTop()).thenReturn(200);
@@ -1425,7 +1425,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTab3.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(2))
+        when(mTabModel.getTabsInGroup(groupId))
                 .thenReturn(List.of(mTab1, mTab2, mTab3)); // tab2 is middle.
 
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
@@ -1657,15 +1657,15 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     private void setupDragGroupHeaderState() {
+        Token groupId = new Token(1L, 2L);
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
 
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
 
-        when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
 
         // Setup mModel indices.
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
@@ -1834,6 +1834,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
         when(mViewHolder.itemView.getTop()).thenReturn(200);
 
@@ -1877,6 +1878,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(destGroupId);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab1, mTab2));
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
         when(mViewHolder.itemView.getTop()).thenReturn(200);
 
@@ -1906,6 +1908,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
         when(mViewHolder.itemView.getTop()).thenReturn(200);
 
@@ -1954,6 +1957,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(destGroupId);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab1, mTab2));
         when(mViewHolder.itemView.getHeight()).thenReturn(100);
         when(mViewHolder.itemView.getTop()).thenReturn(200);
 
@@ -2357,7 +2361,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     private SimpleRecyclerViewAdapter.ViewHolder createGroupHeaderViewHolder(
-            int tabId, Token groupId, int width, int height) {
+            Token groupId, int width, int height) {
         View view = new View(ApplicationProvider.getApplicationContext());
         view.setLayoutParams(new RecyclerView.LayoutParams(width, height));
         view.setAlpha(1.0f);
@@ -2366,7 +2370,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                         .with(
                                 TabListModel.CardProperties.CARD_TYPE,
                                 TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, tabId)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .build();
         SimpleRecyclerViewAdapter.ViewHolder holder =
@@ -2408,7 +2411,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testCollapseAndRestoreDraggedItem_TabGroup_CollapsesAndRestoresAllGroupViews() {
         Token groupId = new Token(10L, 20L);
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                createGroupHeaderViewHolder(1, groupId, 100, 50);
+                createGroupHeaderViewHolder(groupId, 100, 50);
         SimpleRecyclerViewAdapter.ViewHolder childHolder1 =
                 createGroupChildViewHolder(2, groupId, 100, 60);
         SimpleRecyclerViewAdapter.ViewHolder childHolder2 =
@@ -2460,43 +2463,14 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testCollapseDraggedItem_TabGroup_ClearsOverlayAndResetsTranslations() {
         Token groupId = new Token(10L, 20L);
 
-        View headerView = new View(ApplicationProvider.getApplicationContext());
-        headerView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
-        PropertyModel headerModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 1)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
-                        .build();
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(headerView, null));
-        when(headerHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        headerHolder.model = headerModel;
-
-        View childView = new View(ApplicationProvider.getApplicationContext());
-        childView.setLayoutParams(new RecyclerView.LayoutParams(100, 60));
+                createGroupHeaderViewHolder(groupId, 100, 50);
+        SimpleRecyclerViewAdapter.ViewHolder childHolder =
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        View childView = childHolder.itemView;
         childView.setTranslationY(75f);
         childView.setTranslationZ(10f);
-        PropertyModel childModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 2)
-                        .with(TabProperties.TAB_GROUP_ID, groupId)
-                        .build();
-        SimpleRecyclerViewAdapter.ViewHolder childHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
-        when(childHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        childHolder.model = childModel;
-
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(headerView);
-        when(mRecyclerView.getChildAt(1)).thenReturn(childView);
-        when(mRecyclerView.getChildViewHolder(headerView)).thenReturn(headerHolder);
-        when(mRecyclerView.getChildViewHolder(childView)).thenReturn(childHolder);
+        mockRecyclerViewChildren(headerHolder, childHolder);
 
         // Collapse dragged tab group
         mCallback.collapseDraggedItem(headerHolder);
@@ -2511,41 +2485,12 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testOnChildDraw_WhenCollapsed_DoesNotTranslateOrAddChildrenToOverlay() {
         Token groupId = new Token(10L, 20L);
 
-        View headerView = new View(ApplicationProvider.getApplicationContext());
-        headerView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
-        PropertyModel headerModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 1)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
-                        .build();
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(headerView, null));
-        when(headerHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        headerHolder.model = headerModel;
-
-        View childView = new View(ApplicationProvider.getApplicationContext());
-        childView.setLayoutParams(new RecyclerView.LayoutParams(100, 60));
-        PropertyModel childModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 2)
-                        .with(TabProperties.TAB_GROUP_ID, groupId)
-                        .build();
+                createGroupHeaderViewHolder(groupId, 100, 50);
         SimpleRecyclerViewAdapter.ViewHolder childHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
-        when(childHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        childHolder.model = childModel;
-
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(headerView);
-        when(mRecyclerView.getChildAt(1)).thenReturn(childView);
-        when(mRecyclerView.getChildViewHolder(headerView)).thenReturn(headerHolder);
-        when(mRecyclerView.getChildViewHolder(childView)).thenReturn(childHolder);
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        View childView = childHolder.itemView;
+        mockRecyclerViewChildren(headerHolder, childHolder);
 
         // Collapse dragged tab group
         mCallback.collapseDraggedItem(headerHolder);
@@ -2573,53 +2518,21 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
             testOnExternalDragItemRebound_CollapsedGroupChild_RestoresOldHolderAndCollapsesNewHolder() {
         Token groupId = new Token(10L, 20L);
 
-        View headerView = new View(ApplicationProvider.getApplicationContext());
-        headerView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
-        PropertyModel headerModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 1)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
-                        .build();
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(headerView, null));
-        when(headerHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        headerHolder.model = headerModel;
-
-        View childView = new View(ApplicationProvider.getApplicationContext());
-        childView.setLayoutParams(new RecyclerView.LayoutParams(100, 60));
-        PropertyModel childModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 2)
-                        .with(TabProperties.TAB_GROUP_ID, groupId)
-                        .build();
+                createGroupHeaderViewHolder(groupId, 100, 50);
         SimpleRecyclerViewAdapter.ViewHolder childHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
-        when(childHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        childHolder.model = childModel;
-
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(headerView);
-        when(mRecyclerView.getChildAt(1)).thenReturn(childView);
-        when(mRecyclerView.getChildViewHolder(headerView)).thenReturn(headerHolder);
-        when(mRecyclerView.getChildViewHolder(childView)).thenReturn(childHolder);
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        View childView = childHolder.itemView;
+        mockRecyclerViewChildren(headerHolder, childHolder);
 
         // Collapse the dragged tab group
         mCallback.collapseDraggedItem(headerHolder);
         assertTrue(mCallback.isDraggedItemCollapsed());
 
         // Rebound childHolder to a new ViewHolder representing the same group child tab
-        View newChildView = new View(ApplicationProvider.getApplicationContext());
-        newChildView.setLayoutParams(new RecyclerView.LayoutParams(100, 60));
         SimpleRecyclerViewAdapter.ViewHolder newChildHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(newChildView, null));
-        when(newChildHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        newChildHolder.model = childModel;
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        View newChildView = newChildHolder.itemView;
 
         mCallback.onExternalDragItemRebound(childHolder, newChildHolder);
 
@@ -2641,60 +2554,21 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
             testOnExternalDragItemRebound_CollapsedGroupChild_ReboundToUnrelatedTab_RestoresOldHolder() {
         Token groupId = new Token(10L, 20L);
 
-        View headerView = new View(ApplicationProvider.getApplicationContext());
-        headerView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
-        PropertyModel headerModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 1)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
-                        .build();
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(headerView, null));
-        when(headerHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        headerHolder.model = headerModel;
-
-        View childView = new View(ApplicationProvider.getApplicationContext());
-        childView.setLayoutParams(new RecyclerView.LayoutParams(100, 60));
-        PropertyModel childModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 2)
-                        .with(TabProperties.TAB_GROUP_ID, groupId)
-                        .build();
+                createGroupHeaderViewHolder(groupId, 100, 50);
         SimpleRecyclerViewAdapter.ViewHolder childHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
-        when(childHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        childHolder.model = childModel;
-
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(headerView);
-        when(mRecyclerView.getChildAt(1)).thenReturn(childView);
-        when(mRecyclerView.getChildViewHolder(headerView)).thenReturn(headerHolder);
-        when(mRecyclerView.getChildViewHolder(childView)).thenReturn(childHolder);
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        View childView = childHolder.itemView;
+        mockRecyclerViewChildren(headerHolder, childHolder);
 
         // Collapse the dragged tab group
         mCallback.collapseDraggedItem(headerHolder);
         assertTrue(mCallback.isDraggedItemCollapsed());
 
         // Rebound childHolder to an unrelated tab (different tab ID, no group)
-        PropertyModel unrelatedModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 99)
-                        .build();
-        View unrelatedView = new View(ApplicationProvider.getApplicationContext());
-        unrelatedView.setLayoutParams(new RecyclerView.LayoutParams(100, 70));
         SimpleRecyclerViewAdapter.ViewHolder unrelatedHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(unrelatedView, null));
-        when(unrelatedHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        unrelatedHolder.model = unrelatedModel;
+                createGroupChildViewHolder(99, null, 100, 70);
+        View unrelatedView = unrelatedHolder.itemView;
 
         mCallback.onExternalDragItemRebound(childHolder, unrelatedHolder);
 
@@ -2714,41 +2588,13 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testCollapseAndRestore_TabGroup_MultipleCycles() {
         Token groupId = new Token(10L, 20L);
 
-        View headerView = new View(ApplicationProvider.getApplicationContext());
-        headerView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
-        PropertyModel headerModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 1)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
-                        .build();
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(headerView, null));
-        when(headerHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        headerHolder.model = headerModel;
-
-        View childView = new View(ApplicationProvider.getApplicationContext());
-        childView.setLayoutParams(new RecyclerView.LayoutParams(100, 60));
-        PropertyModel childModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 2)
-                        .with(TabProperties.TAB_GROUP_ID, groupId)
-                        .build();
+                createGroupHeaderViewHolder(groupId, 100, 50);
         SimpleRecyclerViewAdapter.ViewHolder childHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
-        when(childHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        childHolder.model = childModel;
-
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(headerView);
-        when(mRecyclerView.getChildAt(1)).thenReturn(childView);
-        when(mRecyclerView.getChildViewHolder(headerView)).thenReturn(headerHolder);
-        when(mRecyclerView.getChildViewHolder(childView)).thenReturn(childHolder);
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        View headerView = headerHolder.itemView;
+        View childView = childHolder.itemView;
+        mockRecyclerViewChildren(headerHolder, childHolder);
 
         // Cycle 1: Drag Exit (Collapse) -> Drag Enter (Restore)
         mCallback.collapseDraggedItem(headerHolder);
@@ -2781,41 +2627,13 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testRestoreDraggedItem_OSNewWindowDrop_ChildDetached_RestoresAllGroupViews() {
         Token groupId = new Token(10L, 20L);
 
-        View headerView = new View(ApplicationProvider.getApplicationContext());
-        headerView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
-        PropertyModel headerModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 1)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
-                        .build();
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(headerView, null));
-        when(headerHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
-        headerHolder.model = headerModel;
-
-        View childView = new View(ApplicationProvider.getApplicationContext());
-        childView.setLayoutParams(new RecyclerView.LayoutParams(100, 60));
-        PropertyModel childModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .with(TabProperties.TAB_ID, 2)
-                        .with(TabProperties.TAB_GROUP_ID, groupId)
-                        .build();
+                createGroupHeaderViewHolder(groupId, 100, 50);
         SimpleRecyclerViewAdapter.ViewHolder childHolder =
-                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
-        when(childHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
-        childHolder.model = childModel;
-
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(headerView);
-        when(mRecyclerView.getChildAt(1)).thenReturn(childView);
-        when(mRecyclerView.getChildViewHolder(headerView)).thenReturn(headerHolder);
-        when(mRecyclerView.getChildViewHolder(childView)).thenReturn(childHolder);
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        View headerView = headerHolder.itemView;
+        View childView = childHolder.itemView;
+        mockRecyclerViewChildren(headerHolder, childHolder);
 
         // 1. Collapse the dragged tab group
         mCallback.collapseDraggedItem(headerHolder);
@@ -2915,8 +2733,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     public void testChooseDropTarget_WhenCollapsed_ReturnsNull() {
-        RecyclerView.ViewHolder selected =
-                createGroupHeaderViewHolder(1, new Token(1L, 2L), 100, 50);
+        RecyclerView.ViewHolder selected = createGroupHeaderViewHolder(new Token(1L, 2L), 100, 50);
         RecyclerView.ViewHolder target = createGroupChildViewHolder(2, null, 100, 50);
         List<RecyclerView.ViewHolder> targets = List.of(target);
 
@@ -2928,7 +2745,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     public void testChooseDropTarget_WhenHeightOrWidthZero_ReturnsNull() {
-        RecyclerView.ViewHolder selected = createGroupHeaderViewHolder(1, new Token(1L, 2L), 0, 0);
+        RecyclerView.ViewHolder selected = createGroupHeaderViewHolder(new Token(1L, 2L), 0, 0);
         RecyclerView.ViewHolder target = createGroupChildViewHolder(2, null, 100, 50);
         List<RecyclerView.ViewHolder> targets = List.of(target);
 
@@ -2957,7 +2774,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testRestoreDraggedItem_AfterRebind_RestoresLiveViewsInRecyclerView() {
         Token groupId = new Token(10L, 20L);
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                createGroupHeaderViewHolder(1, groupId, 100, 50);
+                createGroupHeaderViewHolder(groupId, 100, 50);
         SimpleRecyclerViewAdapter.ViewHolder childHolder =
                 createGroupChildViewHolder(2, groupId, 100, 60);
         mockRecyclerViewChildren(headerHolder, childHolder);
@@ -2968,7 +2785,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // 2. Simulate RecyclerView rebind creating new ViewHolders for the same group
         SimpleRecyclerViewAdapter.ViewHolder reboundHeader =
-                createGroupHeaderViewHolder(1, groupId, 0, 0);
+                createGroupHeaderViewHolder(groupId, 0, 0);
         SimpleRecyclerViewAdapter.ViewHolder reboundChild =
                 createGroupChildViewHolder(2, groupId, 0, 0);
         reboundHeader.itemView.setVisibility(View.GONE);
@@ -2996,7 +2813,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
             testCollapseDraggedItem_TabGroup_OffscreenChildrenAttachedDuringDrag_AreCollapsed() {
         Token groupId = new Token(10L, 20L);
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                createGroupHeaderViewHolder(1, groupId, 100, 50);
+                createGroupHeaderViewHolder(groupId, 100, 50);
         mockRecyclerViewChildren(headerHolder);
 
         // 1. Collapse the dragged tab group
@@ -3037,7 +2854,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testCollapseDraggedItem_TabGroup_UnrelatedTabAttachedDuringDrag_IsNotCollapsed() {
         Token groupId = new Token(10L, 20L);
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                createGroupHeaderViewHolder(1, groupId, 100, 50);
+                createGroupHeaderViewHolder(groupId, 100, 50);
         mockRecyclerViewChildren(headerHolder);
 
         mCallback.collapseDraggedItem(headerHolder);
@@ -3067,7 +2884,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         Token groupId = new Token(10L, 20L);
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
-                createGroupHeaderViewHolder(1, groupId, 100, 50);
+                createGroupHeaderViewHolder(groupId, 100, 50);
         mockRecyclerViewChildren(headerHolder);
 
         mCallback.collapseDraggedItem(headerHolder);

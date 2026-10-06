@@ -26,8 +26,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -237,17 +235,6 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
             }
         }
         return false;
-    }
-
-    /**
-     * Returns the list of all tabs in the same group as the given tab ID.
-     *
-     * @param id The ID of the representative tab.
-     * @return The list of related tabs.
-     */
-    protected List<Tab> getRelatedTabsForId(int id) {
-        TabModel tabModel = mCurrentTabModelSupplier.get();
-        return tabModel == null ? new ArrayList<>() : tabModel.getRelatedTabList(id);
     }
 
     /**
