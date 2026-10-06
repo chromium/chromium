@@ -47,7 +47,7 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
   std::u16string GetPositiveButtonText() const override;
   content::WebContents& GetWebContents() const override;
 
-  // Method for tests to inject a mock or test view.
+  // Methods for testing.
   using FactoryCallback =
       base::RepeatingCallback<std::unique_ptr<AutofillDialogView>()>;
   void SetViewFactoryForTest(FactoryCallback view_factory_for_test) {
@@ -55,6 +55,9 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
   }
   bool HasDialogViewForTest() const { return autofill_dialog_view_ != nullptr; }
   void DismissForTest() { Dismiss(); }
+  bool IsDismissTimerRunningForTest() const {
+    return dismiss_timer_.IsRunning();
+  }
 
  private:
   raw_ref<content::WebContents> web_contents_;

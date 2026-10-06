@@ -88,6 +88,7 @@ void AutofillDialogControllerImpl::OnNegativeButtonClicked() {
 }
 
 void AutofillDialogControllerImpl::OnDismissed() {
+  dismiss_timer_.Stop();
   if (dialog_result_callback_) {
     std::move(dialog_result_callback_).Run(Result::kUnknown);
   }
