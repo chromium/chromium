@@ -218,7 +218,7 @@ void BrowserProcessPlatformPart::InitializeDeviceDisablingManager() {
           g_browser_process->local_state(), browser_policy_connector_ash(),
           device_restriction_schedule_controller_.get(),
           device_disabling_manager_delegate_.get(), ash::CrosSettings::Get(),
-          user_manager::UserManager::Get());
+          session_manager::SessionManager::Get());
   device_disabling_manager_->Init();
 }
 

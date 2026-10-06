@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -25,13 +24,17 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,6 +47,7 @@ namespace system {
 namespace {
 
 const char kTestUser[] = "user@example.com";
+const char kTestGaiaId[] = "1234567890";
 const char kEnrollmentDomain[] = "example.com";
 const char kDeviceId[] = "fake-id";
 const char kDisabledMessage1[] = "Device disabled 1.";
@@ -85,7 +89,8 @@ class DeviceDisablingManagerTestBase : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  FakeChromeUserManager fake_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<DeviceDisablingManager> device_disabling_manager_;
   FakeStatisticsProvider statistics_provider_;
 };
@@ -95,6 +100,12 @@ DeviceDisablingManagerTestBase::DeviceDisablingManagerTestBase() {
 }
 
 void DeviceDisablingManagerTestBase::SetUp() {
+  user_session_test_environment_ =
+      std::make_unique<ash::test::UserSessionTestEnvironment>(
+          TestingBrowserProcess::GetGlobal()->local_state());
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(
+      AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestGaiaId))));
+
   // DeviceRestrictionScheduleController depends on LoginState.
   LoginState::Initialize();
   // DeviceDisablingManager depends on DeviceRestrictionScheduleController.
@@ -110,6 +121,7 @@ void DeviceDisablingManagerTestBase::TearDown() {
       ->platform_part()
       ->ShutdownDeviceRestrictionScheduleController();
   LoginState::Shutdown();
+  user_session_test_environment_.reset();
 }
 
 void DeviceDisablingManagerTestBase::CreateDeviceDisablingManager() {
@@ -121,7 +133,7 @@ void DeviceDisablingManagerTestBase::CreateDeviceDisablingManager() {
       TestingBrowserProcess::GetGlobal()
           ->platform_part()
           ->device_restriction_schedule_controller(),
-      this, CrosSettings::Get(), &fake_user_manager_);
+      this, CrosSettings::Get(), session_manager::SessionManager::Get());
   device_disabling_manager_->Init();
 }
 
@@ -130,7 +142,8 @@ void DeviceDisablingManagerTestBase::DestroyDeviceDisablingManager() {
 }
 
 void DeviceDisablingManagerTestBase::LogIn() {
-  fake_user_manager_.AddUser(AccountId::FromUserEmail(kTestUser));
+  user_session_test_environment_->LogIn(
+      AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestGaiaId)));
 }
 
 void DeviceDisablingManagerTestBase::SetUnowned() {

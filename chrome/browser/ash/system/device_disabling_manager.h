@@ -22,8 +22,8 @@ namespace policy {
 class BrowserPolicyConnectorAsh;
 }
 
-namespace user_manager {
-class UserManager;
+namespace session_manager {
+class SessionManager;
 }
 
 namespace ash {
@@ -89,6 +89,7 @@ class DeviceDisablingManager
   // - `local_state`
   // - `browser_policy_connector_ash`
   // - `device_restriction_schedule_controller`
+  // - `session_manager`
   // `delegate` must outlive `this`.
   DeviceDisablingManager(
       const PrefService* local_state,
@@ -97,7 +98,7 @@ class DeviceDisablingManager
           device_restriction_schedule_controller,
       Delegate* delegate,
       CrosSettings* cros_settings,
-      user_manager::UserManager* user_manager);
+      session_manager::SessionManager* session_manager);
 
   DeviceDisablingManager(const DeviceDisablingManager&) = delete;
   DeviceDisablingManager& operator=(const DeviceDisablingManager&) = delete;
@@ -162,7 +163,7 @@ class DeviceDisablingManager
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<CrosSettings> cros_settings_;
-  raw_ptr<user_manager::UserManager> user_manager_;
+  const raw_ref<session_manager::SessionManager> session_manager_;
 
   base::ObserverList<Observer> observers_;
 

@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 namespace system {
@@ -39,14 +39,14 @@ DeviceDisablingManager::DeviceDisablingManager(
         device_restriction_schedule_controller,
     Delegate* delegate,
     CrosSettings* cros_settings,
-    user_manager::UserManager* user_manager)
+    session_manager::SessionManager* session_manager)
     : local_state_(CHECK_DEREF(local_state)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       device_restriction_schedule_controller_(
           CHECK_DEREF(device_restriction_schedule_controller)),
       delegate_(delegate),
       cros_settings_(cros_settings),
-      user_manager_(user_manager),
+      session_manager_(CHECK_DEREF(session_manager)),
       device_disabled_(false) {
   CHECK(delegate_);
 }
@@ -241,7 +241,7 @@ void DeviceDisablingManager::Update() {
 
   const ExistingUserController* existing_user_controller =
       ExistingUserController::current_controller();
-  if (user_manager_->GetActiveUser() ||
+  if (session_manager_->GetActiveSession() ||
       (existing_user_controller &&
        existing_user_controller->IsSigninInProgress())) {
     // If a session or a login is in progress, restart Chrome and return to the
