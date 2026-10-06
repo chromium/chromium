@@ -132,6 +132,12 @@ class PageContentExtractionService : public KeyedService,
     // triggered for every page once the page has sufficiently loaded. The
     // `page_content` holds either the APC for a non-PDF page; or the PDF text
     // for a PDF page.
+    //
+    // For non-PDF pages, the extracted content and its server upload
+    // eligibility are cached before this method is called, so synchronous
+    // calls to `GetExtractedPageContentAndEligibilityForPage(page)` and
+    // `GetServerUploadEligibilityForPage(page)` from within this method will
+    // return the newly extracted result.
     virtual void OnPageContentExtracted(content::Page& page,
                                         PageContent page_content) {}
 

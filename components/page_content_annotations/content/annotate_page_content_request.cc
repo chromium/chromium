@@ -674,23 +674,22 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
     return;
   }
 
-  // Notify page content extraction service with `page_content`, which holds
-  // either the APC for a non-PDF page; or the PDF text for a PDF page.
-  page_content_extraction_service_->OnPageContentExtracted(
-      web_contents()->GetPrimaryPage(), page_content.value(), screenshot_data,
-      get_tab_id_callback_.Run(web_contents()));
-
   if (IsPDFTextPtr(page_content.value())) {
     // Note: Unlike APC result, PDF text result is not stored to the
     // `cached_content_` below, which is used for supporting on-demand APC
     // fetching.
     // TODO(b/487632737): Investigate the support for on-demand PDF text
     // extraction, which may require storing the result to `cached_content_`.
+    page_content_extraction_service_->OnPageContentExtracted(
+        web_contents()->GetPrimaryPage(), page_content.value(), screenshot_data,
+        get_tab_id_callback_.Run(web_contents()));
     ResolveAllCallbacksWith(/*result=*/std::nullopt);
     return;
   }
 
-  // Move APC into the cache.
+  // Move APC into the cache before notifying `page_content_extraction_service_`
+  // so that observers querying cached content or server upload eligibility
+  // during `OnPageContentExtracted()` see the newly extracted result.
   cached_content_ =
       ExtractedPageContentResult(GetAnnotatedPageContentPtrFromPageContent(
                                      std::move(page_content.value())),
@@ -699,6 +698,11 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
 
   CHECK(cached_content_);
   CHECK(cached_content_->page_content);
+
+  page_content_extraction_service_->OnPageContentExtracted(
+      web_contents()->GetPrimaryPage(), cached_content_->page_content,
+      cached_content_->screenshot_data,
+      get_tab_id_callback_.Run(web_contents()));
 
   RecordAnnotatedPageContentMetrics(cached_content_->page_content->data);
 

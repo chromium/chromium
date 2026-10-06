@@ -36,6 +36,7 @@
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -75,6 +76,8 @@ class TestPageContentExtractionService : public PageContentExtractionService {
                               PageContent page_content,
                               const std::vector<uint8_t>& screenshot_data,
                               std::optional<int> tab_id) override {
+    PageContentExtractionService::OnPageContentExtracted(
+        page, page_content, screenshot_data, tab_id);
     extraction_count_++;
     if (RefCountedPDFTextPtr pdf_text_ptr =
             GetPDFTextPtrFromPageContent(page_content)) {
@@ -155,6 +158,46 @@ class ResetObserver : public PageContentExtractionService::Observer {
   raw_ptr<content::WebContents> web_contents_;
   int num_resets_ = 0;
   int num_is_same_document_resets_ = 0;
+  base::ScopedObservation<PageContentExtractionService,
+                          PageContentExtractionService::Observer>
+      observation_{this};
+};
+
+// Records the extracted content and cached content/eligibility observed during
+// `OnPageContentExtracted()`.
+class CacheCheckExtractionObserver
+    : public PageContentExtractionService::Observer {
+ public:
+  struct CallRecord {
+    RefCountedAnnotatedPageContentPtr extracted_apc;
+    RefCountedPDFTextPtr extracted_pdf;
+    std::optional<ExtractedPageContentResult> cached_apc;
+    std::optional<bool> cached_upload_eligibility;
+  };
+
+  explicit CacheCheckExtractionObserver(PageContentExtractionService& service)
+      : service_(&service) {
+    observation_.Observe(&service);
+  }
+
+  void OnPageContentExtracted(content::Page& page,
+                              PageContent page_content) override {
+    CallRecord record;
+    record.extracted_apc =
+        GetAnnotatedPageContentPtrFromPageContent(page_content);
+    record.extracted_pdf = GetPDFTextPtrFromPageContent(page_content);
+    record.cached_apc =
+        service_->GetExtractedPageContentAndEligibilityForPage(page);
+    record.cached_upload_eligibility =
+        service_->GetServerUploadEligibilityForPage(page);
+    calls_.push_back(std::move(record));
+  }
+
+  const std::vector<CallRecord>& calls() const { return calls_; }
+
+ private:
+  raw_ptr<PageContentExtractionService> service_;
+  std::vector<CallRecord> calls_;
   base::ScopedObservation<PageContentExtractionService,
                           PageContentExtractionService::Observer>
       observation_{this};
@@ -594,6 +637,69 @@ TEST_P(AnnotatePageContentRequestTest, ResetObserver_Subframe) {
 
   EXPECT_EQ(observer.num_resets(), 0);
   EXPECT_EQ(observer.num_is_same_document_resets(), 0);
+}
+
+// Verifies that during `OnPageContentExtracted()` the cache is already
+// populated with the newly extracted content and eligibility, for both
+// initial extraction and subsequent refresh.
+TEST_P(AnnotatePageContentRequestTest,
+       ExtractionObserver_CachePopulatedBeforeNotification) {
+  SetTriggeringMode("on_load");
+
+  CacheCheckExtractionObserver observer(extraction_service());
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  ASSERT_EQ(observer.calls().size(), 1u);
+  {
+    const auto& call1 = observer.calls()[0];
+    ASSERT_NE(call1.extracted_apc, nullptr);
+    ASSERT_TRUE(call1.cached_apc.has_value());
+    EXPECT_EQ(call1.cached_apc->page_content, call1.extracted_apc);
+    EXPECT_EQ(call1.cached_upload_eligibility,
+              call1.cached_apc->is_eligible_for_server_upload);
+  }
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      refresh_future;
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
+      refresh_future.GetCallback());
+  EXPECT_TRUE(refresh_future.Get().has_value());
+
+  ASSERT_EQ(observer.calls().size(), 2u);
+  {
+    const auto& call2 = observer.calls()[1];
+    ASSERT_NE(call2.extracted_apc, nullptr);
+    ASSERT_TRUE(call2.cached_apc.has_value());
+    EXPECT_EQ(call2.cached_apc->page_content, call2.extracted_apc);
+    EXPECT_NE(call2.cached_apc->page_content,
+              observer.calls()[0].extracted_apc);
+    EXPECT_EQ(call2.cached_upload_eligibility,
+              call2.cached_apc->is_eligible_for_server_upload);
+  }
+}
+
+// For PDF extractions, PDF text is not cached during
+// `OnPageContentExtracted()`.
+TEST_P(AnnotatePageContentRequestTest,
+       ExtractionObserver_PDFNotCachedDuringNotification) {
+  if (!IsPDFTextExtractionEnabled() || !PlatformSupportsPDF()) {
+    GTEST_SKIP() << "PDF text extraction is disabled or unsupported.";
+  }
+
+  SetTriggeringMode("on_load");
+
+  CacheCheckExtractionObserver observer(extraction_service());
+
+  SimulatePDFLoad(GURL("https://example.com/file.pdf"));
+  WaitForExtraction();
+
+  ASSERT_EQ(observer.calls().size(), 1u);
+  const auto& call = observer.calls()[0];
+  EXPECT_NE(call.extracted_pdf, nullptr);
+  EXPECT_EQ(call.cached_apc, std::nullopt);
+  EXPECT_EQ(call.cached_upload_eligibility, std::nullopt);
 }
 
 TEST_P(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_FeatureDisabled) {
