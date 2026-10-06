@@ -175,6 +175,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     suggestionGroupsMap: {},
     matches: Array(5).fill(null).map(() => createGhostMatch()),
     smartComposeInlineHint: null,
+    showAimActivityLink: false,
     sequenceId: 0,
   };
   /* If suggestions are loading. Set this any time that should hide suggestions

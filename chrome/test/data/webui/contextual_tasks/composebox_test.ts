@@ -1871,9 +1871,10 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
               queryId: parts.innerComposebox.activeQueryId,
               input: '',
               matches: [
-                createAutocompleteMatch({isNoncannedAimSuggestion: true}),
+                createAutocompleteMatch(),
                 createAutocompleteMatch(),
               ],
+              showAimActivityLink: true,
             }));
         await searchboxCallbackRouterRemote.$.flushForTesting();
         await innerComposebox.updateComplete;
@@ -1895,9 +1896,10 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
           queryId: parts.innerComposebox.activeQueryId,
           input: '',
           matches: [
-            createAutocompleteMatch({isNoncannedAimSuggestion: true}),
+            createAutocompleteMatch(),
             createAutocompleteMatch(),
           ],
+          showAimActivityLink: true,
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await innerComposebox.updateComplete;

@@ -1494,15 +1494,12 @@ suite('OmniboxComposeboxTest', () => {
 
   test('suggestion activity link triggers navigation', async () => {
     // Mock results to show the link.
-    const matches = [
-      createSearchMatchForTesting({
-        isNoncannedAimSuggestion: true,
-      }),
-    ];
+    const matches = [createSearchMatchForTesting()];
     testProxy.page.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           queryId: omniboxComposebox.activeQueryId,
           matches: matches,
+          showAimActivityLink: true,
         }));
     await testProxy.page.$.flushForTesting();
     await microtasksFinished();
@@ -1541,15 +1538,12 @@ suite('OmniboxComposeboxTest', () => {
   test(
       'suggestion activity link hidden when suggestions are non canned',
       async () => {
-        const matches = [
-          createSearchMatchForTesting({
-            isNoncannedAimSuggestion: false,
-          }),
-        ];
+        const matches = [createSearchMatchForTesting()];
         testProxy.page.autocompleteResultChanged(
             createAutocompleteResultForTesting({
               queryId: omniboxComposebox.activeQueryId,
               matches: matches,
+              showAimActivityLink: false,
             }));
         await testProxy.page.$.flushForTesting();
         await microtasksFinished();

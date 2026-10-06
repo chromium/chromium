@@ -2438,6 +2438,53 @@ TEST_F(WebuiOmniboxHandlerTest, SwapContentsAndDescriptionResolvedInHandler) {
             unswapped->description_class[0]->style);
 }
 
+// Verifies that `show_aim_activity_link` is set on the result only when a
+// match belongs to the MIA recommendations group.
+TEST_F(WebuiOmniboxHandlerTest, ShowAimActivityLink) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::kSearch);
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  auto* controller_ptr = fake_autocomplete_controller.get();
+
+  handler_->autocomplete_controller_observation_.Reset();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  for (const bool has_mia_match : {false, true}) {
+    SCOPED_TRACE(has_mia_match);
+    page_.FlushForTesting();
+    testing::Mock::VerifyAndClearExpectations(&page_);
+
+    AutocompleteMatch match1(provider.get(), 1000, false,
+                             omnibox::AutocompleteMatchType::kSearchSuggest);
+    match1.contents = u"query 1";
+    AutocompleteMatch match2(provider.get(), 900, false,
+                             omnibox::AutocompleteMatchType::kSearchSuggest);
+    match2.contents = u"query 2";
+    if (has_mia_match) {
+      match2.suggestion_group_id = omnibox::GROUP_MIA_RECOMMENDATIONS;
+    }
+
+    controller_ptr->published_result_.Reset();
+    controller_ptr->published_result_.AppendMatches({match1, match2});
+
+    searchbox::mojom::AutocompleteResultPtr received_result;
+    EXPECT_CALL(page_, AutocompleteResultChanged)
+        .WillOnce(
+            [&received_result](searchbox::mojom::AutocompleteResultPtr result) {
+              received_result = std::move(result);
+            });
+
+    handler_->OnResultChanged(handler_->autocomplete_controller(), false);
+    page_.FlushForTesting();
+
+    ASSERT_TRUE(received_result);
+    EXPECT_EQ(has_mia_match, received_result->show_aim_activity_link);
+  }
+}
 
 class WebuiOmniboxHandlerTabScopingTest : public WebuiOmniboxHandlerTest {
  protected:

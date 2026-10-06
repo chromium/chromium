@@ -147,15 +147,12 @@ suite('NewTabPageComposeboxTest', () => {
         createComposeboxElement(testProxy);
         await microtasksFinished();
 
-        const matches = [
-          createSearchMatchForTesting({
-            isNoncannedAimSuggestion: true,
-          }),
-        ];
+        const matches = [createSearchMatchForTesting()];
         testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
             createAutocompleteResultForTesting({
               queryId: testProxy.element.activeQueryId,
               matches,
+              showAimActivityLink: true,
             }));
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
@@ -196,15 +193,12 @@ suite('NewTabPageComposeboxTest', () => {
         createComposeboxElement(testProxy);
         await microtasksFinished();
 
-        const matches = [
-          createSearchMatchForTesting({
-            isNoncannedAimSuggestion: false,
-          }),
-        ];
+        const matches = [createSearchMatchForTesting()];
         testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
             createAutocompleteResultForTesting({
               queryId: testProxy.element.activeQueryId,
               matches,
+              showAimActivityLink: false,
             }));
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
