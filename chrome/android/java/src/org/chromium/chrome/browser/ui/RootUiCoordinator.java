@@ -864,7 +864,8 @@ public class RootUiCoordinator
                         mLayoutManagerSupplier,
                         mActivityTabProvider,
                         new Handler(),
-                        mExclusiveAccessManager);
+                        mExclusiveAccessManager,
+                        this::getSidePanelContentView);
 
         mExpandedBottomSheetHelper =
                 new ExpandedSheetHelperImpl(
@@ -2925,9 +2926,19 @@ public class RootUiCoordinator
         return null;
     }
 
-    /** Saves the relevant UI state when the activity is recreated on a device fold transition. */
+    /**
+     * Saves the relevant UI state when the activity is recreated (e.g. due to device fold or dark
+     * mode).
+     *
+     * @see ActivityRecreationController#prepareUiState().
+     */
     public void prepareUiState() {
         mActivityRecreationController.prepareUiState();
+    }
+
+    /** Returns the content {@link View} currently shown in the side panel, if any. */
+    protected @Nullable View getSidePanelContentView() {
+        return null;
     }
 
     /**

@@ -19,6 +19,7 @@ final class ActivityRecreationUiState implements Parcelable {
     boolean mIsTabSwitcherShown;
     boolean mIsPointerLocked;
     boolean mIsKeyboardLocked;
+    boolean mIsSidePanelFocused;
 
     public static final Parcelable.Creator<ActivityRecreationUiState> CREATOR =
             new Parcelable.Creator<>() {
@@ -34,47 +35,16 @@ final class ActivityRecreationUiState implements Parcelable {
             };
 
     /** Constructor of ActivityRecreationUiState using default values. */
-    ActivityRecreationUiState() {
-        this(
-                /* isUrlBarFocused= */ false,
-                /* urlBarEditText= */ "",
-                /* isKeyboardShown= */ false,
-                /* isTabSwitcherShown= */ false,
-                /* isPointerLocked= */ false,
-                /* isKeyboardLocked= */ false);
-    }
-
-    /**
-     * Constructor of ActivityRecreationUiState.
-     *
-     * @param isUrlBarFocused whether url bar is focused.
-     * @param urlBarEditText the edit text in url bar.
-     * @param isKeyboardShown whether soft keyboard is shown.
-     * @param isTabSwitcherShown whether tab switcher is shown.
-     */
-    ActivityRecreationUiState(
-            boolean isUrlBarFocused,
-            @Nullable String urlBarEditText,
-            boolean isKeyboardShown,
-            boolean isTabSwitcherShown,
-            boolean isPointerLocked,
-            boolean isKeyboardLocked) {
-        mIsUrlBarFocused = isUrlBarFocused;
-        mUrlBarEditText = urlBarEditText;
-        mIsKeyboardShown = isKeyboardShown;
-        mIsTabSwitcherShown = isTabSwitcherShown;
-        mIsPointerLocked = isPointerLocked;
-        mIsKeyboardLocked = isKeyboardLocked;
-    }
+    ActivityRecreationUiState() {}
 
     private ActivityRecreationUiState(Parcel in) {
-        this(
-                /* isUrlBarFocused= */ in.readInt() == 1,
-                /* urlBarEditText= */ in.readString(),
-                /* isKeyboardShown= */ in.readInt() == 1,
-                /* isTabSwitcherShown= */ in.readInt() == 1,
-                /* isPointerLocked= */ in.readInt() == 1,
-                /* isKeyboardLocked= */ in.readInt() == 1);
+        mIsUrlBarFocused = in.readInt() == 1;
+        mUrlBarEditText = in.readString();
+        mIsKeyboardShown = in.readInt() == 1;
+        mIsTabSwitcherShown = in.readInt() == 1;
+        mIsPointerLocked = in.readInt() == 1;
+        mIsKeyboardLocked = in.readInt() == 1;
+        mIsSidePanelFocused = in.readInt() == 1;
     }
 
     /** Implements {@link Parcelable} */
@@ -92,6 +62,7 @@ final class ActivityRecreationUiState implements Parcelable {
         out.writeInt(mIsTabSwitcherShown ? 1 : 0);
         out.writeInt(mIsPointerLocked ? 1 : 0);
         out.writeInt(mIsKeyboardLocked ? 1 : 0);
+        out.writeInt(mIsSidePanelFocused ? 1 : 0);
     }
 
     boolean shouldRetainState() {
@@ -99,6 +70,7 @@ final class ActivityRecreationUiState implements Parcelable {
                 || mIsKeyboardShown
                 || mIsTabSwitcherShown
                 || mIsPointerLocked
-                || mIsKeyboardLocked;
+                || mIsKeyboardLocked
+                || mIsSidePanelFocused;
     }
 }

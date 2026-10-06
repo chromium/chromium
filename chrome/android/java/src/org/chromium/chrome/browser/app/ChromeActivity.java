@@ -3556,11 +3556,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     // NightModeStateProvider.Observer implementation.
     @Override
     public void onNightModeStateChanged() {
-        // Note: order matters here because the call to super will recreate the activity.
-        // Note: it's possible for this method to be called before mNightModeReparentingController
+        // Note: it's possible for this method to be called before TabReparentingController
         // is constructed.
         if (mTabReparentingControllerSupplier.get() != null) {
-            mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
+            doRecreateActivity();
+            return;
         }
         super.onNightModeStateChanged();
     }
@@ -3602,11 +3602,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     getResources().getConfiguration().densityDpi);
         }
         if (mTabReparentingControllerSupplier.get() != null && !mIsTabReparentingPrepared) {
+            // Must happen before tabs are detached, since detaching destroys tab-scoped views
+            // (e.g. the side panel's ThinWebView), losing their focus.
+            mRootUiCoordinator.prepareUiState();
             mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
             mIsTabReparentingPrepared = true;
             if (!isFinishing()) {
                 mIsRecreatingForTabletModeChange = tabletMode.changed;
-                mRootUiCoordinator.prepareUiState();
                 // Store the OnPause timestamp before recreation to capture unfold latency metric
                 // only if the activity is currently not in stopped state, to not capture the time
                 // when system was suspended. Hence, unfolding instances where Chrome wasn't in

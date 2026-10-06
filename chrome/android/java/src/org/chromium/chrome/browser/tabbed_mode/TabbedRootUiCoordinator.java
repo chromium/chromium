@@ -2825,6 +2825,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    @Override
+    protected @Nullable View getSidePanelContentView() {
+        return mSidePanelContainerCoordinator != null
+                ? mSidePanelContainerCoordinator.getContentView()
+                : null;
+    }
+
     public @Nullable SidePanelContainerCoordinator getSidePanelContainerCoordinatorForTesting() {
         return mSidePanelContainerCoordinator;
     }

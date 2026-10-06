@@ -414,7 +414,6 @@ public class TabSwitcherLayoutTest {
                         InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class);
         assertTrue(ColorUtils.inNightMode(ctaNightMode));
         CriteriaHelper.pollUiThread(ctaNightMode.getTabModelSelector()::isTabStateInitialized);
-        enterTabSwitcher(ctaNightMode);
         verifyTabSwitcherCardCount(ctaNightMode, 2);
     }
 
