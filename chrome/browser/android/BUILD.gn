@@ -404,6 +404,8 @@ if (is_android) {
       "compositor/scene_layer/contextual_search_scene_layer.h",
       "compositor/scene_layer/edge_to_edge_bottom_chin_scene_layer.cc",
       "compositor/scene_layer/edge_to_edge_bottom_chin_scene_layer.h",
+      "compositor/scene_layer/edge_to_edge_top_scalp_scene_layer.cc",
+      "compositor/scene_layer/edge_to_edge_top_scalp_scene_layer.h",
       "compositor/scene_layer/overscroll_scene_layer.cc",
       "compositor/scene_layer/overscroll_scene_layer.h",
       "compositor/scene_layer/readaloud_mini_player_scene_layer.cc",

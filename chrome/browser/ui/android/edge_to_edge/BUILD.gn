@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeController.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerCreator.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrialImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeTopScalpSceneLayer.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NavigationBarColorProvider.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NoOpTopInsetProvider.java",
@@ -44,7 +45,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinSceneLayer.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeTopScalpSceneLayer.java",
+  ]
 }
 
 android_library_factory("factory_java") {

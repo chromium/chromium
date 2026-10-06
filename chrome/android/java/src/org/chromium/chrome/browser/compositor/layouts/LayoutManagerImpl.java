@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinSceneLayer;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpSceneLayer;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -363,6 +364,7 @@ public class LayoutManagerImpl
                     ScrollingBottomViewSceneLayer.class,
                     ContextualSearchPanel.class,
                     EdgeToEdgeBottomChinSceneLayer.class,
+                    EdgeToEdgeTopScalpSceneLayer.class,
                     StatusIndicatorCoordinator.getSceneOverlayClass()
                 };
 
