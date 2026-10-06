@@ -20,10 +20,16 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.ImageView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -35,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -61,14 +66,10 @@ import java.util.ArrayList;
 
 /** Tests for {@link MostVisitedTilesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MostVisitedMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock UiConfig mUiConfig;
-    @Mock ViewGroup mMvTilesContainerLayout;
-    @Mock MostVisitedTilesLayout mMvTilesLayout;
     @Mock Tile mTile;
-    @Mock SuggestionsTileView mTileView;
     @Mock SiteSuggestion mData;
     @Mock TileRenderer mTileRenderer;
     @Mock UserEducationHelper mUserEducationHelper;
@@ -90,6 +91,9 @@ public class MostVisitedMediatorUnitTest {
     private FakeMostVisitedSites mMostVisitedSites;
     private PropertyModel mModel;
     private MostVisitedTilesMediator mMediator;
+    private ViewGroup mMvTilesContainerLayout;
+    private MostVisitedTilesLayout mMvTilesLayout;
+    private SuggestionsTileView mTileView;
 
     private int mTileViewPaddingEdgePortrait;
     private int mTileViewPaddingLandscape;
@@ -114,8 +118,9 @@ public class MostVisitedMediatorUnitTest {
                         new DisplayStyle(
                                 HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR));
 
-        when(mTileView.getData()).thenReturn(mData);
         when(mTile.getData()).thenReturn(mData);
+        when(mTile.getTitle()).thenReturn("Title");
+        when(mTile.getUrl()).thenReturn(JUnitTestGURLs.HTTP_URL);
 
         mMostVisitedSites = new FakeMostVisitedSites();
         doAnswer(
@@ -174,18 +179,25 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testOnTileIconChanged() {
         createMediator();
+        Drawable icon = new ColorDrawable(Color.RED);
+        when(mTile.getIcon()).thenReturn(icon);
         mMediator.onTileIconChanged(mTile);
 
-        verify(mTileView).renderIcon(mTile);
+        ImageView iconView = mTileView.findViewById(R.id.tile_view_icon);
+        Assert.assertEquals(icon, iconView.getDrawable());
         verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
     @Test
     public void testOnTileOfflineBadgeVisibilityChanged() {
         createMediator();
+        View offlineBadge = mTileView.findViewById(R.id.offline_badge);
+        Assert.assertEquals(View.GONE, offlineBadge.getVisibility());
+
+        when(mTile.isOfflineAvailable()).thenReturn(true);
         mMediator.onTileOfflineBadgeVisibilityChanged(mTile);
 
-        verify(mTileView).renderOfflineBadge(mTile);
+        Assert.assertEquals(View.VISIBLE, offlineBadge.getVisibility());
         verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
@@ -254,10 +266,12 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testDestroy() {
         createMediator();
+        Assert.assertEquals(1, mMvTilesLayout.getTileCount());
 
         mMediator.destroy();
 
-        verify(mMvTilesLayout).destroy();
+        Assert.assertEquals(0, mMvTilesLayout.getTileCount());
+        Assert.assertEquals(0, mMvTilesLayout.getChildCount());
     }
 
     @Test
@@ -380,22 +394,26 @@ public class MostVisitedMediatorUnitTest {
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
+        mMvTilesContainerLayout.setLayoutParams(marginLayoutParams);
         int lateralMargin = mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
         int mvtWidth = totalWidth - (lateralMargin * 2);
-        when(mMvTilesLayout.contentFitsOnLff(mvtWidth)).thenReturn(true);
+        Assert.assertTrue(mMvTilesLayout.contentFitsOnLff(mvtWidth));
 
         mMediator.updateMvtWidth(totalWidth, mvtWidth);
         verifyLayoutParams(marginLayoutParams, LayoutParams.WRAP_CONTENT, lateralMargin);
 
-        // Test case of narrow window on LFF devices.
+        // Test case of narrow window on LFF devices, where the content doesn't fit.
         int lateralMarginNarrowWindowTablet =
                 mResources.getDimensionPixelSize(
                         R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
-        int mvtWidthNarrow = totalWidth - (lateralMarginNarrowWindowTablet * 2);
-        when(mMvTilesLayout.contentFitsOnLff(mvtWidthNarrow)).thenReturn(false);
+        int mvtWidthNarrow =
+                2 * mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet)
+                        + mMvTilesLayout.getTabletContentWidth()
+                        - 1;
+        int totalWidthNarrow = mvtWidthNarrow + (lateralMarginNarrowWindowTablet * 2);
+        Assert.assertFalse(mMvTilesLayout.contentFitsOnLff(mvtWidthNarrow));
 
-        mMediator.updateMvtWidth(totalWidth, mvtWidthNarrow);
+        mMediator.updateMvtWidth(totalWidthNarrow, mvtWidthNarrow);
         verifyLayoutParams(marginLayoutParams, mvtWidthNarrow, lateralMarginNarrowWindowTablet);
     }
 
@@ -406,7 +424,7 @@ public class MostVisitedMediatorUnitTest {
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
+        mMvTilesContainerLayout.setLayoutParams(marginLayoutParams);
 
         int lateralMargin = mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
         mMediator.updateMvtWidth(totalWidth, totalWidth - (lateralMargin * 2));
@@ -418,14 +436,18 @@ public class MostVisitedMediatorUnitTest {
     }
 
     private void createMediator(boolean isLff) {
-        mMvTilesLayout = Mockito.mock(MostVisitedTilesLayout.class);
-        when(mMvTilesContainerLayout.findViewById(R.id.mv_tiles_layout)).thenReturn(mMvTilesLayout);
-
-        when(mMvTilesLayout.getResources()).thenReturn(mResources);
-        when(mMvTilesLayout.getChildCount()).thenReturn(1);
-        when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
-        when(mMvTilesLayout.getTileCount()).thenReturn(1);
-        when(mMvTilesLayout.getTileAt(0)).thenReturn(mTileView);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mMvTilesContainerLayout =
+                (ViewGroup) inflater.inflate(R.layout.mv_tiles_layout, /* root= */ null);
+        mMvTilesLayout = mMvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
+        mTileView =
+                (SuggestionsTileView)
+                        inflater.inflate(
+                                R.layout.suggestions_tile_view,
+                                mMvTilesLayout,
+                                /* attachToRoot= */ false);
+        mTileView.initialize(mTile, /* titleLines= */ 1);
+        mMvTilesLayout.addTile(mTileView);
 
         mMediator =
                 new MostVisitedTilesMediator(

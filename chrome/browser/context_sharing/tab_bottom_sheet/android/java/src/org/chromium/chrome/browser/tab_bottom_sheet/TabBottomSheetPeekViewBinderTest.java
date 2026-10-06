@@ -5,25 +5,22 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.view.LayoutInflater;
-import android.view.View.OnClickListener;
+import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import androidx.test.core.app.ActivityScenario;
+import com.google.android.material.button.MaterialButton;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -32,224 +29,180 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabBottomSheetPeekViewBinderTest {
     private static final String TEST_STRING = "TEST_STRING";
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private TabBottomSheetPeekView mView;
-
+    private Activity mActivity;
+    private TabBottomSheetPeekView mView;
     private PropertyModel mModel;
-    private PropertyModelChangeProcessor mChangeProcessor;
-
-    private OnClickListener mActionButtonClickListener;
-    private OnClickListener mCloseClickListener;
-    private OnClickListener mPeekViewClickListener;
+    private MaterialButton mActionButton;
 
     private boolean mClicked;
 
     @Before
     public void setUp() {
-        mModel = new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS).build();
-        mChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_MaterialComponents);
+        mView =
+                (TabBottomSheetPeekView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.tab_bottom_sheet_peek_layout, null);
+        mActionButton = mView.findViewById(R.id.peek_action_button);
+        bindModel(new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS).build());
+    }
 
-        doAnswer(
-                        invocation -> {
-                            mActionButtonClickListener = invocation.getArgument(0);
-                            return null;
-                        })
-                .when(mView)
-                .setActionButtonClickListener(any());
-
-        doAnswer(
-                        invocation -> {
-                            mCloseClickListener = invocation.getArgument(0);
-                            return null;
-                        })
-                .when(mView)
-                .setCloseClickListener(any());
-
-        doAnswer(
-                        invocation -> {
-                            mPeekViewClickListener = invocation.getArgument(0);
-                            return null;
-                        })
-                .when(mView)
-                .setPeekViewClickListener(any());
+    private void bindModel(PropertyModel model) {
+        mModel = model;
+        PropertyModelChangeProcessor.create(mModel, mView, TabBottomSheetPeekViewBinder::bind);
     }
 
     @Test
     public void testPeekIcon() {
-        int iconRes = 123;
+        int iconRes = android.R.drawable.ic_delete;
         mModel.set(TabBottomSheetPeekProperties.PEEK_ICON_ID, iconRes);
-        verify(mView).setPeekIcon(iconRes);
+        ImageView peekIcon = mView.findViewById(R.id.peek_icon);
+        assertEquals(iconRes, Shadows.shadowOf(peekIcon.getDrawable()).getCreatedFromResId());
     }
 
     @Test
     public void testTitleText() {
         mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, TEST_STRING);
-        verify(mView).setTitle(TEST_STRING);
+        TextView title = mView.findViewById(R.id.peek_title);
+        assertEquals(TEST_STRING, title.getText().toString());
     }
 
     @Test
     public void testTitleTextAppearance() {
-        int styleRes = 456;
+        int styleRes = android.R.style.TextAppearance_Large;
+        TextView expected = new TextView(mActivity);
+        expected.setTextAppearance(styleRes);
+
         mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID, styleRes);
-        verify(mView).setTitleTextAppearance(styleRes);
+        TextView title = mView.findViewById(R.id.peek_title);
+        assertEquals(expected.getTextSize(), title.getTextSize(), 0f);
     }
 
     @Test
     public void testDescriptionText() {
-        int descRes = 123;
+        int descRes = android.R.string.ok;
         mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID, descRes);
-        verify(mView).setDescriptionText(descRes);
+        assertEquals(mActivity.getString(descRes), mView.getStepDescriptionForTesting());
     }
 
     @Test
     public void testDescriptionVisibility() {
-        int visibility = 8;
-        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY, visibility);
-        verify(mView).setDescriptionVisibility(visibility);
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY, View.GONE);
+        assertEquals(View.GONE, mView.findViewById(R.id.peek_description).getVisibility());
     }
 
     @Test
     public void testActionButtonText() {
-        int textRes = 123;
+        int textRes = android.R.string.ok;
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT_ID, textRes);
-        verify(mView).setActionButtonText(textRes);
+        assertEquals(mActivity.getString(textRes), mActionButton.getText().toString());
     }
 
     @Test
     public void testActionButtonVisibility() {
-        int visibility = 0;
-        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY, visibility);
-        verify(mView).setActionButtonVisibility(visibility);
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY, View.GONE);
+        assertEquals(View.GONE, mActionButton.getVisibility());
+
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY, View.VISIBLE);
+        assertEquals(View.VISIBLE, mActionButton.getVisibility());
     }
 
     @Test
     public void testActionButtonIcon() {
-        int iconRes = 789;
+        int iconRes = android.R.drawable.ic_delete;
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_ID, iconRes);
-        verify(mView).setActionButtonIcon(iconRes);
+        assertEquals(iconRes, Shadows.shadowOf(mActionButton.getIcon()).getCreatedFromResId());
     }
 
     @Test
     public void testActionButtonBackgroundTint() {
-        int colorRes = 111;
+        int colorRes = android.R.color.holo_red_dark;
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT_ID, colorRes);
-        verify(mView).setActionButtonBackgroundTint(colorRes);
+        assertEquals(
+                mActivity.getColor(colorRes),
+                mActionButton.getBackgroundTintList().getDefaultColor());
     }
 
     @Test
     public void testActionButtonIconTint() {
-        int colorRes = 222;
+        int colorRes = android.R.color.holo_blue_dark;
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT_ID, colorRes);
-        verify(mView).setActionButtonIconTint(colorRes);
+        assertEquals(mActivity.getColor(colorRes), mActionButton.getIconTint().getDefaultColor());
     }
 
     @Test
     public void testActionButtonHorizontalPadding() {
-        int paddingRes = 333;
+        int paddingRes = android.R.dimen.app_icon_size;
+        int expectedPadding = mActivity.getResources().getDimensionPixelSize(paddingRes);
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING_ID, paddingRes);
-        verify(mView).setActionButtonHorizontalPadding(paddingRes);
+        assertEquals(expectedPadding, mActionButton.getPaddingStart());
+        assertEquals(expectedPadding, mActionButton.getPaddingEnd());
     }
 
     @Test
     public void testActionButtonContentDescription() {
-        int descRes = 123;
+        int descRes = android.R.string.ok;
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION_ID, descRes);
-        verify(mView).setActionButtonContentDescription(descRes);
+        assertEquals(mActivity.getString(descRes), mActionButton.getContentDescription());
     }
 
     @Test
     public void testOnActionButtonClicked() {
         mClicked = false;
-        mModel =
+        bindModel(
                 new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
                         .with(
                                 TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED,
                                 () -> mClicked = true)
-                        .build();
-        mChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+                        .build());
 
-        assertNotNull(mActionButtonClickListener);
-        mActionButtonClickListener.onClick(null);
+        mActionButton.performClick();
         assertTrue(mClicked);
     }
 
     @Test
     public void testOnCloseClicked() {
         mClicked = false;
-        mModel =
+        bindModel(
                 new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
                         .with(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED, () -> mClicked = true)
-                        .build();
-        mChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+                        .build());
 
-        assertNotNull(mCloseClickListener);
-        mCloseClickListener.onClick(null);
+        mView.findViewById(R.id.peek_close_button).performClick();
         assertTrue(mClicked);
     }
 
     @Test
     public void testOnPeekViewClicked() {
         mClicked = false;
-        mModel =
+        bindModel(
                 new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
                         .with(
                                 TabBottomSheetPeekProperties.ON_PEEK_VIEW_CLICKED,
                                 () -> mClicked = true)
-                        .build();
-        mChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mView, TabBottomSheetPeekViewBinder::bind);
+                        .build());
 
-        assertNotNull(mPeekViewClickListener);
-        mPeekViewClickListener.onClick(null);
+        mView.performClick();
         assertTrue(mClicked);
     }
 
     @Test
     public void testAccessibilityProperties() {
-        try (ActivityScenario<TestActivity> scenario =
-                ActivityScenario.launch(TestActivity.class)) {
-            scenario.onActivity(
-                    activity -> {
-                        activity.setTheme(R.style.Theme_MaterialComponents);
-                        TabBottomSheetPeekView realView =
-                                (TabBottomSheetPeekView)
-                                        LayoutInflater.from(activity)
-                                                .inflate(
-                                                        R.layout.tab_bottom_sheet_peek_layout,
-                                                        null);
+        bindModel(
+                new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                        .with(
+                                TabBottomSheetPeekProperties.CONTENT_DESCRIPTION_A11Y,
+                                context -> "Ask Gemini, Gemini in Chrome")
+                        .build());
 
-                        PropertyModel model =
-                                new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
-                                        .with(
-                                                TabBottomSheetPeekProperties
-                                                        .CONTENT_DESCRIPTION_A11Y,
-                                                context -> "Ask Gemini, Gemini in Chrome")
-                                        .build();
-                        PropertyModelChangeProcessor.create(
-                                model, realView, TabBottomSheetPeekViewBinder::bind);
+        assertEquals("Ask Gemini, Gemini in Chrome", mView.getContentDescription().toString());
 
-                        assertEquals(
-                                "Ask Gemini, Gemini in Chrome",
-                                realView.getContentDescription().toString());
-
-                        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
-                        realView.onInitializeAccessibilityNodeInfo(info);
-                        assertEquals(
-                                android.widget.Button.class.getName(),
-                                info.getClassName().toString());
-                    });
-        }
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mView.onInitializeAccessibilityNodeInfo(info);
+        assertEquals(android.widget.Button.class.getName(), info.getClassName().toString());
     }
 }

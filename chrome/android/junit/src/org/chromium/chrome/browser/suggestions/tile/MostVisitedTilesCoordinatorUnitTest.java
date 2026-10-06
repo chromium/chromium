@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -45,22 +45,23 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 /** Unit tests for {@link MostVisitedTilesCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MostVisitedTilesCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String PADDING_STYLE_PARAM = "padding_style";
     private static final int START_PADDING = 10;
+    private static final int TOP_PADDING = 11;
     private static final int END_PADDING = 20;
+    private static final int BOTTOM_PADDING = 21;
+    private static final int INITIAL_TOP_MARGIN = 7;
     private static final int NO_MARGIN_EXPECTED = 0;
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private View mMvTilesContainerLayout;
-    @Mock private MostVisitedTilesLayout mMvTilesLayout;
     @Mock private MostVisitedTilesMediator mMediator;
     @Mock private UiConfig mUiConfig;
 
     private Activity mActivity;
+    private View mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mCoordinator;
 
     @Before
@@ -68,8 +69,8 @@ public class MostVisitedTilesCoordinatorUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        when(mMvTilesContainerLayout.findViewById(R.id.mv_tiles_layout)).thenReturn(mMvTilesLayout);
-        when(mMvTilesLayout.getContext()).thenReturn(mActivity);
+        mMvTilesContainerLayout =
+                LayoutInflater.from(mActivity).inflate(R.layout.mv_tiles_layout, null);
         when(mUiConfig.getCurrentDisplayStyle())
                 .thenReturn(
                         new DisplayStyle(
@@ -95,12 +96,12 @@ public class MostVisitedTilesCoordinatorUnitTest {
     public void testUpdateMvtWidth_WithWidth() {
         int widthMvt = 1000;
         int lateralMargin = 48;
-        when(mMvTilesContainerLayout.getVisibility()).thenReturn(View.VISIBLE);
+        mMvTilesContainerLayout.setVisibility(View.VISIBLE);
         mCoordinator.updateMvtWidth(widthMvt, lateralMargin);
         verify(mMediator).updateMvtWidth(eq(widthMvt), eq(lateralMargin));
 
         clearInvocations(mMediator);
-        when(mMvTilesContainerLayout.getVisibility()).thenReturn(View.GONE);
+        mMvTilesContainerLayout.setVisibility(View.GONE);
         mCoordinator.updateMvtWidth(widthMvt, lateralMargin);
         verify(mMediator, never()).updateMvtWidth(anyInt(), anyInt());
     }
@@ -164,12 +165,11 @@ public class MostVisitedTilesCoordinatorUnitTest {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.NTP_AURORA, PADDING_STYLE_PARAM, paddingStyle);
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(100, 100);
-        when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
+        mMvTilesContainerLayout.setLayoutParams(marginLayoutParams);
 
         mCoordinator.updateTilesLayoutMargins(/* shouldShowLogo= */ false, /* isLff= */ false);
 
         verify(mMediator, never()).updateTilesLayoutMargins(anyBoolean(), anyBoolean());
-        verify(mMvTilesContainerLayout).setLayoutParams(marginLayoutParams);
         assertEquals(
                 mActivity.getResources().getDimensionPixelSize(expectedTopMarginDimen),
                 marginLayoutParams.topMargin);
@@ -178,48 +178,41 @@ public class MostVisitedTilesCoordinatorUnitTest {
     private void verifyMvtPaddingsAndTopMargin(
             @PaddingStyle int paddingStyle, boolean expectPaddingSet, int expectedTopMarginDimen) {
         Resources res = mActivity.getResources();
-        MarginLayoutParams marginLayoutParams = null;
+        View containerLayout =
+                LayoutInflater.from(mActivity).inflate(R.layout.mv_tiles_layout, null);
+        MarginLayoutParams marginLayoutParams = new MarginLayoutParams(100, 100);
+        marginLayoutParams.topMargin = INITIAL_TOP_MARGIN;
+        containerLayout.setLayoutParams(marginLayoutParams);
+        containerLayout.setPaddingRelative(START_PADDING, TOP_PADDING, END_PADDING, BOTTOM_PADDING);
         if (paddingStyle != PaddingStyle.DEFAULT) {
-            marginLayoutParams = new MarginLayoutParams(100, 100);
-            when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
             FeatureOverrides.overrideParam(
                     ChromeFeatureList.NTP_AURORA, PADDING_STYLE_PARAM, paddingStyle);
-            when(mMvTilesContainerLayout.getPaddingStart()).thenReturn(START_PADDING);
-            when(mMvTilesContainerLayout.getPaddingEnd()).thenReturn(END_PADDING);
         }
 
         new MostVisitedTilesCoordinator(
-                mActivity,
-                mActivityLifecycleDispatcher,
-                mMvTilesContainerLayout,
-                mUiConfig,
-                null,
-                null);
+                mActivity, mActivityLifecycleDispatcher, containerLayout, mUiConfig, null, null);
 
         if (expectPaddingSet) {
             int expectedTopPadding =
                     res.getDimensionPixelSize(R.dimen.mvt_container_top_padding_small);
             int expectedBottomPadding =
                     res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding_small);
-
-            verify(mMvTilesContainerLayout)
-                    .setPaddingRelative(
-                            START_PADDING, expectedTopPadding, END_PADDING, expectedBottomPadding);
+            assertEquals(START_PADDING, containerLayout.getPaddingStart());
+            assertEquals(expectedTopPadding, containerLayout.getPaddingTop());
+            assertEquals(END_PADDING, containerLayout.getPaddingEnd());
+            assertEquals(expectedBottomPadding, containerLayout.getPaddingBottom());
         } else {
-            verify(mMvTilesContainerLayout, never())
-                    .setPaddingRelative(
-                            any(Integer.class),
-                            any(Integer.class),
-                            any(Integer.class),
-                            any(Integer.class));
+            assertEquals(START_PADDING, containerLayout.getPaddingStart());
+            assertEquals(TOP_PADDING, containerLayout.getPaddingTop());
+            assertEquals(END_PADDING, containerLayout.getPaddingEnd());
+            assertEquals(BOTTOM_PADDING, containerLayout.getPaddingBottom());
         }
 
         if (expectedTopMarginDimen != NO_MARGIN_EXPECTED) {
             int expectedTopMargin = res.getDimensionPixelSize(expectedTopMarginDimen);
-            verify(mMvTilesContainerLayout).setLayoutParams(marginLayoutParams);
             assertEquals(expectedTopMargin, marginLayoutParams.topMargin);
         } else {
-            verify(mMvTilesContainerLayout, never()).setLayoutParams(any(MarginLayoutParams.class));
+            assertEquals(INITIAL_TOP_MARGIN, marginLayoutParams.topMargin);
         }
     }
 }
