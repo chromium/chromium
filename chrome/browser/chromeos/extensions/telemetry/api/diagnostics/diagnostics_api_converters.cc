@@ -173,7 +173,7 @@ std::vector<CreateRoutineArgumentsField> GetNonNullFields(
 
 bool ConvertMojoRoutine(ash::cros_healthd::mojom::DiagnosticRoutineEnum in,
                         cx_diag::RoutineType* out) {
-  DCHECK(out);
+  CHECK(out, base::NotFatalUntil::M161);
   switch (in) {
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower:
       *out = cx_diag::RoutineType::kAcPower;

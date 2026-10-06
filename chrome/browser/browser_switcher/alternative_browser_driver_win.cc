@@ -116,7 +116,7 @@ void PercentUnencodeQuotes(std::wstring* url) {
 }
 
 std::wstring GetBrowserLocation(const wchar_t* regkey_name) {
-  DCHECK(regkey_name);
+  CHECK(regkey_name, base::NotFatalUntil::M161);
   base::win::RegKey key;
   if (ERROR_SUCCESS != key.Open(HKEY_LOCAL_MACHINE, regkey_name, KEY_READ) &&
       ERROR_SUCCESS != key.Open(HKEY_CURRENT_USER, regkey_name, KEY_READ)) {
@@ -322,7 +322,7 @@ AlternativeBrowserDriverImpl::~AlternativeBrowserDriverImpl() = default;
 
 void AlternativeBrowserDriverImpl::TryLaunch(const GURL& url,
                                              LaunchCallback cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   VLOG(2) << "Launching alternative browser...";
   VLOG(2) << "  path = " << prefs_->GetAlternativeBrowserPath();
   VLOG(2) << "  url = " << url.spec();

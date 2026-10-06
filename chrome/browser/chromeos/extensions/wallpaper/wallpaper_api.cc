@@ -153,7 +153,7 @@ WallpaperSetWallpaperFunction::WallpaperSetWallpaperFunction() = default;
 WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() = default;
 
 ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   params_ = set_wallpaper::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 

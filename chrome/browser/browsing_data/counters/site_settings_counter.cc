@@ -32,14 +32,14 @@ SiteSettingsCounter::SiteSettingsCounter(
       zoom_map_(zoom_map),
       handler_registry_(handler_registry),
       pref_service_(pref_service) {
-  DCHECK(map_);
-  DCHECK(handler_registry_);
+  CHECK(map_, base::NotFatalUntil::M161);
+  CHECK(handler_registry_, base::NotFatalUntil::M161);
 #if !BUILDFLAG(IS_ANDROID)
-  DCHECK(zoom_map_);
+  CHECK(zoom_map_, base::NotFatalUntil::M161);
 #else
-  DCHECK(!zoom_map_);
+  CHECK(!zoom_map_, base::NotFatalUntil::M161);
 #endif
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M161);
 }
 
 SiteSettingsCounter::~SiteSettingsCounter() = default;

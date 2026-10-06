@@ -231,7 +231,7 @@ size_t KioskMetricsService::RetrieveLastDaySessionCount(
   const auto* times_value = metrics_dict.Find(kKioskSessionLastDayList);
   if (times_value) {
     previous_times = times_value->GetIfList();
-    DCHECK(previous_times);
+    CHECK(previous_times, base::NotFatalUntil::M161);
   }
 
   base::ListValue times;

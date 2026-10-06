@@ -429,7 +429,7 @@ class DlpContentManagerReportingBrowserTest
     ::reporting::test::TestStorageModule* test_storage_module =
         static_cast<::reporting::test::TestStorageModule*>(
             storage_module_.get());
-    DCHECK(test_storage_module);
+    CHECK(test_storage_module, base::NotFatalUntil::M161);
     return test_storage_module;
   }
 

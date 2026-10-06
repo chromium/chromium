@@ -48,14 +48,14 @@ void ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
     GetExtensionKeyPermissionsServiceCallback callback,
     content::BrowserContext* context,
     extensions::ExtensionId extension_id) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M161);
 
   extensions::StateStore* const state_store =
       extensions::ExtensionSystem::Get(context)->state_store();
 
   // Must not be nullptr since KeyPermissionsServiceFactory depends on
   // ChromeExtensionSystemFactory.
-  DCHECK(state_store);
+  CHECK(state_store, base::NotFatalUntil::M161);
 
   state_store->GetExtensionValue(
       extension_id, kStateStorePlatformKeys,

@@ -28,7 +28,7 @@ namespace {
 
 Profile* GetOTROrActiveProfile() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   // In Guest mode, the active profile is OTR. Since we do not support creating
   // an OTR profile from another OTR profile we use the active profile for
@@ -45,7 +45,7 @@ Profile* GetOTROrActiveProfile() {
   Profile* otr_profile =
       profile->GetOffTheRecordProfile(*otr_profile_id,
                                       /*create_if_needed=*/true);
-  DCHECK(otr_profile);
+  CHECK(otr_profile, base::NotFatalUntil::M161);
   return otr_profile;
 }
 

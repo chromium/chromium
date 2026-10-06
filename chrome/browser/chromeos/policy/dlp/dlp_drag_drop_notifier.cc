@@ -21,8 +21,8 @@ DlpDragDropNotifier::~DlpDragDropNotifier() = default;
 void DlpDragDropNotifier::NotifyBlockedAction(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
-  DCHECK(data_src.has_value());
-  DCHECK(data_src->GetURL());
+  CHECK(data_src.has_value(), base::NotFatalUntil::M161);
+  CHECK(data_src->GetURL(), base::NotFatalUntil::M161);
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->GetHost());
 
@@ -34,8 +34,8 @@ void DlpDragDropNotifier::WarnOnDrop(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb) {
-  DCHECK(data_src.has_value());
-  DCHECK(data_src->GetURL());
+  CHECK(data_src.has_value(), base::NotFatalUntil::M161);
+  CHECK(data_src->GetURL(), base::NotFatalUntil::M161);
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 

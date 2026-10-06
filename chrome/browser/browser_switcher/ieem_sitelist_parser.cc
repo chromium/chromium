@@ -49,8 +49,9 @@ struct Entry {
 };
 
 Entry ParseDomainOrPath(const base::Value& node, ParsedXml* result) {
-  DCHECK(data_decoder::IsXmlElementNamed(node, kSchema1DomainElement) ||
-         data_decoder::IsXmlElementNamed(node, kSchema1PathElement));
+  CHECK(data_decoder::IsXmlElementNamed(node, kSchema1DomainElement) ||
+            data_decoder::IsXmlElementNamed(node, kSchema1PathElement),
+        base::NotFatalUntil::M161);
 
   Entry entry;
 
@@ -75,7 +76,8 @@ void ParseIeFileVersionOne(const base::Value& xml,
                            ParsedXml* result) {
   const bool none_is_greylist = parsing_mode == ParsingMode::kIESiteListMode;
 
-  DCHECK(data_decoder::IsXmlElementNamed(xml, kSchema1RulesElement));
+  CHECK(data_decoder::IsXmlElementNamed(xml, kSchema1RulesElement),
+        base::NotFatalUntil::M161);
   for (const base::Value& node : *data_decoder::GetXmlElementChildren(xml)) {
     // Skip over anything that is not a <emie> or <docMode> element.
     if (!data_decoder::IsXmlElementNamed(node, kSchema1EmieElement) &&
@@ -136,7 +138,8 @@ void ParseIeFileVersionTwo(const base::Value& xml,
                            ParsedXml* result) {
   const bool none_is_greylist = parsing_mode == ParsingMode::kIESiteListMode;
 
-  DCHECK(data_decoder::IsXmlElementNamed(xml, kSchema2SiteListElement));
+  CHECK(data_decoder::IsXmlElementNamed(xml, kSchema2SiteListElement),
+        base::NotFatalUntil::M161);
   // Iterate over <site> elements. Notably, skip <created-by> elements.
   for (const base::Value* site_node :
        GetChildrenWithTag(xml, kSchema2SiteElement)) {
@@ -187,8 +190,9 @@ void RawXmlParsed(ParsingMode parsing_mode,
     std::move(callback).Run(ParsedXml({}, {}, xml.error()));
     return;
   }
-  DCHECK(data_decoder::IsXmlElementOfType(
-      *xml, data_decoder::mojom::XmlParser::kElementType));
+  CHECK(data_decoder::IsXmlElementOfType(
+            *xml, data_decoder::mojom::XmlParser::kElementType),
+        base::NotFatalUntil::M161);
   ParsedXml result;
   if (data_decoder::IsXmlElementNamed(*xml, kSchema1RulesElement)) {
     // Enterprise Mode schema v.1 has <rules> element at its top level.

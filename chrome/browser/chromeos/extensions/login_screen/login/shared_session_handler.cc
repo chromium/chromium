@@ -226,8 +226,9 @@ void SharedSessionHandler::EndSharedSession(
 
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
-  DCHECK(session_state == session_manager::SessionState::LOCKED ||
-         session_state == session_manager::SessionState::ACTIVE);
+  CHECK(session_state == session_manager::SessionState::LOCKED ||
+            session_state == session_manager::SessionState::ACTIVE,
+        base::NotFatalUntil::M161);
 
   user_secret_hash_.clear();
   user_secret_salt_.clear();

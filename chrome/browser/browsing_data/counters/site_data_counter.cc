@@ -50,6 +50,6 @@ void SiteDataCounter::Count() {
 }
 
 void SiteDataCounter::Done(int origin_count) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   ReportResult(origin_count);
 }

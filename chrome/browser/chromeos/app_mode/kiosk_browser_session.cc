@@ -59,7 +59,7 @@ void RebootDevice() {
 // Sends a SIGFPE signal to plugin subprocesses that matches `child_ids`
 // to trigger a dump.
 void DumpPluginProcess(const std::set<content::ChildProcessId>& child_ids) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   bool dump_requested = false;
 
@@ -105,7 +105,7 @@ class KioskBrowserSession::AppWindowHandler
   ~AppWindowHandler() override = default;
 
   void Init(Profile* profile, const std::string& app_id) {
-    DCHECK(!window_registry_);
+    CHECK(!window_registry_, base::NotFatalUntil::M161);
     window_registry_ = AppWindowRegistry::Get(profile);
     if (window_registry_) {
       window_registry_->AddObserver(this);

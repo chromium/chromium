@@ -220,14 +220,14 @@ ClipboardBlockBubble::ClipboardBlockBubble(const std::u16string& text)
 ClipboardBlockBubble::~ClipboardBlockBubble() = default;
 
 gfx::Size ClipboardBlockBubble::GetBubbleSize() const {
-  DCHECK(label_);
-  DCHECK(button_);
+  CHECK(label_, base::NotFatalUntil::M161);
+  CHECK(button_, base::NotFatalUntil::M161);
   return {kBubbleWidth, 2 * kBubblePadding + label_->bounds().height() +
                             kButtonLabelSpacing + button_->height()};
 }
 
 void ClipboardBlockBubble::SetDismissCallback(base::OnceClosure cb) {
-  DCHECK(button_);
+  CHECK(button_, base::NotFatalUntil::M161);
   button_->SetCallback(std::move(cb));
 }
 
@@ -267,20 +267,20 @@ ClipboardWarnBubble::~ClipboardWarnBubble() {
 }
 
 gfx::Size ClipboardWarnBubble::GetBubbleSize() const {
-  DCHECK(label_);
-  DCHECK(cancel_button_);
-  DCHECK(paste_button_);
+  CHECK(label_, base::NotFatalUntil::M161);
+  CHECK(cancel_button_, base::NotFatalUntil::M161);
+  CHECK(paste_button_, base::NotFatalUntil::M161);
   return {kBubbleWidth, 2 * kBubblePadding + label_->bounds().height() +
                             kButtonLabelSpacing + paste_button_->height()};
 }
 
 void ClipboardWarnBubble::SetDismissCallback(base::OnceClosure cb) {
-  DCHECK(cancel_button_);
+  CHECK(cancel_button_, base::NotFatalUntil::M161);
   cancel_button_->SetCallback(std::move(cb));
 }
 
 void ClipboardWarnBubble::SetProceedCallback(base::OnceClosure cb) {
-  DCHECK(paste_button_);
+  CHECK(paste_button_, base::NotFatalUntil::M161);
   paste_button_->SetCallback(std::move(cb));
 }
 

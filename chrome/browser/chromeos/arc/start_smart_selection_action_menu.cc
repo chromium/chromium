@@ -76,7 +76,7 @@ void StartSmartSelectionActionMenu::InitMenu(
   if (converted_text.empty())
     return;
 
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M161);
   if (!delegate_->IsRequestTextSelectionActionsAvailable()) {
     // RequestTextSelectionActions is either not supported or not yet ready.
     // In this case, immediately stop menu initialization instead of calling

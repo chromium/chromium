@@ -1181,7 +1181,7 @@ void SmartCardProviderPrivateAPI::GetStatusChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const ContextId scard_context = context_receivers_.current_context();
-  DCHECK(!scard_context.is_null());
+  CHECK(!scard_context.is_null(), base::NotFatalUntil::M161);
 
   RunOrQueueRequest(
       scard_context,

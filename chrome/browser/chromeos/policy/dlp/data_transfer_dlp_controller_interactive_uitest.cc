@@ -108,7 +108,7 @@ class FakeDlpController : public DataTransferDlpController,
   FakeDlpController(const DlpRulesManager& dlp_rules_manager,
                     FakeClipboardNotifier* helper)
       : DataTransferDlpController(dlp_rules_manager), helper_(helper) {
-    DCHECK(helper);
+    CHECK(helper, base::NotFatalUntil::M161);
   }
 
   ~FakeDlpController() override {

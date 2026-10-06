@@ -61,7 +61,7 @@ const Rule* MatchUrlToList(const NoCopyUrl& url,
                            bool contains_inverted_matches) {
   const Rule* reason = nullptr;
   for (const std::unique_ptr<Rule>& rule : rules) {
-    DCHECK(rule);
+    CHECK(rule, base::NotFatalUntil::M161);
     if (reason && rule->priority() <= reason->priority())
       continue;
     if (rule->inverted() && !contains_inverted_matches)
@@ -269,7 +269,7 @@ class IESiteListModeRule : public Rule {
   ~IESiteListModeRule() override = default;
 
   bool Matches(const NoCopyUrl& no_copy_url) const override {
-    DCHECK(valid_);
+    CHECK(valid_, base::NotFatalUntil::M161);
 
     const GURL& url = no_copy_url.original();
     // Compare schemes, if present in the rule.
@@ -295,7 +295,7 @@ class IESiteListModeRule : public Rule {
 
   // Typical return value looks like "*://example.com:8000/path".
   std::string ToString() const override {
-    DCHECK(valid_);
+    CHECK(valid_, base::NotFatalUntil::M161);
 
     std::ostringstream out;
 
@@ -463,7 +463,7 @@ void BrowserSwitcherSitelistImpl::SetExternalSitelist(RawRuleSet&& rules) {
 void BrowserSwitcherSitelistImpl::SetExternalGreylist(RawRuleSet&& rules) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.ExternalGreylistSize",
                               rules.sitelist.size());
-  DCHECK(rules.sitelist.empty());
+  CHECK(rules.sitelist.empty(), base::NotFatalUntil::M161);
   StoreRules(external_greylist_, rules);
   original_external_greylist_ = std::move(rules);
 }

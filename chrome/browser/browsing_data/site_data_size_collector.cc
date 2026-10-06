@@ -37,8 +37,8 @@ SiteDataSizeCollector::SiteDataSizeCollector(
 SiteDataSizeCollector::~SiteDataSizeCollector() = default;
 
 void SiteDataSizeCollector::Fetch(FetchCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   fetch_callback_ = std::move(callback);
   total_bytes_ = 0;
@@ -68,7 +68,7 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
 
 void SiteDataSizeCollector::OnCookiesModelInfoLoaded(
     const net::CookieList& cookie_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (cookie_list.empty()) {
     OnStorageSizeFetched(0);
@@ -85,7 +85,7 @@ void SiteDataSizeCollector::OnCookiesModelInfoLoaded(
 
 void SiteDataSizeCollector::OnLocalStorageModelInfoLoaded(
       const LocalStorageInfoList& local_storage_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   int64_t total_size = 0;
   for (const auto& local_storage_info : local_storage_info_list)
     total_size += local_storage_info.total_size_bytes;
@@ -94,7 +94,7 @@ void SiteDataSizeCollector::OnLocalStorageModelInfoLoaded(
 
 void SiteDataSizeCollector::OnQuotaModelInfoLoaded(
     QuotaStorageUsageInfoList quota_storage_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   int64_t total_size = 0;
   for (const auto& quota_info : quota_storage_info_list) {
     total_size += quota_info.usage;
@@ -103,7 +103,7 @@ void SiteDataSizeCollector::OnQuotaModelInfoLoaded(
 }
 
 void SiteDataSizeCollector::OnStorageSizeFetched(int64_t size) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (size > 0)
     total_bytes_ += size;
   if (--in_flight_operations_ == 0)

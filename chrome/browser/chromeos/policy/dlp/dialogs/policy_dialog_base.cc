@@ -84,7 +84,7 @@ void PolicyDialogBase::SetupUpperPanel() {
 }
 
 views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {
-  DCHECK(upper_panel_);
+  CHECK(upper_panel_, base::NotFatalUntil::M161);
 
   views::Label* title_label =
       upper_panel_->AddChildView(std::make_unique<views::Label>(title));
@@ -95,7 +95,7 @@ views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {
 }
 
 views::Label* PolicyDialogBase::AddMessage(const std::u16string& message) {
-  DCHECK(upper_panel_);
+  CHECK(upper_panel_, base::NotFatalUntil::M161);
 
   views::Label* message_label =
       upper_panel_->AddChildView(std::make_unique<views::Label>(message));

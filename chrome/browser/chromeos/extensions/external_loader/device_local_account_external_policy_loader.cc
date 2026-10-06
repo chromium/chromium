@@ -16,7 +16,7 @@ DeviceLocalAccountExternalPolicyLoader::
     ~DeviceLocalAccountExternalPolicyLoader() = default;
 
 void DeviceLocalAccountExternalPolicyLoader::StartLoading() {
-  DCHECK(has_owner());
+  CHECK(has_owner(), base::NotFatalUntil::M161);
 
   // Through OnExtensionListsUpdated(), |prefs_| might have already loaded but
   // not consumed because we didn't have an owner then. Pass |prefs_| in that

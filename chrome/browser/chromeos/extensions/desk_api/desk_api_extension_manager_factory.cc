@@ -14,7 +14,7 @@ namespace chromeos {
 // static
 DeskApiExtensionManager* DeskApiExtensionManagerFactory::GetForProfile(
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return static_cast<DeskApiExtensionManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

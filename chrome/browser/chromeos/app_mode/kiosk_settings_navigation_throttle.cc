@@ -127,7 +127,7 @@ void KioskSettingsNavigationThrottle::SetSettingPagesForTesting(
 // static
 void KioskSettingsNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Kiosk check.
   if (!IsRunningInForcedAppMode()) {

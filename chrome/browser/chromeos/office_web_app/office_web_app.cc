@@ -63,7 +63,7 @@ void InstallMicrosoft365Offline(
     Profile* profile,
     base::OnceCallback<void(webapps::InstallResultCode)> callback) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M161);
 
   // Manually install using the manifest at
   // https://www.microsoft365.com/webmanifest.json.
@@ -128,7 +128,7 @@ void InstallMicrosoft365(
     Profile* profile,
     base::OnceCallback<void(webapps::InstallResultCode)> callback) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M161);
 
   web_app::ExternalInstallOptions options(
       GURL(kMicrosoft365WebAppUrl),

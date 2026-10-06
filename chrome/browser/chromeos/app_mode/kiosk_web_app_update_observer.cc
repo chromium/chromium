@@ -36,8 +36,8 @@ KioskWebAppUpdateObserver::KioskWebAppUpdateObserver(
       app_service_(apps::AppServiceProxyFactory::GetForProfile(profile)),
       web_app_provider_(web_app::WebAppProvider::GetForWebApps(profile)),
       web_app_update_callback_(std::move(callback)) {
-  DCHECK(app_service_);
-  DCHECK(web_app_provider_);
+  CHECK(app_service_, base::NotFatalUntil::M161);
+  CHECK(web_app_provider_, base::NotFatalUntil::M161);
   app_registry_observation_.Observe(&app_service_->AppRegistryCache());
 }
 

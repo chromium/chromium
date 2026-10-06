@@ -322,7 +322,7 @@ BrowserSwitcherPrefs::RegisterPrefsChangedCallback(
 }
 
 void BrowserSwitcherPrefs::RunCallbacksIfDirty() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!dirty_prefs_.empty())
     callback_list_.Notify(this, dirty_prefs_);
   dirty_prefs_.clear();

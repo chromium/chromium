@@ -369,7 +369,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // Writes out the text string (as UTF8). The text is escaped based on
   // type.
   [[nodiscard]] bool Write(const std::string& text, TextType type) {
-    DCHECK(base::IsStringUTF8(text));
+    CHECK(base::IsStringUTF8(text), base::NotFatalUntil::M161);
     std::string utf8_string;
 
     switch (type) {
@@ -550,7 +550,7 @@ BookmarkFaviconFetcher::BookmarkFaviconFetcher(
     const base::FilePath& path,
     bookmark_html_writer::BookmarksExportCallback callback)
     : profile_(profile), path_(path), callback_(std::move(callback)) {
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 }
 
 void BookmarkFaviconFetcher::ExportBookmarks() {

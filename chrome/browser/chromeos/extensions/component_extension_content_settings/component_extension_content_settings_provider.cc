@@ -65,7 +65,7 @@ void ComponentExtensionContentSettingsProvider::ClearAllContentSettingsRules(
 }
 
 void ComponentExtensionContentSettingsProvider::ShutdownOnUIThread() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M161);
 
   RemoveAllObservers();
   allowlist_subscription_ = {};

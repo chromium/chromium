@@ -35,7 +35,7 @@ ExtensionCleanupHandler::ExtensionCleanupHandler() = default;
 ExtensionCleanupHandler::~ExtensionCleanupHandler() = default;
 
 void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
 
   profile_ = ProfileManager::GetActiveUserProfile();
   if (!profile_) {

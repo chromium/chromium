@@ -96,8 +96,8 @@ void VpnService::VpnConfiguration::OnPacketReceived(
 
 void VpnService::VpnConfiguration::OnPlatformMessage(
     uint32_t platform_message) {
-  DCHECK_GE(static_cast<uint32_t>(api_vpn::PlatformMessage::kMaxValue),
-            platform_message);
+  CHECK_GE(static_cast<uint32_t>(api_vpn::PlatformMessage::kMaxValue),
+           platform_message, base::NotFatalUntil::M161);
 
   if (platform_message ==
       std::to_underlying(api_vpn::PlatformMessage::kConnected)) {

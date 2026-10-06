@@ -50,7 +50,7 @@ void MaybeLaunchAlternativeBrowser(
     bool should_run_async,
     navigation_interception::InterceptNavigationThrottle::ResultCallback
         result_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(!should_run_async);
 
   BrowserSwitcherService* service =
@@ -100,7 +100,7 @@ void MaybeLaunchAlternativeBrowser(
 // static
 void BrowserSwitcherNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   content::BrowserContext* browser_context =

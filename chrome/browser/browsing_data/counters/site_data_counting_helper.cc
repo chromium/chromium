@@ -169,7 +169,7 @@ void SiteDataCountingHelper::GetCdmStorageCallback(
 
 void SiteDataCountingHelper::GetQuotaBucketsCallback(
     const std::set<storage::BucketLocator>& buckets) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   std::set<GURL> urls;
   for (const storage::BucketLocator& bucket : buckets)
     urls.insert(bucket.storage_key.origin().GetURL());
@@ -181,7 +181,7 @@ void SiteDataCountingHelper::GetQuotaBucketsCallback(
 
 void SiteDataCountingHelper::GetSharedDictionaryOriginsCallback(
     const std::vector<url::Origin>& origins) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   std::vector<GURL> urls;
   for (const url::Origin& origin : origins) {
     urls.emplace_back(origin.GetURL());
@@ -204,8 +204,8 @@ void SiteDataCountingHelper::GetLocalStorageUsageInfoCallback(
 }
 
 void SiteDataCountingHelper::Done(const std::vector<GURL>& origins) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(tasks_ > 0);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(tasks_ > 0, base::NotFatalUntil::M161);
   for (const GURL& origin : origins) {
     if (browsing_data::HasWebScheme(origin))
       unique_hosts_.insert(origin.GetHost());

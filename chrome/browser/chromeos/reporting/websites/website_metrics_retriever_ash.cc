@@ -20,7 +20,7 @@ WebsiteMetricsRetrieverAsh::WebsiteMetricsRetrieverAsh(
 
 WebsiteMetricsRetrieverAsh::~WebsiteMetricsRetrieverAsh() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void WebsiteMetricsRetrieverAsh::GetWebsiteMetrics(

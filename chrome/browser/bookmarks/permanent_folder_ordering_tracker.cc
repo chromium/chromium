@@ -283,7 +283,7 @@ size_t PermanentFolderOrderingTracker::GetIndexAcrossStorage(
     CHECK(node->parent());
     CHECK_EQ(node->parent()->type(), tracked_type_);
     CHECK(ordering_.empty());
-    DCHECK_EQ(GetIndexOf(node), in_storage_index);
+    CHECK_EQ(GetIndexOf(node), in_storage_index, base::NotFatalUntil::M161);
     return in_storage_index;
   }
   return GetIndexOf(node);

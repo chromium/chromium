@@ -185,9 +185,10 @@ std::u16string GetChromeCounterTextFromResult(
         static_cast<const HostedAppsCounter::HostedAppsResult*>(result);
     int hosted_apps_count = hosted_apps_result->Value();
 
-    DCHECK_GE(
+    CHECK_GE(
         hosted_apps_result->Value(),
-        base::checked_cast<ResultInt>(hosted_apps_result->examples().size()));
+        base::checked_cast<ResultInt>(hosted_apps_result->examples().size()),
+        base::NotFatalUntil::M161);
 
     std::vector<std::u16string> replacements;
     if (hosted_apps_count > 0) {

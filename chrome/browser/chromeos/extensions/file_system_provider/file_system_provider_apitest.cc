@@ -84,8 +84,8 @@ class AbortOnUnresponsivePerformer : public Observer {
  public:
   explicit AbortOnUnresponsivePerformer(Profile* profile)
       : service_(Service::Get(profile)) {
-    DCHECK(profile);
-    DCHECK(service_);
+    CHECK(profile, base::NotFatalUntil::M161);
+    CHECK(service_, base::NotFatalUntil::M161);
     service_->AddObserver(this);
   }
 
@@ -105,7 +105,7 @@ class AbortOnUnresponsivePerformer : public Observer {
     ProvidedFileSystemInterface* const file_system =
         service_->GetProvidedFileSystem(file_system_info.provider_id(),
                                         file_system_info.file_system_id());
-    DCHECK(file_system);
+    CHECK(file_system, base::NotFatalUntil::M161);
     file_system->GetRequestManager()->SetTimeoutForTesting(base::TimeDelta());
 
     std::unique_ptr<NotificationButtonClicker> clicker(

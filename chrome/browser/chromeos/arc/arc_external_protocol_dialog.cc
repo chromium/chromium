@@ -41,8 +41,9 @@ bool IsCapturableLinkNavigation(ui::PageTransition page_transition,
   // PAGE_TRANSITION_AUTO_SUBFRAME in order not to add session history items
   // (see https://crrev.com/c/3265344). So we only check |has_user_gesture|.
   if (is_in_fenced_frame_tree) {
-    DCHECK(ui::PageTransitionCoreTypeIs(page_transition,
-                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    CHECK(ui::PageTransitionCoreTypeIs(page_transition,
+                                       ui::PAGE_TRANSITION_AUTO_SUBFRAME),
+          base::NotFatalUntil::M161);
     return has_user_gesture;
   }
 
@@ -151,7 +152,7 @@ void HandleUrlInArc(base::WeakPtr<WebContents> web_contents,
                     bool ui_bypassed,
                     ArcIntentHelperMojoDelegate* mojo_delegate) {
   // ArcIntentHelperMojoDelegate is already varified non-null.
-  DCHECK(mojo_delegate);
+  CHECK(mojo_delegate, base::NotFatalUntil::M161);
 
   // We want to inform ARC about whether or not the user interacted with the
   // picker UI, also since we want to be more explicit about the package and
@@ -217,8 +218,8 @@ GetActionResult GetAction(
     size_t selected_app_index,
     GurlAndActivityInfo* out_url_and_activity_name,
     bool* in_out_safe_to_bypass_ui) {
-  DCHECK(out_url_and_activity_name);
-  DCHECK(!handlers.empty());
+  CHECK(out_url_and_activity_name, base::NotFatalUntil::M161);
+  CHECK(!handlers.empty(), base::NotFatalUntil::M161);
 
   if (selected_app_index == handlers.size()) {
     // The user hasn't made the selection yet.
@@ -345,7 +346,8 @@ GURL GetUrlToNavigateOnDeactivate(
                                                   /*activity=*/std::string()});
     if (GetActionInternal(empty_url, handlers[i], &url_and_package) ==
         GetActionResult::OPEN_URL_IN_CHROME) {
-      DCHECK(url_and_package.first.SchemeIsHTTPOrHTTPS());
+      CHECK(url_and_package.first.SchemeIsHTTPOrHTTPS(),
+            base::NotFatalUntil::M161);
       return url_and_package.first;
     }
   }
@@ -392,8 +394,8 @@ void OnIntentPickerClosed(
     apps::IntentPickerCloseReason reason,
     bool should_persist) {
   // ArcIntentHelperMojoDelegate is already varified non-null.
-  DCHECK(mojo_delegate);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(mojo_delegate, base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
 
@@ -418,7 +420,8 @@ void OnIntentPickerClosed(
     case apps::IntentPickerCloseReason::OPEN_APP:
       // Only ARC apps are offered in the external protocol intent picker, so if
       // the user decided to open in app the type must be ARC.
-      DCHECK_EQ(apps::PickerEntryType::kArc, entry_type);
+      CHECK_EQ(apps::PickerEntryType::kArc, entry_type,
+               base::NotFatalUntil::M161);
 
       if (should_persist) {
         mojo_delegate->AddPreferredPackage(
@@ -468,7 +471,7 @@ void OnAppIconsReceived(
     base::OnceCallback<void(bool)> handled_cb,
     bool show_stay_in_chrome,
     std::unique_ptr<ArcIconCacheDelegate::ActivityToIconsMap> icons) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   using AppInfo = apps::IntentPickerAppInfo;
   std::vector<AppInfo> app_info;
@@ -523,8 +526,8 @@ void OnUrlHandlerList(
     base::OnceCallback<void(bool)> handled_cb,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers) {
   // ArcIntentHelperMojoDelegate is already varified non-null.
-  DCHECK(mojo_delegate);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(mojo_delegate, base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // We only reach here if Chrome doesn't think it can handle the URL. If ARC is
   // not running anymore, or Chrome is the only candidate returned, show the

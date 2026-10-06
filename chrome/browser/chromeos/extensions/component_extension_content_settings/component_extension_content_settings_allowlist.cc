@@ -118,7 +118,7 @@ const ComponentExtensionContentSettingsAllowlist::
 void ComponentExtensionContentSettingsAllowlist::
     SetContentSettingsForComponentExtension(const Extension* extension,
                                             ContentSetting content_setting) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   const auto& component_extensions_content_settings_types =
       GetComponentExtensionsContentSettingsTypes().find(extension->id());
@@ -142,7 +142,7 @@ void ComponentExtensionContentSettingsAllowlist::
         const ContentSettingsPattern& secondary_pattern,
         ContentSettingsType content_type,
         ContentSetting content_setting) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   {
     base::AutoLock auto_lock(value_map_.GetLock());

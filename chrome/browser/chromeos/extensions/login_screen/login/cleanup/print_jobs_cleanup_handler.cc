@@ -20,7 +20,7 @@ PrintJobsCleanupHandler::PrintJobsCleanupHandler() = default;
 PrintJobsCleanupHandler::~PrintJobsCleanupHandler() = default;
 
 void PrintJobsCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {

@@ -34,7 +34,7 @@ void GotAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
                const storage::FileSystemURL& destination,
                DlpCopyOrMoveHookDelegate::StatusCallback callback,
                std::unique_ptr<file_access::ScopedFileAccess> access) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   bool is_allowed = access->is_allowed();
   if (hook_delegate.MaybeValid()) {
     content::GetIOThreadTaskRunner({})->PostTask(
@@ -55,7 +55,7 @@ void RequestCopyAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
                        const storage::FileSystemURL& source,
                        const storage::FileSystemURL& destination,
                        DlpCopyOrMoveHookDelegate::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   DlpRulesManager* dlp_rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -86,7 +86,7 @@ void DlpCopyOrMoveHookDelegate::GotAccess(
     const storage::FileSystemURL& source,
     const storage::FileSystemURL& destination,
     std::unique_ptr<file_access::ScopedFileAccess> access) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   current_access_map_.emplace(std::make_pair(source.path(), destination.path()),
                               std::move(access));
 }
@@ -95,7 +95,7 @@ void DlpCopyOrMoveHookDelegate::OnBeginProcessFile(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   StatusCallback continuation =
       base::BindPostTaskToCurrentDefault(std::move(callback));
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -128,7 +128,7 @@ void DlpCopyOrMoveHookDelegate::OnError(
 void DlpCopyOrMoveHookDelegate::OnEnd(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   current_access_map_.erase(
       std::make_pair(source_url.path(), destination_url.path()));
 }

@@ -447,7 +447,7 @@ size_t BookmarkMergedSurfaceService::GetIndexAcrossStorage(
         GetPermanentFolderOrderingTracker(*type);
     return tracker.GetIndexAcrossStorage(node, in_storage_index);
   }
-  DCHECK_EQ(GetIndexOf(node), in_storage_index);
+  CHECK_EQ(GetIndexOf(node), in_storage_index, base::NotFatalUntil::M161);
   return in_storage_index;
 }
 

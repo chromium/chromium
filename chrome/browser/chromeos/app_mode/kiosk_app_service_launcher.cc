@@ -32,7 +32,7 @@ namespace chromeos {
 
 KioskAppServiceLauncher::KioskAppServiceLauncher(Profile* profile) {
   app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK(app_service_);
+  CHECK(app_service_, base::NotFatalUntil::M161);
 }
 
 KioskAppServiceLauncher::~KioskAppServiceLauncher() = default;

@@ -134,9 +134,9 @@ ExtensionKeyPermissionsService::ExtensionKeyPermissionsService(
       extensions_state_store_(extensions_state_store),
       profile_policies_(profile_policies),
       keystore_service_(GetKeystoreService(browser_context)) {
-  DCHECK(extensions_state_store_);
-  DCHECK(profile_policies_);
-  DCHECK(keystore_service_);
+  CHECK(extensions_state_store_, base::NotFatalUntil::M161);
+  CHECK(profile_policies_, base::NotFatalUntil::M161);
+  CHECK(keystore_service_, base::NotFatalUntil::M161);
   KeyEntriesFromState(state_store_value);
 }
 

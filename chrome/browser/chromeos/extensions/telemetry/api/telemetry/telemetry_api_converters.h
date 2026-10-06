@@ -145,7 +145,7 @@ template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   std::vector<OutputT> output;
   for (auto&& element : input) {
-    DCHECK(!element.is_null());
+    CHECK(!element.is_null(), base::NotFatalUntil::M161);
     output.push_back(unchecked::UncheckedConvertPtr(std::move(element)));
   }
   return output;

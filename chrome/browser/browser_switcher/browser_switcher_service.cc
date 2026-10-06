@@ -182,7 +182,7 @@ void XmlDownloader::ParseXml(RulesetSource* source,
 }
 
 void XmlDownloader::DoneParsing(RulesetSource* source, ParsedXml xml) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Special processing for "greylist" XML.
   if (source->contains_inverted_rules) {
@@ -209,7 +209,7 @@ void XmlDownloader::DoneParsing(RulesetSource* source, ParsedXml xml) {
 
   // Run the "all done" callback if this was the last ruleset.
   counter_++;
-  DCHECK(counter_ <= sources_.size());
+  CHECK(counter_ <= sources_.size(), base::NotFatalUntil::M161);
   if (counter_ == sources_.size()) {
     all_done_callback_.Run();
     if (HasValidSources())
@@ -411,7 +411,7 @@ void BrowserSwitcherService::OnExternalGreylistParsed(ParsedXml xml) {
   } else {
     VLOG(2) << "Done parsing external SiteList for greylist rules. "
             << "Applying rules to future navigations.";
-    DCHECK(xml.rules.sitelist.empty());
+    CHECK(xml.rules.sitelist.empty(), base::NotFatalUntil::M161);
 
     if (prefs().GetExternalGreylistUrl().is_valid()) {
       prefs().SetCachedExternalGreylist(xml.rules);

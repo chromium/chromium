@@ -10,7 +10,7 @@ namespace chromeos {
 
 KioskPolicies::KioskPolicies(PrefService* pref_service)
     : pref_service_(pref_service) {
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M161);
 }
 
 bool KioskPolicies::IsWindowCreationAllowed() const {

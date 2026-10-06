@@ -80,7 +80,7 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
                       std::map<UrlConditionId, std::string>& patterns_mapping,
                       RuleId rule_id,
                       std::map<UrlConditionId, RuleId>& map) {
-  DCHECK(urls);
+  CHECK(urls, base::NotFatalUntil::M161);
   for (const auto& list_entry : *urls) {
     std::string url = list_entry.GetString();
 
@@ -144,7 +144,7 @@ void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
                << response.error_message();
     return;
   }
-  DCHECK(chromeos::DlpClient::Get()->IsAlive());
+  CHECK(chromeos::DlpClient::Get()->IsAlive(), base::NotFatalUntil::M161);
   DlpScopedFileAccessDelegate::Initialize(
       base::BindRepeating(chromeos::DlpClient::Get));
 }
@@ -180,9 +180,10 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
     Restriction restriction,
     std::string* out_source_pattern,
     RuleMetadata* out_rule_metadata) const {
-  DCHECK(src_url_matcher_);
-  DCHECK(restriction == Restriction::kClipboard ||
-         restriction == Restriction::kFiles);
+  CHECK(src_url_matcher_, base::NotFatalUntil::M161);
+  CHECK(restriction == Restriction::kClipboard ||
+            restriction == Restriction::kFiles,
+        base::NotFatalUntil::M161);
 
   if (destination == data_controls::Component::kUnknownComponent) {
     return DlpRulesManager::Level::kAllow;
@@ -232,9 +233,10 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
 DlpRulesManager::AggregatedComponents
 DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
                                              Restriction restriction) const {
-  DCHECK(src_url_matcher_);
-  DCHECK(restriction == Restriction::kClipboard ||
-         restriction == Restriction::kFiles);
+  CHECK(src_url_matcher_, base::NotFatalUntil::M161);
+  CHECK(restriction == Restriction::kClipboard ||
+            restriction == Restriction::kFiles,
+        base::NotFatalUntil::M161);
 
   std::map<Level, std::set<data_controls::Component>> result;
   for (data_controls::Component component : data_controls::kAllComponents) {
@@ -336,10 +338,11 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   for (const base::Value& rule_value : rules_list) {
     const base::DictValue& rule = rule_value.GetDict();
     const base::DictValue* sources = rule.FindDict("sources");
-    DCHECK(sources);
+    CHECK(sources, base::NotFatalUntil::M161);
     const base::ListValue* sources_urls = sources->FindList("urls");
-    DCHECK(sources_urls);  // This DCHECK should be removed when other types are
-                           // supported as sources.
+    CHECK(sources_urls,
+          base::NotFatalUntil::M161);  // This DCHECK should be removed when
+                                       // other types are supported as sources.
 
     AddUrlConditions(src_url_matcher_.get(), src_url_condition_id, sources_urls,
                      src_conditions_, src_patterns_mapping_, rules_counter,
@@ -358,7 +361,7 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
         destinations ? destinations->FindList("components") : nullptr;
     if (destinations_components) {
       for (const auto& component : *destinations_components) {
-        DCHECK(component.is_string());
+        CHECK(component.is_string(), base::NotFatalUntil::M161);
         data_controls::Component component_mapping =
             data_controls::GetComponentMapping(component.GetString());
         components_rules_[component_mapping].insert(rules_counter);
@@ -379,13 +382,13 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
     }
 
     const base::ListValue* restrictions = rule.FindList("restrictions");
-    DCHECK(restrictions);
+    CHECK(restrictions, base::NotFatalUntil::M161);
     for (const auto& restriction_value : *restrictions) {
       const base::DictValue& restriction = restriction_value.GetDict();
       const std::string* rule_class_str = restriction.FindString("class");
-      DCHECK(rule_class_str);
+      CHECK(rule_class_str, base::NotFatalUntil::M161);
       const std::string* rule_level_str = restriction.FindString("level");
-      DCHECK(rule_level_str);
+      CHECK(rule_level_str, base::NotFatalUntil::M161);
 
       const Restriction rule_restriction =
           data_controls::Rule::StringToRestriction(*rule_class_str);
@@ -405,20 +408,20 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
           (rule_has_destinations || rule_has_components)) {
         ::dlp::DlpFilesRule files_rule;
         for (const auto& url : *sources_urls) {
-          DCHECK(url.is_string());
+          CHECK(url.is_string(), base::NotFatalUntil::M161);
           files_rule.add_source_urls(url.GetString());
         }
 
         if (rule_has_destinations) {
           for (const auto& url : *destinations_urls) {
-            DCHECK(url.is_string());
+            CHECK(url.is_string(), base::NotFatalUntil::M161);
             files_rule.add_destination_urls(url.GetString());
           }
         }
 
         if (rule_has_components) {
           for (const auto& component : *destinations_components) {
-            DCHECK(component.is_string());
+            CHECK(component.is_string(), base::NotFatalUntil::M161);
             files_rule.add_destination_components(
                 data_controls::GetComponentProtoMapping(component.GetString()));
             for (const auto& url :

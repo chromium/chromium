@@ -130,7 +130,7 @@ ChromeKioskAppInstaller::ChromeKioskAppInstaller(
 ChromeKioskAppInstaller::~ChromeKioskAppInstaller() = default;
 
 void ChromeKioskAppInstaller::BeginInstall(InstallCallback callback) {
-  DCHECK(!install_complete_);
+  CHECK(!install_complete_, base::NotFatalUntil::M161);
 
   SYSLOG(INFO) << "BeginInstall primary app id: " << primary_app_id();
 
@@ -201,7 +201,7 @@ void ChromeKioskAppInstaller::MaybeInstallSecondaryApps(
 }
 
 void ChromeKioskAppInstaller::MaybeCheckExtensionUpdate() {
-  DCHECK(!install_complete_);
+  CHECK(!install_complete_, base::NotFatalUntil::M161);
 
   SYSLOG(INFO) << "MaybeCheckExtensionUpdate";
 
@@ -237,7 +237,7 @@ void ChromeKioskAppInstaller::MaybeCheckExtensionUpdate() {
 
 void ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished(
     bool update_found) {
-  DCHECK(!install_complete_);
+  CHECK(!install_complete_, base::NotFatalUntil::M161);
 
   SYSLOG(INFO) << "OnExtensionUpdateCheckFinished";
   update_checker_.reset();
@@ -258,7 +258,7 @@ void ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished(
 }
 
 void ChromeKioskAppInstaller::FinalizeAppInstall() {
-  DCHECK(!install_complete_);
+  CHECK(!install_complete_, base::NotFatalUntil::M161);
 
   install_complete_ = true;
 
@@ -277,7 +277,7 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
     const std::string& extension_id,
     const extensions::Extension* extension,
     bool success) {
-  DCHECK(!install_complete_);
+  CHECK(!install_complete_, base::NotFatalUntil::M161);
 
   SYSLOG(INFO) << (success ? "OnFinishCrxInstall succeeded for id: "
                            : "OnFinishCrxInstall failed for id: ")
@@ -348,7 +348,7 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
 }
 
 void ChromeKioskAppInstaller::ReportInstallSuccess() {
-  DCHECK(install_complete_);
+  CHECK(install_complete_, base::NotFatalUntil::M161);
   SYSLOG(INFO) << "Kiosk app install succeeded";
 
   std::move(on_ready_callback_).Run(ash::KioskInstallResult::kSuccess);
@@ -357,7 +357,7 @@ void ChromeKioskAppInstaller::ReportInstallSuccess() {
 void ChromeKioskAppInstaller::ReportInstallFailure(
     ash::KioskInstallResult error) {
   SYSLOG(ERROR) << "App install failed, error: " << static_cast<int>(error);
-  DCHECK_NE(ash::KioskInstallResult::kSuccess, error);
+  CHECK_NE(ash::KioskInstallResult::kSuccess, error, base::NotFatalUntil::M161);
 
   std::move(on_ready_callback_).Run(error);
 }

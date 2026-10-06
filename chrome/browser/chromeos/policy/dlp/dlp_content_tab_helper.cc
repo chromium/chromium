@@ -21,7 +21,7 @@ bool g_ignore_rules_manager_for_testing_ = false;
 // static
 void DlpContentTabHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   // Do not observe incognito windows.
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
     return;

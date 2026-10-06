@@ -49,7 +49,7 @@ void ReportEvent(GURL url,
                  DlpRulesManager::Restriction restriction,
                  DlpRulesManager::Level level,
                  data_controls::DlpReportingManager* reporting_manager) {
-  DCHECK(reporting_manager);
+  CHECK(reporting_manager, base::NotFatalUntil::M161);
 
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -215,14 +215,14 @@ bool DlpContentManager::IsScreenshotApiRestricted(
 
 void DlpContentManager::SetReportingManagerForTesting(
     data_controls::DlpReportingManager* reporting_manager) {
-  DCHECK(!reporting_manager_);
-  DCHECK(reporting_manager);
+  CHECK(!reporting_manager_, base::NotFatalUntil::M161);
+  CHECK(reporting_manager, base::NotFatalUntil::M161);
   reporting_manager_ = reporting_manager;
 }
 
 void DlpContentManager::SetWarnNotifierForTesting(
     std::unique_ptr<DlpWarnNotifier> warn_notifier) {
-  DCHECK(warn_notifier);
+  CHECK(warn_notifier, base::NotFatalUntil::M161);
   warn_notifier_ = std::move(warn_notifier);
 }
 
@@ -264,10 +264,12 @@ void DlpContentManager::ScreenShareInfo::UpdateAfterSourceChange(
     base::OnceClosure stop_callback,
     content::MediaStreamUI::StateChangeCallback state_change_callback,
     content::MediaStreamUI::SourceCallback source_callback) {
-  DCHECK(state_ == State::kRunningBeforeSourceChange ||
-         state_ == State::kPausedBeforeSourceChange);
-  DCHECK(new_media_id_ == media_id);
-  DCHECK(media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
+  CHECK(state_ == State::kRunningBeforeSourceChange ||
+            state_ == State::kPausedBeforeSourceChange,
+        base::NotFatalUntil::M161);
+  CHECK(new_media_id_ == media_id, base::NotFatalUntil::M161);
+  CHECK(media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS,
+        base::NotFatalUntil::M161);
 
   media_id_ = media_id;
   stop_callback_ = std::move(stop_callback);
@@ -329,7 +331,7 @@ DlpContentManager::ScreenShareInfo::web_contents() const {
 
 void DlpContentManager::ScreenShareInfo::set_dialog_widget(
     base::WeakPtr<views::Widget> dialog_widget) {
-  DCHECK(!HasOpenDialogWidget());
+  CHECK(!HasOpenDialogWidget(), base::NotFatalUntil::M161);
   dialog_widget_ = dialog_widget;
 }
 
@@ -357,14 +359,14 @@ DlpContentManager::ScreenShareInfo::GetConfidentialContents() const {
 }
 
 void DlpContentManager::ScreenShareInfo::Pause() {
-  DCHECK_EQ(state_, State::kRunning);
+  CHECK_EQ(state_, State::kRunning, base::NotFatalUntil::M161);
   state_change_callback_.Run(media_id_,
                              blink::mojom::MediaStreamStateChange::PAUSE);
   state_ = State::kPaused;
 }
 
 void DlpContentManager::ScreenShareInfo::Resume() {
-  DCHECK_EQ(state_, State::kPaused);
+  CHECK_EQ(state_, State::kPaused, base::NotFatalUntil::M161);
   // In case of a tab share try to update the source to the current WebContents
   // frame id in case it was navigated to a different page with another frame.
   // Switching to a new source will resume the share so we don't need to do it
@@ -372,7 +374,7 @@ void DlpContentManager::ScreenShareInfo::Resume() {
   if (media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
       web_contents_ && source_callback_) {
     content::RenderFrameHost* main_frame = web_contents_->GetPrimaryMainFrame();
-    DCHECK(main_frame);
+    CHECK(main_frame, base::NotFatalUntil::M161);
     source_callback_.Run(
         content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
                                 content::DesktopMediaID::kNullId,
@@ -390,8 +392,10 @@ void DlpContentManager::ScreenShareInfo::Resume() {
 }
 
 void DlpContentManager::ScreenShareInfo::ChangeStateBeforeSourceChange() {
-  DCHECK(state_ == State::kPaused || state_ == State::kRunning);
-  DCHECK(media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
+  CHECK(state_ == State::kPaused || state_ == State::kRunning,
+        base::NotFatalUntil::M161);
+  CHECK(media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS,
+        base::NotFatalUntil::M161);
   if (state_ == State::kPaused) {
     state_ = ScreenShareInfo::State::kPausedBeforeSourceChange;
   } else if (state_ == State::kRunning) {
@@ -403,7 +407,7 @@ void DlpContentManager::ScreenShareInfo::ChangeStateBeforeSourceChange() {
 }
 
 void DlpContentManager::ScreenShareInfo::Stop() {
-  DCHECK_NE(state_, State::kStopped);
+  CHECK_NE(state_, State::kStopped, base::NotFatalUntil::M161);
   if (stop_callback_) {
     std::move(stop_callback_).Run();
     state_ = State::kStopped;
@@ -446,7 +450,7 @@ void DlpContentManager::ScreenShareInfo::UpdatePausedNotification(bool show) {
       show)
     return;
   if (show) {
-    DCHECK_EQ(state_, State::kPaused);
+    CHECK_EQ(state_, State::kPaused, base::NotFatalUntil::M161);
     ShowDlpScreenSharePausedNotification(label_, application_title_);
     notification_state_ = NotificationState::kShowingPausedNotification;
   } else {
@@ -460,7 +464,7 @@ void DlpContentManager::ScreenShareInfo::UpdateResumedNotification(bool show) {
       show)
     return;
   if (show) {
-    DCHECK_EQ(state_, State::kRunning);
+    CHECK_EQ(state_, State::kRunning, base::NotFatalUntil::M161);
     ShowDlpScreenShareResumedNotification(label_, application_title_);
     notification_state_ = NotificationState::kShowingResumedNotification;
   } else {
@@ -705,12 +709,14 @@ void DlpContentManager::AddOrUpdateScreenShare(
   if (screen_share_it != running_screen_shares_.end()) {
     // This should only happen for tab shares, and only if there was a source
     // change.
-    DCHECK(media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
+    CHECK(media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS,
+          base::NotFatalUntil::M161);
     ScreenShareInfo* screen_share = screen_share_it->get();
-    DCHECK(screen_share->state() ==
-               ScreenShareInfo::State::kPausedBeforeSourceChange ||
-           screen_share->state() ==
-               ScreenShareInfo::State::kRunningBeforeSourceChange);
+    CHECK(screen_share->state() ==
+                  ScreenShareInfo::State::kPausedBeforeSourceChange ||
+              screen_share->state() ==
+                  ScreenShareInfo::State::kRunningBeforeSourceChange,
+          base::NotFatalUntil::M161);
     if (screen_share->state() ==
         ScreenShareInfo::State::kPausedBeforeSourceChange) {
       data_controls::DlpBooleanHistogram(
@@ -872,7 +878,7 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
     const ConfidentialContentsInfo& info,
     base::WeakPtr<ScreenShareInfo> screen_share,
     bool should_proceed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!screen_share)
     // The screen share was stopped before the dialog was addressed, so no need

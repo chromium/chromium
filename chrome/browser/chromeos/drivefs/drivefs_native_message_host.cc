@@ -53,7 +53,7 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
   ~DriveFsNativeMessageHost() override = default;
 
   void OnMessage(const std::string& message) override {
-    DCHECK(client_);
+    CHECK(client_, base::NotFatalUntil::M161);
 
     if (drivefs_remote_) {
       drivefs_remote_->HandleMessageFromExtension(message);

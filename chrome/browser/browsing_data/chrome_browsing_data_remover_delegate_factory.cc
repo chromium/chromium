@@ -98,6 +98,7 @@ ChromeBrowsingDataRemoverDelegateFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // For guest profiles the browsing data is in the OTR profile.
   Profile* profile = static_cast<Profile*>(context);
-  DCHECK(!profile->IsGuestSession() || profile->IsOffTheRecord());
+  CHECK(!profile->IsGuestSession() || profile->IsOffTheRecord(),
+        base::NotFatalUntil::M161);
   return std::make_unique<ChromeBrowsingDataRemoverDelegate>(context);
 }

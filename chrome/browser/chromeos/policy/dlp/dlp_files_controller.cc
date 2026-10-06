@@ -49,7 +49,7 @@ void GotFilesSourcesOfCopy(
             file_access::ScopedFileAccess::Allowed()));
     return;
   }
-  DCHECK(response.files_metadata_size() == 1);
+  CHECK(response.files_metadata_size() == 1, base::NotFatalUntil::M161);
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
     std::move(result_callback)
         .Run(std::make_unique<file_access::ScopedFileAccess>(
@@ -106,11 +106,11 @@ void GotFilesSourcesOfCopy(
 // Converts DataTransferEndpoint object to DlpFileDestination.
 DlpFileDestination DTEndpointToFileDestination(
     const ui::DataTransferEndpoint* endpoint) {
-  DCHECK(endpoint);
+  CHECK(endpoint, base::NotFatalUntil::M161);
 
   switch (endpoint->type()) {
     case ui::EndpointType::kUrl:
-      DCHECK(endpoint->GetURL());
+      CHECK(endpoint->GetURL(), base::NotFatalUntil::M161);
       return DlpFileDestination(*endpoint->GetURL());
 
     case ui::EndpointType::kArc:
@@ -181,7 +181,7 @@ void DlpFilesController::FolderRecursionDelegate::Run() {
 }
 
 void DlpFilesController::FolderRecursionDelegate::RunRecursively() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   StartRecursiveOperation(*root_,
                           storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP,
                           base::BindOnce(&FolderRecursionDelegate::Completed,
@@ -406,7 +406,7 @@ void DlpFilesController::ContinueCheckIfPasteOrDropIsAllowed(
     const DlpFileDestination& destination,
     CheckIfDlpAllowedCallback result_callback,
     std::vector<storage::FileSystemURL> files) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
     std::move(result_callback).Run(/*is_allowed=*/true);
@@ -421,7 +421,7 @@ void DlpFilesController::ContinueCheckIfPasteOrDropIsAllowed(
     request.set_destination_component(
         dlp::MapPolicyComponentToProto(destination.component().value()));
   } else {
-    DCHECK(destination.url());
+    CHECK(destination.url(), base::NotFatalUntil::M161);
     request.set_destination_url(destination.url()->spec());
   }
   request.set_file_action(::dlp::FileAction::COPY);

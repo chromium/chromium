@@ -14,7 +14,7 @@ namespace policy {
 
 std::unique_ptr<storage::CopyOrMoveHookDelegate>
 DlpFileAccessCopyOrMoveDelegateFactory::MakeHook() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   return std::make_unique<DlpCopyOrMoveHookDelegate>();
 }
 

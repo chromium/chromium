@@ -43,7 +43,7 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
   display::Display display = screen->GetPrimaryDisplay();
 
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M161);
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();
 
@@ -178,7 +178,7 @@ void DlpDataTransferNotifier::CloseWidget(MayBeDangling<views::Widget> widget,
 
 void DlpDataTransferNotifier::SetPasteCallback(
     base::OnceCallback<void(bool)> paste_cb) {
-  DCHECK(widget_);
+  CHECK(widget_, base::NotFatalUntil::M161);
 
   ClipboardWarnBubble* clp_warn_bubble =
       static_cast<ClipboardWarnBubble*>(widget_->GetContentsView());
@@ -186,13 +186,13 @@ void DlpDataTransferNotifier::SetPasteCallback(
 }
 
 void DlpDataTransferNotifier::RunPasteCallback() {
-  DCHECK(widget_);
+  CHECK(widget_, base::NotFatalUntil::M161);
 
   ClipboardWarnBubble* clp_warn_bubble =
       static_cast<ClipboardWarnBubble*>(widget_->GetContentsView());
 
   auto paste_cb = clp_warn_bubble->get_paste_cb();
-  DCHECK(paste_cb);
+  CHECK(paste_cb, base::NotFatalUntil::M161);
   std::move(paste_cb).Run(true);
 }
 
@@ -220,7 +220,7 @@ void DlpDataTransferNotifier::InitWidget() {
 
 void DlpDataTransferNotifier::ResizeAndShowWidget(const gfx::Size& bubble_size,
                                                   int timeout_duration_ms) {
-  DCHECK(widget_);
+  CHECK(widget_, base::NotFatalUntil::M161);
 
   CalculateAndSetWidgetBounds(widget_.get(), bubble_size);
 

@@ -192,7 +192,7 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
     }
   }
 
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   ash::CrosSettingsProvider::TrustedStatus status =
       ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(

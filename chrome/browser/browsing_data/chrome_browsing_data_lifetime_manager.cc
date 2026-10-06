@@ -99,7 +99,8 @@ class BrowsingDataRemoverObserver
           browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending);
     }
     // The profile and browser should not be shutting down yet.
-    DCHECK(!keep_browser_alive_ || !profile_->ShutdownStarted());
+    CHECK(!keep_browser_alive_ || !profile_->ShutdownStarted(),
+          base::NotFatalUntil::M161);
     delete this;
   }
 
@@ -218,7 +219,7 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
         setting.GetDict().FindList(browsing_data::policy_fields::kDataTypes);
     const auto time_to_live_in_hours = setting.GetDict().FindInt(
         browsing_data::policy_fields::kTimeToLiveInHours);
-    DCHECK(data_types);
+    CHECK(data_types, base::NotFatalUntil::M161);
     scheduled_removals_settings.push_back({GetRemoveMask(*data_types),
                                            GetOriginTypeMask(*data_types),
                                            *time_to_live_in_hours});
@@ -270,8 +271,9 @@ std::set<GURL> GetOpenedUrlsAndOngoingDownloads(Profile* profile) {
 syncer::UserSelectableTypeSet GetSyncTypesForPolicyPref(
     Profile* profile,
     const std::string& pref_name) {
-  DCHECK(pref_name == browsing_data::prefs::kBrowsingDataLifetime ||
-         pref_name == browsing_data::prefs::kClearBrowsingDataOnExitList);
+  CHECK(pref_name == browsing_data::prefs::kBrowsingDataLifetime ||
+            pref_name == browsing_data::prefs::kClearBrowsingDataOnExitList,
+        base::NotFatalUntil::M161);
 
   const base::Value& data_lifetime_value =
       profile->GetPrefs()->GetValue(pref_name);
@@ -298,7 +300,8 @@ const char kDataTypes[] = "data_types";
 ChromeBrowsingDataLifetimeManager::ChromeBrowsingDataLifetimeManager(
     content::BrowserContext* browser_context)
     : profile_(Profile::FromBrowserContext(browser_context)) {
-  DCHECK(!profile_->IsGuestSession() || profile_->IsOffTheRecord());
+  CHECK(!profile_->IsGuestSession() || profile_->IsOffTheRecord(),
+        base::NotFatalUntil::M161);
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       browsing_data::prefs::kBrowsingDataLifetime,
@@ -339,7 +342,7 @@ void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
     // data is deleted and the profile is destroyed.
 #if DCHECK_IS_ON()
     if (browser_shutdown::HasShutdownStarted())
-      DCHECK(keep_browser_alive);
+      CHECK(keep_browser_alive, base::NotFatalUntil::M161);
 #endif
     remover->RemoveAndReply(base::Time(), base::Time::Max(),
                             GetRemoveMask(data_types),
