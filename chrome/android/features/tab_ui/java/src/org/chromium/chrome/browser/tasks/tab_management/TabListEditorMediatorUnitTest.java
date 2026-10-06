@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 
 import org.junit.After;
 import org.junit.Before;
@@ -63,7 +64,6 @@ import java.util.Set;
 
 /** Unit tests for {@link TabListEditorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class TabListEditorMediatorUnitTest {
     private static final TabListEditorItemSelectionId TAB_ID_1 =
             TabListEditorItemSelectionId.createTabId(1);
@@ -76,8 +76,6 @@ public final class TabListEditorMediatorUnitTest {
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private TabListCoordinator mTabListCoordinator;
     @Mock private ResetHandler mResetHandler;
-    @Mock private TabListEditorLayout mTabListEditorLayout;
-    @Mock private TabListEditorToolbar mTabListEditorToolbar;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
     @Mock private NavigationProvider mNavigationProvider;
@@ -104,6 +102,7 @@ public final class TabListEditorMediatorUnitTest {
             };
 
     private Context mContext;
+    private TabListEditorLayout mTabListEditorLayout;
     private PropertyModel mModel;
     private TabListEditorMediator mMediator;
     private MonotonicObservableSupplier<TabModel> mTabModelSupplier;
@@ -125,7 +124,10 @@ public final class TabListEditorMediatorUnitTest {
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        when(mTabListEditorLayout.getToolbar()).thenReturn(mTabListEditorToolbar);
+        mTabListEditorLayout =
+                (TabListEditorLayout)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.tab_list_editor_layout, /* root= */ null);
         mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
 
         setupMediator(CreationMode.FULL_SCREEN);

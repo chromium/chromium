@@ -13,8 +13,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
@@ -65,7 +63,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link TabHoverCardView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp")
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabHoverCardViewUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -83,7 +80,6 @@ public class TabHoverCardViewUnitTest {
     private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createMonotonic();
 
-    // Used as a @Spy.
     private TabHoverCardView mTabHoverCardView;
     private ViewGroup mContentView;
     private TabThumbnailView mThumbnailView;
@@ -101,10 +97,9 @@ public class TabHoverCardViewUnitTest {
 
         Activity activity = buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        var tabHoverCardView =
+        mTabHoverCardView =
                 (TabHoverCardView)
                         activity.getLayoutInflater().inflate(R.layout.tab_hover_card_holder, null);
-        mTabHoverCardView = spy(tabHoverCardView);
         mContentView = mTabHoverCardView.findViewById(R.id.content_view);
         mThumbnailView = mTabHoverCardView.findViewById(R.id.thumbnail);
         mTitleView = mTabHoverCardView.findViewById(R.id.title);
@@ -127,8 +122,7 @@ public class TabHoverCardViewUnitTest {
         mThumbnailView.measure(mHoverCardWidth, thumbnailHeight);
         mThumbnailView.layout(0, 0, mHoverCardWidth, thumbnailHeight);
 
-        var originalLayoutParams = new LayoutParams((int) mHoverCardWidth, 200);
-        when(mTabHoverCardView.getLayoutParams()).thenReturn(originalLayoutParams);
+        mTabHoverCardView.setLayoutParams(new LayoutParams(mHoverCardWidth, 200));
 
         SysUtils.setIsLowEndDeviceForTesting(false);
     }
@@ -152,9 +146,9 @@ public class TabHoverCardViewUnitTest {
                 1,
                 mTabHoverCardView.getLastHoveredTabIdForTesting());
         assertTrue("|mIsShowing| should be true.", mTabHoverCardView.isShowingForTesting());
-        verify(mTabHoverCardView).setX(10f);
-        verify(mTabHoverCardView).setY(20f);
-        verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
+        assertEquals(10f, mTabHoverCardView.getX(), 0f);
+        assertEquals(20f, mTabHoverCardView.getY(), 0f);
+        assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
 
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(
@@ -282,8 +276,7 @@ public class TabHoverCardViewUnitTest {
         mContext.getResources().getDisplayMetrics().widthPixels = windowWidth;
         int expectedCardWidth = Math.round(0.9f * windowWidth);
 
-        LayoutParams layoutParams = new LayoutParams(expectedCardWidth, 200);
-        when(mTabHoverCardView.getLayoutParams()).thenReturn(layoutParams);
+        mTabHoverCardView.setLayoutParams(new LayoutParams(expectedCardWidth, 200));
 
         var url = JUnitTestGURLs.EXAMPLE_URL;
         var title = "Tab 1";
@@ -336,9 +329,9 @@ public class TabHoverCardViewUnitTest {
                 "Card URL text is incorrect.",
                 UrlUtilities.stripTrailingSlash(mHoveredTab.getUrl().getSpec()),
                 mUrlView.getText());
-        verify(mTabHoverCardView).setX(10f);
-        verify(mTabHoverCardView).setY(20f);
-        verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
+        assertEquals(10f, mTabHoverCardView.getX(), 0f);
+        assertEquals(20f, mTabHoverCardView.getY(), 0f);
+        assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
     }
 
     @Test
@@ -459,16 +452,16 @@ public class TabHoverCardViewUnitTest {
 
     @Test
     public void initialize() {
-        // View is inflated in standard tab model.
-        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
-        mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
-        // Invoked in #initialize() in setup and in test.
-        verify(mTabHoverCardView, times(2)).updateHoverCardColors(false);
-
+        // setUp() initializes in the standard tab model, so check incognito first.
         // View is inflated in incognito tab model.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
         mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
-        verify(mTabHoverCardView).updateHoverCardColors(true);
+        assertHoverCardColors(/* incognito= */ true);
+
+        // View is inflated in standard tab model.
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
+        assertHoverCardColors(/* incognito= */ false);
     }
 
     @Test
@@ -483,12 +476,11 @@ public class TabHoverCardViewUnitTest {
 
         // Switch to the incognito tab model.
         mTabModelSupplier.set(incognitoTabModel);
-        verify(mTabHoverCardView).updateHoverCardColors(true);
+        assertHoverCardColors(/* incognito= */ true);
 
         // Switch to the standard tab model.
         mTabModelSupplier.set(standardTabModel);
-        // Invoked in #initialize() in setup and in test.
-        verify(mTabHoverCardView, times(2)).updateHoverCardColors(false);
+        assertHoverCardColors(/* incognito= */ false);
     }
 
     @Test
@@ -588,5 +580,20 @@ public class TabHoverCardViewUnitTest {
                 "Measured width should match getHoverCardWidth.",
                 mHoverCardWidth,
                 mTabHoverCardView.getMeasuredWidth());
+    }
+
+    private void assertHoverCardColors(boolean incognito) {
+        assertEquals(
+                "Title text color is incorrect.",
+                TabUiThemeProvider.getTabHoverCardTextColorPrimary(mContext, incognito),
+                mTitleView.getCurrentTextColor());
+        assertEquals(
+                "URL text color is incorrect.",
+                TabUiThemeProvider.getTabHoverCardTextColorSecondary(mContext, incognito),
+                mUrlView.getCurrentTextColor());
+        assertEquals(
+                "Background tint is incorrect.",
+                TabUiThemeProvider.getTabHoverCardBackgroundTintList(mContext, incognito),
+                mTabHoverCardView.getBackgroundTintList());
     }
 }

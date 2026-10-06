@@ -117,6 +117,10 @@ public class TabListRecyclerView extends RecyclerView
         mBlockTouchInput = blockTouchInput;
     }
 
+    boolean isTouchInputBlockedForTesting() {
+        return mBlockTouchInput;
+    }
+
     void setDisableItemAnimations(boolean disable) {
         if (disable) {
             ItemAnimator animator = getItemAnimator();
@@ -401,5 +405,9 @@ public class TabListRecyclerView extends RecyclerView
 
     public void setSmoothScrolling(boolean isSmoothScrolling) {
         mIsSmoothScrolling = isSmoothScrolling;
+    }
+
+    boolean isSmoothScrollingForTesting() {
+        return mIsSmoothScrolling;
     }
 }

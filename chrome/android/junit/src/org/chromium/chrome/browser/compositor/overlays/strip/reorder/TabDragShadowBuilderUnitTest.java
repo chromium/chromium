@@ -10,16 +10,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -27,6 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,7 +39,6 @@ import org.chromium.chrome.R;
 
 /** Unit tests for {@link TabDragShadowBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabDragShadowBuilderUnitTest {
     private static final int SHADOW_WIDTH = 300;
     private static final int SHADOW_HEIGHT = 200;
@@ -47,6 +48,7 @@ public class TabDragShadowBuilderUnitTest {
     private static final int CARD_TOP = 10;
     private static final int CARD_RIGHT = 290;
     private static final int CARD_BOTTOM = 190;
+    private static final int SHADOW_VIEW_COLOR = Color.RED;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -59,12 +61,13 @@ public class TabDragShadowBuilderUnitTest {
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        mDragSourceView = spy(new View(activity));
-        mShadowView = spy(new FrameLayout(activity));
+        mDragSourceView = new View(activity);
+        mShadowView = new FrameLayout(activity);
+        // A background lets the test observe when the shadow view is drawn onto the canvas.
+        mShadowView.setBackground(new ColorDrawable(SHADOW_VIEW_COLOR));
         mCardView = new View(activity);
         mCardView.setId(R.id.card_view);
         mShadowView.addView(mCardView);
-        when(mShadowView.findViewById(R.id.card_view)).thenReturn(mCardView);
     }
 
     @Test
@@ -104,7 +107,7 @@ public class TabDragShadowBuilderUnitTest {
                         anyFloat(),
                         anyFloat(),
                         any(Paint.class));
-        verify(mShadowView).draw(mCanvas);
+        verifyShadowViewDrawn(/* expectedCount= */ 1);
     }
 
     @Test
@@ -127,13 +130,14 @@ public class TabDragShadowBuilderUnitTest {
                         anyFloat(),
                         anyFloat(),
                         any(Paint.class));
-        verify(mShadowView, never()).draw(mCanvas);
+        verifyShadowViewDrawn(/* expectedCount= */ 0);
     }
 
     @Test
     public void testOnDrawShadow_WhenCardViewNull_UsesFallbackDraw() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        FrameLayout emptyShadowView = spy(new FrameLayout(activity));
+        FrameLayout emptyShadowView = new FrameLayout(activity);
+        emptyShadowView.setBackground(new ColorDrawable(SHADOW_VIEW_COLOR));
         emptyShadowView.layout(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         Point offset = new Point(OFFSET_X, OFFSET_Y);
         TabDragShadowBuilder builder =
@@ -151,24 +155,34 @@ public class TabDragShadowBuilderUnitTest {
                         anyFloat(),
                         anyFloat(),
                         any(Paint.class));
-        verify(emptyShadowView).draw(mCanvas);
+        verifyShadowViewDrawn(/* expectedCount= */ 1);
     }
 
     @Test
-    public void testUpdate_TogglesVisibilityAndDispatchesUpdate() {
-        when(mDragSourceView.isAttachedToWindow()).thenReturn(true);
+    public void testUpdate_TogglesVisibility() {
         Point offset = new Point(OFFSET_X, OFFSET_Y);
         TabDragShadowBuilder builder =
                 new TabDragShadowBuilder(mDragSourceView, mShadowView, offset);
 
         assertFalse("Shadow should not be shown initially.", builder.getShowDragShadow());
 
+        // View#updateDragShadow() is final and requires an active drag, so it is not observable.
         builder.update(/* show= */ true);
         assertTrue("Shadow should be shown after update(true).", builder.getShowDragShadow());
-        verify(mDragSourceView).updateDragShadow(builder);
 
         builder.update(/* show= */ false);
         assertFalse("Shadow should be hidden after update(false).", builder.getShowDragShadow());
-        verify(mDragSourceView, times(2)).updateDragShadow(builder);
+    }
+
+    /** Verifies whether the shadow view's background was drawn onto the canvas. */
+    private void verifyShadowViewDrawn(int expectedCount) {
+        // Capture all drawRect() calls (if any) and count those made with the background color.
+        ArgumentCaptor<Paint> paintCaptor = ArgumentCaptor.forClass(Paint.class);
+        verify(mCanvas, atLeast(0)).drawRect(any(Rect.class), paintCaptor.capture());
+        long drawCount =
+                paintCaptor.getAllValues().stream()
+                        .filter(paint -> paint.getColor() == SHADOW_VIEW_COLOR)
+                        .count();
+        assertEquals(expectedCount, drawCount);
     }
 }

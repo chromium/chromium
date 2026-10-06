@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +32,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 
 /** Unit tests for {@link VerticalTabListRecyclerView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabListRecyclerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final int DEFAULT_SCROLL_OFFSET = 12345;
@@ -43,15 +40,17 @@ public class VerticalTabListRecyclerViewUnitTest {
 
     @Mock private LinearLayoutManager mLayoutManager;
     @Mock private Adapter<?> mAdapter;
-    @Mock private View mFirstView;
-    @Mock private View mLastView;
 
     private VerticalTabListRecyclerView mRecyclerView;
+    private View mFirstView;
+    private View mLastView;
 
     @Before
     public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
-        mRecyclerView = spy(new VerticalTabListRecyclerView(context, null));
+        mRecyclerView = new VerticalTabListRecyclerView(context, null);
+        mFirstView = new View(context);
+        mLastView = new View(context);
 
         when(mLayoutManager.canScrollVertically()).thenReturn(true);
         when(mLayoutManager.computeVerticalScrollOffset(any())).thenReturn(DEFAULT_SCROLL_OFFSET);
@@ -64,7 +63,7 @@ public class VerticalTabListRecyclerViewUnitTest {
         for (int i = 2; i < TOTAL_ITEM_COUNT; i++) {
             when(mAdapter.getItemViewType(i)).thenReturn(TabProperties.UiType.TAB);
         }
-        doReturn(mAdapter).when(mRecyclerView).getAdapter();
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Test
@@ -86,10 +85,8 @@ public class VerticalTabListRecyclerViewUnitTest {
         when(mLayoutManager.findViewByPosition(2)).thenReturn(mFirstView);
         when(mLayoutManager.findViewByPosition(4)).thenReturn(mLastView);
 
-        when(mFirstView.getTop()).thenReturn(0);
-        when(mFirstView.getBottom()).thenReturn(100);
-        when(mLastView.getTop()).thenReturn(200);
-        when(mLastView.getBottom()).thenReturn(300);
+        mFirstView.layout(0, /* t= */ 0, 100, /* b= */ 100);
+        mLastView.layout(0, /* t= */ 200, 100, /* b= */ 300);
 
         assertEquals(0, mRecyclerView.computeVerticalScrollOffset());
         verify(mLayoutManager, never()).computeVerticalScrollOffset(any());
@@ -102,10 +99,8 @@ public class VerticalTabListRecyclerViewUnitTest {
         when(mLayoutManager.findViewByPosition(4)).thenReturn(mFirstView);
         when(mLayoutManager.findViewByPosition(7)).thenReturn(mLastView);
 
-        when(mFirstView.getTop()).thenReturn(0);
-        when(mFirstView.getBottom()).thenReturn(100);
-        when(mLastView.getTop()).thenReturn(300);
-        when(mLastView.getBottom()).thenReturn(400);
+        mFirstView.layout(0, /* t= */ 0, 100, /* b= */ 100);
+        mLastView.layout(0, /* t= */ 300, 100, /* b= */ 400);
 
         assertEquals(200, mRecyclerView.computeVerticalScrollOffset());
         verify(mLayoutManager, never()).computeVerticalScrollOffset(any());
@@ -119,9 +114,9 @@ public class VerticalTabListRecyclerViewUnitTest {
         when(mLayoutManager.findViewByPosition(2)).thenReturn(mFirstView);
         when(mLayoutManager.findViewByPosition(3)).thenReturn(mLastView);
 
-        doReturn(500).when(mRecyclerView).getHeight();
-        when(mFirstView.getTop()).thenReturn(0);
-        when(mLastView.getBottom()).thenReturn(200);
+        mRecyclerView.setBottom(500);
+        mFirstView.layout(0, /* t= */ 0, 100, /* b= */ 100);
+        mLastView.layout(0, /* t= */ 100, 100, /* b= */ 200);
 
         assertEquals(
                 mRecyclerView.computeVerticalScrollExtent(),
@@ -136,9 +131,9 @@ public class VerticalTabListRecyclerViewUnitTest {
         when(mLayoutManager.findViewByPosition(2)).thenReturn(mFirstView);
         when(mLayoutManager.findViewByPosition(5)).thenReturn(mLastView);
 
-        doReturn(300).when(mRecyclerView).getHeight();
-        when(mFirstView.getTop()).thenReturn(0);
-        when(mLastView.getBottom()).thenReturn(400);
+        mRecyclerView.setBottom(300);
+        mFirstView.layout(0, /* t= */ 0, 100, /* b= */ 100);
+        mLastView.layout(0, /* t= */ 300, 100, /* b= */ 400);
 
         assertEquals(800, mRecyclerView.computeVerticalScrollRange());
         verify(mLayoutManager, never()).computeVerticalScrollRange(any());

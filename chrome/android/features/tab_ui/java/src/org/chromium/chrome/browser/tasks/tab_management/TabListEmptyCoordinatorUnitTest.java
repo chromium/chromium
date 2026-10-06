@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
@@ -24,6 +22,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -45,8 +45,29 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabListEmptyCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListEmptyCoordinatorUnitTest {
+    /** Adapter that shows a single pre-built view. */
+    private static class SingleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private final View mView;
+
+        SingleViewAdapter(View view) {
+            mView = view;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new RecyclerView.ViewHolder(mView) {};
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+        @Override
+        public int getItemCount() {
+            return 1;
+        }
+    }
+
     private static final int MESSAGE_CARD_HEIGHT = 50;
     private static final int MESSAGE_CARD_TOP = 5;
 
@@ -56,9 +77,9 @@ public class TabListEmptyCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private TabListRecyclerView mRecyclerView;
     @Mock private Callback<Runnable> mRunOnItemAnimatorFinished;
 
+    private TabListRecyclerView mRecyclerView;
     private FrameLayout mRootView;
     private Activity mContext;
     private TabListModel mModel;
@@ -71,6 +92,7 @@ public class TabListEmptyCoordinatorUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
         mRootView = new FrameLayout(mContext);
         mRootView.layout(0, 0, 100, 100);
+        mRecyclerView = new TabListRecyclerView(mContext, /* attributeSet= */ null);
 
         // Immediately execute runnables passed to mRunOnItemAnimatorFinished.
         doAnswer(
@@ -168,10 +190,21 @@ public class TabListEmptyCoordinatorUnitTest {
                         .build();
         mModel.add(new ListItem(MESSAGE, messageModel));
 
-        View mockMsgCard = mock(View.class);
-        when(mockMsgCard.getMeasuredHeight()).thenReturn(MESSAGE_CARD_HEIGHT);
-        when(mockMsgCard.getTop()).thenReturn(MESSAGE_CARD_TOP);
-        when(mRecyclerView.getChildAt(0)).thenReturn(mockMsgCard);
+        // Lay out a single message card of MESSAGE_CARD_HEIGHT, offset by MESSAGE_CARD_TOP.
+        View msgCard = new View(mContext);
+        msgCard.setLayoutParams(
+                new RecyclerView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, MESSAGE_CARD_HEIGHT));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mRecyclerView.setAdapter(new SingleViewAdapter(msgCard));
+        mRecyclerView.setPadding(0, MESSAGE_CARD_TOP, 0, 0);
+        mRecyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY));
+        mRecyclerView.layout(0, 0, 100, 200);
+        assertEquals(msgCard, mRecyclerView.getChildAt(0));
+        assertEquals(MESSAGE_CARD_TOP, msgCard.getTop());
+        assertEquals(MESSAGE_CARD_HEIGHT, msgCard.getMeasuredHeight());
 
         mCoordinator.setIsTabSwitcherShowing(true);
         assertEquals(View.VISIBLE, emptyView.getVisibility());
@@ -192,7 +225,7 @@ public class TabListEmptyCoordinatorUnitTest {
         mCoordinator.attachEmptyView();
         View emptyView = mRootView.getChildAt(0);
 
-        when(mRecyclerView.getTop()).thenReturn(20);
+        mRecyclerView.setTop(20);
 
         mCoordinator.setIsTabSwitcherShowing(true);
         assertEquals(View.VISIBLE, emptyView.getVisibility());
@@ -228,7 +261,7 @@ public class TabListEmptyCoordinatorUnitTest {
         mCoordinator.attachEmptyView();
         View emptyView = mRootView.getChildAt(0);
 
-        when(mRecyclerView.getTop()).thenReturn(0);
+        mRecyclerView.setTop(0);
 
         mCoordinator.setIsTabSwitcherShowing(true);
 
@@ -239,7 +272,7 @@ public class TabListEmptyCoordinatorUnitTest {
         assertEquals(rowMargin, params.topMargin);
 
         // Change layout
-        when(mRecyclerView.getTop()).thenReturn(20);
+        mRecyclerView.setTop(20);
         mRootView.layout(0, 0, 100, 200);
 
         assertEquals(rowMargin + 20, params.topMargin);

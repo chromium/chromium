@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 
 import android.view.View;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,13 +30,11 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 /** Unit tests for {@link StripTabModelActionListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StripTabModelActionListenerUnitTest {
     private static final Token TAB_GROUP_ID = new Token(3478329L, 3489L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mToolbarContainerView;
     @Mock private Runnable mBeforeSyncDialogRunnable;
     @Mock private Runnable mOnSuccess;
 
@@ -46,7 +46,7 @@ public class StripTabModelActionListenerUnitTest {
                 TAB_GROUP_ID,
                 actionType,
                 mGroupIdToHideSupplier,
-                mToolbarContainerView,
+                new View(ApplicationProvider.getApplicationContext()),
                 mBeforeSyncDialogRunnable,
                 mOnSuccess);
     }
@@ -59,7 +59,6 @@ public class StripTabModelActionListenerUnitTest {
         // DialogType.NONE always sends willSkipDialog = true.
         listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         verify(mBeforeSyncDialogRunnable, never()).run();
-        verify(mToolbarContainerView, never()).cancelDragAndDrop();
         assertNull(mGroupIdToHideSupplier.get());
 
         // DialogType.NONE will always send IMMEDIATE_CONTINUE.
@@ -78,7 +77,6 @@ public class StripTabModelActionListenerUnitTest {
         listener.willPerformActionOrShowDialog(
                 DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mBeforeSyncDialogRunnable, never()).run();
-        verify(mToolbarContainerView, never()).cancelDragAndDrop();
         assertNull(mGroupIdToHideSupplier.get());
 
         // Negative confirmation (delete).
@@ -103,7 +101,6 @@ public class StripTabModelActionListenerUnitTest {
 
         listener.willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mBeforeSyncDialogRunnable, never()).run();
-        verify(mToolbarContainerView, never()).cancelDragAndDrop();
         assertNull(mGroupIdToHideSupplier.get());
 
         listener.onConfirmationDialogResult(
@@ -118,8 +115,9 @@ public class StripTabModelActionListenerUnitTest {
         StripTabModelActionListener listener = createListener(ActionType.DRAG_OFF_STRIP);
 
         listener.willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ false);
+        // Note: View#cancelDragAndDrop() on the toolbar container is final and leaves no
+        // observable state, so it is not verified here.
         verify(mBeforeSyncDialogRunnable).run();
-        verify(mToolbarContainerView).cancelDragAndDrop();
         assertEquals(TAB_GROUP_ID, mGroupIdToHideSupplier.get());
 
         // Positive confirmation (delete).
@@ -146,7 +144,6 @@ public class StripTabModelActionListenerUnitTest {
 
         listener.willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mBeforeSyncDialogRunnable, never()).run();
-        verify(mToolbarContainerView, never()).cancelDragAndDrop();
         assertNull(mGroupIdToHideSupplier.get());
 
         // This will assert.

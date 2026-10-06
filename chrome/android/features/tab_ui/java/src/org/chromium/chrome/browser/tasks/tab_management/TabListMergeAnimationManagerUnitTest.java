@@ -4,26 +4,24 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
-
-import android.content.Context;
-import android.graphics.Rect;
+import android.app.Activity;
+import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,174 +30,158 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.Holder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
+import java.time.Duration;
 import java.util.List;
 
 /** Unit tests for {@link TabListMergeAnimationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListMergeAnimationManagerUnitTest {
-    private static final int FULL_HEIGHT = 100;
+    /** Adapter with {@link #ITEM_COUNT} fixed-height items. */
+    private static class TestAdapter extends RecyclerView.Adapter<ViewHolder> {
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = new View(parent.getContext());
+            view.setLayoutParams(
+                    new RecyclerView.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT));
+            return new ViewHolder(view, (model, v, key) -> {});
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {}
+
+        @Override
+        public int getItemCount() {
+            return ITEM_COUNT;
+        }
+    }
+
+    private static final int ITEM_HEIGHT = 100;
+    private static final int ITEM_COUNT = 10;
+    // Fully shows items 0 and 1, and only half of item 2.
+    private static final int RECYCLER_VIEW_HEIGHT = 250;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mOnAnimationEndRunnable;
-    @Mock private View mTargetView;
-    @Mock private View mOtherView;
+    @Mock private Runnable mSecondOnAnimationEndRunnable;
 
     private TabListRecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private ViewHolder mTargetViewHolder;
-    private ViewHolder mOtherViewHolder;
+    private LinearLayoutManager mLayoutManager;
     private TabListMergeAnimationManager mAnimationManager;
 
     @Before
     public void setUp() {
-        mLayoutManager =
-                spy(
-                        new RecyclerView.LayoutManager() {
-                            @Override
-                            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-                                return null;
-                            }
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout root = new FrameLayout(activity);
+        activity.setContentView(root);
 
-                            @Override
-                            public void startSmoothScroll(
-                                    RecyclerView.SmoothScroller smoothScroller) {
-                                super.startSmoothScroll(smoothScroller);
-                                // Setting a new smooth scroller when another scroller is running
-                                // forces
-                                // the earlier scroller to complete.
-                                super.startSmoothScroll(mock());
-                            }
-                        });
-
-        Context context = ApplicationProvider.getApplicationContext();
-        mRecyclerView = spy(new TabListRecyclerView(context, null));
+        mRecyclerView = new TabListRecyclerView(activity, /* attributeSet= */ null);
+        mLayoutManager = spy(new LinearLayoutManager(activity));
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(new TestAdapter());
+        root.addView(
+                mRecyclerView,
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, RECYCLER_VIEW_HEIGHT));
+        RobolectricUtil.runAllBackgroundAndUi();
 
-        mTargetViewHolder = new ViewHolder(mTargetView, (a, b, c) -> {});
-        mOtherViewHolder = new ViewHolder(mOtherView, (a, b, c) -> {});
-
-        doCallback(
-                        0,
-                        runnable -> {
-                            assertThat(runnable).isInstanceOf(Runnable.class);
-                            ((Runnable) runnable).run();
-                        })
-                .when(mRecyclerView)
-                .post(any());
         mAnimationManager = new TabListMergeAnimationManager(mRecyclerView);
     }
 
-    private void mockTargetVisibility(boolean isVisible) {
-        when(mRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(mTargetViewHolder);
-        when(mTargetView.isShown()).thenReturn(isVisible);
-        when(mTargetView.getMeasuredHeight()).thenReturn(FULL_HEIGHT);
-        doCallback(
-                        0,
-                        item -> {
-                            assertThat(item).isInstanceOf(Rect.class);
-                            Rect rect = (Rect) item;
-                            if (isVisible) {
-                                rect.set(0, 0, 50, FULL_HEIGHT);
-                            } else {
-                                rect.set(0, 0, 50, FULL_HEIGHT - 1);
-                            }
-                        })
-                .when(mTargetView)
-                .getGlobalVisibleRect(any());
+    private View getItemView(int position) {
+        RecyclerView.ViewHolder viewHolder =
+                mRecyclerView.findViewHolderForAdapterPosition(position);
+        return viewHolder.itemView;
+    }
+
+    private void runUiForMs(long ms) {
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(ms));
+    }
+
+    private void runAllAnimations() {
+        runUiForMs(5000);
     }
 
     @Test
     public void testPlayAnimation_whenTargetIsVisible() {
-        mockTargetVisibility(true);
-        when(mRecyclerView.findViewHolderForAdapterPosition(1)).thenReturn(mOtherViewHolder);
-        when(mRecyclerView.getLayoutManager()).thenReturn(mLayoutManager);
-
         mAnimationManager.playAnimation(0, List.of(0, 1), mOnAnimationEndRunnable);
-        ShadowLooper.runUiThreadTasks();
 
-        verify(mRecyclerView).setBlockTouchInput(true);
-        verify(mRecyclerView).setSmoothScrolling(true);
+        assertTrue(mRecyclerView.isTouchInputBlockedForTesting());
+        assertTrue(mRecyclerView.isSmoothScrollingForTesting());
         verify(mLayoutManager, never()).startSmoothScroll(any());
+        verify(mOnAnimationEndRunnable, never()).run();
 
-        verify(mRecyclerView).setBlockTouchInput(false);
-        verify(mRecyclerView).setSmoothScrolling(false);
+        runAllAnimations();
+
+        assertFalse(mRecyclerView.isTouchInputBlockedForTesting());
+        assertFalse(mRecyclerView.isSmoothScrollingForTesting());
         verify(mOnAnimationEndRunnable).run();
     }
 
     @Test
     public void testPlayAnimation_whenTargetIsNotVisible() {
-        mockTargetVisibility(false);
+        // Item 2 is only partially visible, so a scroll is needed before animating.
+        mAnimationManager.playAnimation(2, List.of(1, 2), mOnAnimationEndRunnable);
 
-        Holder<@Nullable OnScrollListener> listener = new Holder<>(null);
-        doCallback(0, listener).when(mRecyclerView).addOnScrollListener(any());
+        assertTrue(mRecyclerView.isTouchInputBlockedForTesting());
+        assertTrue(mRecyclerView.isSmoothScrollingForTesting());
+        verify(mLayoutManager).startSmoothScroll(any());
+        verify(mOnAnimationEndRunnable, never()).run();
 
-        mAnimationManager.playAnimation(0, List.of(0, 1), mOnAnimationEndRunnable);
-        ShadowLooper.runUiThreadTasks();
+        // Let the smooth scroll settle and the merge animation run.
+        runAllAnimations();
 
-        verify(mRecyclerView).setBlockTouchInput(true);
-        verify(mRecyclerView).setSmoothScrolling(true);
-        verify(mRecyclerView).addOnScrollListener(any());
-
-        mockTargetVisibility(true);
-        listener.get().onScrollStateChanged(mRecyclerView, RecyclerView.SCROLL_STATE_IDLE);
-        ShadowLooper.runUiThreadTasks();
-
-        verify(mRecyclerView).removeOnScrollListener(listener.get());
-        verify(mRecyclerView).setBlockTouchInput(false);
-        verify(mRecyclerView).setSmoothScrolling(false);
+        assertFalse(mRecyclerView.isTouchInputBlockedForTesting());
+        assertFalse(mRecyclerView.isSmoothScrollingForTesting());
         verify(mOnAnimationEndRunnable).run();
     }
 
     @Test
     public void testPlayAnimation_whenAlreadyAnimating() {
-        mockTargetVisibility(true);
         mAnimationManager.playAnimation(0, List.of(0, 1), mOnAnimationEndRunnable);
-        mAnimationManager.playAnimation(0, List.of(0, 1), mock());
-        ShadowLooper.runUiThreadTasks();
+        mAnimationManager.playAnimation(0, List.of(0, 1), mSecondOnAnimationEndRunnable);
+        runAllAnimations();
 
-        verify(mRecyclerView, times(1)).setBlockTouchInput(true);
-        verify(mOnAnimationEndRunnable, times(1)).run();
+        verify(mOnAnimationEndRunnable).run();
+        verify(mSecondOnAnimationEndRunnable, never()).run();
     }
 
     @Test
     public void testAnimationCleanup() {
-        mockTargetVisibility(true);
-        when(mRecyclerView.findViewHolderForAdapterPosition(1)).thenReturn(mOtherViewHolder);
+        View otherView = getItemView(1);
 
         mAnimationManager.playAnimation(0, List.of(1), mOnAnimationEndRunnable);
-        ShadowLooper.runUiThreadTasks();
+        runAllAnimations();
 
-        verify(mOtherView, atLeast(1)).setTranslationX(0f);
-        verify(mOtherView, atLeast(1)).setTranslationY(0f);
-
-        verify(mRecyclerView).setBlockTouchInput(false);
-        verify(mRecyclerView).setSmoothScrolling(false);
+        // Alpha is not reset by cleanup, so this shows the merge animation actually ran.
+        assertEquals(0f, otherView.getAlpha(), 0f);
+        // Without cleanup, the other card would be left translated onto the target card.
+        assertEquals(0f, otherView.getTranslationX(), 0f);
+        assertEquals(0f, otherView.getTranslationY(), 0f);
+        assertFalse(mRecyclerView.isTouchInputBlockedForTesting());
+        assertFalse(mRecyclerView.isSmoothScrollingForTesting());
         verify(mOnAnimationEndRunnable).run();
     }
 
     @Test
     public void testPlayAnimation_nullTargetViewHolder() {
-        mockTargetVisibility(true);
-
-        when(mRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(null);
-        Holder<@Nullable OnScrollListener> listener = new Holder<>(null);
-        doCallback(0, listener).when(mRecyclerView).addOnScrollListener(any());
+        // Without a layout manager there are no laid-out children, so no view holder is found.
+        // This also skips the smooth scroll (covered by testPlayAnimation_whenTargetIsNotVisible).
+        mRecyclerView.setLayoutManager(null);
+        assertNull(mRecyclerView.findViewHolderForAdapterPosition(0));
 
         mAnimationManager.playAnimation(0, List.of(0, 1), mOnAnimationEndRunnable);
-        listener.get().onScrollStateChanged(mRecyclerView, RecyclerView.SCROLL_STATE_IDLE);
-        ShadowLooper.runUiThreadTasks();
+        runAllAnimations();
 
-        verify(mRecyclerView).setBlockTouchInput(false);
-        verify(mRecyclerView).setSmoothScrolling(false);
+        assertFalse(mRecyclerView.isTouchInputBlockedForTesting());
+        assertFalse(mRecyclerView.isSmoothScrollingForTesting());
         verify(mOnAnimationEndRunnable).run();
-        verify(mTargetView, never()).getX();
     }
 }

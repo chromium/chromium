@@ -5,10 +5,6 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
@@ -43,7 +39,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link TabHoverCardView} positioning on the tab strip. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp")
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StripTabHoverCardPositionUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -60,7 +55,6 @@ public class StripTabHoverCardPositionUnitTest {
     private static final float STRIP_STACK_HEIGHT = 500.f;
     private static final float TAB_WIDTH = 100f;
 
-    // Used as a @Spy.
     private TabHoverCardView mTabHoverCardView;
     private Context mContext;
     private int mHoverCardWidth;
@@ -71,10 +65,9 @@ public class StripTabHoverCardPositionUnitTest {
 
         Activity activity = buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        var tabHoverCardView =
+        mTabHoverCardView =
                 (TabHoverCardView)
                         activity.getLayoutInflater().inflate(R.layout.tab_hover_card_holder, null);
-        mTabHoverCardView = spy(tabHoverCardView);
 
         mContext = mTabHoverCardView.getContext();
         mContext.getResources().getDisplayMetrics().density = 1f;
@@ -87,14 +80,12 @@ public class StripTabHoverCardPositionUnitTest {
         // Set window width large enough to prevent window edge clamping in position tests.
         mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth * 2);
 
-        var originalLayoutParams = new LayoutParams((int) mHoverCardWidth, 200);
-        when(mTabHoverCardView.getLayoutParams()).thenReturn(originalLayoutParams);
+        mTabHoverCardView.setLayoutParams(new LayoutParams(mHoverCardWidth, 200));
 
         SysUtils.setIsLowEndDeviceForTesting(false);
     }
 
     @Test
-    @SuppressWarnings("DirectInvocationOnMock")
     public void show() {
         var url = JUnitTestGURLs.EXAMPLE_URL;
         var title = "Tab 1";
@@ -107,9 +98,9 @@ public class StripTabHoverCardPositionUnitTest {
                         mTabHoverCardView, false, 10, 20, STRIP_STACK_HEIGHT, 0f);
         mTabHoverCardView.show(mHoveredTab, position[0], position[1]);
 
-        verify(mTabHoverCardView).setX(anyFloat());
-        verify(mTabHoverCardView).setY(anyFloat());
-        verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
+        assertEquals(position[0], mTabHoverCardView.getX(), 0f);
+        assertEquals(position[1], mTabHoverCardView.getY(), 0f);
+        assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
     }
 
     @Test
@@ -128,8 +119,9 @@ public class StripTabHoverCardPositionUnitTest {
 
         float cardShadowLength =
                 mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
-        verify(mTabHoverCardView).setY(STRIP_STACK_HEIGHT + topPadding - cardShadowLength);
-        verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
+        assertEquals(
+                STRIP_STACK_HEIGHT + topPadding - cardShadowLength, mTabHoverCardView.getY(), 0f);
+        assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
     }
 
     @Test

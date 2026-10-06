@@ -7,19 +7,17 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -32,11 +30,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link TabGroupHoverCardPresenter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGroupHoverCardPresenterUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
@@ -44,7 +42,6 @@ public class TabGroupHoverCardPresenterUnitTest {
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
-    @Mock private TabGroupHoverCardView mHoverCardView;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
@@ -52,19 +49,21 @@ public class TabGroupHoverCardPresenterUnitTest {
     @Mock private Tab mTab5;
     @Mock private Tab mTab6;
 
-    @Captor private ArgumentCaptor<List<String>> mChildTitlesCaptor;
-
+    private Activity mActivity;
+    private TabGroupHoverCardView mHoverCardView;
     private TabGroupHoverCardPresenter mPresenter;
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mHoverCardView =
+                (TabGroupHoverCardView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.tab_group_hover_card_holder, null);
 
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
-
-        when(mHoverCardView.getContext()).thenReturn(activity);
 
         when(mTab1.getTitle()).thenReturn("Tab 1");
         when(mTab2.getTitle()).thenReturn("Tab 2");
@@ -84,16 +83,11 @@ public class TabGroupHoverCardPresenterUnitTest {
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
-        verify(mHoverCardView)
-                .bindData(
-                        eq("Custom Group"),
-                        mChildTitlesCaptor.capture(),
-                        /* excessCount= */ eq(0),
-                        /* isIncognito= */ eq(false));
-        List<String> capturedTitles = mChildTitlesCaptor.getValue();
-        assertEquals(2, capturedTitles.size());
-        assertEquals("• Tab 1", capturedTitles.get(0));
-        assertEquals("• Tab 2", capturedTitles.get(1));
+        assertBoundData("Custom Group", /* excessCount= */ 0, /* isIncognito= */ false);
+        List<String> childTitles = getVisibleChildTitles();
+        assertEquals(2, childTitles.size());
+        assertEquals("• Tab 1", childTitles.get(0));
+        assertEquals("• Tab 2", childTitles.get(1));
     }
 
     @Test
@@ -104,13 +98,8 @@ public class TabGroupHoverCardPresenterUnitTest {
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
-        verify(mHoverCardView)
-                .bindData(
-                        eq("3 tabs"),
-                        mChildTitlesCaptor.capture(),
-                        /* excessCount= */ eq(0),
-                        /* isIncognito= */ eq(false));
-        assertEquals(3, mChildTitlesCaptor.getValue().size());
+        assertBoundData("3 tabs", /* excessCount= */ 0, /* isIncognito= */ false);
+        assertEquals(3, getVisibleChildTitles().size());
     }
 
     @Test
@@ -121,16 +110,11 @@ public class TabGroupHoverCardPresenterUnitTest {
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
-        verify(mHoverCardView)
-                .bindData(
-                        eq("Big Group"),
-                        mChildTitlesCaptor.capture(),
-                        /* excessCount= */ eq(1),
-                        /* isIncognito= */ eq(false));
-        List<String> capturedTitles = mChildTitlesCaptor.getValue();
-        assertEquals(5, capturedTitles.size());
-        assertEquals("• Tab 1", capturedTitles.get(0));
-        assertEquals("• Tab 5", capturedTitles.get(4));
+        assertBoundData("Big Group", /* excessCount= */ 1, /* isIncognito= */ false);
+        List<String> childTitles = getVisibleChildTitles();
+        assertEquals(5, childTitles.size());
+        assertEquals("• Tab 1", childTitles.get(0));
+        assertEquals("• Tab 5", childTitles.get(4));
     }
 
     @Test
@@ -153,12 +137,7 @@ public class TabGroupHoverCardPresenterUnitTest {
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
-        verify(mHoverCardView)
-                .bindData(
-                        eq("Incognito Group"),
-                        /* childTabTitles= */ anyList(),
-                        /* excessCount= */ eq(0),
-                        /* isIncognito= */ eq(true));
+        assertBoundData("Incognito Group", /* excessCount= */ 0, /* isIncognito= */ true);
     }
 
     @Test
@@ -171,15 +150,10 @@ public class TabGroupHoverCardPresenterUnitTest {
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
-        verify(mHoverCardView)
-                .bindData(
-                        eq("1 tab"),
-                        mChildTitlesCaptor.capture(),
-                        /* excessCount= */ eq(0),
-                        /* isIncognito= */ eq(false));
-        List<String> capturedTitles = mChildTitlesCaptor.getValue();
-        assertEquals(1, capturedTitles.size());
-        assertEquals("• Tab 1", capturedTitles.get(0));
+        assertBoundData("1 tab", /* excessCount= */ 0, /* isIncognito= */ false);
+        List<String> childTitles = getVisibleChildTitles();
+        assertEquals(1, childTitles.size());
+        assertEquals("• Tab 1", childTitles.get(0));
     }
 
     @Test
@@ -190,5 +164,37 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
 
         assertFalse(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
+    }
+
+    private void assertBoundData(String title, int excessCount, boolean isIncognito) {
+        TextView titleView = mHoverCardView.getGroupTitleViewForTesting();
+        assertEquals(title, titleView.getText().toString());
+        TextView excessView = mHoverCardView.getGroupExcessTabsViewForTesting();
+        if (excessCount > 0) {
+            assertEquals(View.VISIBLE, excessView.getVisibility());
+            assertEquals(
+                    mActivity
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.tab_group_hover_card_excess_tabs,
+                                    excessCount,
+                                    excessCount),
+                    excessView.getText().toString());
+        } else {
+            assertEquals(View.GONE, excessView.getVisibility());
+        }
+        assertEquals(
+                TabUiThemeProvider.getTabHoverCardTextColorPrimary(mActivity, isIncognito),
+                titleView.getCurrentTextColor());
+    }
+
+    private List<String> getVisibleChildTitles() {
+        List<String> titles = new ArrayList<>();
+        for (TextView childView : mHoverCardView.getChildTabViewsForTesting()) {
+            if (childView.getVisibility() == View.VISIBLE) {
+                titles.add(childView.getText().toString());
+            }
+        }
+        return titles;
     }
 }

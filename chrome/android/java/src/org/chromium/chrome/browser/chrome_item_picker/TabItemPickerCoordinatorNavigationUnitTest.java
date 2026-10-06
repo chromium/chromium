@@ -4,24 +4,30 @@
 
 package org.chromium.chrome.browser.chrome_item_picker;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,13 +35,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -58,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
@@ -71,7 +80,6 @@ import java.util.Set;
 
 /** Integration tests for TabItemPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabItemPickerCoordinatorNavigationUnitTest {
     private static final int WINDOW_ID = 5;
 
@@ -84,7 +92,6 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabModelSelectorImpl mTabModelSelector;
-    @Mock private ChromeItemPickerActivity mActivity;
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
     @Mock private TabListEditorController mTabListEditorController;
     @Mock private TabContentManager mTabContentManager;
@@ -96,6 +103,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
     private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
 
+    private ChromeItemPickerActivity mActivity;
     private TabItemPickerCoordinator mItemPickerCoordinator;
     private ItemPickerNavigationProvider mNavigationProvider;
     private Set<Integer> mCachedTabIds = new HashSet<>();
@@ -104,8 +112,11 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     public void setUp() {
         TabLoadingService.getInstance().clearForTesting();
         OneshotSupplierImpl<Profile> profileSupplierImpl = new OneshotSupplierImpl<>();
-        ViewGroup rootView = Mockito.mock(ViewGroup.class);
-        ViewGroup containerView = Mockito.mock(ViewGroup.class);
+        // The activity is only used for finishing with a result, so it is not created.
+        mActivity = Robolectric.buildActivity(ChromeItemPickerActivity.class).get();
+        Context context = ContextUtils.getApplicationContext();
+        ViewGroup rootView = new FrameLayout(context);
+        ViewGroup containerView = new FrameLayout(context);
         SnackbarManager snackbarManager = Mockito.mock(SnackbarManager.class);
         TabItemPickerCoordinator realCoordinator =
                 new TabItemPickerCoordinator(
@@ -139,6 +150,31 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         return tab;
     }
 
+    private void assertFinishedWithCancel() {
+        assertTrue(mActivity.isFinishing());
+        assertEquals(Activity.RESULT_CANCELED, shadowOf(mActivity).getResultCode());
+        // finishWithCancel() sets a result intent, unlike a bare finish().
+        assertNotNull(shadowOf(mActivity).getResultIntent());
+    }
+
+    /** Returns an Answer that asserts the activity has not started finishing yet. */
+    private Answer<Void> assertNotFinishingAnswer() {
+        return invocation -> {
+            assertFalse(mActivity.isFinishing());
+            return null;
+        };
+    }
+
+    private void assertFinishedWithTabIds(Integer... tabIds) {
+        assertTrue(mActivity.isFinishing());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        assertEquals(
+                Arrays.asList(tabIds),
+                shadowOf(mActivity)
+                        .getResultIntent()
+                        .getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS));
+    }
+
     private void captureAndSpyNavigationProvider() {
         assumeNonNull(mTabModelSelector);
         mNavigationProvider =
@@ -163,6 +199,8 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     public void testGoBackTriggersCancel() {
         captureAndSpyNavigationProvider();
         when(mTabListEditorController.isVisible()).thenReturn(true);
+        // The UI must be hidden before the activity finishes.
+        doAnswer(assertNotFinishingAnswer()).when(mTabListEditorController).hide();
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -172,13 +210,8 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.goBack();
 
         watcher.assertExpected();
-
-        InOrder inOrder = inOrder(mTabListEditorController, mActivity);
-
-        inOrder.verify(mTabListEditorController).hide();
-        inOrder.verify(mActivity).finishWithCancel();
-
-        verify(mActivity, never()).finish();
+        verify(mTabListEditorController).hide();
+        assertFinishedWithCancel();
     }
 
     @Test
@@ -199,7 +232,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.goBack();
 
         watcher.assertExpected();
-        verify(mActivity).finishWithCancel();
+        assertFinishedWithCancel();
     }
 
     @Test
@@ -209,18 +242,15 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         TabListEditorItemSelectionId id1 = TabListEditorItemSelectionId.createTabId(101);
         TabListEditorItemSelectionId id2 = TabListEditorItemSelectionId.createTabId(102);
         List<TabListEditorItemSelectionId> selectedList = Arrays.asList(id1, id2);
+        // The UI hide action must be called before the activity finishes.
+        doAnswer(assertNotFinishingAnswer()).when(mTabListEditorController).hideByAction();
 
         // Simulate finishSelection() being called.
         mNavigationProvider.finishSelection(selectedList);
 
-        InOrder inOrder = inOrder(mTabListEditorController, mActivity);
-
-        // Verify the UI hide action is called first.
-        inOrder.verify(mTabListEditorController).hideByAction();
-
-        // Verify the Activity success method is called second with the expected data.
-        inOrder.verify(mActivity).finishWithSelectedItems(selectedList);
-        verify(mActivity, never()).finish();
+        verify(mTabListEditorController).hideByAction();
+        // Verify the Activity finishes successfully with the expected data.
+        assertFinishedWithTabIds(101, 102);
     }
 
     @Test
@@ -245,7 +275,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.finishSelection(selectedList);
 
         watcher.assertExpected();
-        verify(mActivity).finishWithSelectedItems(selectedList);
+        assertFinishedWithTabIds(101, 102);
     }
 
     @Test

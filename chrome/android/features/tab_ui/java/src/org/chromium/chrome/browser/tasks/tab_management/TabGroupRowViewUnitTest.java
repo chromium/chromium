@@ -73,7 +73,6 @@ import java.util.stream.Collectors;
 
 /** Unit tests for {@link TabGroupRowView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGroupRowViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -84,7 +83,6 @@ public class TabGroupRowViewUnitTest {
     @Mock Runnable mRunnable;
     @Mock Drawable mDrawable;
     @Mock FaviconResolver mFaviconResolver;
-    @Mock SharedImageTilesView mSharedImageTilesView;
 
     private Activity mActivity;
     private TabGroupRowView mTabGroupRowView;
@@ -330,7 +328,9 @@ public class TabGroupRowViewUnitTest {
     @Test
     @DisabledTest // This needs to be re-worked for Q.
     public void testImageTileContainerCallback() {
-        remakeWithProperty(SHARED_IMAGE_TILES_VIEW, mSharedImageTilesView);
+        SharedImageTilesView sharedImageTilesView =
+                new SharedImageTilesView(mActivity, /* attrs= */ null);
+        remakeWithProperty(SHARED_IMAGE_TILES_VIEW, sharedImageTilesView);
         assertEquals(1, mImageTilesContainer.getChildCount());
         remakeWithProperty(SHARED_IMAGE_TILES_VIEW, null);
         assertEquals(0, mImageTilesContainer.getChildCount());
