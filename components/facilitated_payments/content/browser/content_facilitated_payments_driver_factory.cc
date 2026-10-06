@@ -19,6 +19,23 @@
 
 namespace payments::facilitated {
 
+namespace {
+
+// Returns whether `signals` meets the rule to start extracting images.
+bool ShouldExtractImagesForQrCode(const mojom::HeuristicSignals& signals) {
+  // Pages with a facilitated payment link are handled by the payment link
+  // flow, so offering a QR code payment as well would duplicate the prompt.
+  if (signals.has_facilitated_payment_link) {
+    return false;
+  }
+  // A square image alone is not enough (logos, avatars or icons), so a keyword
+  // is also required to suggest that the page is about paying.
+  return signals.has_square_candidate &&
+         (signals.url_keyword_match || signals.text_keyword_match);
+}
+
+}  // namespace
+
 ContentFacilitatedPaymentsDriverFactory::
     ContentFacilitatedPaymentsDriverFactory(content::WebContents* web_contents,
                                             FacilitatedPaymentsClient* client)
@@ -48,8 +65,23 @@ ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
 void ContentFacilitatedPaymentsDriverFactory::OnHeuristicSignalsReported(
     content::RenderFrameHost* render_frame_host,
     const mojom::HeuristicSignals& signals) {
-  // TODO(crbug.com/556832672): Skip pages with a facilitated payment link, and
-  // extract images when `has_square_candidate` and a keyword signal match.
+  // A report can arrive after the page has been navigated away from, so it
+  // must not trigger extraction on a frame that is no longer shown.
+  if (!render_frame_host->IsActive() ||
+      !render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  if (has_detected_qr_code_ || is_evaluating_qr_code_) {
+    return;
+  }
+  if (!ShouldExtractImagesForQrCode(signals)) {
+    return;
+  }
+
+  is_evaluating_qr_code_ = true;
+  // TODO(crbug.com/556832672): Extract images from `render_frame_host` and
+  // decode them, then clear `is_evaluating_qr_code_` and set
+  // `has_detected_qr_code_` from the result.
 }
 
 void ContentFacilitatedPaymentsDriverFactory::RenderFrameDeleted(
@@ -65,6 +97,9 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
       !navigation_handle->IsInOutermostMainFrame()) {
     return;
   }
+  is_evaluating_qr_code_ = false;
+  has_detected_qr_code_ = false;
+
   auto& driver = GetOrCreateForFrame(navigation_handle->GetRenderFrameHost());
 #if BUILDFLAG(IS_ANDROID)
   driver.DidNavigateToOrAwayFromPage();

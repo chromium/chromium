@@ -4,14 +4,18 @@
 
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
+#include <tuple>
+
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -274,5 +278,81 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   EXPECT_FALSE(factory_->IsEligibleForQrCodeDetection(
       GURL("https://allowlisted-merchant.com")));
 }
+
+// Returns signals that pass the heuristic: a square image plus a keyword.
+mojom::HeuristicSignalsPtr MakeQualifyingSignals() {
+  mojom::HeuristicSignalsPtr signals = mojom::HeuristicSignals::New();
+  signals->has_square_candidate = true;
+  signals->text_keyword_match = true;
+  return signals;
+}
+
+// Test that signals reported from an iframe never start an evaluation, since
+// only the primary main frame is scanned.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnHeuristicSignalsReported_Iframe_DoesNotEvaluate) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  content::RenderFrameHost* iframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("iframe");
+
+  factory_->OnHeuristicSignalsReported(iframe, *MakeQualifyingSignals());
+
+  EXPECT_FALSE(factory_->is_evaluating_qr_code_for_testing());
+}
+
+// Test that no new evaluation starts once a QR code has been found on the page.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnHeuristicSignalsReported_QrCodeAlreadyDetected_DoesNotEvaluate) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->set_has_detected_qr_code_for_testing(true);
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  EXPECT_FALSE(factory_->is_evaluating_qr_code_for_testing());
+}
+
+// Test that committing a new document clears the per-page state, so that the
+// next page can be evaluated.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       DidFinishNavigation_ResetsQrCodeState) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+  ASSERT_TRUE(factory_->is_evaluating_qr_code_for_testing());
+
+  NavigateAndCommit(GURL("https://merchant.example/order"));
+
+  EXPECT_FALSE(factory_->is_evaluating_qr_code_for_testing());
+}
+
+// Parameters: `has_facilitated_payment_link`, `has_square_candidate`,
+// `url_keyword_match`, `text_keyword_match`.
+class ContentFacilitatedPaymentsDriverFactorySignalsTest
+    : public ContentFacilitatedPaymentsDriverFactoryTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {};
+
+// Test that an evaluation starts only for pages without a facilitated payment
+// link that have a square image and at least one keyword match.
+TEST_P(ContentFacilitatedPaymentsDriverFactorySignalsTest,
+       OnHeuristicSignalsReported_EvaluatesOnlyQualifyingSignals) {
+  const auto [has_link, has_square, url_match, text_match] = GetParam();
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+
+  mojom::HeuristicSignalsPtr signals = mojom::HeuristicSignals::New();
+  signals->has_facilitated_payment_link = has_link;
+  signals->has_square_candidate = has_square;
+  signals->url_keyword_match = url_match;
+  signals->text_keyword_match = text_match;
+  factory_->OnHeuristicSignalsReported(main_rfh(), *signals);
+
+  EXPECT_EQ(factory_->is_evaluating_qr_code_for_testing(),
+            !has_link && has_square && (url_match || text_match));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContentFacilitatedPaymentsDriverFactorySignalsTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 }  // namespace payments::facilitated
