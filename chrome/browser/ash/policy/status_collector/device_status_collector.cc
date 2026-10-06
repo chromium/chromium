@@ -2068,8 +2068,10 @@ void DeviceStatusCollector::ReceiveCPUStatistics(const std::string& stats) {
     uint64_t total = active + idle;
     uint64_t last_total = last_cpu_active_ + last_cpu_idle_;
     CHECK_GE(active, last_cpu_active_, base::NotFatalUntil::M160);
-    CHECK_GE(idle, last_cpu_idle_, base::NotFatalUntil::M160);
-    CHECK_GE(total, last_total, base::NotFatalUntil::M160);
+    // TODO(crbug.com/568722898): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_GE(idle, last_cpu_idle_);
+    DCHECK_GE(total, last_total);
 
     if ((total - last_total) > 0) {
       cpu_usage_percent =
@@ -2079,7 +2081,9 @@ void DeviceStatusCollector::ReceiveCPUStatistics(const std::string& stats) {
     last_cpu_idle_ = idle;
   }
 
-  CHECK_LE(cpu_usage_percent, 100, base::NotFatalUntil::M160);
+  // TODO(crbug.com/568722898): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LE(cpu_usage_percent, 100);
 
   // This timestamp is used in both ResourceUsage and SampledData for CPU
   // termporary, which is expected to be same according to existing
