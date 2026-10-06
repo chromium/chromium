@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -3728,7 +3729,7 @@ class ScrollbarsTestWithMacScrollbarAnimatorProxy : public ScrollbarsTest {
 
    private:
     Member<MacScrollbarAnimator> animator_impl_;
-    Counters* counters_;
+    raw_ptr<Counters, UnprotectedInRelease> counters_;
   };
 
   void ProxyingMacScrollbarAnimator(ScrollableArea* scrollable_area,

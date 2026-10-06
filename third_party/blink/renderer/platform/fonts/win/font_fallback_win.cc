@@ -36,6 +36,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
@@ -81,12 +82,13 @@ struct FontMapping {
   }
 
   const char* family_name;
-  base::span<const char* const> candidate_family_names;
+  base::raw_span<const char* const, UnprotectedInRelease>
+      candidate_family_names;
 };
 
 struct ScriptToFontFamilies {
   UScriptCode script;
-  base::span<const char* const> families;
+  base::raw_span<const char* const, UnprotectedInRelease> families;
 };
 
 // A simple mapping from UScriptCode to family name. This is a sparse array,

@@ -6348,14 +6348,15 @@ class MojoTestHelper {
   }
 
   ~MojoTestHelper() {
-    web_view_helper_.Reset();  // Remove dependency on locally scoped client.
+    web_view_helper_->Reset();  // Remove dependency on locally scoped client.
   }
 
   WebViewImpl* WebView() const { return web_view_; }
 
  private:
-  WebViewImpl* web_view_;
-  frame_test_helpers::WebViewHelper& web_view_helper_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease> web_view_;
+  const raw_ref<frame_test_helpers::WebViewHelper, UnprotectedInRelease>
+      web_view_helper_;
   frame_test_helpers::TestWebFrameClient web_frame_client_;
 };
 
@@ -6458,7 +6459,7 @@ class ShowUnhandledTapTest : public WebViewTest {
     EXPECT_EQ(expected, mock_notifier_.WasUnhandledTap());
   }
 
-  WebViewImpl* web_view_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease> web_view_;
   MockUnhandledTapNotifierImpl mock_notifier_;
 
  private:

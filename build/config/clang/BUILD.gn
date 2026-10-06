@@ -93,6 +93,10 @@ clang_plugin("raw_ptr_check") {
     # TODO(crbug.com/330759291): once this has landed and simmered for
     # a while, bake in the resultant settings and remove all this.
     plugin_arguments += [ "no-special-treatment-for-oilpanized-paths" ]
+
+    # TODO(crbug.com/335556942): once this has landed and simmered for
+    # a while, bake in the resultant settings and remove all this.
+    plugin_arguments += [ "check-raw-ptr-in-blink" ]
   }
 }
 
