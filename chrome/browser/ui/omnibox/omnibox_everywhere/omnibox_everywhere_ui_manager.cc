@@ -1035,7 +1035,7 @@ void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
   if (!widget_) {
     return;
   }
-  if (is_dragging_) {
+  if (is_dragging_ || is_screenshare_picker_open_) {
     pending_auto_resize_size_ = new_size;
     return;
   }
@@ -1126,6 +1126,11 @@ void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
 void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
   is_screenshare_picker_open_ = false;
   UpdateModalInteractionState();
+  if (pending_auto_resize_size_.has_value()) {
+    gfx::Size size = *pending_auto_resize_size_;
+    pending_auto_resize_size_.reset();
+    ResizeDueToAutoResize(web_contents(), size);
+  }
   if (widget_ && !suppress_restore_on_screenshare_picker_closed_) {
     ActivateAndFocus();
   }

@@ -2223,6 +2223,16 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->OnWidgetUserDragEnded(widget);
   EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 300);
 
+  // While the screenshare picker is open, AutoResize should also be deferred
+  // so the hidden window frame is not updated mid-picker.
+  ui_manager->OnScreensharePickerOpened();
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(popup_width, 250));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 300);
+
+  // When the screenshare picker closes, the pending AutoResize is applied.
+  ui_manager->OnScreensharePickerClosed();
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 250);
+
   ui_manager->Close();
 }
 

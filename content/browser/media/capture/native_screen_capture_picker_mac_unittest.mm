@@ -702,4 +702,45 @@ TEST_F(NativeScreenCapturePickerMacTest, CancelPickerDeactivatesSystemPicker) {
   }
 }
 
+TEST_F(NativeScreenCapturePickerMacTest, OpenExcludesHiddenWindows) {
+  if (@available(macOS 14.0, *)) {
+    // Ensure NSApplication is initialized so created NSWindows are tracked in
+    // [NSApp windows].
+    [NSApplication sharedApplication];
+
+    NSWindow* hidden_window =
+        [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 100, 400, 300)
+                                    styleMask:NSWindowStyleMaskTitled
+                                      backing:NSBackingStoreBuffered
+                                        defer:NO];
+    [hidden_window setReleasedWhenClosed:NO];
+    [hidden_window orderOut:nil];
+    ASSERT_FALSE([hidden_window isVisible]);
+    ASSERT_GT([hidden_window windowNumber], 0);
+
+    NSWindow* visible_window =
+        [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 100, 400, 300)
+                                    styleMask:NSWindowStyleMaskTitled
+                                      backing:NSBackingStoreBuffered
+                                        defer:NO];
+    [visible_window setReleasedWhenClosed:NO];
+    [visible_window orderFront:nil];
+    ASSERT_TRUE([visible_window isVisible]);
+    ASSERT_GT([visible_window windowNumber], 0);
+
+    picker_->Open(DesktopMediaID::TYPE_WINDOW, base::DoNothing(),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                  base::DoNothing());
+
+    NSArray<NSNumber*>* excluded_ids =
+        g_fake_picker.defaultConfiguration.excludedWindowIDs;
+    EXPECT_TRUE([excluded_ids containsObject:@([hidden_window windowNumber])]);
+    EXPECT_FALSE(
+        [excluded_ids containsObject:@([visible_window windowNumber])]);
+
+    [hidden_window close];
+    [visible_window close];
+  }
+}
+
 }  // namespace content
