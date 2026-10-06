@@ -38,6 +38,7 @@ class DangerousDownloadDialogBridge : public download::DownloadItem::Observer {
   void Cancelled(const std::string& download_guid);
 
   // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* download_item) override;
   void OnDownloadDestroyed(download::DownloadItem* download_item) override;
 
   // Returns the download domain string shown in the dialog. Exposed for
@@ -46,6 +47,10 @@ class DangerousDownloadDialogBridge : public download::DownloadItem::Observer {
       download::DownloadItem* item);
 
  private:
+  // Stops observing `download_item`, removes it from `download_items_`, and
+  // dismisses any associated Java dialog.
+  void DismissDialog(download::DownloadItem* download_item);
+
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>

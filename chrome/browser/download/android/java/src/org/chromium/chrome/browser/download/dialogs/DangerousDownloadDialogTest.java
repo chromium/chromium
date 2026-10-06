@@ -27,6 +27,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog.DangerousDownloadDialogEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -139,6 +140,11 @@ public class DangerousDownloadDialogTest {
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Download.DangerousDialog.Events",
+                        DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISS);
+
         // Simulate a dismissal from tab switching or lifecycle event.
         dialogController.onDismiss(mModalDialogModel, DialogDismissalCause.TAB_SWITCHED);
         verify(mResultCallback)
@@ -147,6 +153,33 @@ public class DangerousDownloadDialogTest {
                 .onResult(DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CANCEL);
         verify(mResultCallback, never())
                 .onResult(DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CONFIRM);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.MALICIOUS_APK_DOWNLOAD_CHECK)
+    public void testDismiss_programmaticDismissal_doesNotInvokeCallback() {
+        createAndShowDialog(/* isDangerous= */ true);
+        ModalDialogProperties.Controller dialogController =
+                mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Download.DangerousDialog.Events",
+                        DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISSED_BY_NATIVE);
+
+        mDialog.dismiss();
+        verify(mModalDialogManager)
+                .dismissDialog(mModalDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+
+        dialogController.onDismiss(mModalDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        verify(mResultCallback, never())
+                .onResult(DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISS);
+        verify(mResultCallback, never())
+                .onResult(DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CANCEL);
+        verify(mResultCallback, never())
+                .onResult(DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CONFIRM);
+        histogramWatcher.assertExpected();
     }
 
     @Test

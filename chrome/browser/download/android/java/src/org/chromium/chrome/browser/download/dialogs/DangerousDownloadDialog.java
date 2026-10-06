@@ -18,6 +18,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -51,7 +52,8 @@ public class DangerousDownloadDialog {
         DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW,
         DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CONFIRM,
         DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CANCEL,
-        DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISS
+        DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISS,
+        DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISSED_BY_NATIVE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DangerousDownloadDialogEvent {
@@ -59,11 +61,26 @@ public class DangerousDownloadDialog {
         int DANGEROUS_DOWNLOAD_DIALOG_CONFIRM = 1;
         int DANGEROUS_DOWNLOAD_DIALOG_CANCEL = 2;
         int DANGEROUS_DOWNLOAD_DIALOG_DISMISS = 3;
+        int DANGEROUS_DOWNLOAD_DIALOG_DISMISSED_BY_NATIVE = 4;
 
-        int COUNT = 4;
+        int COUNT = 5;
     }
 
+    private @Nullable ModalDialogManager mModalDialogManager;
+    private @Nullable PropertyModel mModel;
+    private @Nullable Callback<Integer> mCallback;
+
     public DangerousDownloadDialog() {}
+
+    /** Dismisses the dialog if it is currently showing without invoking the result callback. */
+    public void dismiss() {
+        mCallback = null;
+        if (mModalDialogManager != null && mModel != null) {
+            mModalDialogManager.dismissDialog(mModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        }
+        mModalDialogManager = null;
+        mModel = null;
+    }
 
     /**
      * Called to show a warning dialog for a download.
@@ -74,8 +91,9 @@ public class DangerousDownloadDialog {
      * @param totalBytes Total bytes of the file.
      * @param downloadDomain Domain name to associate with the downloaded file.
      * @param iconId Icon ID of the warning dialog.
-     * @param callback Callback to run when the dialog closes, receiving a {@link
-     *     DangerousDownloadDialogEvent} value indicating confirmation, cancellation, or dismissal.
+     * @param callback Callback to run when the dialog closes (unless dismissed programmatically via
+     *     {@link #dismiss()}), receiving a {@link DangerousDownloadDialogEvent} value indicating
+     *     confirmation, cancellation, or dismissal.
      * @param isDangerous The danger status of the download file.
      */
     public void show(
@@ -87,6 +105,8 @@ public class DangerousDownloadDialog {
             int iconId,
             Callback<Integer> callback,
             boolean isDangerous) {
+        mModalDialogManager = modalDialogManager;
+        mCallback = callback;
         var resources = context.getResources();
         var controller =
                 new ModalDialogProperties.Controller() {
@@ -101,30 +121,41 @@ public class DangerousDownloadDialog {
                                                 .DANGEROUS_DOWNLOAD_DIALOG_CONFIRM
                                         : DangerousDownloadDialogEvent
                                                 .DANGEROUS_DOWNLOAD_DIALOG_CANCEL;
-                        if (callback != null) {
-                            callback.onResult(event);
+                        if (mCallback != null) {
+                            mCallback.onResult(event);
                         }
-                        modalDialogManager.dismissDialog(
-                                model,
-                                acceptDownload
-                                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                        if (mModalDialogManager != null) {
+                            mModalDialogManager.dismissDialog(
+                                    model,
+                                    acceptDownload
+                                            ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                            : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                        }
                         recordDownloadDialogEvent(event, isDangerous);
                     }
 
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
-                        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        if (dismissalCause == DialogDismissalCause.DISMISSED_BY_NATIVE) {
+                            recordDownloadDialogEvent(
+                                    DangerousDownloadDialogEvent
+                                            .DANGEROUS_DOWNLOAD_DIALOG_DISMISSED_BY_NATIVE,
+                                    isDangerous);
+                        } else if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                 && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
-                            if (callback != null) {
-                                callback.onResult(
+                            if (mCallback != null) {
+                                mCallback.onResult(
                                         DangerousDownloadDialogEvent
                                                 .DANGEROUS_DOWNLOAD_DIALOG_DISMISS);
+                                recordDownloadDialogEvent(
+                                        DangerousDownloadDialogEvent
+                                                .DANGEROUS_DOWNLOAD_DIALOG_DISMISS,
+                                        isDangerous);
                             }
-                            recordDownloadDialogEvent(
-                                    DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISS,
-                                    isDangerous);
                         }
+                        mModalDialogManager = null;
+                        mModel = null;
+                        mCallback = null;
                     }
                 };
 
@@ -183,7 +214,8 @@ public class DangerousDownloadDialog {
                                 public void handleOnBackPressed() {}
                             });
         }
-        modalDialogManager.showDialog(builder.build(), dialogType);
+        mModel = builder.build();
+        modalDialogManager.showDialog(mModel, dialogType);
     }
 
     /**
