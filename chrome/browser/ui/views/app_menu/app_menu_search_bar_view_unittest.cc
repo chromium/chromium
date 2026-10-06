@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -17,7 +18,9 @@
 #include "ui/events/event.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace {
 
@@ -130,6 +133,69 @@ TEST_F(AppMenuSearchBarViewTest, DownArrowDeactivatesFocus) {
   EXPECT_FALSE(search_bar->GetCursorEnabled());
   // Down key should be unhandled so MenuController can process it.
   EXPECT_FALSE(down_key.handled());
+}
+
+TEST_F(AppMenuSearchBarViewTest, LeadingIconToggles) {
+  auto search_bar = std::make_unique<AppMenuSearchBarView>();
+  views::ImageView* icon = search_bar->search_icon_for_testing();
+  views::ImageButton* back_button = search_bar->back_button_for_testing();
+  ASSERT_NE(icon, nullptr);
+  ASSERT_NE(back_button, nullptr);
+
+  EXPECT_TRUE(icon->GetVisible());
+  EXPECT_FALSE(back_button->GetVisible());
+
+  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
+  EXPECT_FALSE(icon->GetVisible());
+  EXPECT_TRUE(back_button->GetVisible());
+
+  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kSearch);
+  EXPECT_TRUE(icon->GetVisible());
+  EXPECT_FALSE(back_button->GetVisible());
+}
+
+TEST_F(AppMenuSearchBarViewTest, BackPressClearsText) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  search_bar->SetText(u"downloads");
+  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
+
+  EXPECT_FALSE(search_bar->GetText().empty());
+  EXPECT_TRUE(search_bar->is_active_for_testing());
+  EXPECT_TRUE(search_bar->GetCursorEnabled());
+
+  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+
+  EXPECT_TRUE(search_bar->GetText().empty());
+  EXPECT_TRUE(search_bar->is_active_for_testing());
+  EXPECT_TRUE(search_bar->GetCursorEnabled());
+}
+
+TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesTextChanged) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  search_bar->SetText(u"downloads");
+  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
+
+  int notifications = 0;
+  base::CallbackListSubscription subscription =
+      search_bar->AddTextChangedCallback(
+          base::BindLambdaForTesting([&]() { ++notifications; }));
+
+  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+
+  EXPECT_GT(notifications, 0);
+  EXPECT_TRUE(search_bar->GetText().empty());
 }
 
 }  // namespace
