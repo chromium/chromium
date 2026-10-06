@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerActivity;
 
+@NullMarked
 public class TaskManagerImpl implements TaskManager {
     private static final String TAG = "TaskManager";
 

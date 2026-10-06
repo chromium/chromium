@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -22,12 +24,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.Category;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
@@ -55,6 +58,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Binds the model and the view of task manager. */
+@NullMarked
 class TaskManagerCoordinator {
     private static final @Category int[] CATEGORIES = {
         Category.TABS_AND_EXTENSIONS, Category.BROWSER, Category.ALL_TASKS,
@@ -281,13 +285,12 @@ class TaskManagerCoordinator {
     }
 
     @VisibleForTesting
-    @Nullable
-    AnchoredPopupWindow getContextMenuPopupForTesting() {
+    @Nullable AnchoredPopupWindow getContextMenuPopupForTesting() {
         return mContextMenuPopup;
     }
 
     private static void bindHeader(PropertyModel model, View view, PropertyKey unused) {
-        @Nullable SortDescriptor descriptor = model.get(TaskManagerProperties.SORT_DESCRIPTOR);
+        SortDescriptor descriptor = model.get(TaskManagerProperties.SORT_DESCRIPTOR);
         Set<PropertyKey> selectedKeys = Set.of(model.get(TaskManagerProperties.COLUMNS));
 
         for (PropertyKey columnKey : TaskManagerProperties.ALL_COLUMN_KEYS) {
@@ -303,11 +306,7 @@ class TaskManagerCoordinator {
             // TOOD(crbug.com/380158700): Descriptive message for a11y.
             boolean isSorted = descriptor != null && descriptor.key == columnKey;
             if (isSorted) {
-                if (descriptor.ascending) {
-                    textView.append(" ▲");
-                } else {
-                    textView.append(" ▼");
-                }
+                textView.append(assumeNonNull(descriptor).ascending ? " ▲" : " ▼");
             }
             textView.setSelected(isSorted);
         }

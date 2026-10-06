@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.task_manager;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This interface defines the methods that an observer must implement to receive updates from the
  * C++ task manager class via JNI.
@@ -17,6 +19,7 @@ import org.jni_zero.CalledByNative;
  *
  * <p>This interface mirrors the functionality of the C++ `task_manager_observer.h` header file.
  */
+@NullMarked
 public interface TaskManagerObserver {
     @CalledByNative
     void onTaskAdded(long id);

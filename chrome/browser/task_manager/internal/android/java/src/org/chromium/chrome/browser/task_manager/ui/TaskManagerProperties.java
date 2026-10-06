@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge.GpuMemoryUsage;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -25,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
  * This class contains the keys for retrieving the corresponding value from the model representing
  * the current task manager state.
  */
+@NullMarked
 class TaskManagerProperties {
     /** Categories for filtering tasks in the Task Manager toolbar. */
     @IntDef({
@@ -64,7 +67,7 @@ class TaskManagerProperties {
         }
 
         @Override
-        public boolean equals(Object other) {
+        public boolean equals(@Nullable Object other) {
             if (this == other) return true;
 
             if (!(other instanceof SortDescriptor)) return false;
@@ -78,7 +81,7 @@ class TaskManagerProperties {
             new WritableObjectPropertyKey<>();
 
     /** Property key for the sort order. If the sort order is unspecified, null is set. */
-    static final WritableObjectPropertyKey<SortDescriptor> SORT_DESCRIPTOR =
+    static final WritableObjectPropertyKey<@Nullable SortDescriptor> SORT_DESCRIPTOR =
             new WritableObjectPropertyKey<>();
 
     /** Property key for active filter category. */
@@ -123,7 +126,8 @@ class TaskManagerProperties {
             new WritableObjectPropertyKey<>();
 
     /** Property key for task icon. */
-    static final WritableObjectPropertyKey<Bitmap> TASK_ICON = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<@Nullable Bitmap> TASK_ICON =
+            new WritableObjectPropertyKey<>();
 
     /**
      * All the property keys that can appear as a column. Sorted in order to appear in the context

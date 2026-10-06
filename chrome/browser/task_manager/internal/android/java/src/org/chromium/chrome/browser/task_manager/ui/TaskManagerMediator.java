@@ -21,9 +21,9 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_TYPE;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.task_manager.RefreshType;
 import org.chromium.chrome.browser.task_manager.TaskManagerObserver;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge;
@@ -46,10 +46,11 @@ import java.util.Locale;
  * The class works as a mediator between the underlyning model (ModelList) and the task manager
  * backend accessed through TaskManagerServiceBridge.
  */
+@NullMarked
 class TaskManagerMediator {
     private final int mRefreshTimeMillis;
     private final TaskManagerServiceBridge mBridge = new TaskManagerServiceBridge();
-    private TaskManagerServiceBridge.ObserverHandle mObserverHandle;
+    private TaskManagerServiceBridge.@Nullable ObserverHandle mObserverHandle;
 
     private final PropertyModel mHeader;
     // The list containing the properties representing all tasks received from the bridge.
@@ -153,7 +154,7 @@ class TaskManagerMediator {
      * </ul>
      */
     void cycleSortOrder(PropertyKey columnKey) {
-        @Nullable SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
+        SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
 
         boolean ascendingFirst = TaskManagerProperties.initialSortIsAscending(columnKey);
 
@@ -298,7 +299,7 @@ class TaskManagerMediator {
                 filtered.add(task);
             }
         }
-        @Nullable SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
+        SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
         if (descriptor != null) {
             Comparator<ListItem> comparator = getTaskComparator(descriptor);
             filtered.sort(comparator);
@@ -345,7 +346,7 @@ class TaskManagerMediator {
                     return;
                 }
 
-                @Nullable SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
+                SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
                 if (descriptor == null) {
                     mTasks.add(task);
                     return;
@@ -390,7 +391,7 @@ class TaskManagerMediator {
                     updateTaskModel(task, taskId);
                 }
 
-                @Nullable SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
+                SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
                 if (descriptor != null) {
                     sortTasks(descriptor);
                 }
@@ -459,7 +460,6 @@ class TaskManagerMediator {
         mTasks.set(tasks);
     }
 
-    @SuppressWarnings("NullMarked")
     private static Comparator<ListItem> getTaskComparator(SortDescriptor descriptor) {
         Comparator<ListItem> ascComparator =
                 (a, b) -> {

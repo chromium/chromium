@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
  * manager logic.
  */
 @JNINamespace("task_manager")
+@NullMarked
 public class TaskManagerServiceBridge {
     /** Describes the GPU memory usage. */
     public static class GpuMemoryUsage {
@@ -41,7 +43,7 @@ public class TaskManagerServiceBridge {
         }
 
         @Override
-        public boolean equals(Object other) {
+        public boolean equals(@Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof GpuMemoryUsage)) return false;
             GpuMemoryUsage that = (GpuMemoryUsage) other;

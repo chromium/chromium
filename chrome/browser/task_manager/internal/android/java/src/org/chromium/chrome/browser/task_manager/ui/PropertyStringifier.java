@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge.GpuMemoryUsage;
 import org.chromium.ui.base.BytesFormatting;
 
@@ -13,6 +14,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 /** Provides methods to stringify task properties. */
+@NullMarked
 class PropertyStringifier {
     private static final String ZERO_STRING = "0";
     private static final String ASTERISK_STRING = "*";
