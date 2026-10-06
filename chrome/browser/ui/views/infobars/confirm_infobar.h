@@ -31,6 +31,11 @@ class ConfirmInfoBar : public InfoBarView {
 
   // Creates the appropriate ConfirmInfoBar subclass depending on whether the
   // delegate uses inline links.
+  // Note: Do not add new direct callers; use infobars::BrowserInfoBarManager
+  // and infobars::InfoBarSpec instead.
+  // TODO(https://crbug.com/567121669): Gate with base::PassKey once all desktop
+  // infobar migrations complete, and update //chrome/browser/infobars/README.md
+  // and GEMINI.md.
   static std::unique_ptr<ConfirmInfoBar> Create(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 

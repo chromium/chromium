@@ -14,7 +14,8 @@ namespace infobars {
 
 // Feature flag controlling the centralization of desktop infobars.
 // TODO(https://crbug.com/512837934): Remove feature flag once fully launched
-// and all feature-specific delegates are migrated.
+// and all feature-specific delegates are migrated, and update
+// //chrome/browser/infobars/README.md and GEMINI.md.
 BASE_DECLARE_FEATURE(kCentralizedInfoBarFramework);
 
 BASE_DECLARE_FEATURE_PARAM(bool, kEnableAll);

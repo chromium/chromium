@@ -20,6 +20,11 @@ class ContentInfoBarManager;
 // Creates a simple alert infobar and delegate and adds the infobar to
 // |infobar_manager|. If |vector_icon| is not null, it will be shown.
 // |infobar_identifier| names what class triggered the infobar for metrics.
+// Note: Do not add new Desktop callers; use infobars::BrowserInfoBarManager and
+// infobars::InfoBarSpec instead.
+// TODO(https://crbug.com/567121669): Gate with base::PassKey once all desktop
+// infobar migrations complete, and update //chrome/browser/infobars/README.md
+// and GEMINI.md.
 void CreateSimpleAlertInfoBar(
     infobars::ContentInfoBarManager* infobar_manager,
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,

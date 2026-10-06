@@ -121,6 +121,11 @@ calling `ContentInfoBarManager::AddInfoBar()`:
 
 ## Legacy Utilities (Do Not Use in New Code)
 
+<!-- TODO(https://crbug.com/567121669): Update this section and remove the
+IsInfoBarMigrated() note above once all desktop infobar migrations complete and
+the base::PassKey compile-time gate lands on CreateConfirmInfoBar(),
+CreateSimpleAlertInfoBar(), and ConfirmInfoBar::Create(). -->
+
 * `confirm_infobar_creator.h` (`CreateConfirmInfoBar`) and
   `simple_alert_infobar_creator.h` (`CreateSimpleAlertInfoBar`) are legacy
   helpers retained only for unmigrated infobars and internal use by

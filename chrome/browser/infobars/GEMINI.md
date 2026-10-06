@@ -4,6 +4,10 @@ These instructions apply to Desktop Chrome InfoBars implemented through
 `chrome/browser/infobars/`.
 
 ## Use the Centralized Framework
+<!-- TODO(https://crbug.com/567121669): Update this file once all desktop
+infobar migrations complete and the base::PassKey compile-time gate lands on
+CreateConfirmInfoBar(), CreateSimpleAlertInfoBar(), and
+ConfirmInfoBar::Create(). -->
 
 For new Desktop InfoBars, use:
 
