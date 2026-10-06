@@ -8,6 +8,7 @@ import("protocol_sources.gni")
 proto_library("protocol") {
   proto_in_dir = "//"
   sources = sync_protocol_sources
+  deps = [ "//third_party/protobuf:timestamp_proto" ]
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -44,7 +45,13 @@ if (is_android) {
 
   proto_java_library("protocol_java") {
     proto_path = "//"
-    sources = sync_protocol_sources
+
+    # tab_context_container_access_token.proto imports
+    # google/protobuf/timestamp.proto, whose Java classes are excluded from
+    # //third_party/android_deps:protobuf_lite_runtime_java (see
+    # crbug.com/1103399) and not declared in `android_protoc_import_files`.
+    sources =
+        sync_protocol_sources - [ "tab_context_container_access_token.proto" ]
   }
 }
 

@@ -15,8 +15,8 @@
 #include "base/time/time.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
+#include "components/sync/protocol/tab_context_container_access_token.pb.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
-#include "components/sync_tab_context/proto/tab_context_container_access_token.pb.h"
 #include "components/sync_tab_context/tab_context_container_sync_bridge.h"
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
 
@@ -50,7 +50,7 @@ std::string BuildContainerAccessToken(
     return std::string();
   }
 
-  TabContextContainerAccessToken token_proto;
+  sync_pb::TabContextContainerAccessToken token_proto;
   token_proto.set_name(std::move(result.name));
   token_proto.set_encrypted_container_key(
       encrypted_container_key->SerializeAsString());

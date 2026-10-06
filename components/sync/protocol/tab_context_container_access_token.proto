@@ -5,11 +5,11 @@
 syntax = "proto2";
 
 option java_multiple_files = true;
-option java_package = "org.chromium.components.sync_tab_context.proto";
+option java_package = "org.chromium.components.sync.protocol";
 
 option optimize_for = LITE_RUNTIME;
 
-package sync_tab_context;
+package sync_pb;
 
 import "google/protobuf/timestamp.proto";
 

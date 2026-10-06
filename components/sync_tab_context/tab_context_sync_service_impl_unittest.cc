@@ -23,9 +23,9 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/agile_encryption_keys.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/tab_context_container_access_token.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
-#include "components/sync_tab_context/proto/tab_context_container_access_token.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -149,7 +149,7 @@ TEST_F(TabContextSyncServiceImplTest,
       GetContainerAccessToken(*container_id);
   ASSERT_TRUE(token_string.has_value());
 
-  TabContextContainerAccessToken token_proto;
+  sync_pb::TabContextContainerAccessToken token_proto;
   ASSERT_TRUE(token_proto.ParseFromString(*token_string));
   EXPECT_FALSE(token_proto.name().empty());
   EXPECT_TRUE(token_proto.has_expire_time());
