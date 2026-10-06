@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/time/time.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
@@ -116,11 +117,15 @@ void CriticalUserJourneyRegistry::AddJourneys() {
                    ui::InteractionSequence::StepType::kCustomEvent,
                    ClearBrowsingHistoryJourneySteps::
                        kShowClearBrowsingDataSettingsDialog)
-          .AddStep(
-              browsing_data_important_sites_util::
-                  kClearBrowsingDataHistoryEventId,
-              ui::InteractionSequence::StepType::kCustomEvent,
-              ClearBrowsingHistoryJourneySteps::kClearBrowsingDataHistoryEvent)
+          .AddAnyOf({Branch(browsing_data_important_sites_util::
+                                kClearBrowsingDataHistoryEventId,
+                            ClearBrowsingHistoryJourneySteps::
+                                kClearBrowsingDataHistoryEvent),
+                     Branch(browsing_data_important_sites_util::
+                                kDismissClearBrowsingDataDialogEventId,
+                            ClearBrowsingHistoryJourneySteps::
+                                kDismissClearBrowsingDataDialog)
+                         .SetExitBranch(base::Milliseconds(2000))})
           .LaunchHatsSurveyOnCompletion(clear_browsing_history_hats_params)
           .Build());
 

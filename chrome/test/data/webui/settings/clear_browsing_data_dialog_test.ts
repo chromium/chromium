@@ -134,7 +134,48 @@ suite('DeleteBrowsingDataDialog', function() {
 
   test('CancelButton', async function() {
     dialog.$.cancelButton.click();
+    await testMetricsBrowserProxy.whenCalled(
+        'recordClearBrowsingDataCancelled');
     await eventToPromise('close', dialog);
+  });
+
+  test('DialogEscapeKey', async function() {
+    // Pressing Escape on the native dialog dispatches 'cancel', which should
+    // record cancellation when deletion is not in progress.
+    dialog.$.deleteBrowsingDataDialog.getNative().dispatchEvent(
+        new Event('cancel'));
+    await testMetricsBrowserProxy.whenCalled(
+        'recordClearBrowsingDataCancelled');
+  });
+
+  test('DialogCancelIgnoredWhileDeleting', async function() {
+    // Neither clicking the disabled Cancel button nor a native 'cancel' event
+    // while deletion is in progress should record cancellation.
+    const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
+    assertTrue(!!historyCheckbox);
+    historyCheckbox.$.checkbox.click();
+    await microtasksFinished();
+
+    const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
+    testClearBrowsingDataBrowserProxy.setClearBrowsingDataPromise(
+        promiseResolver.promise);
+    dialog.$.deleteButton.click();
+    await testClearBrowsingDataBrowserProxy.whenCalled('clearBrowsingData');
+    await microtasksFinished();
+
+    assertTrue(dialog.$.cancelButton.disabled);
+    dialog.$.cancelButton.click();
+    dialog.$.deleteBrowsingDataDialog.getNative().dispatchEvent(
+        new Event('cancel'));
+    await microtasksFinished();
+    assertEquals(
+        0,
+        testMetricsBrowserProxy.getCallCount(
+            'recordClearBrowsingDataCancelled'));
+
+    promiseResolver.resolve(
+        {showHistoryNotice: false, showPasswordsNotice: false});
+    await promiseResolver.promise;
   });
 
   test('DeleteButton', async function() {

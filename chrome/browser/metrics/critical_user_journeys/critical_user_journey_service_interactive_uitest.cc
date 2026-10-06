@@ -530,6 +530,13 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
                    browsing_data_important_sites_util::
                        kClearBrowsingDataHistoryEventId));
 
+  // Verification
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
+
   histograms.ExpectBucketCount(step_reached, 2, 1);  // App Menu Clicked
   histograms.ExpectBucketCount(step_reached, 3,
                                1);  // Clear browsing dialog shown
@@ -573,6 +580,13 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
       WaitForEvent(kBrowserViewElementId,
                    browsing_data_important_sites_util::
                        kClearBrowsingDataHistoryEventId));
+
+  // Verification
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
 
   histograms.ExpectBucketCount(step_reached, 1, 1);  // App Menu Clicked
   histograms.ExpectBucketCount(step_reached, 3,

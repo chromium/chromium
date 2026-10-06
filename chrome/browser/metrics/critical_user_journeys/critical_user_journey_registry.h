@@ -30,6 +30,7 @@ enum class ClearBrowsingHistoryJourneySteps {
   kActivateAppMenuButton = 2,
   kShowClearBrowsingDataSettingsDialog = 3,
   kClearBrowsingDataHistoryEvent = 4,
+  kDismissClearBrowsingDataDialog = 5,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:ClearBrowsingHistoryJourneySteps)
 

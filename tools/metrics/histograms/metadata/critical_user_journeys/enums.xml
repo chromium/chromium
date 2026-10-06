@@ -21,6 +21,7 @@ This file defines enums used in Critical User Journey histograms.
   <int value="2" label="Activate app menu toolbar button"/>
   <int value="3" label="Show clear browsing data settings dialog"/>
   <int value="4" label="Clear browsing data history event"/>
+  <int value="5" label="Dismiss clear browsing data settings dialog"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ClearBrowsingHistoryJourneySteps) -->

@@ -366,7 +366,14 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   protected onCancelClick_() {
+    this.metricsBrowserProxy_.recordClearBrowsingDataCancelled();
     this.$.deleteBrowsingDataDialog.close();
+  }
+
+  protected onDialogCancel_() {
+    if (!this.isDeletionInProgress_) {
+      this.metricsBrowserProxy_.recordClearBrowsingDataCancelled();
+    }
   }
 
   /**

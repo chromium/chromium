@@ -19,6 +19,7 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(
     kOpenClearBrowsingDataDialogViaAcceleratorEventId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kClearBrowsingDataHistoryEventId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kShowClearBrowsingDataDialogEventId);
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kDismissClearBrowsingDataDialogEventId);
 
 // Deletes the types protected by Important Sites with the filter from
 // |filter_builder|, the other types are deleted completely.

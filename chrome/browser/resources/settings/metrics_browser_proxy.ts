@@ -729,6 +729,12 @@ export interface MetricsBrowserProxy {
   recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction): void;
 
   /**
+   * Notifies Chrome that the Clear Browsing Data dialog was cancelled or
+   * dismissed without clearing browsing data.
+   */
+  recordClearBrowsingDataCancelled(): void;
+
+  /**
    * Helper function that calls records an impression of the provided Safety Hub
    * surface.
    */
@@ -983,6 +989,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       action,
       DeleteBrowsingDataAction.COUNT,
     ]);
+  }
+
+  recordClearBrowsingDataCancelled(): void {
+    chrome.send('recordClearBrowsingDataCancelled');
   }
 
   recordSafetyHubImpression(surface: SafetyHubSurfaces): void {

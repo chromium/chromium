@@ -8,15 +8,19 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -33,6 +37,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace settings {
@@ -270,6 +275,25 @@ IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,
                   browsing_data::TimePeriod::ALL_TIME)));
 
   handler_->HandleRestartCounters(args);
+}
+
+IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,
+                       RecordClearBrowsingDataCancelled_FiresDismissEvent) {
+  ui::ElementContext context = BrowserElements::From(browser())->GetContext();
+  bool dismiss_event_fired = false;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          browsing_data_important_sites_util::
+              kDismissClearBrowsingDataDialogEventId,
+          kBrowserViewElementId, context,
+          base::BindRepeating(
+              [](bool* fired, ui::TrackedElement*) { *fired = true; },
+              &dismiss_event_fired));
+
+  test_web_ui_.HandleReceivedMessage("recordClearBrowsingDataCancelled",
+                                     base::ListValue());
+
+  EXPECT_TRUE(dismiss_event_fired);
 }
 
 }  // namespace settings

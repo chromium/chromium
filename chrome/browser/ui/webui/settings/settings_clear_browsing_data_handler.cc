@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -73,6 +74,21 @@ const char* kCounterPrefs[] = {
     browsing_data::prefs::kDeleteSiteSettings,
 };
 
+void NotifyBrowserViewCustomEvent(tabs::TabInterface* tab,
+                                  ui::CustomElementEventType event_type) {
+  if (!tab) {
+    return;
+  }
+  ui::ElementContext context =
+      BrowserElements::From(tab->GetBrowserWindowInterface())->GetContext();
+  ui::TrackedElement* const browser_element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kBrowserViewElementId, context);
+  CHECK(browser_element);
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(browser_element,
+                                                                event_type);
+}
+
 }  // namespace
 
 namespace settings {
@@ -105,6 +121,11 @@ void ClearBrowsingDataHandler::RegisterMessages() {
       "restartClearBrowsingDataCounters",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleRestartCounters,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordClearBrowsingDataCancelled",
+      base::BindRepeating(
+          &ClearBrowsingDataHandler::HandleClearBrowsingDataCancelled,
+          base::Unretained(this)));
 }
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
@@ -295,15 +316,9 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
     }
   }
 
-  if (tab && data_types.find(BrowsingDataType::HISTORY) != data_types.end()) {
-    ui::ElementContext context =
-        BrowserElements::From(tab->GetBrowserWindowInterface())->GetContext();
-    ui::TrackedElement* const browser_element =
-        ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-            kBrowserViewElementId, context);
-    CHECK(browser_element);
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-        browser_element,
+  if (data_types.find(BrowsingDataType::HISTORY) != data_types.end()) {
+    NotifyBrowserViewCustomEvent(
+        tab,
         browsing_data_important_sites_util::kClearBrowsingDataHistoryEventId);
   }
 
@@ -346,6 +361,15 @@ void ClearBrowsingDataHandler::HandleRestartCounters(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   RestartCounters(static_cast<browsing_data::TimePeriod>(args[0].GetInt()));
+}
+
+void ClearBrowsingDataHandler::HandleClearBrowsingDataCancelled(
+    const base::ListValue& args) {
+  CHECK_EQ(0U, args.size());
+  NotifyBrowserViewCustomEvent(
+      tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents()),
+      browsing_data_important_sites_util::
+          kDismissClearBrowsingDataDialogEventId);
 }
 
 void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {
