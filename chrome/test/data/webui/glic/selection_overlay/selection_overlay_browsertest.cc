@@ -29,3 +29,7 @@ IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
                        ExplainFulfillment) {
   RunTest("glic/selection_overlay/explain_fulfillment_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest, Markdown) {
+  RunTest("glic/selection_overlay/markdown_test.js", "mocha.run()");
+}

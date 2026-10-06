@@ -6,6 +6,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ExplainFulfillment, ExplainFulfillmentRemote} from './explain_fulfillment.mojom-webui.js';
 import type {ExplainFulfillmentInterface} from './explain_fulfillment.mojom-webui.js';
+import {renderMarkdown} from './markdown.js';
 
 // The card for the C++'s `ExplainSuggestion`. Shows the explanation, and has
 // the browser open Gemini.
@@ -20,15 +21,21 @@ export class ExplainFulfillmentElement extends HTMLElement {
   connectedCallback() {
     const explanation = document.createElement('div');
     explanation.className = 'explanation';
+    // Links search for their text.
+    explanation.addEventListener('click', e => {
+      const link = (e.target as Element).closest('a');
+      if (link) {
+        e.preventDefault();
+        this.fulfillment?.openTabForSearch(link.textContent);
+      }
+    });
     const askGemini = document.createElement('button');
     askGemini.className = 'action-chip ask-gemini';
     askGemini.textContent = loadTimeData.getString('askGemini');
     askGemini.addEventListener('click', () => this.fulfillment?.askGemini());
     this.replaceChildren(explanation, askGemini);
     this.fulfillment?.getExplanation().then(response => {
-      // TODO(liuwilliam): We need to parse the `explanation` from markdown to
-      // HTML.
-      explanation.textContent = response.explanation;
+      explanation.replaceChildren(renderMarkdown(response.explanation));
     });
   }
 }

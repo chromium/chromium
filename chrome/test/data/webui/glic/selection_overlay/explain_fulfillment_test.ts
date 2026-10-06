@@ -7,16 +7,20 @@ import {create} from 'chrome-untrusted://glic/explain_fulfillment.js';
 import type {ExplainFulfillmentElement} from 'chrome-untrusted://glic/explain_fulfillment.js';
 import {ExplainFulfillment} from 'chrome-untrusted://glic/explain_fulfillment.mojom-webui.js';
 import type {ExplainFulfillmentInterface} from 'chrome-untrusted://glic/explain_fulfillment.mojom-webui.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class FakeExplainFulfillment implements ExplainFulfillmentInterface {
   askGeminiCount = 0;
+  searchQueries: string[] = [];
 
   getExplanation() {
-    return Promise.resolve({explanation: 'An explanation.'});
+    return Promise.resolve(
+        {explanation: 'An explanation of [Paris](https://a.test).'});
   }
 
-  openTabForSearch(_query: string) {}
+  openTabForSearch(query: string) {
+    this.searchQueries.push(query);
+  }
 
   askGemini() {
     this.askGeminiCount++;
@@ -47,7 +51,13 @@ suite('ExplainFulfillment', () => {
 
   test('ShowsExplanationWhenAdded', () => {
     assertEquals(
-        'An explanation.', card.querySelector('.explanation')!.textContent);
+        'An explanation of Paris.',
+        card.querySelector('.explanation')!.textContent);
+  });
+
+  test('LinkSearchesForItsText', () => {
+    card.querySelector<HTMLElement>('.explanation a')!.click();
+    assertDeepEquals(['Paris'], fulfillment.searchQueries);
   });
 
   test('AskGeminiButtonAsksGemini', () => {

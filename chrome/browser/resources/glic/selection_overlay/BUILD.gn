@@ -18,6 +18,7 @@ build_webui("build") {
     "glic_selection_overlay.ts",
     "glic_selection_overlay.html.ts",
     "inline_fulfillment_host.ts",
+    "markdown.ts",
     "selection_overlay_app.ts",
     "selection_overlay_app.html.ts",
     "selection_overlay_base_handler_impl.ts",

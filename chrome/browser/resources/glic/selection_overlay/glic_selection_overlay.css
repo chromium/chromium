@@ -394,3 +394,19 @@
 #inlineFulfillmentHost .ask-gemini {
   margin-top: 12px;
 }
+
+#inlineFulfillmentHost .explanation > * {
+  margin: 0;
+}
+
+#inlineFulfillmentHost .explanation > * + * {
+  margin-top: 8px;
+}
+
+#inlineFulfillmentHost .explanation :is(ul, ol) {
+  padding-inline-start: 20px;
+}
+
+#inlineFulfillmentHost .explanation a {
+  color: #0B57D0;
+}
