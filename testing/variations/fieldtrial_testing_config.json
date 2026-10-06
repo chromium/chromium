@@ -9405,25 +9405,6 @@
             ]
         }
     ],
-    "GmailOtpBackendInfrastructure": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GmailOtpRetrievalService",
-                        "OneTimeTokenBackendNotification"
-                    ]
-                }
-            ]
-        }
-    ],
     "GmsCoreUlp": [
         {
             "platforms": [

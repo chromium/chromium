@@ -483,10 +483,10 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
 // Tests that `RetrieveOtp` fails gracefully when the OTP service is null.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
   NavigateAndCommit(GURL("https://example.com"));
+  OneTimeTokenServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
   GmailOtpBackendFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating(
-                     [](content::BrowserContext* context)
-                         -> std::unique_ptr<KeyedService> { return nullptr; }));
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
@@ -1195,10 +1195,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        FetchUserDataProcessingConsent_NullBackend) {
+  OneTimeTokenServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
   GmailOtpBackendFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating(
-                     [](content::BrowserContext* context)
-                         -> std::unique_ptr<KeyedService> { return nullptr; }));
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
+
   base::test::TestFuture<
       std::optional<one_time_tokens::UserDataProcessingConsentStates>>
       future;
