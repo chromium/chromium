@@ -33,7 +33,7 @@ class MemoryPressureLevelReporter {
       base::MemoryPressureLevel initial_pressure_level,
       std::optional<std::string> histogram_name = "Memory.PressureLevel2",
       std::optional<std::string> transition_prefix =
-          "Memory.PressureWindowDuration.");
+          "Memory.PressureWindowDuration2.");
   ~MemoryPressureLevelReporter();
 
   // Should be called whenever the current memory pressure level changes.
@@ -55,7 +55,7 @@ class MemoryPressureLevelReporter {
 
   // The timestamp when the current memory pressure level started. Used to
   // calculate the duration of memory pressure episodes for the
-  // `Memory.PressureWindowDuration.*` histograms upon a level transition.
+  // `Memory.PressureWindowDuration2.*` histograms upon a level transition.
   base::TimeTicks current_pressure_level_begin_ = base::TimeTicks::Now();
 
   // The timestamp of the last time ReportHistogram() accumulated time into
