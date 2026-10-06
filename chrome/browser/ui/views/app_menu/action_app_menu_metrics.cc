@@ -467,17 +467,23 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
                    "BookmarkBarOnlyOnNtp");
       break;
 
+    case kActionGlobalError:
+      RecordAction(MENU_ACTION_GLOBAL_ERROR, "GlobalError");
+      break;
+    case kActionShowSyncPassphraseDialog:
+      RecordAction(MENU_ACTION_SHOW_SYNC_PASSPHRASE_DIALOG,
+                   "ShowSyncPassphraseDialog");
+      break;
+
     // Actions present in the menu that do not have a per-action TimeToAction
     // variant in histograms.xml, but still record the overall
     // WrenchMenu.TimeToAction histogram (and WrenchMenu.MenuAction if defined).
     // TODO(crbug.com/565832018): Add TimeToAction and MenuAction entries for
     // each of these.
-    case kActionGlobalError:
     case kActionNameWindow:
     case kActionReportUnsafeSite:
     case kActionSharingHubScreenshot:
     case kActionShowManagementPage:
-    case kActionShowSyncPassphraseDialog:
     case kActionTabSearch:
     case kActionTakeScreenshot:
     case kActionToggleVerticalTabs:

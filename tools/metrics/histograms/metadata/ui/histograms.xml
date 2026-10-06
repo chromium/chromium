@@ -1557,6 +1557,7 @@ features through Chrome Labs. -->
     <variant name=".Feedback"/>
     <variant name=".Find"/>
     <variant name=".FindExtensions"/>
+    <variant name=".GlobalError"/>
     <variant name=".HelpPage"/>
     <variant name=".ImportSettings"/>
     <variant name=".InstallPwa"/>
@@ -1614,6 +1615,7 @@ features through Chrome Labs. -->
     <variant name=".ShowSavedTabGroups"/>
     <variant name=".ShowSignin"/>
     <variant name=".ShowSigninWhenPaused"/>
+    <variant name=".ShowSyncPassphraseDialog"/>
     <variant name=".ShowSyncSettings"/>
     <variant name=".ShowTranslate"/>
     <variant name=".ShowTravel"/>

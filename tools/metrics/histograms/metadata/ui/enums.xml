@@ -1297,6 +1297,8 @@ chromium-metrics-reviews@google.com.
   <int value="110" label="Bookmark bar: always hide"/>
   <int value="111" label="Bookmark bar: always show"/>
   <int value="112" label="Bookmark bar: only on new tab page"/>
+  <int value="113" label="Global error"/>
+  <int value="114" label="Show sync passphrase dialog"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
