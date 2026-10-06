@@ -124,6 +124,7 @@ void SessionRestoreInfoBarManager::OnInfoBarResult(
       break;
     case infobars::InfoBarResult::kAccepted:
     case infobars::InfoBarResult::kCancelled:
+    case infobars::InfoBarResult::kExtraButtonPressed:
       break;
   }
 }

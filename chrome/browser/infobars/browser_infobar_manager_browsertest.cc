@@ -31,6 +31,11 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "ui/views/view.h"
+#endif
+
 namespace infobars {
 
 namespace {
@@ -1261,5 +1266,119 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, TabMovement) {
   EXPECT_TRUE(delegate->Accept());
   EXPECT_TRUE(ok_clicked);
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       ShowParamsButtonOverridesAndExtraButton) {
+  base::HistogramTester histogram_tester;
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .SetCloseOnCancel(false)
+                          .SetCloseOnExtraButton(false)
+                          .SetResultCallback(base::BindLambdaForTesting(
+                              [&](content::WebContents*, InfoBarResult result) {
+                                results.push_back(result);
+                              }))
+                          .Build());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+
+  bool cancel_called = false;
+  bool extra_called = false;
+  InfoBarShowParams params;
+  params.ok_button.label = u"Stop";
+  params.cancel_button.label = u"Share this tab instead";
+  params.cancel_button.enabled = false;
+  params.cancel_button.tooltip = u"Disabled tooltip";
+  params.cancel_button.style = ui::ButtonStyle::kTonal;
+  params.cancel_button_callback = base::BindLambdaForTesting(
+      [&](content::WebContents*) { cancel_called = true; });
+  params.extra_button.label = u"Captured Surface Control";
+  params.extra_button.enabled = true;
+  params.extra_button.tooltip = u"Extra tooltip";
+  params.extra_button.use_text_color_for_icon = false;
+  params.extra_button.style = ui::ButtonStyle::kDefault;
+  params.extra_button_callback = base::BindLambdaForTesting(
+      [&](content::WebContents*) { extra_called = true; });
+
+  infobars::InfoBar* infobar =
+      manager()->Show(tab, identifier, std::move(params));
+  ASSERT_TRUE(infobar);
+
+  auto* delegate = infobar->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+
+  EXPECT_EQ(ConfirmInfoBarDelegate::BUTTON_OK |
+                ConfirmInfoBarDelegate::BUTTON_CANCEL |
+                ConfirmInfoBarDelegate::BUTTON_EXTRA,
+            delegate->GetButtons());
+  EXPECT_EQ(u"Stop",
+            delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+  EXPECT_EQ(u"Share this tab instead",
+            delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+  EXPECT_FALSE(
+      delegate->GetButtonEnabled(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+  EXPECT_EQ(u"Disabled tooltip",
+            delegate->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+  EXPECT_EQ(ui::ButtonStyle::kTonal,
+            delegate->GetButtonStyle(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+  EXPECT_TRUE(delegate->ShouldUseTextColorForButtonIcon(
+      ConfirmInfoBarDelegate::BUTTON_CANCEL));
+  EXPECT_EQ(u"Captured Surface Control",
+            delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_EXTRA));
+  EXPECT_TRUE(delegate->GetButtonEnabled(ConfirmInfoBarDelegate::BUTTON_EXTRA));
+  EXPECT_EQ(u"Extra tooltip",
+            delegate->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_EXTRA));
+  EXPECT_EQ(ui::ButtonStyle::kDefault,
+            delegate->GetButtonStyle(ConfirmInfoBarDelegate::BUTTON_EXTRA));
+  EXPECT_FALSE(delegate->ShouldUseTextColorForButtonIcon(
+      ConfirmInfoBarDelegate::BUTTON_EXTRA));
+
+  EXPECT_FALSE(delegate->ExtraButtonPressed());
+  EXPECT_TRUE(extra_called);
+  histogram_tester.ExpectUniqueSample("InfoBar.Centralized.Extra", identifier,
+                                      1);
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(InfoBarResult::kExtraButtonPressed, results[0]);
+
+  EXPECT_FALSE(delegate->Cancel());
+  EXPECT_TRUE(cancel_called);
+  histogram_tester.ExpectUniqueSample("InfoBar.Centralized.Cancel", identifier,
+                                      1);
+  EXPECT_EQ(1u, results.size());
+
+  manager()->Hide(tab->GetContents(), identifier);
+  histogram_tester.ExpectTotalCount("InfoBar.Centralized.Ignored", 0);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CustomViewCallback) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Fallback Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .Build());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  views::View* created_view = nullptr;
+  InfoBarShowParams params;
+  params.custom_view_callback = base::BindLambdaForTesting(
+      [&](content::WebContents*) -> std::unique_ptr<views::View> {
+        auto view = std::make_unique<views::View>();
+        created_view = view.get();
+        return view;
+      });
+
+  infobars::InfoBar* infobar =
+      manager()->Show(tab, identifier, std::move(params));
+  ASSERT_TRUE(infobar);
+  ASSERT_NE(nullptr, created_view);
+
+  auto* confirm_infobar = static_cast<ConfirmInfoBar*>(infobar);
+  EXPECT_EQ(created_view, confirm_infobar->message_view_for_testing());
+}
+#endif
 
 }  // namespace infobars

@@ -13,6 +13,10 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/view.h"
+#endif
+
 namespace infobars {
 
 class InfoBarSpecTest : public testing::Test {};
@@ -27,6 +31,9 @@ TEST_F(InfoBarSpecTest, BuildDefaultSpec) {
   EXPECT_EQ(spec.icon(), nullptr);
   EXPECT_EQ(spec.icon_id(), 0);
   EXPECT_TRUE(spec.expire_on_navigation());
+  EXPECT_TRUE(spec.close_on_accept());
+  EXPECT_TRUE(spec.close_on_cancel());
+  EXPECT_TRUE(spec.close_on_extra_button());
   EXPECT_TRUE(spec.message_text().empty());
   EXPECT_TRUE(spec.link_text().empty());
   EXPECT_TRUE(spec.link_navigation_url().is_empty());
@@ -34,6 +41,8 @@ TEST_F(InfoBarSpecTest, BuildDefaultSpec) {
   EXPECT_TRUE(spec.ok_button_callback().is_null());
   EXPECT_TRUE(spec.cancel_button_label().empty());
   EXPECT_TRUE(spec.cancel_button_callback().is_null());
+  EXPECT_TRUE(spec.extra_button_label().empty());
+  EXPECT_TRUE(spec.extra_button_callback().is_null());
   EXPECT_TRUE(spec.dismiss_callback().is_null());
   EXPECT_EQ(spec.dark_mode_icon(), nullptr);
   EXPECT_TRUE(spec.result_callback().is_null());
@@ -164,6 +173,38 @@ TEST_F(InfoBarSpecTest, BuildSpecWithTemplateAndSubstitutions) {
   EXPECT_TRUE(spec.inline_link_callback().Run(
       nullptr, 0, WindowOpenDisposition::CURRENT_TAB));
   EXPECT_TRUE(link_clicked);
+}
+
+TEST_F(InfoBarSpecTest, BuildSpecWithExtraButtonAndCustomView) {
+  bool extra_called = false;
+  auto extra_cb = base::BindRepeating(
+      [](bool* called, content::WebContents*) { *called = true; },
+      &extra_called);
+
+  auto builder = InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR);
+  builder.AddExtraButton(u"Extra", extra_cb)
+      .SetCloseOnCancel(false)
+      .SetCloseOnExtraButton(false);
+
+#if !BUILDFLAG(IS_ANDROID)
+  builder.SetCustomViewCallback(base::BindRepeating(
+      [](content::WebContents*) -> std::unique_ptr<views::View> {
+        return std::make_unique<views::View>();
+      }));
+#endif
+
+  InfoBarSpec spec = builder.Build();
+  EXPECT_EQ(spec.extra_button_label(), u"Extra");
+  ASSERT_FALSE(spec.extra_button_callback().is_null());
+  spec.extra_button_callback().Run(nullptr);
+  EXPECT_TRUE(extra_called);
+  EXPECT_FALSE(spec.close_on_cancel());
+  EXPECT_FALSE(spec.close_on_extra_button());
+
+#if !BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(spec.custom_view_callback().is_null());
+  EXPECT_NE(spec.custom_view_callback().Run(nullptr), nullptr);
+#endif
 }
 
 }  // namespace infobars

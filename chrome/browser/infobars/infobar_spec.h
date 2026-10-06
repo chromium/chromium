@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_INFOBARS_INFOBAR_SPEC_H_
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
@@ -22,6 +25,10 @@ class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
+}
+
+namespace views {
+class View;
 }
 
 namespace infobars {
@@ -40,6 +47,8 @@ enum class InfoBarResult {
   kAccepted,
   // The user pressed the Cancel button.
   kCancelled,
+  // The user pressed the extra button.
+  kExtraButtonPressed,
   // The user closed the infobar.
   kDismissed,
   // Went away without the user touching it, e.g. the tab was closed.
@@ -52,9 +61,8 @@ enum class InfoBarResult {
 class InfoBarSpec {
  public:
   // Runs when the user presses a button or dismisses the infobar. The
-  // infobar is torn down right after the call, so an action callback must
-  // not destroy it or close the tab synchronously. Use Hide() or the
-  // result callback for work that has to happen after teardown.
+  // delegate guards against synchronous destruction during the callback
+  // (e.g. if the callback hides or replaces the infobar).
   using ActionCallback = base::RepeatingCallback<void(content::WebContents*)>;
   using SubstitutionsCallback =
       base::RepeatingCallback<std::vector<MessageSubstitution>(
@@ -63,6 +71,10 @@ class InfoBarSpec {
   // Returns true to close the infobar.
   using InlineLinkCallback = base::RepeatingCallback<
       bool(content::WebContents*, size_t, WindowOpenDisposition)>;
+  // Creates a custom message view to replace the standard label.
+  using CustomViewCallback =
+      base::RepeatingCallback<std::unique_ptr<views::View>(
+          content::WebContents*)>;
   // Reports the terminal outcome. The WebContents may already be gone by
   // then, in which case it is null.
   using ResultCallback =
@@ -92,6 +104,9 @@ class InfoBarSpec {
   const InlineLinkCallback& inline_link_callback() const {
     return inline_link_callback_;
   }
+  const CustomViewCallback& custom_view_callback() const {
+    return custom_view_callback_;
+  }
   const std::u16string& link_text() const { return link_text_; }
   const std::optional<std::u16string>& link_accessible_text() const {
     return link_accessible_text_;
@@ -113,6 +128,8 @@ class InfoBarSpec {
   bool should_animate() const { return should_animate_; }
   bool is_closeable() const { return is_closeable_; }
   bool close_on_accept() const { return close_on_accept_; }
+  bool close_on_cancel() const { return close_on_cancel_; }
+  bool close_on_extra_button() const { return close_on_extra_button_; }
 
   const std::u16string& ok_button_label() const { return ok_button_label_; }
   const ActionCallback& ok_button_callback() const {
@@ -123,6 +140,12 @@ class InfoBarSpec {
   }
   const ActionCallback& cancel_button_callback() const {
     return cancel_button_callback_;
+  }
+  const std::u16string& extra_button_label() const {
+    return extra_button_label_;
+  }
+  const ActionCallback& extra_button_callback() const {
+    return extra_button_callback_;
   }
   const ActionCallback& dismiss_callback() const { return dismiss_callback_; }
   const ResultCallback& result_callback() const { return result_callback_; }
@@ -138,6 +161,7 @@ class InfoBarSpec {
   std::u16string message_text_template_;
   SubstitutionsCallback substitutions_callback_;
   InlineLinkCallback inline_link_callback_;
+  CustomViewCallback custom_view_callback_;
   std::u16string link_text_;
   std::optional<std::u16string> link_accessible_text_;
   GURL link_navigation_url_;
@@ -154,14 +178,35 @@ class InfoBarSpec {
   bool should_animate_ = true;
   bool is_closeable_ = true;
   bool close_on_accept_ = true;
+  bool close_on_cancel_ = true;
+  bool close_on_extra_button_ = true;
 
   std::u16string ok_button_label_;
   ActionCallback ok_button_callback_;
   std::u16string cancel_button_label_;
   ActionCallback cancel_button_callback_;
+  std::u16string extra_button_label_;
+  ActionCallback extra_button_callback_;
   ActionCallback dismiss_callback_;
   ResultCallback result_callback_;
   BrowserFilter browser_filter_;
+};
+
+// Per-show overrides for an individual infobar button.
+struct InfoBarButtonParams {
+  InfoBarButtonParams();
+  InfoBarButtonParams(InfoBarButtonParams&&);
+  InfoBarButtonParams& operator=(InfoBarButtonParams&&);
+  InfoBarButtonParams(const InfoBarButtonParams&);
+  InfoBarButtonParams& operator=(const InfoBarButtonParams&);
+  ~InfoBarButtonParams();
+
+  std::optional<std::u16string> label;
+  std::optional<bool> enabled;
+  std::optional<std::u16string> tooltip;
+  std::optional<ui::ImageModel> image;
+  std::optional<bool> use_text_color_for_icon;
+  std::optional<ui::ButtonStyle> style;
 };
 
 // Per-show overrides for values only known at show time. Anything set here
@@ -192,10 +237,16 @@ struct InfoBarShowParams {
   // active-tab change.
   std::optional<InfoBarScope> scope;
 
+  InfoBarButtonParams ok_button;
+  InfoBarButtonParams cancel_button;
+  InfoBarButtonParams extra_button;
+
   // Override the spec's callbacks when non-null.
   InfoBarSpec::ActionCallback ok_button_callback;
   InfoBarSpec::ActionCallback cancel_button_callback;
+  InfoBarSpec::ActionCallback extra_button_callback;
   InfoBarSpec::InlineLinkCallback inline_link_callback;
+  InfoBarSpec::CustomViewCallback custom_view_callback;
   InfoBarSpec::ResultCallback result_callback;
 };
 
@@ -210,6 +261,7 @@ class InfoBarSpec::Builder {
   Builder& SetMessageTextTemplate(std::u16string message_text_template);
   Builder& SetSubstitutionsCallback(SubstitutionsCallback callback);
   Builder& SetInlineLinkCallback(InlineLinkCallback callback);
+  Builder& SetCustomViewCallback(CustomViewCallback callback);
   Builder& SetLinkText(std::u16string link_text);
   Builder& SetLinkAccessibleText(std::u16string link_accessible_text);
   Builder& SetLinkNavigationUrl(GURL gurl);
@@ -230,11 +282,15 @@ class InfoBarSpec::Builder {
   // keep it up, e.g. when the button starts work whose outcome the infobar
   // is still describing.
   Builder& SetCloseOnAccept(bool close_on_accept);
+  Builder& SetCloseOnCancel(bool close_on_cancel);
+  Builder& SetCloseOnExtraButton(bool close_on_extra_button);
 
   Builder& AddOkButton(const std::u16string& label,
                        InfoBarSpec::ActionCallback callback);
   Builder& AddCancelButton(const std::u16string& label,
                            InfoBarSpec::ActionCallback callback);
+  Builder& AddExtraButton(const std::u16string& label,
+                          InfoBarSpec::ActionCallback callback);
   Builder& SetDismissAction(InfoBarSpec::ActionCallback callback);
   Builder& SetResultCallback(InfoBarSpec::ResultCallback callback);
   Builder& SetBrowserFilter(InfoBarSpec::BrowserFilter filter);

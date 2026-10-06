@@ -259,8 +259,9 @@ void DefaultBrowserInfoBarManager::OnInfoBarResult(
       HideInfoBar();
       break;
     case infobars::InfoBarResult::kCancelled:
+    case infobars::InfoBarResult::kExtraButtonPressed:
     case infobars::InfoBarResult::kLinkClicked:
-      // The infobar has no cancel button or link.
+      // The infobar has no cancel button, extra button, or link.
       break;
   }
 }

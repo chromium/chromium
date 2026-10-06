@@ -86,8 +86,13 @@ source_set("unit_tests") {
     "//components/infobars/core",
     "//content/public/browser",
     "//testing/gtest",
+    "//ui/base",
     "//url",
   ]
+
+  if (toolkit_views) {
+    deps += [ "//ui/views" ]
+  }
 }
 
 if (!is_android) {
