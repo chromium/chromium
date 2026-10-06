@@ -3397,18 +3397,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.MultiInstance.MigrationAttempts" units="count"
-    expires_after="2027-02-07">
-  <owner>zheliooo@google.com</owner>
-  <owner>aishwaryarj@google.com</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    The total number of attempts made to migrate multi-instance data from
-    SharedPreferences to Protobuf. Recorded when the migration successfully
-    completes, or when it reaches the terminal attempt limit (3) and gives up.
-  </summary>
-</histogram>
-
 <histogram name="Android.MultiInstance.NumActivities" units="activities"
     expires_after="2027-03-14">
   <owner>jinsukkim@chromium.org</owner>

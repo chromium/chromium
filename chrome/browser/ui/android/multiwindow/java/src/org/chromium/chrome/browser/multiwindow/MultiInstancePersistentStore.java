@@ -19,7 +19,6 @@ import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.MultiInstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.WindowModeData;
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
@@ -66,34 +65,8 @@ public class MultiInstancePersistentStore {
 
     @VisibleForTesting
     static void ensureInitialized() {
-        boolean isProtoEnabled = ChromeFeatureList.sMultiInstanceSharedPrefsMigration.isEnabled();
-        boolean isMigrationCompleted =
-                getManager()
-                        .readBoolean(
-                                MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE,
-                                false);
-
-        // 1. When the feature is disabled, trigger a downgrade if a previous migration is detected.
-        if (!isProtoEnabled) {
-            if (isMigrationCompleted) {
-                MultiInstanceProtoMigrationController.getInstance().downgrade();
-            }
-        }
-        // 2. Migration enabled, execute migration if it hasn't been completed, otherwise read data
-        // from the file.
-        else if (isMigrationCompleted) {
-            sData = loadProtoFromFile();
-        } else {
-            // Attempt migration. If it fails, sData remains null and the store continues to use
-            // SharedPreferences. If it succeeds, #initializeFromMigration handles the rest.
-            MultiInstanceProtoMigrationController.getInstance().migrate();
-        }
-    }
-
-    protected static void initializeFromMigration(
-            MultiInstanceData data, @Nullable Callback<Boolean> onComplete) {
-        sData = data;
-        saveProto(onComplete);
+        if (sData != null) return;
+        sData = loadProtoFromFile();
     }
 
     private static AtomicFile getAtomicFile() {

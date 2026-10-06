@@ -87,12 +87,6 @@ public final class MultiInstancePreferenceKeys {
     public static final KeyPrefix MULTI_WINDOW_MODE_DURATION_MS =
             new KeyPrefix("Chrome.MultiWindowMode.DurationMs3.*");
 
-    public static final String MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE =
-            "Chrome.MultiInstance.ProtoMigrationComplete";
-
-    public static final String MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS =
-            "Chrome.MultiInstance.ProtoMigrationAttempts";
-
     /** Returns All global (non-prefixed) keys used for multi-instance. */
     public static List<String> getAllGlobalKeys() {
         return Arrays.asList(
@@ -163,9 +157,7 @@ public final class MultiInstancePreferenceKeys {
                 MULTI_WINDOW_MODE_CYCLE_START_TIME,
                 MULTI_WINDOW_MODE_START_TIME.pattern(),
                 MULTI_WINDOW_MODE_ACTIVITIES.pattern(),
-                MULTI_WINDOW_MODE_DURATION_MS.pattern(),
-                MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE,
-                MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS);
+                MULTI_WINDOW_MODE_DURATION_MS.pattern());
     }
 
     private MultiInstancePreferenceKeys() {}

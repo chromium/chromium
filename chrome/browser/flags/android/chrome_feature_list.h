@@ -245,7 +245,6 @@ BASE_DECLARE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition);
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomization);
 BASE_DECLARE_FEATURE(kMostVisitedTilesReselect);
 BASE_DECLARE_FEATURE(kMoveToFrontInLaunchIntentDispatcher);
-BASE_DECLARE_FEATURE(kMultiInstanceSharedPrefsMigration);
 BASE_DECLARE_FEATURE(kNavigationListMenu);
 BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
 BASE_DECLARE_FEATURE(kNotificationTrampoline);
