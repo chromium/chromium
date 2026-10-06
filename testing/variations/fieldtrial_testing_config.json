@@ -11484,6 +11484,21 @@
             ]
         }
     ],
+    "NetworkDataMigrationMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TriggerNetworkMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkQualityEstimatorAsyncNotifyHeadersReceived": [
         {
             "platforms": [
