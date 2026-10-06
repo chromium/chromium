@@ -140,7 +140,7 @@ void ClipboardMac::StartNotifying() {
     // lifetime of this object.
     clipboard_change_subscription_ =
         base::RegisterPasteboardChangedCallback(base::BindRepeating(
-            &ClipboardMac::ClipboardChanged, base::Unretained(this)));
+            &ClipboardMac::OnPasteboardChanged, base::Unretained(this)));
   }
 }
 
@@ -181,10 +181,14 @@ void ClipboardMac::GetSourceInternal(ClipboardBuffer buffer,
 
 const ClipboardSequenceNumberToken& ClipboardMac::GetSequenceNumber(
     ClipboardBuffer buffer) const {
-  DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  return GetSequenceNumber(GetPasteboard());
+}
 
-  NSInteger sequence_number = [GetPasteboard() changeCount];
+const ClipboardSequenceNumberToken& ClipboardMac::GetSequenceNumber(
+    NSPasteboard* pasteboard) const {
+  DCHECK(CalledOnValidThread());
+  NSInteger sequence_number = pasteboard.changeCount;
   if (sequence_number != clipboard_sequence_.sequence_number) {
     // Generate a unique token associated with the current sequence number.
     clipboard_sequence_ = {sequence_number, ClipboardSequenceNumberToken()};
@@ -685,17 +689,30 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   [pasteboard writeObjects:@[ image ]];
 }
 
-void ClipboardMac::ClipboardChanged() {
-  NSInteger current_sequence_number = GetPasteboard().changeCount;
-  if (current_sequence_number != last_known_sequence_number_) {
-    last_known_sequence_number_ = current_sequence_number;
-    // Update clipboard_sequence_ to reflect the new number and generate a new
-    // token, so subsequent calls to GetSequenceNumber() return the latest
-    // state.
+void ClipboardMac::OnPasteboardChanged() {
+  ClipboardChanged(GetPasteboard());
+}
+
+void ClipboardMac::ClipboardChanged(NSPasteboard* pasteboard) {
+  DCHECK(CalledOnValidThread());
+  NSInteger current_sequence_number = pasteboard.changeCount;
+  if (current_sequence_number == last_known_sequence_number_) {
+    return;
+  }
+  last_known_sequence_number_ = current_sequence_number;
+  // Make sure `clipboard_sequence_` reflects the new changeCount so subsequent
+  // calls to GetSequenceNumber() return the latest state. Only mint a new token
+  // if GetSequenceNumber() has not already done so for this changeCount: this
+  // notification is delivered asynchronously and may arrive after a consumer
+  // (e.g. Blink at the start of a paste) already observed a token for it.
+  // Minting a second token for an unchanged pasteboard would make that
+  // in-flight paste look like the clipboard changed underneath it, and Blink
+  // would drop the paste. See crbug.com/568453825.
+  if (current_sequence_number != clipboard_sequence_.sequence_number) {
     clipboard_sequence_ = {current_sequence_number,
                            ClipboardSequenceNumberToken()};
-    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 }  // namespace ui

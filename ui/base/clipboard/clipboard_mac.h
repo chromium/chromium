@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac
                  GetSourceCallback callback) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
+  const ClipboardSequenceNumberToken& GetSequenceNumber(
+      NSPasteboard* pasteboard) const;
   void GetStandardFormats(ClipboardBuffer buffer,
                           const std::optional<DataTransferEndpoint>& data_dst,
                           GetStandardFormatsCallback callback) const override;
@@ -127,7 +129,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac
       std::unique_ptr<DataTransferEndpoint> data_src,
       NSPasteboard* pasteboard,
       uint32_t privacy_types);
-  void ClipboardChanged();
+  // Invoked when the pasteboard changes.
+  void OnPasteboardChanged();
+  void ClipboardChanged(NSPasteboard* pasteboard);
 
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {
