@@ -8,13 +8,17 @@
 #include <unordered_map>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_init_state.h"
@@ -36,6 +40,8 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
 #include "components/account_id/account_id.h"
+#include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_service_observer.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 
@@ -84,6 +90,56 @@ BrowserWindowInterface* FindTabbedBrowserOnCurrentWorkspace(Profile* profile) {
 }  // namespace
 
 namespace ash {
+
+// Restores the most recently closed entry once the TabRestoreService has
+// finished loading. Owned by BrowserControllerImpl via `tab_restore_helper_`,
+// which it clears when done (destroying itself).
+class BrowserControllerImpl::TabRestoreHelper
+    : public sessions::TabRestoreServiceObserver {
+ public:
+  // Both `controller` and `service` must outlive this helper.
+  TabRestoreHelper(BrowserControllerImpl* controller,
+                   sessions::TabRestoreService* service)
+      : controller_(CHECK_DEREF(controller)), service_(CHECK_DEREF(service)) {}
+  TabRestoreHelper(const TabRestoreHelper&) = delete;
+  TabRestoreHelper& operator=(const TabRestoreHelper&) = delete;
+  ~TabRestoreHelper() override = default;
+
+  // Triggers the restore: restores immediately if the service is already
+  // loaded, otherwise waits for it to finish loading. Either way the helper
+  // destroys itself once the restore has been triggered.
+  void Start() {
+    if (service_->IsLoaded()) {
+      Restore();  // Destroys `this`.
+      return;
+    }
+    observation_.Observe(&service_.get());
+    service_->LoadTabsFromLastSession();
+  }
+
+  // sessions::TabRestoreServiceObserver:
+  void TabRestoreServiceChanged(sessions::TabRestoreService* service) override {
+  }
+  void TabRestoreServiceDestroyed(
+      sessions::TabRestoreService* service) override {
+    controller_->tab_restore_helper_.reset();  // Destroys `this`.
+  }
+  void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override {
+    Restore();  // Destroys `this`.
+  }
+
+ private:
+  void Restore() {
+    service_->RestoreMostRecentEntry(nullptr);
+    controller_->tab_restore_helper_.reset();  // Destroys `this`; must be last.
+  }
+
+  const raw_ref<BrowserControllerImpl> controller_;
+  const raw_ref<sessions::TabRestoreService> service_;
+  base::ScopedObservation<sessions::TabRestoreService,
+                          sessions::TabRestoreServiceObserver>
+      observation_{this};
+};
 
 BrowserControllerImpl::BrowserControllerImpl() {
   observation_.Observe(GlobalBrowserCollection::GetInstance());
@@ -292,6 +348,26 @@ BrowserDelegate* BrowserControllerImpl::CreateWebApp(
   cparams.can_fullscreen = params.allow_fullscreen;
   return GetDelegate(
       web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, std::move(cparams)));
+}
+
+void BrowserControllerImpl::RestoreTab(const AccountId& account_id) {
+  if (tab_restore_helper_) {
+    // A previous request is still waiting for the service to load; it will
+    // perform the restore once ready.
+    return;
+  }
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
+  if (!profile || profile->IsOffTheRecord()) {
+    return;
+  }
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return;
+  }
+  tab_restore_helper_ = std::make_unique<TabRestoreHelper>(this, service);
+  tab_restore_helper_->Start();
 }
 
 void BrowserControllerImpl::MayCloseAllBrowsers() {

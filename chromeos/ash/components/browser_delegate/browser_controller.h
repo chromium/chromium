@@ -210,6 +210,12 @@ class BrowserController {
                                         BrowserType browser_type,
                                         const CreateParams& params) = 0;
 
+  // Restores the most recently closed tab (or window) for `account_id`'s
+  // profile -- the action behind the "reopen closed tab" accelerator. Loads the
+  // tab restore service first if it isn't ready yet. No-op if the account has
+  // no profile or the profile is off the record.
+  virtual void RestoreTab(const AccountId& account_id) = 0;
+
   // Closes all browsers. It may fail.
   // Note: conceptually this should be equivalent to
   //

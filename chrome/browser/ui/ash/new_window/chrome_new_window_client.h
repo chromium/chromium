@@ -41,7 +41,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenDownloadsFolder() override;
   void OpenCrosh() override;
   void OpenGetHelp() override;
-  void RestoreTab() override;
+  void RestoreTab(const AccountId& account_id) override;
   void ShowShortcutCustomizationApp() override;
   void ShowTaskManager(bool from_context_menu) override;
   void OpenDiagnostics() override;
@@ -58,11 +58,6 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
                        int32_t task_id) override;
   void CloseCameraApp() override;
   bool IsCameraAppEnabled() override;
-
- private:
-  class TabRestoreHelper;
-
-  std::unique_ptr<TabRestoreHelper> tab_restore_helper_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_NEW_WINDOW_CHROME_NEW_WINDOW_CLIENT_H_

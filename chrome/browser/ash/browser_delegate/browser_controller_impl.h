@@ -52,6 +52,7 @@ class BrowserControllerImpl : public BrowserController,
                                 webapps::AppId app_id,
                                 BrowserType browser_type,
                                 const CreateParams& params) override;
+  void RestoreTab(const AccountId& account_id) override;
   void MayCloseAllBrowsers() override;
   void MayCloseAllBrowsersAndQuit() override;
   bool IsTryingToQuit() override;
@@ -84,9 +85,14 @@ class BrowserControllerImpl : public BrowserController,
       const TabStripSelectionChange& selection) override;
 
  private:
+  // Waits for the tab restore service to finish loading before restoring; see
+  // RestoreTab. Non-null only while such a load is pending.
+  class TabRestoreHelper;
+
   absl::flat_hash_map<BrowserWindowInterface*,
                       std::unique_ptr<BrowserDelegateImpl>>
       browsers_;
+  std::unique_ptr<TabRestoreHelper> tab_restore_helper_;
   base::ObserverList<Observer> observers_;
   base::ObserverList<TabObserver> tab_observers_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>

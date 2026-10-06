@@ -31,7 +31,7 @@ void TestNewWindowDelegate::OpenDownloadsFolder() {}
 void TestNewWindowDelegate::OpenCrosh() {}
 void TestNewWindowDelegate::OpenDiagnostics() {}
 void TestNewWindowDelegate::OpenGetHelp() {}
-void TestNewWindowDelegate::RestoreTab() {}
+void TestNewWindowDelegate::RestoreTab(const AccountId& account_id) {}
 void TestNewWindowDelegate::ShowShortcutCustomizationApp() {}
 void TestNewWindowDelegate::ShowTaskManager(bool from_context_menu) {}
 void TestNewWindowDelegate::OpenFeedbackPage(

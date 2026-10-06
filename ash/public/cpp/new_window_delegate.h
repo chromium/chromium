@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "ui/display/types/display_constants.h"
 
+class AccountId;
 class GURL;
 
 namespace aura {
@@ -105,8 +106,9 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Invoked when an accelerator is used to open help center.
   virtual void OpenGetHelp() = 0;
 
-  // Invoked when the user uses Shift+Ctrl+T to restore the closed tab.
-  virtual void RestoreTab() = 0;
+  // Invoked when the user uses Shift+Ctrl+T to restore the last closed tab for
+  // `account_id`'s profile.
+  virtual void RestoreTab(const AccountId& account_id) = 0;
 
   // Show the shortcut customization app.
   virtual void ShowShortcutCustomizationApp() = 0;

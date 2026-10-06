@@ -104,6 +104,7 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1148,7 +1149,17 @@ void ResizePipWindow() {
 }
 
 void RestoreTab() {
-  NewWindowDelegate::GetInstance()->RestoreTab();
+  // The accelerator is the entry point of the action, so it supplies the active
+  // user's account. The //chrome-side delegate forwards this to
+  // BrowserController, which owns browser-state mutations; //ash can't call
+  // BrowserController directly (it must not depend on //content).
+  //
+  // TODO(crbug.com/332804822): Call BrowserController::RestoreTab() directly
+  // and drop this NewWindowDelegate hop once //ash can depend on
+  // //chromeos/ash/components/browser_delegate (today it transitively pulls in
+  // //content via //components/tabs:public).
+  NewWindowDelegate::GetInstance()->RestoreTab(
+      Shell::Get()->session_controller()->GetActiveAccountId());
 }
 
 void RotateActiveWindow() {
