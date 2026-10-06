@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
+#include <vector>
+
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -492,6 +494,10 @@ void ActionAppMenu::SetTimerForTesting(base::ElapsedTimer timer) {
   metrics_.SetTimerForTesting(std::move(timer));  // IN-TEST
 }
 
+void ActionAppMenu::ClearItemsBelowSearchBarForTesting() {
+  ClearItemsBelowSearchBar();
+}
+
 actions::BaseAction* ActionAppMenu::GetActionForMenuItem(
     views::MenuItemView* menu) const {
   CHECK(menu);
@@ -546,6 +552,29 @@ void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
                                        base_action, mouse_event_flags)};
     CloseMenu();
   }
+}
+
+void ActionAppMenu::ClearItemsBelowSearchBar() {
+  CHECK(search_bar_);
+  views::SubmenuView* submenu = root_->GetSubmenu();
+  CHECK(submenu);
+
+  const std::optional<size_t> search_row_index =
+      submenu->GetIndexOf(search_bar_->parent());
+  CHECK(search_row_index);
+  const std::vector<views::View*> to_remove(
+      submenu->children().begin() + *search_row_index + 1,
+      submenu->children().end());
+  for (views::View* child : to_remove) {
+    root_->RemoveMenuItem(child);
+  }
+
+  // Drop the command mappings of the removed rows. The rows above the search
+  // bar, such as notifications, keep theirs.
+  base::EraseIf(command_to_action_map_, [this](const auto& entry) {
+    return !root_->GetMenuItemByID(entry.first);
+  });
+  section_header_count_ = 0;
 }
 
 void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
@@ -802,8 +831,7 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
 
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
   search_bar->SetProperty(views::kMarginsKey, margins);
-  search_bar_ = search_bar.get();
-  search_item->AddChildView(std::move(search_bar));
+  search_bar_ = search_item->AddChildView(std::move(search_bar));
 }
 
 void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,

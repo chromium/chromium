@@ -1539,10 +1539,18 @@ TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kChroMenuSearch);
+class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
+ public:
+  ActionAppMenuWithSearchTest() {
+    feature_list_.InitAndEnableFeature(features::kChroMenuSearch);
+  }
+  ~ActionAppMenuWithSearchTest() override = default;
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
@@ -1652,6 +1660,84 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   search_bar->HandleKeyEvent(&backspace_event);
   EXPECT_EQ(search_bar->GetText(), u"");
   EXPECT_TRUE(icon->GetVisible());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest,
+       ClearItemsBelowSearchBarPreservesSearchBar) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  views::MenuItemView* search_item = submenu->GetMenuItemAt(0);
+  ASSERT_NE(search_item, nullptr);
+  ASSERT_GT(submenu->GetMenuItems().size(), 1u);
+  ASSERT_NE(menu.GetLabelFontList(kActionPrint), nullptr);
+
+  menu.ClearItemsBelowSearchBarForTesting();
+  root->ChildrenChanged();
+
+  // The search bar row is the same view object, not a rebuilt copy, and it is
+  // the only one left.
+  ASSERT_EQ(submenu->GetMenuItems().size(), 1u);
+  EXPECT_EQ(submenu->GetMenuItemAt(0), search_item);
+  EXPECT_EQ(menu.search_bar_for_testing(), search_bar);
+  ASSERT_EQ(search_item->children().size(), 1u);
+  EXPECT_EQ(search_item->children()[0], search_bar);
+  // The removed rows' command mappings are gone too.
+  EXPECT_EQ(menu.GetLabelFontList(kActionPrint), nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, ClearItemsBelowSearchBarKeepsNotification) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  ASSERT_NE(upgrade_item, nullptr);
+  ASSERT_NE(menu.GetLabelFontList(kActionUpgradeDialog), nullptr);
+
+  menu.ClearItemsBelowSearchBarForTesting();
+  root->ChildrenChanged();
+
+  // The notification row above the search bar stays, along with its command
+  // mapping. Nothing is left below the search bar row.
+  EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
+  EXPECT_NE(menu.GetLabelFontList(kActionUpgradeDialog), nullptr);
+  EXPECT_EQ(submenu->children().back(),
+            menu.search_bar_for_testing()->parent());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

@@ -87,6 +87,7 @@ class ActionAppMenu : public views::MenuDelegate,
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
   AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
   void SetTimerForTesting(base::ElapsedTimer timer);
+  void ClearItemsBelowSearchBarForTesting();
 
  private:
   actions::BaseAction* GetActionForMenuItem(views::MenuItemView* menu) const;
@@ -96,6 +97,8 @@ class ActionAppMenu : public views::MenuDelegate,
   void RemoveSubmenuActionsFromMap(views::MenuItemView* parent_menu_item);
 
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
+
+  void ClearItemsBelowSearchBar();
 
   // Recursively populates the menu item with the `base_action_item`'s
   // children.
