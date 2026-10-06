@@ -42,3 +42,9 @@ per-file ...RecentlyClosedWindow*=zheliooo@google.com
 
 # Exclusive Access:
 per-file ...ExclusiveAccess*=file://chrome/browser/ui/exclusive_access/OWNERS
+
+# Keyboard Shortcuts:
+per-file ...KeyboardShortcuts*=aishwaryarj@google.com
+per-file ...KeyboardShortcuts*=jhimawan@google.com
+per-file ...KeyboardShortcuts*=mschillaci@google.com
+per-file ...KeyboardShortcuts*=skavuluru@google.com
