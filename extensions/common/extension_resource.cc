@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "build/build_config.h"
+#include "extensions/common/file_util.h"
 
 namespace extensions {
 
@@ -56,34 +58,10 @@ base::FilePath ExtensionResource::GetFilePath(
   // normalize file paths. Without normalization parent references, Windows
   // short paths, or different path capitalization will cause `IsParent` to
   // return false.
-  bool extension_root_normalization_skipped = false;
   base::FilePath normalized_extension_root;
-  if (!base::NormalizeFilePath(extension_root, &normalized_extension_root)) {
-#if BUILDFLAG(IS_WIN)
-    // On Windows, `NormalizeFilePath` is implemented via
-    // `GetFinalPathNameByHandle`, which can fail in some cases. One such case
-    // which was reported by users is with paths on a ramdisk. For example, from
-    // the author of ImDisk:
-    //
-    // > ImDisk is a rather old product. It is designed to be as small and
-    // > simple as possible and compatible with Windows versions as old as NT
-    // > 3.51. By design it lacks support for certain "modern" OS features like
-    // > plug-and-play and Volume Mount Manager. The mentioned API function,
-    // > GetFinalPathNameByHandle, uses Volume Mount Manager and is therefore
-    // > not supported for ImDisk virtual disks.
-    //
-    // Since we can't normalize the path, fall back to `MakeAbsoluteFilePath`
-    // and proceed if the file exists.
-    normalized_extension_root = base::MakeAbsoluteFilePath(extension_root);
-    if (normalized_extension_root.empty() ||
-        !base::PathExists(normalized_extension_root)) {
-      return base::FilePath();
-    }
-
-    extension_root_normalization_skipped = true;
-#else
+  if (!file_util::NormalizeFilePath(extension_root,
+                                    &normalized_extension_root)) {
     return base::FilePath();
-#endif
   }
 
   base::FilePath full_path = normalized_extension_root.Append(relative_path);
@@ -107,22 +85,8 @@ base::FilePath ExtensionResource::GetFilePath(
   // We must resolve the absolute path of the combined path when
   // the relative path contains references to a parent folder (i.e., '..').
   // NormalizeFilePath will fail if the path doesn't exist.
-  if (base::FilePath full_path_normalized;
-      !extension_root_normalization_skipped &&
-      base::NormalizeFilePath(full_path, &full_path_normalized)) {
-    full_path = std::move(full_path_normalized);
-  } else {
-#if BUILDFLAG(IS_WIN)
-    // On Windows, if `NormalizeFilePath` fails, fall back to
-    // `MakeAbsoluteFilePath` and proceed if the file exists. This can happen
-    // if, for example, the file isn't accessible due to permissions.
-    full_path = base::MakeAbsoluteFilePath(full_path);
-    if (full_path.empty() || !base::PathExists(full_path)) {
-      return base::FilePath();
-    }
-#else
+  if (!file_util::NormalizeFilePath(full_path, &full_path)) {
     return base::FilePath();
-#endif
   }
 
   if (symlink_policy != FOLLOW_SYMLINKS_ANYWHERE &&

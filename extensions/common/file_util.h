@@ -136,6 +136,14 @@ bool CheckForWindowsReservedFilenames(const base::FilePath& extension_dir,
 // an empty file path on failure.
 base::FilePath GetInstallTempDir(const base::FilePath& extensions_dir);
 
+// Normalizes `path` into `normalized_path` via `base::NormalizeFilePath`. On
+// Windows, falls back to `base::MakeAbsoluteFilePath` (requiring `path` to
+// exist) when `base::NormalizeFilePath` fails (e.g. on ramdisks that do not
+// support `GetFinalPathNameByHandle`, see crbug.com/442094023, or when a file
+// cannot be opened due to permissions).
+bool NormalizeFilePath(const base::FilePath& path,
+                       base::FilePath* normalized_path);
+
 // Get a relative file path from a chrome-extension:// URL.
 base::FilePath ExtensionURLToRelativeFilePath(const GURL& url);
 
