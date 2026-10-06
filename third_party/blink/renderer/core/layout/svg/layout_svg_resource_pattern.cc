@@ -192,14 +192,18 @@ bool LayoutSVGResourcePattern::ApplyShader(
   NOT_DESTROYED();
   ClearInvalidationMask();
 
-  std::unique_ptr<PatternData>& pattern_data =
-      pattern_map_.insert(&client, nullptr).stored_value->value;
+  auto iter = pattern_map_.find(&client);
+  PatternData* pattern_data =
+      (iter == pattern_map_.end() ? nullptr : iter->value.get());
   if (pattern_data && pattern_data->paint_flags != paint_flags) {
-    pattern_data.reset();
+    pattern_data = nullptr;
   }
 
   if (!pattern_data) {
-    pattern_data = BuildPatternData(reference_box, paint_flags);
+    auto new_pattern_data = BuildPatternData(reference_box, paint_flags);
+    pattern_data = new_pattern_data.get();
+    CHECK(pattern_data);
+    pattern_map_.Set(&client, std::move(new_pattern_data));
     pattern_data->paint_flags = paint_flags;
   }
 
