@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 #include <ostream>
-#include <set>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -464,29 +463,6 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-// TODO(crbug.com/350769496): Fixes bug from M127 beta, can be removed once M127
-// is no longer in stable (end of 2024, or mid 2025 is ok).
-void ChromeShelfPrefs::CleanupPreloadPrefs(PrefService* profile_prefs) {
-  constexpr std::array<const char*, 2> kPrefNames{
-      ash::prefs::kShelfDefaultPinLayoutRolls,
-      ash::prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor};
-
-  for (auto* const pref_name : kPrefNames) {
-    // Deduplicate items in list.
-    ScopedListPrefUpdate list(profile_prefs, pref_name);
-    std::set<base::Value> set;
-    for (const auto& item : *list) {
-      set.insert(item.Clone());
-    }
-    if (set.size() < list->size()) {
-      list->clear();
-      for (const auto& item : set) {
-        list->Append(item.Clone());
-      }
-    }
-  }
-}
-
 void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
                                      const char* local,
                                      const char* synced) {
@@ -877,10 +853,6 @@ void ChromeShelfPrefs::AttachProfile(Profile* profile) {
   profile_ = profile;
   needs_consistency_migrations_ = true;
   sync_service_observer_.Reset();
-  if (profile_) {
-    CleanupPreloadPrefs(profile_->GetPrefs());
-  }
-
   pending_preload_apps_.clear();
   preload_pin_order_.clear();
   if (profile_ && !DidAddPreloadApps()) {

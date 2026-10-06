@@ -755,36 +755,3 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
   EXPECT_TRUE(shelf_prefs_->DidAddPreloadApps());
   EXPECT_EQ(get_prefs(), "[ \"default\", \"preload\" ]\n");
 }
-
-// Cleanup duplicate values of 'preload' in prefs (crbug.com/350769496).
-TEST_F(ChromeShelfPrefsTest, CleanupPreloadPrefs) {
-  PrefService* prefs = profile_->GetPrefs();
-  std::vector<std::string> pref_names = {
-      ash::prefs::kShelfDefaultPinLayoutRolls,
-      ash::prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor};
-
-  const struct {
-    std::vector<std::string> pref_list;
-    std::string expected;
-  } tests[] = {
-      {{}, R"([  ])"},
-      {{"default"}, R"([ "default" ])"},
-      {{"default", "preload"}, R"([ "default", "preload" ])"},
-      {{"default", "preload", "preload"}, R"([ "default", "preload" ])"},
-      {{"preload", "default", "preload"}, R"([ "default", "preload" ])"},
-      {{"preload"}, R"([ "preload" ])"},
-      {{"preload", "preload"}, R"([ "preload" ])"},
-  };
-
-  for (const auto& test : tests) {
-    for (const auto& pref_name : pref_names) {
-      base::ListValue list;
-      for (const auto& item : test.pref_list) {
-        list.Append(item);
-      }
-      prefs->SetList(pref_name, std::move(list));
-      ChromeShelfPrefs::CleanupPreloadPrefs(prefs);
-      EXPECT_EQ(test.expected + "\n", prefs->GetList(pref_name).DebugString());
-    }
-  }
-}
