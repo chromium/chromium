@@ -65,6 +65,7 @@ mojom::ScriptType MapToMojoScriptType(UScriptCode script_code, bool is_emoji) {
     case USCRIPT_KATAKANA:
       return mojom::ScriptType::kKatakana;
     case USCRIPT_ARABIC:
+    case USCRIPT_ARABIC_NASTALIQ:
       return mojom::ScriptType::kArabic;
     case USCRIPT_BENGALI:
       return mojom::ScriptType::kBengali;
