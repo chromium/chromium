@@ -8,19 +8,24 @@
 
 #include "base/json/json_writer.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
+
+using ::testing::Optional;
 
 TEST(LogMessage, Serialization) {
   LogBuffer buffer;
   buffer << LogMessage::kParsedForms;
-  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
-  ASSERT_TRUE(json.has_value());
-  EXPECT_EQ(R"({"attributes":{"class":"log-message","message":"ParsedForms"},)"
-            R"("children":[{"type":"text","value":"Parsed forms:"}],)"
-            R"("type":"element","value":"div"})",
-            json.value());
+  EXPECT_THAT(
+      base::WriteJson(*buffer.RetrieveResult()),
+      Optional(std::string(
+          R"({"attributes":{"class":"log-message","message":"ParsedForms"},)"
+          R"("children":[{"type":"text","value":"Parsed forms:"}],)"
+          R"("type":"element","value":"div"})")));
 }
 
+}  // namespace
 }  // namespace autofill
