@@ -77,6 +77,21 @@ class ImageServiceImpl : public ImageService {
     ResultCallback callback;
   };
 
+  struct OptGuideClientState {
+    OptGuideClientState();
+    OptGuideClientState(OptGuideClientState&&);
+    OptGuideClientState& operator=(OptGuideClientState&&);
+    ~OptGuideClientState();
+
+    // Optimization Guide requests waiting to be aggregated into a batch.
+    std::vector<OptGuideRequest> unsent_requests;
+    // Optimization Guide requests that have been sent and are awaiting a
+    // response.
+    std::vector<OptGuideRequest> sent_requests;
+    // Timer used to allow requests to accumulate before sending a batch.
+    std::unique_ptr<base::OneShotTimer> timer;
+  };
+
   // Callback to `GetConsentToFetchImage`, proceeds to call the appropriate
   // backend.
   void OnConsentResult(mojom::ClientId client_id,
@@ -135,21 +150,8 @@ class ImageServiceImpl : public ImageService {
   // Used to make proper suggest requests.
   std::unique_ptr<AutocompleteSchemeClassifier> autocomplete_scheme_classifier_;
 
-  // Stores all the Optimization Guide requests that are still waiting to be
-  // aggregated into a batch and sent. When sent in a batch, the requests are
-  // moved to `sent_opt_guide_requests_`.
-  base::flat_map<mojom::ClientId, std::vector<OptGuideRequest>>
-      unsent_opt_guide_requests_;
-  // Stores all the Optimization Guide requests that have already been sent, and
-  // are awaiting a response from the Optimization Guide service.
-  base::flat_map<mojom::ClientId, std::vector<OptGuideRequest>>
-      sent_opt_guide_requests_;
-
-  // The timers used to allow for some requests to accumulate before sending a
-  // batch request to Optimization Guide Service. One timer per client ID.
-  // Insertion doesn't compile unless the timer is wrapped in a unique pointer.
-  base::flat_map<mojom::ClientId, std::unique_ptr<base::OneShotTimer>>
-      opt_guide_timers_;
+  base::flat_map<mojom::ClientId, OptGuideClientState>
+      opt_guide_client_states_;
 
   base::WeakPtrFactory<ImageServiceImpl> weak_factory_{this};
 };
