@@ -43,6 +43,7 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
                                     ExceptionState&);
   TrustedHTMLParserOptions* createParserOptions(v8::Isolate*,
                                                 const SetHTMLUnsafeOptions*,
+                                                const HeapVector<ScriptValue>&,
                                                 ExceptionState&);
   // These methods do the bulk of the work, but they return a value with a
   // null-ish string. This is meant to support
@@ -61,6 +62,11 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
                                             const String&,
                                             const HeapVector<ScriptValue>&,
                                             ExceptionState&);
+  TrustedHTMLParserOptions* createParserOptionsInternal(
+      v8::Isolate*,
+      const SetHTMLUnsafeOptions*,
+      const HeapVector<ScriptValue>&,
+      ExceptionState&);
 
   bool HasCreateHTML() const;
   bool HasCreateScript() const;

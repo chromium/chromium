@@ -50,6 +50,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   static Sanitizer* Create(const V8SanitizerPresets::Enum, ExceptionState&);
 
   static Sanitizer* CreateEmpty();
+  static bool IsEmpty(const SanitizerConfig*);
 
   Sanitizer* Clone() const;
 

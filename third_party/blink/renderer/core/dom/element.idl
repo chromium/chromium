@@ -34,11 +34,11 @@ dictionary SetHTMLOptions {
   (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer = "default";
 };
 dictionary SetHTMLUnsafeOptions {
-  (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer = {};
+  (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer;
   boolean runScripts = false;
 };
 dictionary ParseHTMLUnsafeOptions {
-  (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer = {};
+  (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer;
 };
 
 // https://dom.spec.whatwg.org/#interface-element

@@ -135,16 +135,16 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "This script element was modified without use of TrustedScript "
              "assignment and the 'default' policy failed to execute.";
     case kTrustedHTMLParserOptionsTransform:
-      CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
+      CHECK(RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled());
       return "This document requires 'TrustedHTMLParserOptions' assignment.";
     case kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted:
-      CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
+      CHECK(RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled());
       return "The TrustedHTMLParserOptions parser options transform failed and "
              "no "
              "'default' policy for 'TrustedHTMLParserOptions' has been "
              "defined.";
     case kTrustedHTMLParserOptionsTransformAndDefaultPolicyFailed:
-      CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
+      CHECK(RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled());
       return "The TrustedHTMLParserOptions parser options transform failed and "
              "the "
              "'default' policy failed to execute.";
@@ -652,9 +652,12 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
     return options;
   }
 
+  const bool require_policy =
+      fail_if_default_policy_is_missing || options.RequiresDefaultPolicy();
+
   auto* default_policy = GetDefaultPolicy(execution_context);
   if (!default_policy) {
-    if (fail_if_default_policy_is_missing &&
+    if (require_policy &&
         TrustedTypeFail(kTrustedHTMLParserOptionsTransform, execution_context,
                         interface_name, property_name, exception_state,
                         g_empty_string)) {
@@ -664,7 +667,7 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
   }
 
   if (!default_policy->HasCreateParserOptions()) {
-    if (fail_if_default_policy_is_missing &&
+    if (require_policy &&
         TrustedTypeFail(
             kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted,
             execution_context, interface_name, property_name, exception_state,
@@ -694,8 +697,11 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
 
       unsafe_options_for_policy->setSanitizer(sanitizer);
     }
-    result = default_policy->createParserOptions(
+    result = default_policy->createParserOptionsInternal(
         execution_context->GetIsolate(), unsafe_options_for_policy,
+        GetDefaultCallbackArgs(execution_context->GetIsolate(),
+                               "TrustedHTMLParserOptions", interface_name,
+                               property_name),
         exception_state);
   }
 
@@ -721,8 +727,10 @@ String TrustedTypesCheckForFragment(const V8UnionStringOrTrustedHTML* html,
                                     const ExecutionContext* execution_context,
                                     const AtomicString& interface_name,
                                     const AtomicString& property_name,
+                                    bool is_xml_document,
                                     ExceptionState& exception_state) {
-  if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
+  if (!is_xml_document &&
+      RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
     auto trusted_options = TrustedTypesCheckForParserOptions(
         resolved_options, /*fail_if_default_policy_is_missing=*/false,
         execution_context, interface_name, property_name, exception_state);
@@ -738,11 +746,9 @@ String TrustedTypesCheckForFragment(const V8UnionStringOrTrustedHTML* html,
 
   const String raw_string = html ? html->GetAsString() : g_empty_string;
 
-  const bool is_sanitized_by_parser =
+  if (!is_xml_document &&
       RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled() &&
-      resolved_options.IsTrusted() && resolved_options.WillSanitize();
-
-  if (is_sanitized_by_parser) {
+      resolved_options.IsTrusted()) {
     return raw_string;
   }
 
@@ -750,14 +756,27 @@ String TrustedTypesCheckForFragment(const V8UnionStringOrTrustedHTML* html,
                                   property_name, exception_state);
 }
 
+String TrustedTypesCheckForFragment(const V8UnionStringOrTrustedHTML* html,
+                                    FragmentParserOptions& resolved_options,
+                                    const ExecutionContext* execution_context,
+                                    const AtomicString& interface_name,
+                                    const AtomicString& property_name,
+                                    ExceptionState& exception_state) {
+  return TrustedTypesCheckForFragment(
+      html, resolved_options, execution_context, interface_name, property_name,
+      /*is_xml_document=*/false, exception_state);
+}
+
 std::tuple<String, FragmentParserOptions> TrustedTypesCheckForLegacyFragment(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
     const ExecutionContext* execution_context,
     const AtomicString& interface_name,
     const AtomicString& property_name,
+    bool is_xml_document,
     ExceptionState& exception_state) {
   FragmentParserOptions resolved_options;
-  if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
+  if (!is_xml_document &&
+      RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
     auto trusted_options = TrustedTypesCheckForParserOptions(
         resolved_options, /*fail_if_default_policy_is_missing=*/false,
         execution_context, interface_name, property_name, exception_state);
@@ -774,11 +793,9 @@ std::tuple<String, FragmentParserOptions> TrustedTypesCheckForLegacyFragment(
   const String raw_string =
       html ? html->GetAsStringLegacyNullToEmptyString() : g_empty_string;
 
-  const bool is_sanitized_by_parser =
+  if (!is_xml_document &&
       RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled() &&
-      resolved_options.IsTrusted() && resolved_options.WillSanitize();
-
-  if (is_sanitized_by_parser) {
+      resolved_options.IsTrusted()) {
     return {raw_string, resolved_options};
   }
 

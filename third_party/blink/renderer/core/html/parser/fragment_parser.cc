@@ -163,6 +163,19 @@ inline void RemoveElementPreservingChildren(DocumentFragment* fragment,
   fragment->RemoveChild(element);
 }
 
+bool HasNonEmptySanitizer(
+    const V8UnionSanitizerOrSanitizerConfigOrSanitizerPresets* sanitizer) {
+  if (!sanitizer) {
+    return false;
+  }
+  if (sanitizer->IsSanitizerConfig()) {
+    return !Sanitizer::IsEmpty(sanitizer->GetAsSanitizerConfig());
+  }
+  // Explicit Sanitizer instances (e.g., `new Sanitizer()`) and presets always
+  // require vetting by the default policy when Trusted Types are enforced.
+  return true;
+}
+
 }  // namespace
 
 FragmentParserOptions::FragmentParserOptions(TrustedHTMLParserOptions* options)
@@ -183,10 +196,13 @@ FragmentParserOptions::FragmentParserOptions(SetHTMLUnsafeOptions* options)
                     RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled())
                        ? RunScripts::kRunScripts
                        : RunScripts::kDontRunScripts),
-      sanitizer_init_(options->sanitizer()) {}
+      sanitizer_init_(options->getSanitizerOr(nullptr)),
+      requires_default_policy_(run_scripts_ == RunScripts::kRunScripts ||
+                               HasNonEmptySanitizer(sanitizer_init_)) {}
 
 FragmentParserOptions::FragmentParserOptions(ParseHTMLUnsafeOptions* options)
-    : sanitizer_init_(options->sanitizer()) {}
+    : sanitizer_init_(options->getSanitizerOr(nullptr)),
+      requires_default_policy_(HasNonEmptySanitizer(sanitizer_init_)) {}
 
 FragmentParserOptions::FragmentParserOptions(SetHTMLOptions* options)
     : sanitizer_init_(options->sanitizer()) {}
@@ -236,15 +252,6 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
   const bool should_sanitize =
       options.WillSanitize() ||
       (config.sanitizer_mode == Sanitizer::Mode::kSafe);
-
-  if (should_sanitize &&
-      config.force_html != FragmentParserConfig::ForceHtml::kForce &&
-      config.context_element &&
-      config.context_element->GetDocument().IsXMLDocument()) {
-    exception_state.ThrowTypeError(
-        "Sanitization is not supported in XML documents.");
-    return nullptr;
-  }
 
   StreamingSanitizer* streaming_sanitizer = nullptr;
   if (should_sanitize) {

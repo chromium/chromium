@@ -15,23 +15,23 @@
     <script>
       const container = document.querySelector("#container");
       // We have to replace this global because we are overriding the default policy from within the test.
-      let createParserOptions = (options) => options;
-      let createHTML = (html) => html;
+      let createParserOptions = (options, type, sink) => options;
+      let createHTML = (html, ...args) => html;
       const cleanupPolicy = trustedTypes.createPolicy("cleanup", {
         createHTML: (_) => "",
       });
 
       trustedTypes.createPolicy("default", {
-        createHTML: (html) => createHTML(html),
-        createParserOptions: (options) => createParserOptions(options),
+        createHTML: (html, ...args) => createHTML(html, ...args),
+        createParserOptions: (options, ...args) => createParserOptions(options, ...args),
       });
 
       function cleanup() {}
 
       function createTarget(target_type, t) {
         t.add_cleanup(() => {
-          createParserOptions = (options) => options;
-          createHTML = (html) => html;
+          createParserOptions = (options, type, sink) => options;
+          createHTML = (html, ...args) => html;
         });
 
         const target = document.createElement("div");
@@ -135,6 +135,27 @@
           }, `${target}.${method}: createParserOptions can inject a sanitizer config`);
 
           test((t) => {
+            const node = createTarget(target, t);
+            let capturedSink = null;
+            let capturedType = null;
+            createParserOptions = (options, type, sink) => {
+              capturedType = type;
+              capturedSink = sink;
+              return options;
+            };
+            get_root(node, method, "<div id='allowed'></div>");
+            const expectedSink = method === "parseHTMLUnsafe"
+              ? "Document parseHTMLUnsafe"
+              : method === "createContextualFragment"
+              ? "Range createContextualFragment"
+              : method === "afterbegin" || method === "beforeend" || method === "beforebegin" || method === "afterend"
+              ? "Element insertAdjacentHTML"
+              : `${target} ${method}`;
+            assert_equals(capturedType, "TrustedHTMLParserOptions");
+            assert_equals(capturedSink, expectedSink);
+          }, `${target}.${method}: createParserOptions receives correct type and sink name`);
+
+          test((t) => {
             t.add_cleanup(cleanup);
             const node = createTarget(target, t);
             createParserOptions = (options) => ({
@@ -177,21 +198,7 @@
             assert_not_equals(root.querySelector("#allowed"), null);
           }, `${target}.${method}: createParserOptions can remove a sanitizer`);
 
-          for (const value of [null, undefined]) {
-            test((t) => {
-              const node = createTarget(target, t);
-              createParserOptions = (options) => value;
-              const root = get_root(
-                node,
-                method,
-                "<div id='allowed'><span id=forbidden></span></div>",
-              );
-              assert_not_equals(root.querySelector("#forbidden"), null);
-              assert_not_equals(root.querySelector("#allowed"), null);
-            }, `${target}.${method}: createParserOptions returning ${JSON.stringify(value)} succeeds and skips sanitization`);
-          }
-
-          for (const value of [0, 123, "foo"]) {
+          for (const value of [null, undefined, 0, 123, "foo", true, false]) {
             test((t) => {
               const node = createTarget(target, t);
               createParserOptions = (options) => value;
@@ -220,10 +227,11 @@
           node.setHTMLUnsafe(
             "<div id=allowed><script>window.did_run = true;<" +
               "/script></div>",
+            { runScripts: true },
           );
-          assert_false(window.did_run);
+          assert_false(window.did_run, "Default policy can override runScripts from true to false");
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}: createParserOptions can override runScripts`);
+        }, `${target}: createParserOptions can override runScripts from true to false`);
 
         test((t) => {
           const node = createTarget(target, t);
@@ -234,14 +242,51 @@
           createParserOptions = (options) => ({
             runScripts: true,
           });
-          (node.setHTMLUnsafe(
+          node.setHTMLUnsafe(
             "<div id=allowed><script>window.did_run = true;<" +
               "/script></div>",
-          ),
-            { runScripts: false });
-          assert_false(window.did_run);
+            { runScripts: false },
+          );
+          assert_true(window.did_run, "Default policy can override runScripts from false to true");
           assert_not_equals(node.querySelector("#allowed"), null);
-        }, `${target}: createParserOptions cannot change runScripts from false to true`);
+        }, `${target}: createParserOptions can override runScripts from false to true`);
+
+        for (const method of [
+          "innerHTML",
+          "outerHTML",
+          "afterbegin",
+          "beforeend",
+          "beforebegin",
+          "afterend",
+        ]) {
+          if (target === "ShadowRoot" && method !== "innerHTML") {
+            continue;
+          }
+          test((t) => {
+            const node = createTarget(target, t);
+            window.did_run = false;
+            t.add_cleanup(() => {
+              window.did_run = false;
+            });
+            let receivedRunScripts = null;
+            createParserOptions = (options) => {
+              receivedRunScripts = options.runScripts;
+              return { runScripts: true };
+            };
+            run_method(
+              node,
+              method,
+              "<div id=allowed><script>window.did_run = true;<" +
+                "/script></div>",
+            );
+            assert_false(receivedRunScripts, "Initial runScripts option should be false");
+            assert_true(
+              window.did_run,
+              `Default policy returning {runScripts: true} enables script execution for ${method}`,
+            );
+            assert_not_equals(node.querySelector("#allowed"), null);
+          }, `${target}.${method}: createParserOptions returning {runScripts: true} enables script execution`);
+        }
 
         if (target === "Element") {
           test((t) => {
@@ -336,22 +381,6 @@
             });
             assert_false(createHTMLCalled, "createHTML should not have been called");
           }, `${target}.${method}: exception in createParserOptions is rethrown and prevents createHTML`);
-
-          test((t) => {
-            const node = createTarget(target, t);
-            let createParserOptionsCalled = false;
-            createParserOptions = (options) => {
-              createParserOptionsCalled = true;
-              return null;
-            };
-            createHTML = (html) => {
-              throw new Error("createHTML oops");
-            };
-            assert_throws_js(Error, () => {
-              run_method(node, method, "test string");
-            });
-            assert_true(createParserOptionsCalled, "createParserOptions should have been called before createHTML");
-          }, `${target}.${method}: exception in createHTML happens after createParserOptions runs`);
         }
       }
     </script>

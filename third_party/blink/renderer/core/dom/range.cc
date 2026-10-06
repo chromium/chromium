@@ -1010,7 +1010,8 @@ DocumentFragment* Range::createContextualFragment(
   String compliant_markup = TrustedTypesCheckForFragment(
       markup, resolved_options, owner_document_->GetExecutionContext(),
       trusted_types_names::kRange,
-      trusted_types_names::kCreateContextualFragment, exception_state);
+      trusted_types_names::kCreateContextualFragment,
+      owner_document_->IsXMLDocument(), exception_state);
 
   if (exception_state.HadException()) {
     return nullptr;

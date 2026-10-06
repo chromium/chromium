@@ -97,6 +97,16 @@ Sanitizer* Sanitizer::CreateEmpty() {
   return sanitizer;
 }
 
+bool Sanitizer::IsEmpty(const SanitizerConfig* config) {
+  return !config ||
+         (!config->hasElements() && !config->hasRemoveElements() &&
+          !config->hasReplaceWithChildrenElements() &&
+          !config->hasProcessingInstructions() &&
+          !config->hasRemoveProcessingInstructions() &&
+          !config->hasAttributes() && !config->hasRemoveAttributes() &&
+          !config->hasComments() && !config->hasDataAttributes());
+}
+
 Sanitizer* Sanitizer::Clone() const {
   Sanitizer* clone = MakeGarbageCollected<Sanitizer>();
   clone->setFrom(*this);

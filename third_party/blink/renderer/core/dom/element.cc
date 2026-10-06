@@ -9860,7 +9860,8 @@ void Element::setInnerHTML(
   auto [compliant_string, resolved_options] =
       TrustedTypesCheckForLegacyFragment(
           html, GetExecutionContext(), trusted_types_names::kElement,
-          trusted_types_names::kInnerHTML, exception_state);
+          trusted_types_names::kInnerHTML, GetDocument().IsXMLDocument(),
+          exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -9961,7 +9962,8 @@ void Element::setOuterHTML(
   auto [compliant_string, resolved_options] =
       TrustedTypesCheckForLegacyFragment(
           html, GetExecutionContext(), trusted_types_names::kElement,
-          trusted_types_names::kOuterHTML, exception_state);
+          trusted_types_names::kOuterHTML, GetDocument().IsXMLDocument(),
+          exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -10238,7 +10240,7 @@ void Element::insertAdjacentHTML(const String& where,
   String compliant_string = TrustedTypesCheckForFragment(
       html, resolved_options, GetExecutionContext(),
       trusted_types_names::kElement, trusted_types_names::kInsertAdjacentHTML,
-      exception_state);
+      GetDocument().IsXMLDocument(), exception_state);
   if (exception_state.HadException()) {
     return;
   }
