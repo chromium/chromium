@@ -22,6 +22,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -312,6 +315,51 @@ public class TabCollectionTabModelImplUnitTest {
                                 /* index= */ 1,
                                 TabLaunchType.FROM_CHROME_UI,
                                 TabCreationState.LIVE_IN_FOREGROUND));
+        verifyBatchedAndReset();
+    }
+
+    @Test
+    public void testAddTab_MigratesRootIdVisualDataAndResetsRootId() {
+        @TabId int rootId = 456;
+        @TabId int tabId = 789;
+        Token tabGroupId = new Token(123L, 456L);
+        String groupTitle = "Restored Group";
+        int groupColor = 1;
+        Context context = ContextUtils.getApplicationContext();
+        String rootIdKey = String.valueOf(rootId);
+
+        context.getSharedPreferences(
+                        TabGroupVisualDataStore.TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putString(rootIdKey, groupTitle)
+                .apply();
+        context.getSharedPreferences(
+                        TabGroupVisualDataStore.TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putInt(rootIdKey, groupColor)
+                .apply();
+
+        MockTab tab = createMockTab(tabId, mProfile);
+        tab.setRootId(rootId);
+        tab.setTabGroupId(tabGroupId);
+        tab.setIsInitialized(true);
+
+        mTabModel.addTab(
+                tab,
+                /* index= */ 0,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.FROZEN_FOR_LAZY_LOAD);
+
+        assertEquals(tabId, tab.getRootId());
+        assertEquals(groupTitle, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
+        assertEquals(groupColor, TabGroupVisualDataStore.getTabGroupColor(tabGroupId));
+        verify(mTabCollectionTabModelImplJni)
+                .createTabGroup(
+                        TAB_COLLECTION_TAB_MODEL_IMPL_PTR,
+                        tabGroupId,
+                        groupTitle,
+                        groupColor,
+                        /* isCollapsed= */ false);
         verifyBatchedAndReset();
     }
 

@@ -602,16 +602,14 @@ public class TabArchiverUnitTest {
         TabStateExtractor.setTabStateForTesting(tab.getId(), tabStateWithoutContents);
         assertNull(mTabArchiver.prepareTabState(tab));
 
-        // Valid TabState with parentId and rootId set
+        // Valid TabState with parentId set
         TabState validTabState = new TabState();
         validTabState.contentsState = mWebContentsState;
         validTabState.parentId = 123;
-        validTabState.rootId = 456;
         TabStateExtractor.setTabStateForTesting(tab.getId(), validTabState);
 
         TabState prepared = mTabArchiver.prepareTabState(tab);
         assertNotNull(prepared);
         assertEquals(Tab.INVALID_TAB_ID, prepared.parentId);
-        assertEquals(Tab.INVALID_TAB_ID, prepared.rootId);
     }
 }

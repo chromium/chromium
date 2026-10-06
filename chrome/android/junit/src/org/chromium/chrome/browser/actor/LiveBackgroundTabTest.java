@@ -112,14 +112,12 @@ public class LiveBackgroundTabTest {
         TabState placeholderState = new TabState();
         placeholderState.contentsState = mPlaceholderContentsState;
         placeholderState.tabGroupId = placeholderGroupToken;
-        placeholderState.rootId = 555;
         placeholderState.isPinned = true;
 
         Tab attached = mLiveBackgroundTab.attachTab(mTabModel, 2, placeholderState);
 
         assertSame(mTab, attached);
         verify(mTab).setTabGroupId(placeholderGroupToken);
-        verify(mTab).setRootId(555);
         verify(mPlaceholderContentsState).destroy();
         assertNull(placeholderState.contentsState);
         verify(mTabModel).pinTab(TAB_ID, /* showUngroupDialog= */ false);

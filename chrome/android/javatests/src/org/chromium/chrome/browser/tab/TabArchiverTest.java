@@ -222,11 +222,6 @@ public class TabArchiverTest {
                 () ->
                         assertEquals(
                                 Tab.INVALID_TAB_ID, mArchivedTabModel.getTabAt(0).getParentId()));
-        runOnUiThreadBlocking(
-                () ->
-                        assertEquals(
-                                mArchivedTabModel.getTabAt(0).getId(),
-                                mArchivedTabModel.getTabAt(0).getRootId()));
 
         watcher =
                 HistogramWatcher.newBuilder()
@@ -282,11 +277,6 @@ public class TabArchiverTest {
                 () ->
                         assertEquals(
                                 Tab.INVALID_TAB_ID, mArchivedTabModel.getTabAt(0).getParentId()));
-        runOnUiThreadBlocking(
-                () ->
-                        assertEquals(
-                                mArchivedTabModel.getTabAt(0).getId(),
-                                mArchivedTabModel.getTabAt(0).getRootId()));
 
         watcher =
                 HistogramWatcher.newBuilder()
@@ -1021,14 +1011,11 @@ public class TabArchiverTest {
                 () -> {
                     Tab archivedTab = mArchivedTabModel.getTabAt(0);
                     assertEquals(Tab.INVALID_TAB_ID, archivedTab.getParentId());
-                    assertEquals(archivedTab.getId(), archivedTab.getRootId());
 
-                    archivedTab.setRootId(7);
                     archivedTab.setParentId(7);
 
                     mTabArchiver.ensureArchivedTabsHaveCorrectFields();
                     assertEquals(Tab.INVALID_TAB_ID, archivedTab.getParentId());
-                    assertEquals(archivedTab.getId(), archivedTab.getRootId());
                 });
     }
 

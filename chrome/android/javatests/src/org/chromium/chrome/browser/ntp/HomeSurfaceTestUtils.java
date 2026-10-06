@@ -4,25 +4,19 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.V2_GOOGLE_COM_FBS;
-
 import android.graphics.Bitmap;
-import android.util.Base64;
 
 import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -33,7 +27,6 @@ import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
-import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,53 +54,19 @@ public class HomeSurfaceTestUtils {
     }
 
     /**
-     * Create all the files so that tab models can be restored.
+     * Creates a Tab state metadata file without creating Tab state files for the given Tab's info.
      *
-     * @param tabIds all the Tab IDs in the normal tab model.
+     * @param tabIds All the Tab IDs in the normal tab model.
+     * @param urls All the Tab URLs in the normal tab model.
+     * @param selectedIndex The selected index of normal tab model.
      */
-    public static void createTabStatesAndMetadataFile(int[] tabIds) {
-        createTabStatesAndMetadataFile(tabIds, null, null, 0);
-    }
-
-    /**
-     * Create all the files so that tab models can be restored.
-     *
-     * @param tabIds all the Tab IDs in the normal tab model.
-     * @param rootIds all the root IDs in the normal tab model.
-     */
-    public static void createTabStatesAndMetadataFile(int[] tabIds, @Nullable int[] rootIds) {
-        createTabStatesAndMetadataFile(tabIds, rootIds, null, 0);
-    }
-
-    /**
-     * Create all the files so that tab models can be restored.
-     *
-     * @param tabIds all the Tab IDs in the normal tab model.
-     * @param rootIds all the root IDs in the normal tab model.
-     * @param urls all of the URLs in the normal tab model.
-     * @param selectedIndex the selected index of normal tab model.
-     */
-    public static void createTabStatesAndMetadataFile(
-            int[] tabIds, @Nullable int[] rootIds, @Nullable String[] urls, int selectedIndex) {
-        createTabStatesAndMetadataFile(tabIds, rootIds, urls, selectedIndex, true);
-    }
-
-    private static void createTabStatesAndMetadataFile(
-            int[] tabIds,
-            int[] rootIds,
-            @Nullable String[] urls,
-            int selectedIndex,
-            boolean createStateFile) {
+    public static void prepareTabStateMetadataFile(
+            int[] tabIds, @Nullable String[] urls, int selectedIndex) {
         TabModelMetadata normalInfo = new TabModelMetadata(selectedIndex);
         for (int i = 0; i < tabIds.length; i++) {
             normalInfo.ids.add(tabIds[i]);
             String url = urls != null ? urls[i] : "about:blank";
             normalInfo.urls.add(url);
-
-            if (createStateFile) {
-                int rootId = rootIds == null ? tabIds[i] : rootIds[i];
-                saveTabState(tabIds[i], rootId);
-            }
         }
         TabModelMetadata incognitoInfo = new TabModelMetadata(0);
 
@@ -120,18 +79,6 @@ public class HomeSurfaceTestUtils {
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
         TabMetadataFileManager.saveListToFile(metadataFile, selectorMetaData);
-    }
-
-    /**
-     * Creates a Tab state metadata file without creating Tab state files for the given Tab's info.
-     *
-     * @param tabIds All the Tab IDs in the normal tab model.
-     * @param urls All the Tab URLs in the normal tab model.
-     * @param selectedIndex The selected index of normal tab model.
-     */
-    public static void prepareTabStateMetadataFile(
-            int[] tabIds, @Nullable String[] urls, int selectedIndex) throws IOException {
-        createTabStatesAndMetadataFile(tabIds, null, urls, selectedIndex, false);
     }
 
     /**
@@ -181,41 +128,5 @@ public class HomeSurfaceTestUtils {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> tab.set(TabModelUtils.getCurrentTab(cta.getCurrentTabModel())));
         return tab.get();
-    }
-
-    /**
-     * Create a file so that a TabState can be restored later.
-     *
-     * @param tabId the Tab ID
-     * @param rootId the Root ID
-     */
-    private static void saveTabState(int tabId, int rootId) {
-        File file =
-                TabStateFileManager.getTabStateFile(
-                        TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
-                        tabId,
-                        /* encrypted= */ false,
-                        /* isFlatbuffer= */ true);
-        writeFile(file, V2_GOOGLE_COM_FBS.encodedTabState);
-
-        CipherFactory unusedCipherFactory = new CipherFactory();
-        TabState tabState =
-                TabStateFileManager.restoreTabStateInternal(
-                        file, /* isEncrypted= */ false, unusedCipherFactory);
-        tabState.rootId = rootId;
-        TabStateFileManager.saveStateInternal(
-                file, tabState, /* encrypted= */ false, unusedCipherFactory);
-    }
-
-    private static void writeFile(File file, String data) {
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(file);
-            outputStream.write(Base64.decode(data, 0));
-        } catch (Exception e) {
-            assert false : "Failed to create " + file;
-        } finally {
-            StreamUtil.closeQuietly(outputStream);
-        }
     }
 }

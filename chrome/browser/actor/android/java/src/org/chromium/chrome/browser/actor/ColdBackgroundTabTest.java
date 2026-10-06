@@ -86,7 +86,6 @@ public class ColdBackgroundTabTest {
         TabState placeholderState = new TabState();
         placeholderState.contentsState = mPlaceholderContentsState;
         placeholderState.tabGroupId = placeholderGroupToken;
-        placeholderState.rootId = 555;
         placeholderState.isPinned = true;
 
         ColdBackgroundTab tab =
@@ -103,7 +102,6 @@ public class ColdBackgroundTabTest {
 
         assertEquals(mTab, attachedTab);
         assertEquals(placeholderGroupToken, mBackgroundTabState.tabGroupId);
-        assertEquals(555, mBackgroundTabState.rootId);
         assertTrue(mBackgroundTabState.isPinned);
         verify(mBackgroundTabPool).removeTabById(ORIGINAL_TAB_ID);
         verify(mTabCreator)
@@ -147,26 +145,6 @@ public class ColdBackgroundTabTest {
 
         verify(mBackgroundContentsState).destroy();
         assertNull(mBackgroundTabState.contentsState);
-    }
-
-    @Test
-    public void testAttachTab_transfersZeroRootId() {
-        TabState placeholderState = new TabState();
-        placeholderState.rootId = 0;
-
-        ColdBackgroundTab tab =
-                new ColdBackgroundTab(
-                        mBackgroundTabPool,
-                        ORIGINAL_TAB_ID,
-                        mBackgroundTabState,
-                        PLACEHOLDER_TAB_ID);
-
-        when(mTabCreator.createFrozenTab(any(), eq(ORIGINAL_TAB_ID), eq(DESTINATION_INDEX)))
-                .thenReturn(mTab);
-
-        tab.attachTab(mTabModel, DESTINATION_INDEX, placeholderState);
-
-        assertEquals(0, mBackgroundTabState.rootId);
     }
 
     @Test

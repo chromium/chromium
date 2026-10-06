@@ -191,7 +191,8 @@ public interface TabWindowManager {
      * @param windowId The ID of the window that holds the tab group.
      * @param tabGroupId The tab group ID of the tab group.
      * @param isIncognito Whether the grouped tabs are incognito tabs.
-     * @return A list of tabs associated with the root ID, or {@code null} if no tabs are found.
+     * @return A list of tabs associated with the tab group ID, or {@code null} if no tabs are
+     *     found.
      */
     @Nullable List<Tab> getGroupedTabsByWindow(
             @WindowId int windowId, Token tabGroupId, boolean isIncognito);

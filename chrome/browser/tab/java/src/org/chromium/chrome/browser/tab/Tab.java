@@ -438,10 +438,7 @@ public interface Tab extends TabLifecycle {
     @Deprecated
     void setRootId(@TabId int rootId);
 
-    /**
-     * Returns the tab group ID of the {@link Tab} or null if not part of a group. Note that during
-     * migration from root ID the TabGroupId may be null until tab state is initialized.
-     */
+    /** Returns the tab group ID of the {@link Tab} or null if not part of a group. */
     @Nullable Token getTabGroupId();
 
     /**

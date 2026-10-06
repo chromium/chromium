@@ -461,7 +461,7 @@ public interface TabObserver {
     /**
      * Broadcast that tab group ID on a {@link Tab} has changed.
      *
-     * @param tab The {@link Tab} root identifier has changed on
+     * @param tab The {@link Tab} tab group ID has changed on.
      * @param tabGroupId The new tab group ID, may be null.
      */
     default void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {}

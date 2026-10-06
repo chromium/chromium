@@ -206,7 +206,6 @@ public class TabUmaTest {
             state.themeColor = 4;
             state.openerAppId = "test";
             state.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
-            state.rootId = 1;
         }
         return state;
     }

@@ -155,8 +155,7 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
     }
 
     /**
-     * Symmetrically transfers grouping and root ID metadata from a placeholder TabState to this
-     * live Tab.
+     * Symmetrically transfers grouping metadata from a placeholder TabState to this live Tab.
      *
      * <p>Note: Pinned status is not transferred here because for a live {@link Tab}, pinned state
      * is maintained by the {@link TabModel} and must be applied via {@link TabModel#pinTab(int,
@@ -165,9 +164,6 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
     private static void transferPlaceholderMetadata(Tab targetTab, TabState placeholderState) {
         if (placeholderState.tabGroupId != null) {
             targetTab.setTabGroupId(placeholderState.tabGroupId);
-        }
-        if (placeholderState.rootId != Tab.INVALID_TAB_ID) {
-            targetTab.setRootId(placeholderState.rootId);
         }
     }
 

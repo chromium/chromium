@@ -87,9 +87,6 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
         if (placeholderState.tabGroupId != null) {
             targetState.tabGroupId = placeholderState.tabGroupId;
         }
-        if (placeholderState.rootId != Tab.INVALID_TAB_ID) {
-            targetState.rootId = placeholderState.rootId;
-        }
         targetState.isPinned = placeholderState.isPinned;
     }
 
