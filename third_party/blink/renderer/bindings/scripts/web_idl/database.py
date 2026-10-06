@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from . import file_io
+from .exposure import Exposure
 from .observable_array import ObservableArray
 from .typedef import Typedef
 from .union import Union
@@ -99,6 +100,20 @@ class Database(object):
     def __init__(self, database_body):
         assert isinstance(database_body, DatabaseBody)
         self._impl = database_body
+        self._global_name_to_global_scopes = (
+            self._compute_global_name_to_global_scopes()
+        )
+        Exposure.init(
+            global_name_to_global_scopes=self._global_name_to_global_scopes
+        )
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        # Class attributes are not pickled, so restore the pre-computed data
+        # when this database is loaded from a file.
+        Exposure.init(
+            global_name_to_global_scopes=self._global_name_to_global_scopes
+        )
 
     @staticmethod
     def read_from_file(filepath):
@@ -182,3 +197,19 @@ class Database(object):
 
     def _view_by_kind(self, kind):
         return list(self._impl.find_by_kind(kind).values())
+
+    def _compute_global_name_to_global_scopes(self):
+        # Use sorted tuples rather than sets so that the pickled database is
+        # deterministic regardless of the hash seed.
+        name_to_scopes = {}
+        for interface in self.interfaces:
+            for global_name in interface.extended_attributes.values_of(
+                'Global'
+            ) + interface.extended_attributes.values_of('TargetOfExposed'):
+                name_to_scopes.setdefault(global_name, set()).add(
+                    interface.identifier
+                )
+        return {
+            name: tuple(sorted(name_to_scopes[name]))
+            for name in sorted(name_to_scopes)
+        }

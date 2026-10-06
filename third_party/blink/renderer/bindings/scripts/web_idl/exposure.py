@@ -50,6 +50,41 @@ class _GlobalNameAndFeature(object):
 class Exposure(object):
     """Represents a set of conditions under which the construct is exposed."""
 
+    _REQUIRE_INIT_MESSAGE = "Exposure.init must be called in advance."
+    _is_initialized = False
+    _global_name_to_global_scopes = {}
+
+    @classmethod
+    def init(cls, global_name_to_global_scopes):
+        """
+        Args:
+            global_name_to_global_scopes: A dict from a global name to the
+                identifiers of the interfaces that implement it.
+        """
+        assert isinstance(global_name_to_global_scopes, dict)
+        assert all(
+            isinstance(name, str)
+            and isinstance(scopes, (frozenset, list, set, tuple))
+            and all(isinstance(scope, str) for scope in scopes)
+            for name, scopes in global_name_to_global_scopes.items()
+        )
+        cls._global_name_to_global_scopes = {
+            name: frozenset(scopes)
+            for name, scopes in global_name_to_global_scopes.items()
+        }
+        cls._is_initialized = True
+
+    @classmethod
+    def get_global_name_to_global_scopes(cls):
+        """
+        Returns a dict from a global name (e.g. "Worker") to the frozenset of
+        identifiers of the [Global] or [TargetOfExposed] interfaces that
+        implement it (e.g.
+        {"DedicatedWorkerGlobalScope", "SharedWorkerGlobalScope", ...}).
+        """
+        assert cls._is_initialized, cls._REQUIRE_INIT_MESSAGE
+        return cls._global_name_to_global_scopes
+
     def __init__(self, other=None):
         assert other is None or isinstance(other, Exposure)
 
@@ -223,6 +258,35 @@ class Exposure(object):
             if entry.feature and entry.feature.is_context_dependent:
                 is_context_dependent = True
         return is_context_dependent
+
+    def unconditional_global_scopes(self):
+        """
+        Returns the frozenset of identifiers of the [Global] or
+        [TargetOfExposed] interfaces on which this construct is exposed
+        according to its [Exposed] alone, with global names such as "Worker"
+        resolved into the concrete global scopes that implement them.
+
+        Returns None if this cannot be determined statically, i.e. there is no
+        [Exposed], or [Exposed] is conditional on a feature
+        ([Exposed=(Window Feature)]), or it refers to a name that no [Global]
+        or [TargetOfExposed] interface implements.
+        """
+        entries = self.global_names_and_features
+        if not entries:
+            return None
+        name_to_scopes = Exposure.get_global_name_to_global_scopes()
+        scopes = set()
+        for entry in entries:
+            if entry.feature is not None:
+                return None
+            if entry.global_name == "*":
+                for name_scopes in name_to_scopes.values():
+                    scopes.update(name_scopes)
+                continue
+            if entry.global_name not in name_to_scopes:
+                return None
+            scopes.update(name_to_scopes[entry.global_name])
+        return frozenset(scopes)
 
 
 class ExposureMutable(Exposure):

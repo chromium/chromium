@@ -6031,57 +6031,6 @@ class _PropEntryOperationGroup(_PropEntryBase):
         self.no_alloc_direct_call_callbacks = no_alloc_direct_call_callbacks
 
 
-def _global_name_to_global_scopes():
-    """
-    Returns a dict from a global name (e.g. "Worker") to the set of identifiers
-    of the [Global] or [TargetOfExposed] interfaces that implement it (e.g.
-    {"DedicatedWorkerGlobalScope", "SharedWorkerGlobalScope", ...}).
-    """
-    cache = getattr(_global_name_to_global_scopes, "_cache", None)
-    if cache is None:
-        cache = {}
-        web_idl_database = package_initializer().web_idl_database()
-        for interface in web_idl_database.interfaces:
-            for global_name in interface.extended_attributes.values_of(
-                "Global"
-            ) + interface.extended_attributes.values_of("TargetOfExposed"):
-                cache.setdefault(global_name, set()).add(interface.identifier)
-        _global_name_to_global_scopes._cache = cache
-    return cache
-
-
-def _unconditional_global_scopes(exposure):
-    """
-    Returns the set of identifiers of the [Global] interfaces on which a
-    construct with |exposure| is exposed according to its [Exposed] alone,
-    with global names such as "Worker" resolved into the concrete global
-    scopes that implement them.
-
-    Returns None if this cannot be determined statically, i.e. there is no
-    [Exposed], or [Exposed] is conditional on a feature
-    ([Exposed=(Window Feature)]), or it refers to a name that no [Global]
-    interface implements.
-    """
-    assert isinstance(exposure, web_idl.Exposure)
-
-    entries = exposure.global_names_and_features
-    if not entries:
-        return None
-    name_to_scopes = _global_name_to_global_scopes()
-    scopes = set()
-    for entry in entries:
-        if entry.feature is not None:
-            return None
-        if entry.global_name == "*":
-            for name_scopes in name_to_scopes.values():
-                scopes.update(name_scopes)
-            continue
-        if entry.global_name not in name_to_scopes:
-            return None
-        scopes.update(name_to_scopes[entry.global_name])
-    return scopes
-
-
 def make_property_entries_and_callback_defs(
     cg_context,
     attribute_entries,
@@ -6128,12 +6077,12 @@ def make_property_entries_and_callback_defs(
     # V8DOMWrapper::CreateWrapper).
     class_like_global_scopes = None
     if not global_names and hasattr(class_like, "exposure"):
-        class_like_global_scopes = _unconditional_global_scopes(
-            class_like.exposure
+        class_like_global_scopes = (
+            class_like.exposure.unconditional_global_scopes()
         )
 
     def is_exposed_wherever_class_like_is(exposure):
-        scopes = _unconditional_global_scopes(exposure)
+        scopes = exposure.unconditional_global_scopes()
         return scopes is not None and class_like_global_scopes <= scopes
 
     def global_names_for_member(member):
