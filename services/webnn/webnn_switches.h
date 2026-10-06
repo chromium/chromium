@@ -77,6 +77,18 @@ inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
 // --webnn-ort-ep-device=OpenVINOExecutionProvider,0x8086,0x4680
 inline constexpr char kWebNNOrtEpDevice[] = "webnn-ort-ep-device";
 
+// Add arbitrary ONNX Runtime session configuration entries for testing.
+// The value must use the format <key>,<value>[,<key>,<value>...].
+// Like other testing switches, this is available in release builds and must
+// only be supplied through a trusted startup command line. Existing session
+// configuration entries, including dispatch security settings, cannot be
+// replaced.
+// Usage:
+// --webnn-ort-session-config-entries-for-testing=
+//   ep.qnnexecutionprovider.webnn_scenario,1,key2,value2
+inline constexpr char kWebNNOrtSessionConfigEntriesForTesting[] =
+    "webnn-ort-session-config-entries-for-testing";
+
 // Enable all execution providers, ignoring the enabled flag blocklist.
 inline constexpr char kWebNNOrtIgnoreEpBlocklist[] =
     "webnn-ort-ignore-ep-blocklist";

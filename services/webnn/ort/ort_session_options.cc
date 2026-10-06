@@ -11,6 +11,8 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_data_type.h"
@@ -273,6 +275,52 @@ ScopedOrtSessionOptions CreateTrivialModelSessionOptions(
   return session_options;
 }
 
+void ApplySessionConfigEntriesFromCommandLine(
+    OrtSessionOptions* session_options,
+    const base::CommandLine& command_line) {
+  const std::string switch_value = command_line.GetSwitchValueASCII(
+      switches::kWebNNOrtSessionConfigEntriesForTesting);
+  if (switch_value.empty()) {
+    return;
+  }
+
+  std::vector<std::string_view> parts = base::SplitStringPiece(
+      switch_value, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  CHECK_EQ(parts.size() % 2, 0u)
+      << "--" << switches::kWebNNOrtSessionConfigEntriesForTesting
+      << " must use the format <key>,<value>[,<key>,<value>...]; received \""
+      << switch_value << "\".";
+
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  for (size_t i = 0; i < parts.size(); i += 2) {
+    const std::string key(base::TrimWhitespaceASCII(parts[i], base::TRIM_ALL));
+    const std::string value(parts[i + 1]);
+    CHECK(!key.empty()) << "--"
+                        << switches::kWebNNOrtSessionConfigEntriesForTesting
+                        << " requires a non-empty key; received \""
+                        << switch_value << "\".";
+
+    int has_entry = 0;
+    CHECK_STATUS(ort_api->HasSessionConfigEntry(session_options, key.c_str(),
+                                                &has_entry));
+    CHECK(!has_entry)
+        << "--" << switches::kWebNNOrtSessionConfigEntriesForTesting
+        << " cannot replace existing session configuration entry \"" << key
+        << "\" with value \"" << value << "\".";
+
+    // Keep the failing pair in the fatal diagnostic. CHECK_STATUS would only
+    // report ORT's status.
+    ScopedOrtStatus status(ort_api->AddSessionConfigEntry(
+        session_options, key.c_str(), value.c_str()));
+    CHECK(!status.is_valid())
+        << "Failed to apply --"
+        << switches::kWebNNOrtSessionConfigEntriesForTesting << " entry \""
+        << key << "," << value << "\" from \"" << switch_value
+        << "\": " << internal::OrtStatusErrorMessage(status.get());
+  }
+}
+
 // static
 base::expected<scoped_refptr<SessionOptions>, std::string>
 SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
@@ -309,6 +357,11 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
     CHECK_STATUS(ort_api->AddSessionConfigEntry(
         session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
   }
+
+  // Apply the testing entries after WebNN and EP defaults. Existing entries
+  // cannot be replaced and fail fast with the conflicting key and value.
+  ApplySessionConfigEntriesFromCommandLine(
+      session_options.get(), *base::CommandLine::ForCurrentProcess());
 
   return base::MakeRefCounted<SessionOptions>(
       base::PassKey<SessionOptions>(), std::move(session_options),
@@ -372,6 +425,11 @@ scoped_refptr<SessionOptions> SessionOptions::CreateForDispatch(
       kOrtSessionOptionsModelExternalInitializersFileFolderPath,
       "\\\\?\\Volume{00000000-0000-0000-0000-000000000000}\\"));
 
+  // Apply the testing entries only after dispatch hardening so none of the
+  // security settings above can be replaced.
+  ApplySessionConfigEntriesFromCommandLine(
+      session_options.get(), *base::CommandLine::ForCurrentProcess());
+
   return base::MakeRefCounted<SessionOptions>(
       base::PassKey<SessionOptions>(), std::move(session_options),
       std::move(env), target_ort_device, /*context_options=*/nullptr);
@@ -391,6 +449,11 @@ scoped_refptr<SessionOptions> SessionOptions::CreateForCompilation(
 
   ScopedOrtSessionOptions session_options = CreateSessionOptionsForTargetDevice(
       target_device.ep_name, env->get(), target_ort_device);
+
+  // Apply the testing entries after WebNN, EP, and OrtEpDevice defaults.
+  // Existing entries cannot be replaced and fail fast.
+  ApplySessionConfigEntriesFromCommandLine(
+      session_options.get(), *base::CommandLine::ForCurrentProcess());
 
   return base::MakeRefCounted<SessionOptions>(
       base::PassKey<SessionOptions>(), std::move(session_options),

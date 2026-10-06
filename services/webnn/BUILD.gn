@@ -317,6 +317,7 @@ source_set("tests") {
   if (is_win) {
     sources += [
       "ort/model_editor_test.cc",
+      "ort/ort_session_options_test.cc",
       "ort/platform_functions_ort_test.cc",
       "ort/test_base_ort.cc",
       "ort/test_base_ort.h",
@@ -339,6 +340,8 @@ source_set("tests") {
 
   if (is_win) {
     deps += [
+      ":webnn_switches",
+      "//third_party/windows_app_sdk_headers",
       "//ui/gl",
       "//ui/gl/init",
     ]
