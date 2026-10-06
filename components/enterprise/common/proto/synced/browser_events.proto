@@ -1196,6 +1196,8 @@ message PasswordBreachEvent {
 //
 // Next ID: 11.
 message BrowserExtensionInstallEvent {
+  reserved 9;
+
   // The extension ID.
   string id = 1;
 
@@ -1241,9 +1243,6 @@ message BrowserExtensionInstallEvent {
       // ]
       // copybara:datapol_end
       ;
-
-  // Whether the extension source is Chrome Web Store.
-  bool from_webstore = 9 [deprecated = true];
 
   // The source of the extension.
   enum ExtensionSource {
