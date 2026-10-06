@@ -4,6 +4,8 @@
 
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
@@ -21,7 +23,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/manifest_handlers/mime_types_handler.h"
+#include "extensions/common/manifest_handlers/mime_types_handler_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -267,8 +269,7 @@ TEST_F(MimeHandlerRegistryTest, MultipleMimeTypesWithOverlap) {
 
   // Allowlisted QuickOffice extension registers for BOTH application/pdf
   // and application/msword via a dict-format manifest. Allowlisted
-  // extensions bypass `GetPublicAllowedMIMETypeList()`, so msword is
-  // accepted.
+  // extensions may claim unsupported MIME types, so msword is accepted.
   auto allowlisted =
       ExtensionBuilder("AllowlistedMulti")
           .SetID(extension_misc::kQuickOfficeExtensionId)
@@ -422,15 +423,13 @@ TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {
 
 TEST_F(MimeHandlerRegistryTest, SetEnabledForUnclaimedMimeTypeDoesNotRegister) {
   constexpr char kPngMimeType[] = "image/png";
-  // Anchor on the actual invariant: `kPngMimeType` is not in the public
-  // allowed MIME types, so no non-allowlisted extension's manifest can
-  // claim it (the parser drops unsupported entries with an install
-  // warning). If this list ever grows to include `image/png`, pick a
-  // different MIME type for this test.
-  ASSERT_TRUE(
-      std::ranges::find(MimeTypesHandler::GetPublicAllowedMIMETypeList(),
-                        kPngMimeType) ==
-      MimeTypesHandler::GetPublicAllowedMIMETypeList().end());
+  // Anchor on the actual invariant: `kPngMimeType` is not a supported MIME
+  // type, so no non-allowlisted extension's manifest can claim it (the
+  // parser drops unsupported entries with an install warning). If support
+  // ever grows to include `image/png`, pick a different MIME type for this
+  // test.
+  EXPECT_EQ(MimeTypesHandlerPermission::PermissionIDForMimeType(kPngMimeType),
+            std::nullopt);
 
   auto ext =
       CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl);

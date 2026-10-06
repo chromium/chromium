@@ -491,6 +491,11 @@ ChromePermissionMessageRule::GetAllRules() {
        {APIPermissionID::kPrintingMetrics},
        {}},
 
+      // Third-party MIME handlers, one warning per claimed MIME type.
+      {IDS_EXTENSION_PROMPT_WARNING_MIME_TYPES_HANDLER_PDF,
+       {APIPermissionID::kMimeTypesHandlerPdf},
+       {}},
+
       {IDS_EXTENSION_PROMPT_WARNING_DECLARATIVE_WEB_REQUEST,
        {APIPermissionID::kDeclarativeWebRequest},
        {}},

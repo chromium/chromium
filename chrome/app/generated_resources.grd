@@ -5646,6 +5646,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_NEW_TAB_PAGE_OVERRIDE" desc="Permission string for extensions that override the new tab page.">
           Replace the page you see when opening a new tab
         </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_MIME_TYPES_HANDLER_PDF" desc="Permission string for extensions that register themselves as the handler that opens PDF files.">
+          Read and display PDF files
+        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_TRANSIENT_BACKGROUND" desc="Permission string for transient background permission.">
           Run in the background when requested by a cooperating native application
         </message>

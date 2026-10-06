@@ -3332,6 +3332,7 @@ Called by update_extension_permission.py.-->
   <int value="272" label="kBluetoothPeripheral"/>
   <int value="273" label="kPublicSuffix"/>
   <int value="274" label="kEnterpriseWebrtc"/>
+  <int value="275" label="kMimeTypesHandlerPdf"/>
 </enum>
 
 <enum name="ExtensionPinReason">

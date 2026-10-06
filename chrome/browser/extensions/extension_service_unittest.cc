@@ -1890,6 +1890,38 @@ TEST_F(ExtensionServiceTest, ReenableWithAllPermissionsGrantedOnStartup) {
       id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
 }
 
+// An extension installed with the mime_types_handler warning should stay
+// enabled after a restart. An extension installed before the warning existed
+// should be disabled at startup until the user approves the permission.
+TEST_F(ExtensionServiceTest,
+       MimeTypesHandlerInstalledBeforeWarningRepromptsOnStartup) {
+  InitializeEmptyExtensionService();
+  const base::FilePath path =
+      data_dir().AppendASCII("permissions").AppendASCII("mime_types_handler");
+
+  const Extension* extension = PackAndInstallCRX(path, INSTALL_NEW);
+  const std::string id = extension->id();
+
+  EXPECT_EQ(0u, GetErrors().size());
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(id));
+
+  // The permission granted at install should still be granted after a restart.
+  service()->ReloadExtensionsForTest();
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(id));
+
+  // Make the extension look as if it was installed before the permission
+  // existed. The manifest requests only the MIME handler permission, so
+  // clearing all granted permissions clears just that one.
+  std::unique_ptr<PermissionSet> granted = prefs()->GetGrantedPermissions(id);
+  ASSERT_FALSE(granted->manifest_permissions().empty());
+  prefs()->RemoveGrantedPermissions(id, *granted);
+
+  service()->ReloadExtensionsForTest();
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
+  EXPECT_TRUE(prefs()->HasDisableReason(
+      id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
+}
+
 TEST_F(ExtensionServiceTest,
        DontReenableWithAllPermissionsGrantedButOtherReason) {
   InitializeEmptyExtensionService();

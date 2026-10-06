@@ -1295,6 +1295,20 @@ TEST_F(PermissionMessageCombinationsUnittest, NewTabPagePermissionMessages) {
 }
 
 TEST_F(PermissionMessageCombinationsUnittest,
+       MimeTypesHandlerPermissionMessages) {
+  static constexpr char kManifest[] = R"({
+    "mime_types_handler": {
+      "application/pdf": {
+        "handler_url": "viewer.html"
+      }
+    }
+  })";
+
+  CreateAndInstall(kManifest);
+  ASSERT_TRUE(CheckManifestProducesPermissions("Read and display PDF files"));
+}
+
+TEST_F(PermissionMessageCombinationsUnittest,
        DeclarativeNetRequestFeedbackPermissionMessages) {
   // Set the current channel to trunk.
   ScopedCurrentChannel scoped_channel(version_info::Channel::UNKNOWN);

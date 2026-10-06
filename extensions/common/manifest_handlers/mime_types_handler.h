@@ -6,7 +6,6 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_MIME_TYPES_HANDLER_H_
 
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -32,9 +31,6 @@ class MimeTypesHandler {
 
   // Returns list of extensions' ids that are allowed to use MIME type filters.
   static const std::vector<extensions::ExtensionId>& GetMIMETypeAllowlist();
-
-  // Returns list of MIME types allowed for public (non-allowlisted) extensions.
-  static base::span<const std::string_view> GetPublicAllowedMIMETypeList();
 
   static const MimeTypesHandler* Get(const extensions::Extension& extension);
 
@@ -93,6 +89,9 @@ class MimeTypesHandlerParser : public extensions::ManifestHandler {
   ~MimeTypesHandlerParser() override;
 
   bool Parse(extensions::Extension* extension, std::u16string* error) override;
+  extensions::ManifestPermission* CreatePermission() override;
+  extensions::ManifestPermission* CreateInitialRequiredPermission(
+      const extensions::Extension* extension) override;
 
  private:
   base::span<const char* const> Keys() const override;
