@@ -55,6 +55,22 @@ bool IsVisualSelectionType(lens::LensOverlaySelectionType selection_type) {
          selection_type == lens::INJECTED_IMAGE;
 }
 
+bool IsSelectedRegionOnlyInvocationSource(
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
+  if (invocation_source ==
+      lens::LensOverlayInvocationSource::kOmniboxPopupButton) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksUpdatedEntryPoints)) {
+    return invocation_source ==
+               lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
+           invocation_source == lens::LensOverlayInvocationSource::kAppMenu ||
+           invocation_source == lens::LensOverlayInvocationSource::kToolbar;
+  }
+  return false;
+}
+
 std::vector<lens::ContextualInput> ConvertPageContentToContextualInput(
     base::span<const lens::PageContent> underlying_page_contents) {
   std::vector<lens::ContextualInput> contextual_inputs;
@@ -229,8 +245,8 @@ void LensQueryFlowRouter::StartQueryFlow(
         .invocation_time = invocation_time,
     };
 
-    if (lens_search_controller_->invocation_source() ==
-        lens::LensOverlayInvocationSource::kOmniboxPopupButton) {
+    if (IsSelectedRegionOnlyInvocationSource(
+            lens_search_controller_->invocation_source())) {
       context_upload_mode_ = ContextUploadMode::kSelectedRegionOnly;
       // For region-only uploads, page context is not uploaded, but page context
       // eligibility is evaluated to ensure protected pages are blocked.
@@ -985,8 +1001,8 @@ bool LensQueryFlowRouter::ShouldPopulateFullPageContext() const {
   // if the invocation source is one where page context is blocked.
   if (context_upload_mode_ == ContextUploadMode::kSelectedRegionOnly ||
       (lens_search_controller_ &&
-       lens_search_controller_->invocation_source() ==
-           lens::LensOverlayInvocationSource::kOmniboxPopupButton)) {
+       IsSelectedRegionOnlyInvocationSource(
+           lens_search_controller_->invocation_source()))) {
     return false;
   }
   const bool can_add_page_content_to_query =

@@ -1238,6 +1238,86 @@ TEST_F(
             LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
 }
 
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       ShouldPopulateFullPageContext_UpdatedEntryPoints_ReturnsFalse) {
+  base::test::ScopedFeatureList feature_list{
+      contextual_tasks::kContextualTasksUpdatedEntryPoints};
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  for (auto source :
+       {lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+        lens::LensOverlayInvocationSource::kAppMenu,
+        lens::LensOverlayInvocationSource::kToolbar}) {
+    EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+        .WillRepeatedly(Return(source));
+    TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                   mock_context_controller_.get(),
+                                   profile_.get());
+    router.StartQueryFlow(router.GetViewportScreenshot(),
+                          router.GetViewportScreenshot(),
+                          GURL("https://example.com"), "Title", {}, {},
+                          lens::MimeType::kAnnotatedPageContent, std::nullopt,
+                          1.0f, base::TimeTicks::Now());
+    EXPECT_EQ(router.context_upload_mode(),
+              LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+    EXPECT_FALSE(router.ShouldPopulateFullPageContext());
+  }
+}
+
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       ShouldPopulateFullPageContext_UpdatedEntryPointsDisabled_ReturnsTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      contextual_tasks::kContextualTasksUpdatedEntryPoints);
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  for (auto source :
+       {lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+        lens::LensOverlayInvocationSource::kAppMenu,
+        lens::LensOverlayInvocationSource::kToolbar}) {
+    EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+        .WillRepeatedly(Return(source));
+    TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                   mock_context_controller_.get(),
+                                   profile_.get());
+    EXPECT_TRUE(router.ShouldPopulateFullPageContext());
+  }
+}
+
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    StartQueryFlow_RoutesToContextualTasks_SelectedRegionOnly_WhenUpdatedEntryPointsEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      contextual_tasks::kContextualTasksUpdatedEntryPoints};
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  for (auto source :
+       {lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+        lens::LensOverlayInvocationSource::kAppMenu,
+        lens::LensOverlayInvocationSource::kToolbar}) {
+    EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+        .WillRepeatedly(Return(source));
+    EXPECT_CALL(*mock_lens_search_controller_,
+                lens_search_contextualization_controller())
+        .WillOnce(Return(contextualization_controller_.get()));
+    TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                   mock_context_controller_.get(),
+                                   profile_.get());
+
+    std::vector<uint8_t> bytes = {1, 2, 3};
+    std::vector<lens::PageContent> page_contents;
+    page_contents.push_back({bytes, lens::MimeType::kPlainText});
+
+    router.StartQueryFlow(router.GetViewportScreenshot(),
+                          router.GetViewportScreenshot(),
+                          GURL("https://example.com"), "Title", {},
+                          page_contents, lens::MimeType::kAnnotatedPageContent,
+                          std::nullopt, 1.0f, base::TimeTicks::Now());
+    EXPECT_EQ(router.context_upload_mode(),
+              LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+  }
+}
+
 TEST_F(
     LensQueryFlowRouterContextualTaskEnabledTest,
     StartQueryFlow_RoutesToContextualTasks_OnlyViewport_WhenComposeboxSource) {

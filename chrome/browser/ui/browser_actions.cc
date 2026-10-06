@@ -3725,7 +3725,10 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   if (controller) {
                     controller->OpenLensOverlay(
                         lens::LensOverlayInvocationSource::
-                            kContentAreaContextMenuPage);
+                            kContentAreaContextMenuPage,
+                        /*should_show_csb=*/!base::FeatureList::IsEnabled(
+                            contextual_tasks::
+                                kContextualTasksUpdatedEntryPoints));
                     return;
                   }
                 }

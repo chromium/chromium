@@ -1393,6 +1393,14 @@ bool LensOverlayController::CoBrowsePanelWithLensOverlayEnabled() const {
 }
 
 bool LensOverlayController::ShouldHideNonBlockingPrivacyNotice() const {
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksUpdatedEntryPoints) &&
+      (invocation_source_ ==
+           lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
+       invocation_source_ == lens::LensOverlayInvocationSource::kAppMenu ||
+       invocation_source_ == lens::LensOverlayInvocationSource::kToolbar)) {
+    return true;
+  }
   return invocation_source_ ==
              lens::LensOverlayInvocationSource::kOmniboxPopupButton ||
          invocation_source_ ==

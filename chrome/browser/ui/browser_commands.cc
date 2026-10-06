@@ -3105,7 +3105,10 @@ void ExecLensOverlay(BrowserWindowInterface* browser) {
   LensSearchController* const controller =
       LensSearchController::FromTabWebContents(web_contents);
   CHECK(controller);
-  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+  controller->OpenLensOverlay(
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*should_show_csb=*/!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksUpdatedEntryPoints));
   BrowserUserEducationInterface::From(browser)->NotifyNewBadgeFeatureUsed(
       lens::features::kLensOverlay);
 }

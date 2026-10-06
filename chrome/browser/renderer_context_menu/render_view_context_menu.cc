@@ -5468,7 +5468,9 @@ void RenderViewContextMenu::ExecRegionSearch(
           LensSearchController::FromTabWebContents(embedder_web_contents_);
       CHECK(controller);
       controller->OpenLensOverlay(
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+          /*should_show_csb=*/!base::FeatureList::IsEnabled(
+              contextual_tasks::kContextualTasksUpdatedEntryPoints));
       return;
     }
   }

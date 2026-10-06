@@ -306,7 +306,9 @@ void LensOverlayEntryPointController::InvokeAction(
         lens::LensOverlayDismissalSource::kToolbar);
   } else {
     search_controller->OpenLensOverlay(
-        lens::LensOverlayInvocationSource::kToolbar);
+        lens::LensOverlayInvocationSource::kToolbar,
+        /*should_show_csb=*/!base::FeatureList::IsEnabled(
+            contextual_tasks::kContextualTasksUpdatedEntryPoints));
   }
 }
 
