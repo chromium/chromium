@@ -712,10 +712,8 @@ std::vector<DownloadRecord> DownloadRecordDatabase::GetDownloadRecordsPage(
           BuildLikePattern(NormalizeFileName(query.name_query.value())));
     }
     if (has_cursor) {
-      int64_t cursor_micros =
-          cursor_time.value().ToDeltaSinceWindowsEpoch().InMicroseconds();
-      statement.BindInt64(param_index++, cursor_micros);
-      statement.BindInt64(param_index++, cursor_micros);
+      statement.BindTime(param_index++, cursor_time.value());
+      statement.BindTime(param_index++, cursor_time.value());
       statement.BindString(param_index++, cursor_id.value());
     }
     // Over-fetch when ICU re-check might prune rows; otherwise grab exactly
@@ -954,15 +952,9 @@ void DownloadRecordDatabase::BindRecordToInsertStatement(
   statement.BindInt(12, record.error_code);
   statement.BindInt64(13, record.total_bytes);
   statement.BindInt(14, static_cast<int>(record.state));
-  statement.BindInt64(
-      15, record.created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-
-  int64_t completed_time_microseconds = 0;
-  if (!record.completed_time.is_null()) {
-    completed_time_microseconds =
-        record.completed_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  }
-  statement.BindInt64(16, completed_time_microseconds);
+  statement.BindTime(15, record.created_time);
+  // A null `completed_time` is stored as 0.
+  statement.BindTime(16, record.completed_time);
   statement.BindBool(17, record.has_performed_background_download);
   statement.BindString(18, NormalizeFileName(record.file_name));
 }
@@ -989,12 +981,8 @@ void DownloadRecordDatabase::BindRecordToUpdateStatement(
   statement.BindInt64(12, record.total_bytes);
   statement.BindInt(13, static_cast<int>(record.state));
 
-  int64_t completed_time_microseconds = 0;
-  if (!record.completed_time.is_null()) {
-    completed_time_microseconds =
-        record.completed_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  }
-  statement.BindInt64(14, completed_time_microseconds);
+  // A null `completed_time` is stored as 0.
+  statement.BindTime(14, record.completed_time);
   statement.BindBool(15, record.has_performed_background_download);
   statement.BindString(16, NormalizeFileName(record.file_name));
   statement.BindString(17, record.download_id);
@@ -1022,14 +1010,9 @@ DownloadRecord DownloadRecordDatabase::CreateRecordFromStatement(
   record.error_code = statement.ColumnInt(12);
   record.total_bytes = statement.ColumnInt64(13);
   record.state = static_cast<web::DownloadTask::State>(statement.ColumnInt(14));
-  record.created_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(statement.ColumnInt64(15)));
-
-  int64_t completed_time_microseconds = statement.ColumnInt64(16);
-  if (completed_time_microseconds > 0) {
-    record.completed_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(completed_time_microseconds));
-  }
+  record.created_time = statement.ColumnTime(15);
+  // A stored 0 reads back as a null `completed_time`.
+  record.completed_time = statement.ColumnTime(16);
   record.has_performed_background_download = statement.ColumnBool(17);
 
   return record;
