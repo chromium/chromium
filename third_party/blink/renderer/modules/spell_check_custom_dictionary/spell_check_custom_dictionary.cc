@@ -38,8 +38,10 @@ std::optional<TextCheckEntryPoint> GetTextCheckEntryPoint(
   if (!frame) {
     return std::nullopt;
   }
+  // Forward words even while spell checking is disabled, so they still apply
+  // if the user turns spell checking back on during the document's lifetime.
   WebTextCheckClient* client = frame->Client()->GetTextCheckerClient();
-  if (!client || !client->IsSpellCheckingEnabled()) {
+  if (!client) {
     return std::nullopt;
   }
   return TextCheckEntryPoint{frame, client};
@@ -104,6 +106,11 @@ void SpellCheckCustomDictionary::removeWords(ScriptState* script_state,
   }
   entry->client->SpellCheckCustomDictionaryChanged(
       /*words_added=*/{}, /*words_removed=*/custom_words);
+
+  // With spell checking disabled there are no markers to restore.
+  if (!entry->client->IsSpellCheckingEnabled()) {
+    return;
+  }
 
   // Force a fresh spell-check pass on the document. The downstream
   // DictionaryUpdateObserver only reacts to words_added, so without an

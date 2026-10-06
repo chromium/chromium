@@ -34,7 +34,7 @@ class DummyLocalInterfaceProvider
 // SpellCheckCustomDictionary::{addWords,removeWords}.
 class RecordingTextCheckClient : public WebTextCheckClient {
  public:
-  bool IsSpellCheckingEnabled() const override { return true; }
+  bool IsSpellCheckingEnabled() const override { return enabled_; }
 
   void SpellCheckCustomDictionaryChanged(
       const std::vector<std::string>& words_added,
@@ -44,6 +44,7 @@ class RecordingTextCheckClient : public WebTextCheckClient {
     ++change_count_;
   }
 
+  bool enabled_ = true;
   std::vector<std::string> last_added_;
   std::vector<std::string> last_removed_;
   int change_count_ = 0;
@@ -117,6 +118,12 @@ class SpellCheckCustomDictionaryTest : public PageTestBase {
 
   WebTextCheckClient* Client() {
     return static_cast<WebTextCheckClient*>(Provider());
+  }
+
+  // Mirrors the browser turning spell checking off or on for the renderer.
+  // Initialize() drops loaded languages, so call InitializeSpellCheck() after.
+  void SetSpellCheckEnabled(bool enable) {
+    spellcheck_->Initialize({}, {}, enable);
   }
 
   // Swaps in a client that records the forwarded word lists so tests can assert
@@ -434,6 +441,80 @@ TEST_F(SpellCheckCustomDictionaryTest, RemoveWordTranscodesLikeAdd) {
   dict->removeWords(script_state, {emoji});
   ASSERT_EQ(client.last_removed_.size(), 1u);
   EXPECT_EQ(client.last_removed_[0], added_bytes);
+}
+
+// Words added or removed while spell checking is disabled still reach the
+// client, so they apply if spell checking is turned back on.
+TEST_F(SpellCheckCustomDictionaryTest,
+       ForwardsWordsWhileSpellCheckingDisabled) {
+  RecordingTextCheckClient client;
+  client.enabled_ = false;
+  UseRecordingClient(&client);
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  GetDictionary()->addWords(script_state, {"zzzz"});
+  EXPECT_EQ(client.change_count_, 1);
+  ASSERT_EQ(client.last_added_.size(), 1u);
+  EXPECT_EQ(client.last_added_[0], "zzzz");
+
+  GetDictionary()->removeWords(script_state, {"zzzz"});
+  EXPECT_EQ(client.change_count_, 2);
+  ASSERT_EQ(client.last_removed_.size(), 1u);
+  EXPECT_EQ(client.last_removed_[0], "zzzz");
+}
+
+// With spell checking disabled, removeWords() does not schedule a re-check
+// pass, even with user activation.
+TEST_F(SpellCheckCustomDictionaryTest,
+       RemoveWordsWhileSpellCheckingDisabledSkipsRecheck) {
+  RecordingTextCheckClient client;
+  client.enabled_ = false;
+  UseRecordingClient(&client);
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  IdleSpellCheckController& idle =
+      GetFrame().GetSpellChecker().GetIdleSpellCheckController();
+  idle.Deactivate();
+
+  GetDictionary()->removeWords(script_state, {"zzzz"});
+
+  EXPECT_EQ(client.change_count_, 1);
+  EXPECT_EQ(idle.GetState(), IdleSpellCheckController::State::kInactive);
+}
+
+// A word added while spell checking is disabled is accepted once spell
+// checking is turned back on.
+TEST_F(SpellCheckCustomDictionaryTest,
+       WordAddedWhileDisabledAppliesOnReenable) {
+  SetSpellCheckEnabled(false);
+  ASSERT_FALSE(Client()->IsSpellCheckingEnabled());
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  GetDictionary()->addWords(script_state, {"zzzz"});
+
+  SetSpellCheckEnabled(true);
+  InitializeSpellCheck("en-US");
+
+  size_t misspelling_start = 0;
+  size_t misspelling_end = 0;
+  Client()->CheckSpelling(WebString("zzzz"), misspelling_start, misspelling_end,
+                          nullptr);
+  EXPECT_EQ(misspelling_start, 0u);
+  EXPECT_EQ(misspelling_end, 0u);
+
+  // A word that was never added is still flagged.
+  Client()->CheckSpelling(WebString("qqqq"), misspelling_start, misspelling_end,
+                          nullptr);
+  EXPECT_EQ(misspelling_start, 0u);
+  EXPECT_EQ(misspelling_end, 4u);
 }
 
 }  // namespace
