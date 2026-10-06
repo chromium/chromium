@@ -119,11 +119,6 @@ void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,
                                int64_t service_worker_version_id,
                                base::TimeDelta delay);
 
-// Simulates recovery from service worker storage corruption by deleting all
-// stored data in `context` and starting over. Blocks until recovery completes
-// and `OnStorageWipedSync()` has been called. Must be called on the UI thread.
-void DeleteAndStartOverServiceWorkerStorage(ServiceWorkerContext* context);
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_SERVICE_WORKER_TEST_HELPERS_H_

@@ -135,12 +135,6 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
   // Called when `context` is destroyed. Observers must no longer use |context|.
   virtual void OnDestructSync(ServiceWorkerContext* context) {}
 
-  // Called after `context` wipes all stored data to recover from storage
-  // corruption. Existing registrations are deleted without
-  // `OnRegistrationDeletedSync()` notifications, and `context` is ready to
-  // accept new registrations.
-  virtual void OnStorageWipedSync(ServiceWorkerContext* context) {}
-
   // Called before the URLLoaderFactory used to fetch the worker script is
   // constructed.
   virtual void OnWillCreateURLLoaderFactorySync(const GURL& scope) {}

@@ -272,7 +272,6 @@ class ServiceWorkerTaskQueue
       const GURL& scope,
       const content::ConsoleMessage& message) override;
   void OnDestructSync(content::ServiceWorkerContext* context) override;
-  void OnStorageWipedSync(content::ServiceWorkerContext* context) override;
 
   // Worker unregistrations can fail in expected and unexpected ways, this
   // determines if the unregistration can be accepted as successful from the
@@ -378,7 +377,6 @@ class ServiceWorkerTaskQueue
     REGISTER_ON_EXTENSION_LOAD,
     RE_REGISTER_ON_STATE_MISMATCH,
     RE_REGISTER_ON_TRANSIENT_FAILURE,
-    RE_REGISTER_ON_STORAGE_WIPE,
   };
 
   // Manages registration/start retry attempts with exponential backoff.

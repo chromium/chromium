@@ -7,11 +7,9 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -1401,29 +1399,6 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   EXPECT_TRUE(results.contains(service_worker_client2.get()));
 }
 
-class StorageWipedSyncObserver
-    : public ServiceWorkerContextObserverSynchronous {
- public:
-  explicit StorageWipedSyncObserver(ServiceWorkerContext* context) {
-    scoped_observation_.Observe(context);
-  }
-
-  // ServiceWorkerContextObserverSynchronous:
-  void OnStorageWipedSync(ServiceWorkerContext* context) override {
-    wiped_contexts_.push_back(context);
-  }
-
-  const std::vector<raw_ptr<ServiceWorkerContext>>& wiped_contexts() const {
-    return wiped_contexts_;
-  }
-
- private:
-  std::vector<raw_ptr<ServiceWorkerContext>> wiped_contexts_;
-  base::ScopedObservation<ServiceWorkerContext,
-                          ServiceWorkerContextObserverSynchronous>
-      scoped_observation_{this};
-};
-
 class ServiceWorkerContextRecoveryTest
     : public ServiceWorkerContextTest,
       public testing::WithParamInterface<bool /* is_storage_on_disk */> {
@@ -1450,8 +1425,6 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(user_data_directory);
     helper_->context_wrapper()->AddObserver(this);
   }
-
-  StorageWipedSyncObserver sync_observer(context_wrapper());
 
   int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
   bool called = false;
@@ -1480,7 +1453,6 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   EXPECT_EQ(service_worker_client->context().get(), context());
 
   context()->ScheduleDeleteAndStartOver();
-  EXPECT_TRUE(sync_observer.wiped_contexts().empty());
 
   // The storage is disabled while the recovery process is running, so the
   // operation should be aborted.
@@ -1490,11 +1462,6 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
                      blink::ServiceWorkerStatusCode::kErrorAbort,
                      false /* expect_waiting */, true /* expect_active */));
   content::RunAllTasksUntilIdle();
-
-  // Synchronous observers are notified once the recovery completed.
-  ASSERT_EQ(1u, sync_observer.wiped_contexts().size());
-  EXPECT_EQ(static_cast<ServiceWorkerContext*>(context_wrapper()),
-            sync_observer.wiped_contexts()[0].get());
 
   // The context started over and the storage was re-initialized, so the
   // registration should not be found.

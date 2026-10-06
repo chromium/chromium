@@ -780,10 +780,6 @@ void ServiceWorkerTaskQueue::RetryStartWorker(
     return;
   }
 
-  // Starts are only requested for registered workers, and
-  // `OnStorageWipedSync()` cancels retries when it deletes the registration.
-  CHECK(worker_registered_.contains(context_id));
-
   // If there are no pending tasks, there is no reason to start the worker.
   // This is unlikely as we got here from a failure while trying to run tasks,
   // but it can conceivably happen in at least two scenarios:
@@ -1262,52 +1258,6 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
 void ServiceWorkerTaskQueue::OnDestructSync(
     content::ServiceWorkerContext* context) {
   StopObserving(context);
-}
-
-void ServiceWorkerTaskQueue::OnStorageWipedSync(
-    content::ServiceWorkerContext* context) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Storage recovery deleted all registrations in `context` without calling
-  // `OnRegistrationDeletedSync()`, and aborted in-flight registrations. Reset
-  // the registration and worker state of all enabled extensions that use
-  // `context` and re-register their workers.
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  for (const auto& [extension_id, activation_token] : activation_tokens_) {
-    if (GetServiceWorkerContext(extension_id) != context) {
-      continue;
-    }
-    const Extension* extension =
-        registry->enabled_extensions().GetByID(extension_id);
-    if (!extension) {
-      // An extension that's no longer enabled may still have registration info
-      // stored. That's okay: on its next activation, the worker is registered
-      // again, either from scratch or by `VerifyRegistration()`.
-      continue;
-    }
-
-    const SequencedContextId context_id = {
-        extension_id, browser_context_->UniqueToken(), activation_token};
-
-    // Clear browser-side and persisted registration state.
-    worker_registered_.erase(context_id);
-    pending_storage_registrations_.erase(extension_id);
-    RemoveRegisteredServiceWorkerInfo(extension_id);
-
-    // Cancel any pending retry timers for this activation.
-    worker_registration_retries_.erase(activation_token);
-    worker_unregistration_wait_retries_.erase(activation_token);
-    worker_start_retries_.erase(activation_token);
-
-    // Reset the worker's runtime state and drop callbacks for any in-flight
-    // pre-wipe start request.
-    ServiceWorkerState* worker_state = GetWorkerState(context_id);
-    CHECK(worker_state);
-    worker_state->ResetForStorageWipe();
-
-    RegisterServiceWorker(RegistrationReason::RE_REGISTER_ON_STORAGE_WIPE,
-                          context_id, *extension);
-  }
 }
 
 std::tuple<ServiceWorkerState*, SequencedContextId>
