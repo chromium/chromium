@@ -19,7 +19,7 @@ import {InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} f
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -2655,5 +2655,50 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(element.inputModel.hasFiles(), element.hasFiles());
         assertEquals(
             element.inputModel.canSubmit(), element.computeSubmitEnabled());
+      });
+
+  test('updateFileStatus does not return error for unattached token', () => {
+    const unattachedToken = 'unattached-token-123';
+    const result = element.updateFileStatus(
+        unattachedToken, ContextUploadStatus.kUploadExpired, null);
+    assertEquals(null, result.file);
+    assertEquals(null, result.errorMessage);
+
+    const validationResult = element.updateFileStatus(
+        unattachedToken, ContextUploadStatus.kValidationFailed,
+        ContextUploadErrorType.kBrowserProcessingFileTooLargeError);
+    assertEquals(null, validationResult.file);
+    assertEquals(null, validationResult.errorMessage);
+  });
+
+  test(
+      'onContextualInputStatusChanged does not set errorMessage for ' +
+          'unattached token',
+      () => {
+        const unattachedToken = 'unattached-token-123';
+        element.errorMessage = '';
+        element.onContextualInputStatusChanged(
+            unattachedToken, ContextUploadStatus.kUploadExpired, null);
+        assertEquals('', element.errorMessage);
+
+        element.onContextualInputStatusChanged(
+            unattachedToken, ContextUploadStatus.kValidationFailed,
+            ContextUploadErrorType.kBrowserProcessingFileTooLargeError);
+        assertEquals('', element.errorMessage);
+      });
+
+  test(
+      'onContextualInputStatusChanged sets errorMessage for attached token ' +
+          'on upload expired',
+      () => {
+        const attachedFile = ComposeboxFile.createFromFile(
+            'attached-token-123', {name: 'image.png', type: 'image/png'});
+        element.attachedContext = new Map([[attachedFile.uuid, attachedFile]]);
+
+        element.onContextualInputStatusChanged(
+            attachedFile.uuid, ContextUploadStatus.kUploadExpired, null);
+
+        assertTrue(element.errorMessage.length > 0);
+        assertFalse(element.attachedContext.has(attachedFile.uuid));
       });
 });
