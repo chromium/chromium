@@ -519,8 +519,9 @@ void CertStoreServiceTest::SetUpOnMainThread() {
             CHECK(out_installer);
             CHECK(!*out_installer);
             *out_installer = installer.get();
-            return std::make_unique<CertStoreService>(profile,
-                                                      std::move(installer));
+            return std::make_unique<CertStoreService>(
+                profile, NssServiceFactory::GetForContext(profile),
+                std::move(installer));
           },
           base::Unretained(&installer_)));
 

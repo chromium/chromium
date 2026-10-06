@@ -442,7 +442,8 @@ class ArcPolicyBridgeCertStoreTest : public ArcPolicyBridgeTest {
             profile(),
             base::BindRepeating([](content::BrowserContext* profile)
                                     -> std::unique_ptr<KeyedService> {
-              return std::make_unique<CertStoreService>(nullptr);
+              return std::make_unique<CertStoreService>(
+                  /*context=*/nullptr, /*nss_service=*/nullptr);
             })));
   }
 };

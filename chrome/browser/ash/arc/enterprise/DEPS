@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/certificate_provider",
   "+chrome/browser/ash/platform_keys",
   "+chrome/browser/ash/policy/remote_commands",
-  "+chrome/browser/net",
   "+chrome/browser/profiles",
   "+chrome/common/net",
 ]
@@ -28,10 +27,19 @@ specific_include_rules = {
     "+chrome/browser/ash/login/users",
     "+chrome/test/base",
   ],
+  # The keyed service factory resolves the NssService that CertStoreService
+  # takes by constructor; the service itself only needs the type.
+  "cert_store_service\\.cc": [
+    "+chrome/browser/net",
+  ],
+  "cert_store_service_factory\\.cc": [
+    "+chrome/browser/net",
+  ],
   "cert_store_service_browsertest\\.cc": [
     "+chrome/browser/ash/login/test",
     "+chrome/browser/ash/policy/affiliation",
     "+chrome/browser/chromeos/platform_keys",
+    "+chrome/browser/net",
     "+chrome/test/base",
   ],
 }
