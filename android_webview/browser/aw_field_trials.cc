@@ -396,6 +396,12 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // DISABLED_TEMPORARY: b/568735242
   aw_feature_overrides.DisableFeature(
       blink::features::kDisconnectWebSocketOnBFCache);
+
+  // DISABLED_INCOMPATIBLE: WebView has a fundamentally different set of
+  // constraints on its memory footprint so it does not make sense to
+  // unconditionally retain caches in the face of memory pressure signals.
+  aw_feature_overrides.DisableFeature(
+      net::features::kIgnoreQuicCryptoConfigMemoryPressure);
 }
 
 void AwFieldTrials::EnableRuntimeMutableFeatures(
