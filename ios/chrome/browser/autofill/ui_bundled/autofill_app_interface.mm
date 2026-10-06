@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
-#import "base/memory/singleton.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -219,7 +218,8 @@ class VirtualCardEnrollmentManager;
 class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
  public:
   static FakeCreditCardServer* SharedInstance() {
-    return base::Singleton<FakeCreditCardServer>::get();
+    static base::NoDestructor<FakeCreditCardServer> kInstance;
+    return kInstance.get();
   }
 
   FakeCreditCardServer() {}

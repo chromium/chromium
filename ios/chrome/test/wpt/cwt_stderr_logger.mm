@@ -8,7 +8,8 @@
 #import "base/files/file_path.h"
 
 CWTStderrLogger* CWTStderrLogger::GetInstance() {
-  return base::Singleton<CWTStderrLogger>::get();
+  static CWTStderrLogger kInstance;
+  return &kInstance;
 }
 
 void CWTStderrLogger::StartRedirectingToFile(const base::FilePath& file_path) {

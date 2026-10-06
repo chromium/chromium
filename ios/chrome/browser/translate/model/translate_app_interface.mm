@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/translate/model/translate_app_interface.h"
 
 #import "base/command_line.h"
-#import "base/memory/singleton.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/types/pass_key.h"
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
@@ -51,8 +52,17 @@ class FakeNetworkChangeNotifier : public net::NetworkChangeNotifier {
 // Helper singleton object to hold states for fake objects to facility testing.
 class TranslateAppInterfaceHelper {
  public:
+  using PassKey = base::PassKey<TranslateAppInterfaceHelper>;
+
+  TranslateAppInterfaceHelper(PassKey) {}
+  TranslateAppInterfaceHelper(const TranslateAppInterfaceHelper&) = delete;
+  TranslateAppInterfaceHelper& operator=(const TranslateAppInterfaceHelper&) =
+      delete;
+  ~TranslateAppInterfaceHelper() = delete;
+
   static TranslateAppInterfaceHelper* GetInstance() {
-    return base::Singleton<TranslateAppInterfaceHelper>::get();
+    static base::NoDestructor<TranslateAppInterfaceHelper> kInstance(PassKey{});
+    return kInstance.get();
   }
 
   FakeLanguageDetectionTabHelperObserver& tab_helper_observer() const {
@@ -78,10 +88,6 @@ class TranslateAppInterfaceHelper {
   }
 
  private:
-  TranslateAppInterfaceHelper() {}
-  ~TranslateAppInterfaceHelper() = default;
-  friend struct base::DefaultSingletonTraits<TranslateAppInterfaceHelper>;
-
   // Observes the language detection tab helper and captures the translation
   // details for inspection by tests.
   std::unique_ptr<FakeLanguageDetectionTabHelperObserver> tab_helper_observer_;

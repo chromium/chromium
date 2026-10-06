@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 
 #import "base/location.h"
-#import "base/memory/singleton.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -51,7 +51,8 @@ class WifiNetworkChangeNotifier : public net::NetworkChangeNotifier {
 class ConnectionTypeOverrider {
  public:
   static ConnectionTypeOverrider* SharedInstance() {
-    return base::Singleton<ConnectionTypeOverrider>::get();
+    static base::NoDestructor<ConnectionTypeOverrider> kInstance;
+    return kInstance.get();
   }
 
   ConnectionTypeOverrider() {}

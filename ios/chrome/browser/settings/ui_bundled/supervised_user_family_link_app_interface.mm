@@ -9,7 +9,7 @@
 #import "base/functional/callback.h"
 #import "base/ios/block_types.h"
 #import "base/memory/ptr_util.h"
-#import "base/memory/singleton.h"
+#import "base/no_destructor.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/consent_level.h"
@@ -61,7 +61,8 @@ GetSupervisedUserServicesForProfile(ProfileIOS* profile) {
 class TestFamilyLinkSettingsStateHelper {
  public:
   static TestFamilyLinkSettingsStateHelper* SharedInstance() {
-    return base::Singleton<TestFamilyLinkSettingsStateHelper>::get();
+    static base::NoDestructor<TestFamilyLinkSettingsStateHelper> kInstance;
+    return kInstance.get();
   }
 
   void TearDown() { family_link_settings_state_.reset(); }
