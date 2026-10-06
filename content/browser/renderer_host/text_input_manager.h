@@ -311,8 +311,8 @@ class CONTENT_EXPORT TextInputManager {
  private:
   struct ViewState {
     ViewState();
-    ViewState(ViewState&&);
-    ViewState& operator=(ViewState&&);
+    ViewState(const ViewState&) = delete;
+    ViewState& operator=(const ViewState&) = delete;
     ~ViewState();
 
     ui::mojom::TextInputStatePtr text_input_state =
@@ -321,6 +321,9 @@ class CONTENT_EXPORT TextInputManager {
     std::optional<SelectionRegion> edit_context_selection_region;
     CompositionRangeInfo composition_range_info;
     TextSelection text_selection;
+#if BUILDFLAG(IS_WIN)
+    blink::mojom::ProximateCharacterRangeBoundsPtr proximate_character_bounds;
+#endif  // BUILDFLAG(IS_WIN)
   };
 
   // This class is used to create maps which hold specific IME state for a
@@ -341,10 +344,6 @@ class CONTENT_EXPORT TextInputManager {
   // is initialized and cleared in Register and Unregister methods,
   // respectively.
   ViewMap<ViewState> view_map_;
-#if BUILDFLAG(IS_WIN)
-  ViewMap<blink::mojom::ProximateCharacterRangeBoundsPtr>
-      proximate_character_bounds_map_;
-#endif  // BUILDFLAG(IS_WIN)
 
   // TextInputManager::Observer reentrantly issues further notifications upon
   // `OnUpdateTextInputStateCalled()` (e.g. `SelectionBoundsChange()`).

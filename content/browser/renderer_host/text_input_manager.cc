@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
@@ -102,13 +103,9 @@ TextInputManager::~TextInputManager() {
     Unregister(active_view_);
 
   // Unregister all the remaining views.
-  std::vector<RenderWidgetHostViewBase*> views;
-  for (auto const& pair : view_map_) {
-    views.push_back(pair.first);
+  while (!view_map_.empty()) {
+    Unregister(view_map_.begin()->first);
   }
-
-  for (auto* view : views)
-    Unregister(view);
 }
 
 RenderWidgetHostImpl* TextInputManager::GetActiveWidget() const {
@@ -193,10 +190,11 @@ TextInputManager::GetProximateCharacterBoundsInfo(
   // callers are const methods passing (*this).
   // - RenderWidgetHostViewAura::GetProximateCharacterBounds
   // - RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint
-  const auto found = proximate_character_bounds_map_.find(
-      const_cast<RenderWidgetHostViewBase*>(&view));
-  return found != proximate_character_bounds_map_.end() ? found->second.get()
-                                                        : nullptr;
+  const auto found =
+      view_map_.find(const_cast<RenderWidgetHostViewBase*>(&view));
+  return found != view_map_.end()
+             ? found->second.proximate_character_bounds.get()
+             : nullptr;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -208,8 +206,11 @@ const TextInputManager::TextSelection* TextInputManager::GetTextSelection(
   // A crash occurs when we end up here with an unregistered view.
   // See crbug.com/735980
   // TODO(ekaramad): Take a deeper look why this is happening.
-  return (view && IsRegistered(view)) ? &view_map_.at(view).text_selection
-                                      : nullptr;
+  if (!view) {
+    return nullptr;
+  }
+  const auto found = view_map_.find(view);
+  return found != view_map_.end() ? &found->second.text_selection : nullptr;
 }
 
 const std::optional<gfx::Rect> TextInputManager::GetTextControlBounds() const {
@@ -353,11 +354,10 @@ void TextInputManager::UpdateTextInputState(
 void TextInputManager::UpdateProximateCharacterBounds(
     RenderWidgetHostViewBase& view,
     blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds) {
-  if (!proximate_bounds) {
-    proximate_character_bounds_map_.erase(&view);
-    return;
+  auto found = view_map_.find(&view);
+  if (found != view_map_.end()) {
+    found->second.proximate_character_bounds = std::move(proximate_bounds);
   }
-  proximate_character_bounds_map_[&view] = std::move(proximate_bounds);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -413,31 +413,24 @@ void TextInputManager::SelectionBoundsChanged(
   }
 
   // Transform `bounding_box` to the top-level frame's coordinate space.
-  std::vector<gfx::Point> bounding_box_vertice = {
-      bounding_box.origin(), bounding_box.top_right(),
-      bounding_box.bottom_left(), bounding_box.bottom_right()};
-  std::vector<int> x_after_transform;
-  std::vector<int> y_after_transform;
-  for (const auto& vertex : bounding_box_vertice) {
+  int min_x = std::numeric_limits<int>::max();
+  int max_x = std::numeric_limits<int>::min();
+  int min_y = std::numeric_limits<int>::max();
+  int max_y = std::numeric_limits<int>::min();
+  for (const gfx::Point& vertex :
+       {bounding_box.origin(), bounding_box.top_right(),
+        bounding_box.bottom_left(), bounding_box.bottom_right()}) {
     const gfx::Point vertex_after_transform =
         view->TransformPointToRootCoordSpace(vertex);
-    x_after_transform.push_back(vertex_after_transform.x());
-    y_after_transform.push_back(vertex_after_transform.y());
+    min_x = std::min(min_x, vertex_after_transform.x());
+    max_x = std::max(max_x, vertex_after_transform.x());
+    min_y = std::min(min_y, vertex_after_transform.y());
+    max_y = std::max(max_y, vertex_after_transform.y());
   }
 
-  std::sort(x_after_transform.begin(), x_after_transform.end());
-  std::sort(y_after_transform.begin(), y_after_transform.end());
-
-  const gfx::Point bounding_box_origin_after_transform(x_after_transform[0],
-                                                       y_after_transform[0]);
-  const gfx::Point bounding_box_bottom_right_after_transform(
-      x_after_transform.back(), y_after_transform.back());
   const gfx::Rect bounding_box_transformed(
-      bounding_box_origin_after_transform,
-      gfx::Size(base::ClampSub(bounding_box_bottom_right_after_transform.x(),
-                               bounding_box_origin_after_transform.x()),
-                base::ClampSub(bounding_box_bottom_right_after_transform.y(),
-                               bounding_box_origin_after_transform.y())));
+      gfx::Point(min_x, min_y),
+      gfx::Size(base::ClampSub(max_x, min_x), base::ClampSub(max_y, min_y)));
 
   SelectionRegion& selection_region = view_map_.at(view).selection_region;
   if (anchor_bound == selection_region.anchor &&
@@ -530,9 +523,6 @@ void TextInputManager::Unregister(RenderWidgetHostViewBase* view) {
   CHECK(IsRegistered(view), base::NotFatalUntil::M153);
 
   view_map_.erase(view);
-#if BUILDFLAG(IS_WIN)
-  proximate_character_bounds_map_.erase(view);
-#endif  // BUILDFLAG(IS_WIN)
 
   if (active_view_ == view) {
     active_view_ = nullptr;
@@ -624,11 +614,6 @@ void TextInputManager::NotifyObserversAboutInputStateUpdate(
 }
 
 TextInputManager::ViewState::ViewState() = default;
-
-TextInputManager::ViewState::ViewState(ViewState&&) = default;
-
-TextInputManager::ViewState& TextInputManager::ViewState::operator=(
-    ViewState&&) = default;
 
 TextInputManager::ViewState::~ViewState() = default;
 
