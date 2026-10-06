@@ -16,6 +16,8 @@
 
 namespace ttc {
 
+struct ServerJournalEvent;
+
 // Records a TTC session's events in the actor journal, on the "Front End"
 // track of the session's current actor task.
 //
@@ -54,6 +56,9 @@ class SessionJournal {
   [[nodiscard]] std::unique_ptr<PendingAsyncEvent> BeginAsyncEvent(
       std::string_view event_name,
       std::vector<actor::mojom::JournalDetailsPtr> details);
+
+  // Records a journal event received from the server.
+  void HandleServerJournalEvent(const ServerJournalEvent& event);
 
   actor::TaskId task_id() const { return task_id_; }
 

@@ -14,6 +14,7 @@ source_set("core") {
   public = [
     "entrypoint_controller.h",
     "page_context.h",
+    "server_journal_event.h",
     "session_controller.h",
     "session_journal.h",
     "session_view.h",
@@ -48,6 +49,7 @@ source_set("impl") {
   sources = [
     "entrypoint_controller.cc",
     "page_context.cc",
+    "server_journal_event.cc",
     "session_controller_impl.cc",
     "session_controller_impl.h",
     "session_journal.cc",

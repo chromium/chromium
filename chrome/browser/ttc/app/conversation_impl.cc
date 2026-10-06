@@ -150,4 +150,8 @@ void ConversationImpl::OnToolCall(const ToolRequest& tool_request,
                                        std::move(response_callback));
 }
 
+void ConversationImpl::OnJournalEvent(const ServerJournalEvent& journal_event) {
+  session_controller_->GetJournal().HandleServerJournalEvent(journal_event);
+}
+
 }  // namespace ttc

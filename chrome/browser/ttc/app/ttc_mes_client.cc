@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/server_journal_event.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 
 namespace ttc {
@@ -70,6 +71,37 @@ base::DictValue ToResponseDict(ToolResponse response) {
   base::DictValue dict = std::move(response).TakeResult();
   dict.Set("status", "ok");
   return dict;
+}
+
+ServerJournalEvent::Type ToServerJournalEventType(
+    optimization_guide::proto::JournalEvent_JournalEventType type) {
+  switch (type) {
+    case optimization_guide::proto::JournalEvent::JOURNAL_EVENT_TYPE_INSTANT:
+      return ServerJournalEvent::Type::kInstant;
+    case optimization_guide::proto::JournalEvent::
+        JOURNAL_EVENT_TYPE_ASYNC_BEGIN:
+      return ServerJournalEvent::Type::kAsyncBegin;
+    case optimization_guide::proto::JournalEvent::JOURNAL_EVENT_TYPE_ASYNC_END:
+      return ServerJournalEvent::Type::kAsyncEnd;
+    case optimization_guide::proto::JournalEvent::
+        JOURNAL_EVENT_TYPE_UNSPECIFIED:
+    default:
+      return ServerJournalEvent::Type::kUnspecified;
+  }
+}
+
+ServerJournalEvent ToServerJournalEvent(
+    const optimization_guide::proto::JournalEvent& proto_event) {
+  ServerJournalEvent event;
+  event.timestamp_us = proto_event.timestamp_us();
+  event.type = ToServerJournalEventType(proto_event.type());
+  event.name = proto_event.name();
+  event.details.reserve(proto_event.details_size());
+  for (const auto& detail : proto_event.details()) {
+    event.details.push_back({detail.key(), detail.value()});
+  }
+  event.async_event_id = proto_event.async_event_id();
+  return event;
 }
 
 }  // namespace
@@ -224,6 +256,10 @@ void TtcMesClient::HandleServerFrame(
 
   if (frame.has_go_away()) {
     observer_->OnApplicationClosed();
+  }
+
+  if (frame.has_journal_event()) {
+    observer_->OnJournalEvent(ToServerJournalEvent(frame.journal_event()));
   }
 }
 

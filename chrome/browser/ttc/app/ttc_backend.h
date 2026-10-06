@@ -23,6 +23,8 @@ class AnnotatedPageContent;
 
 namespace ttc {
 
+struct ServerJournalEvent;
+
 // Generic interface for communicating with a TTC model backend.
 class TtcBackend {
  public:
@@ -52,8 +54,10 @@ class TtcBackend {
     virtual void OnGenerationStateChanged(bool started,
                                           bool completed,
                                           bool interrupted) = 0;
+    // TODO(bokan): These should be pure virtual
     virtual void OnToolCall(const ToolRequest& tool_request,
                             ToolResponseCallback response_callback) {}
+    virtual void OnJournalEvent(const ServerJournalEvent& journal_event) {}
   };
 
   virtual ~TtcBackend() = default;

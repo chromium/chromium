@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "chrome/browser/ttc/core/server_journal_event.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "url/gurl.h"
 
@@ -47,6 +48,18 @@ SessionJournal::BeginAsyncEvent(
   return journal_->CreatePendingAsyncEntry(
       GURL(), task_id_, actor::MakeFrontEndTrackUUID(task_id_), event_name,
       std::move(details));
+}
+
+void SessionJournal::HandleServerJournalEvent(const ServerJournalEvent& event) {
+  actor::JournalDetailsBuilder details_builder;
+  for (const ServerJournalEvent::Details& detail : event.details) {
+    details_builder.Add(detail.key, detail.value);
+  }
+  // TODO(bokan): Use server provided time.
+  // TODO(bokan): Put these into a separate track.
+  // TODO(bokan): Implement async events
+  journal_->Log(GURL(), task_id_, actor::MakeFrontEndTrackUUID(task_id_),
+                event.name, std::move(details_builder).Build());
 }
 
 }  // namespace ttc

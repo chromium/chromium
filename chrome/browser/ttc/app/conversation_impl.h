@@ -70,6 +70,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
                                 bool interrupted) override;
   void OnToolCall(const ToolRequest& tool_request,
                   ToolResponseCallback response_callback) override;
+  void OnJournalEvent(const ServerJournalEvent& journal_event) override;
 
   AudioController* audio_controller() { return audio_controller_.get(); }
   TtcBackend* backend() { return backend_.get(); }
