@@ -232,35 +232,35 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
                shared_image_usage_flags, "CanvasResourceRaster"},
               gpu::kNullSurfaceHandle);
 
-  gpu::SyncToken sync_token = shared_image->creation_sync_token();
   MemoryManagedPaintRecorder recorder(size, /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
-  if (recorder.HasReleasableDrawOps()) {
-    cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (shared_image->format() == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 = context_provider_wrapper->ContextProvider().ImageDecodeCache(
-          kRGBA_F16_SkColorType);
-    }
-    cc::ImageDecodeCache* cache_rgba8 =
-        context_provider_wrapper->ContextProvider().ImageDecodeCache(
-            kN32_SkColorType);
-    CanvasImageProvider image_provider(
-        cache_rgba8, cache_f16, color_space, shared_image->format(),
-        cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper);
-    if (animated_image_frame_index_map) {
-      image_provider.SetAnimatedImageFrameIndexes(
-          std::move(animated_image_frame_index_map));
-    }
 
-    sync_token = context_provider_wrapper->ContextProvider()
-                     .RasterInterface()
-                     ->RasterSharedImage(
-                         shared_image, sync_token,
-                         recorder.ReleaseMainRecording(), &image_provider,
-                         /*needs_clear=*/true);
-    image_provider.ReleaseLockedImages();
-    image_provider.UnbindTextureBackedImages();
+  cc::ImageDecodeCache* cache_f16 = nullptr;
+  if (shared_image->format() == viz::SinglePlaneFormat::kRGBA_F16) {
+    cache_f16 = context_provider_wrapper->ContextProvider().ImageDecodeCache(
+        kRGBA_F16_SkColorType);
   }
+  cc::ImageDecodeCache* cache_rgba8 =
+      context_provider_wrapper->ContextProvider().ImageDecodeCache(
+          kN32_SkColorType);
+  CanvasImageProvider image_provider(
+      cache_rgba8, cache_f16, color_space, shared_image->format(),
+      cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper);
+  if (animated_image_frame_index_map) {
+    image_provider.SetAnimatedImageFrameIndexes(
+        std::move(animated_image_frame_index_map));
+  }
+
+  gpu::SyncToken sync_token =
+      context_provider_wrapper->ContextProvider()
+          .RasterInterface()
+          ->RasterSharedImage(
+              shared_image, shared_image->creation_sync_token(),
+              recorder.ReleaseMainRecording(), &image_provider,
+              /*needs_clear=*/true);
+  image_provider.ReleaseLockedImages();
+  image_provider.UnbindTextureBackedImages();
+
   if (context_provider_wrapper->ContextProvider().IsContextLost()) {
     return nullptr;
   }
