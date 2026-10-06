@@ -37,16 +37,13 @@ constexpr char kPropertyVersion[] = "version";
 constexpr char kSignalChanged[] = "changed";
 constexpr char kMethodGetStatus[] = "GetStatus";
 constexpr char kMethodGetMetered[] = "GetMetered";
-constexpr char kMethodGetAvailable[] = "GetAvailable";
 
 class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
  public:
   PortalMonitorImpl(scoped_refptr<dbus::Bus> bus,
-                    OnlineStateCallback online_state_callback,
                     ConnectionCostCallback connection_cost_callback)
       : bus_(std::move(bus)),
         owns_bus_(!bus_),
-        online_state_callback_(std::move(online_state_callback)),
         connection_cost_callback_(std::move(connection_cost_callback)) {
     if (owns_bus_) {
       // Create a private session bus owned by this monitor rather than using
@@ -107,8 +104,6 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
   }
 
  private:
-  using PortalOnlineState = NetworkChangeNotifierLinux::PortalOnlineState;
-
   void QueryVersion() {
     dbus_utils::CallMethod<"ss", "v">(
         portal_proxy_, DBUS_INTERFACE_PROPERTIES, "Get",
@@ -121,7 +116,6 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
                           const std::string& new_owner) {
     ++query_generation_;
     version_ = 0;
-    online_state_callback_.Run(PortalOnlineState::kUnknown);
     connection_cost_callback_.Run(
         NetworkChangeNotifier::CONNECTION_COST_UNKNOWN);
     if (!new_owner.empty()) {
@@ -137,7 +131,7 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
     std::optional<uint32_t> version =
         std::move(std::get<0>(*result)).Take<uint32_t>();
     // Portal v1 exposed D-Bus properties instead of methods and is deprecated;
-    // require v2+ (GetAvailable/GetMetered) or v3+ (GetStatus).
+    // require v2+ (GetMetered) or v3+ (GetStatus).
     if (!version || *version < 2) {
       return;
     }
@@ -170,10 +164,6 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
           portal_proxy_, kNetworkMonitorInterface, kMethodGetMetered,
           base::BindOnce(&PortalMonitorImpl::OnGetMetered,
                          weak_ptr_factory_.GetWeakPtr(), generation));
-      dbus_utils::CallMethod<"", "b">(
-          portal_proxy_, kNetworkMonitorInterface, kMethodGetAvailable,
-          base::BindOnce(&PortalMonitorImpl::OnGetAvailable,
-                         weak_ptr_factory_.GetWeakPtr(), generation));
     }
   }
 
@@ -183,17 +173,6 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
       return;
     }
     auto& status = std::get<0>(*result);
-
-    // Use `available` rather than `connectivity` to determine online state so
-    // that limited (2) and captive-portal (3) networks are still treated as
-    // online when a default route is available.
-    if (auto it = status.find("available"); it != status.end()) {
-      if (std::optional<bool> available = std::move(it->second).Take<bool>()) {
-        online_state_callback_.Run(*available ? PortalOnlineState::kOnline
-                                              : PortalOnlineState::kOffline);
-      }
-    }
-
     if (auto it = status.find("metered"); it != status.end()) {
       if (std::optional<bool> metered = std::move(it->second).Take<bool>()) {
         UpdateConnectionCost(*metered);
@@ -209,16 +188,6 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
     UpdateConnectionCost(std::get<0>(*result));
   }
 
-  void OnGetAvailable(uint64_t generation,
-                      dbus_utils::CallMethodResultSig<"b"> result) {
-    if (generation != query_generation_ || !result.has_value()) {
-      return;
-    }
-    online_state_callback_.Run(std::get<0>(*result)
-                                   ? PortalOnlineState::kOnline
-                                   : PortalOnlineState::kOffline);
-  }
-
   void UpdateConnectionCost(bool metered) {
     connection_cost_callback_.Run(
         metered ? NetworkChangeNotifier::CONNECTION_COST_METERED
@@ -228,7 +197,6 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
   scoped_refptr<dbus::Bus> bus_;
   const bool owns_bus_;
   raw_ptr<dbus::ObjectProxy> portal_proxy_ = nullptr;
-  OnlineStateCallback online_state_callback_;
   ConnectionCostCallback connection_cost_callback_;
   uint32_t version_ = 0;
   uint64_t query_generation_ = 0;
@@ -241,14 +209,12 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
 std::unique_ptr<NetworkChangeNotifierLinux::PortalMonitor>
 NetworkChangeNotifierLinux::PortalMonitor::Create(
     dbus::Bus* bus,
-    OnlineStateCallback online_state_callback,
     ConnectionCostCallback connection_cost_callback) {
   if (!base::SequencedTaskRunner::HasCurrentDefault()) {
     return nullptr;
   }
   return std::make_unique<PortalMonitorImpl>(
-      scoped_refptr<dbus::Bus>(bus), std::move(online_state_callback),
-      std::move(connection_cost_callback));
+      scoped_refptr<dbus::Bus>(bus), std::move(connection_cost_callback));
 }
 
 }  // namespace net

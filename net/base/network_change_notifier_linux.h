@@ -32,12 +32,6 @@ namespace net {
 class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
     : public NetworkChangeNotifier {
  public:
-  enum class PortalOnlineState {
-    kUnknown,
-    kOnline,
-    kOffline,
-  };
-
   class PortalMonitor;
 
   // Creates the object mostly like normal, but the AddressTrackerLinux will use
@@ -95,7 +89,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
   // |netlink_fd| rather than the kernel.
   void InitBlockingThreadObjectsForTesting(base::ScopedFD netlink_fd);
 
-  void OnPortalOnlineStateChanged(PortalOnlineState state);
   void OnPortalConnectionCostChanged(ConnectionCost cost);
 
   // NetworkChangeNotifier:

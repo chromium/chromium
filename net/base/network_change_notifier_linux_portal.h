@@ -21,13 +21,11 @@ namespace net {
 
 class NetworkChangeNotifierLinux::PortalMonitor {
  public:
-  using OnlineStateCallback = base::RepeatingCallback<void(PortalOnlineState)>;
   using ConnectionCostCallback =
       base::RepeatingCallback<void(NetworkChangeNotifier::ConnectionCost)>;
 
   static std::unique_ptr<PortalMonitor> Create(
       dbus::Bus* bus,
-      OnlineStateCallback online_state_callback,
       ConnectionCostCallback connection_cost_callback);
 
   PortalMonitor() = default;
@@ -40,7 +38,6 @@ class NetworkChangeNotifierLinux::PortalMonitor {
 inline std::unique_ptr<NetworkChangeNotifierLinux::PortalMonitor>
 NetworkChangeNotifierLinux::PortalMonitor::Create(
     dbus::Bus* bus,
-    OnlineStateCallback online_state_callback,
     ConnectionCostCallback connection_cost_callback) {
   return nullptr;
 }

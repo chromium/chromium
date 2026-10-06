@@ -1076,10 +1076,5 @@ BASE_FEATURE_PARAM(int,
                    &kQuicSocketSendBufferSize,
                    -1);
 
-#if BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kNetworkChangeNotifierPortalOnlineState,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 }  // namespace net::features
 

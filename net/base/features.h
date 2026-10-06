@@ -1064,12 +1064,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWindowsTcpLoopbackFastFail);
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicSocketSendBufferSize);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kQuicSocketSendBufferSizeParam);
 
-#if BUILDFLAG(IS_LINUX)
-// Whether NetworkChangeNotifierLinux uses the XDG NetworkMonitor portal's
-// online/offline state to override or supplement netlink connection state.
-NET_EXPORT BASE_DECLARE_FEATURE(kNetworkChangeNotifierPortalOnlineState);
-#endif
-
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

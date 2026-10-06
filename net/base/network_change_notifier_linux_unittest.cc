@@ -16,13 +16,11 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/config/linux/dbus/buildflags.h"
 #include "net/base/address_map_linux.h"
 #include "net/base/address_tracker_linux.h"
 #include "net/base/cronet_buildflags.h"
-#include "net/base/features.h"
 #include "net/dns/dns_config_service.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -176,128 +174,9 @@ TEST_F(NetworkChangeNotifierLinuxTest, AddressTrackerLinuxSetDiffCallback) {
 
 #if BUILDFLAG(USE_DBUS) && !BUILDFLAG(CRONET_BUILD)
 TEST_F(NetworkChangeNotifierLinuxTest, PortalNetworkMonitorV3StatusAndChanged) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kNetworkChangeNotifierPortalOnlineState);
   InitPortalMockBus();
 
-  bool status_available = true;
   bool status_metered = true;
-  // Limited connectivity (2) with `available == true` should still be treated
-  // as online (upgrading netlink's CONNECTION_NONE to CONNECTION_UNKNOWN).
-  uint32_t status_connectivity = 2;
-
-  EXPECT_CALL(*mock_proxy_, CallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-        auto response = dbus::Response::CreateEmpty();
-        dbus::MessageWriter writer(response.get());
-        if (method_call->GetInterface() == DBUS_INTERFACE_PROPERTIES &&
-            method_call->GetMember() == "Get") {
-          writer.AppendVariantOfUint32(3);
-        } else if (method_call->GetInterface() == kNetworkMonitorInterface &&
-                   method_call->GetMember() == "GetStatus") {
-          std::map<std::string, dbus_utils::Variant> dict;
-          dict["available"] = dbus_utils::Variant::Wrap<"b">(status_available);
-          dict["metered"] = dbus_utils::Variant::Wrap<"b">(status_metered);
-          dict["connectivity"] =
-              dbus_utils::Variant::Wrap<"u">(status_connectivity);
-          dbus_utils::WriteValue(writer, dict);
-        }
-        std::move(callback).Run(response.get(), nullptr);
-      });
-
-  CreateNotifierWithBus(mock_bus_);
-  EXPECT_TRUE(base::test::RunUntil([]() {
-    return NetworkChangeNotifier::GetConnectionCost() ==
-               NetworkChangeNotifier::CONNECTION_COST_METERED &&
-           NetworkChangeNotifier::GetConnectionType() ==
-               NetworkChangeNotifier::CONNECTION_UNKNOWN;
-  }));
-
-  TestConnectionCostObserver cost_observer;
-  NetworkChangeNotifier::AddConnectionCostObserver(&cost_observer);
-
-  // Transition to unmetered + offline via the "changed" signal.
-  status_available = false;
-  status_metered = false;
-  dbus::Signal changed_signal(kNetworkMonitorInterface, "changed");
-  ASSERT_TRUE(signal_callback_);
-  signal_callback_.Run(&changed_signal);
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return cost_observer.cost_changed_calls() == 1 &&
-           NetworkChangeNotifier::GetConnectionType() ==
-               NetworkChangeNotifier::CONNECTION_NONE;
-  }));
-
-  EXPECT_EQ(NetworkChangeNotifier::GetConnectionCost(),
-            NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
-  EXPECT_EQ(cost_observer.last_cost(),
-            NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
-
-  // Transition back to online via the "changed" signal.
-  status_available = true;
-  signal_callback_.Run(&changed_signal);
-  EXPECT_TRUE(base::test::RunUntil([]() {
-    return NetworkChangeNotifier::GetConnectionType() ==
-           NetworkChangeNotifier::CONNECTION_UNKNOWN;
-  }));
-
-  NetworkChangeNotifier::RemoveConnectionCostObserver(&cost_observer);
-}
-
-TEST_F(NetworkChangeNotifierLinuxTest, PortalNetworkMonitorV2Fallback) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kNetworkChangeNotifierPortalOnlineState);
-  InitPortalMockBus();
-
-  bool status_available = true;
-  bool status_metered = true;
-
-  EXPECT_CALL(*mock_proxy_, CallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-        auto response = dbus::Response::CreateEmpty();
-        dbus::MessageWriter writer(response.get());
-        if (method_call->GetInterface() == DBUS_INTERFACE_PROPERTIES &&
-            method_call->GetMember() == "Get") {
-          writer.AppendVariantOfUint32(2);
-        } else if (method_call->GetInterface() == kNetworkMonitorInterface &&
-                   method_call->GetMember() == "GetMetered") {
-          writer.AppendBool(status_metered);
-        } else if (method_call->GetInterface() == kNetworkMonitorInterface &&
-                   method_call->GetMember() == "GetAvailable") {
-          writer.AppendBool(status_available);
-        }
-        std::move(callback).Run(response.get(), nullptr);
-      });
-
-  CreateNotifierWithBus(mock_bus_);
-  EXPECT_TRUE(base::test::RunUntil([]() {
-    return NetworkChangeNotifier::GetConnectionCost() ==
-               NetworkChangeNotifier::CONNECTION_COST_METERED &&
-           NetworkChangeNotifier::GetConnectionType() ==
-               NetworkChangeNotifier::CONNECTION_UNKNOWN;
-  }));
-
-  status_metered = false;
-  status_available = false;
-  dbus::Signal changed_signal(kNetworkMonitorInterface, "changed");
-  ASSERT_TRUE(signal_callback_);
-  signal_callback_.Run(&changed_signal);
-  EXPECT_TRUE(base::test::RunUntil([]() {
-    return NetworkChangeNotifier::GetConnectionCost() ==
-               NetworkChangeNotifier::CONNECTION_COST_UNMETERED &&
-           NetworkChangeNotifier::GetConnectionType() ==
-               NetworkChangeNotifier::CONNECTION_NONE;
-  }));
-}
-
-TEST_F(NetworkChangeNotifierLinuxTest,
-       PortalNetworkMonitorOnlineStateFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kNetworkChangeNotifierPortalOnlineState);
-  InitPortalMockBus();
 
   EXPECT_CALL(*mock_proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
@@ -311,7 +190,7 @@ TEST_F(NetworkChangeNotifierLinuxTest,
                    method_call->GetMember() == "GetStatus") {
           std::map<std::string, dbus_utils::Variant> dict;
           dict["available"] = dbus_utils::Variant::Wrap<"b">(true);
-          dict["metered"] = dbus_utils::Variant::Wrap<"b">(true);
+          dict["metered"] = dbus_utils::Variant::Wrap<"b">(status_metered);
           dbus_utils::WriteValue(writer, dict);
         }
         std::move(callback).Run(response.get(), nullptr);
@@ -322,16 +201,68 @@ TEST_F(NetworkChangeNotifierLinuxTest,
     return NetworkChangeNotifier::GetConnectionCost() ==
            NetworkChangeNotifier::CONNECTION_COST_METERED;
   }));
-  // With `kNetworkChangeNotifierPortalOnlineState` disabled, netlink's
-  // CONNECTION_NONE is not overridden by the portal's `available == true`.
+  // The portal's `available` state does not affect the connection type, which
+  // comes only from netlink (uninitialized here, so CONNECTION_NONE).
   EXPECT_EQ(NetworkChangeNotifier::GetConnectionType(),
             NetworkChangeNotifier::CONNECTION_NONE);
+
+  TestConnectionCostObserver cost_observer;
+  NetworkChangeNotifier::AddConnectionCostObserver(&cost_observer);
+
+  // Transition to unmetered via the "changed" signal.
+  status_metered = false;
+  dbus::Signal changed_signal(kNetworkMonitorInterface, "changed");
+  ASSERT_TRUE(signal_callback_);
+  signal_callback_.Run(&changed_signal);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return cost_observer.cost_changed_calls() == 1; }));
+
+  EXPECT_EQ(NetworkChangeNotifier::GetConnectionCost(),
+            NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
+  EXPECT_EQ(cost_observer.last_cost(),
+            NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
+
+  NetworkChangeNotifier::RemoveConnectionCostObserver(&cost_observer);
+}
+
+TEST_F(NetworkChangeNotifierLinuxTest, PortalNetworkMonitorV2Fallback) {
+  InitPortalMockBus();
+
+  bool status_metered = true;
+
+  EXPECT_CALL(*mock_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        if (method_call->GetInterface() == DBUS_INTERFACE_PROPERTIES &&
+            method_call->GetMember() == "Get") {
+          writer.AppendVariantOfUint32(2);
+        } else if (method_call->GetInterface() == kNetworkMonitorInterface &&
+                   method_call->GetMember() == "GetMetered") {
+          writer.AppendBool(status_metered);
+        }
+        std::move(callback).Run(response.get(), nullptr);
+      });
+
+  CreateNotifierWithBus(mock_bus_);
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    return NetworkChangeNotifier::GetConnectionCost() ==
+           NetworkChangeNotifier::CONNECTION_COST_METERED;
+  }));
+
+  status_metered = false;
+  dbus::Signal changed_signal(kNetworkMonitorInterface, "changed");
+  ASSERT_TRUE(signal_callback_);
+  signal_callback_.Run(&changed_signal);
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    return NetworkChangeNotifier::GetConnectionCost() ==
+           NetworkChangeNotifier::CONNECTION_COST_UNMETERED;
+  }));
 }
 
 TEST_F(NetworkChangeNotifierLinuxTest,
        PortalNetworkMonitorLateStartAndOwnerReset) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kNetworkChangeNotifierPortalOnlineState);
   InitPortalMockBus();
 
   bool portal_running = false;
@@ -350,7 +281,6 @@ TEST_F(NetworkChangeNotifierLinuxTest,
         } else if (method_call->GetInterface() == kNetworkMonitorInterface &&
                    method_call->GetMember() == "GetStatus") {
           std::map<std::string, dbus_utils::Variant> dict;
-          dict["available"] = dbus_utils::Variant::Wrap<"b">(true);
           dict["metered"] = dbus_utils::Variant::Wrap<"b">(true);
           dbus_utils::WriteValue(writer, dict);
         }
@@ -358,30 +288,26 @@ TEST_F(NetworkChangeNotifierLinuxTest,
       });
 
   CreateNotifierWithBus(mock_bus_);
-  // Initially portal is not running; netlink reports CONNECTION_NONE.
-  EXPECT_EQ(NetworkChangeNotifier::GetConnectionType(),
-            NetworkChangeNotifier::CONNECTION_NONE);
+  // Initially the portal is not running, so the cost is not metered.
+  EXPECT_NE(NetworkChangeNotifier::GetConnectionCost(),
+            NetworkChangeNotifier::CONNECTION_COST_METERED);
 
   // Portal starts up and acquires bus ownership; monitor should query version
-  // and status and transition to CONNECTION_COST_METERED + CONNECTION_UNKNOWN.
+  // and status and transition to CONNECTION_COST_METERED.
   portal_running = true;
   ASSERT_TRUE(name_owner_changed_callback_);
   name_owner_changed_callback_.Run("", ":1.42");
   EXPECT_TRUE(base::test::RunUntil([]() {
     return NetworkChangeNotifier::GetConnectionCost() ==
-               NetworkChangeNotifier::CONNECTION_COST_METERED &&
-           NetworkChangeNotifier::GetConnectionType() ==
-               NetworkChangeNotifier::CONNECTION_UNKNOWN;
+           NetworkChangeNotifier::CONNECTION_COST_METERED;
   }));
 
-  // Simulate the portal service losing its bus owner; online state and cost
-  // should reset back to netlink's CONNECTION_NONE and fallback cost.
+  // Simulate the portal service losing its bus owner; cost should reset back
+  // to the fallback cost.
   name_owner_changed_callback_.Run(":1.42", "");
   EXPECT_TRUE(base::test::RunUntil([]() {
     return NetworkChangeNotifier::GetConnectionCost() !=
-               NetworkChangeNotifier::CONNECTION_COST_METERED &&
-           NetworkChangeNotifier::GetConnectionType() ==
-               NetworkChangeNotifier::CONNECTION_NONE;
+           NetworkChangeNotifier::CONNECTION_COST_METERED;
   }));
 }
 #endif
