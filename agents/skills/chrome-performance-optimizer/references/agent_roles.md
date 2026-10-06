@@ -61,6 +61,7 @@ ______________________________________________________________________
   parent conversation context.
 - **Invocation Config**:
   - `TypeName`: `self` or `research-google`
+  - `Model`: `'inherit'`
   - `Workspace`: `inherit`
 - **Prompt Template**:
   ```markdown
@@ -94,6 +95,7 @@ ______________________________________________________________________
   locally, and runs unit tests + Crossbench smoke tests.
 - **Invocation Config**:
   - `TypeName`: `self`
+  - `Model`: `'flash'`
   - `Workspace`: `share` (creates an isolated worktree sharing the parent repo
     storage)
 - **Prompt Template**:
@@ -130,6 +132,7 @@ ______________________________________________________________________
   `git cl lint`, and local unit tests.
 - **Invocation Config**:
   - `TypeName`: `self`
+  - `Model`: `'inherit'`
   - `Workspace`: `share` (operates in an isolated worktree checking out the
     branch)
 - **Prompt Template**:
@@ -196,6 +199,7 @@ ______________________________________________________________________
   statistical significance, and updates Gerrit topics.
 - **Invocation Config**:
   - `TypeName`: `self`
+  - `Model`: `'flash'`
   - `Workspace`: `share` or background task
 - **Prompt Template**:
   ```markdown
@@ -230,6 +234,7 @@ ______________________________________________________________________
   or Crossbench logs using performance tools.
 - **Invocation Config**:
   - `TypeName`: `self` or `research-google`
+  - `Model`: `'inherit'`
   - `Workspace`: `inherit`
 - **Prompt Template**:
   ```markdown

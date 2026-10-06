@@ -60,6 +60,10 @@ graph TD
     Main -->|10. Accept (Keep CL) or Reject (Abandon CL)| Main
 ```
 
+- **Subagent Model Policy**: Pass `Model: 'flash'` when invoking **Implementer**
+  and **Pinpoint** subagents; use `Model: 'inherit'` (the default) for all other
+  subagents (**Explorer**, **Profiler**, and **Reviewer**).
+
 ______________________________________________________________________
 
 ## Step 1: Bottleneck & Opportunity Discovery
