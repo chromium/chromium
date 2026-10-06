@@ -531,10 +531,14 @@ class TabImpl implements Tab, TabInternal {
 
             // Reload the NativePage (if any), since the old NativePage has a reference to the old
             // activity. If hidden, detach its view and freeze the native page to avoid eager
-            // instantiation of background native pages. If visible, reload it so that it binds to
-            // the new Activity and destroys the old native page to fix the Activity leak.
+            // instantiation of background native pages. Unfrozen PDF pages are exempted from
+            // freezing because freezing destroys the PdfPage and removes the
+            // ChromePdfViewerFragment from FragmentManager, losing unsaved annotations. Instead,
+            // reloading via maybeShowNativePage() allows the new PdfCoordinator to reclaim the
+            // restored fragment by tag and relocate misplaced fragment views before destroying
+            // the old page. Already-frozen PDF pages remain frozen.
             if (isNativePage()) {
-                if (isHidden()) {
+                if (isHidden() && (!mNativePage.isPdf() || mNativePage.isFrozen())) {
                     detachAndFreezeNativePage();
                 } else {
                     maybeShowNativePage(
@@ -551,10 +555,16 @@ class TabImpl implements Tab, TabInternal {
                 // observers (e.g. NtpFeedSurfaceLifecycleManager) can save UI state while the
                 // view hierarchy is still attached to the window, then notify observers so
                 // CompositorViewHolder detaches the NativePage view and reclaims focus via
-                // updateContentOverlayVisibility(false) before freezing and destroying the page.
+                // updateContentOverlayVisibility(false) before detaching the view and freezing.
+                // PDF pages are exempted from freezing because freezing destroys the PdfPage and
+                // loses unsaved annotations, but their view is still detached from the Activity.
                 updateInteractableState();
                 notifyContentChanged();
-                detachAndFreezeNativePage();
+                if (mNativePage.isPdf()) {
+                    detachNativePageView();
+                } else {
+                    detachAndFreezeNativePage();
+                }
             }
 
             // Clear the current tab supplier during detachment/reparenting to indicate that the
@@ -722,7 +732,7 @@ class TabImpl implements Tab, TabInternal {
         updateInteractableState();
     }
 
-    private void detachAndFreezeNativePage() {
+    private void detachNativePageView() {
         if (mNativePage == null || mNativePage.isFrozen()) {
             return;
         }
@@ -730,6 +740,10 @@ class TabImpl implements Tab, TabInternal {
         if (view != null) {
             UiUtils.removeViewFromParent(view);
         }
+    }
+
+    private void detachAndFreezeNativePage() {
+        detachNativePageView();
         freezeNativePage();
     }
 
