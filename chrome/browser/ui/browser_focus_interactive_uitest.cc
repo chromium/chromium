@@ -212,11 +212,11 @@ class BrowserFocusTest : public InteractiveBrowserTest {
     std::vector<content::WebContents*> web_contents = {
         browser()->tab_strip_model()->GetActiveWebContents()};
 
-    ToolbarButtonProvider* toolbar_button_provider =
+    WebUIToolbarWebView* webui_toolbar =
         BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider();
-    if (WebUIToolbarWebView* webui_toolbar =
-            toolbar_button_provider->GetWebUIToolbarViewForTesting()) {
+            ->toolbar_button_provider()
+            ->GetWebUIToolbarViewForTesting();
+    if (webui_toolbar) {
       web_contents.push_back(
           webui_toolbar->GetWebViewForTesting()->web_contents());
     }
@@ -225,6 +225,15 @@ class BrowserFocusTest : public InteractiveBrowserTest {
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
                                                 reverse, false, false));
     obs.WaitForFocusChange();
+
+    // `obs` may have been woken by the toolbar renderer's frame-level
+    // focused-element notification, whereas the omnibox focus state reported
+    // by IsViewFocused(VIEW_ID_OMNIBOX) travels over the separate
+    // ToolbarUIService pipe. Settle the toolbar pipes so callers observe the
+    // state that corresponds to the focus change they just waited for.
+    if (webui_toolbar) {
+      ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+    }
   }
 
   void TestFocusTraversal(bool reverse) {
@@ -559,11 +568,11 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   std::vector<content::WebContents*> web_contents = {
       browser()->tab_strip_model()->GetActiveWebContents()};
-  ToolbarButtonProvider* toolbar_button_provider =
+  WebUIToolbarWebView* webui_toolbar =
       BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider();
-  if (WebUIToolbarWebView* webui_toolbar =
-          toolbar_button_provider->GetWebUIToolbarViewForTesting()) {
+          ->toolbar_button_provider()
+          ->GetWebUIToolbarViewForTesting();
+  if (webui_toolbar) {
     web_contents.push_back(
         webui_toolbar->GetWebViewForTesting()->web_contents());
   }
@@ -574,9 +583,27 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
   ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
 
+  // With the WebUI location bar, the focus request above is acknowledged by
+  // the renderer asynchronously, and it is that acknowledgement which starts
+  // zero-suggest. Make sure it has been processed before waiting for
+  // autocomplete to finish, so that the popup state is final when we close
+  // the popup below.
+  if (webui_toolbar) {
+    ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+  }
+  ui_test_utils::WaitForAutocompleteDone(browser());
+
   // Simulate ESC being pressed to close the omnibox suggestions popup.
   omnibox::OmniboxPopupCloser::From(browser())->CloseWithReason(
       omnibox::PopupCloseReason::kEscapeKeyPressed);
+
+  // The WebUI omnibox decides whether Tab is focus traversal or a popup key
+  // from the popup-open flag the browser pushes to it. Make sure it has seen
+  // the popup close before the first Tab is sent; otherwise it swallows the
+  // key and forwards it to the (now closed) popup instead.
+  if (webui_toolbar) {
+    ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+  }
 
   // Loop through the focus chain twice in each direction for good measure.
   TestFocusTraversal(false);

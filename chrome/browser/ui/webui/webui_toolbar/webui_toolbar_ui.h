@@ -117,6 +117,10 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
   void ShowSplitTabsContextMenu();
 
+  // Blocks until every ToolbarUIObserver message sent so far has been
+  // dispatched by the WebUI. No-op before the service is bound.
+  void FlushToolbarUIObserversForTesting();
+
   // The |depdency_provider| is expected to outlive this class.
   void Init(DependencyProvider* dependency_provider);
 

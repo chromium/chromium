@@ -1766,6 +1766,15 @@ void WebUIToolbarWebView::PushToolbarState() {
   }
 }
 
+void WebUIToolbarWebView::FlushPendingToolbarStateForTesting() {
+  if (!state_push_weak_ptr_factory_.HasWeakPtrs()) {
+    return;  // No push is pending.
+  }
+  // Cancel the posted PushToolbarState() and do its work now.
+  state_push_weak_ptr_factory_.InvalidateWeakPtrs();
+  PushToolbarState();
+}
+
 toolbar_ui_api::mojom::BackForwardControlStatePtr
 WebUIToolbarWebView::GetBackForwardState() const {
   auto state = toolbar_ui_api::mojom::BackForwardControlState::New();

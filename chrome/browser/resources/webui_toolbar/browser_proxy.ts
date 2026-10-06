@@ -9,7 +9,7 @@ import type {BrowserControlsServiceInterface} from '/shared/browser_controls_api
 import {EventDispositionFlag} from '/shared/browser_controls_api_data_model.mojom-webui.js';
 import type {IconUpdate} from '/shared/icon_handle.mojom-webui.js';
 import {ToolbarUIObserverCallbackRouter, ToolbarUIService} from '/shared/toolbar_ui_api.mojom-webui.js';
-import type {ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
+import type {ToolbarUIServiceInterface, ToolbarUIServiceRemote} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {ContextMenuType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {BackForwardButtonState, FocusRequestTarget, OmniboxViewState, ReloadControlState, ToolbarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -85,17 +85,26 @@ export interface BrowserProxy extends PermissionChipDelegate {
   removeFocusRequestListener(handle: FocusRequestHandle): void;
   removeShowSplitTabsContextMenuListener(
       handle: ShowSplitTabsContextMenuHandle): void;
+
+  /**
+   * Resolves once the browser has dispatched every message sent so far on the
+   * ToolbarUIService pipe (e.g. onOmniboxAction). For tests that need the
+   * browser-side state to reflect what this page has already sent.
+   */
+  flushToolbarUiHandlerForTesting(): Promise<void>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
   private callbackRouter: ToolbarUIObserverCallbackRouter;
+  private toolbarUIRemote: ToolbarUIServiceRemote;
   browserControlsHandler: BrowserControlsServiceInterface;
   toolbarUIHandler: ToolbarUIServiceInterface;
 
   private constructor() {
     this.callbackRouter = new ToolbarUIObserverCallbackRouter();
     this.browserControlsHandler = BrowserControlsService.getRemote();
-    this.toolbarUIHandler = ToolbarUIService.getRemote();
+    this.toolbarUIRemote = ToolbarUIService.getRemote();
+    this.toolbarUIHandler = this.toolbarUIRemote;
   }
 
   onChipClicked(id: LhsChipIdentifier, isPointer: boolean, stateToken: number) {
@@ -171,6 +180,10 @@ export class BrowserProxyImpl implements BrowserProxy {
     if (handle !== INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE) {
       this.callbackRouter.removeListener(handle);
     }
+  }
+
+  flushToolbarUiHandlerForTesting(): Promise<void> {
+    return this.toolbarUIRemote.$.flushForTesting();
   }
 
   static getInstance(): BrowserProxy {

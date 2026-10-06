@@ -410,6 +410,11 @@ class WebUIToolbarWebView
     return GetWebUIToolbarUI();
   }
 
+  // Synchronously performs the state push that PostPushToolbarState() has
+  // coalesced into a pending task, if any, so tests can observe the latest
+  // state on the WebUI side without spinning the message loop.
+  void FlushPendingToolbarStateForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckReloadButtonColor);

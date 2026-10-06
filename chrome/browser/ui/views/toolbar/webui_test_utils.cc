@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -1146,4 +1147,36 @@ const char kGetAllAnimationsJS[] = R"(
       kFindDeepJS, kGetAllAnimationsJS,
       custom_wait_js.empty() ? "" : std::string(custom_wait_js).c_str());
   return content::ExecJs(web_contents, script);
+}
+
+::testing::AssertionResult FlushWebUIToolbarPipes(
+    BrowserWindowInterface* browser) {
+  WebUIToolbarWebView* toolbar = GetWebUIToolbarWebView(browser);
+  if (!toolbar) {
+    return ::testing::AssertionFailure() << "no WebUI toolbar";
+  }
+  WebUIToolbarUI* toolbar_ui = toolbar->GetWebUIToolbarUIForTesting();
+  if (!toolbar_ui || !toolbar_ui->is_initialized()) {
+    return ::testing::AssertionFailure() << "WebUI toolbar is not bound";
+  }
+
+  // Send any state push that PostPushToolbarState() has coalesced into a
+  // pending task, so the observer flush below covers it.
+  toolbar->FlushPendingToolbarStateForTesting();
+
+  // browser -> WebUI.
+  toolbar_ui->FlushToolbarUIObserversForTesting();
+
+  // WebUI -> browser. Go through the page's BrowserProxy so the flush is done
+  // on the ToolbarUIService remote the page actually uses (a fresh
+  // `ToolbarUIService.getRemote()` would be a different pipe).
+  static constexpr char kFlushJS[] = R"((async () => {
+    const app = document.querySelector('toolbar-app');
+    if (!app) {
+      throw new Error('toolbar-app not found');
+    }
+    await app.browserProxyForTesting.flushToolbarUiHandlerForTesting();
+  })())";
+  return content::ExecJs(toolbar->GetWebViewForTesting()->web_contents(),
+                         kFlushJS);
 }

@@ -374,6 +374,12 @@ void WebUIToolbarUI::ShowSplitTabsContextMenu() {
   }
 }
 
+void WebUIToolbarUI::FlushToolbarUIObserversForTesting() {
+  if (toolbar_ui_service_) {
+    toolbar_ui_service_->FlushObserversForTesting();  // IN-TEST
+  }
+}
+
 void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
   CHECK(dependency_provider);
 

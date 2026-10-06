@@ -104,6 +104,10 @@ void ToolbarUIService::ShowSplitTabsContextMenu() {
   }
 }
 
+void ToolbarUIService::FlushObserversForTesting() {
+  observers_.FlushForTesting();  // IN-TEST
+}
+
 void ToolbarUIService::ShowContextMenu(
     toolbar_ui_api::mojom::ContextMenuType menu_type,
     const gfx::RectF& bounds_in_css_pixels,

@@ -135,6 +135,10 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
   void ShowSplitTabsContextMenu();
 
+  // Blocks until every ToolbarUIObserver message sent so far has been
+  // dispatched by the WebUI.
+  void FlushObserversForTesting();
+
   // toolbar_ui_api::mojom::ToolbarUIService:
   void Bind(BindCallback callback) override;
   void ShowContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,

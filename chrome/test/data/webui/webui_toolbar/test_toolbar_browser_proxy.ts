@@ -285,6 +285,10 @@ export class TestToolbarBrowserProxy extends TestBrowserProxy implements
   removeShowSplitTabsContextMenuListener(
       _handle: ShowSplitTabsContextMenuHandle) {}
 
+  flushToolbarUiHandlerForTesting(): Promise<void> {
+    return Promise.resolve();
+  }
+
   onChipClicked(
       id: LhsChipIdentifier, isPointer: boolean, stateToken: number = 0) {
     this.toolbarUIHandler.onLhsChipClicked(id, isPointer, stateToken);
