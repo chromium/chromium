@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -128,8 +130,10 @@ void AddSupervisionHandler::NotifySupervisionEnabled() {
   // Force full sign-in the next time the user is at the login screen.
   // Gellerization can only be triggered by the primary user.
   user_manager::UserManager* manager = user_manager::UserManager::Get();
-  manager->SaveForceOnlineSignin(manager->GetPrimaryUser()->GetAccountId(),
-                                 true /* force signin */);
+  manager->SaveForceOnlineSignin(
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id(),
+      true /* force signin */);
 
   // Record UMA metric that user has completed Add Supervision process.
   AddSupervisionMetricsRecorder::GetInstance()->RecordAddSupervisionEnrollment(
