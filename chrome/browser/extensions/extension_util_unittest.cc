@@ -400,4 +400,50 @@ TEST_F(ExtensionUtilWithSigninProfileUnittest,
 
 #endif
 
+// The clipboardWrite check behind navigator.clipboard in an extension service
+// worker. The renderer-facing permission query and the browser-side write check
+// both ask this, so each way it can refuse is covered.
+//
+// These live chrome-side rather than next to the helper: clipboardWrite is
+// declared in chrome/common/extensions/api/_permission_features.json, so
+// extensions_unittests cannot build an extension holding it.
+TEST_F(ExtensionUtilUnittest, HasClipboardWritePermission) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("allowed")
+          .SetManifestVersion(3)
+          .AddAPIPermission("clipboardWrite")
+          .Build();
+  registrar()->AddExtension(extension.get());
+
+  EXPECT_TRUE(util::HasClipboardWritePermission(extension->id(), profile()));
+}
+
+TEST_F(ExtensionUtilUnittest, HasClipboardWritePermission_WithoutPermission) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("no-perm").SetManifestVersion(3).Build();
+  registrar()->AddExtension(extension.get());
+
+  EXPECT_FALSE(util::HasClipboardWritePermission(extension->id(), profile()));
+}
+
+// The permission travels with the extension, so disabling it has to take the
+// clipboard away from a worker that is already running.
+TEST_F(ExtensionUtilUnittest, HasClipboardWritePermission_Disabled) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("disabled")
+          .SetManifestVersion(3)
+          .AddAPIPermission("clipboardWrite")
+          .Build();
+  registrar()->AddExtension(extension.get());
+  registrar()->DisableExtension(extension->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
+
+  EXPECT_FALSE(util::HasClipboardWritePermission(extension->id(), profile()));
+}
+
+TEST_F(ExtensionUtilUnittest, HasClipboardWritePermission_UnknownExtension) {
+  EXPECT_FALSE(util::HasClipboardWritePermission(
+      "abcdefghijklmnopabcdefghijklmnop", profile()));
+}
+
 }  // namespace extensions

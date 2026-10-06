@@ -96,13 +96,6 @@ class ChromeContentBrowserClientExtensionsPart
                                  const GURL& script_url,
                                  content::BrowserContext* context);
 
-  // Returns whether the enabled extension `extension_id` holds the
-  // clipboardWrite API permission in `context`. The permission query, the
-  // content settings proxy and the browser-side write check all ask this.
-  static bool ExtensionHasClipboardWritePermission(
-      content::BrowserContext* context,
-      const std::string& extension_id);
-
   // Returns whether a service worker with `origin` may be given a ClipboardHost
   // at all. Answers only whether this class of context is ever eligible, not
   // whether an individual clipboard call is allowed.

@@ -173,6 +173,13 @@ bool CanRendererActOnBehalfOfExtension(
 bool IsChromeApp(const ExtensionId& extension_id,
                  content::BrowserContext* context);
 
+// Returns true if the enabled extension associated with `extension_id` holds
+// the clipboardWrite API permission. Asked by the renderer-facing permission
+// query and again by the browser when a write actually arrives, so a permission
+// revoked mid-worker takes effect.
+bool HasClipboardWritePermission(const ExtensionId& extension_id,
+                                 content::BrowserContext* context);
+
 // Returns true if `extension_id` can be launched (possibly only after being
 // enabled).
 bool IsAppLaunchable(const ExtensionId& extension_id,

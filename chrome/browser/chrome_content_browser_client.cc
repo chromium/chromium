@@ -3725,8 +3725,8 @@ bool ChromeContentBrowserClient::AllowWorkerWriteToClipboard(
   if (origin.scheme() != extensions::kExtensionScheme) {
     return false;
   }
-  return extensions::ChromeContentBrowserClientExtensionsPart::
-      ExtensionHasClipboardWritePermission(browser_context, origin.host());
+  return extensions::util::HasClipboardWritePermission(origin.host(),
+                                                       browser_context);
 #else
   return false;
 #endif

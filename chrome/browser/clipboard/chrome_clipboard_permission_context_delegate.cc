@@ -17,14 +17,11 @@
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
-#include "extensions/browser/process_map.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/mojom/api_permission_id.mojom.h"
-#include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/constants.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -133,29 +130,17 @@ ChromeClipboardPermissionContextDelegate::GetPermissionStatusForWorker(
     return std::nullopt;
   }
 
-  const std::string extension_id = origin.host();
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser_context);
-  const extensions::Extension* extension =
-      registry->enabled_extensions().GetByID(extension_id);
-  if (!extension) {
-    // Deferring here would fall through to the web default, which allows
-    // sanitized write. An extension origin we cannot resolve gets nothing.
-    return ContentSetting::CONTENT_SETTING_BLOCK;
-  }
-
-  if (type_ == Type::kReadWrite) {
-    // Clipboard read (paste) is intentionally blocked for service workers
-    // because they lack the user-visible context needed for safe paste
-    // operations. Extensions should use popup/side panel views for reading.
-    return ContentSetting::CONTENT_SETTING_BLOCK;
-  }
-
-  if (type_ == Type::kSanitizedWrite) {
-    if (extension->permissions_data()->HasAPIPermission(
-            extensions::mojom::APIPermissionID::kClipboardWrite)) {
-      return ContentSetting::CONTENT_SETTING_ALLOW;
-    }
+  // Clipboard read (paste) is blocked for service workers because they lack the
+  // user-visible context needed for safe paste. Extensions should use popup or
+  // side panel views for reading.
+  //
+  // Everything else falls through to BLOCK, including an extension origin that
+  // does not resolve: deferring there would reach the web default, which allows
+  // sanitized write.
+  if (type_ == Type::kSanitizedWrite &&
+      extensions::util::HasClipboardWritePermission(origin.host(),
+                                                    browser_context)) {
+    return ContentSetting::CONTENT_SETTING_ALLOW;
   }
 
   return ContentSetting::CONTENT_SETTING_BLOCK;

@@ -40,6 +40,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -568,6 +569,15 @@ bool IsChromeApp(const ExtensionId& extension_id,
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
   return extension->is_platform_app();
+}
+
+bool HasClipboardWritePermission(const ExtensionId& extension_id,
+                                 content::BrowserContext* context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  return extension && extension->permissions_data()->HasAPIPermission(
+                          mojom::APIPermissionID::kClipboardWrite);
 }
 
 bool IsAppLaunchable(const ExtensionId& extension_id,

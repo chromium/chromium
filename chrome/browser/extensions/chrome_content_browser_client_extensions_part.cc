@@ -629,17 +629,6 @@ bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
 
 // static
 bool ChromeContentBrowserClientExtensionsPart::
-    ExtensionHasClipboardWritePermission(content::BrowserContext* context,
-                                         const std::string& extension_id) {
-  const Extension* extension =
-      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
-          extension_id);
-  return extension && extension->permissions_data()->HasAPIPermission(
-                          mojom::APIPermissionID::kClipboardWrite);
-}
-
-// static
-bool ChromeContentBrowserClientExtensionsPart::
     IsClipboardAllowedForServiceWorker(const url::Origin& origin) {
   // The renderer only exposes navigator.clipboard to extension service workers
   // when this is on, so the browser has to agree or a disabled feature still
