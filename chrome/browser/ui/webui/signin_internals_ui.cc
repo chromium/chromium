@@ -261,7 +261,6 @@ void SignInInternalsHandler::AddAccountCapabilitiesOverridesInfo(
 
   base::ListValue* account_capabilities =
       signin_status.FindList("accountCapabilities");
-  bool any_capability_can_override = false;
   if (account_capabilities) {
     for (base::Value& item : *account_capabilities) {
       if (!item.is_dict()) {
@@ -291,11 +290,7 @@ void SignInInternalsHandler::AddAccountCapabilitiesOverridesInfo(
             about_signin_internals->CanOverrideAccountCapability(
                 account_id, *cap_name, chrome::GetChannel());
         cap_dict.Set("can_override", can_override);
-        if (can_override) {
-          any_capability_can_override = true;
-        }
       }
     }
   }
-  signin_status.Set("canOverrideAccountInfo", any_capability_can_override);
 }

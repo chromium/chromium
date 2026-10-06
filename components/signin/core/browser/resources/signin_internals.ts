@@ -96,7 +96,6 @@ interface SigninInfo {
   signin_info: BasicInfo[];
   token_info: TokenInfo[];
   accountCapabilities: AccountCapabilitiesInfo[];
-  canOverrideAccountInfo?: boolean;
 }
 
 function getSigninInfoHtml(infos: BasicInfo[]) {
@@ -292,20 +291,24 @@ function getAccountCapabilitiesHtml(infos: AccountCapabilitiesInfo[]) {
   // clang-format off
   return html`
     <h2>Account Capabilities By Account</h2>
-    ${infos.map(item => html`
+    ${infos.map(item => {
+      // Only show the override column if at least one capability of this
+      // account can be overridden.
+      const canOverrideAny = item.capabilities.some(cap => cap.can_override);
+      return html`
       <div class="account-capabilities-section">
         <h3>${item.accountId}</h3>
         <table class="signin-details">
           <tr class="header">
             <td>Capability Name</td>
             <td>Fetched Value</td>
-            <td>Override</td>
+            <td ?hidden="${!canOverrideAny}">Override</td>
           </tr>
           ${item.capabilities.map(cap => html`
             <tr>
               <td><a href="http://go/capability-alias/${cap.name.replace('accountcapabilities/', '')}">${cap.label}</a></td>
               <td>${cap.value}</td>
-              <td>
+              <td ?hidden="${!canOverrideAny}">
                 <select ?disabled="${!cap.can_override}"
                         @change="${(ev: Event) => onOverrideValueChange(
                             item.accountId, cap.name, ev)}">
@@ -330,7 +333,8 @@ function getAccountCapabilitiesHtml(infos: AccountCapabilitiesInfo[]) {
           `)}
         </table>
       </div>
-    `)}
+    `;
+    })}
   `;
   // clang-format on
 }
