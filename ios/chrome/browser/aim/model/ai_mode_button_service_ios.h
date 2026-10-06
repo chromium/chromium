@@ -14,6 +14,8 @@
 #import "components/search_engines/template_url_service_observer.h"
 #import "url/gurl.h"
 
+class AiModeButtonService;
+struct AiModeButtonUiConfig;
 class AimEligibilityService;
 class TemplateURLService;
 
@@ -22,7 +24,8 @@ class AIModeButtonServiceIOS : public KeyedService,
                                public TemplateURLServiceObserver {
  public:
   AIModeButtonServiceIOS(TemplateURLService* template_url_service,
-                         AimEligibilityService* aim_eligibility_service);
+                         AimEligibilityService* aim_eligibility_service,
+                         AiModeButtonService* ai_mode_button_service = nullptr);
   AIModeButtonServiceIOS(const AIModeButtonServiceIOS&) = delete;
   AIModeButtonServiceIOS& operator=(const AIModeButtonServiceIOS&) = delete;
   ~AIModeButtonServiceIOS() override;
@@ -55,15 +58,20 @@ class AIModeButtonServiceIOS : public KeyedService,
   // Called when the eligibility service notifies that AIM eligibility changed.
   void OnEligibilityChanged();
 
+  // Called when the AI mode button service notifies that config changed.
+  void OnAiModeButtonConfigChanged(const AiModeButtonUiConfig* config);
+
   // Notifies all registered state change observers.
   void NotifyStateChanged();
 
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   raw_ptr<AimEligibilityService> aim_eligibility_service_ = nullptr;
+  raw_ptr<AiModeButtonService> ai_mode_button_service_ = nullptr;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
   base::CallbackListSubscription eligibility_subscription_;
+  base::CallbackListSubscription ai_mode_button_subscription_;
 
   base::RepeatingClosureList state_changed_callbacks_;
 };

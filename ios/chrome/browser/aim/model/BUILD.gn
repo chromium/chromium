@@ -17,6 +17,7 @@ source_set("aim_button_service") {
     "//components/keyed_service/core",
     "//components/lens:lens_url_utils",
     "//components/omnibox/browser",
+    "//components/search",
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
@@ -103,19 +104,23 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ai_mode_button_service_ios_unittest.mm",
     "aim_tab_helper_unittest.mm",
     "ios_chrome_aim_eligibility_service_unittest.mm",
   ]
   deps = [
     ":aim_availability",
+    ":aim_button_service",
     ":tab_helper",
     ":test_support",
     "//base/test:test_support",
     "//components/application_locale_storage",
     "//components/omnibox/browser:test_support",
+    "//components/omnibox/common",
     "//components/search_engines",
     "//components/signin/public/identity_manager:test_support",
     "//components/variations:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
