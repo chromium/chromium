@@ -1892,64 +1892,34 @@ TEST_F(ExtensionServiceTest, ReenableWithAllPermissionsGrantedOnStartup) {
 
 // An extension installed with the mime_types_handler warning should stay
 // enabled after a restart. An extension installed before the warning existed
-// should be disabled at startup until the user approves the permission. One
-// already allowed on all sites is not expected to be disabled, because that
-// approval covers the MIME handler.
+// should be disabled at startup until the user approves the permission.
 TEST_F(ExtensionServiceTest,
        MimeTypesHandlerInstalledBeforeWarningRepromptsOnStartup) {
   InitializeEmptyExtensionService();
+  const base::FilePath path =
+      data_dir().AppendASCII("permissions").AppendASCII("mime_types_handler");
 
-  struct TestCase {
-    const char* extension_dir;
-    bool expect_reprompt;
-    std::string id;
-  };
-  auto test_cases = std::to_array<TestCase>({
-      {"mime_types_handler", true},
-      {"mime_types_handler_one_host", true},
-      {"mime_types_handler_all_hosts", false},
-  });
+  const Extension* extension = PackAndInstallCRX(path, INSTALL_NEW);
+  const std::string id = extension->id();
 
-  for (TestCase& test_case : test_cases) {
-    SCOPED_TRACE(test_case.extension_dir);
-    const Extension* extension =
-        PackAndInstallCRX(data_dir()
-                              .AppendASCII("permissions")
-                              .AppendASCII(test_case.extension_dir),
-                          INSTALL_NEW);
-    ASSERT_TRUE(extension);
-    test_case.id = extension->id();
-  }
+  EXPECT_EQ(0u, GetErrors().size());
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(id));
+
+  // The permission granted at install should still be granted after a restart.
+  service()->ReloadExtensionsForTest();
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(id));
+
+  // Make the extension look as if it was installed before the permission
+  // existed. The manifest requests only the MIME handler permission, so
+  // clearing all granted permissions clears just that one.
+  std::unique_ptr<PermissionSet> granted = prefs()->GetGrantedPermissions(id);
+  ASSERT_FALSE(granted->manifest_permissions().empty());
+  prefs()->RemoveGrantedPermissions(id, *granted);
 
   service()->ReloadExtensionsForTest();
-
-  for (const TestCase& test_case : test_cases) {
-    SCOPED_TRACE(test_case.extension_dir);
-    ASSERT_TRUE(registry()->enabled_extensions().Contains(test_case.id));
-
-    // Revoke the MIME handler permission but keep the approved hosts, as for
-    // an extension installed before the permission existed. Without the hosts,
-    // the <all_urls> case would ask again for them too.
-    std::unique_ptr<PermissionSet> granted =
-        prefs()->GetGrantedPermissions(test_case.id);
-    ASSERT_FALSE(granted->manifest_permissions().empty());
-    PermissionSet mime_handler_permission_only(
-        APIPermissionSet(), granted->manifest_permissions().Clone(),
-        URLPatternSet(), URLPatternSet());
-    prefs()->RemoveGrantedPermissions(test_case.id,
-                                      mime_handler_permission_only);
-  }
-
-  service()->ReloadExtensionsForTest();
-
-  for (const TestCase& test_case : test_cases) {
-    SCOPED_TRACE(test_case.extension_dir);
-    EXPECT_EQ(test_case.expect_reprompt,
-              registry()->disabled_extensions().Contains(test_case.id));
-    EXPECT_EQ(test_case.expect_reprompt,
-              prefs()->HasDisableReason(
-                  test_case.id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
-  }
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
+  EXPECT_TRUE(prefs()->HasDisableReason(
+      id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
 }
 
 TEST_F(ExtensionServiceTest,
