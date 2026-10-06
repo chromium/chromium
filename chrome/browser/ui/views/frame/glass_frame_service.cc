@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -220,10 +221,11 @@ bool GlassFrameService::IsBrowserEligibleForGlass(
   if (!tracked_browsers_.contains(browser)) {
     return false;
   }
-  // Skip windows currently in fullscreen mode.
+  // Skip windows currently in fullscreen mode (browser or tab/video
+  // fullscreen).
   if (SafeInvoke(ExclusiveAccessManager::From(browser))
-          .Then(&ExclusiveAccessManager::fullscreen_controller)
-          .Then(&FullscreenController::IsFullscreenForBrowser)
+          .Then(&ExclusiveAccessManager::context)
+          .Then(&ExclusiveAccessContext::IsFullscreen)
           .value_or(false)) {
     return false;
   }

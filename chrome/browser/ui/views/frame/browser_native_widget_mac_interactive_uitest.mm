@@ -23,7 +23,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -412,6 +414,37 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
+  ASSERT_TRUE(base::test::RunUntil([&]() { return [ns_window isOpaque]; }));
+  auto [fs_glass_view, fs_tint_view, fs_opaque_view] =
+      GetGlassViews(content_view);
+  EXPECT_EQ(fs_glass_view, nil);
+  EXPECT_EQ(fs_opaque_view, nil);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
+                       TabFullscreenWindowIsOpaque) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "Glass frame feature is disabled.";
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+  NSView* content_view = [ns_window contentView];
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  EXPECT_FALSE([ns_window isOpaque]);
+  auto [glass_view, tint_view, opaque_view] = GetGlassViews(content_view);
+  EXPECT_NE(glass_view, nil);
+  EXPECT_NE(opaque_view, nil);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetDelegate()->EnterFullscreenModeForTab(
+      web_contents->GetPrimaryMainFrame(), {});
+
+  // Wait for Cocoa window to become opaque in tab fullscreen
   ASSERT_TRUE(base::test::RunUntil([&]() { return [ns_window isOpaque]; }));
   auto [fs_glass_view, fs_tint_view, fs_opaque_view] =
       GetGlassViews(content_view);
