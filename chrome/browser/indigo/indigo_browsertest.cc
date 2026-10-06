@@ -816,7 +816,13 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
       // instead.
       AddInstrumentedTab(kSecondTabId, url2),
       WaitForWebContentsReady(kSecondTabId, url2),
-      WaitForShow(kIndigoPageActionIconElementId), Check([&]() {
+      // With the WebUI location bar, the icon shown for the previous tab may
+      // be hidden and replaced by a new element once the location bar updates
+      // for the new tab, so do not require this particular element to remain
+      // visible.
+      std::move(WaitForShow(kIndigoPageActionIconElementId)
+                    .SetMustRemainVisible(false)),
+      Check([&]() {
         return user_action_tester.GetActionCount(
                    "Indigo.PageAction.AnchoredMessage.Proactive.Show") == 1;
       }),
