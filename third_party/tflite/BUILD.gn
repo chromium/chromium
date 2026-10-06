@@ -58,6 +58,12 @@ if (use_litert_tflite) {
     conditional_public_deps = [ "//third_party/litert:tflite_framework" ]
   }
 
+  tflite_group("tflite_empty_op_resolver") {
+    public_configs = [ ":tflite_shim_config" ]
+    conditional_public_deps =
+        [ "//third_party/litert:tflite_empty_op_resolver" ]
+  }
+
   tflite_group("tflite_builtin_op_resolver") {
     public_configs = [ ":tflite_shim_config" ]
     conditional_public_deps =
@@ -1311,7 +1317,14 @@ if (!use_litert_tflite) {
   # op kernels (:tflite_kernels) or XNNPACK delegate. This allows standalone
   # accelerator libraries (e.g. libLiteRtWebGpuAccelerator.dll) to link the
   # core TFLite framework without pulling in unused CPU kernels and XNNPACK.
-  tflite_static_library("tflite_framework") {
+  tflite_group("tflite_framework") {
+    conditional_public_deps = [
+      ":tflite_c_api",
+      ":tflite_framework_core",
+    ]
+  }
+
+  tflite_static_library("tflite_empty_op_resolver") {
     sources = [ "shims/create_op_resolver_empty.cc" ]
 
     deps = [
@@ -1320,10 +1333,7 @@ if (!use_litert_tflite) {
       "//third_party/abseil-cpp:absl",
     ]
 
-    conditional_public_deps = [
-      ":tflite_c_api",
-      ":tflite_framework_core",
-    ]
+    conditional_public_deps = [ ":tflite_framework" ]
 
     configs_to_remove = [ "//build/config/compiler:chromium_code" ]
     configs_to_add = [
@@ -1342,10 +1352,7 @@ if (!use_litert_tflite) {
       ":tflite_config",
     ]
 
-    public_deps_for_standalone = [
-      "//third_party/neon_2_sse",
-      "//third_party/gemmlowp",
-    ]
+    visibility = [ "//components/optimization_guide/internal/*" ]
   }
 
   tflite_static_library("tflite") {
