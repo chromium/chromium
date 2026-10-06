@@ -2684,11 +2684,47 @@ suite('OmniboxComposeboxTest', () => {
 
           // In error:
           voiceSearch.isPermissionPromptOpen = false;
-          (voiceSearch as unknown as {errorMessage_: string}).errorMessage_ = 'Voice error';
+          omniboxComposebox.isListening = false;
+          (voiceSearch as unknown as {errorMessage_: string}).errorMessage_ =
+              'Voice error';
+          await omniboxComposebox.updateComplete;
           await voiceSearch.updateComplete;
           assertNotEquals(
               'absolute',
               window.getComputedStyle(voiceSearchContainer).position);
+        });
+
+    test(
+        'maintains full container width in voice search and error states',
+        async () => {
+          document.body.style.width = '600px';
+          omniboxComposebox.showVoiceSearch = true;
+          await omniboxComposebox.updateComplete;
+
+          assertEquals(
+              'block', window.getComputedStyle(omniboxComposebox).display);
+          assertEquals(600, omniboxComposebox.getBoundingClientRect().width);
+
+          const voiceSearch = omniboxComposebox.shadowRoot.querySelector(
+              'cr-composebox-voice-search');
+          assertTrue(!!voiceSearch);
+
+          // Enter voice search mode (#composebox becomes display: none).
+          omniboxComposebox.inVoiceSearchMode = true;
+          omniboxComposebox.isListening = true;
+          await omniboxComposebox.updateComplete;
+          await voiceSearch.updateComplete;
+          assertEquals(600, omniboxComposebox.getBoundingClientRect().width);
+
+          // Transition to voice search error state after permission prompt.
+          omniboxComposebox.isListening = false;
+          (voiceSearch as unknown as {errorMessage_: string}).errorMessage_ =
+              'Voice error';
+          await omniboxComposebox.updateComplete;
+          await voiceSearch.updateComplete;
+          assertEquals(600, omniboxComposebox.getBoundingClientRect().width);
+
+          document.body.style.width = '';
         });
   });
 

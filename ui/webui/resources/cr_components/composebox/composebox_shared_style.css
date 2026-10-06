@@ -207,10 +207,13 @@ cr-composebox-voice-search {
 }
 
 /* When listening, make voice search 'absolute' to have composebox take
- * height from parent, which gets it from 'animated_glow'. Otherwise,
+ * height and width from parent, which gets it from 'animated_glow'. Otherwise,
  * make voice search 'static', and thus composebox's source of height
- * when not listening and in voice search mode (when permission prompt
- * is showing).
+ * when not listening and in voice search mode (e.g. when in error state or
+ * permission prompt is showing). Because '#composebox' and 'animated_glow''s
+ * '#fullContainerOverlay' are 'display: none' when in error state, the ':host'
+ * itself must have 'display: block' and '--cr-composebox-width' set so the
+ * static 'cr-composebox-voice-search' ('width: 100%') fills the expected width.
  */
 :host([in-voice-search-mode][is-listening]) cr-composebox-voice-search {
   inset: 0;

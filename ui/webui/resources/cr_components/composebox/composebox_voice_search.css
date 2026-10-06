@@ -45,6 +45,11 @@
  * can overlay the animation's container div.
  * Must have static positioning otherwise so the error and placeholder
  * voice search text change the height of voice_search and thus composebox.
+ * Note: when static (in error mode), this '#container''s 'width: 100%'
+ * resolves against the parent composebox ':host'. Thus, host must set
+ * 'display: block' and '--cr-composebox-width' since others that control
+ * height/width, like '#composebox' and 'search-animated-glow', are hidden in
+ * error state.
  */
 :host(:not([is-permission-prompt-open])) #container:not(.has-error) {
   inset: 0;

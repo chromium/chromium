@@ -89,6 +89,13 @@
   transition: var(--border-radius-transition),
       /* Fast out (start), slow in (end) box shadow transition. */
       box-shadow 500ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  /* Usually, this width only applies to non-voice search mode.
+   * Exception: Surfaces that override the composebox width
+   * must set '--cr-composebox-width' and 'display: block' on ':host' so that
+   * when '#composebox' and 'search-animated-glow' are hidden in voice search
+   * error mode, (which causes this composebox to provide the height/width),
+   * the host does not fall back to 'display: inline' or this default width.
+   */
   width: var(--cr-composebox-width, 337px);
 }
 

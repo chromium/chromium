@@ -30,6 +30,14 @@
   --text-input-max-height: 190px;
   --fade-duration: 100ms;
   --cr-composebox-submit-container-size: 40px;
+  /* When voice search error shows, #composebox and
+   * search-animated-glow's #fullContainerOverlay are hidden (display: none),
+   * and cr-composebox-voice-search is position: static (e.g. in voice search
+   * error state). This makes this container in control of the width.
+   * Make sure it is 100% instead of 337px default width from composebox.css.
+   */
+  --cr-composebox-width: 100%;
+  display: block;
 }
 
 #composebox {
