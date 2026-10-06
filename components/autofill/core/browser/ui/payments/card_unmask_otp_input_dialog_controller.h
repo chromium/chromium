@@ -17,7 +17,7 @@ namespace autofill {
 
 struct FooterText {
   std::u16string text;
-  size_t link_offset_in_text;
+  size_t link_offset_in_text = 0;
 };
 
 class CardUnmaskOtpInputDialogView;
