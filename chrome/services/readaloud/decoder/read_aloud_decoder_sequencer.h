@@ -58,8 +58,10 @@ class ReadAloudDecoderSequencer {
   void SetAudioQueue(AudioSegmentQueue* audio_segment_queue);
 
   // Updates the next sequential chunk index to decode (e.g. after seek
-  // operations).
-  void SetNextChunkToDecode(uint32_t chunk_index);
+  // operations), optionally skipping leading word segments that precede
+  // `min_global_char_offset`.
+  void SetNextChunkToDecode(uint32_t chunk_index,
+                            uint32_t min_global_char_offset = 0);
 
   // Outcome of a replenish cycle, from the renderer's point of view.
   enum class PumpStatus {
@@ -82,6 +84,7 @@ class ReadAloudDecoderSequencer {
   void SetPumpStatusCallback(PumpStatusCallback callback);
 
   uint32_t next_chunk_to_decode() const { return next_chunk_to_decode_; }
+  uint32_t min_global_char_offset() const { return min_global_char_offset_; }
   bool is_decoding() const { return is_decoding_; }
   bool is_pumping() const { return pump_timer_.IsRunning(); }
 
@@ -106,11 +109,15 @@ class ReadAloudDecoderSequencer {
   PumpStatusCallback pump_status_callback_;
 
   uint32_t next_chunk_to_decode_ = 0;
+  uint32_t min_global_char_offset_ = 0;
   bool is_decoding_ = false;
   bool is_replenishing_ = false;
-  // True once any decoded segment has been pushed to the queue in this
-  // session. Distinguishes a finished timeline from a totally failed one.
+  // True once any valid audio has been decoded in this session. Distinguishes
+  // a finished timeline from a totally failed one.
   bool produced_audio_ = false;
+  // True when `SetNextChunkToDecode` explicitly positioned the cursor at or
+  // past the end of a non-empty timeline (seek to EOF).
+  bool sought_to_end_ = false;
 
   base::RepeatingTimer pump_timer_;
 

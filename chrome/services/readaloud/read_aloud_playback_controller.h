@@ -21,6 +21,7 @@
 #include "chrome/services/readaloud/decoder/read_aloud_decoder_sequencer.h"
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
 #include "chrome/services/readaloud/timeline/playback_timeline.h"
+#include "chrome/services/readaloud/timeline/timeline_position.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -96,6 +97,11 @@ class ReadAloudPlaybackController
 
   // Resets active session state, clears timeline, and resets playback rate.
   void ResetSession();
+
+  // Cancels in-flight network requests, flushes decoded PCM buffers and
+  // AudioRenderer, and repositions the decoder sequencer to `target` while
+  // preserving cached Opus segments in PrefetchManager.
+  void ExecuteSeek(const TimelinePosition& target);
 
   // Invoked by `prefetch_manager_` when an in-flight synthesis request is
   // dispatched.

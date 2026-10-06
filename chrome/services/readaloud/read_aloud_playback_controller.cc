@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
 #include "chrome/services/readaloud/audio_renderer/read_aloud_audio_renderer.h"
@@ -398,22 +399,14 @@ void ReadAloudPlaybackController::SeekToWord(uint32_t segment_index,
         "ReadAloudPlaybackController: Invalid segment_index in SeekToWord");
     return;
   }
-  if (character_offset > timeline_.chunks()[segment_index].text.size()) {
+  std::optional<TimelinePosition> target =
+      timeline_.ResolveSegmentOffset(segment_index, character_offset);
+  if (!target.has_value()) {
     controller_receiver_.ReportBadMessage(
         "ReadAloudPlaybackController: Invalid character_offset in SeekToWord");
     return;
   }
-  // When not actively playing (paused, drained or errored), make sure the
-  // stream is paused too, so that audio decoded for the new position is not
-  // rendered until the next Play().
-  // TODO(b/565419447): Remove once end of document is driven by a real
-  // end-of-stream signal that pauses the audio output stream. The stream is
-  // then paused whenever the pump is stopped, making this guard redundant.
-  if (!decoder_sequencer_.is_pumping() && audio_resources_ &&
-      audio_resources_->audio_output_stream.is_bound()) {
-    audio_resources_->audio_output_stream->Pause();
-  }
-  decoder_sequencer_.SetNextChunkToDecode(segment_index);
+  ExecuteSeek(*target);
 }
 
 void ReadAloudPlaybackController::SeekToTime(base::TimeDelta position) {
@@ -423,6 +416,55 @@ void ReadAloudPlaybackController::SeekToTime(base::TimeDelta position) {
         "ReadAloudPlaybackController: Invalid position in SeekToTime");
     return;
   }
+  if (timeline_.GetChunkCount() == 0) {
+    return;
+  }
+  std::optional<TimelinePosition> target =
+      timeline_.ResolveTimeOffset(position);
+  if (!target.has_value()) {
+    return;
+  }
+  ExecuteSeek(*target);
+}
+
+void ReadAloudPlaybackController::ExecuteSeek(const TimelinePosition& target) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  prefetch_manager_.CancelInflightRequests();
+
+  if (audio_resources_) {
+    if (audio_resources_->audio_segment_queue) {
+      audio_resources_->audio_segment_queue->Clear(
+          base::PassKey<ReadAloudPlaybackController>());
+    }
+    if (audio_resources_->audio_renderer) {
+      audio_resources_->audio_renderer->Flush();
+    }
+    // When not actively playing (paused, drained or errored), make sure the
+    // stream is paused too, so that audio decoded for the new position is not
+    // rendered until the next Play().
+    // TODO(b/565419447): Remove once end of document is driven by a real
+    // end-of-stream signal that pauses the audio output stream. The stream is
+    // then paused whenever the pump is stopped, making this guard redundant.
+    if (!decoder_sequencer_.is_pumping() &&
+        audio_resources_->audio_output_stream.is_bound()) {
+      audio_resources_->audio_output_stream->Pause();
+    }
+  }
+
+  // If the resolved position is at the exact end of `target.chunk`, advance
+  // to the start of the next chunk rather than synthesizing and decoding
+  // `target.chunk` only to skip every word in it.
+  if (target.chunk.index < timeline_.GetChunkCount() &&
+      target.chunk.start_char_offset ==
+          timeline_.chunks()[target.chunk.index].text.size()) {
+    decoder_sequencer_.SetNextChunkToDecode(target.chunk.index + 1,
+                                            /*min_global_char_offset=*/0);
+    return;
+  }
+
+  decoder_sequencer_.SetNextChunkToDecode(
+      target.chunk.index,
+      base::checked_cast<uint32_t>(target.global_char.start_offset));
 }
 
 void ReadAloudPlaybackController::SetVoice(const std::string& voice_id) {

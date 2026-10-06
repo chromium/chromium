@@ -87,7 +87,7 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
       segments.push_back(std::move(seg));
     }
     timeline_.SetTextContent(std::move(segments));
-    ASSERT_EQ(prefetch_manager_.GetTimelineChunkCount(), chunk_count);
+    EXPECT_EQ(prefetch_manager_.GetTimelineChunkCount(), chunk_count);
   }
 
   void InsertCachedSegment(
@@ -100,6 +100,16 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
 
   scoped_refptr<media::DecoderBuffer> CreateDummyBuffer() {
     return media::DecoderBuffer::CopyFrom(std::vector<uint8_t>{0x4f, 0x67});
+  }
+
+  scoped_refptr<DecodedAudioSegment> CreateSegmentWithWordTiming(
+      const WordTiming& timing) {
+    scoped_refptr<media::AudioBuffer> audio_buffer =
+        media::AudioBuffer::CreateEmptyBuffer(
+            media::ChannelLayout::CHANNEL_LAYOUT_MONO, /*channel_count=*/1,
+            /*sample_rate=*/48000, /*frame_count=*/48000, base::TimeDelta());
+    return base::MakeRefCounted<DecodedAudioSegment>(
+        std::move(audio_buffer), std::vector<WordTiming>{timing});
   }
 
  protected:
@@ -507,6 +517,189 @@ TEST_F(ReadAloudDecoderSequencerTest,
   EXPECT_THAT(
       pump_reports_,
       testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kFailed));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       SetNextChunkToDecodeCancelsInFlightDecode) {
+  SetUpTimeline(/*chunk_count=*/3);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+  InsertCachedSegment(/*chunk_index=*/2, CreateDummyBuffer());
+
+  // Start decoding chunk 0.
+  sequencer_.ReplenishBuffer();
+  EXPECT_TRUE(sequencer_.is_decoding());
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 0u);
+  EXPECT_EQ(fake_decoder_.decode_call_count(), 1u);
+
+  // Seek to chunk 2 while chunk 0 decode is still in flight.
+  // SetNextChunkToDecode must invalidate the in-flight decode callback for
+  // chunk 0 and immediately start decoding chunk 2.
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/2,
+                                  /*min_global_char_offset=*/20);
+  EXPECT_TRUE(sequencer_.is_decoding());
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 2u);
+  EXPECT_EQ(sequencer_.min_global_char_offset(), 20u);
+  EXPECT_EQ(fake_decoder_.decode_call_count(), 2u);
+
+  // Complete chunk 2 decode.
+  scoped_refptr<DecodedAudioSegment> segment2 =
+      base::MakeRefCounted<DecodedAudioSegment>(base::Seconds(2));
+  fake_decoder_.DeliverDecodedSegments({segment2});
+  EXPECT_FALSE(sequencer_.is_decoding());
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 3u);
+  EXPECT_EQ(sequencer_.min_global_char_offset(), 0u);
+  EXPECT_EQ(audio_queue_->size(), 1u);
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       SetNextChunkToDecodeSkipsWordsPrecedingCharOffset) {
+  SetUpTimeline(/*chunk_count=*/2);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+  InsertCachedSegment(/*chunk_index=*/1, CreateDummyBuffer());
+
+  // Seek to chunk 0 with min_global_char_offset = 6 (e.g. second word in
+  // "Hello world.").
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/0,
+                                  /*min_global_char_offset=*/6);
+  EXPECT_TRUE(sequencer_.is_decoding());
+  EXPECT_EQ(sequencer_.min_global_char_offset(), 6u);
+
+  // Deliver two word segments for chunk 0:
+  // Word 0: [0, 5) -> precedes 6, must be skipped.
+  // Word 1: [6, 12) -> starts at 6, must be pushed.
+  WordTiming word0{.start_time = base::Seconds(0),
+                   .end_time = base::Seconds(1),
+                   .start_character_offset = 0,
+                   .end_character_offset = 5};
+  WordTiming word1{.start_time = base::Seconds(1),
+                   .end_time = base::Seconds(2),
+                   .start_character_offset = 6,
+                   .end_character_offset = 12};
+  fake_decoder_.DeliverDecodedSegments(
+      {CreateSegmentWithWordTiming(word0), CreateSegmentWithWordTiming(word1)});
+
+  // Only seg_word1 should have been pushed to audio_queue_, and
+  // min_global_char_offset_ should reset to 0 for subsequent chunks.
+  EXPECT_EQ(audio_queue_->size(), 1u);
+  EXPECT_EQ(sequencer_.min_global_char_offset(), 0u);
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 1u);
+  EXPECT_TRUE(sequencer_.is_decoding());
+
+  scoped_refptr<DecodedAudioSegment> popped = audio_queue_->Pop();
+  ASSERT_NE(popped, nullptr);
+  EXPECT_THAT(popped->word_timings(), testing::ElementsAre(word1));
+
+  // Deliver chunk 1 word segment with [12, 18) -> not skipped.
+  WordTiming word2{.start_time = base::Seconds(0),
+                   .end_time = base::Seconds(1),
+                   .start_character_offset = 12,
+                   .end_character_offset = 18};
+  fake_decoder_.DeliverDecodedSegments({CreateSegmentWithWordTiming(word2)});
+  scoped_refptr<DecodedAudioSegment> popped2 = audio_queue_->Pop();
+  ASSERT_NE(popped2, nullptr);
+  EXPECT_THAT(popped2->word_timings(), testing::ElementsAre(word2));
+  EXPECT_EQ(audio_queue_->Pop(), nullptr);
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       SetNextChunkToDecodePreservesZeroLengthWordTimingAtExactMinOffset) {
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/0,
+                                  /*min_global_char_offset=*/5);
+
+  // Zero-length WordTiming anchored at [5, 5) must NOT be skipped when
+  // min_global_char_offset is 5.
+  WordTiming zero_len_word{.start_time = base::Seconds(0),
+                           .end_time = base::Seconds(1),
+                           .start_character_offset = 5,
+                           .end_character_offset = 5};
+  fake_decoder_.DeliverDecodedSegments(
+      {CreateSegmentWithWordTiming(zero_len_word)});
+  EXPECT_EQ(audio_queue_->size(), 1u);
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       SetNextChunkToDecodeToEndOfTimelineReportsDrainedNotFailed) {
+  SetUpTimeline(/*chunk_count=*/2);
+
+  sequencer_.StartPumping();
+  pump_reports_.clear();
+
+  // Explicitly seeking to chunk_index == GetTimelineChunkCount() (EOF) before
+  // any audio is decoded must report kDrained rather than kFailed.
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/2,
+                                  /*min_global_char_offset=*/0);
+
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kDrained));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       SetNextChunkToDecodeSkippingAllWordsInFinalChunkReportsDrained) {
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+
+  sequencer_.StartPumping();
+  // Seek to trailing punctuation offset (11) after the last word [6, 11).
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/0,
+                                  /*min_global_char_offset=*/11);
+  pump_reports_.clear();
+
+  WordTiming word{.start_time = base::Seconds(0),
+                  .end_time = base::Seconds(1),
+                  .start_character_offset = 6,
+                  .end_character_offset = 11};
+  fake_decoder_.DeliverDecodedSegments({CreateSegmentWithWordTiming(word)});
+
+  EXPECT_EQ(audio_queue_->size(), 0u);
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kDrained));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       SeekBackFromEndWhenAllChunksFailReportsFailed) {
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
+
+  sequencer_.StartPumping();
+  pump_reports_.clear();
+
+  // Seeking to EOF reports kDrained.
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/1,
+                                  /*min_global_char_offset=*/0);
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kDrained));
+  pump_reports_.clear();
+
+  // Seeking back to chunk 0 (which failed synthesis) must clear sought_to_end_
+  // and report kFailed.
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/0,
+                                  /*min_global_char_offset=*/0);
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kFailed));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       SkippingFailedChunkResetsMinGlobalCharOffset) {
+  SetUpTimeline(/*chunk_count=*/2);
+  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
+  InsertCachedSegment(/*chunk_index=*/1, CreateDummyBuffer());
+
+  // Seek into chunk 0 with a non-zero character offset; chunk 0 fails and is
+  // skipped, which must reset min_global_char_offset_ to 0 for chunk 1.
+  sequencer_.SetNextChunkToDecode(/*chunk_index=*/0,
+                                  /*min_global_char_offset=*/15);
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 1u);
+  EXPECT_EQ(sequencer_.min_global_char_offset(), 0u);
+  EXPECT_TRUE(sequencer_.is_decoding());
 }
 
 }  // namespace readaloud
