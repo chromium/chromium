@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import android.os.Handler;
+import android.view.View;
 import android.widget.HorizontalScrollView;
 
 import androidx.annotation.Px;
@@ -277,6 +278,11 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
             mFromView.setScaleX(1.0f);
             mFromView.setScaleY(1.0f);
         };
+    }
+
+    /** Returns whether the given {@code view} is the tile being dragged in this session. */
+    public boolean isFromView(View view) {
+        return mFromView == view;
     }
 
     /** Helper to instantiate {@link TileMovement}, extract to method to allow testing override. */

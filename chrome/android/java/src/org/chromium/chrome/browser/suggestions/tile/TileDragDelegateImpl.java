@@ -117,15 +117,15 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
     public void onTileTouchDown(
             View view, MotionEvent event, TileDragSession.EventListener eventListener) {
         assert event.getAction() == MotionEvent.ACTION_DOWN;
-        if (!((TileView) view).isDraggable()) {
-            return;
-        }
-
         if (mPhase != DragPhase.NONE) {
             cancelActiveSession();
         } else {
             reset();
         }
+        if (!((TileView) view).isDraggable()) {
+            return;
+        }
+
         mPhase = DragPhase.PREPARE;
         mTileDragSession =
                 new TileDragSession(
@@ -149,7 +149,10 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
 
     @Override
     public void onSessionTileTouch(View view, MotionEvent event) {
-        assert ((TileView) view).isDraggable() && mTileDragSession != null;
+        if (mTileDragSession == null || !mTileDragSession.isFromView(view)) {
+            return;
+        }
+        assert ((TileView) view).isDraggable();
 
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (mPhase == DragPhase.START) {
@@ -227,7 +230,7 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
 
     @Override
     public boolean hasTileDragSession() {
-        return mPhase != DragPhase.NONE || mPendingChangeFinalizer != null;
+        return mPhase != DragPhase.NONE;
     }
 
     @Override
@@ -275,8 +278,8 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
                 cancelVisuals.run();
             }
         } else if (mPendingChangeFinalizer != null) {
-            // mPendingChangeFinalizer != null guarantees an active in-flight finalization
-            // animation is running (either for Drag Flow or Swap Flow).
+            // mPendingChangeFinalizer != null means a finalization callback is present (either
+            // actively in-flight or lingering from a completed Drag Flow prior to the next reset).
             if (mTileMovementForSwap == null) {
                 // Drag Flow: Runs the finish() runnable to stop animators and immediately restore
                 // visuals.

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -174,6 +175,32 @@ public class TileInteractionDelegateTest {
         mDelegate.onTouch(mTileView, event);
         mDelegate.onClick(mTileView);
         verify(mTileGroupDelegate).openMostVisitedItem(WindowOpenDisposition.NEW_WINDOW, mTile);
+    }
+
+    @Test
+    public void testOnTouch_ActionDown_StartsDragSession() {
+        setupDelegate();
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        mDelegate.onTouch(mTileView, event);
+        verify(mTileDragDelegate).onTileTouchDown(mTileView, event, mDelegate);
+    }
+
+    @Test
+    public void testOnTouch_ActionUp_WhenHasTileDragSession_CallsOnSessionTileTouch() {
+        setupDelegate();
+        when(mTileDragDelegate.hasTileDragSession()).thenReturn(true);
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+        mDelegate.onTouch(mTileView, event);
+        verify(mTileDragDelegate).onSessionTileTouch(mTileView, event);
+    }
+
+    @Test
+    public void testOnTouch_ActionUp_WhenNoTileDragSession_DoesNotCallOnSessionTileTouch() {
+        setupDelegate();
+        when(mTileDragDelegate.hasTileDragSession()).thenReturn(false);
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+        mDelegate.onTouch(mTileView, event);
+        verify(mTileDragDelegate, never()).onSessionTileTouch(any(), any());
     }
 
     @Test
