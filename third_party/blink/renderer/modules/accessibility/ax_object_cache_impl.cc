@@ -819,9 +819,9 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(kRoleMaybeChangedFromEventListener);
     DEBUG_STRING_CASE(kRoleMaybeChangedFromHref);
     DEBUG_STRING_CASE(kRoleMaybeChangedOnSelect);
-    DEBUG_STRING_CASE(kSectionOrRegionRoleMaybeChangedFromLabel);
-    DEBUG_STRING_CASE(kSectionOrRegionRoleMaybeChangedFromLabelledBy);
-    DEBUG_STRING_CASE(kSectionOrRegionRoleMaybeChangedFromTitle);
+    DEBUG_STRING_CASE(kNameDependentRolesMaybeChangedFromLabel);
+    DEBUG_STRING_CASE(kNameDependentRolesMaybeChangedFromLabelledBy);
+    DEBUG_STRING_CASE(kNameDependentRolesMaybeChangedFromTitle);
     DEBUG_STRING_CASE(kTextChangedOnNode);
     DEBUG_STRING_CASE(kTextChangedOnClosestNodeForLayoutObject);
     DEBUG_STRING_CASE(kTextMarkerDataAdded);
@@ -4512,10 +4512,10 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kRoleMaybeChangedOnSelect:
       HandleRoleMaybeChangedWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
-    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabelledBy:
-    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
-      SectionOrRegionRoleMaybeChangedWithCleanLayout(node);
+    case TreeUpdateReason::kNameDependentRolesMaybeChangedFromLabel:
+    case TreeUpdateReason::kNameDependentRolesMaybeChangedFromLabelledBy:
+    case TreeUpdateReason::kNameDependentRolesMaybeChangedFromTitle:
+      NameDependentRolesMaybeChangedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kTextChangedOnNode:
     case TreeUpdateReason::kTextChangedOnClosestNodeForLayoutObject:
@@ -4936,8 +4936,9 @@ void AXObjectCacheImpl::HandleActiveDescendantChangedWithCleanLayout(
   }
 }
 
-// A <section> or role=region uses the region role if and only if it has a name.
-void AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout(
+// Recompute the role when an accessible name change may affect role.
+// https://www.w3.org/TR/html-aam/#html-element-role-mappings
+void AXObjectCacheImpl::NameDependentRolesMaybeChangedWithCleanLayout(
     Node* node) {
   TextChangedWithCleanLayout(node);
   Element* element = To<Element>(node);
@@ -4945,10 +4946,11 @@ void AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout(
   if (!ax_object)
     return;
 
-  // Require <section> or role="region" markup.
+  // Require <section> or role="region" or <form> or role="form" markup.
   if (!element->HasTagName(html_names::kSectionTag) &&
-      ax_object->DetermineRawAriaRoleWithContext() !=
-          ax::mojom::blink::Role::kRegion) {
+      !element->HasTagName(html_names::kFormTag) &&
+      !AXObject::IsNameDependentAriaRole(
+          ax_object->DetermineRawAriaRoleWithContext())) {
     return;
   }
 
@@ -5070,14 +5072,14 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     } else if (attr_name == html_names::kAriaLabelAttr) {
       TextChanged(element);
       DeferTreeUpdate(
-          TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel, element);
+          TreeUpdateReason::kNameDependentRolesMaybeChangedFromLabel, element);
     } else if (attr_name == html_names::kAriaLabeledbyAttr ||
                attr_name == html_names::kAriaLabelledbyAttr) {
       if (relation_cache_) {
         relation_cache_->UpdateReverseTextRelations(*element, attr_name);
       }
       DeferTreeUpdate(
-          TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabelledBy,
+          TreeUpdateReason::kNameDependentRolesMaybeChangedFromLabelledBy,
           element);
       TextChanged(element);
     } else if (attr_name == html_names::kAriaDescriptionAttr) {
@@ -5168,7 +5170,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kAltAttr) {
     TextChanged(element);
   } else if (attr_name == html_names::kTitleAttr) {
-    DeferTreeUpdate(TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle,
+    DeferTreeUpdate(TreeUpdateReason::kNameDependentRolesMaybeChangedFromTitle,
                     element);
   } else if (attr_name == html_names::kForAttr) {
     if (relation_cache_) {
@@ -5686,9 +5688,9 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kRoleMaybeChangedFromEventListener:
     case TreeUpdateReason::kRoleMaybeChangedFromHref:
     case TreeUpdateReason::kRoleMaybeChangedOnSelect:
-    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
-    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabelledBy:
-    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
+    case TreeUpdateReason::kNameDependentRolesMaybeChangedFromLabel:
+    case TreeUpdateReason::kNameDependentRolesMaybeChangedFromLabelledBy:
+    case TreeUpdateReason::kNameDependentRolesMaybeChangedFromTitle:
     case TreeUpdateReason::kTextChangedOnNode:
     case TreeUpdateReason::kTextChangedOnClosestNodeForLayoutObject:
     case TreeUpdateReason::kTextMarkerDataAdded:

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -613,6 +614,28 @@ TEST_F(AccessibilityTest,
   ignored_div->SetHasDirtyDescendants(false);
   cache.UpdateAXForAllDocuments();
   EXPECT_FALSE(paragraph->HasDirtyDescendants());
+}
+
+TEST_F(AccessibilityTest, FormRoleUpdatesWhenAriaLabelIsAdded) {
+  SetBodyInnerHTML("<div id=\"form\" role=\"form\">Contents</div>");
+
+  // Ensure the initial, unnamed role is cached before adding the label.
+  AXObject* form = GetAXObjectByElementId("form");
+  ASSERT_NE(nullptr, form);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, form->RoleValue());
+
+  Element* form_element = GetElementById("form");
+  ASSERT_NE(nullptr, form_element);
+  form_element->setAttribute(html_names::kAriaLabelAttr,
+                             AtomicString("Search form"));
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // A role change recreates the AXObject.
+  form = GetAXObjectByElementId("form");
+  ASSERT_NE(nullptr, form);
+  EXPECT_EQ(ax::mojom::Role::kForm, form->RoleValue());
 }
 
 TEST_F(AccessibilityTest, AccessibilityFocus) {

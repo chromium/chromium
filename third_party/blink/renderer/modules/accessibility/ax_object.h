@@ -865,6 +865,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // (2) Determine the ARIA role after applying rules based on other properties.
   ax::mojom::blink::Role DetermineAriaRole() const;
 
+  // Returns true if an explicit ARIA role is only exposed when the element has
+  // an author-provided accessible name.
+  static bool IsNameDependentAriaRole(ax::mojom::blink::Role);
+
   // (3) Determine the native role using other ARIA properties (without using
   // the ARIA role).
   virtual ax::mojom::blink::Role NativeRoleIgnoringAria() const = 0;

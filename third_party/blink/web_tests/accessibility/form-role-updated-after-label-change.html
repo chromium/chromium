@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<script src="../resources/accessibility-helper.js"></script>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+window.onload = async () => {
+  const ariaForm = document.getElementById('aria-form');
+  const nativeForm = document.getElementById('native-form');
+  const forms = [ariaForm, nativeForm];
+  const console = document.getElementById('console');
+
+  async function dumpForms(stage) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    if (console.innerText)
+      console.innerText += '\n';
+    console.innerText += stage + '\n';
+    for (const form of forms) {
+      console.innerText += form.id + ':\n';
+      // Query again because changing the role can replace the AXObject.
+      buildAccessibilityTree(
+          accessibilityController.accessibleElementById(form.id), 0);
+    }
+  }
+
+  // Populate the accessibility cache before any name changes.
+  await dumpForms('Initially unnamed');
+
+  for (const form of forms)
+    form.setAttribute('aria-label', 'Search form');
+  await dumpForms('aria-label added');
+
+  for (const form of forms)
+    form.removeAttribute('aria-label');
+  await dumpForms('aria-label removed');
+
+  const label = document.createElement('span');
+  label.id = 'dynamic-label';
+  label.textContent = 'Labelled form';
+  document.body.appendChild(label);
+
+  for (const form of forms)
+    form.setAttribute('aria-labelledby', label.id);
+  await dumpForms('aria-labelledby added');
+
+  for (const form of forms)
+    form.removeAttribute('aria-labelledby');
+  await dumpForms('aria-labelledby removed');
+  label.remove();
+
+  console.innerText = console.innerText.trimEnd();
+  testRunner.notifyDone();
+};
+</script>
+<div id="aria-form" role="form"></div>
+<form id="native-form"></form>
+<div id="console"></div>

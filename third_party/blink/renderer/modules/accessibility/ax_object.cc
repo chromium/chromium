@@ -6191,9 +6191,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
 
   ax::mojom::blink::Role role = DetermineRawAriaRoleWithContext();
 
-  if ((role == ax::mojom::blink::Role::kForm ||
-       role == ax::mojom::blink::Role::kRegion) &&
-      !IsNameFromAuthorAttribute() &&
+  if (IsNameDependentAriaRole(role) && !IsNameFromAuthorAttribute() &&
       !HasAriaAttribute(html_names::kAriaRoledescriptionAttr)) {
     // If form or region is nameless, use a valid fallback role (if present
     // in the role attribute) or the native element's role (by returning
@@ -6275,6 +6273,11 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
   }
 
   return role;
+}
+
+bool AXObject::IsNameDependentAriaRole(ax::mojom::blink::Role role) {
+  return role == ax::mojom::blink::Role::kForm ||
+         role == ax::mojom::blink::Role::kRegion;
 }
 
 ax::mojom::blink::HasPopup AXObject::HasPopup() const {

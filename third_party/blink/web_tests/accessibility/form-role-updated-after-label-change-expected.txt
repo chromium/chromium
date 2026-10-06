@@ -1,0 +1,29 @@
+Initially unnamed
+aria-form:
+AXRole: AXGenericContainer
+native-form:
+AXRole: AXForm
+
+aria-label added
+aria-form:
+AXRole: AXForm "Search form"
+native-form:
+AXRole: AXForm "Search form"
+
+aria-label removed
+aria-form:
+AXRole: AXGenericContainer
+native-form:
+AXRole: AXForm
+
+aria-labelledby added
+aria-form:
+AXRole: AXForm "Labelled form"
+native-form:
+AXRole: AXForm "Labelled form"
+
+aria-labelledby removed
+aria-form:
+AXRole: AXGenericContainer
+native-form:
+AXRole: AXForm

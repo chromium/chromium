@@ -507,7 +507,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void MaybeNewRelationTarget(Node& node, AXObject* obj);
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
-  void SectionOrRegionRoleMaybeChangedWithCleanLayout(Node*);
+  void NameDependentRolesMaybeChangedWithCleanLayout(Node*);
   void TableCellRoleMaybeChanged(Node* node);
   void HandleRoleMaybeChangedWithCleanLayout(Node*);
   void HandleRoleChangeWithCleanLayout(Node*);
