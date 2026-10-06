@@ -100,6 +100,9 @@ using SignoutCompletionCallback = void (^)(BOOL success,
 
 }  // namespace signin_ui
 
+// Accessibility identifier for the identity avatar image view.
+extern NSString* const kIdentityAvatarImageAccessibilityIdentifier;
+
 // Accessibility identifier for the premium avatar ring.
 extern NSString* const kPremiumAvatarRingAccessibilityIdentifier;
 

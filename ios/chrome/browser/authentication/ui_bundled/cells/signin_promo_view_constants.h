@@ -42,4 +42,10 @@ extern NSString* const kSigninPromoActivityIndicatorId;
 // email.
 NSString* CentralAccountViewAccessibilityIdentifier(NSString* email);
 
+// Accessibility identifiers for subviews of CentralAccountView.
+extern NSString* const kCentralAccountViewTitleAccessibilityIdentifier;
+extern NSString* const kCentralAccountViewSubtitleAccessibilityIdentifier;
+extern NSString* const
+    kCentralAccountViewManagementDescriptionAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CELLS_SIGNIN_PROMO_VIEW_CONSTANTS_H_

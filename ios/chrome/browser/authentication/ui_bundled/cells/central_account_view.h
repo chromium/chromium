@@ -44,25 +44,6 @@
         managementDescription:(NSString*)managementDescription
               useLargeMargins:(BOOL)useLargeMargins;
 
-// Returns the avatar image.
-- (UIImage*)avatarImage;
-
-// Returns the avatar view container.
-- (UIView*)avatarView;
-
-// The title of the view. The name if it’s set otherwise the email.
-- (NSString*)title;
-
-// The subtitle of the view. The email if the name is set, otherwise nil.
-- (NSString*)subtitle;
-
-// The full name of the AI tier. May be nil.
-- (NSString*)aiTierFullName;
-
-- (BOOL)managed;
-
-- (NSString*)managementDescription;
-
 // update the top padding.
 - (void)updateTopPadding:(CGFloat)existingPadding;
 

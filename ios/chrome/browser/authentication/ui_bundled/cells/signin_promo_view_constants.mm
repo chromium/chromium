@@ -14,3 +14,11 @@ NSString* const kSigninPromoActivityIndicatorId =
 NSString* CentralAccountViewAccessibilityIdentifier(NSString* email) {
   return [NSString stringWithFormat:@"CentralAccountViewId-%@", email];
 }
+
+NSString* const kCentralAccountViewTitleAccessibilityIdentifier =
+    @"CentralAccountViewTitleAccessibilityIdentifier";
+NSString* const kCentralAccountViewSubtitleAccessibilityIdentifier =
+    @"CentralAccountViewSubtitleAccessibilityIdentifier";
+NSString* const
+    kCentralAccountViewManagementDescriptionAccessibilityIdentifier =
+        @"CentralAccountViewManagementDescriptionAccessibilityIdentifier";

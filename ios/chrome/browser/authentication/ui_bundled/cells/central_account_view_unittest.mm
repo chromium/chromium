@@ -7,6 +7,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -27,19 +28,66 @@
 
 namespace {
 
+// Recursively searches `view` and its subviews for a view with the given
+// `accessibility_id`. Returns nil if not found.
+UIView* FindSubviewWithAccessibilityIdentifier(UIView* view,
+                                               NSString* accessibility_id) {
+  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
+    return view;
+  }
+  for (UIView* subview in view.subviews) {
+    if (UIView* found =
+            FindSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
+      return found;
+    }
+  }
+  return nil;
+}
+
 // Returns true if `view` or any of its recursive subviews has the given
 // `accessibility_id`.
 bool HasSubviewWithAccessibilityIdentifier(UIView* view,
                                            NSString* accessibility_id) {
-  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
-    return true;
-  }
-  for (UIView* subview in view.subviews) {
-    if (HasSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
-      return true;
-    }
-  }
-  return false;
+  return FindSubviewWithAccessibilityIdentifier(view, accessibility_id) != nil;
+}
+
+// Returns the avatar image displayed in `account_view`.
+UIImage* GetAvatarImage(CentralAccountView* account_view) {
+  UIImageView* avatar_image_view = base::apple::ObjCCastStrict<UIImageView>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view, kIdentityAvatarImageAccessibilityIdentifier));
+  return avatar_image_view.image;
+}
+
+// Returns the title text displayed in `account_view`.
+NSString* GetTitle(CentralAccountView* account_view) {
+  UILabel* title_label = base::apple::ObjCCastStrict<UILabel>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view, kCentralAccountViewTitleAccessibilityIdentifier));
+  return title_label.text;
+}
+
+// Returns the subtitle text displayed in `account_view`.
+NSString* GetSubtitle(CentralAccountView* account_view) {
+  UILabel* subtitle_label = base::apple::ObjCCastStrict<UILabel>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view, kCentralAccountViewSubtitleAccessibilityIdentifier));
+  return subtitle_label.text;
+}
+
+// Returns the management description displayed in `account_view`, or nil if
+// the view is not managed.
+NSString* GetManagementDescription(CentralAccountView* account_view) {
+  UILabel* management_label = base::apple::ObjCCastStrict<UILabel>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view,
+          kCentralAccountViewManagementDescriptionAccessibilityIdentifier));
+  return management_label.text;
+}
+
+// Returns whether `account_view` displays a management description.
+bool IsManaged(CentralAccountView* account_view) {
+  return GetManagementDescription(account_view) != nil;
 }
 
 }  // namespace
@@ -64,11 +112,11 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
                           managementDescription:nil
                                 useLargeMargins:YES];
 
-  EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.title, mainText);
-  EXPECT_NSEQ(accountView.subtitle, detailText);
-  EXPECT_EQ(accountView.managed, false);
-  EXPECT_NSEQ([accountView managementDescription], nil);
+  EXPECT_NSEQ(GetAvatarImage(accountView), image);
+  EXPECT_NSEQ(GetTitle(accountView), mainText);
+  EXPECT_NSEQ(GetSubtitle(accountView), detailText);
+  EXPECT_EQ(IsManaged(accountView), false);
+  EXPECT_NSEQ(GetManagementDescription(accountView), nil);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if the
@@ -89,11 +137,11 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
                           managementDescription:nil
                                 useLargeMargins:YES];
 
-  EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.title, mainText);
-  EXPECT_NSEQ(accountView.subtitle, nil);
-  EXPECT_EQ(accountView.managed, false);
-  EXPECT_NSEQ([accountView managementDescription], nil);
+  EXPECT_NSEQ(GetAvatarImage(accountView), image);
+  EXPECT_NSEQ(GetTitle(accountView), mainText);
+  EXPECT_NSEQ(GetSubtitle(accountView), nil);
+  EXPECT_EQ(IsManaged(accountView), false);
+  EXPECT_NSEQ(GetManagementDescription(accountView), nil);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if the
@@ -117,11 +165,11 @@ TEST_F(CentralAccountViewTest,
                           managementDescription:managementDescription
                                 useLargeMargins:YES];
 
-  EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.title, mainText);
-  EXPECT_NSEQ(accountView.subtitle, detailText);
-  EXPECT_EQ(accountView.managed, true);
-  EXPECT_NSEQ([accountView managementDescription], managementDescription);
+  EXPECT_NSEQ(GetAvatarImage(accountView), image);
+  EXPECT_NSEQ(GetTitle(accountView), mainText);
+  EXPECT_NSEQ(GetSubtitle(accountView), detailText);
+  EXPECT_EQ(IsManaged(accountView), true);
+  EXPECT_NSEQ(GetManagementDescription(accountView), managementDescription);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if the
@@ -144,10 +192,10 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingGivenName) {
                           managementDescription:nil
                                 useLargeMargins:YES];
 
-  EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.title, identity.userFullName);
-  EXPECT_NSEQ(accountView.subtitle, identity.userEmail);
-  EXPECT_EQ(accountView.managed, false);
+  EXPECT_NSEQ(GetAvatarImage(accountView), image);
+  EXPECT_NSEQ(GetTitle(accountView), identity.userFullName);
+  EXPECT_NSEQ(GetSubtitle(accountView), identity.userEmail);
+  EXPECT_EQ(IsManaged(accountView), false);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if both
@@ -170,10 +218,10 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingNames) {
                           managementDescription:nil
                                 useLargeMargins:YES];
 
-  EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.title, identity.userEmail);
-  EXPECT_NSEQ(accountView.subtitle, nil);
-  EXPECT_EQ(accountView.managed, false);
+  EXPECT_NSEQ(GetAvatarImage(accountView), image);
+  EXPECT_NSEQ(GetTitle(accountView), identity.userEmail);
+  EXPECT_NSEQ(GetSubtitle(accountView), nil);
+  EXPECT_EQ(IsManaged(accountView), false);
 }
 
 // Tests that the UIImageView and UILabels are set properly in the view if the
@@ -195,31 +243,13 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAITierRing) {
                           managementDescription:nil
                                 useLargeMargins:YES];
 
-  UIView* avatarView = accountView.avatarView;
-  EXPECT_TRUE([avatarView isDescendantOfView:accountView]);
-  EXPECT_EQ(avatarView.subviews.count, 2u);
+  EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
+      accountView, kPremiumAvatarRingAccessibilityIdentifier));
 
-  BOOL foundAvatarImage = NO;
-  BOOL foundPremiumRing = NO;
-  for (UIView* subview in avatarView.subviews) {
-    if ([subview isKindOfClass:[UIImageView class]]) {
-      UIImageView* imageView = (UIImageView*)subview;
-      if (imageView.image == image) {
-        foundAvatarImage = YES;
-      } else if ([imageView.accessibilityIdentifier
-                     isEqualToString:
-                         kPremiumAvatarRingAccessibilityIdentifier]) {
-        foundPremiumRing = YES;
-      }
-    }
-  }
-  EXPECT_TRUE(foundAvatarImage);
-  EXPECT_TRUE(foundPremiumRing);
-
-  EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.title, mainText);
-  EXPECT_NSEQ(accountView.subtitle, detailText);
-  EXPECT_EQ(accountView.managed, false);
+  EXPECT_NSEQ(GetAvatarImage(accountView), image);
+  EXPECT_NSEQ(GetTitle(accountView), mainText);
+  EXPECT_NSEQ(GetSubtitle(accountView), detailText);
+  EXPECT_EQ(IsManaged(accountView), false);
 }
 
 // Test that the AI subscription chip view is created and added when

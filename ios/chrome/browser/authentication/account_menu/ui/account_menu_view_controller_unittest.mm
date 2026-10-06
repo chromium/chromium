@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -12,9 +13,11 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/test/ios/test_utils.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_data_source.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_mutator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
@@ -30,6 +33,7 @@
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -52,6 +56,55 @@ const FakeSystemIdentity* kSecondaryIdentity =
 const FakeSystemIdentity* kSecondaryIdentity2 =
     [FakeSystemIdentity fakeIdentity3];
 UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
+
+// Recursively searches `view` and its subviews for a view with the given
+// `accessibility_id`. Returns nil if not found.
+UIView* FindSubviewWithAccessibilityIdentifier(UIView* view,
+                                               NSString* accessibility_id) {
+  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
+    return view;
+  }
+  for (UIView* subview in view.subviews) {
+    if (UIView* found =
+            FindSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
+      return found;
+    }
+  }
+  return nil;
+}
+
+// Returns the avatar image displayed in `account_view`.
+UIImage* GetAvatarImage(CentralAccountView* account_view) {
+  UIImageView* avatar_image_view = base::apple::ObjCCastStrict<UIImageView>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view, kIdentityAvatarImageAccessibilityIdentifier));
+  return avatar_image_view.image;
+}
+
+// Returns the title text displayed in `account_view`.
+NSString* GetTitle(CentralAccountView* account_view) {
+  UILabel* title_label = base::apple::ObjCCastStrict<UILabel>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view, kCentralAccountViewTitleAccessibilityIdentifier));
+  return title_label.text;
+}
+
+// Returns the subtitle text displayed in `account_view`.
+NSString* GetSubtitle(CentralAccountView* account_view) {
+  UILabel* subtitle_label = base::apple::ObjCCastStrict<UILabel>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view, kCentralAccountViewSubtitleAccessibilityIdentifier));
+  return subtitle_label.text;
+}
+
+// Returns whether `account_view` displays a management description.
+bool IsManaged(CentralAccountView* account_view) {
+  UILabel* management_label = base::apple::ObjCCastStrict<UILabel>(
+      FindSubviewWithAccessibilityIdentifier(
+          account_view,
+          kCentralAccountViewManagementDescriptionAccessibilityIdentifier));
+  return management_label.text != nil;
+}
 
 }  // namespace
 
@@ -206,7 +259,11 @@ class AccountMenuViewControllerTest : public PlatformTest {
   void VerifyMock() { EXPECT_OCMOCK_VERIFY((id)mutator_); }
 
   // The UITableView* of the account menu view controller.
-  UITableView* TableView() { return view_controller_.view.subviews[0]; }
+  UITableView* TableView() {
+    return base::apple::ObjCCastStrict<UITableView>(
+        FindSubviewWithAccessibilityIdentifier(view_controller_.view,
+                                               kAccountMenuTableViewId));
+  }
 
   //  Returns the cell at `path`.
   UITableViewCell* GetCell(NSIndexPath* path) {
@@ -279,10 +336,10 @@ TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
   EXPECT_TRUE([table_header_view_ isKindOfClass:[CentralAccountView class]]);
   CentralAccountView* table_header_view =
       static_cast<CentralAccountView*>(table_header_view_);
-  EXPECT_EQ(table_header_view.avatarImage, kPrimaryAccountAvatar);
-  EXPECT_EQ(table_header_view.title, kPrimaryIdentity.userFullName);
-  EXPECT_EQ(table_header_view.subtitle, kPrimaryIdentity.userEmail);
-  EXPECT_EQ(table_header_view.managed, true);
+  EXPECT_EQ(GetAvatarImage(table_header_view), kPrimaryAccountAvatar);
+  EXPECT_EQ(GetTitle(table_header_view), kPrimaryIdentity.userFullName);
+  EXPECT_EQ(GetSubtitle(table_header_view), kPrimaryIdentity.userEmail);
+  EXPECT_EQ(IsManaged(table_header_view), true);
 }
 
 // Test the account menu without ellipsis.
@@ -449,13 +506,15 @@ TEST_F(AccountMenuViewControllerTest, TestMissingGivenName) {
   viewController.mutator = mutator_;
   [viewController view];
 
-  UITableView* tableView = viewController.view.subviews[0];
+  UITableView* tableView = base::apple::ObjCCastStrict<UITableView>(
+      FindSubviewWithAccessibilityIdentifier(viewController.view,
+                                             kAccountMenuTableViewId));
   UIView* header = tableView.tableHeaderView;
   EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
   CentralAccountView* centralAccountView =
       static_cast<CentralAccountView*>(header);
-  EXPECT_NSEQ(centralAccountView.title, identity.userFullName);
-  EXPECT_NSEQ(centralAccountView.subtitle, identity.userEmail);
+  EXPECT_NSEQ(GetTitle(centralAccountView), identity.userFullName);
+  EXPECT_NSEQ(GetSubtitle(centralAccountView), identity.userEmail);
 }
 
 // Test the account menu with an identity with missing names.
@@ -473,13 +532,15 @@ TEST_F(AccountMenuViewControllerTest, TestMissingNames) {
   viewController.mutator = mutator_;
   [viewController view];
 
-  UITableView* tableView = viewController.view.subviews[0];
+  UITableView* tableView = base::apple::ObjCCastStrict<UITableView>(
+      FindSubviewWithAccessibilityIdentifier(viewController.view,
+                                             kAccountMenuTableViewId));
   UIView* header = tableView.tableHeaderView;
   EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
   CentralAccountView* centralAccountView =
       static_cast<CentralAccountView*>(header);
-  EXPECT_NSEQ(centralAccountView.title, identity.userEmail);
-  EXPECT_NSEQ(centralAccountView.subtitle, nil);
+  EXPECT_NSEQ(GetTitle(centralAccountView), identity.userEmail);
+  EXPECT_NSEQ(GetSubtitle(centralAccountView), nil);
 }
 
 // Tests that calling `-[AccountMenuViewController updateErrorSection:nil]`

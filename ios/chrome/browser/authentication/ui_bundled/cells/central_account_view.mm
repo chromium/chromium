@@ -111,6 +111,8 @@ UIImage* GetEnterpriseIcon() {
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    titleLabel.accessibilityIdentifier =
+        kCentralAccountViewTitleAccessibilityIdentifier;
     [self addSubview:titleLabel];
 
     UILabel* subtitleLabel = [[UILabel alloc] init];
@@ -123,6 +125,8 @@ UIImage* GetEnterpriseIcon() {
     subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    subtitleLabel.accessibilityIdentifier =
+        kCentralAccountViewSubtitleAccessibilityIdentifier;
     [self addSubview:subtitleLabel];
     CGFloat bottomMargin =
         _useLargeMargins
@@ -163,6 +167,8 @@ UIImage* GetEnterpriseIcon() {
       _managementLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
       _managementLabel.translatesAutoresizingMaskIntoConstraints = NO;
+      _managementLabel.accessibilityIdentifier =
+          kCentralAccountViewManagementDescriptionAccessibilityIdentifier;
 
       UIStackView* horizontalStack = [[UIStackView alloc]
           initWithArrangedSubviews:@[ managementIconView, _managementLabel ]];
@@ -253,6 +259,13 @@ UIImage* GetEnterpriseIcon() {
   return self;
 }
 
+- (void)updateTopPadding:(CGFloat)existingPadding {
+  CGFloat topPadding =
+      (_useLargeMargins ? kTableViewLargeVerticalSpacing : kTopLargePadding);
+  _topPaddingConstraint.constant = topPadding - existingPadding;
+  [self updateFrame];
+}
+
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
@@ -265,18 +278,18 @@ UIImage* GetEnterpriseIcon() {
 
   if (_name != nil) {
     // Both name and email are present.
-    if ([self managed]) {
+    if (_managementLabel) {
       if (aiTierString) {
         return l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS_AI_TIER,
             base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email),
-            base::SysNSStringToUTF16([self managementDescription]),
+            base::SysNSStringToUTF16(_managementLabel.text),
             base::SysNSStringToUTF16(aiTierString));
       } else {
         return l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS,
             base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email),
-            base::SysNSStringToUTF16([self managementDescription]));
+            base::SysNSStringToUTF16(_managementLabel.text));
       }
     } else {
       if (aiTierString) {
@@ -292,18 +305,18 @@ UIImage* GetEnterpriseIcon() {
     }
   } else {
     // Only email is present.
-    if ([self managed]) {
+    if (_managementLabel) {
       if (aiTierString) {
         return l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS_AI_TIER,
             base::SysNSStringToUTF16(_email),
-            base::SysNSStringToUTF16([self managementDescription]),
+            base::SysNSStringToUTF16(_managementLabel.text),
             base::SysNSStringToUTF16(aiTierString));
       } else {
         return l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS,
             base::SysNSStringToUTF16(_email),
-            base::SysNSStringToUTF16([self managementDescription]));
+            base::SysNSStringToUTF16(_managementLabel.text));
       }
     } else {
       if (aiTierString) {
@@ -318,6 +331,8 @@ UIImage* GetEnterpriseIcon() {
   }
 }
 
+#pragma mark - Private
+
 // Updates the frame size.
 - (void)updateFrame {
   CGSize size =
@@ -327,14 +342,6 @@ UIImage* GetEnterpriseIcon() {
   CGRect newFrame = CGRectZero;
   newFrame.size = size;
   self.frame = newFrame;
-}
-
-- (UIImage*)avatarImage {
-  return _avatarImage;
-}
-
-- (UIView*)avatarView {
-  return _avatarView;
 }
 
 - (NSString*)title {
@@ -350,27 +357,6 @@ UIImage* GetEnterpriseIcon() {
   }
   return nil;
 }
-
-- (NSString*)aiTierFullName {
-  return _aiTierFullName;
-}
-
-- (BOOL)managed {
-  return _managementLabel != nil;
-}
-
-- (NSString*)managementDescription {
-  return _managementLabel.text;
-}
-
-- (void)updateTopPadding:(CGFloat)existingPadding {
-  CGFloat topPadding =
-      (_useLargeMargins ? kTableViewLargeVerticalSpacing : kTopLargePadding);
-  _topPaddingConstraint.constant = topPadding - existingPadding;
-  [self updateFrame];
-}
-
-#pragma mark - Private
 
 - (void)subscriptionChipTapped:(UITapGestureRecognizer*)sender {
   [self.delegate centralAccountViewDidTapAISubscriptionChip:self];

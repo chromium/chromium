@@ -30,6 +30,8 @@
     _avatarImageView.layer.cornerRadius = avatarDiameter / 2.0;
     _avatarImageView.clipsToBounds = YES;
     _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _avatarImageView.accessibilityIdentifier =
+        kIdentityAvatarImageAccessibilityIdentifier;
     [self addSubview:_avatarImageView];
 
     AddSquareConstraints(_avatarImageView, avatarDiameter);
