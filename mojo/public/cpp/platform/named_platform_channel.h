@@ -18,6 +18,10 @@
 #include "base/files/file_path.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace mojo {
 
 // NamedPlatformChannel encapsulates a Mojo invitation transport channel which
@@ -120,6 +124,11 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   static std::wstring GetPipeNameFromServerName(
       const ServerName& server_name,
       PipeNameType name_type = PipeNameType::kDefault);
+
+  // Returns true if the pipe behind `pipe_handle` is owned by SYSTEM or
+  // Administrators. The owner identifies the server only if other users can't
+  // create instances of the pipe, as with a kAdminProtected pipe.
+  static bool IsPipeOwnerPrivileged(HANDLE pipe_handle);
 #endif
 
   // Passes the local server endpoint for the channel. On Windows, this is a

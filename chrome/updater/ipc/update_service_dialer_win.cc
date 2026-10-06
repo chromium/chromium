@@ -64,7 +64,8 @@ Microsoft::WRL::ComPtr<IUnknown> DialUpdateService(UpdaterScope scope,
   return server;
 }
 
-bool IsServerElevated(HANDLE pipe_handle) {
+bool IsServerElevated(HANDLE pipe_handle,
+                      mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
   DWORD pid = 0;
   if (!::GetNamedPipeServerProcessId(pipe_handle, &pid)) {
     PLOG(ERROR) << "Failed to get named pipe server process ID";
@@ -74,8 +75,15 @@ bool IsServerElevated(HANDLE pipe_handle) {
   base::win::ScopedHandle process(
       ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
   if (!process.is_valid()) {
-    PLOG(ERROR) << "Failed to open named pipe server process " << pid;
-    return false;
+    // Only the protected pipe's DACL denies other users new instances, so only
+    // there does the pipe owner identify the server.
+    if (::GetLastError() != ERROR_ACCESS_DENIED ||
+        pipe_name_type !=
+            mojo::NamedPlatformChannel::PipeNameType::kAdminProtected) {
+      PLOG(ERROR) << "Failed to open named pipe server process " << pid;
+      return false;
+    }
+    return mojo::NamedPlatformChannel::IsPipeOwnerPrivileged(pipe_handle);
   }
 
   std::optional<base::win::AccessToken> server_token =
@@ -104,8 +112,8 @@ std::optional<mojo::PlatformChannelEndpoint> ConnectToUpdateService(
       named_mojo_ipc_server::ConnectToServer(options);
   if (!connected_endpoint.is_valid() ||
       (IsSystemInstall(scope) &&
-       !IsServerElevated(
-           connected_endpoint.platform_handle().GetHandle().get()))) {
+       !IsServerElevated(connected_endpoint.platform_handle().GetHandle().get(),
+                         pipe_name_type))) {
     return std::nullopt;
   }
   return connected_endpoint;
