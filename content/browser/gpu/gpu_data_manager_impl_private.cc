@@ -741,7 +741,9 @@ void GpuDataManagerImplPrivate::RequestDawnInfo(bool delayed,
       },
       collect_metrics);
 
-  GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+  base::TaskPriority priority = delayed ? base::TaskPriority::BEST_EFFORT
+                                        : base::TaskPriority::USER_BLOCKING;
+  GetUIThreadTaskRunner({priority})
       ->PostDelayedTask(FROM_HERE, std::move(task), delta);
 }
 

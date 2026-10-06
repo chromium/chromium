@@ -62,7 +62,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
       safe_name = safe_feature_name(feature)
       yield (
         f'HardwareAcceleratedFeature_{safe_name}_accelerated',
-        'chrome://gpu',
+        'chrome://gpu?skip-dawn-info',
         [feature],
       )
 

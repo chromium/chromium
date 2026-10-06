@@ -89,6 +89,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     | None = None,
     requires_fullscreen_os_screenshot_func: Callable[[], bool] | None = None,
     known_flaky_output_test: bool = False,
+    collect_dawn_info: bool | None = None,
     **kwargs,
   ):
     # Video tests can result in non-hermetic test behavior due to overlays, so
@@ -134,6 +135,9 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     # multiple times so that inexact matching with stricter parameters can
     # match.
     self.known_flaky_output_test = known_flaky_output_test
+    if collect_dawn_info is None:
+      collect_dawn_info = 'webgpu' in name.lower()
+    self.collect_dawn_info = collect_dawn_info
 
 
 # pytype: disable=signature-mismatch

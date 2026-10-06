@@ -1272,25 +1272,49 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
     GpuTestClass.browser.browser_type = 'release'
     GpuTestClass.tab = mock.MagicMock()
 
-  def testRetrieveAboutGpuWaitsForDawnInfo(self):
+  def testRetrieveAboutGpuSkipsDawnInfoByDefault(self):
     expected_content = 'a' * 2000
-    GpuTestClass.tab.action_runner.EvaluateJavaScript.side_effect = [
+    action_runner = GpuTestClass.tab.action_runner
+    action_runner.EvaluateJavaScript.return_value = expected_content
+
+    with mock.patch.object(py_utils, 'WaitFor') as mock_wait_for:
+      GpuTestClass._RetrieveAboutGpu()
+
+    GpuTestClass.tab.Navigate.assert_called_once_with(
+      'chrome://gpu?skip-dawn-info'
+    )
+    action_runner.WaitForElement.assert_called_once_with(selector='info-view')
+    action_runner.WaitForJavaScriptCondition.assert_called_once_with(
+      'document.getElementsByTagName("info-view")[0].getSelectionText '
+      '!= undefined'
+    )
+    mock_wait_for.assert_not_called()
+    action_runner.EvaluateJavaScript.assert_called_once_with(
+      'document.getElementsByTagName("info-view")[0].getSelectionText(true)'
+    )
+    self.assertEqual(GpuTestClass._about_gpu_content, expected_content)
+
+  def testRetrieveAboutGpuWaitsForDawnInfoWhenOptedIn(self):
+    expected_content = 'a' * 2000
+    action_runner = GpuTestClass.tab.action_runner
+    action_runner.EvaluateJavaScript.side_effect = [
       True,
       expected_content,
     ]
 
-    GpuTestClass._RetrieveAboutGpu()
+    with mock.patch.object(
+      GpuTestClass, '_ShouldCollectDawnInfoInAboutGpu', return_value=True
+    ):
+      GpuTestClass._RetrieveAboutGpu()
 
     GpuTestClass.tab.Navigate.assert_called_once_with('chrome://gpu')
-    GpuTestClass.tab.action_runner.WaitForElement.assert_called_once_with(
-      selector='info-view'
-    )
-    GpuTestClass.tab.action_runner.WaitForJavaScriptCondition.assert_called_once_with(
+    action_runner.WaitForElement.assert_called_once_with(selector='info-view')
+    action_runner.WaitForJavaScriptCondition.assert_called_once_with(
       'document.getElementsByTagName("info-view")[0].getSelectionText '
       '!= undefined'
     )
     self.assertEqual(
-      GpuTestClass.tab.action_runner.EvaluateJavaScript.call_args_list,
+      action_runner.EvaluateJavaScript.call_args_list,
       [
         mock.call(
           'document.getElementsByTagName("info-view")[0]'
@@ -1309,9 +1333,14 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
       expected_content
     )
 
-    with mock.patch.object(
-      py_utils, 'WaitFor', side_effect=py_utils.TimeoutException('Timed out')
-    ) as mock_wait_for:
+    with (
+      mock.patch.object(
+        GpuTestClass, '_ShouldCollectDawnInfoInAboutGpu', return_value=True
+      ),
+      mock.patch.object(
+        py_utils, 'WaitFor', side_effect=py_utils.TimeoutException('Timed out')
+      ) as mock_wait_for,
+    ):
       GpuTestClass._RetrieveAboutGpu()
 
     mock_wait_for.assert_called_once_with(mock.ANY, timeout=15)
@@ -1326,9 +1355,17 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
       expected_content
     )
 
-    with mock.patch.object(py_utils, 'WaitFor') as mock_wait_for:
+    with (
+      mock.patch.object(
+        GpuTestClass, '_ShouldCollectDawnInfoInAboutGpu', return_value=True
+      ),
+      mock.patch.object(py_utils, 'WaitFor') as mock_wait_for,
+    ):
       GpuTestClass._RetrieveAboutGpu()
 
+    GpuTestClass.tab.Navigate.assert_called_once_with(
+      'chrome://gpu?skip-dawn-info'
+    )
     mock_wait_for.assert_not_called()
     GpuTestClass.tab.action_runner.EvaluateJavaScript.assert_called_once_with(
       'document.getElementsByTagName("info-view")[0].getSelectionText(true)'
@@ -1339,9 +1376,7 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
     content_a = 'a' * 2000
     content_b = 'b' * 2000
     GpuTestClass.tab.action_runner.EvaluateJavaScript.side_effect = [
-      True,
       content_a,
-      True,
       content_b,
     ]
     instance = GpuTestClass('runTest')
@@ -1383,6 +1418,52 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
     instance._ReportAboutGpu('test_a2')
     instance.artifacts.CreateInMemoryTextArtifact.assert_called_once_with(
       'about_gpu', 'See artifacts for test_a1'
+    )
+
+  def testRetrieveAboutGpuCachesSeparatelyForCollectDawnInfo(self):
+    content_no_dawn = 'a' * 2000
+    content_with_dawn = 'b' * 2000
+    GpuTestClass.tab.action_runner.EvaluateJavaScript.side_effect = [
+      content_no_dawn,
+      True,
+      content_with_dawn,
+    ]
+    instance = GpuTestClass('runTest')
+    instance.artifacts = mock.MagicMock()
+
+    # Launch with --arg-a and collect_dawn_info=False.
+    GpuTestClass._last_launched_browser_info = (
+      gpu_integration_test._BrowserLaunchInfo(
+        browser_args={'--arg-a'}, collect_dawn_info=False
+      )
+    )
+    GpuTestClass._args_changed_this_browser_start = True
+    GpuTestClass._RetrieveAboutGpu()
+    instance._ReportAboutGpu('test_no_dawn')
+    self.assertEqual(GpuTestClass._about_gpu_content, content_no_dawn)
+    self.assertEqual(GpuTestClass._test_that_started_browser, 'test_no_dawn')
+    GpuTestClass.tab.Navigate.assert_called_once_with(
+      'chrome://gpu?skip-dawn-info'
+    )
+
+    # Same --arg-a, but collect_dawn_info=True: should re-fetch chrome://gpu
+    # with Dawn Info instead of reusing the skip-dawn-info cache entry.
+    GpuTestClass._last_launched_browser_info = (
+      gpu_integration_test._BrowserLaunchInfo(
+        browser_args={'--arg-a'}, collect_dawn_info=True
+      )
+    )
+    GpuTestClass._args_changed_this_browser_start = True
+    GpuTestClass._RetrieveAboutGpu()
+    instance._ReportAboutGpu('test_with_dawn')
+    self.assertEqual(GpuTestClass._about_gpu_content, content_with_dawn)
+    self.assertEqual(GpuTestClass._test_that_started_browser, 'test_with_dawn')
+    self.assertEqual(
+      GpuTestClass.tab.Navigate.call_args_list,
+      [
+        mock.call('chrome://gpu?skip-dawn-info'),
+        mock.call('chrome://gpu'),
+      ],
     )
 
   def testRestartBrowserClearsArgsChangedFlag(self):

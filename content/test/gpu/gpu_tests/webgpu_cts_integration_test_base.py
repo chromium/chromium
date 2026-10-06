@@ -159,6 +159,10 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return self.ShouldPerformMinidumpCleanupOnSetUp()
 
   @classmethod
+  def _ShouldCollectDawnInfoInAboutGpu(cls) -> bool:
+    return True
+
+  @classmethod
   def _SuiteSupportsParallelTests(cls) -> bool:
     # Service worker tests might have cross-page state. Serialize to be safe.
     return cls._worker_type != WorkerType.SERVICE

@@ -323,7 +323,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GetWebGLFeatureStatus(self, for_hardware_gpu: bool) -> str:
     tab = self.tab.browser.tabs.New()
     tab.Navigate(
-      'chrome:gpu', script_to_evaluate_on_commit=feature_query_script
+      'chrome:gpu?skip-dawn-info',
+      script_to_evaluate_on_commit=feature_query_script,
     )
     tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
     status = tab.EvaluateJavaScript(
@@ -335,7 +336,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GetActiveVendorId(self, for_hardware_gpu: bool) -> str:
     tab = self.tab.browser.tabs.New()
     tab.Navigate(
-      'chrome:gpu', script_to_evaluate_on_commit=vendor_id_query_script
+      'chrome:gpu?skip-dawn-info',
+      script_to_evaluate_on_commit=vendor_id_query_script,
     )
     tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
     vid = tab.EvaluateJavaScript(
@@ -397,7 +399,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _ContextLost_WebGPUContextLostFromGPUProcessExit(
     self, test_path: str
   ) -> None:
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs([], collect_dawn_info=True)
     self._NavigateAndWaitForLoad(test_path)
     self.tab.EvaluateJavaScript(
       'chrome.gpuBenchmarking.terminateGpuProcessNormally()'
@@ -412,7 +414,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _ContextLost_WebGPUStressRequestDeviceAndRemoveLoop(
     self, test_path: str
   ) -> None:
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs([], collect_dawn_info=True)
     self._NavigateAndWaitForLoad(test_path)
 
     # Test runs for 90 seconds; wait for 120 seconds.
@@ -847,7 +849,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _ContextLost_WebGPUBlockedAfterJSNavigation(self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs([], collect_dawn_info=True)
     self._NavigateAndWaitForLoad(test_path)
 
     tab = self.tab
@@ -903,7 +905,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     'Success' state while the second run only needs to reach 'Loaded' state to
     verify that a WebGPU has been unblocked.
     """
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs([], collect_dawn_info=True)
     # Make sure the tab loaded and initially got a WebGPU device.
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab

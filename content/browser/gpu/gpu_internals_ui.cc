@@ -712,8 +712,14 @@ void GpuMessageHandler::HandleGetGpuInfo(const base::ListValue& args) {
 
   // Tell GpuDataManager it should have full GpuInfo. If the
   // Gpu process has not run yet, this will trigger its launch.
+  uint32_t request = GpuDataManagerImpl::kGpuInfoRequestAll;
+  if (WebContents* web_contents = web_ui()->GetWebContents();
+      web_contents &&
+      web_contents->GetLastCommittedURL().query().contains("skip-dawn-info")) {
+    request &= ~GpuDataManagerImpl::kGpuInfoRequestDawnInfo;
+  }
   GpuDataManagerImpl::GetInstance()->RequestGpuInfoIfNeeded(
-      GpuDataManagerImpl::kGpuInfoRequestAll,
+      static_cast<GpuDataManagerImpl::GpuInfoRequest>(request),
       /*delayed=*/false);
 
   // Send current snapshot of gpu info. Any future updates will be communicated

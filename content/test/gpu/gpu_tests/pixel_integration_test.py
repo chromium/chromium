@@ -145,7 +145,10 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     # Some pixel tests require non-standard browser arguments. Need to
     # check before running each test case that it can run in the current
     # browser instance.
-    self.RestartBrowserIfNecessaryWithArgs(test_case.browser_args)
+    self.RestartBrowserIfNecessaryWithArgs(
+      test_case.browser_args,
+      collect_dawn_info=test_case.collect_dawn_info,
+    )
 
     attempt = 1
     while True:

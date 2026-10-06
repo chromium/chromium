@@ -98,6 +98,7 @@ class _BrowserLaunchInfo:
   browser_args: set[str] = ct.EmptySet()
   profile_dir: str | None = None
   profile_type: str | None = None
+  collect_dawn_info: bool = False
 
   def __eq__(self, other: Any):
     return (
@@ -105,6 +106,7 @@ class _BrowserLaunchInfo:
       and self.browser_args == other.browser_args
       and self.profile_dir == other.profile_dir
       and self.profile_type == other.profile_type
+      and self.collect_dawn_info == other.collect_dawn_info
     )
 
 
@@ -166,7 +168,7 @@ class GpuIntegrationTest(
   # unnecessary communication with the browser when args did not change.
   _about_gpu_content: str | None = None
   _test_that_started_browser: str | None = None
-  _about_gpu_cache: dict[frozenset[str], _CachedAboutGpu] = {}
+  _about_gpu_cache: dict[tuple[frozenset[str], bool], _CachedAboutGpu] = {}
   _args_changed_this_browser_start = True
   _cached_platform_tags: list[str] | None = None
 
@@ -494,6 +496,7 @@ class GpuIntegrationTest(
     browser_args: list[str],
     profile_dir: str | None = None,
     profile_type: str | None = None,
+    collect_dawn_info: bool | None = None,
   ) -> None:
     """Sets the browser arguments to use for the next browser startup.
 
@@ -507,7 +510,12 @@ class GpuIntegrationTest(
           used. Valid examples are 'clean' which means the profile_dir will be
           used to seed a new temporary directory which is used, or 'exact' which
           means the exact specified directory will be used instead.
+      collect_dawn_info: Whether Dawn Info should be collected when retrieving
+          chrome://gpu for this browser startup. Defaults to
+          _ShouldCollectDawnInfoInAboutGpu().
     """
+    if collect_dawn_info is None:
+      collect_dawn_info = cls._ShouldCollectDawnInfoInAboutGpu()
     cls._finder_options = cls.GetOriginalFinderOptions().Copy()
     browser_options = cls._finder_options.browser_options
 
@@ -534,7 +542,7 @@ class GpuIntegrationTest(
 
     # Save the last set of options for comparison.
     cls._last_launched_browser_info = _BrowserLaunchInfo(
-      set(browser_args), profile_dir, profile_type
+      set(browser_args), profile_dir, profile_type, collect_dawn_info
     )
     cls.SetBrowserOptions(cls._finder_options)
 
@@ -544,6 +552,7 @@ class GpuIntegrationTest(
     force_restart: bool = False,
     profile_dir: str | None = None,
     profile_type: str | None = None,
+    collect_dawn_info: bool | None = None,
   ) -> None:
     """Restarts the browser if it is determined to be necessary.
 
@@ -563,6 +572,9 @@ class GpuIntegrationTest(
           used. Valid examples are 'clean' which means the profile_dir will be
           used to seed a new temporary directory which is used, or 'exact' which
           means the exact specified directory will be used instead.
+      collect_dawn_info: Whether Dawn Info should be collected when retrieving
+          chrome://gpu for this browser startup. Defaults to
+          _ShouldCollectDawnInfoInAboutGpu().
     """
     # cls is largely used here since this used to be a class method and we want
     # to maintain the previous behavior with regards to storing browser launch
@@ -571,15 +583,21 @@ class GpuIntegrationTest(
     # pylint: disable=protected-access
     cls = self.__class__
     new_browser_args = cls._GenerateAndSanitizeBrowserArgs(additional_args)
+    if collect_dawn_info is None:
+      collect_dawn_info = cls._ShouldCollectDawnInfoInAboutGpu()
 
     new_browser_info = _BrowserLaunchInfo(
-      set(new_browser_args), profile_dir, profile_type
+      set(new_browser_args), profile_dir, profile_type, collect_dawn_info
     )
     args_differ = (
       new_browser_info.browser_args
       != cls._last_launched_browser_info.browser_args
     )
-    cls._args_changed_this_browser_start = args_differ
+    dawn_info_differs = (
+      new_browser_info.collect_dawn_info
+      != cls._last_launched_browser_info.collect_dawn_info
+    )
+    cls._args_changed_this_browser_start = args_differ or dawn_info_differs
     if force_restart or new_browser_info != cls._last_launched_browser_info:
       logging.info(
         'Restarting browser with arguments: %s, profile type %s, and profile '
@@ -590,7 +608,7 @@ class GpuIntegrationTest(
       )
       cls.StopBrowser()
       cls._SetBrowserArgsForNextStartup(
-        new_browser_args, profile_dir, profile_type
+        new_browser_args, profile_dir, profile_type, collect_dawn_info
       )
       cls.StartBrowser()
 
@@ -610,12 +628,14 @@ class GpuIntegrationTest(
     additional_args: list[str] | None = None,
     profile_dir: str | None = None,
     profile_type: str = 'clean',
+    collect_dawn_info: bool | None = None,
   ) -> None:
     self.RestartBrowserIfNecessaryWithArgs(
       additional_args,
       force_restart=True,
       profile_dir=profile_dir,
       profile_type=profile_type,
+      collect_dawn_info=collect_dawn_info,
     )
 
   # The following is the rest of the framework for the GPU integration tests.
@@ -698,6 +718,18 @@ class GpuIntegrationTest(
       )
 
   @classmethod
+  def _ShouldCollectDawnInfoInAboutGpu(cls) -> bool:
+    """Returns whether _RetrieveAboutGpu should request/wait for Dawn Info."""
+    return False
+
+  @classmethod
+  def _ShouldCollectDawnInfoForCurrentBrowser(cls) -> bool:
+    return (
+      cls._last_launched_browser_info.collect_dawn_info
+      or cls._ShouldCollectDawnInfoInAboutGpu()
+    ) and cba.DISABLE_GPU not in cls._last_launched_browser_info.browser_args
+
+  @classmethod
   def _RetrieveAboutGpu(cls) -> None:
     """Retrieves the plaintext representation of about:gpu / chrome://gpu.
 
@@ -722,15 +754,17 @@ class GpuIntegrationTest(
       return
 
     browser_args_key = frozenset(cls._last_launched_browser_info.browser_args)
+    collect_dawn_info = cls._ShouldCollectDawnInfoForCurrentBrowser()
+    about_gpu_cache_key = (browser_args_key, collect_dawn_info)
     # TODO(crbug.com/568512619): Skipping the chrome://gpu navigation when
     # --gpu-blocklist-test-group=2 triggers a SwiftShader fallback on Linux
     # leaves the initial about:blank RasterDecoderImpl alive until WebGL
     # context creation, tripping a DCHECK in RasterDecoderImpl::Destroy().
     if (
       '--gpu-blocklist-test-group=2' not in browser_args_key
-      and browser_args_key in cls._about_gpu_cache
+      and about_gpu_cache_key in cls._about_gpu_cache
     ):
-      cached_about_gpu = cls._about_gpu_cache[browser_args_key]
+      cached_about_gpu = cls._about_gpu_cache[about_gpu_cache_key]
       cls._about_gpu_content = cached_about_gpu.content
       cls._test_that_started_browser = (
         cached_about_gpu.test_that_started_browser
@@ -743,7 +777,10 @@ class GpuIntegrationTest(
     # This is non-critical to actually running tests, so suppress any
     # exceptions.
     try:
-      cls.tab.Navigate('chrome://gpu')
+      about_gpu_url = (
+        'chrome://gpu' if collect_dawn_info else 'chrome://gpu?skip-dawn-info'
+      )
+      cls.tab.Navigate(about_gpu_url)
       # WaitForNavigate does not work properly on this page, so instead wait
       # until the relevant element is available with the relevant function
       # defined.
@@ -752,7 +789,7 @@ class GpuIntegrationTest(
         'document.getElementsByTagName("info-view")[0].getSelectionText '
         '!= undefined'
       )
-      if cba.DISABLE_GPU not in cls._last_launched_browser_info.browser_args:
+      if collect_dawn_info:
         try:
           # Navigating to chrome://gpu triggers asynchronous Dawn info
           # collection on the GPU main thread. Wait for it to finish so that
@@ -1140,8 +1177,11 @@ class GpuIntegrationTest(
 
     if cls._test_that_started_browser is None:
       cls._test_that_started_browser = test_name
-      browser_args_key = frozenset(cls._last_launched_browser_info.browser_args)
-      cls._about_gpu_cache[browser_args_key] = _CachedAboutGpu(
+      about_gpu_cache_key = (
+        frozenset(cls._last_launched_browser_info.browser_args),
+        cls._ShouldCollectDawnInfoForCurrentBrowser(),
+      )
+      cls._about_gpu_cache[about_gpu_cache_key] = _CachedAboutGpu(
         content=cls._about_gpu_content,
         test_that_started_browser=test_name,
       )
