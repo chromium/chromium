@@ -40,11 +40,9 @@
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_contentView];
   AddSameConstraintsToSides(
-      _contentView, self.view,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
-  [_contentView.topAnchor
-      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor]
-      .active = YES;
+      _contentView, self.view.safeAreaLayoutGuide,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(_contentView, self.view, LayoutSides::kBottom);
 }
 
 #pragma mark - Private

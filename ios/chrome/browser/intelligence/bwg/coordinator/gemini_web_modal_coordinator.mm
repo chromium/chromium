@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -70,7 +71,12 @@
   _webStateObserverBridge = std::make_unique<web::WebStateObserverBridge>(self);
   _webState->AddObserver(_webStateObserverBridge.get());
 
+  // Disable swiping on edges to navigate back/forward.
   _webState->GetWebViewProxy().allowsBackForwardNavigationGestures = NO;
+
+  // Lets page content extend to the bottom edge of the web view.
+  _webState->GetWebViewProxy().scrollViewProxy.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
 
   _viewController = [[GeminiModalContentViewController alloc]
       initWithContentView:_webState->GetView()];
