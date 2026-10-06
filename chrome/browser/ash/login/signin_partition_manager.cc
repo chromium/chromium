@@ -140,7 +140,9 @@ const std::string& SigninPartitionManager::GetCurrentStoragePartitionName()
 
 content::StoragePartition*
 SigninPartitionManager::GetCurrentStoragePartition() {
-  CHECK(IsInSigninSession(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568878390): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsInSigninSession());
   return current_storage_partition_;
 }
 
