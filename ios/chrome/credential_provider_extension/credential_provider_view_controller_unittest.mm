@@ -28,6 +28,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
+#import "ios/chrome/common/credential_provider/ASPasswordCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
@@ -230,15 +231,24 @@ ArchivableCredential* TestPasswordCredential() {
                   lastUsedTime:recent_time];
 }
 
+// Creates an `ASPasswordCredentialRequest` for `credential`.
+ASPasswordCredentialRequest* CreatePasswordRequest(id<Credential> credential) {
+  ASPasswordCredentialIdentity* identity =
+      [[ASPasswordCredentialIdentity alloc] cr_initWithCredential:credential];
+  return [ASPasswordCredentialRequest requestWithCredentialIdentity:identity];
+}
+
 // Creates an `ASPasskeyCredentialRequest` for `credential`.
-ASPasskeyCredentialRequest* CreatePasskeyRequest(id<Credential> credential) {
+ASPasskeyCredentialRequest* CreatePasskeyRequest(
+    id<Credential> credential,
+    ASAuthorizationPublicKeyCredentialUserVerificationPreference uv_preference =
+        ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged) {
   ASPasskeyCredentialIdentity* identity =
       [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
   return [ASPasskeyCredentialRequest
       requestWithCredentialIdentity:identity
                      clientDataHash:StringToData(kTestClientDataHash)
-         userVerificationPreference:
-             ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged
+         userVerificationPreference:uv_preference
                 supportedAlgorithms:@[ @(kSupportedAlgorithm) ]];
 }
 
@@ -260,6 +270,10 @@ void CleanStorage() {
   [user_defaults
       removeObjectForKey:HistogramCountKey(kBrowserAssistedLoginHistogram,
                                            kPasskeyBucket)];
+  [user_defaults
+      removeObjectForKey:app_group::kCredentialExtensionQuickPasswordUseCount];
+  [user_defaults
+      removeObjectForKey:app_group::kCredentialExtensionQuickPasskeyUseCount];
 }
 
 // Fake `PasskeyKeychainProvider` for testing trusted vault key fetches.
@@ -790,6 +804,267 @@ TEST_F(CredentialProviderViewControllerTest,
   ASSERT_TRUE(cancel_error_future_.Wait());
   EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
   EXPECT_FALSE(controller_.presentedViewController);
+}
+
+// Test that `provideCredentialWithoutUserInteractionForRequest:` exits
+// immediately with `ASExtensionErrorCodeUserInteractionRequired` when a passkey
+// assertion request requires user verification.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ProvideCredentialWithoutUserInteractionForPasskeyRequiringUVExitsWithUserInteractionRequired) {
+  ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(
+      passkey,
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired);
+
+  [controller_ provideCredentialWithoutUserInteractionForRequest:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeUserInteractionRequired);
+}
+
+// Test that `provideCredentialWithoutUserInteractionForRequest:` exits with
+// `ASExtensionErrorCodeUserInteractionRequired` when `reauthenticationModule`
+// cannot attempt reauthentication.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ProvideCredentialWithoutUserInteractionWhenCannotAttemptReauthExitsWithUserInteractionRequired) {
+  mock_reauth_module_.canAttempt = NO;
+  ArchivableCredential* password = TestPasswordCredential();
+  CreateStoreWithCredentials(@[ password ]);
+  ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
+
+  [controller_ provideCredentialWithoutUserInteractionForRequest:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeUserInteractionRequired);
+}
+
+// Test that `provideCredentialWithoutUserInteractionForRequest:` exits with
+// `ASExtensionErrorCodeUserInteractionRequired` when managed user validation
+// fails.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ProvideCredentialWithoutUserInteractionForInvalidUserExitsWithUserInteractionRequired) {
+  [GetGroupUserDefaults()
+      setObject:kTestManagedUserId
+         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+  fake_account_verificator_.isValid = NO;
+
+  ArchivableCredential* password = TestPasswordCredential();
+  CreateStoreWithCredentials(@[ password ]);
+  ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
+
+  [controller_ provideCredentialWithoutUserInteractionForRequest:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeUserInteractionRequired);
+}
+
+// Test that `provideCredentialWithoutUserInteractionForRequest:` completes with
+// the matching `ASPasswordCredential` and increments the quick password use
+// count metric.
+TEST_F(CredentialProviderViewControllerTest,
+       ProvideCredentialWithoutUserInteractionForPasswordCompletesRequest) {
+  ArchivableCredential* password = TestPasswordCredential();
+  CreateStoreWithCredentials(@[ password ]);
+  ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
+
+  [controller_ provideCredentialWithoutUserInteractionForRequest:request];
+
+  ASSERT_TRUE(completed_password_future_.Wait());
+  ASPasswordCredential* completed = completed_password_future_.Get();
+  ASSERT_TRUE(completed);
+  EXPECT_NSEQ(completed.user, kTestUsername);
+  EXPECT_NSEQ(completed.password, kTestPassword);
+  EXPECT_EQ(
+      [GetGroupUserDefaults()
+          integerForKey:app_group::kCredentialExtensionQuickPasswordUseCount],
+      1);
+}
+
+// Test that `provideCredentialWithoutUserInteractionForRequest:` exits with
+// `ASExtensionErrorCodeCredentialIdentityNotFound` when the requested password
+// credential is not in the store.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ProvideCredentialWithoutUserInteractionForMissingPasswordExitsWithNotFound) {
+  CreateStoreWithCredentials(@[]);
+  ASPasswordCredentialRequest* request =
+      CreatePasswordRequest(TestPasswordCredential());
+
+  [controller_ provideCredentialWithoutUserInteractionForRequest:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeCredentialIdentityNotFound);
+}
+
+// Test that `provideCredentialWithoutUserInteractionForRequest:` completes a
+// passkey assertion when user verification is discouraged and increments the
+// quick passkey use count metric.
+TEST_F(CredentialProviderViewControllerTest,
+       ProvideCredentialWithoutUserInteractionForPasskeyCompletesAssertion) {
+  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
+  CreateStoreWithCredentials(@[ passkey ]);
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(passkey);
+
+  [controller_ provideCredentialWithoutUserInteractionForRequest:request];
+
+  ASSERT_TRUE(completed_assertion_future_.Wait());
+  ASPasskeyAssertionCredential* assertion = completed_assertion_future_.Get();
+  ASSERT_TRUE(assertion);
+  EXPECT_NSEQ(assertion.credentialID, passkey.credentialId);
+  EXPECT_EQ(
+      [GetGroupUserDefaults()
+          integerForKey:app_group::kCredentialExtensionQuickPasskeyUseCount],
+      1);
+}
+
+// Test that `provideCredentialWithoutUserInteractionForRequest:` exits with
+// `ASExtensionErrorCodeCredentialIdentityNotFound` when the requested passkey
+// credential is not in the store.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    ProvideCredentialWithoutUserInteractionForMissingPasskeyExitsWithNotFound) {
+  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  CreateStoreWithCredentials(@[]);
+  ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(passkey);
+
+  [controller_ provideCredentialWithoutUserInteractionForRequest:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code,
+            ASExtensionErrorCodeCredentialIdentityNotFound);
+}
+
+// Test that `prepareInterfaceToProvideCredentialForRequest:` for a passkey
+// assertion exits with `ASExtensionErrorCodeFailed` when the user is invalid.
+TEST_F(CredentialProviderViewControllerTest,
+       PrepareInterfaceToProvidePasskeyForInvalidUserExitsWithFailedError) {
+  [GetGroupUserDefaults()
+      setObject:kTestManagedUserId
+         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+  fake_account_verificator_.isValid = NO;
+
+  ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
+  CreateStoreWithCredentials(@[ passkey ]);
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(
+      passkey,
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired);
+
+  [controller_ prepareInterfaceToProvideCredentialForRequest:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `prepareInterfaceToProvideCredentialForRequest:` for a passkey
+// assertion with required user verification performs user verification during
+// key fetching and completes the assertion.
+TEST_F(CredentialProviderViewControllerTest,
+       PrepareInterfaceToProvidePasskeyWithUVCompletesAssertion) {
+  ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
+  CreateStoreWithCredentials(@[ passkey ]);
+  ASPasskeyCredentialRequest* request = CreatePasskeyRequest(
+      passkey,
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired);
+
+  [controller_ prepareInterfaceToProvideCredentialForRequest:request];
+
+  ASSERT_TRUE(completed_assertion_future_.Wait());
+  ASPasskeyAssertionCredential* assertion = completed_assertion_future_.Get();
+  ASSERT_TRUE(assertion);
+  EXPECT_NSEQ(assertion.credentialID, passkey.credentialId);
+
+  // Verify user verification was marked as completed by checking that
+  // `performUserVerificationIfNeeded:` immediately succeeds without invoking
+  // `mock_reauth_module_`.
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  TestFuture<BOOL> uv_future;
+  [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
+                                                   uv_future.GetCallback())];
+  ASSERT_TRUE(uv_future.Wait());
+  EXPECT_TRUE(uv_future.Get());
+}
+
+// Test that `prepareInterfaceToProvideCredentialForRequest:` for a password
+// request presents `StaleCredentialsViewController` when the user is invalid,
+// and tapping its close button exits with `ASExtensionErrorCodeFailed`.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceToProvidePasswordForInvalidUserShowsStaleCredentialsAndCloseButtonExits) {
+  AttachControllerToWindow();
+  [GetGroupUserDefaults()
+      setObject:kTestManagedUserId
+         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+  fake_account_verificator_.isValid = NO;
+
+  ArchivableCredential* password = TestPasswordCredential();
+  CreateStoreWithCredentials(@[ password ]);
+  ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
+
+  [controller_ prepareInterfaceToProvideCredentialForRequest:request];
+
+  ASSERT_TRUE(presented_vc_future_.Wait());
+  UINavigationController* nav_controller =
+      ObjCCast<UINavigationController>(presented_vc_future_.Get());
+  ASSERT_TRUE(nav_controller);
+  StaleCredentialsViewController* top_vc =
+      ObjCCast<StaleCredentialsViewController>(
+          nav_controller.topViewController);
+  ASSERT_TRUE(top_vc);
+  UIBarButtonItem* close_button = top_vc.navigationItem.rightBarButtonItem;
+  ASSERT_TRUE(close_button);
+
+  // Perform the close button's action (`dismissExtension`).
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  [close_button.target performSelector:close_button.action];
+#pragma clang diagnostic pop
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that `prepareInterfaceToProvideCredentialForRequest:` for a password
+// request exits with `ASExtensionErrorCodeUserCanceled` when reauthentication
+// fails.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    PrepareInterfaceToProvidePasswordWithReauthFailureExitsWithUserCanceled) {
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  ArchivableCredential* password = TestPasswordCredential();
+  CreateStoreWithCredentials(@[ password ]);
+  ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
+
+  [controller_ prepareInterfaceToProvideCredentialForRequest:request];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
+}
+
+// Test that `prepareInterfaceToProvideCredentialForRequest:` for a password
+// request completes with `ASPasswordCredential` when user validation and
+// reauthentication succeed.
+TEST_F(CredentialProviderViewControllerTest,
+       PrepareInterfaceToProvidePasswordCompletesRequest) {
+  ArchivableCredential* password = TestPasswordCredential();
+  CreateStoreWithCredentials(@[ password ]);
+  ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
+
+  [controller_ prepareInterfaceToProvideCredentialForRequest:request];
+
+  ASSERT_TRUE(completed_password_future_.Wait());
+  ASPasswordCredential* completed = completed_password_future_.Get();
+  ASSERT_TRUE(completed);
+  EXPECT_NSEQ(completed.user, kTestUsername);
+  EXPECT_NSEQ(completed.password, kTestPassword);
 }
 
 }  // namespace
