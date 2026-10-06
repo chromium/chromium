@@ -91,37 +91,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   }
 }
 
-// Maps a tool mode to its corresponding menu item type.
-ComposeboxMenuItemType MenuItemTypeForTool(ComposeboxMode mode) {
-  switch (mode) {
-    case ComposeboxMode::kAIM:
-      return ComposeboxMenuItemType::kAIM;
-    case ComposeboxMode::kImageGeneration:
-      return ComposeboxMenuItemType::kCreateImage;
-    case ComposeboxMode::kDeepSearch:
-      return ComposeboxMenuItemType::kDeepSearch;
-    case ComposeboxMode::kCanvas:
-      return ComposeboxMenuItemType::kCanvas;
-    case ComposeboxMode::kRegularSearch:
-      return ComposeboxMenuItemType::kUnknown;
-  }
-}
-
-// Returns YES if the menu item type represents a tool (which can be toggled).
-BOOL IsToolType(ComposeboxMenuItemType type) {
-  switch (type) {
-    case ComposeboxMenuItemType::kAIM:
-    case ComposeboxMenuItemType::kCreateImage:
-    case ComposeboxMenuItemType::kDeepSearch:
-    case ComposeboxMenuItemType::kCanvas:
-      return YES;
-    default:
-      return NO;
-  }
-}
-
 }  // namespace
-
 
 
 @interface ComposeboxMenuViewController () <UICollectionViewDelegate>
@@ -193,113 +163,16 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
   CHECK(_inputState);
   NSMutableArray<ComposeboxMenuSection*>* sections =
       [[NSMutableArray alloc] init];
-
-  // Attachments Section
-  NSMutableArray<ComposeboxMenuItem*>* attachmentsItems =
-      [[NSMutableArray alloc] init];
-  NSArray<ComposeboxMenuItem*>* allAttachments =
-      [self availableAttachmentItems];
-
-  for (ComposeboxMenuItem* item in allAttachments) {
-    std::optional<ComposeboxAttachmentOption> option =
-        AttachmentOptionForMenuItemType(item.type);
-    if (option && ![_inputState isAttachmentHidden:*option]) {
-      [attachmentsItems addObject:item];
-    }
-  }
-
-  if (attachmentsItems.count > 0) {
-    ComposeboxMenuSection* attachmentsSection = [[ComposeboxMenuSection alloc]
-        initWithTitle:nil
-                items:attachmentsItems
-           identifier:ComposeboxMenuSectionIdentifier::kAttachments];
+  if (ComposeboxMenuSection* attachmentsSection = [self attachmentsSection]) {
     [sections addObject:attachmentsSection];
   }
-
-  // Shared Tabs Section
-  if (_inputState.sharedTabs.count > 0) {
-    NSMutableArray<NSString*>* tabDomains = [[NSMutableArray alloc] init];
-    NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
-    for (ComposeboxMenuSharedTab* tab in _inputState.sharedTabs) {
-      if (tab.URL.is_valid() && !tab.URL.host().empty()) {
-        std::u16string elidedHost = url_formatter::
-            FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                tab.URL);
-        [tabDomains addObject:base::SysUTF16ToNSString(elidedHost)];
-      }
-      UIImage* favicon =
-          tab.favicon
-              ?: SymbolWithPointSize(SymbolGlobe, kSharedTabFaviconSymbolSize);
-      [favicons addObject:favicon];
-    }
-    NSString* subtitle = [tabDomains componentsJoinedByString:@", "];
-
-    ComposeboxMenuItem* sharedTabsItem = [[ComposeboxMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS)
-             subtitle:subtitle
-             favicons:favicons
-                 type:ComposeboxMenuItemType::kAttachmentSharedTabs];
-
-    ComposeboxMenuSection* sharedTabsSection = [[ComposeboxMenuSection alloc]
-        initWithTitle:nil
-                items:@[ sharedTabsItem ]
-           identifier:ComposeboxMenuSectionIdentifier::kSharedTabs];
+  if (ComposeboxMenuSection* sharedTabsSection = [self sharedTabsSection]) {
     [sections addObject:sharedTabsSection];
   }
-
-  ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
-
-  // Tools Section
-  NSMutableArray<ComposeboxMenuItem*>* toolsItems =
-      [[NSMutableArray alloc] init];
-
-  for (ComposeboxMode mode : ComposeboxModeSet::All()) {
-    if (mode == ComposeboxMode::kRegularSearch) {
-      continue;
-    }
-    if (![_inputState isToolHidden:mode]) {
-      [toolsItems
-          addObject:[[ComposeboxMenuItem alloc]
-                        initWithTitle:[uiConfig menuLabelForTool:mode]
-                                image:[uiConfig iconForTool:mode]
-                                 type:MenuItemTypeForTool(mode)
-                             disabled:[_inputState isToolDisabled:mode]]];
-    }
-  }
-
-  if (toolsItems.count > 0) {
-    ComposeboxMenuSection* toolsSection = [[ComposeboxMenuSection alloc]
-        initWithTitle:uiConfig.toolsSectionHeader
-                items:toolsItems
-           identifier:ComposeboxMenuSectionIdentifier::kTools];
+  if (ComposeboxMenuSection* toolsSection = [self toolsSection]) {
     [sections addObject:toolsSection];
   }
-
-  // Models Section
-  NSMutableArray<ComposeboxMenuItem*>* modelsItems =
-      [[NSMutableArray alloc] init];
-
-  for (ComposeboxModelOption option : ComposeboxModelOptionSet::All()) {
-    if (option == ComposeboxModelOption::kNone) {
-      continue;
-    }
-
-    if (![_inputState isModelHidden:option]) {
-      [modelsItems
-          addObject:[[ComposeboxMenuItem alloc]
-                        initWithTitle:[uiConfig menuLabelForModel:option]
-                                image:[uiConfig iconForModel:option]
-                                 type:MenuItemTypeForModel(option)
-                             disabled:[_inputState isModelDisabled:option]]];
-    }
-  }
-
-  if (modelsItems.count > 0) {
-    ComposeboxMenuSection* modelsSection = [[ComposeboxMenuSection alloc]
-        initWithTitle:uiConfig.modelSectionHeader
-                items:modelsItems
-           identifier:ComposeboxMenuSectionIdentifier::kModels];
+  if (ComposeboxMenuSection* modelsSection = [self modelsSection]) {
     [sections addObject:modelsSection];
   }
 
@@ -738,6 +611,129 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
   cell.accessibilityIdentifier =
       AccessibilityIdentifierForMenuItemType(item.type);
 }
+
+#pragma mark - Private Sections Configuration
+
+// Returns the shared tabs section if available.
+- (ComposeboxMenuSection*)attachmentsSection {
+  NSMutableArray<ComposeboxMenuItem*>* attachmentsItems =
+      [[NSMutableArray alloc] init];
+  NSArray<ComposeboxMenuItem*>* allAttachments =
+      [self availableAttachmentItems];
+
+  for (ComposeboxMenuItem* item in allAttachments) {
+    std::optional<ComposeboxAttachmentOption> option =
+        AttachmentOptionForMenuItemType(item.type);
+    if (option && ![_inputState isAttachmentHidden:*option]) {
+      [attachmentsItems addObject:item];
+    }
+  }
+
+  if (attachmentsItems.count == 0) {
+    return nil;
+  }
+
+  return [[ComposeboxMenuSection alloc]
+      initWithTitle:nil
+              items:attachmentsItems
+         identifier:ComposeboxMenuSectionIdentifier::kAttachments];
+}
+
+// Returns the shared tabs section if available.
+- (ComposeboxMenuSection*)sharedTabsSection {
+  if (_inputState.sharedTabs.count == 0) {
+    return nil;
+  }
+
+  NSMutableArray<NSString*>* tabDomains = [[NSMutableArray alloc] init];
+  NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
+  for (ComposeboxMenuSharedTab* tab in _inputState.sharedTabs) {
+    if (tab.URL.is_valid() && !tab.URL.host().empty()) {
+      std::u16string elidedHost = url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              tab.URL);
+      [tabDomains addObject:base::SysUTF16ToNSString(elidedHost)];
+    }
+    UIImage* favicon =
+        tab.favicon
+            ?: SymbolWithPointSize(SymbolGlobe, kSharedTabFaviconSymbolSize);
+    [favicons addObject:favicon];
+  }
+  NSString* subtitle = [tabDomains componentsJoinedByString:@", "];
+
+  ComposeboxMenuItem* sharedTabsItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS)
+           subtitle:subtitle
+           favicons:favicons
+               type:ComposeboxMenuItemType::kAttachmentSharedTabs];
+
+  return [[ComposeboxMenuSection alloc]
+      initWithTitle:nil
+              items:@[ sharedTabsItem ]
+         identifier:ComposeboxMenuSectionIdentifier::kSharedTabs];
+}
+
+// Returns the tools section if there are tools available.
+- (ComposeboxMenuSection*)toolsSection {
+  NSMutableArray<ComposeboxMenuItem*>* toolsItems =
+      [[NSMutableArray alloc] init];
+
+  ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
+  for (ComposeboxMode mode : ComposeboxModeSet::All()) {
+    if (mode == ComposeboxMode::kRegularSearch) {
+      continue;
+    }
+    if (![_inputState isToolHidden:mode]) {
+      [toolsItems
+          addObject:[[ComposeboxMenuItem alloc]
+                        initWithTitle:[uiConfig menuLabelForTool:mode]
+                                image:[uiConfig iconForTool:mode]
+                                 type:MenuItemTypeForTool(mode)
+                             disabled:[_inputState isToolDisabled:mode]]];
+    }
+  }
+
+  if (toolsItems.count == 0) {
+    return nil;
+  }
+
+  return [[ComposeboxMenuSection alloc]
+      initWithTitle:uiConfig.toolsSectionHeader
+              items:toolsItems
+         identifier:ComposeboxMenuSectionIdentifier::kTools];
+}
+
+// Returns the models section if there are models available.
+- (ComposeboxMenuSection*)modelsSection {
+  NSMutableArray<ComposeboxMenuItem*>* modelsItems =
+      [[NSMutableArray alloc] init];
+
+  ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
+  for (ComposeboxModelOption option : ComposeboxModelOptionSet::All()) {
+    if (option == ComposeboxModelOption::kNone) {
+      continue;
+    }
+
+    if (![_inputState isModelHidden:option]) {
+      [modelsItems
+          addObject:[[ComposeboxMenuItem alloc]
+                        initWithTitle:[uiConfig menuLabelForModel:option]
+                                image:[uiConfig iconForModel:option]
+                                 type:MenuItemTypeForModel(option)
+                             disabled:[_inputState isModelDisabled:option]]];
+    }
+  }
+
+  if (modelsItems.count == 0) {
+    return nil;
+  }
+
+  return [[ComposeboxMenuSection alloc]
+      initWithTitle:uiConfig.modelSectionHeader
+              items:modelsItems
+         identifier:ComposeboxMenuSectionIdentifier::kModels];
+}
+
 #pragma mark - UIResponder
 
 // To always be able to register key commands via -keyCommands, the VC must be

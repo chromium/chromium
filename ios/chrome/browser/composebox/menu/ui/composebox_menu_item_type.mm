@@ -20,3 +20,30 @@ ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
       return ComposeboxMenuItemType::kUnknown;
   }
 }
+
+ComposeboxMenuItemType MenuItemTypeForTool(ComposeboxMode mode) {
+  switch (mode) {
+    case ComposeboxMode::kAIM:
+      return ComposeboxMenuItemType::kAIM;
+    case ComposeboxMode::kImageGeneration:
+      return ComposeboxMenuItemType::kCreateImage;
+    case ComposeboxMode::kDeepSearch:
+      return ComposeboxMenuItemType::kDeepSearch;
+    case ComposeboxMode::kCanvas:
+      return ComposeboxMenuItemType::kCanvas;
+    case ComposeboxMode::kRegularSearch:
+      return ComposeboxMenuItemType::kUnknown;
+  }
+}
+
+bool IsToolType(ComposeboxMenuItemType type) {
+  switch (type) {
+    case ComposeboxMenuItemType::kAIM:
+    case ComposeboxMenuItemType::kCreateImage:
+    case ComposeboxMenuItemType::kDeepSearch:
+    case ComposeboxMenuItemType::kCanvas:
+      return true;
+    default:
+      return false;
+  }
+}
