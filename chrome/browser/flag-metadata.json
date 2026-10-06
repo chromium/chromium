@@ -3265,11 +3265,6 @@
     "expiry_milestone": 170
   },
   {
-   "name": "enable-accessibility-atomic-live-regions",
-   "owners": ["kyraseevers@chromium.org", "//ui/accessibility/OWNERS"],
-   "expiry_milestone": 156
-  },
-  {
     "name": "enable-accessibility-extended-selection",
     "owners": ["rhalavati@chromium.org", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 170

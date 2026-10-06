@@ -461,9 +461,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       wcax->HandlePaneOpened(android_node->GetUniqueId());
       // ALERT events are only fired on the root node of the alert live region,
       // but verify that `node` is in fact an atomic live region root.
-      if (base::FeatureList::IsEnabled(
-              features::kAccessibilityAtomicLiveRegions) &&
-          node->data().IsAtomicLiveRegionRoot()) {
+      if (node->data().IsAtomicLiveRegionRoot()) {
         wcax->HandleAtomicLiveRegionChanged(android_node->GetUniqueId());
       }
       break;
@@ -547,9 +545,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       // root node of that live region. For atomic live regions, we should begin
       // at the root node and notify Android of every single node within the
       // subtree of this atomic live region root.
-      if (base::FeatureList::IsEnabled(
-              features::kAccessibilityAtomicLiveRegions) &&
-          node->data().IsAtomicLiveRegionRoot()) {
+      if (node->data().IsAtomicLiveRegionRoot()) {
         wcax->HandleAtomicLiveRegionChanged(android_node->GetUniqueId());
       }
       break;
@@ -558,12 +554,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       //  This event is fired when an object appears in a live region.
       bool is_atomic = node->data().IsAtomicLiveRegionRoot() ||
                        node->data().IsContainedInAtomicLiveRegion();
-      // If kAccessibilityAtomicLiveRegions is enabled and our node is atomic,
-      // it will have been handled by the LIVE_REGION_CHANGED case above.
-      // Otherwise, fire a WINDOW_CONTENT_CHANGED event to inform the Android
-      // Framework of the individual node change.
-      if (!(is_atomic && base::FeatureList::IsEnabled(
-                             features::kAccessibilityAtomicLiveRegions))) {
+      // If our node is atomic, it will have been handled by the
+      // LIVE_REGION_CHANGED case above. Otherwise, fire a
+      // WINDOW_CONTENT_CHANGED event to inform the Android Framework of the
+      // individual node change.
+      if (!is_atomic) {
         wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
       }
       break;

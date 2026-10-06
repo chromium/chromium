@@ -1214,10 +1214,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, misspelling suggestion span will be blocked from showing in"
                         + " composition mode."),
         Flag.baseFeature(
-                ContentFeatures.ACCESSIBILITY_ATOMIC_LIVE_REGIONS,
-                "When enabled, supports atomic announcements, meaning that when aria-atomic=true,"
-                    + " the entire live region will be announced not just the node that changed."),
-        Flag.baseFeature(
                 "LevelDBCacheSize",
                 "Reduces the size of the LevelDB cache to reduce memory usage at no expected speed"
                         + " cost"),

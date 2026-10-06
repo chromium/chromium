@@ -200,14 +200,12 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_addAlert() {
         performTest("add-alert.html", "add-alert-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_addAlertWithRoleChange() {
         performTest(
                 "add-alert-with-role-change.html",
@@ -217,7 +215,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_addAlertContent() {
         performTest(
                 "add-alert-content.html",
@@ -227,7 +224,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_alertShadowDomIgnoredChanged() {
         performTest(
                 "alert-shadow-dom-ignored-changed.html",
@@ -237,7 +233,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_alertShadowDomIgnoredReparented() {
         performTest(
                 "alert-shadow-dom-ignored-reparented.html",
@@ -1204,7 +1199,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionAdd() {
         performTest(
                 "live-region-add.html",
@@ -1214,7 +1208,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionAtomicAdd() {
         performTest(
                 "live-region-atomic-add.html",
@@ -1233,7 +1226,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionChanged() {
         performTest(
                 "live-region-change.html",
@@ -1243,7 +1235,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionChangedInnerHtml() {
         performTest(
                 "live-region-change-innerhtml.html",
@@ -1253,7 +1244,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionChangedInnerText() {
         performTest(
                 "live-region-change-innertext.html",
@@ -1263,7 +1253,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionAtomicChangedInnerText() {
         performTest(
                 "live-region-atomic-change-innertext.html",
@@ -1282,7 +1271,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionElemReparent() {
         performTest(
                 "live-region-elem-reparent.html",
@@ -1558,7 +1546,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_reportValidityInvalidField() {
         performTest(
                 "report-validity-invalid-field.html",

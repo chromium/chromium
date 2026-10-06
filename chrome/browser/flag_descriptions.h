@@ -5312,13 +5312,6 @@ inline constexpr char kAccessibilityExtendedSelectionDescription[] =
     "When enabled, extended selections are sent to Android through "
     "setSelection API add received using ACTION_SET_EXTENDED_SELECTION.";
 
-inline constexpr char kAccessibilityAtomicLiveRegionsName[] =
-    "Accessibility Atomic Live Regions";
-inline constexpr char kAccessibilityAtomicLiveRegionsDescription[] =
-    "When enabled, supports atomic announcements, meaning that when "
-    "aria-atomic=true, the entire live region will be announced not just the "
-    "node that changed.";
-
 inline constexpr char kAccessibilityRequestScopedContentChangedEventsName[] =
     "Accessibility Request Scoped Content Changed Events";
 inline constexpr char
