@@ -15,7 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -189,30 +189,74 @@ bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
-class GpuWatchdogInit {
+bool IsGpuWatchdogEnabled(const GpuPreferences& gpu_preferences,
+                          const base::CommandLine& command_line) {
+#if defined(NDEBUG)
+  return !gpu_preferences.disable_gpu_watchdog &&
+         !command_line.HasSwitch(switches::kHeadless);
+#else
+  // Disable the watchdog in debug builds because they tend to only be run by
+  // developers who will not appreciate the watchdog killing the GPU process.
+  return false;
+#endif
+}
+
+// Don't start watchdog immediately, to allow developers to switch to VT2 on
+// startup.
+constexpr bool kDelayGpuWatchdogStart = BUILDFLAG(IS_CHROMEOS);
+
+// Owns the lifecycle of GpuInit2's watchdog thread during
+// GpuInit2::InitializeAndStartSandbox(), where the watchdog may be created,
+// recreated or destroyed several times. When this goes out of scope, i.e. on
+// every return path, the current watchdog, if any, is told that
+// initialization is complete.
+class GpuWatchdogInitScope {
+  STACK_ALLOCATED();
+
  public:
-  GpuWatchdogInit() = default;
-  ~GpuWatchdogInit() {
-    if (watchdog_ptr_)
-      watchdog_ptr_->OnInitComplete();
+  GpuWatchdogInitScope(std::unique_ptr<GpuWatchdogThread>& watchdog_thread,
+                       bool enabled,
+                       bool starts_backgrounded)
+      : watchdog_thread_(watchdog_thread),
+        enabled_(enabled),
+        starts_backgrounded_(starts_backgrounded) {}
+  GpuWatchdogInitScope(const GpuWatchdogInitScope&) = delete;
+  GpuWatchdogInitScope& operator=(const GpuWatchdogInitScope&) = delete;
+  ~GpuWatchdogInitScope() {
+    if (watchdog_thread_) {
+      watchdog_thread_->OnInitComplete();
+    }
   }
 
-  void SetGpuWatchdogPtr(GpuWatchdogThread* ptr) { watchdog_ptr_ = ptr; }
+  // Whether the watchdog is enabled for this GPU process.
+  bool enabled() const { return enabled_; }
+  // The current watchdog, or null.
+  GpuWatchdogThread* get() const { return watchdog_thread_.get(); }
+
+  // Creates a new watchdog. The current watchdog, if any, is destroyed first.
+  void Create(bool software_rendering) {
+    watchdog_thread_ = nullptr;
+    watchdog_thread_ = GpuWatchdogThread::Create(
+        starts_backgrounded_, software_rendering, "GpuWatchdog");
+  }
+  void Destroy() { watchdog_thread_ = nullptr; }
+
+  void Pause() {
+    if (watchdog_thread_) {
+      watchdog_thread_->PauseWatchdog();
+    }
+  }
+  void Resume() {
+    if (watchdog_thread_) {
+      watchdog_thread_->ResumeWatchdog();
+    }
+  }
 
  private:
-  raw_ptr<GpuWatchdogThread, DanglingUntriaged> watchdog_ptr_ = nullptr;
+  std::unique_ptr<GpuWatchdogThread>& watchdog_thread_;
+  const bool enabled_;
+  const bool starts_backgrounded_;
 };
-
-void PauseGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
-  if (watchdog_thread) {
-    watchdog_thread->PauseWatchdog();
-  }
-}
-void ResumeGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
-  if (watchdog_thread) {
-    watchdog_thread->ResumeWatchdog();
-  }
-}
 
 // TODO(crbug.com/40700374): We currently do not handle
 // VK_ERROR_DEVICE_LOST in in-process-gpu.
@@ -361,6 +405,34 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
 
 }  // namespace
 
+struct GpuInit2::InitState {
+  STACK_ALLOCATED();
+
+ public:
+  InitState(std::unique_ptr<GpuWatchdogThread>& watchdog_thread,
+            bool enable_watchdog,
+            bool watchdog_starts_backgrounded)
+      : watchdog(watchdog_thread,
+                 enable_watchdog,
+                 watchdog_starts_backgrounded) {}
+  InitState(const InitState&) = delete;
+  InitState& operator=(const InitState&) = delete;
+
+  // Blocklist decisions based on basic GPUInfo may not be final. It might
+  // need more context based GPUInfo. In such situations, switching to
+  // SwiftShader needs to wait until creating a context.
+  bool needs_more_info = true;
+
+  bool pre_sandbox_startup_done = false;
+  bool sandbox_start_attempted = false;
+
+  // Null until GL is initialized, and if GL is disabled.
+  gl::GLDisplay* gl_display = nullptr;
+  bool gl_disabled = false;
+
+  GpuWatchdogInitScope watchdog;
+};
+
 GpuInit2::GpuInit2() = default;
 
 GpuInit2::~GpuInit2() {
@@ -374,6 +446,9 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   LOG(WARNING) << "Starting gpu initialization.";
 #endif  //  BUILDFLAG(IS_CHROMEOS)
   gpu_preferences_ = gpu_preferences;
+  InitState state(watchdog_thread_,
+                  IsGpuWatchdogEnabled(gpu_preferences_, *command_line),
+                  gpu_preferences_.watchdog_starts_backgrounded);
 
   // Record the number of recent GPU process crashes as a crash key so that it
   // is included in crash reports if this GPU process terminates unexpectedly.
@@ -382,12 +457,8 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
     crash_key.Set(
         command_line->GetSwitchValueASCII(switches::kGpuRecentCrashCount));
   }
-  // Blocklist decisions based on basic GPUInfo may not be final. It might
-  // need more context based GPUInfo. In such situations, switching to
-  // SwiftShader needs to wait until creating a context.
-  bool needs_more_info = true;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
-  needs_more_info = false;
+  state.needs_more_info = false;
   CollectBasicGraphicsInfo(command_line, &gpu_info_);
 
   // Set keys for crash logging based on preliminary gpu info, in case we
@@ -411,16 +482,14 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   // Compute blocklist and driver bug workaround decisions based on basic GPU
   // info.
-  gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                            command_line, &needs_more_info);
+  gpu_feature_info_ = ComputeGpuFeatureInfo(
+      gpu_info_, gpu_preferences_, command_line, &state.needs_more_info);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
 #endif  // IS_WIN || IS_MAC
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
-  GpuDriverBugWorkarounds workarounds(
-      gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
   gpu_info_.in_process_gpu = false;
 
   DCHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationNone);
@@ -430,16 +499,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
-      gpu_preferences_.disable_software_rasterizer, needs_more_info);
-
-  bool enable_watchdog = !gpu_preferences_.disable_gpu_watchdog &&
-                         !command_line->HasSwitch(switches::kHeadless);
-
-  // Disable the watchdog in debug builds because they tend to only be run by
-  // developers who will not appreciate the watchdog killing the GPU process.
-#ifndef NDEBUG
-  enable_watchdog = false;
-#endif
+      gpu_preferences_.disable_software_rasterizer, state.needs_more_info);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool gpu_sandbox_start_early = gpu_preferences_.gpu_sandbox_start_early;
@@ -457,37 +517,22 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gpu_sandbox_start_early) {
     // The sandbox will be started earlier than usual (i.e. before GL) so
     // execute the pre-sandbox steps now.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences_, workarounds,
-                                       &gpu_info_);
+    RunPreSandboxStartup(state);
   }
-
-  // watchdog_init will call watchdog OnInitComplete() at the end of this
-  // function.
-  GpuWatchdogInit watchdog_init;
-
-  // Don't start watchdog immediately, to allow developers to switch to VT2 on
-  // startup.
-  constexpr bool delayed_watchdog_enable = BUILDFLAG(IS_CHROMEOS);
 
   // Start the GPU watchdog only after anything that is expected to be time
   // consuming has completed, otherwise the process is liable to be aborted.
-  if (enable_watchdog && !delayed_watchdog_enable) {
+  if (state.watchdog.enabled() && !kDelayGpuWatchdogStart) {
     TRACE_EVENT("gpu,startup", "Create GpuWatchdog");
-    watchdog_thread_ =
-        GpuWatchdogThread::Create(gpu_preferences_.watchdog_starts_backgrounded,
-                                  gl_use_swiftshader_, "GpuWatchdog");
-    watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
+    state.watchdog.Create(gl_use_swiftshader_);
   }
 
-  bool attempted_startsandbox = false;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS ARM Mali, GPU driver userspace creates threads when
   // initializing a GL context, so start the sandbox early.
   // TODO(zmo): Need to collect OS version before this.
   if (gpu_preferences_.gpu_sandbox_start_early) {
-    gpu_info_.sandboxed = sandbox_helper_->EnsureSandboxInitialized(
-        watchdog_thread_.get(), &gpu_info_, gpu_preferences_);
-    attempted_startsandbox = true;
+    StartSandbox(state);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -505,19 +550,17 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   ui::OzonePlatform::InitializeForGPU(params);
 #endif  // BUILDFLAG(IS_OZONE)
 
-  gl::GLDisplay* gl_display = nullptr;
-
   // Pause watchdog. LoadLibrary in GLBindings may take long time.
-  PauseGpuWatchdog(watchdog_thread_.get());
+  state.watchdog.Pause();
 
   if (!gl::init::InitializeStaticGLBindingsOneOff()) {
     VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
     return false;
   }
   if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
-    gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+    state.gl_display = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings*/ false, gl::GpuPreference::kDefault);
-    if (!gl_display) {
+    if (!state.gl_display) {
       VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
       return false;
     }
@@ -530,17 +573,16 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   // to use. So call PreSandboxStartup after GL initialization. But make
   // sure the watchdog is paused as loadLibrary may take a long time and
   // restarting the GPU process will not help.
-  if (!attempted_startsandbox) {
+  if (!state.sandbox_start_attempted) {
     // The sandbox is not started yet.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences_, workarounds,
-                                       &gpu_info_);
+    RunPreSandboxStartup(state);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  ResumeGpuWatchdog(watchdog_thread_.get());
+  state.watchdog.Resume();
 
   auto impl = gl::GetGLImplementationParts();
-  bool gl_disabled = impl == gl::kGLImplementationDisabled;
+  state.gl_disabled = impl == gl::kGLImplementationDisabled;
 
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
   bool is_swangle = impl == gl::ANGLEImplementation::kSwiftShader;
@@ -568,7 +610,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
-  if (!gl_disabled) {
+  if (!state.gl_disabled) {
     if (!gl_use_swiftshader_) {
       if (!CollectGraphicsInfo(&gpu_info_)) {
         VLOG(1) << "gpu::CollectGraphicsInfo failed";
@@ -588,19 +630,14 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
         return false;
 #else
         SaveHardwareGpuInfoAndGpuFeatureInfo();
-        gl::init::ShutdownGL(gl_display, true);
-        if (watchdog_thread_.get()) {
+        gl::init::ShutdownGL(state.gl_display, true);
+        if (state.watchdog.get()) {
           // Recreate watchdog for software rasterizer.
-          watchdog_thread_ = nullptr;
-          watchdog_init.SetGpuWatchdogPtr(nullptr);
-          watchdog_thread_ = GpuWatchdogThread::Create(
-              gpu_preferences_.watchdog_starts_backgrounded,
-              /*software_rendering=*/true, "GpuWatchdog");
-          watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
+          state.watchdog.Create(/*software_rendering=*/true);
         }
-        gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+        state.gl_display = gl::init::InitializeGLNoExtensionsOneOff(
             /*init_bindings=*/true, gl::GpuPreference::kDefault);
-        if (!gl_display) {
+        if (!state.gl_display) {
           VLOG(1)
               << "gl::init::InitializeGLNoExtensionsOneOff with SwiftShader "
               << "failed";
@@ -658,11 +695,11 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
         features::SkiaGraphiteDawnBackendValidation()) {
       // Enable ANGLE debug layer for Graphite backend validation, sharing the
       // D3D11 device between ANGLE and Dawn. Requires GL reinit.
-      gl::init::ShutdownGL(gl_display, true);
+      gl::init::ShutdownGL(state.gl_display, true);
       gl::GLDisplayEGL::EnableANGLEDebugLayer();
-      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+      state.gl_display = gl::init::InitializeGLNoExtensionsOneOff(
           /*init_bindings=*/true, gl::GpuPreference::kDefault);
-      if (!gl_display) {
+      if (!state.gl_display) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
                    "after enabling ANGLE debug layer";
         return false;
@@ -676,7 +713,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
     // which WebGPU may use on D3D12 devices.
     // Don't handle errors as failure here is non-fatal. Loading either DLL
     // again at a later point will fail as well.
-    PauseGpuWatchdog(watchdog_thread_.get());
+    state.watchdog.Pause();
 
     base::FilePath module_path;
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
@@ -722,7 +759,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif
     }
 
-    ResumeGpuWatchdog(watchdog_thread_.get());
+    state.watchdog.Resume();
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -786,24 +823,25 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 
   // Collect GPU process info
-  if (!gl_disabled) {
+  if (!state.gl_disabled) {
     if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
       VLOG(1) << "gpu::CollectGpuExtraInfo failed";
       return false;
     }
   }
 
-  if (!gl_disabled) {
+  if (!state.gl_disabled) {
     if (!gpu_feature_info_.disabled_extensions.empty()) {
       gl::init::SetDisabledExtensionsPlatform(
           gpu_feature_info_.disabled_extensions);
     }
-    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(gl_display)) {
+    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(
+            state.gl_display)) {
       VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
       return false;
     }
     default_offscreen_surface_ =
-        gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
+        gl::init::CreateOffscreenGLSurface(state.gl_display, gfx::Size());
     if (!default_offscreen_surface_) {
       VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
       return false;
@@ -814,7 +852,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   // Driver may create a compatibility profile context when collect graphics
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
-  if (!gl_disabled && !gl_use_swiftshader_) {
+  if (!state.gl_disabled && !gl_use_swiftshader_) {
     if (!CollectGraphicsInfo(&gpu_info_)) {
       return false;
     }
@@ -852,7 +890,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
   }
-  if (gl_disabled) {
+  if (state.gl_disabled) {
     // GL is disabled in display compositor mode, typically due to repeated GPU
     // crashes. Disable WebNN to ensure stability in this state.
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
@@ -880,20 +918,21 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
         (use_angle == gl::kANGLEImplementationSwiftShaderName ||
          use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName)) {
       gl_use_swiftshader_ = true;
-      if (watchdog_thread_) {
+      if (state.watchdog.get()) {
         recreate_watchdog = true;
       }
     }
   }
 #if BUILDFLAG(IS_LINUX) || \
     (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
-  if (!gl_disabled && !gl_use_swiftshader_ && std::getenv("RUNNING_UNDER_RR")) {
+  if (!state.gl_disabled && !gl_use_swiftshader_ &&
+      std::getenv("RUNNING_UNDER_RR")) {
     // https://rr-project.org/ is a Linux-only record-and-replay debugger that
     // is unhappy when things like GPU drivers write directly into the
     // process's address space.  Using swiftshader helps ensure that doesn't
     // happen and keeps Chrome and linux-chromeos usable with rr.
     gl_use_swiftshader_ = true;
-    if (watchdog_thread_) {
+    if (state.watchdog.get()) {
       recreate_watchdog = true;
     }
   }
@@ -903,25 +942,18 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gl_use_swiftshader_ ||
       gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
     software_rendering = true;
-  } else if (gl_disabled) {
+  } else if (state.gl_disabled) {
     DCHECK(!recreate_watchdog);
-    watchdog_thread_ = nullptr;
-    watchdog_init.SetGpuWatchdogPtr(nullptr);
-  } else if (enable_watchdog && delayed_watchdog_enable) {
+    state.watchdog.Destroy();
+  } else if (state.watchdog.enabled() && kDelayGpuWatchdogStart) {
     recreate_watchdog = true;
   }
   if (recreate_watchdog) {
-    watchdog_thread_ = nullptr;
-    watchdog_init.SetGpuWatchdogPtr(nullptr);
-    watchdog_thread_ =
-        GpuWatchdogThread::Create(gpu_preferences_.watchdog_starts_backgrounded,
-                                  software_rendering, "GpuWatchdog");
-    watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
+    state.watchdog.Create(software_rendering);
   }
 
-  if (!gpu_info_.sandboxed && !attempted_startsandbox) {
-    gpu_info_.sandboxed = sandbox_helper_->EnsureSandboxInitialized(
-        watchdog_thread_.get(), &gpu_info_, gpu_preferences_);
+  if (!gpu_info_.sandboxed && !state.sandbox_start_attempted) {
+    StartSandbox(state);
   }
 
   InitializeDawnProcs();
@@ -1017,9 +1049,6 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // BUILDFLAG(IS_OZONE)
 
   RecordUMA();
-  if (!watchdog_thread_) {
-    watchdog_init.SetGpuWatchdogPtr(nullptr);
-  }
 
 #if !BUILDFLAG(IS_MAC)
   if (gpu_feature_info_.IsWorkaroundEnabled(CHECK_EGL_FENCE_BEFORE_WAIT)) {
@@ -1032,6 +1061,22 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // !BUILDFLAG(IS_MAC)
 
   return true;
+}
+
+void GpuInit2::RunPreSandboxStartup(InitState& state) {
+  DCHECK(!state.pre_sandbox_startup_done);
+  sandbox_helper_->PreSandboxStartup(
+      gpu_preferences_,
+      GpuDriverBugWorkarounds(
+          gpu_feature_info_.enabled_gpu_driver_bug_workarounds),
+      &gpu_info_);
+  state.pre_sandbox_startup_done = true;
+}
+
+void GpuInit2::StartSandbox(InitState& state) {
+  gpu_info_.sandboxed = sandbox_helper_->EnsureSandboxInitialized(
+      state.watchdog.get(), &gpu_info_, gpu_preferences_);
+  state.sandbox_start_attempted = true;
 }
 
 void GpuInit2::InitializeInProcess(base::CommandLine* command_line,

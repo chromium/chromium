@@ -103,6 +103,16 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 {
 #endif
 
  private:
+  // State shared by the steps of InitializeAndStartSandbox(). It only lives
+  // for the duration of that call. Defined in gpu_init_2.cc.
+  struct InitState;
+
+  // Runs GpuSandboxHelper::PreSandboxStartup(). Must run exactly once, before
+  // the sandbox is started.
+  void RunPreSandboxStartup(InitState& state);
+  // Starts the sandbox and records the result in `gpu_info_`.
+  void StartSandbox(InitState& state);
+
   bool InitializeDawn();
   bool InitializeVulkan();
   void SetSkiaBackendType();
