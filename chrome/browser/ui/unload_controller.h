@@ -393,7 +393,11 @@ class UnloadController : public WebContentsCollection::Observer,
     // Window close is committed; firing unload (ClosePage) handlers.
     kRunningUnload,
 
-    // All beforeunload and unload processing has completed.
+    // All beforeunload and unload processing has completed. This can still
+    // return to kIdle if the window close is cancelled before deletion is
+    // scheduled, e.g. the tab strip became empty (TabStripEmpty()) and the user
+    // then cancels the in-progress download warning shown when closing the
+    // window.
     kUnloadCompleted,
   };
 

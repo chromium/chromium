@@ -8,9 +8,12 @@
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -23,21 +26,30 @@
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/download/public/common/download_item.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
+#include "content/public/test/slow_download_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -236,3 +248,88 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerBrowserTest,
   // 3. Let the ClosePage() ACK (ClosePageIgnoringUnloadEvents) arrive.
   content::WebContentsDestroyedWatcher(contents).Wait();
 }
+
+// On Mac and ChromeOS, in-progress downloads of regular profiles don't block
+// window close, so the download warning dialog is never shown.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+
+class UnloadControllerDownloadBrowserTest : public InProcessBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &content::SlowDownloadHttpResponse::HandleSlowDownloadRequest));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    // Cancel the stalled download so that browser teardown is not blocked on
+    // another download warning.
+    content::DownloadManager::DownloadVector downloads;
+    browser()->GetProfile()->GetDownloadManager()->GetAllDownloads(&downloads);
+    for (download::DownloadItem* download : downloads) {
+      download->Cancel(/*user_cancel=*/true);
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  // Starts a download that never completes, from the active tab. The tab stays
+  // in the tab strip since the download navigation does not commit.
+  void CreateStalledDownload() {
+    content::DownloadTestObserverInProgress observer(
+        browser()->GetProfile()->GetDownloadManager(), 1);
+    SetPromptForDownload(browser(), false);
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(),
+        embedded_test_server()->GetURL(
+            content::SlowDownloadHttpResponse::kKnownSizeUrl),
+        WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
+    observer.WaitForFinished();
+    ASSERT_EQ(1u, observer.NumDownloadsSeenInState(
+                      download::DownloadItem::IN_PROGRESS));
+  }
+};
+
+// Regression test for crbug.com/570186027:
+// Closing the last tab through a path that does not pre-check in-progress
+// downloads (e.g. Ctrl+W -> chrome::CloseTab()) empties the tab strip first.
+// The resulting window close (Browser::TabStripEmpty() -> HandleBeforeClose())
+// shows the download warning, and UnloadController::TabStripEmpty() moves to
+// kUnloadCompleted while the warning is open. Cancelling that warning must not
+// crash and must leave the browser window usable.
+IN_PROC_BROWSER_TEST_F(UnloadControllerDownloadBrowserTest,
+                       CancelDownloadWarningAfterClosingLastTabViaAccelerator) {
+  ASSERT_NO_FATAL_FAILURE(CreateStalledDownload());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
+                                       "DownloadInProgressDialogView");
+  chrome::CloseTab(browser());
+  views::Widget* const dialog = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(dialog);
+
+  // The last tab is already gone by the time the download warning shows up.
+  EXPECT_TRUE(browser()->GetTabStripModel()->empty());
+
+  // "Continue download" (i.e. cancel closing the window).
+  dialog->widget_delegate()->AsDialogDelegate()->CancelDialog();
+
+  UnloadController* const unload_controller = UnloadController::From(browser());
+  EXPECT_FALSE(unload_controller->is_attempting_to_close_browser());
+  EXPECT_FALSE(unload_controller->is_delete_scheduled());
+
+  // The window stays open and shows the downloads page.
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      GURL(chrome::kChromeUIDownloadsURL),
+      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetVisibleURL());
+
+  // The download keeps running, even though the tab that started it is gone.
+  content::DownloadManager::DownloadVector downloads;
+  browser()->GetProfile()->GetDownloadManager()->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+  EXPECT_EQ(download::DownloadItem::IN_PROGRESS, downloads[0]->GetState());
+}
+
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)

@@ -653,7 +653,21 @@ void UnloadController::TransitionTo(State new_state) {
       CHECK(state_ == State::kIdle ||
             state_ == State::kRunningBeforeUnloadForShutdown ||
             state_ == State::kBeforeUnloadConfirmed ||
-            state_ == State::kRunningBeforeUnloadForWindowClose);
+            state_ == State::kRunningBeforeUnloadForWindowClose ||
+            state_ == State::kUnloadCompleted);
+      // kUnloadCompleted -> kIdle can happen when the last tab is closed
+      // without going through the window close flow (e.g. Ctrl+W): the window
+      // close triggered by Browser::TabStripEmpty() shows the in-progress
+      // download warning (HandleBeforeClose()), and TabStripEmpty() below then
+      // moves state_ to kUnloadCompleted while the warning is still open. If
+      // the user cancels the warning, the window has not been closed, so it
+      // must become usable again (see crbug.com/570186027).
+      // TODO(crbug.com/570223950): Show the in-progress download warning
+      // before the last tab is closed (like beforeunload, from TabStripModel)
+      // so that a window close can no longer be cancelled after
+      // TabStripEmpty(). Then kUnloadCompleted can be terminal again and this
+      // transition removed.
+      CHECK(state_ != State::kUnloadCompleted || !is_delete_scheduled_);
       CHECK(tabs_needing_before_unload_fired_.empty());
       CHECK(tabs_needing_unload_fired_.empty());
       CHECK(on_close_confirmed_.is_null());
@@ -1076,12 +1090,16 @@ void UnloadController::InProgressDownloadResponse(bool cancel_downloads) {
   cancel_download_confirmation_state_ =
       CancelDownloadConfirmationState::kNotPrompted;
 
+  // Cancel the window close first so that `state_` is no longer
+  // kUnloadCompleted when the downloads tab below is added; otherwise tab
+  // strip observers may skip this browser because it is still attempting to
+  // close.
+  std::move(warn_before_closing_callback_)
+      .Run(WarnBeforeClosingResult::kDoNotClose);
+
   // Show the download page so the user can figure-out what downloads are still
   // in-progress.
   chrome::ShowDownloads(browser_);
-
-  std::move(warn_before_closing_callback_)
-      .Run(WarnBeforeClosingResult::kDoNotClose);
 }
 
 void UnloadController::FinishWarnBeforeClosing(WarnBeforeClosingResult result) {
