@@ -74,7 +74,8 @@
         "args": [
           "--use-gpu-in-tests",
           "--no-xvfb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -674,7 +675,8 @@
         "args": [
           "--use-gpu-in-tests",
           "--no-xvfb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1150,7 +1152,8 @@
         "args": [
           "--use-gpu-in-tests",
           "--no-xvfb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1710,7 +1713,8 @@
         "args": [
           "--use-gpu-in-tests",
           "--no-xvfb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

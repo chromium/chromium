@@ -40,6 +40,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -120,6 +121,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -276,6 +278,7 @@
           "--enable-features=TreesInViz",
           "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

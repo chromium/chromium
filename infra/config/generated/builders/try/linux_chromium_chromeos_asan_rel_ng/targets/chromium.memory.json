@@ -227,6 +227,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--test-launcher-print-test-stdio=always"
         ],
         "merge": {

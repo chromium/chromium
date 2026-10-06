@@ -7,7 +7,8 @@
         "args": [
           "--target-platform=android",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "description": "Run with android_30_google_apis_x86",
         "merge": {
@@ -53,7 +54,8 @@
         "args": [
           "--target-platform=webview",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "description": "Run with android_30_google_apis_x86",
         "merge": {
@@ -101,7 +103,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -134,7 +137,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -168,7 +172,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
