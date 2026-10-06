@@ -197,33 +197,33 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     void logEnterFullscreen(View contentView) {
-        Log.i(TAG, "enterFullscreen, systemUiVisibility=" + getSystemUiVisibility(contentView));
+        Log.i(TAG, "enterFullscreen, systemUiVisibility=%s", getSystemUiVisibility(contentView));
     }
 
     @Override
     void logEnterFullscreenOptions(FullscreenOptions fullscreenOptions) {
-        Log.i(TAG, "enterFullscreen, options=" + fullscreenOptions.toString());
+        Log.i(TAG, "enterFullscreen, options=%s", fullscreenOptions);
     }
 
     @Override
     void logExitFullscreen(View contentView) {
-        Log.i(TAG, "exitFullscreen, systemUiVisibility=" + getSystemUiVisibility(contentView));
+        Log.i(TAG, "exitFullscreen, systemUiVisibility=%s", getSystemUiVisibility(contentView));
     }
 
     @Override
     void logHandlerUnsetFullscreenLayout(View contentView) {
         Log.i(
                 TAG,
-                "handleMessage clear fullscreen flag, systemUiVisibility="
-                        + getSystemUiVisibility(contentView));
+                "handleMessage clear fullscreen flag, systemUiVisibility=%s",
+                getSystemUiVisibility(contentView));
     }
 
     @Override
     void logHandleMessageHideSystemBars(View contentView) {
         Log.i(
                 TAG,
-                "handleMessage set flags, systemUiVisibility="
-                        + getSystemUiVisibility(contentView));
+                "handleMessage set flags, systemUiVisibility=%s",
+                getSystemUiVisibility(contentView));
     }
 
     private @Nullable WindowInsetsCompat getWindowInsets(View contentView) {

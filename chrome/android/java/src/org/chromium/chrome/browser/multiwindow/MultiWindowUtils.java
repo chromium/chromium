@@ -1364,8 +1364,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     /* package */ static boolean shouldOpenInAdjacentWindow(
             Activity activity, boolean isTargetIncognito) {
         boolean isSourceIncognito = false;
-        if (activity instanceof ChromeTabbedActivity) {
-            isSourceIncognito = ((ChromeTabbedActivity) activity).isIncognitoWindow();
+        if (activity instanceof ChromeTabbedActivity cta) {
+            isSourceIncognito = cta.isIncognitoWindow();
         }
         if (isSourceIncognito != isTargetIncognito
                 && IncognitoUtils.isIncognitoAsWindowFullScreenEnabled()) {
@@ -1395,8 +1395,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     /* package */ static boolean shouldOpenInAdjacentWindowUpdated(
             Activity activity, boolean isTargetIncognito) {
         boolean isSourceIncognito = false;
-        if (activity instanceof ChromeTabbedActivity) {
-            isSourceIncognito = ((ChromeTabbedActivity) activity).isIncognitoWindow();
+        if (activity instanceof ChromeTabbedActivity cta) {
+            isSourceIncognito = cta.isIncognitoWindow();
         }
         if (isSourceIncognito != isTargetIncognito
                 && IncognitoUtils.isIncognitoAsWindowFullScreenEnabled()) {

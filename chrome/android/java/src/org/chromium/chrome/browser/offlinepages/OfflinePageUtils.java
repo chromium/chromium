@@ -519,7 +519,7 @@ public class OfflinePageUtils {
                         try {
                             generatedUri = ChromeFileProvider.generateUri(offlinePageFile);
                         } catch (IllegalArgumentException e) {
-                            Log.e(TAG, "Couldn't generate URI for sharing page: " + e);
+                            Log.e(TAG, "Couldn't generate URI for sharing page", e);
                             generatedUri = Uri.parse(pageUrl);
                         }
                         return generatedUri;

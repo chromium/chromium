@@ -81,7 +81,7 @@ public class OfflinePageArchivePublisherBridge {
             return callAddCompletedDownload(title, description, path, length, uri, referer);
         } catch (Exception e) {
             // In case of exception, we return a download id of 0.
-            Log.i(TAG, "ADM threw while trying to add a download. " + e);
+            Log.i(TAG, "ADM threw while trying to add a download.", e);
             return 0;
         }
     }
@@ -123,7 +123,7 @@ public class OfflinePageArchivePublisherBridge {
 
             return downloadManager.remove(ids);
         } catch (Exception e) {
-            Log.i(TAG, "ADM threw while trying to remove a download. " + e);
+            Log.i(TAG, "ADM threw while trying to remove a download.", e);
             return 0;
         }
     }
@@ -175,13 +175,11 @@ public class OfflinePageArchivePublisherBridge {
         } catch (Exception e) {
             Log.i(
                     TAG,
-                    "Unable to copy archive to pending URI (externalDownloadUri: "
-                            + externalDownloadUri
-                            + ", intermediateUri: "
-                            + intermediateUri
-                            + ", page.getFilePath(): "
-                            + page.getFilePath()
-                            + ")",
+                    "Unable to copy archive to pending URI (externalDownloadUri: %s,"
+                            + " intermediateUri: %s, page.getFilePath(): %s)",
+                    externalDownloadUri,
+                    intermediateUri,
+                    page.getFilePath(),
                     e);
             return "";
         }

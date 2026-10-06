@@ -190,8 +190,8 @@ public class PassphraseDialogFragment extends DialogFragment {
 
     private Delegate getDelegate() {
         Fragment target = getTargetFragment();
-        if (target instanceof Delegate) {
-            return (Delegate) target;
+        if (target instanceof Delegate delegate) {
+            return delegate;
         }
         return (Delegate) getActivity();
     }

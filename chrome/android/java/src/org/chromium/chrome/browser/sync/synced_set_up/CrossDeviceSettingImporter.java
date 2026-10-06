@@ -542,12 +542,11 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
             Log.i(
                     TAG,
-                    "onTabChangeOrGainFocus - localStateReady = "
-                            + localStateReady
-                            + ", prefTrackerReady = "
-                            + prefTrackerReady
-                            + ", themeTrackerReady = "
-                            + themeTrackerReady);
+                    "onTabChangeOrGainFocus - localStateReady = %s, prefTrackerReady = %s,"
+                            + " themeTrackerReady = %s",
+                    localStateReady,
+                    prefTrackerReady,
+                    themeTrackerReady);
         }
 
         // If all dependencies are ready, stop any active observation and proceed to import.
@@ -685,10 +684,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
             Log.i(
                     TAG,
-                    "running onDependenciesReady with status "
-                            + status
-                            + ", available immediately ? "
-                            + availableImmediately);
+                    "running onDependenciesReady with status %s, available immediately ? %s",
+                    status,
+                    availableImmediately);
         }
         boolean nonNtp = !UrlUtilities.isNtpUrl(tab.getUrl());
         SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
@@ -1697,7 +1695,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             res.put(key, crossDevicePrefs.get(crossDeviceKey));
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
-            Log.i(TAG, "getPrefsFromRemoteDevice, res = " + res);
+            Log.i(TAG, "getPrefsFromRemoteDevice, res = %s", res);
         }
         return res;
     }

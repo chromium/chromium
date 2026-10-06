@@ -390,7 +390,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
             Log.i(
                     TAG_MULTI_INSTANCE,
-                    "Existing Instance - selected Id allocated: " + preferredInstanceId);
+                    "Existing Instance - selected Id allocated: %s",
+                    preferredInstanceId);
             TabbedStartupWindowPolicyDelegate.getInstance()
                     .claimStartupPolicy(isIncognitoIntent, StartupMode.EXPLICIT_INSTANCE);
             profileType = getProfileType(preferredInstanceId, isIncognitoIntent);
@@ -406,7 +407,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (instanceIdForTask != INVALID_WINDOW_ID) {
             Log.i(
                     TAG_MULTI_INSTANCE,
-                    "Existing Instance - mapped Id allocated: " + instanceIdForTask);
+                    "Existing Instance - mapped Id allocated: %s",
+                    instanceIdForTask);
             TabbedStartupWindowPolicyDelegate.getInstance()
                     .claimStartupPolicy(isIncognitoIntent, StartupMode.MAPPED_TASK);
             profileType = getProfileType(instanceIdForTask, isIncognitoIntent);
@@ -503,7 +505,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         } else if (id != INVALID_WINDOW_ID) {
             Log.i(
                     TAG_MULTI_INSTANCE,
-                    "Existing Instance - persisted and unmapped Id allocated: " + id);
+                    "Existing Instance - persisted and unmapped Id allocated: %s",
+                    id);
         }
 
         if (id != INVALID_WINDOW_ID) {
@@ -613,10 +616,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         }
         Log.i(
                 TAG_MULTI_INSTANCE,
-                "New Instance - unused Id allocated: "
-                        + i
-                        + ". Task data during instance allocation: "
-                        + taskData);
+                "New Instance - unused Id allocated: %s. Task data during instance allocation: %s",
+                i,
+                taskData);
     }
 
     @Override
@@ -794,14 +796,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 || !expiredInstances.isEmpty()) {
             Log.i(
                     TAG_MULTI_INSTANCE,
-                    "Removed invalid instance data. Removed tasks-instance mappings: "
-                            + tasksRemoved
-                            + " and shared prefs for instances: "
-                            + instancesRemoved
-                            + " and inactive instances in excess of the closed instance limit: "
-                            + inactiveInstances
-                            + " and expired instances: "
-                            + expiredInstances);
+                    "Removed invalid instance data. Removed tasks-instance mappings: %s and shared"
+                            + " prefs for instances: %s and inactive instances in excess of the"
+                            + " closed instance limit: %s and expired instances: %s",
+                    tasksRemoved,
+                    instancesRemoved,
+                    inactiveInstances,
+                    expiredInstances);
         }
     }
 
