@@ -12,32 +12,28 @@
 #import "base/system/sys_info.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/public/provider/chrome/browser/signin/device_identifier_api.h"
 
 namespace {
 
 constexpr char kIOSOperatingSystem[] = "iOS";
 
-device_signals::SettingValue GetScreenLockSecured() {
-  ReauthenticationModule* auth_module = [[ReauthenticationModule alloc] init];
-  return [auth_module canAttemptReauth]
-             ? device_signals::SettingValue::ENABLED
-             : device_signals::SettingValue::DISABLED;
-}
-
 }  // namespace
 
 IOSSystemSignalsCollector::IOSSystemSignalsCollector(
-    DeviceAffiliationIdsCallback device_affiliation_ids_callback)
+    DeviceAffiliationIdsCallback device_affiliation_ids_callback,
+    id<ReauthenticationProtocol> reauth_module)
     : device_signals::BaseSignalsCollector({
           {device_signals::SignalName::kOsSignals,
            base::BindRepeating(&IOSSystemSignalsCollector::GetOsSignals,
                                base::Unretained(this))},
       }),
       device_affiliation_ids_callback_(
-          std::move(device_affiliation_ids_callback)) {
+          std::move(device_affiliation_ids_callback)),
+      reauth_module_(reauth_module) {
   CHECK(device_affiliation_ids_callback_);
+  CHECK(reauth_module_);
 }
 
 IOSSystemSignalsCollector::~IOSSystemSignalsCollector() = default;
@@ -58,7 +54,10 @@ void IOSSystemSignalsCollector::GetOsSignals(
                                                  device_affiliation_ids.end());
   signal_response->operating_system = kIOSOperatingSystem;
   signal_response->vendor_id = ios::provider::GetDeviceIdentifier();
-  device_signals::SettingValue screen_lock = GetScreenLockSecured();
+  device_signals::SettingValue screen_lock =
+      [reauth_module_ canAttemptReauth]
+          ? device_signals::SettingValue::ENABLED
+          : device_signals::SettingValue::DISABLED;
   signal_response->screen_lock_secured = screen_lock;
   // `diskEncryption` mirrors `screenLockSecured` on iOS.
   signal_response->disk_encryption = screen_lock;

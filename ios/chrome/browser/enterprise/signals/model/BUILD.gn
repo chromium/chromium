@@ -21,6 +21,7 @@ source_set("model") {
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/policy/model",
@@ -62,11 +63,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
-    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//ios/chrome/test/providers/signin:device_identifier",
     "//ios/public/provider/chrome/browser/signin:device_identifier_api",
     "//services/network:test_support",
     "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }

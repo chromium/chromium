@@ -15,13 +15,16 @@
 #import "components/device_signals/core/browser/base_signals_collector.h"
 #import "components/device_signals/core/browser/signals_types.h"
 
+@protocol ReauthenticationProtocol;
+
 class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
  public:
   using DeviceAffiliationIdsCallback =
       base::RepeatingCallback<base::flat_set<std::string>()>;
 
-  explicit IOSSystemSignalsCollector(
-      DeviceAffiliationIdsCallback device_affiliation_ids_callback);
+  IOSSystemSignalsCollector(
+      DeviceAffiliationIdsCallback device_affiliation_ids_callback,
+      id<ReauthenticationProtocol> reauth_module);
   ~IOSSystemSignalsCollector() override;
 
   IOSSystemSignalsCollector(const IOSSystemSignalsCollector&) = delete;
@@ -41,6 +44,7 @@ class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
       base::SysInfo::HardwareInfo hardware_info);
 
   const DeviceAffiliationIdsCallback device_affiliation_ids_callback_;
+  const id<ReauthenticationProtocol> reauth_module_;
   base::WeakPtrFactory<IOSSystemSignalsCollector> weak_factory_{this};
 };
 

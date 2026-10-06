@@ -15,6 +15,8 @@
 #import "components/device_signals/core/browser/signals_aggregator_impl.h"
 #import "components/device_signals/core/browser/signals_collector.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_system_signals_collector.h"
@@ -80,6 +82,7 @@ IOSSignalsAggregatorFactory::IOSSignalsAggregatorFactory()
     : ProfileKeyedServiceFactoryIOS("IOSSignalsAggregator") {
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
+  DependsOn(ReauthenticationServiceFactory::GetInstance());
 }
 
 IOSSignalsAggregatorFactory::~IOSSignalsAggregatorFactory() = default;
@@ -94,7 +97,9 @@ IOSSignalsAggregatorFactory::BuildServiceInstanceFor(
   CHECK(browser_policy_connector);
   collectors.push_back(std::make_unique<IOSSystemSignalsCollector>(
       base::BindRepeating(&BrowserPolicyConnectorIOS::GetDeviceAffiliationIds,
-                          base::Unretained(browser_policy_connector))));
+                          base::Unretained(browser_policy_connector)),
+      ReauthenticationServiceFactory::GetForProfile(profile)
+          ->GetReauthModule()));
 
   collectors.push_back(std::make_unique<ProfileSignalsCollectorIOS>(
       profile->GetPrefs(), profile->GetUserCloudPolicyManager(),

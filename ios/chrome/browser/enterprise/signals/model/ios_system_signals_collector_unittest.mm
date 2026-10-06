@@ -15,13 +15,12 @@
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/providers/signin/test_device_identifier.h"
 #import "ios/public/provider/chrome/browser/signin/device_identifier_api.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
@@ -33,26 +32,23 @@ class IOSSystemSignalsCollectorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     ios::provider::test::SetDeviceIdentifier(kFakeVendorId);
-    collector_ =
-        std::make_unique<IOSSystemSignalsCollector>(base::BindRepeating([] {
+    reauth_module_ = [[MockReauthenticationModule alloc] init];
+    collector_ = std::make_unique<IOSSystemSignalsCollector>(
+        base::BindRepeating([] {
           return base::flat_set<std::string>{kFakeDeviceAffiliationId};
-        }));
-
-    mock_auth_module_ = OCMClassMock([ReauthenticationModule class]);
-
-    OCMStub([mock_auth_module_ alloc]).andReturn(mock_auth_module_);
+        }),
+        reauth_module_);
   }
 
   void TearDown() override {
     ios::provider::test::ResetDeviceIdentifier();
-    [mock_auth_module_ stopMocking];
     PlatformTest::TearDown();
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IOSSystemSignalsCollector> collector_;
 
-  id mock_auth_module_;
+  MockReauthenticationModule* reauth_module_;
 };
 
 TEST_F(IOSSystemSignalsCollectorTest, GetSupportedSignalNames) {
@@ -71,8 +67,7 @@ TEST_F(IOSSystemSignalsCollectorTest, IsSignalSupported) {
 }
 
 TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_Success) {
-  // Mock canAttemptReauth to return YES (Secured).
-  OCMStub([mock_auth_module_ canAttemptReauth]).andReturn(YES);
+  reauth_module_.canAttempt = YES;
 
   device_signals::SignalsAggregationRequest request;
   device_signals::SignalsAggregationResponse response;
@@ -98,8 +93,7 @@ TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_Success) {
 }
 
 TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_ScreenLockDisabled) {
-  // Mock canAttemptReauth to return NO.
-  OCMStub([mock_auth_module_ canAttemptReauth]).andReturn(NO);
+  reauth_module_.canAttempt = NO;
 
   device_signals::SignalsAggregationRequest request;
   device_signals::SignalsAggregationResponse response;
