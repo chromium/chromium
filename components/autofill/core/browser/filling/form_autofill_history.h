@@ -62,7 +62,7 @@ class FormAutofillHistory {
     // because fields that are autofilled might be reset to still autofilled
     // field, considering cases where autofill is allowed to override autofilled
     // fields.
-    bool is_autofilled_according_to_renderer;
+    bool is_autofilled_according_to_renderer = false;
 
     // The sequence of modifiers that have affected the field.
     std::vector<FieldModifier> field_modifiers;
@@ -81,13 +81,13 @@ class FormAutofillHistory {
     // Last product used to fill the field. This is stored so that Autofill
     // stores accurate information about the last modifier of the field,
     // especially since a single field can now be filled via different products.
-    FillingProduct filling_product;
+    FillingProduct filling_product = FillingProduct::kNone;
 
     // The undo functionality is supposed to work only on autofilled fields.
     // However when this boolean is enabled, this check is relaxed to include
     // non-autofilled fields as well provided that the undo history contains a
     // value for the field.
-    bool ignore_is_autofilled;
+    bool ignore_is_autofilled = false;
   };
 
   using FormFillingEntry = std::map<FieldGlobalId, FieldFillingEntry>;
