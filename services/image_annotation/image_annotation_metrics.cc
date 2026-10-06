@@ -4,14 +4,14 @@
 
 #include "services/image_annotation/image_annotation_metrics.h"
 
-#include <map>
 #include <string>
+#include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace image_annotation {
 
@@ -32,32 +32,32 @@ void ReportPixelFetchSuccess(const bool success) {
 
 void ReportOcrAnnotation(const double confidence, const bool empty) {
   const int confidence_percent = static_cast<int>(std::round(confidence * 100));
-  UMA_HISTOGRAM_PERCENTAGE(base::StringPrintf(kAnnotationConfidence, "Ocr"),
+  UMA_HISTOGRAM_PERCENTAGE(absl::StrFormat(kAnnotationConfidence, "Ocr"),
                            confidence_percent);
-  UMA_HISTOGRAM_BOOLEAN(base::StringPrintf(kAnnotationEmpty, "Ocr"), empty);
+  UMA_HISTOGRAM_BOOLEAN(absl::StrFormat(kAnnotationEmpty, "Ocr"), empty);
 }
 
 void ReportDescAnnotation(const mojom::AnnotationType type,
                           const double confidence,
                           const bool empty) {
-  static const base::NoDestructor<std::map<mojom::AnnotationType, std::string>>
-      kTypeNames({{mojom::AnnotationType::kOcr, "Ocr"},
-                  {mojom::AnnotationType::kLabel, "Label"},
-                  {mojom::AnnotationType::kCaption, "Caption"}});
+  static constexpr auto kTypeNames =
+      base::MakeFixedFlatMap<mojom::AnnotationType, std::string_view>(
+          {{mojom::AnnotationType::kOcr, "Ocr"},
+           {mojom::AnnotationType::kLabel, "Label"},
+           {mojom::AnnotationType::kCaption, "Caption"}});
 
-  const auto lookup = kTypeNames->find(type);
+  const auto lookup = kTypeNames.find(type);
   const std::string type_name = base::StrCat(
-      {"Desc", lookup == kTypeNames->end() ? "Unknown" : lookup->second});
+      {"Desc", lookup == kTypeNames.end() ? "Unknown" : lookup->second});
 
   const int confidence_percent = static_cast<int>(std::round(confidence * 100));
 
   // We use function variants here since our histogram name is not a "runtime
   // constant".
   base::UmaHistogramPercentageObsoleteDoNotUse(
-      base::StringPrintf(kAnnotationConfidence, type_name.c_str()),
-      confidence_percent);
-  base::UmaHistogramBoolean(
-      base::StringPrintf(kAnnotationEmpty, type_name.c_str()), empty);
+      absl::StrFormat(kAnnotationConfidence, type_name), confidence_percent);
+  base::UmaHistogramBoolean(absl::StrFormat(kAnnotationEmpty, type_name),
+                            empty);
 
   UMA_HISTOGRAM_ENUMERATION(metrics_internal::kDescType, type);
 }
@@ -107,12 +107,12 @@ void ReportServerResponseSizeBytes(const size_t size_bytes) {
 
 void ReportOcrStatus(const int status) {
   base::UmaHistogramSparse(
-      base::StringPrintf(metrics_internal::kAnnotationStatus, "Ocr"), status);
+      absl::StrFormat(metrics_internal::kAnnotationStatus, "Ocr"), status);
 }
 
 void ReportDescStatus(const int status) {
   base::UmaHistogramSparse(
-      base::StringPrintf(metrics_internal::kAnnotationStatus, "Desc"), status);
+      absl::StrFormat(metrics_internal::kAnnotationStatus, "Desc"), status);
 }
 
 void ReportEngineKnown(const bool known) {
