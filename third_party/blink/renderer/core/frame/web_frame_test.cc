@@ -15444,9 +15444,6 @@ TEST_F(WebFrameTest, FindFrameByNameCurrent) {
 
   EXPECT_EQ(frame->FindFrameByName(WebString("_self")), frame);
   EXPECT_EQ(frame->FindFrameByName(WebString("_current")), nullptr);
-
-  ScopedRemoveTargetCurrentForTest scoped_feature(false);
-  EXPECT_EQ(frame->FindFrameByName(WebString("_current")), frame);
 }
 
 }  // namespace blink
