@@ -148,6 +148,27 @@ void DispatchNotificationClickForRegistration(
       }));
 }
 
+// Waits for `ServiceWorkerContextObserverSynchronous::OnStorageWipedSync()`.
+class StorageWipedWaiter : public ServiceWorkerContextObserverSynchronous {
+ public:
+  explicit StorageWipedWaiter(ServiceWorkerContext* context) {
+    observation_.Observe(context);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // ServiceWorkerContextObserverSynchronous:
+  void OnStorageWipedSync(ServiceWorkerContext* context) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ServiceWorkerContext,
+                          ServiceWorkerContextObserverSynchronous>
+      observation_{this};
+};
+
 }  // namespace
 
 // Implementation for `content::ServiceWorkerContextCore::TestVersionObserver`.
@@ -373,6 +394,16 @@ void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
   service_worker_version->endpoint()->SetIdleDelay(delta);
+}
+
+void DeleteAndStartOverServiceWorkerStorage(ServiceWorkerContext* context) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  StorageWipedWaiter waiter(context);
+  // Use the same path as when //content detects storage corruption.
+  static_cast<ServiceWorkerContextWrapper*>(context)
+      ->context()
+      ->ScheduleDeleteAndStartOver();
+  waiter.Wait();
 }
 
 }  // namespace content

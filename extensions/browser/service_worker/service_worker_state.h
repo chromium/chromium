@@ -84,6 +84,10 @@ class ServiceWorkerState
   void SetRendererState(RendererState renderer_state);
   void Reset();
 
+  // Resets the state after service worker storage is wiped. Unlike `Reset()`,
+  // this also drops any in-flight start request.
+  void ResetForStorageWipe();
+
   // Returns true if a request to start the worker has been made but the worker
   // is not ready yet.
   bool IsStarting() const;
