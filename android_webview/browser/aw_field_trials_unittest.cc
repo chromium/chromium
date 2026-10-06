@@ -9,6 +9,7 @@
 #include "components/variations/feature_overrides.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace android_webview {
 
@@ -213,6 +214,17 @@ TEST_F(AwFieldTrialsTest, ResamplingScrollEventsFeatureOverride) {
                 blink::features::kResamplingScrollEvents,
                 blink::features::kScrollPredictorMaxResampleTime.name),
             "20ms");
+}
+
+TEST_F(AwFieldTrialsTest, DisconnectWebSocketOnBFCacheFeatureOverride) {
+  AwFieldTrials aw_field_trials;
+  auto feature_list = std::make_unique<base::FeatureList>();
+
+  aw_field_trials.RegisterFeatureOverrides(feature_list.get());
+  base::FeatureList::SetInstance(std::move(feature_list));
+
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      blink::features::kDisconnectWebSocketOnBFCache));
 }
 
 }  // namespace android_webview
