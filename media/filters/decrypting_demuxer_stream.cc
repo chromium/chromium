@@ -361,13 +361,6 @@ void DecryptingDemuxerStream::OnBufferDecrypted(
 
   DCHECK_EQ(status, Decryptor::kSuccess);
 
-  // Copy the key frame flag and duration from the encrypted to decrypted
-  // buffer.
-  // TODO(crbug.com/40711813): Ensure all fields are copied by Decryptor.
-  decrypted_buffer->set_is_key_frame(
-      pending_buffer_to_decrypt_->is_key_frame());
-  decrypted_buffer->set_duration(pending_buffer_to_decrypt_->duration());
-
   pending_buffer_to_decrypt_ = nullptr;
   state_ = kIdle;
   std::move(read_cb_).Run(kOk, {std::move(decrypted_buffer)});

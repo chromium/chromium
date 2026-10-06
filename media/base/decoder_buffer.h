@@ -246,8 +246,6 @@ class MEDIA_EXPORT DecoderBuffer
     is_key_frame_ = is_key_frame;
   }
 
-  // Returns DecoderBufferSideData associated with `this`. Check if `side_data_`
-  // exists using `has_side_data()` before calling this function.
   const DecoderBufferSideData* side_data() const {
     DCHECK(!end_of_stream());
     return side_data_.get();
@@ -264,6 +262,11 @@ class MEDIA_EXPORT DecoderBuffer
 
   // As above, except that |data_| is not compared.
   bool MatchesMetadataForTesting(const DecoderBuffer& buffer) const;
+
+  // Copies metadata from `source` to this decrypted buffer. DecryptConfig is
+  // not copied as the decrypted buffer is clear. `*this` must not have a
+  // DecryptConfig.
+  void CopyMetadataClearBufferFrom(const DecoderBuffer& source);
 
   // Returns a human-readable string describing |*this|.
   std::string AsHumanReadableString(bool verbose = false) const;
@@ -300,6 +303,9 @@ class MEDIA_EXPORT DecoderBuffer
   // must be added and can be optional, ensure it is heap allocated through the
   // usage of something like std::unique_ptr.
   // ***************************************************************************
+
+  // Note: When adding new members, you might need to modify
+  // `CopyMetadataClearBufferFrom` and `MatchesMetadataForTesting` as well.
 
   // Presentation time of the frame.
   base::TimeDelta timestamp_;

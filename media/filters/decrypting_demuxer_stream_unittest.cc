@@ -409,6 +409,52 @@ TEST_F(DecryptingDemuxerStreamTest, Read_Normal) {
   EnterNormalReadingState();
 }
 
+// Test that metadata from the decrypted buffer is preserved by
+// DecryptingDemuxerStream.
+TEST_F(DecryptingDemuxerStreamTest, MetadataPreserved) {
+  Initialize();
+
+  const auto& kExpectedTimestamp = base::Microseconds(123);
+  const auto& kExpectedDuration = base::Microseconds(456);
+  const DecoderBufferSideData::DiscardPadding& kExpectedPadding = {
+      base::Microseconds(10), base::Microseconds(20)};
+
+  encrypted_buffer_->set_timestamp(kExpectedTimestamp);
+  encrypted_buffer_->set_duration(kExpectedDuration);
+  encrypted_buffer_->set_is_key_frame(true);
+  encrypted_buffer_->WritableSideData().discard_padding = kExpectedPadding;
+
+  EXPECT_CALL(*input_audio_stream_, OnRead(_))
+      .WillOnce(ReturnBuffer(encrypted_buffer_));
+  EXPECT_CALL(*decryptor_, Decrypt(_, encrypted_buffer_, _))
+      .WillOnce([this](Decryptor::StreamType type,
+                       scoped_refptr<DecoderBuffer> buffer,
+                       Decryptor::DecryptCB cb) {
+        decrypted_buffer_->CopyMetadataClearBufferFrom(*buffer);
+        std::move(cb).Run(Decryptor::kSuccess, decrypted_buffer_);
+      });
+
+  DemuxerStream::DecoderBufferVector read_buffers;
+  demuxer_stream_->Read(1,
+                        base::BindOnce(
+                            [](DemuxerStream::DecoderBufferVector* out_buffers,
+                               DemuxerStream::Status status,
+                               DemuxerStream::DecoderBufferVector buffers) {
+                              EXPECT_EQ(status, DemuxerStream::kOk);
+                              *out_buffers = std::move(buffers);
+                            },
+                            &read_buffers));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(read_buffers.size(), 1u);
+  ASSERT_TRUE(read_buffers[0]);
+  EXPECT_EQ(read_buffers[0]->timestamp(), kExpectedTimestamp);
+  EXPECT_EQ(read_buffers[0]->duration(), kExpectedDuration);
+  EXPECT_TRUE(read_buffers[0]->is_key_frame());
+  ASSERT_TRUE(read_buffers[0]->side_data());
+  EXPECT_EQ(read_buffers[0]->side_data()->discard_padding, kExpectedPadding);
+}
+
 // Test normal read case where the buffer is clear.
 TEST_F(DecryptingDemuxerStreamTest, Read_ClearBufferInEncryptedStream) {
   Initialize();

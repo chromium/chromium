@@ -525,13 +525,7 @@ void ContentDecryptionModuleAdapter::OnDecrypt(
 
   scoped_refptr<media::DecoderBuffer> decrypted =
       media::DecoderBuffer::CopyFrom(decrypted_data);
-  // Copy the auxiliary fields.
-  decrypted->set_timestamp(encrypted->timestamp());
-  decrypted->set_duration(encrypted->duration());
-  decrypted->set_is_key_frame(encrypted->is_key_frame());
-  if (encrypted->side_data()) {
-    decrypted->set_side_data(encrypted->side_data()->Clone());
-  }
+  decrypted->CopyMetadataClearBufferFrom(*encrypted);
 
   if (decrypt_config_out)
     decrypted->set_decrypt_config(std::move(decrypt_config_out));

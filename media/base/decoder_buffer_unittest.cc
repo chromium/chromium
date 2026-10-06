@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
@@ -309,6 +310,48 @@ TEST(DecoderBufferTest, IsEncrypted) {
       DecryptConfig::CreateCencConfig(kKeyId, kIv, subsamples));
 
   EXPECT_TRUE(buffer->is_encrypted());
+}
+
+TEST(DecoderBufferTest, CopyMetadataClearBufferFrom) {
+  auto src = base::MakeRefCounted<DecoderBuffer>(10);
+  src->set_timestamp(base::Microseconds(123));
+  src->set_duration(base::Microseconds(456));
+  src->set_is_key_frame(true);
+  src->WritableSideData().secure_handle = 42;
+  ASSERT_EQ(src->decrypt_config(), nullptr);
+
+  auto dst = base::MakeRefCounted<DecoderBuffer>(5);
+  dst->CopyMetadataClearBufferFrom(*src);
+  ASSERT_EQ(dst->decrypt_config(), nullptr);
+  EXPECT_TRUE(dst->MatchesMetadataForTesting(*src));
+
+  // Test that side_data is cleared if source doesn't have it.
+  auto src_no_side_data = base::MakeRefCounted<DecoderBuffer>(10);
+  dst->CopyMetadataClearBufferFrom(*src_no_side_data);
+  EXPECT_FALSE(dst->side_data());
+
+  // Test that decrypt_config is NOT copied.
+  auto src_encrypted = base::MakeRefCounted<DecoderBuffer>(10);
+  src_encrypted->set_decrypt_config(
+      DecryptConfig::CreateCencConfig("key_id", "0123456789abcdef", {}));
+  auto dst_clear = base::MakeRefCounted<DecoderBuffer>(5);
+  dst_clear->CopyMetadataClearBufferFrom(*src_encrypted);
+  EXPECT_EQ(dst_clear->decrypt_config(), nullptr);
+  src_encrypted->set_decrypt_config(nullptr);
+  EXPECT_TRUE(dst_clear->MatchesMetadataForTesting(*src_encrypted));
+
+  // Test that copying to a destination with decrypt_config triggers CHECK.
+  auto dst_encrypted = base::MakeRefCounted<DecoderBuffer>(5);
+  dst_encrypted->set_decrypt_config(
+      DecryptConfig::CreateCencConfig("key_id", "0123456789abcdef", {}));
+  EXPECT_CHECK_DEATH(dst_encrypted->CopyMetadataClearBufferFrom(*src));
+
+  // Test that EOS buffers cannot be used as source or destination.
+  auto src_eos = DecoderBuffer::CreateEOSBuffer();
+  auto dst_eos = DecoderBuffer::CreateEOSBuffer();
+  EXPECT_CHECK_DEATH(dst_eos->CopyMetadataClearBufferFrom(*src_eos));
+  EXPECT_CHECK_DEATH(dst->CopyMetadataClearBufferFrom(*src_eos));
+  EXPECT_CHECK_DEATH(dst_eos->CopyMetadataClearBufferFrom(*src));
 }
 
 }  // namespace media

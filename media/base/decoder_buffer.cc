@@ -221,6 +221,24 @@ bool DecoderBuffer::MatchesMetadataForTesting(
                           : true;
 }
 
+void DecoderBuffer::CopyMetadataClearBufferFrom(const DecoderBuffer& source) {
+  // EOS buffers are immutable, we shouldn't copy them.
+  CHECK(!end_of_stream());
+  CHECK(!source.end_of_stream());
+
+  // Destination buffer must not have DecryptConfig (decrypted buffer is clear).
+  CHECK(!decrypt_config());
+
+  if (source.side_data()) {
+    set_side_data(source.side_data()->Clone());
+  } else {
+    set_side_data(nullptr);
+  }
+  set_timestamp(source.timestamp());
+  set_duration(source.duration());
+  set_is_key_frame(source.is_key_frame());
+}
+
 bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
   if (!MatchesMetadataForTesting(buffer))  // IN-TEST
     return false;

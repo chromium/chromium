@@ -137,12 +137,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
   // Decrypted data will be the same size as |input| size.
   auto buffer = base::MakeRefCounted<DecoderBuffer>(sample_size);
   base::span<uint8_t> output_data = buffer->writable_span();
-  buffer->set_timestamp(input.timestamp());
-  buffer->set_duration(input.duration());
-  buffer->set_is_key_frame(input.is_key_frame());
-  if (input.side_data()) {
-    buffer->set_side_data(input.side_data()->Clone());
-  }
+  buffer->CopyMetadataClearBufferFrom(input);
 
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
   if (subsamples.empty()) {

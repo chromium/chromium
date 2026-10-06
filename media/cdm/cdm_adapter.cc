@@ -503,8 +503,7 @@ void CdmAdapter::Decrypt(StreamType stream_type,
 
   scoped_refptr<DecoderBuffer> decrypted_buffer(
       DecoderBuffer::CopyFrom(AsSpan(decrypted_block->DecryptedBuffer())));
-  decrypted_buffer->set_timestamp(
-      base::Microseconds(decrypted_block->Timestamp()));
+  decrypted_buffer->CopyMetadataClearBufferFrom(*encrypted);
   std::move(decrypt_cb).Run(Decryptor::kSuccess, std::move(decrypted_buffer));
 }
 

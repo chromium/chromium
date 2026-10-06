@@ -55,17 +55,6 @@ void CopySubsamples(const std::vector<SubsampleEntry>& subsamples,
   }
 }
 
-// TODO(crbug.com/40575437): This should be done in DecoderBuffer so that
-// additional fields are more easily handled.
-void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
-  output->set_timestamp(input.timestamp());
-  output->set_duration(input.duration());
-  output->set_is_key_frame(input.is_key_frame());
-  if (input.side_data()) {
-    output->set_side_data(input.side_data()->Clone());
-  }
-}
-
 }  // namespace
 
 scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
@@ -94,7 +83,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
     auto decrypted = base::HeapArray<uint8_t>::Uninit(sample.size());
     crypto::aes_ctr::Decrypt(key, *iv, sample, decrypted);
     auto output = DecoderBuffer::FromArray(std::move(decrypted));
-    CopyExtraSettings(input, output.get());
+    output->CopyMetadataClearBufferFrom(input);
     return output;
   }
 
@@ -112,7 +101,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
   // No need to decrypt if there is no encrypted data.
   if (total_encrypted_size == 0) {
     auto output = DecoderBuffer::CopyFrom(sample);
-    CopyExtraSettings(input, output.get());
+    output->CopyMetadataClearBufferFrom(input);
     return output;
   }
 
@@ -131,7 +120,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
   scoped_refptr<DecoderBuffer> output = DecoderBuffer::CopyFrom(sample);
   CopySubsamples(subsamples, kDstContainsClearBytes, decrypted,
                  output->writable_span());
-  CopyExtraSettings(input, output.get());
+  output->CopyMetadataClearBufferFrom(input);
   return output;
 }
 
