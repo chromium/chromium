@@ -40,11 +40,17 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /** Unit tests for {@link BookmarkBarIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -60,6 +66,11 @@ public class BookmarkBarIphControllerTest {
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private BookmarkId mDesktopFolderId;
+    @Mock private BookmarkId mAccountDesktopFolderId;
+    @Mock private BookmarkItem mDesktopFolderItem;
+    @Mock private BookmarkId mChildBookmarkId;
+    @Mock private BookmarkItem mChildBookmarkItem;
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private PrefService mPrefService;
 
@@ -127,6 +138,104 @@ public class BookmarkBarIphControllerTest {
     public void testShowIph_TriState() {
         mController.showIph();
         verifyIphCommand();
+    }
+
+    /**
+     * Tests Trigger 1: IPH shows on startup if at least one bookmark already exists in the local
+     * bookmarks bar.
+     */
+    @Test
+    public void testTrigger1_OnModelLoaded_WithLocalBookmark() {
+        List<BookmarkId> children = new ArrayList<>();
+        children.add(mChildBookmarkId);
+        when(mBookmarkModel.getDesktopFolderId()).thenReturn(mDesktopFolderId);
+        when(mBookmarkModel.getChildIds(mDesktopFolderId)).thenReturn(children);
+        when(mBookmarkModel.getBookmarkById(mChildBookmarkId)).thenReturn(mChildBookmarkItem);
+        when(mChildBookmarkItem.isFolder()).thenReturn(false);
+
+        mController.bookmarkModelLoaded();
+        verifyIphCommand();
+    }
+
+    /**
+     * Tests Trigger 1: IPH shows on startup if at least one bookmark already exists in the account
+     * bookmarks bar.
+     */
+    @Test
+    public void testTrigger1_OnModelLoaded_WithAccountBookmark() {
+        List<BookmarkId> children = new ArrayList<>();
+        children.add(mChildBookmarkId);
+        when(mBookmarkModel.getDesktopFolderId()).thenReturn(mDesktopFolderId);
+        when(mBookmarkModel.getChildIds(mDesktopFolderId)).thenReturn(Collections.emptyList());
+        when(mBookmarkModel.getAccountDesktopFolderId()).thenReturn(mAccountDesktopFolderId);
+        when(mBookmarkModel.getChildIds(mAccountDesktopFolderId)).thenReturn(children);
+        when(mBookmarkModel.getBookmarkById(mChildBookmarkId)).thenReturn(mChildBookmarkItem);
+        when(mChildBookmarkItem.isFolder()).thenReturn(false);
+
+        mController.bookmarkModelLoaded();
+        verifyIphCommand();
+    }
+
+    /**
+     * Tests Trigger 1: IPH does not show on startup if the bookmarks bar only contains folders (no
+     * non-folder bookmarks).
+     */
+    @Test
+    public void testTrigger1_OnModelLoaded_OnlyFolders() {
+        List<BookmarkId> children = new ArrayList<>();
+        children.add(mChildBookmarkId);
+        when(mBookmarkModel.getDesktopFolderId()).thenReturn(mDesktopFolderId);
+        when(mBookmarkModel.getChildIds(mDesktopFolderId)).thenReturn(children);
+        when(mBookmarkModel.getBookmarkById(mChildBookmarkId)).thenReturn(mChildBookmarkItem);
+        when(mChildBookmarkItem.isFolder()).thenReturn(true);
+
+        mController.bookmarkModelLoaded();
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    /** Tests Trigger 2: IPH shows when a new bookmark is added on the current device. */
+    @Test
+    public void testTrigger2_OnBookmarkNodeAdded() {
+        when(mDesktopFolderItem.getId()).thenReturn(mDesktopFolderId);
+        List<BookmarkId> children = new ArrayList<>();
+        children.add(mChildBookmarkId);
+        when(mBookmarkModel.getChildIds(any())).thenReturn(children);
+        when(mBookmarkModel.getBookmarkById(mChildBookmarkId)).thenReturn(mChildBookmarkItem);
+        when(mChildBookmarkItem.isFolder()).thenReturn(false);
+
+        mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ true);
+        verifyIphCommand();
+    }
+
+    /**
+     * Tests that Trigger 2 is ignored if the bookmark addition came from sync (addedByUser is
+     * false).
+     */
+    @Test
+    public void testTrigger2_OnBookmarkNodeAdded_FromSync() {
+        when(mDesktopFolderItem.getId()).thenReturn(mDesktopFolderId);
+        List<BookmarkId> children = new ArrayList<>();
+        children.add(mChildBookmarkId);
+        when(mBookmarkModel.getChildIds(any())).thenReturn(children);
+        when(mBookmarkModel.getBookmarkById(mChildBookmarkId)).thenReturn(mChildBookmarkItem);
+        when(mChildBookmarkItem.isFolder()).thenReturn(false);
+
+        mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ false);
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    /** Tests that Trigger 2 is ignored when a folder (rather than a bookmark) is added. */
+    @Test
+    public void testTrigger2_OnBookmarkNodeAdded_FolderIgnored() {
+        when(mDesktopFolderItem.getId()).thenReturn(mDesktopFolderId);
+        List<BookmarkId> children = new ArrayList<>();
+        children.add(mChildBookmarkId);
+        when(mBookmarkModel.getChildIds(any())).thenReturn(children);
+        when(mBookmarkModel.getBookmarkById(mChildBookmarkId)).thenReturn(mChildBookmarkItem);
+        when(mChildBookmarkItem.isFolder()).thenReturn(true);
+
+        mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ true);
+        verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
     @Test

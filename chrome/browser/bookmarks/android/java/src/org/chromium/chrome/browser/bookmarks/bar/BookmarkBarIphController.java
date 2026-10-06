@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.R;
@@ -26,7 +27,11 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.feature_engagement.FeatureConstants;
+
+import java.util.List;
 
 /** Controller for the Bookmark Bar In-Product Help. */
 @NullMarked
@@ -93,6 +98,63 @@ public class BookmarkBarIphController extends BookmarkModelObserver implements D
         mBookmarkModel.removeObserver(this);
     }
 
+    /** This callback ensures we only access the bookmark model after it has been fully loaded. */
+    @Override
+    public void bookmarkModelLoaded() {
+        // Trigger condition 1: Check for existing bookmarks only in the bookmarks bar (not mobile
+        // bookmarks or reading list) now that the bookmark model is loaded.
+        if (hasAtLeastOneBookmarkInBookmarksBar()) {
+            showIph();
+        }
+    }
+
+    @Override
+    public void bookmarkNodeAdded(BookmarkItem parent, int index, boolean addedByUser) {
+        // Only trigger the IPH if the bookmark was added by the user on this device.
+        // This ignores bookmarks that are added via sync.
+        if (!addedByUser) return;
+
+        BookmarkId addedId = mBookmarkModel.getChildIds(parent.getId()).get(index);
+        BookmarkItem addedItem = mBookmarkModel.getBookmarkById(addedId);
+
+        // The IPH is triggered only when an actual bookmark, and not an empty folder, is added.
+        if (addedItem == null || addedItem.isFolder()) return;
+
+        // Trigger condition 2: A new bookmark was added to the bookmarks bar, mobile bookmarks, or
+        // reading list.
+        showIph();
+    }
+
+    public boolean hasAtLeastOneBookmark(@Nullable BookmarkId folderId) {
+        if (folderId == null) return false;
+
+        // Get all of the children in the bookmarks bar, which may include both bookmarks and
+        // folders.
+        List<BookmarkId> children = mBookmarkModel.getChildIds(folderId);
+        for (BookmarkId childId : children) {
+            BookmarkItem item = mBookmarkModel.getBookmarkById(childId);
+            if (item != null && !item.isFolder()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasAtLeastOneBookmarkInBookmarksBar() {
+        // Check the local/device bookmarks bar.
+        if (hasAtLeastOneBookmark(mBookmarkModel.getDesktopFolderId())) {
+            return true;
+        }
+
+        // Check the account/synced bookmarks bar.
+        if (hasAtLeastOneBookmark(mBookmarkModel.getAccountDesktopFolderId())) {
+            return true;
+        }
+
+        // No bookmarks were found.
+        return false;
+    }
+
     /** Shows the In-Product Help text bubble. */
     @VisibleForTesting
     void showIph() {
@@ -117,7 +179,6 @@ public class BookmarkBarIphController extends BookmarkModelObserver implements D
                 });
     }
 
-    // TODO(crbug.com/566865543): Implement v2 trigger and eligibility checks.
     @Override
     public void bookmarkModelChanged() {}
 
