@@ -473,7 +473,8 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 // Restoration is not supported for devices that can show the side panel, as
 // they present post capture embedded in the viewport.
 - (BOOL)supportsRestoringLVF {
-  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET &&
+         !IsDuoDevice();
 }
 
 @end
