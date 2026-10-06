@@ -256,3 +256,26 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       VerifyTabIsNotLoadedAndNeedsReloading(1),
       VerifyTabIsNotLoadedAndNeedsReloading(2), WaitForAndVerifyThumbnail(1));
 }
+
+IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
+                       CloseObservedTabThenObserveAnotherTab) {
+  std::unique_ptr<ThumbnailImage::Subscription> first_subscription;
+  std::unique_ptr<ThumbnailImage::Subscription> second_subscription;
+
+  RunTestSequence(
+      AddInstrumentedTab(kFirstTab, chrome::ChromeUINewTabURLAsGURL(), 0),
+      WaitForWebContentsReady(kFirstTab),
+      AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 1),
+      WaitForWebContentsReady(kSecondTab), Do([&]() {
+        auto* tab_strip = browser()->GetTabStripModel();
+        first_subscription =
+            ThumbnailTabHelper::From(tab_strip->GetTabAtIndex(0))
+                ->thumbnail()
+                ->Subscribe();
+        tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+        second_subscription =
+            ThumbnailTabHelper::From(tab_strip->GetTabAtIndex(0))
+                ->thumbnail()
+                ->Subscribe();
+      }));
+}
