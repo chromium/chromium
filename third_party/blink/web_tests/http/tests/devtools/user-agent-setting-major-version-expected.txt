@@ -13,6 +13,7 @@ Chrome — Android Tablet: PASSED
 Chrome — iPhone: PASSED
 Chrome — iPad: PASSED
 Chrome — Chrome OS: PASSED
+Chrome — Googlebook: PASSED
 Chrome — Mac: PASSED
 Chrome — Windows: PASSED
 Firefox — Android Mobile: PASSED
