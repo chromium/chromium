@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -13,6 +15,7 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ttc {
 
@@ -65,6 +68,8 @@ class SessionJournal {
  private:
   const raw_ref<actor::AggregatedJournal> journal_;
   actor::TaskId task_id_;
+  absl::flat_hash_map<int32_t, std::unique_ptr<PendingAsyncEvent>>
+      pending_server_async_events_;
 };
 
 }  // namespace ttc
