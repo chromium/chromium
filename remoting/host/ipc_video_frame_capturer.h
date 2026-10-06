@@ -24,10 +24,8 @@ namespace remoting {
 class DesktopSessionProxy;
 class IpcSharedBufferCore;
 
-// Routes webrtc::DesktopCapturer calls though the IPC channel to the desktop
-// session agent running in the desktop integration process.
-// GetSourceList() and SelectSource() functions are not implemented, they always
-// return false.
+// Routes DesktopCapturer calls through the IPC channel to the desktop session
+// agent running in the desktop integration process.
 class IpcVideoFrameCapturer : public DesktopCapturer,
                               public mojom::VideoCapturerEventHandler {
  public:
@@ -48,10 +46,9 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
   // this capturer is bound to the VideoStream.
   base::WeakPtr<IpcVideoFrameCapturer> GetWeakPtr();
 
-  // webrtc::DesktopCapturer interface.
+  // DesktopCapturer interface.
   void Start(Callback* callback) override;
-  bool GetSourceList(SourceList* sources) override;
-  bool SelectSource(SourceId id) override;
+  void SelectSource(SourceId id) override;
   void SetMaxFrameRate(uint32_t max_frame_rate) override;
   void Pause(bool pause) override;
   void BoostCaptureRate(base::TimeDelta capture_interval,
@@ -80,8 +77,8 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
   // Returns a shared buffer from the list of known buffers.
   scoped_refptr<IpcSharedBufferCore> GetSharedBufferCore(int id);
 
-  // Points to the callback passed to webrtc::DesktopCapturer::Start().
-  raw_ptr<webrtc::DesktopCapturer::Callback> callback_ = nullptr;
+  // Points to the callback passed to DesktopCapturer::Start().
+  raw_ptr<Callback> callback_ = nullptr;
 
   // Mojo endpoint for sending capturer commands to the Desktop process.
   mojo::Remote<mojom::VideoCapturer> capturer_control_;

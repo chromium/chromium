@@ -19,19 +19,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "build/build_config.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
-
-#if defined(WEBRTC_USE_GIO)
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
-#endif
 
 namespace remoting {
 
@@ -57,10 +51,6 @@ class DesktopCapturerProxy::Core : public webrtc::DesktopCapturer::Callback {
   void Pause(bool pause);
   void BoostCaptureRate(base::TimeDelta capture_interval,
                         base::TimeDelta duration);
-
-#if defined(WEBRTC_USE_GIO)
-  webrtc::DesktopCaptureMetadata GetMetadata();
-#endif
 
   base::WeakPtr<Core> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
@@ -177,15 +167,6 @@ void DesktopCapturerProxy::Core::BoostCaptureRate(
                   std::move(capture_interval), std::move(duration));
 }
 
-#if defined(WEBRTC_USE_GIO)
-webrtc::DesktopCaptureMetadata DesktopCapturerProxy::Core::GetMetadata() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  return capturer_ ? capturer_->GetMetadata()
-                   : webrtc::DesktopCaptureMetadata{};
-}
-#endif
-
 void DesktopCapturerProxy::Core::OnFrameCaptureStart() {
   caller_task_runner_->PostTask(
       FROM_HERE,
@@ -285,18 +266,12 @@ void DesktopCapturerProxy::CaptureFrame() {
       base::BindOnce(&Core::CaptureFrame, base::Unretained(core_.get())));
 }
 
-bool DesktopCapturerProxy::GetSourceList(SourceList* sources) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool DesktopCapturerProxy::SelectSource(SourceId id) {
+void DesktopCapturerProxy::SelectSource(SourceId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   capture_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Core::SelectSource, base::Unretained(core_.get()), id));
-  return false;
 }
 
 void DesktopCapturerProxy::OnFrameCaptureStarting() {
@@ -312,27 +287,6 @@ void DesktopCapturerProxy::OnFrameCaptured(
 
   callback_->OnCaptureResult(result, std::move(frame));
 }
-
-#if defined(WEBRTC_USE_GIO)
-void DesktopCapturerProxy::GetMetadataAsync(
-    base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  capture_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&Core::GetMetadata, base::Unretained(core_.get())),
-      base::BindOnce(&DesktopCapturerProxy::OnMetadata,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void DesktopCapturerProxy::OnMetadata(
-    base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback,
-    webrtc::DesktopCaptureMetadata metadata) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  std::move(callback).Run(std::move(metadata));
-}
-#endif
 
 void DesktopCapturerProxy::SetMaxFrameRate(std::uint32_t max_frame_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

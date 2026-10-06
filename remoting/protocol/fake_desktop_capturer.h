@@ -43,13 +43,11 @@ class FakeDesktopCapturer : public DesktopCapturer {
   void set_frame_generator(FrameGenerator frame_generator);
   void set_on_started_closure(base::OnceClosure on_started_closure);
 
-  // webrtc::DesktopCapturer interface.
+  // DesktopCapturer interface.
   void Start(Callback* callback) override;
   void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
                                   shared_memory_factory) override;
   void CaptureFrame() override;
-  bool GetSourceList(SourceList* sources) override;
-  bool SelectSource(SourceId id) override;
 
   base::WeakPtr<FakeDesktopCapturer> GetWeakPtr();
 

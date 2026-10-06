@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -183,16 +182,6 @@ void FakeDesktopCapturer::CaptureFrame() {
       FROM_HERE,
       base::BindOnce(&webrtc::DesktopCapturer::Callback::OnCaptureResult,
                      base::Unretained(callback_), result, std::move(frame)));
-}
-
-bool FakeDesktopCapturer::GetSourceList(SourceList* sources) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool FakeDesktopCapturer::SelectSource(SourceId id) {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 base::WeakPtr<FakeDesktopCapturer> FakeDesktopCapturer::GetWeakPtr() {

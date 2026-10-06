@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -41,11 +40,6 @@ void PipewireDesktopCapturer::Start(Callback* callback) {
   }
 }
 
-void PipewireDesktopCapturer::CaptureFrame() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Capturer will push frames as they are ready.
-}
-
 void PipewireDesktopCapturer::SetMaxFrameRate(std::uint32_t max_frame_rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_frame_rate_ = max_frame_rate;
@@ -61,14 +55,6 @@ void PipewireDesktopCapturer::SetSharedMemoryFactory(
   if (stream_) {
     stream_->SetSharedMemoryFactory(std::move(shared_memory_factory));
   }
-}
-
-bool PipewireDesktopCapturer::GetSourceList(SourceList* sources) {
-  NOTREACHED();
-}
-
-bool PipewireDesktopCapturer::SelectSource(SourceId id) {
-  NOTREACHED();
 }
 
 void PipewireDesktopCapturer::Pause(bool pause) {
@@ -89,7 +75,7 @@ void PipewireDesktopCapturer::OnFrameCaptureStart() {
 }
 
 void PipewireDesktopCapturer::OnCaptureResult(
-    Result result,
+    webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

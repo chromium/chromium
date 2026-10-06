@@ -11,19 +11,11 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
-#include "base/notimplemented.h"
 #include "base/threading/thread_checker.h"
-#include "build/build_config.h"
 #include "remoting/protocol/webrtc_frame_scheduler_constant_rate.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
-
-#if defined(WEBRTC_USE_GIO)
-#include "base/notreached.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
-#endif
 
 namespace remoting {
 
@@ -62,14 +54,6 @@ void DesktopCapturerWrapper::SetSharedMemoryFactory(
   }
 }
 
-void DesktopCapturerWrapper::CaptureFrame() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // This method should not be called directly, the scheduler will call
-  // CaptureFrameInternal().
-  // TODO: crbug.com/375470501 - Either add NOTREACHED() or just delete this
-  // method once chromotocol is removed.
-}
-
 void DesktopCapturerWrapper::CaptureFrameInternal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -86,19 +70,12 @@ void DesktopCapturerWrapper::CaptureFrameInternal() {
   }
 }
 
-bool DesktopCapturerWrapper::GetSourceList(SourceList* sources) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool DesktopCapturerWrapper::SelectSource(SourceId id) {
+void DesktopCapturerWrapper::SelectSource(SourceId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (capturer_) {
-    return capturer_->SelectSource(id);
+    capturer_->SelectSource(id);
   }
-  return false;
 }
 
 void DesktopCapturerWrapper::SetMaxFrameRate(std::uint32_t max_frame_rate) {
@@ -133,12 +110,5 @@ void DesktopCapturerWrapper::OnCaptureResult(
   scheduler_->OnFrameCaptured(frame.get());
   callback_->OnCaptureResult(result, std::move(frame));
 }
-
-#if defined(WEBRTC_USE_GIO)
-void DesktopCapturerWrapper::GetMetadataAsync(
-    base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback) {
-  NOTREACHED() << "Use DesktopCapturerProxy instead!";
-}
-#endif
 
 }  // namespace remoting

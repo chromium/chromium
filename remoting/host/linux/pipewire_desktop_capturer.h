@@ -38,17 +38,9 @@ class PipewireDesktopCapturer : public DesktopCapturer,
   // DesktopCapturer interface.
   // These methods can be called on any sequence.
   void Start(Callback* callback) override;
-  void CaptureFrame() override;
   void SetMaxFrameRate(std::uint32_t max_frame_rate) override;
   void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
                                   shared_memory_factory) override;
-
-  // Unimplemented DesktopCapturer methods that should not be called. Rather,
-  // the appropriate PipewireCaptureStream is provided to the constructor by the
-  // DesktopInteractionStrategy based on the screen ID passed to
-  // DesktopInteractionStrategy::CreateVideoCapturer().
-  bool GetSourceList(SourceList* sources) override;
-  bool SelectSource(SourceId id) override;
   void Pause(bool pause) override;
   void BoostCaptureRate(base::TimeDelta capture_interval,
                         base::TimeDelta duration) override;
@@ -56,7 +48,7 @@ class PipewireDesktopCapturer : public DesktopCapturer,
  private:
   // webrtc::DesktopCapturer::Callback implementation.
   void OnFrameCaptureStart() override;
-  void OnCaptureResult(Result result,
+  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
   base::WeakPtr<CaptureStream> stream_;

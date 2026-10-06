@@ -82,7 +82,7 @@ class MockConnectionToHostEventCallback
               (override));
 };
 
-class TestScreenCapturer : public DesktopCapturer {
+class TestScreenCapturer : public webrtc::DesktopCapturer {
  public:
   TestScreenCapturer() = default;
   ~TestScreenCapturer() override = default;

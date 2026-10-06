@@ -18,16 +18,10 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
 
-#if defined(WEBRTC_USE_GIO)
-#include "base/functional/callback.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
-#endif
-
 namespace remoting {
 
 // DesktopCapturerProxy is responsible for calling remoting::DesktopCapturer on
 // the capturer thread and then returning results to the caller's thread.
-// GetSourceList() is not implemented by this class, it always returns false.
 class DesktopCapturerProxy : public DesktopCapturer {
  public:
   explicit DesktopCapturerProxy(
@@ -55,17 +49,11 @@ class DesktopCapturerProxy : public DesktopCapturer {
   void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
                                   shared_memory_factory) override;
   void CaptureFrame() override;
-  bool GetSourceList(SourceList* sources) override;
-  bool SelectSource(SourceId id) override;
+  void SelectSource(SourceId id) override;
   void SetMaxFrameRate(std::uint32_t max_frame_rate) override;
   void Pause(bool pause) override;
   void BoostCaptureRate(base::TimeDelta capture_interval,
                         base::TimeDelta duration) override;
-
-#if defined(WEBRTC_USE_GIO)
-  void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
-                            callback) override;
-#endif
 
  private:
   class Core;
@@ -73,12 +61,6 @@ class DesktopCapturerProxy : public DesktopCapturer {
   void OnFrameCaptureStarting();
   void OnFrameCaptured(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
-
-#if defined(WEBRTC_USE_GIO)
-  void OnMetadata(
-      base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback,
-      webrtc::DesktopCaptureMetadata metadata);
-#endif
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SequencedTaskRunner> capture_task_runner_;

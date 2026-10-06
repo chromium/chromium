@@ -8,17 +8,12 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/webrtc_frame_scheduler_constant_rate.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
-
-#if defined(WEBRTC_USE_GIO)
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
-#endif
 
 namespace remoting {
 
@@ -38,18 +33,11 @@ class DesktopCapturerWrapper : public DesktopCapturer,
   void Start(Callback* callback) override;
   void SetSharedMemoryFactory(std::unique_ptr<webrtc::SharedMemoryFactory>
                                   shared_memory_factory) override;
-  void CaptureFrame() override;
-  bool GetSourceList(SourceList* sources) override;
-  bool SelectSource(SourceId id) override;
+  void SelectSource(SourceId id) override;
   void SetMaxFrameRate(std::uint32_t max_frame_rate) override;
   void Pause(bool pause) override;
   void BoostCaptureRate(base::TimeDelta capture_interval,
                         base::TimeDelta duration) override;
-
-#if defined(WEBRTC_USE_GIO)
-  void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
-                            callback) override;
-#endif
 
  private:
   // webrtc::DesktopCapturer::Callback implementation.

@@ -319,7 +319,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   std::unique_ptr<ScreenControls> screen_controls_;
 
   // The IPC screen capturer.
-  std::unique_ptr<webrtc::DesktopCapturer> video_capturer_;
+  std::unique_ptr<DesktopCapturer> video_capturer_;
 
   // Represents the desktop process running in a user session.
   std::unique_ptr<DesktopProcess> desktop_process_;
