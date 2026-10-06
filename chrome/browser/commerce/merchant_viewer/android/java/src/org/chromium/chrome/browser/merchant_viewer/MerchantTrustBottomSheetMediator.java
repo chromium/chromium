@@ -131,8 +131,10 @@ public class MerchantTrustBottomSheetMediator {
                         if (navigation.hasCommitted()) {
                             assumeNonNull(mToolbarModel);
                             mToolbarModel.set(
-                                    BottomSheetToolbarProperties.URL,
-                                    assumeNonNull(getWebContents()).getVisibleUrl());
+                                    BottomSheetToolbarProperties.ORIGIN,
+                                    assumeNonNull(getWebContents())
+                                            .getMainFrame()
+                                            .getLastCommittedOrigin());
                         }
                     }
                 };
@@ -149,7 +151,8 @@ public class MerchantTrustBottomSheetMediator {
                                 BottomSheetToolbarProperties.SECURITY_ICON,
                                 getSecurityIconResource(securityLevel));
                         mToolbarModel.set(
-                                BottomSheetToolbarProperties.URL, mWebContents.getVisibleUrl());
+                                BottomSheetToolbarProperties.ORIGIN,
+                                mWebContents.getMainFrame().getLastCommittedOrigin());
                     }
 
                     @Override

@@ -12,12 +12,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** BottomSheetToolbar UI properties. */
 @NullMarked
 public class BottomSheetToolbarProperties {
-    public static final WritableObjectPropertyKey<GURL> URL = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Origin> ORIGIN =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
@@ -50,7 +51,7 @@ public class BottomSheetToolbarProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                URL,
+                ORIGIN,
                 TITLE,
                 LOAD_PROGRESS,
                 PROGRESS_VISIBLE,

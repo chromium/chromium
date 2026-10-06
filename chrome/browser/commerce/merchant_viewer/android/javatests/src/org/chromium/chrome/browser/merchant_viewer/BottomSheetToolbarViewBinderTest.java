@@ -20,8 +20,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.JUnitTestOrigins;
+import org.chromium.url.Origin;
 
 /** Tests for {@link BottomSheetToolbarViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,10 +54,10 @@ public class BottomSheetToolbarViewBinderTest {
     }
 
     @Test
-    public void testSetUrl() {
-        GURL url = JUnitTestGURLs.EXAMPLE_URL;
-        mItemViewModel.set(BottomSheetToolbarProperties.URL, url);
-        verify(mToolbarView).setUrl(url);
+    public void testSetOrigin() {
+        Origin origin = JUnitTestOrigins.createTuple("https", "www.example.com", 443);
+        mItemViewModel.set(BottomSheetToolbarProperties.ORIGIN, origin);
+        verify(mToolbarView).setOrigin(origin);
     }
 
     @Test

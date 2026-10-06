@@ -20,7 +20,7 @@ import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** BottomSheetToolbar UI. */
 @NullMarked
@@ -45,11 +45,12 @@ public class BottomSheetToolbarView {
         toolbarText.setText(title);
     }
 
-    /** Sets the second line in the toolbar to the the provided URL. */
-    public void setUrl(GURL url) {
+    /** Sets the second line in the toolbar to the provided origin. */
+    public void setOrigin(Origin origin) {
         TextView originView = mToolbarView.findViewById(R.id.origin);
         originView.setText(
-                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
+                UrlFormatter.formatOriginForSecurityDisplay(
+                        origin, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
     }
 
     /** Sets the security icon. */

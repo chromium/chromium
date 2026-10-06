@@ -13,8 +13,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class BottomSheetToolbarViewBinder {
     public static void bind(
             PropertyModel model, BottomSheetToolbarView view, PropertyKey propertyKey) {
-        if (BottomSheetToolbarProperties.URL == propertyKey) {
-            view.setUrl(model.get(BottomSheetToolbarProperties.URL));
+        if (BottomSheetToolbarProperties.ORIGIN == propertyKey) {
+            view.setOrigin(model.get(BottomSheetToolbarProperties.ORIGIN));
         } else if (BottomSheetToolbarProperties.TITLE == propertyKey) {
             view.setTitle(model.get(BottomSheetToolbarProperties.TITLE));
         } else if (BottomSheetToolbarProperties.LOAD_PROGRESS == propertyKey) {
