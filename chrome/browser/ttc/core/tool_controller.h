@@ -16,8 +16,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/ttc/app/public/tool_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/ttc/app/public/tool_types.h"
 
 class BrowserWindowInterface;
 class Profile;

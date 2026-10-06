@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_TTC_MES_CLIENT_H_
-#define CHROME_BROWSER_TTC_APP_TTC_MES_CLIENT_H_
+#ifndef COMPONENTS_TTC_APP_TTC_MES_CLIENT_H_
+#define COMPONENTS_TTC_APP_TTC_MES_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -13,27 +13,25 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/ttc/app/public/tool_types.h"
-#include "chrome/browser/ttc/app/ttc_backend.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/ttc.pb.h"
+#include "components/ttc/app/public/tool_types.h"
+#include "components/ttc/app/ttc_backend.h"
 #include "url/gurl.h"
-
-class Profile;
 
 namespace ttc {
 
 // Client for establishing and maintaining a bidirectional streaming session
-// with the Model Execution Service (MES) for TTC using
-// OptimizationGuideKeyedService. Implements the TtcBackend interface.
+// with the Model Execution Service (MES) for TTC using RemoteModelExecutor.
+// Implements the TtcBackend interface.
 class TtcMesClient
     : public TtcBackend,
       public optimization_guide::RemoteModelExecutionSession::Observer {
  public:
   using Observer = TtcBackend::Observer;
 
-  explicit TtcMesClient(Profile* profile);
+  explicit TtcMesClient(
+      optimization_guide::RemoteModelExecutor* model_executor);
   ~TtcMesClient() override;
 
   TtcMesClient(const TtcMesClient&) = delete;
@@ -57,7 +55,7 @@ class TtcMesClient
       optimization_guide::RemoteModelExecutionSession::ConnectionState state)
       override;
 
-  // The session this client was given by the OptimizationGuideKeyedService.
+  // The session this client was given by the RemoteModelExecutor.
   // Null until Connect() and after Close().
   optimization_guide::RemoteModelExecutionSession*
   GetExecutionSessionForTesting() {
@@ -79,7 +77,7 @@ class TtcMesClient
                                ToolResponse response);
   void SendFrame(const optimization_guide::proto::TtcClientFrame& frame);
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<optimization_guide::RemoteModelExecutor> model_executor_ = nullptr;
   // Set by Connect(); null until then.
   raw_ptr<Observer> observer_ = nullptr;
 
@@ -93,4 +91,4 @@ class TtcMesClient
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_TTC_MES_CLIENT_H_
+#endif  // COMPONENTS_TTC_APP_TTC_MES_CLIENT_H_

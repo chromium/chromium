@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_
-#define CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_
+#ifndef COMPONENTS_TTC_APP_PUBLIC_TOOL_TYPES_H_
+#define COMPONENTS_TTC_APP_PUBLIC_TOOL_TYPES_H_
 
 #include <optional>
 #include <string>
@@ -116,4 +116,4 @@ using ToolResponseCallback = base::OnceCallback<void(ToolResponse)>;
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_PUBLIC_TOOL_TYPES_H_
+#endif  // COMPONENTS_TTC_APP_PUBLIC_TOOL_TYPES_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_TTC_BACKEND_H_
-#define CHROME_BROWSER_TTC_APP_TTC_BACKEND_H_
+#ifndef COMPONENTS_TTC_APP_TTC_BACKEND_H_
+#define COMPONENTS_TTC_APP_TTC_BACKEND_H_
 
 #include <stdint.h>
 
@@ -13,8 +13,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chrome/browser/ttc/app/public/error_codes.h"
-#include "chrome/browser/ttc/app/public/tool_types.h"
+#include "components/ttc/app/public/error_codes.h"
+#include "components/ttc/app/public/tool_types.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -92,4 +92,4 @@ class TtcBackend {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_TTC_BACKEND_H_
+#endif  // COMPONENTS_TTC_APP_TTC_BACKEND_H_

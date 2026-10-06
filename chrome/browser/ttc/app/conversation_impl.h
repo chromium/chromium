@@ -16,7 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
-#include "chrome/browser/ttc/app/ttc_backend.h"
+#include "components/ttc/app/ttc_backend.h"
 #include "url/gurl.h"
 
 namespace media {

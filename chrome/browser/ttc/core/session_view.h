@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 
-#include "chrome/browser/ttc/app/public/error_codes.h"
+#include "components/ttc/app/public/error_codes.h"
 
 namespace ttc {
 

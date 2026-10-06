@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "chrome/browser/ttc/app/public/error_codes.h"
-#include "chrome/browser/ttc/app/public/tool_types.h"
 #include "chrome/browser/ttc/core/page_context.h"
 #include "chrome/browser/ttc/core/states.h"
+#include "components/ttc/app/public/error_codes.h"
+#include "components/ttc/app/public/tool_types.h"
 
 class Profile;
 

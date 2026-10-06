@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_TEST_UTILS_H_
-#define CHROME_BROWSER_TTC_APP_TEST_UTILS_H_
+#ifndef COMPONENTS_TTC_APP_TEST_UTILS_H_
+#define COMPONENTS_TTC_APP_TEST_UTILS_H_
 
 #include <stdint.h>
 
@@ -12,9 +12,9 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ttc/app/public/tool_types.h"
-#include "chrome/browser/ttc/app/ttc_backend.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/ttc/app/public/tool_types.h"
+#include "components/ttc/app/ttc_backend.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -54,4 +54,4 @@ class MockTtcBackend : public TtcBackend {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_TEST_UTILS_H_
+#endif  // COMPONENTS_TTC_APP_TEST_UTILS_H_

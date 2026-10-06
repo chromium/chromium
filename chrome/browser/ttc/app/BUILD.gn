@@ -7,30 +7,27 @@
 source_set("public") {
   public = [
     "public/conversation.h",
-    "public/error_codes.h",
     "public/make_conversation.h",
-    "public/tool_types.h",
   ]
   public_deps = [
     "//base",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/ttc/app/public",
     "//url",
   ]
 }
 
 source_set("app") {
-  public = [
-    "audio_controller.h",
-    "ttc_backend.h",
-    "ttc_mes_client.h",
-  ]
+  public = [ "audio_controller.h" ]
   public_deps = [
     ":public",
     "//base",
     "//chrome/browser/optimization_guide",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/ttc/app",
+    "//components/ttc/app/public",
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
@@ -43,16 +40,16 @@ source_set("impl") {
     "audio_controller.cc",
     "conversation_impl.cc",
     "conversation_impl.h",
-    "error_codes.cc",
     "make_conversation.cc",
-    "tool_types.cc",
-    "ttc_mes_client.cc",
   ]
+  public_deps = [ "//components/ttc/app:impl" ]
   deps = [
     ":app",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/core",
+    "//components/ttc/app",
+    "//components/ttc/app/public",
     "//content/public/browser",
     "//services/audio/public/cpp",
   ]
@@ -60,17 +57,7 @@ source_set("impl") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "test_utils.cc",
-    "test_utils.h",
-  ]
-  public_deps = [
-    ":app",
-    "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//testing/gmock",
-    "//url",
-  ]
+  public_deps = [ "//components/ttc/app:test_support" ]
 }
 
 source_set("unit_tests") {
@@ -78,7 +65,6 @@ source_set("unit_tests") {
   sources = [
     "audio_controller_unittest.cc",
     "conversation_impl_unittest.cc",
-    "ttc_mes_client_unittest.cc",
   ]
   deps = [
     ":app",
@@ -90,6 +76,9 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/actor/core:journal",
     "//components/actor/core:task_id",
+    "//components/ttc/app",
+    "//components/ttc/app:test_support",
+    "//components/ttc/app/public",
     "//content/test:test_support",
     "//media",
     "//media:test_support",
@@ -111,6 +100,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/test:test_support",
+      "//components/ttc/app",
       "//content/public/browser",
       "//media",
       "//media:test_support",
@@ -149,6 +139,7 @@ if (!is_android) {
       "//chrome/browser/ttc/core:impl",
       "//chrome/test:test_support",
       "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/ttc/app",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//testing/gmock",

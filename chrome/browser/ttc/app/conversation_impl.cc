@@ -10,11 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
-#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/ttc/app/public/error_codes.h"
 
 namespace ttc {
 

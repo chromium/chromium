@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/app/ttc_mes_client.h"
+#include "components/ttc/app/ttc_mes_client.h"
 
+#include <stdint.h>
+
+#include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/core/server_journal_event.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/ttc/app/public/server_journal_event.h"
 
 namespace ttc {
 
@@ -118,9 +120,9 @@ ServerJournalEvent ToServerJournalEvent(
 
 }  // namespace
 
-TtcMesClient::TtcMesClient(Profile* profile) : profile_(profile) {
-  CHECK(profile_);
-}
+TtcMesClient::TtcMesClient(
+    optimization_guide::RemoteModelExecutor* model_executor)
+    : model_executor_(model_executor) {}
 
 TtcMesClient::~TtcMesClient() {
   Close();
@@ -135,9 +137,7 @@ void TtcMesClient::Connect(Observer* observer) {
 
   observer_ = observer;
 
-  OptimizationGuideKeyedService* opt_guide =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
-  if (!opt_guide) {
+  if (!model_executor_) {
     observer_->OnApplicationError(ErrorCode::kOptimizationGuideUnavailable);
     return;
   }
@@ -145,7 +145,7 @@ void TtcMesClient::Connect(Observer* observer) {
   optimization_guide::StreamingModelExecutionOptions options;
   options.idle_disconnect_timeout = base::Minutes(10);
 
-  session_ = opt_guide->StartStreamingSession(
+  session_ = model_executor_->StartStreamingSession(
       optimization_guide::ModelBasedCapabilityKey::kTtc, options,
       base::BindRepeating(&TtcMesClient::OnStreamingResult,
                           weak_factory_.GetWeakPtr()));

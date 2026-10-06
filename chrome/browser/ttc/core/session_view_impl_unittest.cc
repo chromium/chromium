@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ttc/core/session_view_impl.h"
 
-#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "components/ttc/app/public/error_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ttc {

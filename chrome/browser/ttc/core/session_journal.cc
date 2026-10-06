@@ -8,8 +8,8 @@
 
 #include "base/check_op.h"
 #include "base/time/time.h"
-#include "chrome/browser/ttc/core/server_journal_event.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/ttc/app/public/server_journal_event.h"
 #include "url/gurl.h"
 
 namespace ttc {

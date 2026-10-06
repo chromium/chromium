@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "components/ttc/app/public/error_codes.h"
 
 namespace ttc {
 

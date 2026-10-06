@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/app/ttc_mes_client.h"
+#include "components/ttc/app/ttc_mes_client.h"
 
 #include <stdint.h>
 
@@ -12,18 +12,13 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/ttc/app/public/error_codes.h"
-#include "chrome/browser/ttc/app/ttc_backend.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/features/ttc.pb.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/test/browser_task_environment.h"
+#include "components/ttc/app/public/error_codes.h"
+#include "components/ttc/app/ttc_backend.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,7 +75,9 @@ class FakeRemoteModelExecutionSession
 // had arrived over the session.
 class TestTtcMesClient : public TtcMesClient {
  public:
-  explicit TestTtcMesClient(Profile* profile) : TtcMesClient(profile) {}
+  explicit TestTtcMesClient(
+      optimization_guide::RemoteModelExecutor* model_executor)
+      : TtcMesClient(model_executor) {}
 
   using TtcMesClient::HandleServerFrame;
 };
@@ -107,35 +104,21 @@ optimization_guide::proto::TtcServerFrame MakeServerErrorFrame(
 class TtcMesClientTest : public testing::Test {
  public:
   TtcMesClientTest() {
-    TestingProfile::Builder builder;
-    builder.AddTestingFactory(
-        OptimizationGuideKeyedServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              testing::NiceMock<MockOptimizationGuideKeyedService>>();
-        }));
-    profile_ = builder.Build();
-
-    ON_CALL(opt_guide(), StartStreamingSession).WillByDefault([] {
+    ON_CALL(model_executor_, StartStreamingSession).WillByDefault([] {
       return std::make_unique<FakeRemoteModelExecutionSession>();
     });
 
-    client_ = std::make_unique<TestTtcMesClient>(profile_.get());
+    client_ = std::make_unique<TestTtcMesClient>(&model_executor_);
     client_->Connect(&observer_);
   }
 
  protected:
-  MockOptimizationGuideKeyedService& opt_guide() {
-    return *static_cast<MockOptimizationGuideKeyedService*>(
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile_.get()));
-  }
-
   TestTtcMesClient& client() { return *client_; }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   FakeObserver observer_;
-  std::unique_ptr<TestingProfile> profile_;
+  testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
+      model_executor_;
   std::unique_ptr<TestTtcMesClient> client_;
 };
 
@@ -189,6 +172,14 @@ TEST_F(TtcMesClientTest, ReportsOutOfRangeServerErrorAsUnknown) {
 
     EXPECT_EQ(observer_.last_error(), ErrorCode::kUnknown);
   }
+}
+
+TEST_F(TtcMesClientTest, ReportsErrorWhenModelExecutorIsNull) {
+  FakeObserver observer;
+  TestTtcMesClient client(/*model_executor=*/nullptr);
+  client.Connect(&observer);
+
+  EXPECT_EQ(observer.last_error(), ErrorCode::kOptimizationGuideUnavailable);
 }
 
 }  // namespace ttc

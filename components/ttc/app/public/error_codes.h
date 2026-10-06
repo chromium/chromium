@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_PUBLIC_ERROR_CODES_H_
-#define CHROME_BROWSER_TTC_APP_PUBLIC_ERROR_CODES_H_
+#ifndef COMPONENTS_TTC_APP_PUBLIC_ERROR_CODES_H_
+#define COMPONENTS_TTC_APP_PUBLIC_ERROR_CODES_H_
 
 #include <iosfwd>
 
@@ -23,7 +23,7 @@ enum class ErrorCode {
 
   // 1000+ are for client-side errors
 
-  // The OptimizationGuideKeyedService is not available in this browser profile.
+  // The RemoteModelExecutor is not available.
   kOptimizationGuideUnavailable = 1001,
 
   // Encountered a failure when trying to create a RemoteModelExecutionSession.
@@ -46,4 +46,4 @@ std::ostream& operator<<(std::ostream& os, ErrorCode error);
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_PUBLIC_ERROR_CODES_H_
+#endif  // COMPONENTS_TTC_APP_PUBLIC_ERROR_CODES_H_
