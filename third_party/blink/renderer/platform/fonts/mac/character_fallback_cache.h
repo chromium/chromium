@@ -22,16 +22,12 @@ struct PLATFORM_EXPORT CharacterFallbackKey {
   int16_t style = 0;
   float font_size = 0.f;
   uint8_t orientation = 0;
-  uint8_t fallback_flags = 0;
-  UChar32 character = 0;
   bool operator==(const CharacterFallbackKey&) const = default;
   static std::optional<CharacterFallbackKey> Make(CTFontRef ct_font,
                                                   int16_t raw_font_weight,
                                                   int16_t raw_font_style,
                                                   uint8_t orientation,
-                                                  float font_size,
-                                                  UChar32 character = 0,
-                                                  uint8_t fallback_flags = 0);
+                                                  float font_size);
 };
 
 struct PLATFORM_EXPORT CharacterFallbackKeyHashTraits

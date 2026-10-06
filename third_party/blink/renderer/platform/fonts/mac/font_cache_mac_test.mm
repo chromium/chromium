@@ -64,10 +64,6 @@ class FontCacheMacTest
   size_t PlatformDataCacheSize() {
     return FontCache::Get().font_platform_data_cache_.map_.size();
   }
-
-  size_t CharacterFallbackCacheSize() {
-    return FontCache::Get().character_fallback_cache_.size();
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(SystemUISyntheticBold,
@@ -126,32 +122,6 @@ TEST_F(FontCacheMacTest, UnavailableFontCaching) {
   // The font should no longer be marked as unavailable after invalidation.
   font_cache.Invalidate();
   EXPECT_FALSE(font_cache.IsFontFamilyUnavailable(non_existent_family));
-}
-
-TEST_F(FontCacheMacTest, NonIdeographicCharacterFallbackCache) {
-  FontCache& font_cache = FontCache::Get();
-  font_cache.Invalidate();
-
-  FontDescription font_description;
-  const SimpleFontData* primary_font =
-      font_cache.GetFontData(font_description, AtomicString("Helvetica"));
-  ASSERT_TRUE(primary_font);
-  EXPECT_EQ(CharacterFallbackCacheSize(), 0u);
-
-  // U+3042 HIRAGANA LETTER A is non-ideographic and requires fallback from
-  // Helvetica.
-  const SimpleFontData* first_fallback = font_cache.FallbackFontForCharacter(
-      font_description, U'\u3042', primary_font);
-  ASSERT_TRUE(first_fallback);
-  EXPECT_EQ(CharacterFallbackCacheSize(), 1u);
-
-  const SimpleFontData* second_fallback = font_cache.FallbackFontForCharacter(
-      font_description, U'\u3042', primary_font);
-  EXPECT_EQ(first_fallback, second_fallback);
-  EXPECT_EQ(CharacterFallbackCacheSize(), 1u);
-
-  font_cache.Invalidate();
-  EXPECT_EQ(CharacterFallbackCacheSize(), 0u);
 }
 
 }  // namespace blink

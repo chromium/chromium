@@ -269,7 +269,6 @@ void FontCache::Invalidate() {
   font_data_cache_.Clear();
   unique_name_typeface_cache_.clear();
 #if BUILDFLAG(IS_MAC)
-  character_fallback_cache_.clear();
   unavailable_font_families_.clear();
 #endif
 
