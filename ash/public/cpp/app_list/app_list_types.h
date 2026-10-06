@@ -374,7 +374,7 @@ enum class AppListLaunchedFrom {
   kLaunchedFromRecentApps = 5,
   kLaunchedFromContinueTask = 6,
   kLaunchedFromQuickAppAccess = 7,
-  kLaunchedFromAppsCollections = 8,
+  DEPRECATED_kLaunchedFromAppsCollections = 8,
   kLaunchedFromDiscoveryChip = 9,
   kLaunchedFromSearchBoxIcon = 10,
   kMaxValue = kLaunchedFromSearchBoxIcon,

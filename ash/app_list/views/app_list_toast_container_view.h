@@ -54,10 +54,6 @@ class AppListToastContainerView : public views::View {
 
     // Called when the nudge gets removed by the close or dismiss buttons.
     virtual void OnNudgeRemoved() = 0;
-
-    // Determines the appropriate grid type for the context menu on the
-    // nudge view.
-    virtual AppsGridContextMenu::GridType GetGridTypeForContextMenu();
   };
 
   AppListToastContainerView(AppListNudgeController* nudge_controller,
@@ -86,9 +82,6 @@ class AppListToastContainerView : public views::View {
 
   // Creates a reorder nudge view in the container.
   void CreateReorderNudgeView();
-
-  // Creates a tutorial nudge view in the container.
-  void CreateTutorialNudgeView();
 
   // Removes the reorder nudge view if the nudge view is showing.
   void RemoveReorderNudgeView();

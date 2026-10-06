@@ -88,27 +88,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
             user_journey_time);
       }
       break;
-    case PRODUCTIVITY_LAUNCHER_APPS_COLLECTIONS:
-      if (is_tablet_mode()) {
-        base::UmaHistogramEnumeration(
-            "Apps.ContextMenuShowSourceV2.AppsCollections."
-            "TabletMode",
-            source_type());
-        base::UmaHistogramTimes(
-            "Apps.ContextMenuUserJourneyTimeV2.AppsCollections."
-            "TabletMode",
-            user_journey_time);
-      } else {
-        base::UmaHistogramEnumeration(
-            "Apps.ContextMenuShowSourceV2.AppsCollections."
-            "ClamshellMode",
-            source_type());
-        base::UmaHistogramTimes(
-            "Apps.ContextMenuUserJourneyTimeV2.AppsCollections."
-            "ClamshellMode",
-            user_journey_time);
-      }
-      break;
     case APP_LIST_APP_TYPE_LAST:
       NOTREACHED();
   }
@@ -151,30 +130,21 @@ void AppListMenuModelAdapter::MaybeRecordAppLaunched(int command_id) {
               AppListUserAction::kAppLaunchFromAppsGrid,
               metric_params_.is_tablet_mode,
               metric_params_.launcher_show_timestamp);
-          RecordAppListByCollectionLaunched(collection_,
-                                            /*is_app_collections= */ false);
+          RecordAppListByCollectionLaunched(collection_);
           break;
         case AppListLaunchedFrom::kLaunchedFromRecentApps:
           RecordLauncherWorkflowMetrics(
               AppListUserAction::kAppLaunchFromRecentApps,
               metric_params_.is_tablet_mode,
               metric_params_.launcher_show_timestamp);
-          RecordAppListByCollectionLaunched(collection_,
-                                            /*is_app_collections= */ false);
+          RecordAppListByCollectionLaunched(collection_);
           break;
         case AppListLaunchedFrom::kLaunchedFromSearchBox:
           RecordLauncherWorkflowMetrics(AppListUserAction::kOpenAppSearchResult,
                                         metric_params_.is_tablet_mode,
                                         metric_params_.launcher_show_timestamp);
           break;
-        case AppListLaunchedFrom::kLaunchedFromAppsCollections:
-          RecordLauncherWorkflowMetrics(
-              AppListUserAction::kAppLauncherFromAppsCollections,
-              metric_params_.is_tablet_mode,
-              metric_params_.launcher_show_timestamp);
-          RecordAppListByCollectionLaunched(collection_,
-                                            /*is_app_collections= */ true);
-          break;
+        case AppListLaunchedFrom::DEPRECATED_kLaunchedFromAppsCollections:
         case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         case AppListLaunchedFrom::kLaunchedFromContinueTask:
         case AppListLaunchedFrom::kLaunchedFromShelf:

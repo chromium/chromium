@@ -69,8 +69,6 @@ TEST_P(AppListMenuModelAdapterTest, RecordsHistogramOnMenuClosed) {
        "ProductivityLauncherRecentApp", false},
       {AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID,
        "ProductivityLauncherAppGrid", false},
-      {AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APPS_COLLECTIONS,
-       "AppsCollections", false},
   };
 
   for (const auto& test_case : test_cases) {
@@ -113,8 +111,6 @@ TEST_P(AppListMenuModelAdapterTest, RecordsAppLaunched) {
        AppListUserAction::kAppLaunchFromRecentApps},
       {AppListLaunchedFrom::kLaunchedFromSearchBox,
        AppListUserAction::kOpenAppSearchResult},
-      {AppListLaunchedFrom::kLaunchedFromAppsCollections,
-       AppListUserAction::kAppLauncherFromAppsCollections},
   };
 
   for (const auto& test_case : test_cases) {

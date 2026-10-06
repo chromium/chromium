@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/app_list/app_list_model_provider.h"
-#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -23,8 +22,7 @@
 
 namespace ash {
 
-AppsGridContextMenu::AppsGridContextMenu(GridType grid_type)
-    : grid_type_(grid_type) {}
+AppsGridContextMenu::AppsGridContextMenu() = default;
 
 AppsGridContextMenu::~AppsGridContextMenu() = default;
 
@@ -40,22 +38,12 @@ void AppsGridContextMenu::Cancel() {
 void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case REORDER_BY_NAME_ALPHABETICAL:
-      if (grid_type_ == GridType::kAppsCollectionsGrid) {
-        AppsCollectionsController::Get()->RequestAppReorder(
-            AppListSortOrder::kNameAlphabetical);
-      } else {
-        AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
-            AppListSortOrder::kNameAlphabetical);
-      }
+      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+          AppListSortOrder::kNameAlphabetical);
       break;
     case REORDER_BY_COLOR:
-      if (grid_type_ == GridType::kAppsCollectionsGrid) {
-        AppsCollectionsController::Get()->RequestAppReorder(
-            AppListSortOrder::kColor);
-      } else {
-        AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
-            AppListSortOrder::kColor);
-      }
+      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+          AppListSortOrder::kColor);
       break;
     default:
       NOTREACHED();

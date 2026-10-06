@@ -58,11 +58,6 @@ constexpr auto kReorderUndoInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 8);
 
 }  // namespace
 
-AppsGridContextMenu::GridType
-AppListToastContainerView::Delegate::GetGridTypeForContextMenu() {
-  return AppsGridContextMenu::GridType::kAppsGrid;
-}
-
 AppListToastContainerView::AppListToastContainerView(
     AppListNudgeController* nudge_controller,
     AppListKeyboardController* keyboard_controller,
@@ -90,8 +85,7 @@ AppListToastContainerView::AppListToastContainerView(
   if (!tablet_mode_) {
     // `context_menu_` is only set in clamshell mode. The sort options in tablet
     // mode are handled in RootWindowController with ShelfContextMenuModel.
-    context_menu_ = std::make_unique<AppsGridContextMenu>(
-        delegate->GetGridTypeForContextMenu());
+    context_menu_ = std::make_unique<AppsGridContextMenu>();
     set_context_menu_controller(context_menu_.get());
   }
 }
@@ -195,36 +189,6 @@ void AppListToastContainerView::CreateReorderNudgeView() {
     toast_view_->SetAvailableWidth(*available_width_);
   }
   current_toast_ = AppListToastType::kReorderNudge;
-}
-
-void AppListToastContainerView::CreateTutorialNudgeView() {
-  if (toast_view_) {
-    return;
-  }
-
-  AppListToastView::Builder toast_view_builder(
-      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_TITLE));
-
-  toast_view_builder
-      .SetButton(
-          l10n_util::GetStringUTF16(
-              IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON),
-          base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
-                              base::Unretained(this)))
-      .SetStyleForTabletMode(tablet_mode_)
-      .SetSubtitle(l10n_util::GetStringUTF16(
-          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_SUBTITLE))
-      .SetIconBackground(true);
-
-  toast_view_ = AddChildView(toast_view_builder.Build());
-  toast_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kRegion);
-  toast_view_->toast_button()->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(
-          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON_SPOKEN_TEXT));
-  if (available_width_) {
-    toast_view_->SetAvailableWidth(*available_width_);
-  }
-  current_toast_ = AppListToastType::kTutorialViewNudge;
 }
 
 void AppListToastContainerView::RemoveReorderNudgeView() {

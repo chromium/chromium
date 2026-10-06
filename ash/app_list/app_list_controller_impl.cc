@@ -1132,10 +1132,10 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
       case AppListLaunchedFrom::kLaunchedFromShelf:
       case AppListLaunchedFrom::kLaunchedFromContinueTask:
       case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
-      case AppListLaunchedFrom::kLaunchedFromAppsCollections:
       case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
       case AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
         break;
+      case AppListLaunchedFrom::DEPRECATED_kLaunchedFromAppsCollections:
       case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();
     }
@@ -1166,7 +1166,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     case AppListLaunchedFrom::kLaunchedFromShelf:
     case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
-    case AppListLaunchedFrom::kLaunchedFromAppsCollections:
+    case AppListLaunchedFrom::DEPRECATED_kLaunchedFromAppsCollections:
     case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
     case AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
       NOTREACHED();
@@ -1230,9 +1230,6 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
       break;
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
     // Metrics for quick app launch already recorded at RecordApplaunched().
-    case AppListLaunchedFrom::kLaunchedFromAppsCollections:
-    // Metrics for apps collections launch recorded by the
-    // AppListViewDelegate.
     case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
       // Metrics for discovery chip already recorded at RecordApplaunched().
       break;
@@ -1244,6 +1241,7 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
     case AppListLaunchedFrom::kLaunchedFromSearchBox:
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
     case AppListLaunchedFrom::kLaunchedFromShelf:
+    case AppListLaunchedFrom::DEPRECATED_kLaunchedFromAppsCollections:
     case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
       NOTREACHED();
   }

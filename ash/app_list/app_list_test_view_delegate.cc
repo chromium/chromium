@@ -60,7 +60,6 @@ void AppListTestViewDelegate::OpenSearchResult(
     switch (launched_from) {
       case ash::AppListLaunchedFrom::kLaunchedFromSearchBox:
       case ash::AppListLaunchedFrom::kLaunchedFromRecentApps:
-      case ash::AppListLaunchedFrom::kLaunchedFromAppsCollections:
         RecordAppLaunched(launched_from);
         return;
       case ash::AppListLaunchedFrom::kLaunchedFromGrid:
@@ -70,6 +69,7 @@ void AppListTestViewDelegate::OpenSearchResult(
       case ash::AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
       case ash::AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
         return;
+      case ash::AppListLaunchedFrom::DEPRECATED_kLaunchedFromAppsCollections:
       case ash::AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();
     }

@@ -138,11 +138,10 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
     case AppListLaunchedFrom::kLaunchedFromRecentApps:
     case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
-    case AppListLaunchedFrom::kLaunchedFromAppsCollections:
+    case AppListLaunchedFrom::DEPRECATED_kLaunchedFromAppsCollections:
     case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
     case AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
-      // Search results don't live in the shelf, the app grid, apps collections
-      // or recent apps.
+      // Search results don't live in the shelf, the app grid, or recent apps.
       NOTREACHED();
   }
 }
