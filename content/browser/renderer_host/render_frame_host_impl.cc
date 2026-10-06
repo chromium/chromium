@@ -2878,6 +2878,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     delegate_->RenderFrameDeleted(this);
   }
 
+  const base::UnguessableToken reporting_source = GetReportingSource();
+
   // Resetting `document_associated_data_` destroys live `DocumentService` and
   // `DocumentUserData` instances. It is important for them to be
   // destroyed before the body of the `RenderFrameHostImpl` destructor
@@ -2885,6 +2887,23 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // `DocumentService` and `RenderFrameHostUserData` subclasses are still valid
   // when their destructors run.
   document_associated_data_.reset();
+
+  if (has_committed_any_navigation_) {
+    // Reporting API: Send any queued reports and mark the reporting source as
+    // expired so that the reporting configuration in the network service can be
+    // removed.
+    // - Gated on `has_committed_any_navigation_` because document reporting
+    //   endpoints are only configured upon navigation commit, and
+    //   `RenderProcessGone()` resets `has_committed_any_navigation_` to false
+    //   after already calling `SendReportsAndRemoveSource()`.
+    // - Ordered after `RenderFrameDeleted()` and
+    //   `document_associated_data_.reset()` so that observers and
+    //   `DocumentService` / `DocumentUserData` destructors (such as
+    //   `~DeclarativePerformanceObserver`) queue any final reports before the
+    //   reporting source is marked expired.
+    GetStoragePartition()->GetNetworkContext()->SendReportsAndRemoveSource(
+        reporting_source);
+  }
 
   // If this was the last active frame in the SiteInstanceGroup, the
   // DecrementActiveFrameCount call will trigger the deletion of the
@@ -4550,11 +4569,16 @@ void RenderFrameHostImpl::RenderProcessGone(
 
   // Reporting API: Send any queued reports and mark the reporting source as
   // expired so that the reporting configuration in the network service can be
-  // removed. This is done here, rather than in the destructor, as it needs the
-  // mojo pipe to the network service. It must be called after
-  // RenderFrameDeleted() so that observers (such as
-  // DeclarativePerformanceObserver) flushing final reports during frame
+  // removed. Although `~RenderFrameHostImpl()` also calls
+  // `SendReportsAndRemoveSource()`, a crashed `RenderFrameHostImpl` remains
+  // alive in the frame tree until a subsequent navigation or tab closure, so
+  // reports (including any crash report queued above) must be flushed
+  // immediately upon process exit. It must be called after
+  // `RenderFrameDeleted()` so that observers (such as
+  // `DeclarativePerformanceObserver`) flushing final reports during frame
   // deletion queue their reports before the reporting source is marked expired.
+  // `has_committed_any_navigation_` is reset below so `~RenderFrameHostImpl()`
+  // will not call this a second time.
   GetProcess()
       ->GetStoragePartition()
       ->GetNetworkContext()

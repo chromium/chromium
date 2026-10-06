@@ -27,6 +27,7 @@
 #include "content/public/test/test_storage_partition.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/storage_partition_test_helpers.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/features.h"
@@ -1676,6 +1677,123 @@ TEST_F(DeclarativePerformanceObserverSameRFHTest,
       network_context_.expired_sources().contains(old_reporting_source));
   EXPECT_FALSE(network_context_.expired_sources().contains(
       main_rfh()->GetReportingSource()));
+  EXPECT_EQ(network_context_.dropped_reports_due_to_expired_source(), 0u);
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  EXPECT_EQ(network_context_.reports()[0].type, "performance-observer");
+}
+
+class DeclarativePerformanceObserverCrossRFHWithoutBFCacheTest
+    : public DeclarativePerformanceObserverTest {
+ public:
+  DeclarativePerformanceObserverCrossRFHWithoutBFCacheTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kRenderDocument},
+        /*disabled_features=*/{features::kBackForwardCache});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that when a cross-RenderFrameHost navigation destroys the previous
+// RenderFrameHost without storing it in BackForwardCache (crbug.com/558351483),
+// RenderFrameHostImpl::~RenderFrameHostImpl() flushes
+// DeclarativePerformanceObserver before expiring the previous document's
+// reporting source via SendReportsAndRemoveSource().
+TEST_F(DeclarativePerformanceObserverCrossRFHWithoutBFCacheTest,
+       FlushesBeforeSourceRemovalOnCrossRFHNavigation) {
+  const GURL kPageURL1("https://example.com/index.html");
+  const GURL kPageURL2("https://example.com/page2.html");
+  const std::string kEndpoint("telemetry");
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kPageURL1);
+
+  mojo::Receiver<network::mojom::NetworkContext> network_context_receiver(
+      &network_context_);
+  static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition())
+      ->SetNetworkContextForTesting(
+          network_context_receiver.BindNewPipeAndPassRemote());
+
+  DeclarativePerformanceObserverCoordinator::CreateForWebContents(
+      web_contents());
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL1, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::CreateForCurrentDocument(main_rfh(),
+                                                           &navigation_handle);
+
+  const GlobalRenderFrameHostId old_rfh_id = main_rfh()->GetGlobalId();
+  const base::UnguessableToken old_reporting_source =
+      main_rfh()->GetReportingSource();
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kPageURL2);
+  EXPECT_NE(old_rfh_id, main_rfh()->GetGlobalId());
+  main_rfh()->GetStoragePartition()->FlushNetworkInterfaceForTesting();
+
+  EXPECT_TRUE(
+      network_context_.expired_sources().contains(old_reporting_source));
+  EXPECT_FALSE(network_context_.expired_sources().contains(
+      main_rfh()->GetReportingSource()));
+  EXPECT_EQ(network_context_.dropped_reports_due_to_expired_source(), 0u);
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  EXPECT_EQ(network_context_.reports()[0].type, "performance-observer");
+}
+
+// Verifies that when WebContents is destroyed (e.g., tab closure,
+// crbug.com/558351483), RenderFrameHostImpl::~RenderFrameHostImpl() flushes
+// DeclarativePerformanceObserver before expiring the reporting source via
+// SendReportsAndRemoveSource().
+TEST_F(DeclarativePerformanceObserverTest,
+       FlushesBeforeSourceRemovalOnWebContentsDestruction) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kPageURL);
+
+  auto* storage_partition =
+      static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+  mojo::Receiver<network::mojom::NetworkContext> network_context_receiver(
+      &network_context_);
+  storage_partition->SetNetworkContextForTesting(
+      network_context_receiver.BindNewPipeAndPassRemote());
+
+  DeclarativePerformanceObserverCoordinator::CreateForWebContents(
+      web_contents());
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::CreateForCurrentDocument(main_rfh(),
+                                                           &navigation_handle);
+
+  const base::UnguessableToken reporting_source =
+      main_rfh()->GetReportingSource();
+
+  DeleteContents();
+  storage_partition->FlushNetworkInterfaceForTesting();
+
+  EXPECT_TRUE(network_context_.expired_sources().contains(reporting_source));
   EXPECT_EQ(network_context_.dropped_reports_due_to_expired_source(), 0u);
   ASSERT_EQ(network_context_.reports().size(), 1u);
   EXPECT_EQ(network_context_.reports()[0].type, "performance-observer");
