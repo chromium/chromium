@@ -708,8 +708,9 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
                     inFolderWithName:@"Folder 1"
                            inStorage:kindOfTestToStorageType(sourceKind)];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 2")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityID(
+                                                       @"Folder 2")];
   // Close bookmarks
   [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];

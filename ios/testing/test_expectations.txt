@@ -132,9 +132,6 @@ crbug.com/559221484 TabGroupsTestCase/testGroupCreationFromAnotherGroupInSelecti
 crbug.com/561662655 SafeBrowsingTestCase/testEnterpriseWarningPageRefreshedThenBypass [ Pass Failure ]
 
 # Gardening suppression 2026-09-17
-crbug.com/562885431 BookmarksFolderChooserAccountTestCase/testMoveAndUndoAccountToLocal [ Pass Failure ]
-crbug.com/562885431 BookmarksFolderChooserLocalTestCase/testMoveAndUndoLocalToAccount [ Pass Failure ]
-crbug.com/562885431 BookmarksFolderChooserAccountTestCase/testMoveAndUndoAccount [ Pass Failure ]
 crbug.com/553554439 [ iPad Simulator ] ReadingListTestCase/testMarkMixedEntriesUnread [ Pass Failure ]
 
 # Gardening suppression 2026-09-18
