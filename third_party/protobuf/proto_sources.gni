@@ -193,7 +193,6 @@ protoc_headers = [
   "$_include_dir/compiler/zip_writer.h",
   "$_include_dir/compiler/retention.h",
   "$_include_dir/compiler/versions.h",
-  "$_include_dir/compiler/cpp/enum.h",
 ]
 
 _cpp_dir = "$_include_dir/compiler/cpp"
@@ -224,6 +223,7 @@ protoc_cpp_sources = [
 ]
 
 protoc_cpp_headers = [
+  "$_cpp_dir/enum.h",
   "$_cpp_dir/extension.h",
   "$_cpp_dir/names.h",
   "$_cpp_dir/options.h",
