@@ -88,7 +88,6 @@ static_library("system") {
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/services/auth_factor_config/public/mojom",
     "//components/paint_preview/buildflags",
-    "//services/accessibility/public/mojom",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
   ]
 }

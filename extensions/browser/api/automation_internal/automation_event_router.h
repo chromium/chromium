@@ -155,7 +155,7 @@ class AutomationEventRouter
   AutomationListener* GetListenerByRenderProcessID(
       const RenderProcessHostId& listener_rph_id) const;
 
-  // ax::mojom::AutomationClient:
+  // extensions::mojom::RendererAutomationRegistry:
   void BindAutomation(
       mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) override;
 

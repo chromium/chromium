@@ -31,7 +31,6 @@
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
-#include "services/accessibility/buildflags.h"
 #include "services/audio/service_factory.h"
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/network/network_service.h"
@@ -112,12 +111,6 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "content/common/features.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_provider_factory.h"
 #endif
-
-#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
-#include "services/accessibility/browser_accessibility_service.h"  // nogncheck
-#include "services/accessibility/public/mojom/accessibility_service.mojom.h"  // nogncheck
-#include "ui/accessibility/accessibility_features.h"
-#endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "media/capture/capture_switches.h"
@@ -287,13 +280,6 @@ auto RunDataDecoder(
   return std::make_unique<data_decoder::DataDecoderService>(
       std::move(receiver));
 }
-
-#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
-auto RunAccessibilityService(
-    mojo::PendingReceiver<ax::mojom::AccessibilityService> receiver) {
-  return std::make_unique<ax::BrowserAccessibilityService>(std::move(receiver));
-}
-#endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
 #if BUILDFLAG(IS_WIN)
 auto RunMediaFoundationServiceBroker(
@@ -471,10 +457,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   services.Add(RunVideoEncodeAcceleratorProviderFactory);
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
-  if (::features::IsAccessibilityServiceEnabled())
-    services.Add(RunAccessibilityService);
-#endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
   // Add new main-thread services above this line.
   GetContentClient()->utility()->RegisterMainThreadServices(services);

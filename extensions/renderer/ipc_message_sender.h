@@ -16,7 +16,7 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/automation.mojom.h"
 
 namespace base {
 class Uuid;

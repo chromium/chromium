@@ -128,10 +128,6 @@ test("services_unittests") {
     bundle_deps = [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
   }
 
-  if (is_linux) {
-    deps += [ "//services/accessibility:tests" ]
-  }
-
   if (is_win) {
     deps += [ "//services/proxy_resolver_win:tests" ]
   }

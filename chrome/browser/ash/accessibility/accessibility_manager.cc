@@ -100,7 +100,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
 #include "media/base/audio_codecs.h"
-#include "services/accessibility/buildflags.h"
 #include "services/audio/public/cpp/sounds/global_sounds_manager.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -803,11 +802,6 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
         kUserSpokenFeedbackEnabled, enabled);
   }
 
-  // TODO(crbug.com/1355633): Refactor a helper class that uses either
-  // AccessibilityExtensionLoader or AccessibilityServiceClient when
-  // setting profile or turning on/off extensions depending on the state
-  // of the flag. That class will own both the loaders and the
-  // AccessibilityServiceClient.
   if (enabled) {
     chromevox_loader_->SetBrowserContext(
         profile_,

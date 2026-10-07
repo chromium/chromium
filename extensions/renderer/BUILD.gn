@@ -270,7 +270,7 @@ source_set("renderer") {
     "//gin",
     "//mojo/public/js:resources",
     "//pdf:buildflags",
-    "//services/accessibility/public/mojom",
+    "//services/accessibility/public/mojom:automation",
     "//services/metrics/public/cpp:metrics_cpp",
     "//skia",
     "//storage/common",
