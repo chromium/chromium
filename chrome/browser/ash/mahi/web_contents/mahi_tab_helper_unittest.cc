@@ -10,17 +10,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/mahi/web_contents/test_support/mock_mahi_web_contents_manager.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tabs/tab_activity_simulator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 namespace mahi {
 
 using testing::_;
@@ -36,18 +33,9 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
     scoped_mahi_web_contents_manager_ =
         std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             &mock_mahi_web_contents_manager_);
-
-    // Initialize browser.
-    BrowserWindowCreateParams params(profile(), /*user_gesture=*/true);
-    browser_ = CreateBrowserWithTestWindowForParams(std::move(params));
-    tab_strip_model_ = browser_->GetTabStripModel();
   }
 
   void TearDown() override {
-    tab_strip_model_->CloseAllTabs();
-    tab_strip_model_ = nullptr;
-    browser_.reset();
-
     scoped_mahi_web_contents_manager_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -57,10 +45,6 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
   MockMahiWebContentsManager mock_mahi_web_contents_manager_;
   std::unique_ptr<chromeos::ScopedMahiWebContentsManagerOverride>
       scoped_mahi_web_contents_manager_;
-
-  TabActivitySimulator tab_activity_simulator_;
-  raw_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<BrowserWindowInterface> browser_;
 };
 
 TEST_F(MahiTabHelperTest, FocusedTabLoadComplete) {
@@ -91,10 +75,12 @@ TEST_F(MahiTabHelperTest, TabSwitch) {
   ASSERT_NE(nullptr, tab_helper);
   NavigateAndCommit(GURL("https://example1.com"));
 
-  content::WebContents* web_contents2 =
-      tab_activity_simulator_.AddWebContentsAndNavigate(
-          tab_strip_model_, GURL("https://example2.com"));
-  EXPECT_NE(nullptr, web_contents2);
+  std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
+  std::unique_ptr<MahiTabHelper> tab_helper2 =
+      MahiTabHelper::MaybeCreate(web_contents2.get());
+  ASSERT_NE(nullptr, tab_helper2);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents2.get(), GURL("https://example2.com"));
 
   // Switch back to a previous loaded tab.
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
