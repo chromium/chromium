@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="outer">
+  <object id="obj" type="text/html" data="about:blank">
+    <svg><foreignObject><canvas></canvas></foreignObject></svg>
+  </object>
+</div>
+<script>
+async_test((t) => {
+  const outer = document.getElementById('outer');
+  const obj = document.getElementById('obj');
+  const canvas = outer.querySelector('canvas');
+  const home = canvas.parentNode;
+  const ctx = canvas.getContext('2d');
+  const other = document.implementation.createHTMLDocument();
+
+  EventTarget.prototype.addEventListener.call(obj, 'load', t.step_func_done(() => {
+    const frame = new VideoFrame(canvas, {timestamp: 0});
+    ctx.filter = 'url(#none)';
+    frames[0].onpagehide = () => {
+      other.adoptNode(canvas);
+      canvas.width = 17;
+      home.append(canvas);
+    };
+
+    outer.style.display = 'none';
+    outer.offsetWidth;
+    getComputedStyle(canvas).color;
+    Element.prototype.setAttribute.call(obj, 'type', 'image/png');
+    Element.prototype.setAttribute.call(obj, 'data', 'data:image/png,x');
+    ctx.drawImage(frame, 0, 0);
+    frame.close();
+  }));
+}, 'Canvas2D drawImage does not crash when style recalc during drawing resizes canvas');
+</script>
