@@ -26,10 +26,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -163,38 +160,6 @@ class DemoModeIdleHandlerTest : public DemoModeIdleHandlerTestBase {
     demo_mode::SetDoNothingWhenPowerIdle();
   }
 };
-
-TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
-  // Ensure MGS logout timer not started.
-  EXPECT_FALSE(
-      demo_mode_idle_handler()->GetMGSLogoutTimeoutForTest().has_value());
-
-  // Initialize 2 browsers.
-  std::unique_ptr<BrowserWindowInterface> browser_1 =
-      CreateBrowserWithTestWindowForParams(
-          BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
-  std::unique_ptr<BrowserWindowInterface> browser_2 =
-      CreateBrowserWithTestWindowForParams(
-          BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
-  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2U);
-
-  // Trigger close all browsers by being idle for
-  // `kReLuanchDemoAppIdleDuration`.
-  SimulateUserActivity();
-  FastForwardBy(kReLuanchDemoAppIdleDuration);
-  EXPECT_TRUE(
-      static_cast<TestBrowserWindow*>(browser_1->GetWindow())->IsClosed());
-  EXPECT_TRUE(
-      static_cast<TestBrowserWindow*>(browser_2->GetWindow())->IsClosed());
-  // `TestBrowserWindow` does not destroy `Browser` when `Close()` is called,
-  // but real browser window does. Reset both browsers here to fake this
-  // behavior.
-  browser_1.reset();
-  browser_2.reset();
-
-  EXPECT_EQ(get_launch_demo_app_count(), 1);
-  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
-}
 
 TEST_F(DemoModeIdleHandlerTest, ClearAndCloseClipboard) {
   ash::ClipboardHistoryControllerImpl* clipboard_history_controller =

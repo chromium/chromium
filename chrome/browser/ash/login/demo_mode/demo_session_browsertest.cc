@@ -8,18 +8,23 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/scoped_observation.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -36,8 +41,10 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -52,6 +59,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/url_util.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
 namespace {
@@ -784,6 +792,32 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginIdleHandlerTest,
     EXPECT_TRUE(base::test::RunUntil(
         [&drive_fs_file]() { return !base::PathExists(drive_fs_file); }));
   }
+}
+
+using DemoModeIdleHandlerBrowserTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(DemoModeIdleHandlerBrowserTest, CloseAllBrowsers) {
+  demo_mode::SetDoNothingWhenPowerIdle();
+  DemoSessionMetricsRecorder metrics_recorder;
+  base::test::TestFuture<void> launch_demo_app_future;
+  DemoModeWindowCloser window_closer(
+      launch_demo_app_future.GetRepeatingCallback());
+  DemoModeIdleHandler idle_handler(
+      &window_closer,
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  idle_handler.SetIdleTimeoutForTest(base::Milliseconds(1));
+
+  // Ensure MGS logout timer not started.
+  EXPECT_FALSE(idle_handler.GetMGSLogoutTimeoutForTest().has_value());
+
+  // Initialize a second browser in addition to the default browser.
+  CreateBrowser(GetProfile());
+  EXPECT_NE(BrowserController::GetInstance()->GetLastUsedBrowser(), nullptr);
+
+  // Trigger close all browsers by being idle.
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+  EXPECT_TRUE(launch_demo_app_future.Wait());
+  EXPECT_EQ(BrowserController::GetInstance()->GetLastUsedBrowser(), nullptr);
 }
 
 }  // namespace ash

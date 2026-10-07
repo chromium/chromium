@@ -163,6 +163,7 @@ source_set("browser_tests") {
   deps = [
     ":demo_mode",
     ":test_support",
+    "//ash",
     "//ash/constants",
     "//ash/login/resources:login_strings",
     "//ash/public/cpp",
@@ -257,7 +258,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
-    "//chrome/test/base:test_browser_window",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
