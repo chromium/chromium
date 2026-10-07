@@ -607,6 +607,20 @@ class LocalDeviceInstrumentationTestRun(
                     'settings put secure notification_permission_enabled 0'
                 )
                 dev.RunShellCommand(cmd, shell=True, check_return=True)
+                # Disable the letterbox education popup in Android T+. It shows
+                # the first time an app is letterboxed (e.g. when a test
+                # requests portrait on a landscape tablet or desktop) and
+                # swallows input meant for the app.
+                if dev.build_version_sdk >= version_codes.TIRAMISU:
+                    dev.RunShellCommand(
+                        [
+                            'wm',
+                            'set-letterbox-style',
+                            '--isEducationEnabled',
+                            'false',
+                        ],
+                        check_return=False,
+                    )
 
             @trace_event.traced
             def set_vega_permissions(dev):
