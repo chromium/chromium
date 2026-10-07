@@ -392,42 +392,42 @@ IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
                                 MENU_ACTION_MANAGE_EXTENSIONS, 0);
 }
 
-class AppMenuModelSkillsInteractiveTest : public AppMenuModelInteractiveTest {
+class AppMenuModelSkillsAndExtensionsInteractiveTest
+    : public AppMenuModelInteractiveTest {
  public:
-  AppMenuModelSkillsInteractiveTest() {
-    // TODO(crbug.com/562074283): Remove kAppMenuGlowUp from disabled features
-    // once there is a skills entry in the action app menu.
+  AppMenuModelSkillsAndExtensionsInteractiveTest() {
     feature_list_.InitWithFeatures(
-        {features::kSkillsEnabled, features::kSkillsAppMenu},
-        {features::kAppMenuGlowUp});
+        {features::kSkillsEnabled, features::kSkillsAndExtensionsAppMenu}, {});
   }
 
-  ~AppMenuModelSkillsInteractiveTest() override = default;
+  ~AppMenuModelSkillsAndExtensionsInteractiveTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsInteractiveTest, ManageSkills) {
-  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  SelectMenuItem(AppMenuModel::kSkillsMenuItem),
-                  SelectMenuItem(SkillsMenuModel::kManageSkillsMenuItem),
-                  WaitForWebContentsNavigation(
-                      kPrimaryTabPageElementId,
-                      GURL(chrome::kChromeUISkillsURL)
-                          .Resolve(chrome::kChromeUISkillsYourSkillsPath)));
+IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
+                       ManageSkills) {
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kSkillsAndExtensionsMenuItem),
+      SelectMenuItem(SkillsAndExtensionsMenuModel::kManageSkillsMenuItem),
+      WaitForWebContentsNavigation(
+          kPrimaryTabPageElementId,
+          GURL(chrome::kChromeUISkillsURL)
+              .Resolve(chrome::kChromeUISkillsYourSkillsPath)));
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsInteractiveTest, BrowseSkills) {
-  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  SelectMenuItem(AppMenuModel::kSkillsMenuItem),
-                  SelectMenuItem(SkillsMenuModel::kBrowseSkillsMenuItem),
-                  WaitForWebContentsNavigation(
-                      kPrimaryTabPageElementId,
-                      GURL(chrome::kChromeUISkillsURL)
-                          .Resolve(chrome::kChromeUISkillsBrowsePath)));
+IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
+                       ManageExtensions) {
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kSkillsAndExtensionsMenuItem),
+      SelectMenuItem(ExtensionsMenuModel::kManageExtensionsMenuItem),
+      WaitForWebContentsNavigation(kPrimaryTabPageElementId,
+                                   GURL(chrome::kChromeUIExtensionsURL)));
 }
 
 class PasswordManagerMenuItemInteractiveTest

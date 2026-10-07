@@ -580,7 +580,7 @@
   E(kActionRecentTabsSubmenu, IDC_RECENT_TABS_MENU)                       \
   E(kActionDeveloperSubmenu, IDC_DEVELOPER_MENU)                               \
   E(kActionExtensionsSubmenu, IDC_EXTENSIONS_SUBMENU)                          \
-  E(kActionSkillsSubmenu, IDC_SKILLS_MENU)
+  E(kActionSkillsAndExtensionsSubmenu, IDC_SKILLS_AND_EXTENSIONS_MENU)
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

@@ -11153,9 +11153,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"skills", flag_descriptions::kSkillsEnabledName,
      flag_descriptions::kSkillsEnabledDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSkillsEnabled)},
-    {"skills-app-menu", flag_descriptions::kSkillsAppMenuName,
-     flag_descriptions::kSkillsAppMenuDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSkillsAppMenu)},
+    {"skills-and-extensions-app-menu",
+     flag_descriptions::kSkillsAndExtensionsAppMenuName,
+     flag_descriptions::kSkillsAndExtensionsAppMenuDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSkillsAndExtensionsAppMenu)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

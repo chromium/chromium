@@ -524,77 +524,160 @@ IN_PROC_BROWSER_TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
   }
 }
 
-class SkillsMenuModelTest : public AppMenuModelTest {
+class SkillsAndExtensionsMenuModelTest : public AppMenuModelTest {
  public:
-  SkillsMenuModelTest() {
+  SkillsAndExtensionsMenuModelTest() {
     feature_list_.InitWithFeatures(
-        {features::kSkillsEnabled, features::kSkillsAppMenu}, {});
+        {features::kSkillsEnabled, features::kSkillsAndExtensionsAppMenu}, {});
   }
-  ~SkillsMenuModelTest() override = default;
+  ~SkillsAndExtensionsMenuModelTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SkillsMenuModelTest, SkillsMenuStandalone) {
+IN_PROC_BROWSER_TEST_F(SkillsAndExtensionsMenuModelTest,
+                       SkillsAndExtensionsMenuStandalone) {
+  actions::ActionItem* root_action =
+      BrowserActions::From(browser())->root_action_item();
+  auto* skills_and_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionSkillsAndExtensionsSubmenu, root_action);
+  ASSERT_NE(skills_and_extensions_action, nullptr);
+  EXPECT_TRUE(skills_and_extensions_action->GetVisible());
+
+  auto* extensions_action = actions::ActionManager::Get().FindAction(
+      kActionExtensionsSubmenu, root_action);
+  ASSERT_NE(extensions_action, nullptr);
+  EXPECT_FALSE(extensions_action->GetVisible());
+
+  auto* find_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionFindExtensions, root_action);
+  ASSERT_NE(find_extensions_action, nullptr);
+  EXPECT_FALSE(find_extensions_action->GetVisible());
+
   AppMenuModel model(this, browser());
   model.Init();
 
-  ASSERT_TRUE(model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder)
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(AppMenuModel::kExtensionsSubmenuPlaceholder)
+          .has_value());
+  EXPECT_FALSE(model.GetIndexOfCommandId(IDC_FIND_EXTENSIONS).has_value());
+
+  ASSERT_TRUE(model
+                  .GetIndexOfCommandId(
+                      AppMenuModel::kSkillsAndExtensionsMenuPlaceholder)
                   .has_value());
-  const size_t skills_index =
-      model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder).value();
-  ui::MenuModel* skills_submenu = model.GetSubmenuModelAt(skills_index);
-  ASSERT_NE(skills_submenu, nullptr);
-  ASSERT_EQ(2ul, skills_submenu->GetItemCount());
-  EXPECT_EQ(IDC_MANAGE_SKILLS, skills_submenu->GetCommandIdAt(0));
-  EXPECT_EQ(IDC_BROWSE_SKILLS, skills_submenu->GetCommandIdAt(1));
-  EXPECT_TRUE(skills_submenu->IsEnabledAt(0));
-  EXPECT_TRUE(skills_submenu->IsEnabledAt(1));
-  EXPECT_FALSE(model.GetIconAt(skills_index).IsEmpty());
-  EXPECT_FALSE(skills_submenu->GetIconAt(0).IsEmpty());
-  EXPECT_FALSE(skills_submenu->GetIconAt(1).IsEmpty());
+  const size_t skills_and_extensions_index =
+      model
+          .GetIndexOfCommandId(
+              AppMenuModel::kSkillsAndExtensionsMenuPlaceholder)
+          .value();
+  ui::MenuModel* skills_and_extensions_submenu =
+      model.GetSubmenuModelAt(skills_and_extensions_index);
+  ASSERT_NE(skills_and_extensions_submenu, nullptr);
+  ASSERT_EQ(4ul, skills_and_extensions_submenu->GetItemCount());
+  EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+            skills_and_extensions_submenu->GetCommandIdAt(0));
+  EXPECT_EQ(IDC_MANAGE_SKILLS,
+            skills_and_extensions_submenu->GetCommandIdAt(1));
+  EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
+            skills_and_extensions_submenu->GetTypeAt(2));
+  EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+            skills_and_extensions_submenu->GetCommandIdAt(3));
+  EXPECT_TRUE(skills_and_extensions_submenu->IsEnabledAt(0));
+  EXPECT_TRUE(skills_and_extensions_submenu->IsEnabledAt(1));
+  EXPECT_TRUE(skills_and_extensions_submenu->IsEnabledAt(3));
+  EXPECT_FALSE(model.GetIconAt(skills_and_extensions_index).IsEmpty());
+  EXPECT_FALSE(skills_and_extensions_submenu->GetIconAt(0).IsEmpty());
+  EXPECT_FALSE(skills_and_extensions_submenu->GetIconAt(1).IsEmpty());
 }
 
-class SkillsMenuModelDisabledTest : public AppMenuModelTest {
+class SkillsAndExtensionsMenuModelDisabledTest : public AppMenuModelTest {
  public:
-  SkillsMenuModelDisabledTest() {
-    feature_list_.InitAndDisableFeature(features::kSkillsAppMenu);
+  SkillsAndExtensionsMenuModelDisabledTest() {
+    feature_list_.InitAndDisableFeature(features::kSkillsAndExtensionsAppMenu);
   }
-  ~SkillsMenuModelDisabledTest() override = default;
+  ~SkillsAndExtensionsMenuModelDisabledTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SkillsMenuModelDisabledTest, SkillsMenuDisabled) {
+IN_PROC_BROWSER_TEST_F(SkillsAndExtensionsMenuModelDisabledTest,
+                       SkillsAndExtensionsMenuDisabled) {
+  actions::ActionItem* root_action =
+      BrowserActions::From(browser())->root_action_item();
+  auto* skills_and_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionSkillsAndExtensionsSubmenu, root_action);
+  ASSERT_NE(skills_and_extensions_action, nullptr);
+  EXPECT_FALSE(skills_and_extensions_action->GetVisible());
+
+  auto* extensions_action = actions::ActionManager::Get().FindAction(
+      kActionExtensionsSubmenu, root_action);
+  ASSERT_NE(extensions_action, nullptr);
+  EXPECT_TRUE(extensions_action->GetVisible());
+
+  auto* find_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionFindExtensions, root_action);
+  ASSERT_NE(find_extensions_action, nullptr);
+  EXPECT_TRUE(find_extensions_action->GetVisible());
+
   AppMenuModel model(this, browser());
   model.Init();
 
-  EXPECT_FALSE(model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder)
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       AppMenuModel::kSkillsAndExtensionsMenuPlaceholder)
                    .has_value());
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(AppMenuModel::kExtensionsSubmenuPlaceholder)
+          .has_value() ||
+      model.GetIndexOfCommandId(IDC_FIND_EXTENSIONS).has_value());
 }
 
-class SkillsMenuModelSkillsDisabledTest : public AppMenuModelTest {
+class SkillsAndExtensionsMenuModelSkillsDisabledTest : public AppMenuModelTest {
  public:
-  SkillsMenuModelSkillsDisabledTest() {
+  SkillsAndExtensionsMenuModelSkillsDisabledTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkillsAppMenu},
+        /*enabled_features=*/{features::kSkillsAndExtensionsAppMenu},
         /*disabled_features=*/{features::kSkillsEnabled});
   }
-  ~SkillsMenuModelSkillsDisabledTest() override = default;
+  ~SkillsAndExtensionsMenuModelSkillsDisabledTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SkillsMenuModelSkillsDisabledTest,
-                       SkillsMenuDisabledWhenSkillsDisabled) {
+IN_PROC_BROWSER_TEST_F(SkillsAndExtensionsMenuModelSkillsDisabledTest,
+                       SkillsAndExtensionsMenuDisabledWhenSkillsDisabled) {
+  actions::ActionItem* root_action =
+      BrowserActions::From(browser())->root_action_item();
+  auto* skills_and_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionSkillsAndExtensionsSubmenu, root_action);
+  ASSERT_NE(skills_and_extensions_action, nullptr);
+  EXPECT_FALSE(skills_and_extensions_action->GetVisible());
+
+  auto* extensions_action = actions::ActionManager::Get().FindAction(
+      kActionExtensionsSubmenu, root_action);
+  ASSERT_NE(extensions_action, nullptr);
+  EXPECT_TRUE(extensions_action->GetVisible());
+
+  auto* find_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionFindExtensions, root_action);
+  ASSERT_NE(find_extensions_action, nullptr);
+  EXPECT_TRUE(find_extensions_action->GetVisible());
+
   AppMenuModel model(this, browser());
   model.Init();
 
-  EXPECT_FALSE(model.GetIndexOfCommandId(AppMenuModel::kSkillsMenuPlaceholder)
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       AppMenuModel::kSkillsAndExtensionsMenuPlaceholder)
                    .has_value());
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(AppMenuModel::kExtensionsSubmenuPlaceholder)
+          .has_value() ||
+      model.GetIndexOfCommandId(IDC_FIND_EXTENSIONS).has_value());
 }
 
 // Profile row does not show on ChromeOS.

@@ -1269,12 +1269,12 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_MANAGE_SKILLS:
       ShowSkillsYourSkills(webui::GetBrowserForOpeningWebUi(browser_));
       BrowserUserEducationInterface::From(browser_)->NotifyNewBadgeFeatureUsed(
-          features::kSkillsAppMenu);
+          features::kSkillsAndExtensionsAppMenu);
       break;
     case IDC_BROWSE_SKILLS:
       ShowSkillsBrowse(webui::GetBrowserForOpeningWebUi(browser_));
       BrowserUserEducationInterface::From(browser_)->NotifyNewBadgeFeatureUsed(
-          features::kSkillsAppMenu);
+          features::kSkillsAndExtensionsAppMenu);
       break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
       SidePanelUI::From(browser_)->Show(SidePanelEntryId::kBookmarks,
@@ -1769,7 +1769,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON, true);
 
   // Skills menu commands
-  command_updater_->UpdateCommandEnabled(IDC_SKILLS_MENU, true);
+  command_updater_->UpdateCommandEnabled(IDC_SKILLS_AND_EXTENSIONS_MENU, true);
   command_updater_->UpdateCommandEnabled(IDC_MANAGE_SKILLS, true);
   command_updater_->UpdateCommandEnabled(IDC_BROWSE_SKILLS, true);
 

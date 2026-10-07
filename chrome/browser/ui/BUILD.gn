@@ -325,6 +325,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/signin",
+      "//chrome/browser/skills",
       "//chrome/browser/spellchecker",
       "//chrome/browser/ttc/core",
       "//chrome/browser/ui:accelerator_table",
@@ -385,6 +386,7 @@ if (!is_android) {
       "//components/multistep_filter/core:features",
       "//components/omnibox/common:features",
       "//components/profile_metrics",
+      "//components/skills:features",
       "//components/spellcheck/browser",
       "//components/undo",
     ]

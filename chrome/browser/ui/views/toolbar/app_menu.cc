@@ -1282,7 +1282,7 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
-  if (command_id == AppMenuModel::kSkillsMenuPlaceholder) {
+  if (command_id == AppMenuModel::kSkillsAndExtensionsMenuPlaceholder) {
     return true;
   }
 

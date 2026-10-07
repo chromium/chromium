@@ -2852,9 +2852,10 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Shown on the Dictation context menu item.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kSkillsAppMenu,
-      user_education::Metadata(158, "xinlongyi@google.com",
-                               "Shown on the Skills item in the app menu.")));
+      features::kSkillsAndExtensionsAppMenu,
+      user_education::Metadata(
+          158, "xinlongyi@google.com",
+          "Shown on the Extensions and Skills item in the app menu.")));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry.RegisterFeature(user_education::NewBadgeSpecification(

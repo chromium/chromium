@@ -83,6 +83,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -223,6 +224,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/features.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -1808,6 +1810,9 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                BrowserUserEducationInterface::From(bwi)
+                    ->NotifyNewBadgeFeatureUsed(
+                        features::kSkillsAndExtensionsAppMenu);
                 chrome::ShowSkillsYourSkills(
                     webui::GetBrowserForOpeningWebUi(bwi));
               },
@@ -1816,9 +1821,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           .SetText(l10n_util::GetStringUTF16(IDS_SKILLS_MENU_MANAGE_SKILLS))
           .SetTooltipText(
               l10n_util::GetStringUTF16(IDS_SKILLS_MENU_MANAGE_SKILLS))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kSettingsIcon
-                                                : kSettingsMenuOldIcon))
+          .SetImage(ui::ImageModel::FromVectorIcon(kContractIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -1826,6 +1829,9 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                BrowserUserEducationInterface::From(bwi)
+                    ->NotifyNewBadgeFeatureUsed(
+                        features::kSkillsAndExtensionsAppMenu);
                 chrome::ShowSkillsBrowse(webui::GetBrowserForOpeningWebUi(bwi));
               },
               bwi))
@@ -1833,9 +1839,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           .SetText(l10n_util::GetStringUTF16(IDS_SKILLS_MENU_BROWSE_SKILLS))
           .SetTooltipText(
               l10n_util::GetStringUTF16(IDS_SKILLS_MENU_BROWSE_SKILLS))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kExploreIcon
-                                                : kTravelExploreOldIcon))
+          .SetImage(ui::ImageModel::FromVectorIcon(kExploreIcon))
           .Build());
 
   if (ttc::TtcKeyedService* service =
@@ -4721,6 +4725,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                                                 : kSecurityOldIcon,
               ui::kColorMenuIconOnEmphasizedBackground))
           .Build());
+  const bool show_skills_and_extensions =
+      profile_->IsRegularProfile() &&
+      skills::SkillsServiceFactory::IsSkillsEnabledForProfile(
+          base::to_address(profile_)) &&
+      base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu);
   root_action_item_->AddChild(
       ChromeMenuAction(
           base::BindRepeating(
@@ -4734,6 +4743,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               ? vector_icons::kChromeExtensionIcon
               : vector_icons::kExtensionChromeRefreshOldIcon,
           /*is_pinnable=*/false)
+          .SetVisible(!show_skills_and_extensions)
           .Build());
   root_action_item_->AddChild(
       ChromeMenuAction(
@@ -5356,6 +5366,12 @@ void BrowserActions::InitializeSubmenuActions() {
           /*is_pinnable=*/false)
           .Build());
 
+  const bool show_skills_and_extensions =
+      profile_->IsRegularProfile() &&
+      skills::SkillsServiceFactory::IsSkillsEnabledForProfile(
+          base::to_address(profile_)) &&
+      base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu);
+
   root_action_item_->AddChild(
       ChromeMenuAction(
           base::BindRepeating(
@@ -5368,6 +5384,7 @@ void BrowserActions::InitializeSubmenuActions() {
               ? vector_icons::kChromeExtensionIcon
               : vector_icons::kExtensionChromeRefreshOldIcon,
           /*is_pinnable=*/false)
+          .SetVisible(!show_skills_and_extensions)
           .Build());
 
   root_action_item_->AddChild(
@@ -5376,10 +5393,13 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionSkillsSubmenu, IDS_SKILLS_MENU, IDS_SKILLS_MENU,
-          features::IsRoundedIconsEnabled() ? kContractIcon
-                                            : vector_icons::kDescriptionOldIcon,
+          kActionSkillsAndExtensionsSubmenu, IDS_EXTENSIONS_AND_SKILLS_MENU,
+          IDS_EXTENSIONS_AND_SKILLS_MENU,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kChromeExtensionIcon
+              : vector_icons::kExtensionChromeRefreshOldIcon,
           /*is_pinnable=*/false)
+          .SetVisible(show_skills_and_extensions)
           .Build());
 }
 

@@ -20,8 +20,8 @@
   </message>
 
   <!-- App Menu Skills strings -->
-  <message name="IDS_SKILLS_MENU" desc="The text for the Skills item in the Chrome App Menu">
-    Skills
+  <message name="IDS_EXTENSIONS_AND_SKILLS_MENU" desc="The text for the Extensions and Skills item in the Chrome App Menu">
+    Extensions and Skills
   </message>
   <message name="IDS_SKILLS_MENU_MANAGE_SKILLS" desc="The text for the Manage Skills item in the Skills sub-menu">
     Manage skills

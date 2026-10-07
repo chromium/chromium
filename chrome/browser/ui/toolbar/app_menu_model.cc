@@ -55,7 +55,9 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -152,6 +154,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/extension_features.h"
 #include "media/base/media_switches.h"
+#include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/button_menu_item_model.h"
@@ -200,7 +203,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTabGroupsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSkillsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
+                                      kSkillsAndExtensionsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kClearBrowsingDataMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kMoreToolsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
@@ -982,28 +986,44 @@ void HelpMenuModel::Build(BrowserWindowInterface* browser) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// SkillsMenuModel
+// SkillsAndExtensionsMenuModel
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsMenuModel, kManageSkillsMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsMenuModel, kBrowseSkillsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsAndExtensionsMenuModel,
+                                      kManageSkillsMenuItem);
 
-SkillsMenuModel::SkillsMenuModel(ui::SimpleMenuModel::Delegate* delegate)
+SkillsAndExtensionsMenuModel::SkillsAndExtensionsMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate)
     : SimpleMenuModel(delegate) {
   Build();
 }
 
-SkillsMenuModel::~SkillsMenuModel() = default;
+SkillsAndExtensionsMenuModel::~SkillsAndExtensionsMenuModel() = default;
 
-void SkillsMenuModel::Build() {
+void SkillsAndExtensionsMenuModel::Build() {
   AddItemWithStringIdAndVectorIcon(
-      this, IDC_MANAGE_SKILLS, IDS_SKILLS_MENU_MANAGE_SKILLS,
-      features::IsRoundedIconsEnabled() ? kSettingsIcon : kSettingsMenuOldIcon);
+      this, IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+      IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM,
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kChromeExtensionIcon
+          : vector_icons::kExtensionChromeRefreshOldIcon);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
+      ExtensionsMenuModel::kManageExtensionsMenuItem);
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_MANAGE_SKILLS, IDS_SKILLS_MENU_MANAGE_SKILLS, kContractIcon);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_MANAGE_SKILLS).value(),
                          kManageSkillsMenuItem);
-  AddItemWithStringIdAndVectorIcon(this, IDC_BROWSE_SKILLS,
-                                   IDS_SKILLS_MENU_BROWSE_SKILLS, kExploreIcon);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_BROWSE_SKILLS).value(),
-                         kBrowseSkillsMenuItem);
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  AddItemWithStringId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+                      IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
+          .value(),
+      ExtensionsMenuModel::kVisitChromeWebStoreMenuItem);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  SetCommandIcon(this, IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+                 vector_icons::kGoogleChromeWebstoreIcon);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2205,10 +2225,31 @@ void AppMenuModel::Build() {
         kTabGroupsMenuItem);
   }
 
-  // Extensions sub menu.
-  if (ArePromotionsEnabled() &&
-      base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
-      !extensions::ui_util::HasManageableExtensions(browser_->GetProfile())) {
+  // Extensions and Skills sub menu.
+  auto* skills_and_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionSkillsAndExtensionsSubmenu,
+      BrowserActions::From(browser_)->root_action_item());
+  if (skills_and_extensions_action &&
+      skills_and_extensions_action->GetVisible()) {
+    sub_menus_.push_back(std::make_unique<SkillsAndExtensionsMenuModel>(this));
+    AddSubMenuWithStringIdAndVectorIcon(
+        this, kSkillsAndExtensionsMenuPlaceholder,
+        IDS_EXTENSIONS_AND_SKILLS_MENU, sub_menus_.back().get(),
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kChromeExtensionIcon
+            : vector_icons::kExtensionChromeRefreshOldIcon);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(kSkillsAndExtensionsMenuPlaceholder).value(),
+        kSkillsAndExtensionsMenuItem);
+    SetIsNewFeatureAt(
+        GetIndexOfCommandId(kSkillsAndExtensionsMenuPlaceholder).value(),
+        BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
+            features::kSkillsAndExtensionsAppMenu));
+  } else if (ArePromotionsEnabled() &&
+             base::FeatureList::IsEnabled(
+                 features::kExtensionsCollapseMainMenu) &&
+             !extensions::ui_util::HasManageableExtensions(
+                 browser_->GetProfile())) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_FIND_EXTENSIONS, IDS_FIND_EXTENSIONS,
         features::IsRoundedIconsEnabled()
@@ -2227,21 +2268,6 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(
         GetIndexOfCommandId(kExtensionsSubmenuPlaceholder).value(),
         kExtensionsMenuItem);
-  }
-
-  if (browser_->GetProfile()->IsRegularProfile() &&
-      base::FeatureList::IsEnabled(features::kSkillsEnabled) &&
-      base::FeatureList::IsEnabled(features::kSkillsAppMenu)) {
-    sub_menus_.push_back(std::make_unique<SkillsMenuModel>(this));
-    AddSubMenuWithStringIdAndVectorIcon(this, kSkillsMenuPlaceholder,
-                                        IDS_SKILLS_MENU,
-                                        sub_menus_.back().get(), kContractIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(kSkillsMenuPlaceholder).value(),
-                           kSkillsMenuItem);
-    SetIsNewFeatureAt(
-        GetIndexOfCommandId(kSkillsMenuPlaceholder).value(),
-        BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
-            features::kSkillsAppMenu));
   }
 
   AddItemWithStringIdAndVectorIcon(

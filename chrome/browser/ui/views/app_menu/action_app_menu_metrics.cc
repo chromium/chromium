@@ -500,6 +500,11 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
       RecordAction(MENU_ACTION_NAME_WINDOW, "NameWindow");
       break;
 
+    case kActionBrowseSkills:
+    case kActionManageSkills:
+      RecordTimeToAction();
+      break;
+
     default:
       NOTREACHED();
   }

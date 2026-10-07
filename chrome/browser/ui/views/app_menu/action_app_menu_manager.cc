@@ -90,6 +90,7 @@
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/skills/features.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
@@ -772,6 +773,26 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
               },
               {.element_id = AppMenuModel::kTabGroupsMenuItem});
         }
+
+        section.AddSubmenu(
+            kActionSkillsAndExtensionsSubmenu,
+            [](AppMenuBuilder& sub) {
+              sub.AddAction(
+                     kActionExtensionsSubmenuManageExtensions,
+                     {.element_id =
+                          ExtensionsMenuModel::kManageExtensionsMenuItem})
+                  .AddAction(
+                      kActionManageSkills,
+                      {.element_id =
+                           SkillsAndExtensionsMenuModel::kManageSkillsMenuItem})
+                  .AddDivider()
+                  .AddAction(
+                      kActionExtensionsSubmenuVisitChromeWebStore,
+                      {.element_id =
+                           ExtensionsMenuModel::kVisitChromeWebStoreMenuItem});
+            },
+            {.new_badge_feature = &features::kSkillsAndExtensionsAppMenu,
+             .element_id = AppMenuModel::kSkillsAndExtensionsMenuItem});
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (ArePromotionsEnabled() &&

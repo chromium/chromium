@@ -34,12 +34,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/skills/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -737,6 +739,54 @@ TEST_F(ActionAppMenuManagerTest, VerticalTabsNewBadgeProperty) {
   EXPECT_EQ(
       toggle_vertical_tabs->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey),
       nullptr);
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       SkillsAndExtensionsSubmenuAndNewBadgeProperty) {
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+
+  actions::BaseAction* skills_and_extensions_submenu = nullptr;
+  for (const auto& child : your_chrome_section->GetChildren().children()) {
+    if (child->GetActionItem()->GetActionId() ==
+        kActionSkillsAndExtensionsSubmenu) {
+      skills_and_extensions_submenu = child.get();
+      break;
+    }
+  }
+  ASSERT_NE(skills_and_extensions_submenu, nullptr);
+  EXPECT_EQ(skills_and_extensions_submenu->GetProperty(
+                AppMenuActionItem::kNewBadgeFeatureKey),
+            &features::kSkillsAndExtensionsAppMenu);
+  EXPECT_EQ(
+      skills_and_extensions_submenu->GetProperty(views::kElementIdentifierKey),
+      AppMenuModel::kSkillsAndExtensionsMenuItem);
+
+  const auto& children =
+      skills_and_extensions_submenu->GetChildren().children();
+  ASSERT_EQ(children.size(), 4u);
+  EXPECT_EQ(children[0]->GetActionItem()->GetActionId(),
+            kActionExtensionsSubmenuManageExtensions);
+  EXPECT_EQ(children[0]->GetProperty(views::kElementIdentifierKey),
+            ExtensionsMenuModel::kManageExtensionsMenuItem);
+  EXPECT_EQ(children[1]->GetActionItem()->GetActionId(), kActionManageSkills);
+  EXPECT_EQ(children[1]->GetProperty(views::kElementIdentifierKey),
+            SkillsAndExtensionsMenuModel::kManageSkillsMenuItem);
+  EXPECT_EQ(children[2]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
+  EXPECT_EQ(children[2]->GetProperty(AppMenuActionItem::kSeparatorKey),
+            ui::NORMAL_SEPARATOR);
+  EXPECT_EQ(children[3]->GetActionItem()->GetActionId(),
+            kActionExtensionsSubmenuVisitChromeWebStore);
+  EXPECT_EQ(children[3]->GetProperty(views::kElementIdentifierKey),
+            ExtensionsMenuModel::kVisitChromeWebStoreMenuItem);
 }
 
 TEST_F(ActionAppMenuManagerTest, AlertedElementPropagatesToSubmenu) {

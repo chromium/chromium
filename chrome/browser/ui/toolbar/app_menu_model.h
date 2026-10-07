@@ -207,17 +207,18 @@ class HelpMenuModel : public ui::SimpleMenuModel {
   void Build(BrowserWindowInterface* browser);
 };
 
-class SkillsMenuModel : public ui::SimpleMenuModel {
+class SkillsAndExtensionsMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kManageSkillsMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBrowseSkillsMenuItem);
 
-  SkillsMenuModel(ui::SimpleMenuModel::Delegate* delegate);
+  explicit SkillsAndExtensionsMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate);
 
-  SkillsMenuModel(const SkillsMenuModel&) = delete;
-  SkillsMenuModel& operator=(const SkillsMenuModel&) = delete;
+  SkillsAndExtensionsMenuModel(const SkillsAndExtensionsMenuModel&) = delete;
+  SkillsAndExtensionsMenuModel& operator=(const SkillsAndExtensionsMenuModel&) =
+      delete;
 
-  ~SkillsMenuModel() override;
+  ~SkillsAndExtensionsMenuModel() override;
 
  private:
   void Build();
@@ -235,7 +236,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDownloadsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSkillsMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSkillsAndExtensionsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClearBrowsingDataMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoreToolsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIncognitoMenuItem);
@@ -264,7 +265,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   static constexpr int kProfileMenuPlaceholder = IDC_PROFILE_MENU_IN_APP_MENU;
   static constexpr int kReadingListMenuPlaceholder = IDC_READING_LIST_MENU;
   static constexpr int kExtensionsSubmenuPlaceholder = IDC_EXTENSIONS_SUBMENU;
-  static constexpr int kSkillsMenuPlaceholder = IDC_SKILLS_MENU;
+  static constexpr int kSkillsAndExtensionsMenuPlaceholder =
+      IDC_SKILLS_AND_EXTENSIONS_MENU;
   static constexpr int kBookmarksMenuPlaceholder = IDC_BOOKMARKS_MENU;
   static constexpr int kSavedTabGroupsMenuPlaceholder =
       IDC_SAVED_TAB_GROUPS_MENU;
