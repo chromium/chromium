@@ -61,26 +61,15 @@ IN_PROC_BROWSER_TEST_F(SplitNewTabPageUiTest, MAYBE_Focus) {
       AddInstrumentedTab(kThirdTab, GetTestUrl()), EnterSplitView(2),
       InstrumentTab(kFourthTab), FocusElement(kFourthTab),
 
-      // Initially there should be no currently focused element.
-      CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
-                    ::testing::Eq("BODY")),
-
-      // The first focusable element should be the close button.
-      SendKeyPress(kMultiContentsViewElementId, ui::VKEY_TAB),
-      CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
-                    ::testing::Eq("CR-ICON-BUTTON")),
-      CheckJsResult(kFourthTab, getDeepActiveElement("id"),
-                    ::testing::Eq("closeButton")),
-
-      // Advance focus into the list of open tabs. kSecondTab was the most
-      // recently focused tab.
-      SendKeyPress(kMultiContentsViewElementId, ui::VKEY_TAB),
+      // Initially the first tab in the list should be focused.
+      // kSecondTab was the most recently focused tab.
       CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
                     ::testing::Eq("TAB-SEARCH-ITEM")),
       CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.url"),
                     ::testing::Eq(GetTestUrl().spec())),
 
-      // Advance focus again. kNewTab was the next most recently focused tab.
+      // Advance focus to next open tab. kNewTab was the next most recently
+      // focused tab.
       SendKeyPress(kMultiContentsViewElementId, ui::VKEY_TAB),
       CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
                     ::testing::Eq("TAB-SEARCH-ITEM")),

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {SplitNewTabPageAppElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabAlertState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -79,6 +80,7 @@ suite('SplitNewTabPageTest', () => {
     document.body.appendChild(splitNewTabPage);
 
     await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
+    await splitNewTabPage.initialFocusPromiseForTesting;
   }
 
   setup(() => {
@@ -301,5 +303,13 @@ suite('SplitNewTabPageTest', () => {
     const initialTabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
     assertEquals(0, initialTabSearchItems.length);
+  });
+
+  test('Initially focuses the first tab in the list', async () => {
+    await splitNewTabPageSetup();
+    const tabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(3, tabSearchItems.length);
+    assertEquals(tabSearchItems[0], getDeepActiveElement());
   });
 });

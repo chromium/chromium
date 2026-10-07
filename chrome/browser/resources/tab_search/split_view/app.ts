@@ -59,8 +59,13 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
+  private initialFocusPromise_: Promise<void>|null = null;
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
+
+  get initialFocusPromiseForTesting(): Promise<void>|null {
+    return this.initialFocusPromise_;
+  }
 
   constructor() {
     super();
@@ -165,9 +170,28 @@ export class SplitNewTabPageAppElement extends CrLitElement {
             .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB)) ||
         [];
     this.sortTabs_();
+    if (!this.initialFocusPromise_) {
+      this.initialFocusPromise_ = this.focusFirstTab_();
+    }
     this.updateComplete.then(() => {
       this.updateViewportHeight_(profileData);
     });
+  }
+
+  private async focusFirstTab_() {
+    await this.updateComplete;
+    await this.$.splitTabsList.updateComplete;
+    if (!this.isConnected || this.allEligibleTabs_.length === 0) {
+      return;
+    }
+    // setSelected(0) ensures the first item is rendered by the underlying
+    // cr-lazy-list before we attempt to query and focus it.
+    await this.$.splitTabsList.setSelected(0);
+    const firstItem =
+        this.shadowRoot.querySelector<HTMLElement>('tab-search-item');
+    if (firstItem) {
+      firstItem.focus();
+    }
   }
 
   private onTabUpdated_(tabUpdateInfo: TabUpdateInfo) {
