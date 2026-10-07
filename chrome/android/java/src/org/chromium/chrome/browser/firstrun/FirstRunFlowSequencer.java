@@ -30,6 +30,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -346,7 +347,14 @@ public abstract class FirstRunFlowSequencer {
             // First Run requires that the Intent contains NEW_TASK so that it doesn't sit on top
             // of something else.
             Intent newIntent = new Intent(fromIntent);
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            // If the LauncherActivity is already the root of this task, it means a new task was
+            // already created and we don't want to create a second one (b/555883506).
+            boolean isRootActivity =
+                    (caller instanceof ChromeLauncherActivity) && ((Activity) caller).isTaskRoot();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AVOID_TASK_TRAMPOLINES)
+                    || !isRootActivity) {
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
             IntentUtils.safeStartActivity(caller, newIntent);
         }
         return true;
