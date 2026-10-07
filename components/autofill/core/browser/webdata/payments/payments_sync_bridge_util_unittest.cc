@@ -48,6 +48,10 @@ namespace {
 using ::base::test::EqualsProto;
 using syncer::EntityChange;
 using syncer::EntityData;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 class TestPaymentsAutofillTable : public PaymentsAutofillTable {
  public:
@@ -402,12 +406,12 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsSyncTest,
         wallet_cards.back().product_terms_url().spec(),
         wallet_specifics_card2.mutable_masked_card()->product_terms_url());
     EXPECT_THAT(benefits,
-                testing::UnorderedElementsAre(
-                    flat_rate_benefit, category_benefit, merchant_benefit));
+                UnorderedElementsAre(flat_rate_benefit, category_benefit,
+                                     merchant_benefit));
   } else {
     EXPECT_TRUE(wallet_cards.front().product_terms_url().is_empty());
     EXPECT_TRUE(wallet_cards.back().product_terms_url().is_empty());
-    EXPECT_TRUE(benefits.empty());
+    EXPECT_THAT(benefits, IsEmpty());
   }
 }
 
@@ -473,9 +477,9 @@ TEST_P(PaymentsSyncBridgeUtilCardCategoryBenefitsTest, VerifyBenefitCategory) {
 
   if (GetCardBenefitCategory() ==
       CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
-    ASSERT_EQ(benefits.size(), 0U);
+    EXPECT_THAT(benefits, IsEmpty());
   } else {
-    ASSERT_EQ(benefits.size(), 1U);
+    ASSERT_THAT(benefits, SizeIs(1));
     //  This call is correct only because we know that the
     // `CreditCardCategoryBenefit` alternative is active at index 0
     CreditCardCategoryBenefit* category_benefit_alternative =
@@ -1035,10 +1039,10 @@ TEST_F(PaymentsSyncBridgeUtilTest,
       SpecificsToEntity(wallet_specifics,
                         /*client_tag=*/"payment_instrument_creation_option")));
 
-  EXPECT_THAT(PopulateWalletTypesFromSyncData(entity_change_list)
-                  .payment_instrument_creation_options,
-              testing::UnorderedElementsAre(
-                  EqualsProto(payment_instrument_creation_option)));
+  EXPECT_THAT(
+      PopulateWalletTypesFromSyncData(entity_change_list)
+          .payment_instrument_creation_options,
+      UnorderedElementsAre(EqualsProto(payment_instrument_creation_option)));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1077,8 +1081,7 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(bank_accounts.size(), 1u);
-  EXPECT_EQ(expected_bank_account, bank_accounts.at(0));
+  EXPECT_THAT(bank_accounts, ElementsAre(expected_bank_account));
 }
 
 TEST_F(PaymentsSyncBridgeUtilTest, BankAccountFromWalletSpecifics) {
@@ -1209,7 +1212,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  EXPECT_EQ(payment_instruments.size(), 0u);
+  EXPECT_THAT(payment_instruments, IsEmpty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1315,7 +1318,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(payment_instruments.size(), 0u);
+  EXPECT_THAT(payment_instruments, IsEmpty());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
