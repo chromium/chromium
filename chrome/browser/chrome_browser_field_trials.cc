@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/features.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
@@ -397,8 +396,4 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
 void ChromeBrowserFieldTrials::EnableRuntimeMutableFeatures(
     base::FeatureList* feature_list) {
   // Add calls to enable runtime-mutable features here.
-#if BUILDFLAG(IS_ANDROID)
-  feature_list->EnableRuntimeMutability(chrome::android::kAvoidTaskTrampolines,
-                                        base::DoNothing());
-#endif  // BUILDFLAG(IS_ANDROID)
 }

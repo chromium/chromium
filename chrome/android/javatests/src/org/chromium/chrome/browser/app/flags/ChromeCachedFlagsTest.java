@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureMap;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.build.BuildConfig;
@@ -141,9 +140,7 @@ public class ChromeCachedFlagsTest {
                 String featureName = defaultValueEntry.getKey();
                 Boolean defaultValueInTests = defaultValueEntry.getValue();
                 // Get the fieldtrial_testing_config.json value by getting the value from native.
-                // Mutable flags are only supported on the UI thread, so query from the UI thread.
-                boolean jsonValue = ThreadUtils.runOnUiThreadBlocking(
-                        () -> featureMap.queryFeatureValueFromNative(featureName));
+                boolean jsonValue = featureMap.queryFeatureValueFromNative(featureName);
                 if (defaultValueInTests != jsonValue) {
                     notMatching.add(featureName);
                 }
