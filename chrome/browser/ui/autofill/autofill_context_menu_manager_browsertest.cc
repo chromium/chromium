@@ -359,15 +359,14 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     FormData form;
     form.set_renderer_id(test::MakeFormRendererId());
     form.set_name(u"MyForm");
-    form.set_url(GURL("https://myform.com/"));
-    form.set_action(GURL("https://myform.com/submit.html"));
+    form.set_url(main_rfh()->GetLastCommittedURL());
+    form.set_action(main_rfh()->GetLastCommittedURL().Resolve("/submit.html"));
     form.set_fields({test::CreateTestFormField(
         /*label=*/"Password", /*name=*/"password", /*value=*/"",
         /*type=*/FormControlType::kInputPassword,
         is_webauthn ? /*autocomplete=*/"webauthn" : "")});
     password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
-    OverrideLastCommittedOrigin(main_rfh(), url::Origin::Create(form.url()));
     AttachForm(form);
     password_manager::PasswordManagerInterface* password_manager =
         password_manager_driver()->GetPasswordManager();
