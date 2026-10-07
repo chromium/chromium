@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -1058,19 +1059,44 @@ TEST_F(ManifestAssetManagerTest,
   }
   SimulateShutdown();
 
-  // Second run: on startup, the asset was already downloaded.
-  UpdateManifest(DummyManifest().Add(asset));
+  // Second run: on startup, the asset was already downloaded. Include a second
+  // ready asset so we can wait for the manifest's solution configs to finish
+  // loading on the thread pool before asserting that `asset` is the sole
+  // remaining blocker on `future`.
+  DummyAsset ready_asset = DummyAsset::For("test");
+  MakeAssetInstallable(ready_asset);
+  usage_tracker_.RaisePriority(ready_asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+
+  component_state_.SetDeferRegistrationCallbacks(true);
+  UpdateManifest(DummyManifest().Add(asset).Add(ready_asset));
   Startup();
 
   auto& subscriber =
       model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+  CanCreateSessionFuture future;
+  subscriber.CanCreateSession({}, future.GetCallback());
+
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(ready_asset.ToInstallTarget()));
+  component_state_.RunPendingRegistrations(ready_asset.public_key);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return manifest_broker_state_->GetOnDeviceModelEligibility(
+               mojom::OnDeviceFeature::kTest) ==
+           OnDeviceModelEligibilityReason::kSuccess;
+  }));
+  EXPECT_FALSE(future.IsReady());
+
+  // Complete registration: InstallerRegistered(is_already_installed=true)
+  // does not emit a transient kNotDownloaded before OnAssetReady delivers the
+  // install path.
+  component_state_.RunPendingRegistrations(asset.public_key);
+  EXPECT_EQ(future.Get<UnavailableReason>(), std::nullopt);
+
   base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
   subscriber.WaitForClient(client_future.GetCallback());
   EXPECT_TRUE(client_future.Get());
-
-  CanCreateSessionFuture future;
-  subscriber.CanCreateSession({}, future.GetCallback());
-  EXPECT_EQ(future.Get<UnavailableReason>(), std::nullopt);
 }
 
 TEST_F(ManifestAssetManagerTest, OrphanedAssetNotInManifestIsUninstalled) {
@@ -1338,6 +1364,167 @@ TEST(AssetPrioritiesTest, RaiseAndIsAtLeast) {
       priorities.IsAtLeast(AssetPriority::kSpeculative, "best_effort_asset"));
   EXPECT_FALSE(
       priorities.IsAtLeast(AssetPriority::kSpeculative, "user_blocking_asset"));
+}
+
+TEST_F(ManifestAssetManagerTest, DeferPendingAssetsUntilRegistered) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+
+  // Include a second already-installed asset so we can wait for the manifest's
+  // solution configs to finish loading on the thread pool before asserting that
+  // `asset` is the sole remaining blocker on `future`.
+  DummyAsset ready_asset = DummyAsset::For("test");
+  MakeAssetInstallable(ready_asset);
+  usage_tracker_.RaisePriority(ready_asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+
+  component_state_.SetDeferRegistrationCallbacks(true);
+  UpdateManifest(DummyManifest().Add(asset).Add(ready_asset));
+  Startup();
+
+  auto& subscriber =
+      model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+  CanCreateSessionFuture future;
+  subscriber.CanCreateSession({}, future.GetCallback());
+
+  // Wait for disk-space evaluation, registration request, and manifest solution
+  // config loading. Still registering `asset`, so the factory has not yet been
+  // notified for `asset`.
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(ready_asset.ToInstallTarget()));
+  component_state_.RunPendingRegistrations(ready_asset.public_key);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return manifest_broker_state_->GetOnDeviceModelEligibility(
+               mojom::OnDeviceFeature::kTest) ==
+           OnDeviceModelEligibilityReason::kSuccess;
+  }));
+  EXPECT_FALSE(future.IsReady());
+
+  // Complete registration (not yet installed on disk): the factory is notified
+  // that the asset is not downloaded, resolving CanCreateSession with
+  // kPendingAssets.
+  component_state_.RunPendingRegistrations(asset.public_key);
+  EXPECT_EQ(future.Get<UnavailableReason>(),
+            mojom::ModelUnavailableReason::kPendingAssets);
+
+  // Simulate download completion: the model client becomes ready.
+  MakeAssetInstallable(asset);
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  subscriber.WaitForClient(client_future.GetCallback());
+  EXPECT_TRUE(client_future.Get());
+}
+
+TEST_F(ManifestAssetManagerTest,
+       GetBrokerAssetsReflectsComponentStateTransitions) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kBestEffort);
+  component_state_.SetDeferRegistrationCallbacks(true);
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+
+  auto get_broker_assets = [&]() {
+    base::test::TestFuture<mojom::BrokerStateInfoPtr> future;
+    manifest_broker_state_->GetStateInfo(future.GetCallback());
+    return std::move(future.Take()->assets);
+  };
+
+  // 1. Registering (kRegistering -> BrokerAssetState::kRegistering).
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  {
+    auto assets = get_broker_assets();
+    ASSERT_EQ(assets.size(), 1u);
+    EXPECT_EQ(assets[0]->name, asset.asset_id);
+    EXPECT_EQ(assets[0]->version, asset.version);
+    EXPECT_EQ(assets[0]->state, mojom::BrokerAssetState::kRegistering);
+  }
+
+  // 2. Registered in background (kRegistered ->
+  // BrokerAssetState::kNotInstalled).
+  auto& subscriber =
+      model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+  CanCreateSessionFuture can_create_future;
+  subscriber.CanCreateSession({}, can_create_future.GetCallback());
+  component_state_.RunPendingRegistrations();
+  EXPECT_EQ(can_create_future.Get<UnavailableReason>(),
+            mojom::ModelUnavailableReason::kPendingAssets);
+  {
+    auto assets = get_broker_assets();
+    ASSERT_EQ(assets.size(), 1u);
+    EXPECT_EQ(assets[0]->state, mojom::BrokerAssetState::kNotInstalled);
+  }
+
+  // 3. Foreground download requested (kOnDemandDownloading ->
+  // BrokerAssetState::kForegroundInstalling).
+  manifest_broker_state_->SetUseCaseRequested(asset.use_case, true);
+  {
+    auto assets = get_broker_assets();
+    ASSERT_EQ(assets.size(), 1u);
+    EXPECT_EQ(assets[0]->state, mojom::BrokerAssetState::kForegroundInstalling);
+  }
+
+  // 4. Installed and ready (kReady -> BrokerAssetState::kReady).
+  MakeAssetInstallable(asset);
+  {
+    base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+    subscriber.WaitForClient(client_future.GetCallback());
+    EXPECT_TRUE(client_future.Get());
+  }
+  {
+    auto assets = get_broker_assets();
+    ASSERT_EQ(assets.size(), 1u);
+    EXPECT_EQ(assets[0]->state, mojom::BrokerAssetState::kReady);
+  }
+
+  // 5. Uninstalling (kUninstalling -> BrokerAssetState::kUninstalling).
+  UpdateManifest(DummyManifest());
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  {
+    auto assets = get_broker_assets();
+    ASSERT_EQ(assets.size(), 1u);
+    EXPECT_EQ(assets[0]->name, asset.asset_id);
+    EXPECT_EQ(assets[0]->version, "uninstalling");
+    EXPECT_EQ(assets[0]->state, mojom::BrokerAssetState::kUninstalling);
+  }
+}
+
+TEST_F(ManifestAssetManagerTest,
+       NotifiedImmediatelyOnUserOptOutBeforeDelayedUninstall) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  Startup();
+
+  auto& subscriber =
+      model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  subscriber.WaitForClient(client_future.GetCallback());
+  base::WeakPtr<ModelClient> client = client_future.Get();
+  ASSERT_TRUE(client);
+
+  // User opts out of on-device AI while `asset`'s model client is active.
+  local_state_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
+      false);
+
+  // The solution factory is replaced immediately so `asset`'s model client is
+  // invalidated before the 1-second delayed UninstallComponent() task runs.
+  base::test::TestFuture<base::WeakPtr<ModelClient>> prompt_client_future;
+  model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kPromptApi)
+      .WaitForClient(prompt_client_future.GetCallback());
+  EXPECT_FALSE(prompt_client_future.Get());
+  EXPECT_FALSE(client);
+  EXPECT_EQ(manifest_broker_state_->GetOnDeviceModelEligibility(
+                mojom::OnDeviceFeature::kCompose),
+            OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled);
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+
+  // After the 1-second delay elapses, the component uninstall is executed.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
 }  // namespace
