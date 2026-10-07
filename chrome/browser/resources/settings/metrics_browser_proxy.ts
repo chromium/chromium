@@ -585,6 +585,18 @@ export interface MetricsBrowserProxy {
   recordSettingsSearchResultDwellTime(time: number): void;
 
   /**
+   * Helper function that triggers the C++ CUJ interaction sequence step when
+   * a navigation category in the settings menu is clicked.
+   */
+  recordSettingsNavCategoryClicked(): void;
+
+  /**
+   * Helper function that triggers the C++ CUJ interaction sequence step when
+   * a settings search query is submitted.
+   */
+  recordSettingsSearchQueryEntered(): void;
+
+  /**
    * Helper function that calls recordAction with one action from
    * tools/metrics/actions/actions.xml.
    */
@@ -826,6 +838,14 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     // exposes no recordLongTime message, so record through metricsPrivate.
     chrome.metricsPrivate.recordLongTime(
         'Settings.Search.ResultDwellTime', time);
+  }
+
+  recordSettingsNavCategoryClicked() {
+    chrome.send('recordSettingsNavCategoryClicked');
+  }
+
+  recordSettingsSearchQueryEntered() {
+    chrome.send('recordSettingsSearchQueryEntered');
   }
 
   recordAction(action: string) {

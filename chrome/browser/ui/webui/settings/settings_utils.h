@@ -8,12 +8,14 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "ui/base/interaction/element_tracker.h"
 
 class GURL;
 class PrefService;
 
 namespace content {
 class WebContents;
+class WebUI;
 }
 
 // Chrome settings utility methods.
@@ -29,6 +31,17 @@ void ShowManageSSLCertificates(content::WebContents* web_contents);
 // the fixed up, valid URL if not null.
 bool FixupAndValidateStartupPage(const std::string& url_string,
                                  GURL* fixed_url);
+
+// Dispatches an interaction sequence custom event for Settings CUJ telemetry.
+// Resolves the BrowserView element via the tab associated with |web_ui|.
+void MaybeNotifySettingsCustomEvent(content::WebUI* web_ui,
+                                    ui::CustomElementEventType event_type);
+
+// Dispatches an interaction sequence element activation event for Settings
+// CUJ telemetry. Resolves the tracked element via the element tracker across
+// contexts.
+void MaybeNotifySettingsElementActivated(content::WebUI* web_ui,
+                                         ui::ElementIdentifier element_id);
 
 #if BUILDFLAG(IS_MAC)
 void ValidateSavedFonts(PrefService* prefs);

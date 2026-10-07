@@ -63,6 +63,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
+#include "chrome/browser/ui/webui/settings/settings_element_ids.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -2049,6 +2051,8 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
     base::RecordAction(base::UserMetricsAction(
         "ThirdPartyCookies.SettingsSiteException.Added"));
   }
+  settings_utils::MaybeNotifySettingsCustomEvent(
+      web_ui(), settings::kSitePermissionChangedEventId);
 }
 
 void SiteSettingsHandler::HandleResetChooserExceptionForSite(

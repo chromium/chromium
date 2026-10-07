@@ -42,6 +42,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordAiPageSuggestionsInteractions',
       'recordSettingsSearchExitReason',
       'recordSettingsSearchResultDwellTime',
+      'recordSettingsNavCategoryClicked',
+      'recordSettingsSearchQueryEntered',
       'recordAutofillSettingsReferrer',
       'recordYourSavedInfoCategoryClick',
       'recordYourSavedInfoDataChipClick',
@@ -57,6 +59,14 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSettingsSearchResultDwellTime(time: number) {
     this.methodCalled('recordSettingsSearchResultDwellTime', time);
+  }
+
+  recordSettingsNavCategoryClicked() {
+    this.methodCalled('recordSettingsNavCategoryClicked');
+  }
+
+  recordSettingsSearchQueryEntered() {
+    this.methodCalled('recordSettingsSearchQueryEntered');
   }
 
   recordAction(action: string) {

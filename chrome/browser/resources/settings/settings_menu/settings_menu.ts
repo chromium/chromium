@@ -153,6 +153,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
     const path = event.detail.selected;
     this.setSelectedPath_(path);
+    this.metricsBrowserProxy_.recordSettingsNavCategoryClicked();
 
     const action = pathToActionMap.get(path);
     if (action) {

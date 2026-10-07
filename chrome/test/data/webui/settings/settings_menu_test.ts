@@ -311,6 +311,7 @@ suite('SettingsMenu', function() {
 
     for (const testCase of testCases) {
       metricsBrowserProxy.resetResolver('recordAction');
+      metricsBrowserProxy.resetResolver('recordSettingsNavCategoryClicked');
 
       const navItem = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
           testCase.selector);
@@ -320,6 +321,9 @@ suite('SettingsMenu', function() {
       const action = await metricsBrowserProxy.whenCalled('recordAction');
       assertEquals(testCase.action, action);
       assertEquals(testCase.route, Router.getInstance().getCurrentRoute());
+      assertEquals(
+          1,
+          metricsBrowserProxy.getCallCount('recordSettingsNavCategoryClicked'));
     }
   });
 });

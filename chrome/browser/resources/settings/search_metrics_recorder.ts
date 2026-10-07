@@ -211,6 +211,7 @@ export class SearchMetricsRecorder implements RouteObserverMixinInterface {
 
   private recordQuerySubmitted_() {
     this.metricsBrowserProxy_.recordAction('Settings.Search.QuerySubmitted');
+    this.metricsBrowserProxy_.recordSettingsSearchQueryEntered();
 
     // The results for this query may not be known yet, in which case they are
     // recorded once the search request completes.

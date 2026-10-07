@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/webui/settings/settings_element_ids.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
@@ -252,6 +254,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
+  settings_utils::MaybeNotifySettingsElementActivated(
+      web_ui(), settings::kClearBrowsingDataDialogOkButtonElementId);
 
   int period_selected = args_list[2].GetInt();
 

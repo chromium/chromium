@@ -58,12 +58,16 @@ suite('SearchMetricsRecorder', function() {
     search('fo');
     search('foo');
     assertEquals(0, metricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        0, metricsBrowserProxy.getCallCount('recordSettingsSearchQueryEntered'));
 
     simulateQuerySubmitted();
     assertEquals(1, metricsBrowserProxy.getCallCount('recordAction'));
     assertEquals(
         'Settings.Search.QuerySubmitted',
         metricsBrowserProxy.getArgs('recordAction')[0]);
+    assertEquals(
+        1, metricsBrowserProxy.getCallCount('recordSettingsSearchQueryEntered'));
   });
 
   test('records whether the submitted query had results', function() {

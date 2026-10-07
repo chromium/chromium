@@ -28,6 +28,8 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "chrome/browser/ui/webui/settings/settings_element_ids.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -481,6 +483,8 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
         choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchEngineSettings);
   list_controller_.MakeDefaultTemplateURL(id, choice_made_location);
+  settings_utils::MaybeNotifySettingsCustomEvent(
+      web_ui(), settings::kDefaultSearchEngineChangedId);
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 
   if (std::optional<bool> save_guest_choice = args[2].GetIfBool();
@@ -514,6 +518,8 @@ void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
   const bool is_active = args[1].GetBool();
 
   list_controller_.SetIsActiveTemplateURL(id, is_active);
+  settings_utils::MaybeNotifySettingsCustomEvent(
+      web_ui(), settings::kSearchShortcutsToggledEventId);
 }
 
 void SearchEnginesHandler::HandleRemoveSearchEngine(
