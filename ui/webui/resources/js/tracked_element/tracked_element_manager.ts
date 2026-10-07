@@ -624,10 +624,6 @@ export class TrackedElementManager {
     const wasVisible = trackedElement.visible;
     trackedElement.visible = visible;
     trackedElement.bounds = bounds;
-    this.trackedElementHandler_.trackedElementVisibilityChanged(
-        TrackedElementManager.elementToIdentifier_(trackedElement), visible,
-        bounds);
-
     if (visible && !wasVisible && trackedElement.onHighlightChanged) {
       // The C++ tracker drops its state when it is destroyed and recreated
       // during a visibility bounce (e.g., from a 0x0 size during a CSS
@@ -636,6 +632,9 @@ export class TrackedElementManager {
       this.trackedElementHandler_.trackedElementCanHighlightChanged(
           TrackedElementManager.elementToIdentifier_(trackedElement), true);
     }
+    this.trackedElementHandler_.trackedElementVisibilityChanged(
+        TrackedElementManager.elementToIdentifier_(trackedElement), visible,
+        bounds);
   }
 
   private updateAllBounds_() {

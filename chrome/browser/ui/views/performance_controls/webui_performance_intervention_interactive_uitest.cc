@@ -151,6 +151,12 @@ class WebUIPerformanceInterventionInteractiveTest
                              "el => el.hasAttribute('is-activated')", active);
   }
 
+  auto WaitForButtonHighlighted(bool highlighted) {
+    return WaitForJsResultAt(kWebUIToolbarWebContentsId, ButtonDeepQuery(),
+                             "el => el.classList.contains('anchor-highlight')",
+                             highlighted);
+  }
+
   auto ClickButton() {
     // Simulate clicking on the WebUI toolbar button while the performance
     // intervention bubble dialog is showing. Because injecting physical mouse
@@ -205,14 +211,15 @@ IN_PROC_BROWSER_TEST_F(WebUIPerformanceInterventionInteractiveTest,
         widget->LayoutRootViewIfNecessary();
       }),
       InstrumentWebUIToolbar(), WaitForButtonShown(true),
-      WaitForButtonActive(true),
+      WaitForButtonActive(true), WaitForButtonHighlighted(true),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       ClickButton(),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       WaitForButtonShown(true), WaitForButtonActive(false),
-      TriggerOnActionableTabListChange({}), WaitForButtonShown(false));
+      WaitForButtonHighlighted(false), TriggerOnActionableTabListChange({}),
+      WaitForButtonShown(false));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPerformanceInterventionInteractiveTest,
