@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/notimplemented.h"
 #include "base/state_transitions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
@@ -29,7 +28,9 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ttc/android/session_view_android.h"
+#else
 #include "chrome/browser/ttc/core/session_view_impl.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
@@ -38,11 +39,9 @@ namespace ttc {
 
 namespace {
 
-std::unique_ptr<SessionView> MakeSessionView(
-    [[maybe_unused]] SessionViewDelegate& delegate) {
+std::unique_ptr<SessionView> MakeSessionView(SessionViewDelegate& delegate) {
 #if BUILDFLAG(IS_ANDROID)
-  // SessionViewImpl is views-based; Android will need its own implementation.
-  return nullptr;
+  return std::make_unique<SessionViewAndroid>(delegate);
 #else
   return std::make_unique<SessionViewImpl>(delegate);
 #endif
@@ -129,12 +128,6 @@ std::vector<ToolDefinition> SessionControllerImpl::GetToolDefinitions() {
 }
 
 void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
-  // Android doesn't have a SessionView implementation yet.
-  if (!session_view_) {
-    NOTIMPLEMENTED();
-    return;
-  }
-
   session_view_->UpdateAudioLevel(audio_level);
 }
 
@@ -149,11 +142,6 @@ BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
 }
 
 void SessionControllerImpl::OnSessionInitialized() {
-  if (!session_view_) {
-    NOTIMPLEMENTED();
-    return;
-  }
-
   session_view_->OnSessionInitialized();
 }
 
@@ -171,11 +159,6 @@ void SessionControllerImpl::OnError(ErrorCode error) {
   if (is_fatal) {
     EndSessionAsync();
     fatal_error_reported_ = true;
-  }
-
-  if (!session_view_) {
-    NOTIMPLEMENTED();
-    return;
   }
 
   session_view_->OnError(error);

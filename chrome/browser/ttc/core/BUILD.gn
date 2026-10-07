@@ -4,6 +4,15 @@
 
 import("//build/config/ozone.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("enums_java") {
+    sources = [ "states.h" ]
+    visibility = [ "//chrome/browser/ttc/*" ]
+  }
+}
+
 source_set("features") {
   public = [ "features.h" ]
   sources = [ "features.cc" ]
@@ -17,6 +26,7 @@ source_set("core") {
     "session_controller.h",
     "session_journal.h",
     "session_view.h",
+    "session_view_delegate.h",
     "states.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
@@ -54,7 +64,6 @@ source_set("impl") {
     "session_controller_impl.cc",
     "session_controller_impl.h",
     "session_journal.cc",
-    "session_view_delegate.h",
     "states.cc",
     "tool_controller.cc",
     "tool_controller.h",
@@ -96,6 +105,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ttc/android",
       "//chrome/browser/ui/android/tab_model",
     ]
   } else {

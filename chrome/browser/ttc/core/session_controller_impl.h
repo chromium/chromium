@@ -62,8 +62,6 @@ class SessionControllerImpl : public SessionController,
   // context is read from.
   content::WebContents* GetVoiceFocusedWebContents();
 
-  // TODO(bokan): Android doesn't yet have a session_view so calling
-  // this will crash there.
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
@@ -74,7 +72,7 @@ class SessionControllerImpl : public SessionController,
   // assigned on construction.
   const raw_ref<TtcKeyedService> service_;
 
-  // Never null
+  // Neither is ever null.
   std::unique_ptr<Conversation> conversation_;
   std::unique_ptr<SessionView> session_view_;
 

@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ttc/TtcKeyedService.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcKeyedServiceFactory.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//chrome/browser/ttc/core:enums_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ ":*" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ttc/TtcKeyedService.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcKeyedServiceFactory.java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "session_view_android.cc",
+    "session_view_android.h",
+    "ttc_keyed_service_android.cc",
+    "ttc_keyed_service_android.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/ttc/app/public",
+    "//chrome/browser/ttc/core",
+  ]
+}

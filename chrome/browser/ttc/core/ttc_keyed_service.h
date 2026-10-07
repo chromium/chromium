@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,7 +29,9 @@ class SessionController;
 class SessionControllerImpl;
 class TtcActorUiStateManager;
 
-class TtcKeyedService : public KeyedService {
+// SupportsUserData lets platform-specific bridges (e.g. the Android JNI
+// bridge) attach themselves to the service so they share its lifetime.
+class TtcKeyedService : public KeyedService, public base::SupportsUserData {
  public:
   // Creates the Conversation used by a session.
   using ConversationFactory =

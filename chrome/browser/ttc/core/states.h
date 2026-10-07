@@ -9,6 +9,7 @@
 
 namespace ttc {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ttc
 enum class ServiceState {
   // TTC is unavailable for this profile.
   kProfileIneligible,

@@ -32,6 +32,10 @@ TtcKeyedService::~TtcKeyedService() = default;
 
 void TtcKeyedService::Shutdown() {
   EndSession();
+  // Drop platform bridges (e.g. the Android JNI counterpart) now, during
+  // KeyedService shutdown, rather than in the destructor, so nothing can reach
+  // this service through them once it has shut down.
+  ClearAllUserData();
 }
 
 bool TtcKeyedService::IsEnabled() const {
