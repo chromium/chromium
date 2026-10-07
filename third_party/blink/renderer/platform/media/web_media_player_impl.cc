@@ -692,7 +692,6 @@ void WebMediaPlayerImpl::Shutdown() {
   video_decode_stats_reporter_.reset();
   simple_watch_timer_.Stop();
   memory_usage_reporting_timer_.Stop();
-  background_pause_timer_.Stop();
   update_background_status_cb_.Cancel();
   media_log_->OnWebMediaPlayerDestroyed();
 
@@ -1027,7 +1026,6 @@ void WebMediaPlayerImpl::Play() {
   delegate_->SetIdle(delegate_id_, false);
   paused_ = false;
   pipeline_controller_->SetPlaybackRate(playback_rate_);
-  background_pause_timer_.Stop();
 
   if (observer_)
     observer_->OnPlaying();
@@ -2668,10 +2666,6 @@ void WebMediaPlayerImpl::OnPageHidden() {
   UpdateBackgroundVideoOptimizationState();
   UpdatePlayState();
 
-  // Schedule suspended playing media to be paused if the user doesn't come back
-  // to it within some timeout period to avoid any autoplay surprises.
-  ScheduleIdlePauseTimer();
-
   // Notify the compositor of our page visibility status.
   PostCrossThreadTask(
       *vfc_task_runner_, FROM_HERE,
@@ -2690,7 +2684,6 @@ void WebMediaPlayerImpl::SuspendForFrameClosed() {
 
 void WebMediaPlayerImpl::OnPageShown() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  background_pause_timer_.Stop();
 
   // Foreground videos don't require user gesture to continue playback.
   allow_background_video_playback_ = true;
@@ -2750,7 +2743,6 @@ void WebMediaPlayerImpl::OnIdleTimeout() {
 
 void WebMediaPlayerImpl::OnFrameShown() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  background_pause_timer_.Stop();
   is_frame_hidden_ = false;
 
   // Foreground videos don't require user gesture to continue playback.
@@ -2790,10 +2782,6 @@ void WebMediaPlayerImpl::OnFrameHidden() {
 
   UpdateBackgroundVideoOptimizationState();
   UpdatePlayState();
-
-  // Schedule suspended playing media to be paused if the user doesn't come back
-  // to it within some timeout period to avoid any autoplay surprises.
-  ScheduleIdlePauseTimer();
 }
 
 void WebMediaPlayerImpl::SetVolumeMultiplier(double multiplier) {
@@ -3534,32 +3522,6 @@ void WebMediaPlayerImpl::OnMediaThreadMemoryDump(
     return;
 
   CreateAllocation(pmd, player_id, "demuxer", demuxer->GetMemoryUsage());
-}
-
-void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
-  if (!base::FeatureList::IsEnabled(media::kPauseBackgroundTimer)) {
-    return;
-  }
-
-  // Only schedule the pause timer if we're not paused or paused but going to
-  // resume when foregrounded, and are suspended and have audio.
-  if ((paused_ && !IsPausedBecausePageHidden()) ||
-      !pipeline_controller_->IsSuspended() || !HasAudio()) {
-    return;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Don't pause videos casted as part of RemotePlayback.
-  if (is_flinging_)
-    return;
-#endif
-
-  // Idle timeout chosen arbitrarily.
-  background_pause_timer_.Start(
-      FROM_HERE, base::Seconds(5),
-      BindOnce(&MediaPlayerClient::PausePlayback,
-               WrapWeakPersistent(client_.Get()),
-               PauseReason::kSuspendedPlayerIdleTimeout));
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {

@@ -885,12 +885,6 @@ BASE_FEATURE(kOverlayFullscreenVideo,
 // recovery point with `recovery_frame_cnt=0` has been found.
 BASE_FEATURE(kParseSEIRecoveryPoints, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// We plan to remove the background pause timer feature from WebMediaPlayerImpl.
-// We received reports that suggest that this feature's codepath hasn't been
-// exercised for a long time. This is a finch killswitch to rollback to the
-// previous behavior if we find any problems while disabling this feature.
-BASE_FEATURE(kPauseBackgroundTimer, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPauseMutedBackgroundAudio,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT

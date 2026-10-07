@@ -722,13 +722,6 @@ class WebMediaPlayerImplTest
     wmpi_->Pause(pause_reason);
   }
 
-  void ScheduleIdlePauseTimer() { wmpi_->ScheduleIdlePauseTimer(); }
-  void FireIdlePauseTimer() { wmpi_->background_pause_timer_.FireNow(); }
-
-  bool IsIdlePauseTimerRunning() {
-    return wmpi_->background_pause_timer_.IsRunning();
-  }
-
   void SetSuspendState(bool is_suspended) {
     wmpi_->SetSuspendState(is_suspended);
   }
@@ -3100,31 +3093,6 @@ TEST_F(WebMediaPlayerImplTest, OnFrozenSuspendsPlayback) {
   ASSERT_FALSE(IsSuspended());
   wmpi_->OnFrozen();
   ASSERT_TRUE(IsSuspended());
-}
-
-TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kPauseBackgroundTimer);
-  InitializeWebMediaPlayerImpl();
-  SetSuspendState(true);
-  SetPaused(false);
-
-  ASSERT_TRUE(IsSuspended());
-
-  // Video-only players are not paused when suspended.
-  SetMetadata(false, true);
-  ScheduleIdlePauseTimer();
-  EXPECT_FALSE(IsIdlePauseTimerRunning());
-
-  SetMetadata(true, true);
-  ScheduleIdlePauseTimer();
-  EXPECT_TRUE(IsIdlePauseTimerRunning());
-
-  EXPECT_CALL(
-      *client_,
-      PausePlayback(WebMediaPlayer::PauseReason::kSuspendedPlayerIdleTimeout));
-  FireIdlePauseTimer();
-  base::RunLoop().RunUntilIdle();
 }
 
 // Verifies that an infinite duration doesn't muck up GetCurrentTimeInternal.

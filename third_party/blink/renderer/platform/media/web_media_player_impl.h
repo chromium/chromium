@@ -578,10 +578,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* pmd);
 
-  // Called during OnHidden() when we want a suspended player to enter the
-  // paused state after some idle timeout.
-  void ScheduleIdlePauseTimer();
-
   // Returns |true| before HaveFutureData whenever there has been loading
   // progress and we have not been resumed for at least kLoadingToIdleTimeout
   // since then.
@@ -963,10 +959,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Stores the current position state of the media.
   media_session::MediaPosition media_position_state_;
-
-  // Called sometime after the media is suspended in a playing state in
-  // OnFrameHidden(), causing the state to change to paused.
-  base::OneShotTimer background_pause_timer_;
 
   // Monitors the watch time of the played content.
   std::unique_ptr<WatchTimeReporter> watch_time_reporter_;
