@@ -84,7 +84,7 @@ namespace sql {
 // When enabled, don't commit or rollback transactions if they have already been
 // rolled back by a statement error (e.g. SQLITE_FULL).
 BASE_FEATURE(kCheckAutoCommitInCommitAndRollback,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

@@ -3204,7 +3204,6 @@ TEST_F(DatabaseDiskFullTest, CacheSpillCanCauseSqliteFullErrors) {
 // Checks that statements producing `SQLITE_FULL` automatically rollback
 // transactions.
 TEST_F(DatabaseDiskFullTest, SqliteFullAbortsTransactions) {
-  ScopedFeatureList feature_list(kCheckAutoCommitInCommitAndRollback);
   Database db(test::kTestTag);
 
   std::vector<int> errors;
@@ -3232,10 +3231,40 @@ TEST_F(DatabaseDiskFullTest, SqliteFullAbortsTransactions) {
   EXPECT_THAT(errors, ElementsAre(SQLITE_FULL));
 }
 
+// Checks that a `Transaction` rolled-back by an `SQLITE_FULL` error will also
+// produce an additional `SQLITE_ERROR` if the feature
+// `kCheckAutoCommitInCommitAndRollback` is disabled.
+TEST_F(DatabaseDiskFullTest,
+       TransactionsRolledBackBySqliteFullProduceSqliteErrorIfFeatureDisabled) {
+  ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kCheckAutoCommitInCommitAndRollback);
+  Database db(test::kTestTag);
+
+  std::vector<int> errors;
+  db.set_error_callback(base::BindLambdaForTesting(
+      [&](int error, Statement*) { errors.push_back(error); }));
+
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE foo(i)"));
+
+  {
+    Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+
+    vfs_.set_drive_full(true);
+    EXPECT_FALSE(db.Execute("INSERT INTO foo(i) VALUES(42)"));
+    vfs_.set_drive_full(false);
+
+    EXPECT_THAT(errors, ElementsAre(SQLITE_FULL));
+  }
+  // `~Transaction` tries to rollback. which fails because the SQLite
+  // transaction was already rolled-back by the `SQLITE_FULL` error.
+  EXPECT_THAT(errors, ElementsAre(SQLITE_FULL, SQLITE_ERROR));
+}
+
 // Checks that calling `Commit` in an abandoned transactions doesn't invoke
 // error callback.
 TEST_F(DatabaseDiskFullTest, CommitInAbandonedTransactions) {
-  ScopedFeatureList feature_list(kCheckAutoCommitInCommitAndRollback);
   Database db(test::kTestTag);
 
   std::vector<int> errors;
@@ -3263,7 +3292,6 @@ TEST_F(DatabaseDiskFullTest, CommitInAbandonedTransactions) {
 // Checks that calling `Rollback` in an abandoned transactions doesn't invoke
 // error callback.
 TEST_F(DatabaseDiskFullTest, RollbackInAbandonedTransactions) {
-  ScopedFeatureList feature_list(kCheckAutoCommitInCommitAndRollback);
   Database db(test::kTestTag);
 
   std::vector<int> errors;
@@ -3295,7 +3323,6 @@ TEST_F(DatabaseDiskFullTest, RollbackInAbandonedTransactions) {
 // possibly rollback transactions. `Commit` should still fail without producing
 // errors.
 TEST_F(DatabaseDiskFullTest, CommitInTransactionAbortedByRawSqliteCalls) {
-  ScopedFeatureList feature_list(kCheckAutoCommitInCommitAndRollback);
   Database db(test::kTestTag);
 
   std::vector<int> errors;
@@ -3328,7 +3355,6 @@ TEST_F(DatabaseDiskFullTest, CommitInTransactionAbortedByRawSqliteCalls) {
 // a non-statement API call which the `Database` doesn't expect could ever
 // possibly rollback transactions. `Rollback` shouldn't produce errors.
 TEST_F(DatabaseDiskFullTest, RollbackInTransactionAbortedByRawSqliteCalls) {
-  ScopedFeatureList feature_list(kCheckAutoCommitInCommitAndRollback);
   Database db(test::kTestTag);
 
   std::vector<int> errors;
