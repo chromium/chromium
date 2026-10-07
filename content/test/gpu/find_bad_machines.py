@@ -34,7 +34,7 @@ MIXIN_GROUPS = {
     'linux_intel_uhd_770_stable',
     'linux_nvidia_gtx_1660_experimental',
     'linux_nvidia_gtx_1660_stable',
-    'linux_nvidia_rtx_4070_super_stable',
+    'linux_nvidia_rtx_4070_super_wayland_stable',
     'mac_arm64_apple_m1_gpu_experimental',
     'mac_arm64_apple_m1_gpu_stable',
     'mac_arm64_apple_m2_retina_gpu_experimental',
@@ -81,7 +81,7 @@ def ParseArgs() -> argparse.Namespace:
     dest='verbose_count',
     action='count',
     default=0,
-    help=('Increase logging verbosity, can be passed multiple times.'),
+    help='Increase logging verbosity, can be passed multiple times.',
   )
   parser.add_argument(
     '-q',
@@ -253,7 +253,10 @@ def _AnalyzeMixin(
   )
   bad_machine_list.Merge(
     detection.DetectViaInterquartileRange(
-      mixin_stats, mixin_name, args.iqr_multiplier, args.minimum_failed_tasks
+      mixin_stats,
+      mixin_name,
+      args.iqr_multiplier,
+      args.minimum_failed_tasks,
     )
   )
   return bad_machine_list

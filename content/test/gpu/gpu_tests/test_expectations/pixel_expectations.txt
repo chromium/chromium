@@ -601,6 +601,11 @@ crbug.com/559557324 [ android android-Pixel-6 android-chromium ] Pixel_Video_Con
 # 32-bit GPU process virtual address space exhaustion (E_OUTOFMEMORY)
 crbug.com/417782068 [ win nvidia-0x2184 target-cpu-32 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
+# Linux/Wayland NVIDIA RTX 4070 Super failures
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_Video_AV1 [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

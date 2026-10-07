@@ -654,6 +654,9 @@ crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExt
 crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 crbug.com/541251909 [ linux amd display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] WebglExtension_WEBGL_draw_buffers [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 ###############################
 # New failures in WebGL rolls #

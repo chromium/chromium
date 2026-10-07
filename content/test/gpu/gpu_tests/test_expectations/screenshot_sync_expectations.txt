@@ -126,6 +126,12 @@ crbug.com/330130724 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_SWRasterWi
 # Gardener 2024-04-30 - timeouts
 crbug.com/324934210 [ mac angle-metal apple-angle-metal-renderer:-apple-m2 asan ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
 
+# Linux/Wayland NVIDIA RTX 4070 Super failures
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] ScreenshotSync_GPURasterWithDivs [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] ScreenshotSync_SWRasterWithDivs [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

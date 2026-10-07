@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "GPU FYI Linux Builder",
+              "builder": "GPU FYI Linux Wayland Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -29,7 +29,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux FYI Release (NVIDIA RTX 4070 Super)",
+              "builder": "Linux Wayland FYI Release (NVIDIA RTX 4070 Super)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -49,7 +49,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "GPU FYI Linux Builder",
+                "builder": "GPU FYI Linux Wayland Builder",
                 "project": "chromium"
               },
               "run_tests_serially": true,
@@ -61,17 +61,17 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Linux FYI Release (NVIDIA RTX 4070 Super)",
+          "builder": "Linux Wayland FYI Release (NVIDIA RTX 4070 Super)",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "gpu-fyi-try-linux-nvidia-rtx-4070-super-rel",
+          "builder": "gpu-fyi-try-linux-wayland-nvidia-rtx-4070-super-rel",
           "group": "tryserver.chromium.linux"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Linux FYI Release (NVIDIA RTX 4070 Super)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Linux Wayland FYI Release (NVIDIA RTX 4070 Super)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -318,7 +318,7 @@ chromium_luci.configure_targets(
             "linux_intel_uhd_770_stable": targets.IGNORE_UNUSED,
             "linux_nvidia_gtx_1660_experimental": targets.IGNORE_UNUSED,
             "linux_nvidia_gtx_1660_stable": targets.IGNORE_UNUSED,
-            "linux_nvidia_rtx_4070_super_stable": targets.IGNORE_UNUSED,
+            "linux_nvidia_rtx_4070_super_wayland_stable": targets.IGNORE_UNUSED,
             "mac_arm64_apple_m1_gpu_experimental": targets.IGNORE_UNUSED,
             "mac_arm64_apple_m1_gpu_stable": targets.IGNORE_UNUSED,
             "mac_arm64_apple_m2_retina_gpu_experimental": targets.IGNORE_UNUSED,

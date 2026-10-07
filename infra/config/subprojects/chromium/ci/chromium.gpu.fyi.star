@@ -1736,9 +1736,9 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Linux FYI Release (NVIDIA RTX 4070 Super)",
-    description_html = "Runs release GPU tests on stable Linux/NVIDIA RTX 4070 Super configs",
-    parent = "GPU FYI Linux Builder",
+    name = "Linux Wayland FYI Release (NVIDIA RTX 4070 Super)",
+    description_html = "Runs release GPU tests with Wayland enabled on stable Linux/NVIDIA RTX 4070 Super configs",
+    parent = "GPU FYI Linux Wayland Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1756,18 +1756,25 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_all_linux_release_gtests",
-            "gpu_all_linux_release_telemetry_tests",
+            "gpu_all_linux_wayland_release_telemetry_tests",
         ],
         mixins = [
-            "linux_nvidia_rtx_4070_super_stable",
+            "linux_nvidia_rtx_4070_super_wayland_stable",
         ],
+        per_test_modifications = {
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.rtx_4070_super.wayland.gl_tests_passthrough.filter",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.LINUX,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Linux|Nvidia",
+        category = "Linux|Wayland|Nvidia",
         short_name = "4070",
     ),
 )

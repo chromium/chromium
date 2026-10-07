@@ -1028,8 +1028,19 @@ crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scis
 
 crbug.com/566046558 [ win ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 
-
-
+# Linux/Wayland NVIDIA RTX 4070 Super failures
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] WebglExtension_WEBGL_provoking_vertex [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/extensions/ext-render-snorm.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/glsl3/array-complex-indexing.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] deqp/data/gles3/shaders/arrays.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] deqp/functional/gles3/shadermatrix/inverse.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

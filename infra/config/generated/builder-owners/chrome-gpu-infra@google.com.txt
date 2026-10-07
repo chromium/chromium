@@ -105,10 +105,10 @@ ci/Linux FYI Release (AMD RX 5500 XT)
 ci/Linux FYI Release (AMD RX 7600)
 ci/Linux FYI Release (Intel UHD 630)
 ci/Linux FYI Release (Intel UHD 770)
-ci/Linux FYI Release (NVIDIA RTX 4070 Super)
 ci/Linux FYI Release (NVIDIA)
 ci/Linux Release (NVIDIA)
 ci/Linux Wayland FYI Release (AMD)
+ci/Linux Wayland FYI Release (NVIDIA RTX 4070 Super)
 ci/Mac Debug (Intel)
 ci/Mac FYI Debug (Intel)
 ci/Mac FYI Experimental Release (Apple M1)
@@ -216,10 +216,10 @@ try/gpu-fyi-try-linux-intel-rel
 try/gpu-fyi-try-linux-intel-uhd770-rel
 try/gpu-fyi-try-linux-nvidia-exp
 try/gpu-fyi-try-linux-nvidia-rel
-try/gpu-fyi-try-linux-nvidia-rtx-4070-super-rel
 try/gpu-fyi-try-linux-nvidia-rtx-5080-exp
 try/gpu-fyi-try-linux-nvidia-tsn
 try/gpu-fyi-try-linux-wayland-amd-rel
+try/gpu-fyi-try-linux-wayland-nvidia-rtx-4070-super-rel
 try/gpu-fyi-try-mac-amd-retina-555x-rel
 try/gpu-fyi-try-mac-amd-retina-dbg
 try/gpu-fyi-try-mac-amd-retina-exp

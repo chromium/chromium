@@ -259,12 +259,13 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
-    name = "gpu-fyi-try-linux-nvidia-rtx-4070-super-rel",
+    name = "gpu-fyi-try-linux-wayland-nvidia-rtx-4070-super-rel",
+    description_html = "Runs release GPU tests on stable Linux/NVIDIA RTX 4070 Super configs using Wayland",
     mirrors = [
-        "ci/GPU FYI Linux Builder",
-        "ci/Linux FYI Release (NVIDIA RTX 4070 Super)",
+        "ci/GPU FYI Linux Wayland Builder",
+        "ci/Linux Wayland FYI Release (NVIDIA RTX 4070 Super)",
     ],
-    gn_args = "ci/GPU FYI Linux Builder",
+    gn_args = "ci/GPU FYI Linux Wayland Builder",
 )
 
 gpu_linux_builder(
