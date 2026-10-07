@@ -61,6 +61,14 @@
   width: 100%;
 }
 
+/* The UA stylesheet hides [unbounded]:not(:unbounded) elements. The wrapper
+ * is always [unbounded], but only shown in a separate OS window while the
+ * dropdown is open. Keep it visible at all times so that toggling it in and
+ * out of the unbounded window never produces a hidden frame (flicker). */
+#inputWrapper[unbounded] {
+  visibility: visible;
+}
+
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
   padding-top: 2px;

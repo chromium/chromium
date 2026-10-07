@@ -8,8 +8,12 @@ import type {WebuiBrowserSearchboxElement} from './webui_browser_searchbox.js';
 
 export function getHtml(this: WebuiBrowserSearchboxElement) {
   return html`
-    <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
-        @keydown="${this.onInputWrapperKeydown}">
+    <div id="inputWrapper" ?unbounded="${this.unboundedSupported_}"
+        @focusout="${this.onInputWrapperFocusout_}"
+        @keydown="${this.onInputWrapperKeydown_}"
+        @keyup="${this.onInputWrapperKeyup_}"
+        @beforetoggle="${this.onInputWrapperBeforetoggle_}"
+        @toggle="${this.onInputWrapperToggle_}">
       <cr-searchbox-input id="input"
           exportparts="searchbox-input"
           ?dropdown-is-visible="${this.dropdownIsVisible}"

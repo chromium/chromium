@@ -98,6 +98,9 @@ webui-browser-searchbox {
 
   margin: 0 10px;
   flex: 1;
+  /* Don't let long suggestions widen the searchbox (flex items default to
+   * min-width: auto, i.e. their min-content width). */
+  min-width: 0;
 }
 
 webui-browser-searchbox[dropdown-is-visible] {
@@ -142,6 +145,7 @@ webui-browser-searchbox[dropdown-is-visible] {
 #addressBox {
   position: relative;
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
 }
