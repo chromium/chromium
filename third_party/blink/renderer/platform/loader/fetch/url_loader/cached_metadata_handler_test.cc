@@ -247,6 +247,25 @@ TEST_F(
   EXPECT_EQ(0u, mock_disk_cache.CacheStorageWriteCount());
 }
 
+TEST_F(
+    CachedMetadataHandlerTest,
+    DoesNotSendMetadataToPlatformWhenFetchedViaServiceWorkerWithUnboundCacheResponse) {
+  ScopedServiceWorkerCodeCacheForTest scoped_feature(true);
+  MockGeneratedCodeCache mock_disk_cache;
+
+  // Equivalent to a kCacheStorage response whose writer was not preserved
+  // (e.g., after Response.clone() or when the cache backend is closed).
+  ResourceResponse response(CreateTestResourceResponse());
+  response.SetWasFetchedViaServiceWorker(true);
+  response.SetUrlListViaServiceWorker({response.CurrentRequestUrl()});
+  response.SetServiceWorkerResponseSource(
+      network::mojom::FetchResponseSource::kCacheStorage);
+
+  SendDataFor(response, &mock_disk_cache);
+  EXPECT_EQ(0u, mock_disk_cache.CachedURLs().size());
+  EXPECT_EQ(0u, mock_disk_cache.CacheStorageWriteCount());
+}
+
 TEST_F(CachedMetadataHandlerTest,
        ShouldUseIsolatedCodeCacheRespectsServiceWorkerCodeCacheFlag) {
   ResourceResponse response(CreateTestResourceResponse());
