@@ -143,10 +143,6 @@ class InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// On ChromeOS, the global hotkey is registered with ash's accelerator
-// controller, which FocusManager::ProcessAccelerator() falls through to, so
-// triggering the hotkey from the browser opens the panel via the global path.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest,
     AcceleratorPressedDoesNotLaunchGlicWhenLauncherEnabled) {
@@ -165,7 +161,6 @@ IN_PROC_BROWSER_TEST_F(
   WaitForDuration(base::Milliseconds(300));
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(
     InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest,
