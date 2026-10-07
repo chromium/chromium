@@ -4,16 +4,24 @@
 
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
+
+using ::base::test::EqualsProto;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Property;
+using ::testing::SizeIs;
 
 class AutofillOptimizationGuideProtoUtilTest : public testing::Test {
  private:
@@ -54,7 +62,7 @@ TEST_P(ByConversionReason, ToFormDataProto) {
                    }}}});
   optimization_guide::proto::FormData form_data_proto =
       ToFormDataProto(form, /*conversion_reason=*/GetParam());
-  ASSERT_EQ(form_data_proto.fields_size(), 3);
+  ASSERT_THAT(form_data_proto.fields(), SizeIs(3));
 
   EXPECT_EQ(form_data_proto.form_signature(), *CalculateFormSignature(form));
 
@@ -92,15 +100,15 @@ TEST_P(ByConversionReason, ToFormDataProto) {
   EXPECT_EQ(field_data3.field_label(), "select");
   EXPECT_TRUE(field_data3.field_value().empty());
   EXPECT_TRUE(field_data3.field_name().empty());
-  ASSERT_EQ(2, field_data3.select_options_size());
-  optimization_guide::proto::SelectOption select_option1 =
-      field_data3.select_options(0);
-  EXPECT_EQ("1", select_option1.value());
-  EXPECT_EQ("text1", select_option1.text());
-  optimization_guide::proto::SelectOption select_option2 =
-      field_data3.select_options(1);
-  EXPECT_EQ("2", select_option2.value());
-  EXPECT_EQ("text2", select_option2.text());
+  auto create_option = [](const std::string& value, const std::string& text) {
+    optimization_guide::proto::SelectOption option;
+    option.set_value(value);
+    option.set_text(text);
+    return option;
+  };
+  EXPECT_THAT(field_data3.select_options(),
+              ElementsAre(EqualsProto(create_option("1", "text1")),
+                          EqualsProto(create_option("2", "text2"))));
 }
 
 // Tests that the "ForExtensionAPI" flavor additionally populates global IDs.
@@ -123,7 +131,7 @@ TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProtoForExtensionAPI) {
   EXPECT_EQ(form_proto.global_id().renderer_id(), *form_id.renderer_id);
 
   // Field-level metadata.
-  ASSERT_EQ(form_proto.fields_size(), 1);
+  ASSERT_THAT(form_proto.fields(), SizeIs(1));
   const optimization_guide::proto::FormFieldData& field_proto =
       form_proto.fields(0);
   EXPECT_EQ(field_proto.global_id().frame_token(),
