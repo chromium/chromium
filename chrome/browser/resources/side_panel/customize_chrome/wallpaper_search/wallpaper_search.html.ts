@@ -51,8 +51,8 @@ export function getHtml(this: WallpaperSearchElement) {
         </customize-chrome-combobox>
         <cr-grid columns="6" id="descriptorMenuD" role="radiogroup">
           ${this.descriptorD_.map((item, index) => html`
-            <button class="default-color"
-                data-index="${index}" @click="${this.onDefaultColorClick_}"
+            <button class="default-color" data-index="${index}"
+                @click="${this.onDefaultColorClick_}"
                 aria-checked="${this.isColorSelected_(item)}"
                 title="${this.getColorLabel_(item)}">
               <cr-ripple></cr-ripple>
@@ -77,8 +77,9 @@ export function getHtml(this: WallpaperSearchElement) {
               </div>
             </customize-chrome-check-mark-wrapper>
           </button>
-        </div>
-      </cr-grid>
+        </cr-grid>
+      </div>
+
       <cr-theme-hue-slider-dialog id="hueSlider"
           @selected-hue-changed="${this.onSelectedHueChanged_}">
         <cr-icon-button slot="headerSuffix" id="deleteSelectedHueButton"
@@ -89,9 +90,7 @@ export function getHtml(this: WallpaperSearchElement) {
         </cr-icon-button>
       </cr-theme-hue-slider-dialog>
       <div id="btnContainer">
-        <cr-button
-            id="submitButton"
-            @click="${this.onSearchClick_}"
+        <cr-button id="submitButton" @click="${this.onSearchClick_}"
             class="action-button">
           <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
           $i18n{wallpaperSearchSubmitBtn}
@@ -110,18 +109,17 @@ export function getHtml(this: WallpaperSearchElement) {
         </svg>
       </cr-loading-gradient>
     </div>
-    <cr-grid id="resultGrid" columns="3"
-        ?hidden="${!this.results_}" role="radiogroup">
+    <cr-grid id="resultGrid" columns="3" ?hidden="${!this.results_}"
+        role="radiogroup">
       ${this.results_.map((item, index) => html`
-        <div class="tile result" tabindex="0" role="radio"
-            data-index="${index}" @click="${this.onResultClick_}"
+        <div class="tile result" tabindex="0" role="radio" data-index="${index}"
+            @click="${this.onResultClick_}"
             aria-label="${this.getResultAriaLabel_(index)}"
             aria-checked="${this.isBackgroundSelected_(item.id)}">
           <customize-chrome-check-mark-wrapper class="image-check-mark"
               ?checked="${this.isBackgroundSelected_(item.id)}">
             <div class="image-container">
               <img src="data:image/png;base64,${item.image}">
-              </img>
             </div>
           </customize-chrome-check-mark-wrapper>
         </div>
@@ -131,7 +129,9 @@ export function getHtml(this: WallpaperSearchElement) {
       <div id="disclaimer">
         $i18n{experimentalFeatureDisclaimer}
         <a href="#" aria-label="$i18n{learnMoreAboutFeatureA11yLabel}"
-            @click="${this.onLearnMoreClick_}">$i18n{learnMore}</a>
+            @click="${this.onLearnMoreClick_}">
+          $i18n{learnMore}
+        </a>
       </div>
       <div ?hidden="${!this.loading_}">
         <cr-loading-gradient>
@@ -160,12 +160,10 @@ ${this.inspirationCardEnabled_ ? html`
         title="$i18n{showInspirationCardToggle}"
         @click="${this.onInspirationToggleClick_}"
         @keydown="${this.onButtonKeydown_}"
-        aria-expanded="${this.openInspirations_}"
-        tabindex="0"
+        aria-expanded="${this.openInspirations_}" tabindex="0"
         id="inspirationToggle">
       <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
-      <div class="cr-icon ${this.inspirationToggleIcon_}" slot="buttons">
-      </div>
+      <div class="cr-icon ${this.inspirationToggleIcon_}" slot="buttons"></div>
     </sp-heading>
     <cr-collapse .opened="${this.openInspirations_}">
       <div class="inspirations-content">
@@ -175,18 +173,17 @@ ${this.inspirationCardEnabled_ ? html`
                 data-index="${groupIndex}"
                 @click="${this.onInspirationGroupTitleClick_}"
                 @keydown="${this.onButtonKeydown_}"
-                aria-current="${
-                      this.getInspirationDescriptorsCheckedStatus_(
-                          item.descriptors)}">
+                aria-current="${this.getInspirationDescriptorsCheckedStatus_(
+                    item.descriptors)}">
               ${this.getInspirationGroupTitle_(item.descriptors)}
             </div>
           </h3>
           <cr-grid columns="3" role="radiogroup">
             ${item.inspirations.map((item, index) => html`
-              <div class="tile result"
-                  data-group-index="${groupIndex}" data-index="${index}"
-                  @click="${this.onInspirationImageClick_}"
-                  tabindex="0" role="radio"
+              <div class="tile result" data-group-index="${groupIndex}"
+                  data-index="${index}"
+                  @click="${this.onInspirationImageClick_}" tabindex="0"
+                  role="radio"
                   aria-checked="${this.isBackgroundSelected_(item.id)}"
                   aria-label="${item.description}">
                 <customize-chrome-check-mark-wrapper class="image-check-mark"
@@ -219,7 +216,6 @@ ${this.inspirationCardEnabled_ ? html`
               ?checked="${this.isBackgroundSelected_(item.id)}">
             <div class="image-container">
               <img src="data:image/png;base64,${item.image}">
-              </img>
             </div>
           </customize-chrome-check-mark-wrapper>
         </div>

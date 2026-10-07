@@ -8,20 +8,15 @@ import type {AudioMenuElement} from './audio_menu.js';
 
 export function getHtml(this: AudioMenuElement) {
   return html`<!--_html_template_start_-->
-<grouped-action-menu
-    id="menu"
-    label="$i18n{audioTitle}"
-    .menuGroups="${this.groups_}"
-    .nonModal="${this.nonModal}"
-    .closeOnClick="${false}"
-    @highlight-change="${this.onHighlightChange_}"
+<grouped-action-menu id="menu" label="$i18n{audioTitle}"
+    .menuGroups="${this.groups_}" .nonModal="${this.nonModal}"
+    .closeOnClick="${false}" @highlight-change="${this.onHighlightChange_}"
     @open-accent-menu="${this.onOpenAccentMenu_}"
     @open-voice-selection-dialog="${this.onOpenVoiceSelectionDialog_}">
 </grouped-action-menu>
 
 ${this.showVoiceSelectionDialog_ ? html`
-  <voice-selection-dialog
-      id="voiceSelectionDialog"
+  <voice-selection-dialog id="voiceSelectionDialog"
       .selectedVoice="${this.selectedVoice}"
       .availableVoices="${this.availableVoices}"
       .enabledLangs="${this.enabledLangs}"
@@ -32,8 +27,7 @@ ${this.showVoiceSelectionDialog_ ? html`
 ` : ''}
 
 ${this.showAccentMenuDialog_ ? html`
-  <accent-menu id="accentMenu"
-      .enabledLangs="${this.enabledLangs}"
+  <accent-menu id="accentMenu" .enabledLangs="${this.enabledLangs}"
       .localeToDisplayName="${this.localeToDisplayName}"
       .selectedLang="${this.selectedLang}"
       .availableVoices="${this.availableVoices}"

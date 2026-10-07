@@ -14,13 +14,11 @@ export function getHtml(this: AppElement) {
   <!-- Overlay to prevent cursor from interacting with background elements when
   the settings menu is open. -->
   <div id="settingsOverlay" class="settings-overlay"></div>
-  <div id="lineFocus"
-      class="${this.getLineFocusClass_()}"
+  <div id="lineFocus" class="${this.getLineFocusClass_()}"
       ?hidden="${!this.computeHasContent()}">
   </div>
   <div id="toolbar-container">
-    <read-anything-toolbar
-        .isReadAnythingPinned="${this.isReadAnythingPinned_}"
+    <read-anything-toolbar .isReadAnythingPinned="${this.isReadAnythingPinned_}"
         .presentationState="${this.presentationState_}"
         .isSpeechActive="${this.isSpeechActive_}"
         .isAudioCurrentlyPlaying="${this.isAudioCurrentlyPlaying_}"
@@ -63,10 +61,8 @@ export function getHtml(this: AppElement) {
         @line-focus-movement-change="${this.onLineFocusMovementChange_}"
         @close-all-menus="${this.onCloseAllMenus_}"
         @settings-opened="${this.onSettingsOpened_}"
-        @settings-closed="${this.onSettingsClosed_}"
-        translate="no"
-        class="notranslate"
-        id="toolbar">
+        @settings-closed="${this.onSettingsClosed_}" translate="no"
+        class="notranslate" id="toolbar">
     </read-anything-toolbar>
   </div>
   <div id="containerParent" class="sp-card"
@@ -77,14 +73,12 @@ export function getHtml(this: AppElement) {
         @mousemove="${this.onScrollerMousemove_}"
         @mouseleave="${this.onScrollerMouseleave_}">
       <div id="container"
-        class=
-          "user-select-disabled-when-speech-active-${this.isSpeechActive_}">
+          class="user-select-disabled-when-speech-active-${
+              this.isSpeechActive_}">
       </div>
     </div>
   </div>
-  <div id="empty-state-container"
-      class="sp-scroller notranslate"
-      translate="no"
+  <div id="empty-state-container" class="sp-scroller notranslate" translate="no"
       @mousemove="${this.onScrollerMousemove_}"
       @mouseleave="${this.onScrollerMouseleave_}"
       ?hidden="${this.computeHasContent()}">

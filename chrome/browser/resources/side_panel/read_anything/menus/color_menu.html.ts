@@ -10,11 +10,8 @@ import type {ColorMenuElement} from './color_menu.js';
 
 export function getHtml(this: ColorMenuElement) {
   return html`<!--_html_template_start_-->
-<simple-action-menu
-    id="menu"
-    label="$i18n{themeTitle}"
-    .menuItems="${this.options_}"
-    .nonModal="${this.nonModal}"
+<simple-action-menu id="menu" label="$i18n{themeTitle}"
+    .menuItems="${this.options_}" .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.THEME}"
     current-selected-index="${this.restoredThemeIndex_()}"
     @theme-change="${this.onThemeChange_}">

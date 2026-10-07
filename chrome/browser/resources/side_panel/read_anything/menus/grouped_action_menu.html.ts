@@ -9,56 +9,51 @@ import {SettingsItemType} from './menu_util.js';
 
 export function getHtml(this: GroupedActionMenuElement) {
   return html`<!--_html_template_start_-->
-<cr-lazy-render-lit  id="lazyMenu" .template='${() => html`
-  <cr-action-menu
-      accessibility-label="${this.label}"
-      role-description="$i18n{menu}"
-      ?non-modal="${this.nonModal}"
-      tabindex="-1">
-    ${this.menuGroups.map((group, groupIndex) => html`
-      <span class="menu-group" role="group" aria-label="${group.header.title}"
-          aria-owns="${this.getAriaOwns_(groupIndex, group.items.length)}">
-      </span>
-      <hr class="sp-hr has-separator-${group.header.separator}">
-      <div class="header-container">
-        <span
-            class="header-style"
-            role="heading">
-            ${group.header.title}
-        </span>
-        ${group.header.shortcut ? html`
-            <span class="shortcut-text">${group.header.shortcut}</span>` : ``}
-      </div>
-      ${group.items.map((item, itemIndex) => html`
-        <button
-            id="group-${groupIndex}-item-${itemIndex}"
-            class="dropdown-item"
-            style="${item.style || nothing}"
-            role="${this.getItemRole_(item)}"
-            title="${item.ariaLabel || item.title}"
-            aria-label="${item.ariaLabel || item.title}"
-            aria-checked="${this.getItemAriaChecked_(item)}"
-            aria-haspopup="${this.getItemAriaHasPopup_(item)}"
-            @click="${this.onClick_}"
-            data-group-index="${groupIndex}"
-            data-item-index="${itemIndex}">
-          ${item.itemType !== SettingsItemType.ACTION ? html`
-            <cr-icon
-                class="button-image check-mark check-mark-showing-${
-                    !!item.selected}"
-                icon="${this.getItemIcon_(item)}">
-            </cr-icon>
-          ` : nothing}
-          <cr-icon
-              class="button-image has-icon-${!!item.icon}"
-              icon="${item.icon || ''}">
-          </cr-icon>
-          ${this.getItemDisplayTitle_(item)}
-        </button>
-      `)}
-    `)}
-  </cr-action-menu>
-`}'>
+<cr-lazy-render-lit id="lazyMenu"
+    .template="${() => html`
+      <cr-action-menu accessibility-label="${this.label}"
+          role-description="$i18n{menu}" ?non-modal="${this.nonModal}"
+          tabindex="-1">
+        ${this.menuGroups.map((group, groupIndex) => html`
+          <span class="menu-group" role="group"
+              aria-label="${group.header.title}"
+              aria-owns="${this.getAriaOwns_(groupIndex, group.items.length)}">
+          </span>
+          <hr class="sp-hr has-separator-${group.header.separator}">
+          <div class="header-container">
+            <span class="header-style" role="heading">
+              ${group.header.title}
+            </span>
+            ${group.header.shortcut ? html`
+              <span class="shortcut-text">${group.header.shortcut}</span>
+            ` : ``}
+          </div>
+          ${group.items.map((item, itemIndex) => html`
+            <button id="group-${groupIndex}-item-${itemIndex}"
+                class="dropdown-item" style="${item.style || nothing}"
+                role="${this.getItemRole_(item)}"
+                title="${item.ariaLabel || item.title}"
+                aria-label="${item.ariaLabel || item.title}"
+                aria-checked="${this.getItemAriaChecked_(item)}"
+                aria-haspopup="${this.getItemAriaHasPopup_(item)}"
+                @click="${this.onClick_}" data-group-index="${groupIndex}"
+                data-item-index="${itemIndex}">
+              ${item.itemType !== SettingsItemType.ACTION ? html`
+                <cr-icon
+                    class="button-image check-mark check-mark-showing-${
+                        !!item.selected}"
+                    icon="${this.getItemIcon_(item)}">
+                </cr-icon>
+              ` : nothing}
+              <cr-icon class="button-image has-icon-${!!item.icon}"
+                  icon="${item.icon || ''}">
+              </cr-icon>
+              ${this.getItemDisplayTitle_(item)}
+            </button>
+          `)}
+        `)}
+      </cr-action-menu>
+    `}">
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
 }

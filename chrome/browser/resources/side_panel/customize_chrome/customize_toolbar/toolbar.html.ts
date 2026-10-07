@@ -29,52 +29,41 @@ export function getHtml(this: ToolbarElement) {
 </div>
 <hr class="sp-cards-separator">
 <div class="sp-card" id="pinningSelectionCard">
-  ${
-      this.categories_.map(
-          (category, categoryIndex) => html`
+  ${this.categories_.map((category, categoryIndex) => html`
     <h3 class="choose-icons-row category-title">${category.displayName}</h3>
-    ${
-              this.actions_.map(
-                  (action) => action.category === category.id ?
-                      html`
-      ${
-                          !action.hasEnterpriseControlledPinnedState ?
-                              html`
-        <div
-          class="toggle-container choose-icons-row-container choose-icons-row"
-          @click="${this.getActionToggleHandler_(action.id, !action.pinned)}"
-        >
-          <img class="toggle-icon" src="${action.iconUrl}"
-              aria-hidden="true"></img>
-          <div class="toggle-title">${action.displayName}</div>
-          <cr-toggle @change="${
-                                  this.getActionToggleHandler_(
-                                      action.id, !action.pinned)}"
-              ?checked="${action.pinned}" aria-label="${
-                                  action.displayName}"></cr-toggle>
-        </div>
-      ` :
-                              html`
-        <div class="choose-icons-row-container choose-icons-row">
-          <img class="toggle-icon" src="${action.iconUrl}"
-              aria-hidden="true"></img>
-          <div class="toggle-title">${action.displayName}</div>
-          <div class="enterprise-enabled-text"
-              aria-label="$i18n{managedA11yLabel}">
-            $i18n{enterpriseEnabledLabel}
+    ${this.actions_.map(action => html`
+      ${action.category === category.id ? html`
+        ${!action.hasEnterpriseControlledPinnedState ? html`
+          <div
+              class="toggle-container choose-icons-row-container choose-icons-row"
+              @click="${
+                  this.getActionToggleHandler_(action.id, !action.pinned)}">
+            <img class="toggle-icon" src="${action.iconUrl}" aria-hidden="true">
+            <div class="toggle-title">${action.displayName}</div>
+            <cr-toggle
+                @change="${
+                    this.getActionToggleHandler_(action.id, !action.pinned)}"
+                ?checked="${action.pinned}" aria-label="${action.displayName}">
+            </cr-toggle>
           </div>
-          <img class="toggle-icon" src="icons/domain.svg"
-              aria-label="$i18n{managedA11yLabel}"
-              title="$i18n{managedA11yLabel}">
-          </img>
-        </div>
-      `}
-    ` :
-                      '')}
-    ${
-              categoryIndex !== this.categories_.length - 1 ?
-                  html`<hr class="sp-hr">` :
-                  ''}
+        ` : html`
+          <div class="choose-icons-row-container choose-icons-row">
+            <img class="toggle-icon" src="${action.iconUrl}" aria-hidden="true">
+            <div class="toggle-title">${action.displayName}</div>
+            <div class="enterprise-enabled-text"
+                aria-label="$i18n{managedA11yLabel}">
+              $i18n{enterpriseEnabledLabel}
+            </div>
+            <img class="toggle-icon" src="icons/domain.svg"
+                aria-label="$i18n{managedA11yLabel}"
+                title="$i18n{managedA11yLabel}">
+          </div>
+        `}
+      ` : ''}
+    `)}
+    ${categoryIndex !== this.categories_.length - 1 ? html`
+      <hr class="sp-hr">
+    ` : ''}
   `)}
 </div>
 <hr class="sp-cards-separator">

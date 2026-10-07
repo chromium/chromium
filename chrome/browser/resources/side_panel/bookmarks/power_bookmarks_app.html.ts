@@ -13,8 +13,8 @@ export function getHtml(this: PowerBookmarksAppElement) {
 <div class="column" id="powerBookmarksContainer">
   <cr-toolbar-search-field id="searchField" label="$i18n{searchBookmarks}"
       clear-label="$i18n{clearSearch}"
-      @search-changed="${this.onSearchChanged_}"
-      ?disabled="${this.editing_}" ?hidden="${!this.sectionVisibility_.search}"
+      @search-changed="${this.onSearchChanged_}" ?disabled="${this.editing_}"
+      ?hidden="${!this.sectionVisibility_.search}"
       @blur="${this.onSearchBlur_}">
   </cr-toolbar-search-field>
   <div class="label-row" ?hidden="${!this.sectionVisibility_.labels}"
@@ -30,12 +30,10 @@ export function getHtml(this: PowerBookmarksAppElement) {
       .activeFolderPath="${this.activeFolderPath_}"
       @active-folder-path-changed="${this.onActiveFolderPathChanged_}"
       @has-shown-bookmarks-changed="${this.onHasShownBookmarksChanged_}"
-      .labels="${this.labels_}"
-      .selectedBookmarks="${this.selectedBookmarks_}"
+      .labels="${this.labels_}" .selectedBookmarks="${this.selectedBookmarks_}"
       .contextMenuBookmark="${this.contextMenuBookmark_}"
       .hasSomeActiveFilter="${this.hasSomeActiveFilter_}"
-      .searchQuery="${this.searchQuery_}"
-      .editing="${this.editing_}"
+      .searchQuery="${this.searchQuery_}" .editing="${this.editing_}"
       .renamingId="${this.renamingId_}"
       @renaming-id-changed="${this.onRenamingIdChanged_}"
       @has-scrollbars-changed="${this.onHasScrollbarsChanged_}"
@@ -48,26 +46,20 @@ export function getHtml(this: PowerBookmarksAppElement) {
 
   <div class="sp-scroller"
       ?hidden="${!this.sectionVisibility_.topLevelEmptyState}">
-    <sp-empty-state id="topLevelEmptyState"
-        ?guest="${this.guestMode_}"
+    <sp-empty-state id="topLevelEmptyState" ?guest="${this.guestMode_}"
         image-path="${this.getEmptyImagePath_()}"
         dark-image-path="${this.getEmptyImagePathDark_()}"
-        heading="${this.getEmptyTitle_()}"
-        body="${this.getEmptyBody_()}">
+        heading="${this.getEmptyTitle_()}" body="${this.getEmptyBody_()}">
     </sp-empty-state>
   </div>
-  <sp-footer id="footer"
-      ?hidden="${!this.sectionVisibility_.footer}"
-      pinned>
-    <cr-button id="addCurrentTabButton"
-        class="floating-button"
-        ?hidden="${this.hideAddTabButton_()}"
-        @click="${this.onAddTabClick_}"
+  <sp-footer id="footer" ?hidden="${!this.sectionVisibility_.footer}" pinned>
+    <cr-button id="addCurrentTabButton" class="floating-button"
+        ?hidden="${this.hideAddTabButton_()}" @click="${this.onAddTabClick_}"
         ?disabled="${!this.canAddCurrentUrl_}">
       <cr-icon slot="prefix-icon"
-          icon="${this.webuiRoundedIconsEnabled_
-              ? 'sp:add-circle'
-              : 'sp:add-circle-old'}"></cr-icon>
+          icon="${this.webuiRoundedIconsEnabled_ ? 'sp:add-circle' :
+                                                   'sp:add-circle-old'}">
+      </cr-icon>
       $i18n{addCurrentTab}
     </cr-button>
 
@@ -77,17 +69,17 @@ export function getHtml(this: PowerBookmarksAppElement) {
         @clear-selected-items="${this.onClearSelectedItems_}">
       <div class="sp-icon-buttons-row">
         <cr-icon-button id="deleteButton"
-            iron-icon="${this.webuiRoundedIconsEnabled_
-                ? 'bookmarks:delete'
-                : 'bookmarks:delete-old'}"
+            iron-icon="${this.webuiRoundedIconsEnabled_ ?
+                'bookmarks:delete' :
+                'bookmarks:delete-old'}"
             ?disabled="${!this.getSelectedBookmarksLength_()}"
             title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
             @click="${this.onDeleteClick_}">
         </cr-icon-button>
         <cr-icon-button
-            iron-icon="${this.webuiRoundedIconsEnabled_
-                ? 'bookmarks:drive-file-move'
-                : 'bookmarks:move-old'}"
+            iron-icon="${this.webuiRoundedIconsEnabled_ ?
+                'bookmarks:drive-file-move' :
+                'bookmarks:move-old'}"
             ?disabled="${!this.getSelectedBookmarksLength_()}"
             title="$i18n{tooltipMove}" aria-label="$i18n{tooltipMove}"
             @click="${this.onMoveClick_}">
@@ -122,14 +114,15 @@ export function getHtml(this: PowerBookmarksAppElement) {
     @close="${this.onContextMenuClose_}">
 </power-bookmarks-context-menu>
 
-<cr-lazy-render-lit id="deletionToast" .template="${() => html`
-  <cr-toast duration="5000">
-    <div>${this.deletionDescription_}</div>
-    <cr-button @click="${this.onUndoClick_}">
-      $i18n{undoBookmarkDeletion}
-    </cr-button>
-  </cr-toast>
-`}">
+<cr-lazy-render-lit id="deletionToast"
+    .template="${() => html`
+      <cr-toast duration="5000">
+        <div>${this.deletionDescription_}</div>
+        <cr-button @click="${this.onUndoClick_}">
+          $i18n{undoBookmarkDeletion}
+        </cr-button>
+      </cr-toast>
+    `}">
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
 }

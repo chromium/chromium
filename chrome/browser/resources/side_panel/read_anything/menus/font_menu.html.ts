@@ -9,11 +9,8 @@ import type {FontMenuElement} from './font_menu.js';
 
 export function getHtml(this: FontMenuElement) {
   return html`<!--_html_template_start_-->
-<simple-action-menu
-    id="menu"
-    label="$i18n{fontNameTitle}"
-    .menuItems="${this.options_}"
-    .nonModal="${this.nonModal}"
+<simple-action-menu id="menu" label="$i18n{fontNameTitle}"
+    .menuItems="${this.options_}" .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.FONT}"
     current-selected-index="${this.currentFontIndex_()}"
     @font-change="${this.onFontChange_}">

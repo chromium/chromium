@@ -10,11 +10,8 @@ import type {HighlightMenuElement} from './highlight_menu.js';
 
 export function getHtml(this: HighlightMenuElement) {
   return html`<!--_html_template_start_-->
-<simple-action-menu
-    id="menu"
-    label="$i18n{voiceHighlightLabel}"
-    .menuItems="${this.options_}"
-    .nonModal="${this.nonModal}"
+<simple-action-menu id="menu" label="$i18n{voiceHighlightLabel}"
+    .menuItems="${this.options_}" .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.HIGHLIGHT_CHANGE}"
     current-selected-index="${this.restoredHighlightIndex_()}"
     @highlight-change="${this.onHighlightChange_}">

@@ -13,8 +13,7 @@ export function getHtml(this: PowerBookmarksContextMenuElement) {
   ${this.getMenuItemsForBookmarks_().map(item => html`
     ${!this.showDivider_(item) ? html`
       <button class="dropdown-item" data-id="${item.id}"
-          @click="${this.onMenuItemClick_}"
-          ?disabled="${!!item.disabled}">
+          @click="${this.onMenuItemClick_}" ?disabled="${!!item.disabled}">
         ${item.label}
       </button>
     ` : html`

@@ -14,8 +14,7 @@ export function getHtml(this: CardsElement) {
       ?hidden="${!this.managedByPolicy_}">
   </cr-policy-indicator>
   <cr-toggle title="$i18n{showCardsToggleTitle}" ?checked="${this.show_}"
-      ?disabled="${this.managedByPolicy_}"
-      @change="${this.onShowChange_}">
+      ?disabled="${this.managedByPolicy_}" @change="${this.onShowChange_}">
   </cr-toggle>
 </div>
 <div id="cards">

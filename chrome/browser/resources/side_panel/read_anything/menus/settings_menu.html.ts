@@ -9,53 +9,52 @@ import type {SettingsMenuElement} from './settings_menu.js';
 
 export function getHtml(this: SettingsMenuElement) {
   return html`
-<cr-lazy-render-lit id="lazyMenu" .template='${() => html`
-  <cr-action-menu id="settings-menu-dialog" @close="${this.onClose_}" non-modal>
-    ${this.options_.map((item, index) => html`
-      ${item.showSeparator ? html`<hr class="separator" aria-hidden="true">` : ``}
-      <button class="menu-row dropdown-item"
-          id="${item.id}"
-          role="menuitem"
-          data-index="${index}"
-          title="${item.ariaLabel || item.title}"
-          aria-label="${item.ariaLabel || item.title}"
-          ?disabled="${!!item.disabled}"
-          aria-haspopup="${item.itemType === SettingsItemType.MENU ?
-             'menu' : 'false'}"
-          aria-expanded="${this.getAriaExpanded_(item)}"
-          @pointerenter="${this.onPointerenter_}"
-          @pointerleave="${this.onPointerleave_}"
-          @click="${this.onMenuItemClick_}">
-
-        <div class="start-container">
-          ${item.icon ? html`
-            <cr-icon class="start-icon" icon="${item.icon}"></cr-icon>
-          ` : ''}
-
-          <div class="label">
-            ${item.title}
-            ${item.showBadge ? html`<new-badge></new-badge>` : ''}
-          </div>
-        </div>
-
-        ${item.itemType === SettingsItemType.TOGGLE ? html`
-            <cr-toggle
-              title="${item.ariaLabel || item.title}"
+<cr-lazy-render-lit id="lazyMenu"
+    .template="${() => html`
+      <cr-action-menu id="settings-menu-dialog" @close="${this.onClose_}"
+          non-modal>
+        ${this.options_.map((item, index) => html`
+          ${item.showSeparator ? html`
+            <hr class="separator" aria-hidden="true">
+          ` : ``}
+          <button class="menu-row dropdown-item" id="${item.id}" role="menuitem"
+              data-index="${index}" title="${item.ariaLabel || item.title}"
               aria-label="${item.ariaLabel || item.title}"
-              ?disabled="${!!item.disabled}"
-              @click="${this.onMenuItemClick_}"
-              ?checked="${item.checked || false}"
-              data-index="${index}">
-            </cr-toggle>
-        ` : html`
-          ${item.itemType === SettingsItemType.ACTION ? html`` : html`
-            <cr-icon class="end-icon" icon="cr:chevron-right"></cr-icon>
-          `}
-        `}
-      </button>
-    `)}
-  </cr-action-menu>
-`}'>
-</cr-lazy-render-lit>
-`;
+              ?disabled="${!!item.disabled}" aria-haspopup="${
+                  item.itemType === SettingsItemType.MENU ? 'menu' : 'false'}"
+              aria-expanded="${this.getAriaExpanded_(item)}"
+              @pointerenter="${this.onPointerenter_}"
+              @pointerleave="${this.onPointerleave_}"
+              @click="${this.onMenuItemClick_}">
+
+            <div class="start-container">
+              ${item.icon ? html`
+                <cr-icon class="start-icon" icon="${item.icon}"></cr-icon>
+              ` : ''}
+
+              <div class="label">
+                ${item.title}
+                ${item.showBadge ? html`
+                  <new-badge></new-badge>
+                ` : ''}
+              </div>
+            </div>
+
+            ${item.itemType === SettingsItemType.TOGGLE ? html`
+              <cr-toggle title="${item.ariaLabel || item.title}"
+                  aria-label="${item.ariaLabel || item.title}"
+                  ?disabled="${!!item.disabled}"
+                  @click="${this.onMenuItemClick_}"
+                  ?checked="${item.checked || false}" data-index="${index}">
+              </cr-toggle>
+            ` : html`
+              ${item.itemType === SettingsItemType.ACTION ? html`` : html`
+                <cr-icon class="end-icon" icon="cr:chevron-right"></cr-icon>
+              `}
+            `}
+          </button>
+        `)}
+      </cr-action-menu>
+    `}">
+</cr-lazy-render-lit>`;
 }

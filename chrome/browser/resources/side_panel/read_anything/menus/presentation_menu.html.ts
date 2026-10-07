@@ -10,10 +10,7 @@ import type {PresentationMenuElement} from './presentation_menu.js';
 
 export function getHtml(this: PresentationMenuElement) {
   return html`<!--_html_template_start_-->
-<simple-action-menu
-    non-modal
-    id="menu"
-    label="$i18n{viewLabel}"
+<simple-action-menu non-modal id="menu" label="$i18n{viewLabel}"
     .menuItems="${this.options_}"
     event-name="${ToolbarEvent.PRESENTATION_CHANGE}"
     current-selected-index="${this.restoredPresentationIndex_()}"

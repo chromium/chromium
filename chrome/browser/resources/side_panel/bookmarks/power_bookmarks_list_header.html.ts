@@ -22,10 +22,12 @@ export function getHtml(this: PowerBookmarksListHeaderElement) {
         ?disable-back-button="${this.disableBackButton_()}">
       <h1 slot="heading" id="title-container"
           class="${this.getTitleContainerClass_()}">
-        <span id="title-a"
-            class="${this.getTitleClass_('a')}">${this.titleA_}</span>
-        <span id="title-b"
-            class="${this.getTitleClass_('b')}">${this.titleB_}</span>
+        <span id="title-a" class="${this.getTitleClass_('a')}">
+          ${this.titleA_}
+        </span>
+        <span id="title-b" class="${this.getTitleClass_('b')}">
+          ${this.titleB_}
+        </span>
       </h1>
     </sp-heading>
   </div>
@@ -35,26 +37,21 @@ export function getHtml(this: PowerBookmarksListHeaderElement) {
       ${this.activeSortType_.label}
     </div>
     <cr-icon-button class="sort-menu-button"
-        iron-icon="${this.webuiRoundedIconsEnabled_
-            ? 'sp:filter-list'
-            : 'sp:filter-list-old'}"
-        title="$i18n{tooltipOrganize}"
-        aria-label="$i18n{sortMenuA11yLabel}"
+        iron-icon="${this.webuiRoundedIconsEnabled_ ? 'sp:filter-list' :
+                                                      'sp:filter-list-old'}"
+        title="$i18n{tooltipOrganize}" aria-label="$i18n{sortMenuA11yLabel}"
         aria-description="${this.activeSortType_.label}"
         @click="${this.onShowSortMenuClick_}">
     </cr-icon-button>
-    <cr-icon-button id="viewButton"
-        iron-icon="${this.getViewButtonIcon_()}"
+    <cr-icon-button id="viewButton" iron-icon="${this.getViewButtonIcon_()}"
         title="${this.getViewButtonTooltip_()}"
         aria-label="${this.getViewButtonA11yLabel_()}"
         @click="${this.onViewToggleClick_}">
     </cr-icon-button>
     <cr-icon-button id="editButton" class="icon-edit"
-        ?disabled="${this.disableEdit}"
-        title="$i18n{tooltipEdit}"
+        ?disabled="${this.disableEdit}" title="$i18n{tooltipEdit}"
         aria-label="$i18n{editBookmarkListA11yLabel}"
-        ?aria-pressed="${this.editing}"
-        @click="${this.onBulkEditClick_}">
+        ?aria-pressed="${this.editing}" @click="${this.onBulkEditClick_}">
     </cr-icon-button>
   </div>
 </div>

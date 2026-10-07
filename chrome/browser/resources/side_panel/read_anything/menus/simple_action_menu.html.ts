@@ -8,35 +8,32 @@ import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export function getHtml(this: SimpleActionMenuElement) {
   return html`<!--_html_template_start_-->
-<cr-lazy-render-lit  id="lazyMenu" .template='${() => html`
-  <cr-action-menu
-      accessibility-label="${this.label}"
-      role-description="$i18n{menu}"
-      ?non-modal="${this.nonModal}"
-      tabindex="-1">
-    ${this.menuItems.map((item, index) => html`
-      <button
-          class="dropdown-item"
-          style="${item.style}"
-          aria-label="${item.ariaLabel}"
-          @click="${this.onClick_}"
-          data-index="${index}">
-        <cr-icon
-            class="button-image check-mark check-mark-showing-${this.isItemSelected_(index)}"
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'read-anything-20:check-small'
-                : 'read-anything-20:check-mark-old'}"
-            aria-label="$i18n{selected}">
-        </cr-icon>
-        <cr-icon
-            class="button-image has-icon-${this.doesItemHaveIcon_(item)}"
-            icon="${this.itemIcon_(item)}">
-        </cr-icon>
-        ${item.title}
-      </button>
-    `)}
-  </cr-action-menu>
-`}'>
+<cr-lazy-render-lit id="lazyMenu"
+    .template="${() => html`
+      <cr-action-menu accessibility-label="${this.label}"
+          role-description="$i18n{menu}" ?non-modal="${this.nonModal}"
+          tabindex="-1">
+        ${this.menuItems.map((item, index) => html`
+          <button class="dropdown-item" style="${item.style}"
+              aria-label="${item.ariaLabel}" @click="${this.onClick_}"
+              data-index="${index}">
+            <cr-icon
+                class="button-image check-mark check-mark-showing-${
+                    this.isItemSelected_(index)}"
+                icon="${this.webuiRoundedIconsEnabled_ ?
+                    'read-anything-20:check-small' :
+                    'read-anything-20:check-mark-old'}"
+                aria-label="$i18n{selected}">
+            </cr-icon>
+            <cr-icon
+                class="button-image has-icon-${this.doesItemHaveIcon_(item)}"
+                icon="${this.itemIcon_(item)}">
+            </cr-icon>
+            ${item.title}
+          </button>
+        `)}
+      </cr-action-menu>
+    `}">
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
 }

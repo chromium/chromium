@@ -16,10 +16,11 @@ export function getHtml(this: PriceTrackingSectionElement) {
     <div id="toggleAnnotation">
       ${this.toggleAnnotationText_}
       <span ?hidden="${!this.showSaveLocationText_}">
-        ${this.saveLocationStartText_}<a href="#"
-            id="toggleAnnotationButton"
-            @click="${this.onToggleAnnotationButtonClick_}"
-            >${this.folderName_}</a>${this.saveLocationEndText_}
+        ${this.saveLocationStartText_}<!--
+        --><a href="#" id="toggleAnnotationButton"
+            @click="${this.onToggleAnnotationButtonClick_}"><!--
+          -->${this.folderName_}<!--
+        --></a>${this.saveLocationEndText_}
       </span>
     </div>
   </div>

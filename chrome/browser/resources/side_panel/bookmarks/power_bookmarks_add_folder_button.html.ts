@@ -8,10 +8,8 @@ import type {PowerBookmarksAddFolderButtonElement} from './power_bookmarks_add_f
 
 export function getHtml(this: PowerBookmarksAddFolderButtonElement) {
   return html`<!--_html_template_start_-->
-<button class="new-folder-row"
-    ?disabled="${this.disabled}"
-    ?compact="${this.compact}"
-    aria-label="$i18n{createNewFolderA11yLabel}">
+<button class="new-folder-row" ?disabled="${this.disabled}"
+    ?compact="${this.compact}" aria-label="$i18n{createNewFolderA11yLabel}">
   <div class="new-folder-icon-container">
     <cr-icon icon="cr:add"></cr-icon>
   </div>

@@ -8,29 +8,27 @@ import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
 export function getHtml(this: VoiceSelectionMenuElement) {
   return html`<!--_html_template_start_-->
-<cr-lazy-render-lit
-  id="voiceSelectionMenu"
-  .template='${() => html`
-    <cr-action-menu
-        @close="${this.onClose_}"
-        @keydown="${this.onVoiceMenuKeydown_}"
-        accessibility-label="$i18n{voiceSelectionLabel}"
-        role-description="$i18n{menu}"
-        ?non-modal="${this.nonModal}"
-    >
-      ${this.errorMessages_.map((item) => html`
-        <p class="dropdown-line notification error-message">${item}</p>
-      `)}
-      ${this.downloadingMessages_.map((item) => html`
-        <span class="dropdown-line notification download-message">${item}</span>
-      `)}
+<cr-lazy-render-lit id="voiceSelectionMenu"
+    .template="${() => html`
+      <cr-action-menu @close="${this.onClose_}"
+          @keydown="${this.onVoiceMenuKeydown_}"
+          accessibility-label="$i18n{voiceSelectionLabel}"
+          role-description="$i18n{menu}" ?non-modal="${this.nonModal}">
+        ${this.errorMessages_.map((item) => html`
+          <p class="dropdown-line notification error-message">${item}</p>
+        `)}
+        ${this.downloadingMessages_.map((item) => html`
+          <span class="dropdown-line notification download-message">
+            ${item}
+          </span>
+        `)}
 
-      ${this.voiceGroups_.map((voiceGroup, groupIndex) => html`
-        <span class="dropdown-line lang-group-title">
-          ${voiceGroup.language}
-        </span>
+        ${this.voiceGroups_.map((voiceGroup, groupIndex) => html`
+          <span class="dropdown-line lang-group-title">
+            ${voiceGroup.language}
+          </span>
 
-        ${voiceGroup.voices.map((voice, voiceIndex) => html`
+          ${voiceGroup.voices.map((voice, voiceIndex) => html`
             <button data-test-id="${voice.id}"
                 tabindex="${this.voiceItemTabIndex_(groupIndex, voiceIndex)}"
                 class="dropdown-item dropdown-voice-selection-button"
@@ -41,9 +39,9 @@ export function getHtml(this: VoiceSelectionMenuElement) {
               <span class="voice-name">
                 <cr-icon id="check-mark"
                     class="item-hidden-${!voice.selected} check-mark"
-                    icon="${this.webuiRoundedIconsEnabled_
-                        ? 'read-anything-20:check-small'
-                        : 'read-anything-20:check-mark-old'}">
+                    icon="${this.webuiRoundedIconsEnabled_ ?
+                        'read-anything-20:check-small' :
+                        'read-anything-20:check-mark-old'}">
                 </cr-icon>
                 ${voice.title}
               </span>
@@ -68,33 +66,28 @@ export function getHtml(this: VoiceSelectionMenuElement) {
                   iron-icon="${this.previewIcon_(voice.previewInitiated)}">
               </cr-icon-button>
             </button>
+          `)}
         `)}
-      `)}
 
-      <hr class="sp-hr">
-      <button
-          class="dropdown-item dropdown-voice-selection-button language-menu-button"
-          tabindex="0"
-          aria-haspopup="dialog"
-          @click="${this.onLanguageMenuClick_}">
-        $i18n{readingModeLanguageMenu}
-      </button>
+        <hr class="sp-hr">
+        <button
+            class="dropdown-item dropdown-voice-selection-button language-menu-button"
+            tabindex="0" aria-haspopup="dialog"
+            @click="${this.onLanguageMenuClick_}">
+          $i18n{readingModeLanguageMenu}
+        </button>
 
-    </cr-action-menu>
-  `}'>
+      </cr-action-menu>
+    `}">
 </cr-lazy-render-lit>
 
-${this.showLanguageMenuDialog_
-  ?  html`
-  <language-menu id="languageMenu"
-      .enabledLangs="${this.enabledLangs}"
+${this.showLanguageMenuDialog_ ? html`
+  <language-menu id="languageMenu" .enabledLangs="${this.enabledLangs}"
       .localeToDisplayName="${this.localeToDisplayName}"
       .selectedLang="${this.selectedVoice?.lang || ''}"
       .availableVoices="${this.availableVoices}"
       @close="${this.onLanguageMenuClose_}">
   </language-menu>
-  `
-  : ''
-}
+` : ''}
 <!--_html_template_end_-->`;
 }

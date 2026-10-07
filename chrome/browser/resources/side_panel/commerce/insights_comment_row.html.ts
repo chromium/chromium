@@ -11,7 +11,9 @@ export function getHtml(this: InsightsCommentRowElement) {
 <div id="commentRow">
   <span id="comment">$i18n{historyDescription}</span>
   <a href="#" ?hidden="${!this.shouldShowFeedback_}"
-      @click="${this.onFeedbackClick_}" class="link">$i18n{feedback}</a>
+      @click="${this.onFeedbackClick_}" class="link">
+    $i18n{feedback}
+  </a>
 </div>
 <!--_html_template_end_-->`;
 }

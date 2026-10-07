@@ -18,24 +18,22 @@ export function getHtml(this: ShortcutsElement) {
 <div id="options">
   <cr-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
-    <div id="enterpriseShortcutsMixedContainer" class="option" @click="${
-      this.onShowEnterpriseShortcutsClick_}" ?hidden="${
-  !this.showEnterprisePersonalMixedSidepanel_()}">
-      ${
-      this.getEnterpriseShortcutConfigs_()
-          .map(item => html`
-          <customize-chrome-button-label label="${item.title}"
-              label-description="${item.description}">
-          </customize-chrome-button-label>
-          <cr-checkbox id="enterpriseToggle" class="label-first"
-              ?checked="${this.showEnterpriseShortcuts_}"
-              @change="${this.onShowEnterpriseShortcutsChange_}">
-          </cr-checkbox>
+    <div id="enterpriseShortcutsMixedContainer" class="option"
+        @click="${this.onShowEnterpriseShortcutsClick_}"
+        ?hidden="${!this.showEnterprisePersonalMixedSidepanel_()}">
+      ${this.getEnterpriseShortcutConfigs_().map(item => html`
+        <customize-chrome-button-label label="${item.title}"
+            label-description="${item.description}">
+        </customize-chrome-button-label>
+        <cr-checkbox id="enterpriseToggle" class="label-first"
+            ?checked="${this.showEnterpriseShortcuts_}"
+            @change="${this.onShowEnterpriseShortcutsChange_}">
+        </cr-checkbox>
       `)}
     </div>
-    <div id="personalShortcutsContainer" class="option" @click="${
-      this.onShowPersonalShortcutsClick_}" ?hidden="${
-  !this.showEnterprisePersonalMixedSidepanel_()}">
+    <div id="personalShortcutsContainer" class="option"
+        @click="${this.onShowPersonalShortcutsClick_}"
+        ?hidden="${!this.showEnterprisePersonalMixedSidepanel_()}">
       <customize-chrome-button-label label="$i18n{showPersonalShortcutsToggle}"
           label-description="$i18n{showPersonalShortcutsToggleDescription}">
       </customize-chrome-button-label>
@@ -46,23 +44,18 @@ export function getHtml(this: ShortcutsElement) {
     </div>
     <cr-radio-group id="radioSelection"
         class="${
-      this.showEnterprisePersonalMixedSidepanel_() ?
-      'sub-options' :
-      ''}"
+            this.showEnterprisePersonalMixedSidepanel_() ? 'sub-options' : ''}"
         ?disabled="${this.getRadioSelectionDisabled_()}"
         .selected="${this.radioSelection_}"
-         @selected-changed="${this.onRadioSelectionSelectedChanged_}"
-         nested-selectable>
-      ${
-      this.getRadioSelectionShortcutConfigs_()
-          .map(item => html`
-        <div class="option" id="${item.containerName}"
-            data-type="${item.type}" @click="${this.onOptionClick_}">
+        @selected-changed="${this.onRadioSelectionSelectedChanged_}"
+        nested-selectable>
+      ${this.getRadioSelectionShortcutConfigs_().map(item => html`
+        <div class="option" id="${item.containerName}" data-type="${item.type}"
+            @click="${this.onOptionClick_}">
           <customize-chrome-button-label label="${item.title}"
               label-description="${item.description}">
           </customize-chrome-button-label>
-          <cr-radio-button name="${item.buttonName}"
-              label="${item.title}"
+          <cr-radio-button name="${item.buttonName}" label="${item.title}"
               hide-label-text>
             <!-- cr-radio-button's aria description references slotted content
              -->

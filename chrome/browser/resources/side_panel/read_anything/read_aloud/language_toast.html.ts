@@ -11,10 +11,9 @@ export function getHtml(this: LanguageToastElement) {
 <cr-toast id="toast" duration="${this.toastDuration_}">
   <div id="toastDiv">
     <span id="toastTitle">${this.toastTitle_}</span>
-    ${this.toastMessage_ ? html
-        `<span id="toastMessage">${this.toastMessage_}</span>`
-        : ''
-    }
+    ${this.toastMessage_ ? html`
+      <span id="toastMessage">${this.toastMessage_}</span>
+    ` : ''}
   </div>
 </cr-toast>
 <!--_html_template_end_-->`;

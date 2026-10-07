@@ -23,29 +23,25 @@ export function getHtml(this: ThemesElement) {
   </div>
   <cr-grid columns="3" role="radiogroup">
     ${this.themes_.map((item, index) => html`
-      <div class="tile theme" tabindex="0" role="radio"
-          data-index="${index}" @click="${this.onThemeClick_}"
-          title="${item.attribution1}"
+      <div class="tile theme" tabindex="0" role="radio" data-index="${index}"
+          @click="${this.onThemeClick_}" title="${item.attribution1}"
           aria-checked="${this.isThemeSelected_(item.imageUrl)}"
           ?hidden="${!this.shouldShowTheme_(item.imageVerified)}"
-          @focus="${this.onThemeFocus_}"
-          @blur="${this.onThemeBlur_}">
+          @focus="${this.onThemeFocus_}" @blur="${this.onThemeBlur_}">
         <customize-chrome-check-mark-wrapper
             ?checked="${this.isThemeSelected_(item.imageUrl)}">
           <div class="image-container">
             <img is="cr-auto-img" data-index="${index}"
-                .autoSrc="${item.previewImageUrl}"
-                draggable="false"
+                .autoSrc="${item.previewImageUrl}" draggable="false"
                 @load="${this.onPreviewImageLoad_}"
                 @error="${this.onPreviewImageError_}">
-            </img>
           </div>
         </customize-chrome-check-mark-wrapper>
       </div>
     `)}
   </cr-grid>
-  <cr-tooltip id="themeTooltip" position="bottom"
-    fit-to-visible-bounds manual-mode>
+  <cr-tooltip id="themeTooltip" position="bottom" fit-to-visible-bounds
+      manual-mode>
   </cr-tooltip>
 </div>
 <!--_html_template_end_-->`;

@@ -8,13 +8,9 @@ import type {AppearanceMenuElement} from './appearance_menu.js';
 
 export function getHtml(this: AppearanceMenuElement) {
   return html`<!--_html_template_start_-->
-<grouped-action-menu
-    id="menu"
-    label="$i18n{appearanceTitle}"
-    .menuGroups="${this.groups_}"
-    .nonModal="${this.nonModal}"
-    .closeOnClick="${false}"
-    @theme-change="${this.onThemeChange_}"
+<grouped-action-menu id="menu" label="$i18n{appearanceTitle}"
+    .menuGroups="${this.groups_}" .nonModal="${this.nonModal}"
+    .closeOnClick="${false}" @theme-change="${this.onThemeChange_}"
     @presentation-change="${this.onPresentationChange_}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;

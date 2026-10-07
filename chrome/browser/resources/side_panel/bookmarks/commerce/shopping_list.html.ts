@@ -9,35 +9,33 @@ import type {ShoppingListElement} from './shopping_list.js';
 export function getHtml(this: ShoppingListElement) {
   return html`<!--_html_template_start_-->
 <div id="container" role="treeitem" aria-expanded="${this.open_}">
-  <button class="row" title="$i18n{shoppingListFolderTitle}"
-      draggable="false" @click="${this.onFolderClick_}">
+  <button class="row" title="$i18n{shoppingListFolderTitle}" draggable="false"
+      @click="${this.onFolderClick_}">
     <div id="arrow">
-      <cr-icon-button
-          id="arrowIcon" iron-icon="cr:arrow-drop-down"
+      <cr-icon-button id="arrowIcon" iron-icon="cr:arrow-drop-down"
           ?open="${this.open_}" tabindex="-1">
       </cr-icon-button>
     </div>
     <cr-icon class="icon"
-        icon="${this.webuiRoundedIconsEnabled_
-            ? 'shopping-list:notifications-active'
-            : 'shopping-list:shopping-list-icon-old'}"></cr-icon>
+        icon="${this.webuiRoundedIconsEnabled_ ?
+            'shopping-list:notifications-active' :
+            'shopping-list:shopping-list-icon-old'}">
+    </cr-icon>
     <div class="title">$i18n{shoppingListFolderTitle}</div>
   </button>
   ${this.open_ ? html`
     ${this.productInfos.map((item, index) => html`
-      <button class="product-item" role="treeitem"
-          data-index="${index}"
+      <button class="product-item" role="treeitem" data-index="${index}"
           aria-labelledby="productInfo-${index}"
           @click="${this.onProductClick_}"
           @auxclick="${this.onProductAuxclick_}"
           @contextmenu="${this.onProductContextmenu_}">
         ${item.info.imageUrl.length ? html`
           <div class="product-image-container item-image">
-              <img class="product-image" is="cr-auto-img"
-                  auto-src="${item.info.imageUrl}"
-                  data-index="${index}"
-                  @load="${this.onProductImageLoad_}"
-                  @error="${this.onImageLoadError_}"></img>
+            <img class="product-image" is="cr-auto-img"
+                auto-src="${item.info.imageUrl}" data-index="${index}"
+                @load="${this.onProductImageLoad_}"
+                @error="${this.onImageLoadError_}">
           </div>
         ` : html`
           <div class="favicon-image item-image"

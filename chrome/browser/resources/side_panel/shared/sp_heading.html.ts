@@ -9,13 +9,14 @@ import type {SpHeadingElement} from './sp_heading.js';
 export function getHtml(this: SpHeadingElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
-    ?disabled="${this.disableBackButton}"
-    @click="${this.onBackButtonClick_}" aria-label="${this.backButtonAriaLabel}"
-    title="${this.backButtonTitle}">
+    ?disabled="${this.disableBackButton}" @click="${this.onBackButtonClick_}"
+    aria-label="${this.backButtonAriaLabel}" title="${this.backButtonTitle}">
 </cr-icon-button>
 
 <slot name="heading"></slot>
 <slot name="metadata"></slot>
-<div class="sp-icon-buttons-row"><slot name="buttons"></slot></div>
+<div class="sp-icon-buttons-row">
+  <slot name="buttons"></slot>
+</div>
 <!--_html_template_end_-->`;
 }

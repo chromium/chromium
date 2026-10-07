@@ -40,14 +40,12 @@ export function getHtml(this: ShoppingInsightsAppElement) {
             .locale="${this.priceInsightsInfo.locale}"
             .currency="${this.priceInsightsInfo.currencyCode}">
         </shopping-insights-history-graph>
-        <insights-comment-row class="section-details">
-        </insights-comment-row>
+        <insights-comment-row class="section-details"></insights-comment-row>
       </div>
     ` : ''}
     ${this.isProductTrackable_ ? html`
       <div class="sp-cards-separator"></div>
-      <price-tracking-section class="section sp-card"
-          id="priceTrackingSection"
+      <price-tracking-section class="section sp-card" id="priceTrackingSection"
           .productInfo="${this.productInfo}"
           .priceInsightsInfo="${this.priceInsightsInfo}"
           .isProductTracked="${this.isProductTracked_}">

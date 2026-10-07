@@ -11,58 +11,47 @@ import type {VoiceSelectionDialogElement} from './voice_selection_dialog.js';
 
 export function getHtml(this: VoiceSelectionDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="voiceSelectionDialog"
-    @close="${this.onDialogClose_}"
-    @cancel="${this.onDialogCancel_}"
-    show-on-attach
-    ignore-popstate>
+<cr-dialog id="voiceSelectionDialog" @close="${this.onDialogClose_}"
+    @cancel="${this.onDialogCancel_}" show-on-attach ignore-popstate>
   <div slot="title" class="voice-menu-title-bar">
     <div class="voice-menu-title">$i18n{voiceSelectionLabel}</div>
   </div>
 
   <div slot="body" class="voice-menu-body">
     ${this.errorMessages_.map(item => html`
-      <p class="notification error-message"
-          role="status"
-          aria-live="polite">
+      <p class="notification error-message" role="status" aria-live="polite">
         ${item}
       </p>
     `)}
     ${this.downloadingMessages_.map(item => html`
-      <p class="notification download-message"
-          role="status"
-          aria-live="polite">
+      <p class="notification download-message" role="status" aria-live="polite">
         ${item}
       </p>
     `)}
 
-    <cr-radio-group id="voiceRadioGroup"
-        nested-selectable
+    <cr-radio-group id="voiceRadioGroup" nested-selectable
         aria-label="$i18n{voiceSelectionLabel}"
         .selected="${this.candidateVoice_ ? this.candidateVoice_.name : ''}"
         @selected-changed="${this.onVoiceRadioGroupSelectedChanged_}">
       ${this.voiceGroups_.map((group, groupIndex) => html`
-        <div class="lang-group-title"
-            role="presentation">${group.language}</div>
+        <div class="lang-group-title" role="presentation">
+          ${group.language}
+        </div>
         ${group.voices.map((voiceItem, voiceIndex) => html`
-          <cr-radio-button
-              class="voice-row label-first"
-              hide-label-text
+          <cr-radio-button class="voice-row label-first" hide-label-text
               label="${this.voiceLabel_(this.voiceDisplayName_(voiceItem))}"
-              name="${voiceItem.voice.name}"
-              data-test-id="${voiceItem.id}">
+              name="${voiceItem.voice.name}" data-test-id="${voiceItem.id}">
             <div class="voice-row-content">
               <!-- LEFT: Play/Stop Preview Button & Adjacent Spinner -->
               <div class="preview-group">
                 <cr-icon-button id="preview-icon"
                     tabindex="${this.previewButtonTabIndex_(
-                        voiceItem,
-                        groupIndex === 0 && voiceIndex === 0)}"
-                    class="voice-preview-button"
-                    aria-label="${
-                      this.previewLabel_(voiceItem.previewInitiated)}"
+                        voiceItem, groupIndex === 0 && voiceIndex === 0)}"
+                    class="voice-preview-button" aria-label="${
+                        this.previewLabel_(voiceItem.previewInitiated)}"
                     title="${this.previewLabel_(voiceItem.previewInitiated)}"
-                    iron-icon="${this.previewIcon_(voiceItem.previewInitiated)}"
+                    iron-icon="${
+                        this.previewIcon_(voiceItem.previewInitiated)}"
                     data-group-index="${groupIndex}"
                     data-voice-index="${voiceIndex}"
                     @click="${this.onVoicePreviewClick_}">
@@ -82,12 +71,14 @@ export function getHtml(this: VoiceSelectionDialogElement) {
                    description. -->
               <div class="voice-text">
                 <span class="voice-name" aria-hidden="true"
-                    lang="${this.voiceLang_(voiceItem)}">${
-                    this.voiceDisplayName_(voiceItem)}</span>
+                    lang="${this.voiceLang_(voiceItem)}"><!--
+                  -->${this.voiceDisplayName_(voiceItem)}<!--
+                --></span>
                 ${voiceItem.natureNaming ? html`
                   <span class="voice-description"
-                      lang="${voiceItem.voice.lang}">${
-                      voiceItem.natureNaming.description}</span>
+                      lang="${voiceItem.voice.lang}"><!--
+                    -->${voiceItem.natureNaming.description}<!--
+                  --></span>
                 ` : ''}
               </div>
             </div>
@@ -99,13 +90,11 @@ export function getHtml(this: VoiceSelectionDialogElement) {
 
   <!-- FOOTER: Cancel and Save Action Buttons -->
   <div slot="button-container">
-    <cr-button class="cancel-button"
-        id="cancelButton"
+    <cr-button class="cancel-button" id="cancelButton"
         @click="${this.onCancelButtonClick_}">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button"
-        id="saveButton"
+    <cr-button class="action-button" id="saveButton"
         @click="${this.onSaveClick_}">
       $i18n{save}
     </cr-button>
