@@ -35,7 +35,6 @@ public class BnplIssuerTosDetailTest {
         assertThat(bnplIssuerTosDetail.getIssuerId(), equalTo(ISSUER_ID));
         assertTrue(bnplIssuerTosDetail.getIsLinkedIssuer());
         assertThat(bnplIssuerTosDetail.getIssuerName(), equalTo(ISSUER_NAME));
-        assertThat(bnplIssuerTosDetail.getLegalMessageLines().size(), equalTo(1));
         assertThat(bnplIssuerTosDetail.getLegalMessageLines(), contains(LEGAL_MESSAGE_LINE));
     }
 }
