@@ -4,18 +4,25 @@
 
 #include "chrome/browser/actor/transport/actor_keyed_service_adapter.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace actor {
 
 ActorKeyedServiceAdapter::ActorKeyedServiceAdapter(
-    ActorKeyedService* actor_service) {
-  // TODO(crbug.com/565390654): Store and validate actor_service.
-  NOTIMPLEMENTED();
+    ActorKeyedService* actor_service)
+    : actor_service_(actor_service) {
+  CHECK(actor_service_);
 }
 
 ActorKeyedServiceAdapter::~ActorKeyedServiceAdapter() = default;
@@ -24,8 +31,25 @@ void ActorKeyedServiceAdapter::StartTask(
     const std::string& session_id,
     const optimization_guide::proto::BrowserStartTask& request,
     StartTaskCallback callback) {
-  // TODO(crbug.com/565390654): Pipe StartTask to ActorKeyedService.
-  NOTIMPLEMENTED();
+  auto options = webui::mojom::TaskOptions::New();
+  if (request.tab_id() > 0) {
+    options->actuation_tab_id = request.tab_id();
+  }
+
+  // TODO(crbug.com/568105613): Use a non-null enterprise policy checker.
+  TaskId task_id = actor_service_->CreateTaskWithOptions(
+      TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator, session_id),
+      GetNullEnterprisePolicyChecker(), std::move(options),
+      weak_ptr_factory_.GetWeakPtr(),
+      ui::ActorUiStateManager::Get(actor_service_->GetProfile()));
+
+  optimization_guide::proto::BrowserStartTaskResult result;
+  result.set_task_id(task_id.value());
+  if (request.tab_id() > 0) {
+    result.set_tab_id(request.tab_id());
+  }
+  result.set_status(optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
+  std::move(callback).Run(std::move(result));
 }
 
 void ActorKeyedServiceAdapter::StopTask(TaskId task_id,

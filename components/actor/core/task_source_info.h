@@ -23,10 +23,16 @@ struct TaskSourceInfo {
     kUnknown = 0,
     // Used by internal tests.
     kTest = 1,
+    // Tasks created by the experimental_actor extension API.
     kExperimentalActor = 2,
+    // Tasks created by Glic.
     kGlic = 3,
+    // Tasks created by Contextual Tasks.
     kContextualTasks = 4,
+    // Tasks created by TTC.
     kTtc = 5,
+    // Tasks created via the browser actuator transport layer.
+    kBrowserActuator = 6,
   };
 
   TaskSourceInfo(Client type, std::optional<SourceDefinedId> id);

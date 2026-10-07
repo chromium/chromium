@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "components/actor/core/task_id.h"
@@ -73,6 +74,11 @@ class ActorKeyedServiceAdapter : public ActuationDelegate,
       TaskId task_id,
       const std::string& verification_code,
       GmailOtpConfirmationCallback callback) override;
+
+ private:
+  // ActorKeyedService outlives this adapter.
+  raw_ptr<ActorKeyedService> actor_service_;
+  base::WeakPtrFactory<ActorKeyedServiceAdapter> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

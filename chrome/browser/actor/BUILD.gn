@@ -469,6 +469,7 @@ source_set("unit_tests") {
     "tools/media_control_tool_request_unittest.cc",
     "tools/page_search_utils_unittest.cc",
     "tools/type_tool_request_unittest.cc",
+    "transport/actor_keyed_service_adapter_unittest.cc",
   ]
   deps = [
     ":actor",

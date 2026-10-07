@@ -43,6 +43,10 @@ specific_include_rules = {
     # This is required for actor task creation.
     "+chrome/browser/actor/ui/actor_ui_state_manager.h",
   ],
+  'actor_keyed_service_adapter\\.cc': [
+    # This is required for actor task creation.
+    "+chrome/browser/actor/ui/actor_ui_state_manager.h",
+  ],
   'actor_actions_runner_unittest\\.cc': [
     "+chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h",
   ],
