@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+#ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+#define ASH_WEBUI_ECHE_APP_UI_ECHE_APP_NOTIFICATION_CONTROLLER_H_
 
 #include <optional>
 #include <string>
@@ -66,4 +66,4 @@ class EcheAppNotificationController {
 }  // namespace eche_app
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+#endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_APP_NOTIFICATION_CONTROLLER_H_

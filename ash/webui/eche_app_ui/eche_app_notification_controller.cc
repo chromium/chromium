@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
+#include "ash/webui/eche_app_ui/eche_app_notification_controller.h"
 
 #include <variant>
 

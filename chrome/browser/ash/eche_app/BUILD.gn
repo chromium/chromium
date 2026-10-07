@@ -11,8 +11,6 @@ static_library("eche_app") {
     "eche_app_accessibility_provider_proxy.h",
     "eche_app_manager_factory.cc",
     "eche_app_manager_factory.h",
-    "eche_app_notification_controller.cc",
-    "eche_app_notification_controller.h",
   ]
 
   public_deps = [
@@ -21,18 +19,13 @@ static_library("eche_app") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/profiles:profile",
-    "//components/account_id",
     "//ui/gfx",
-    "//ui/message_center/public/cpp",
   ]
 
   deps = [
     "//ash",
     "//ash/constants",
-    "//ash/public/cpp",
-    "//ash/strings",
     "//ash/webui/eche_app_ui:system_info_provider",
-    "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/multidevice_setup",
@@ -43,19 +36,19 @@ static_library("eche_app") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/phonehub",
-    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/ash/services/secure_channel",
     "//chromeos/ash/services/secure_channel/public/cpp/client",
     "//chromeos/ash/services/secure_channel/public/cpp/shared",
     "//chromeos/strings",
     "//chromeos/strings:strings_grit",
+    "//components/account_id",
     "//components/pref_registry",
     "//components/user_manager",
     "//components/version_info:channel",
+    "//google_apis",
     "//ui/base",
     "//ui/chromeos",
-    "//ui/message_center",
     "//url",
   ]
 
@@ -82,10 +75,7 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "eche_app_manager_factory_unittest.cc",
-    "eche_app_notification_controller_unittest.cc",
-  ]
+  sources = [ "eche_app_manager_factory_unittest.cc" ]
 
   deps = [
     ":eche_app",
@@ -93,7 +83,6 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//ash/public/cpp",
-    "//ash/public/cpp:test_support",
     "//ash/webui/eche_app_ui",
     "//ash/webui/eche_app_ui:system_info_provider",
     "//base",
@@ -103,12 +92,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support_unit",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
-    "//components/account_id",
-    "//components/account_id:test_support",
-    "//components/session_manager/test:test_support",
     "//components/user_manager",
-    "//google_apis",
-    "//testing/gmock",
+    "//testing/gtest",
     "//ui/gfx:test_support",
     "//ui/message_center",
   ]
