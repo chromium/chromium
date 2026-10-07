@@ -71,19 +71,34 @@ _SKIP_ON_WINDOWS = unittest.skipIf(
 )
 
 
-def _WriteFakeClangScript(script_path: str) -> str:
+def _WriteFakeClangScript(
+        script_path: str, mode_file_path: str | None = None) -> str:
     """Writes an executable fake `clang++` script that mimics `-M -H`."""
-    script_contents = """#!/usr/bin/env python3
+    script_contents = f"""#!/usr/bin/env python3
 import sys
+
+mode = "before"
+mode_file_path = {mode_file_path!r}
+if mode_file_path:
+    with open(mode_file_path, "r", encoding="utf-8") as handle:
+        mode = handle.read().strip()
 
 source_path = sys.argv[-1]
 dependencies = [
     source_path,
     "../../third_party/protobuf/src/google/protobuf/extension_set.h",
 ]
+trace_lines = [
+    ". ../../third_party/protobuf/src/google/protobuf/extension_set.h",
+]
+if mode == "after":
+    dependencies.append(
+        "../../third_party/abseil-cpp/absl/container/btree_map.h")
+    trace_lines.append(
+        ".. ../../third_party/abseil-cpp/absl/container/btree_map.h")
+
 sys.stdout.write("target.o: " + " \\\\\\n  ".join(dependencies) + "\\n")
-sys.stderr.write(
-    ". ../../third_party/protobuf/src/google/protobuf/extension_set.h\\n")
+sys.stderr.write("\\n".join(trace_lines) + "\\n")
 """
     with open(script_path, 'w', encoding='utf-8') as file_handle:
         file_handle.write(script_contents)
@@ -1444,6 +1459,735 @@ class CompileSizeProbeTest(unittest.TestCase):
             msg=(
                 'Expected _WriteJsonAtomically to delete its temporary '
                 '.tmp.<pid> file when os.replace raises an error.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsOrdersAddedHeadersLargestFirst(self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=2000,
+            included_files={'gen/sync/sync_entity.pb.cc': 2000},
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=43000,
+            included_files={
+                'gen/sync/sync_entity.pb.cc': 2000,
+                'third_party/abseil-cpp/absl/container/layout.h': 11000,
+                'third_party/abseil-cpp/absl/container/btree_map.h': 30000,
+            },
+            include_chains={
+                'third_party/abseil-cpp/absl/container/btree_map.h': (
+                    'gen/sync/sync_entity.pb.cc',
+                    'third_party/abseil-cpp/absl/container/btree_map.h',
+                ),
+            },
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            [
+                'third_party/abseil-cpp/absl/container/btree_map.h',
+                'third_party/abseil-cpp/absl/container/layout.h',
+            ],
+            [header.path for header in comparison.added_headers],
+            msg=(
+                'Expected added_headers to be sorted from largest size_bytes '
+                'to smallest.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsFallsBackToSingletonIncludeChain(
+            self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=2000,
+            included_files={'gen/sync/sync_entity.pb.cc': 2000},
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=13000,
+            included_files={
+                'gen/sync/sync_entity.pb.cc': 2000,
+                'third_party/abseil-cpp/absl/container/layout.h': 11000,
+            },
+            include_chains={},
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            ('third_party/abseil-cpp/absl/container/layout.h',),
+            comparison.added_headers[0].include_chain,
+            msg=(
+                'Expected AddedHeaderDelta.include_chain to fall back to '
+                '(path,) when the header is absent from include_chains.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsOrdersRemovedHeadersLargestFirst(
+            self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=5000,
+            included_files={
+                'gen/sync/sync_entity.pb.cc': 2000,
+                'third_party/protobuf/src/old_small.h': 1000,
+                'third_party/protobuf/src/old_large.h': 2000,
+            },
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=2000,
+            included_files={'gen/sync/sync_entity.pb.cc': 2000},
+            include_chains={},
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            [
+                'third_party/protobuf/src/old_large.h',
+                'third_party/protobuf/src/old_small.h',
+            ],
+            [header.path for header in comparison.removed_headers],
+            msg=(
+                'Expected removed_headers to be sorted from largest '
+                'size_bytes to smallest.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsOrdersResizedFilesLargestMagnitude(
+            self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=7000,
+            included_files={
+                'gen/sync/sync_entity.pb.cc': 2000,
+                'third_party/protobuf/src/extension_set.h': 5000,
+            },
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=8000,
+            included_files={
+                'gen/sync/sync_entity.pb.cc': 2100,
+                'third_party/protobuf/src/extension_set.h': 5900,
+            },
+            include_chains={},
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            [
+                'third_party/protobuf/src/extension_set.h',
+                'gen/sync/sync_entity.pb.cc',
+            ],
+            [resized_file.path for resized_file in comparison.resized_files],
+            msg=(
+                'Expected resized_files to be sorted by absolute delta_bytes '
+                'descending.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsOrdersLargeShrinkBeforeSmallGrowth(
+            self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=7000,
+            included_files={
+                'gen/sync/sync_entity.pb.cc': 2000,
+                'third_party/protobuf/src/extension_set.h': 5000,
+            },
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=6200,
+            included_files={
+                'gen/sync/sync_entity.pb.cc': 2100,
+                'third_party/protobuf/src/extension_set.h': 4100,
+            },
+            include_chains={},
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            [
+                'third_party/protobuf/src/extension_set.h',
+                'gen/sync/sync_entity.pb.cc',
+            ],
+            [resized_file.path for resized_file in comparison.resized_files],
+            msg=(
+                'Expected _ResizedFileSortKey to sort by abs(delta_bytes) '
+                'so a -900 B shrink ranks ahead of a +100 B growth.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsComputesPerUnitDeltaBytes(self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=1000,
+            included_files={'gen/sync/sync_entity.pb.cc': 1000},
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=1500,
+            included_files={'gen/sync/sync_entity.pb.cc': 1500},
+            include_chains={},
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            500,
+            comparison.delta_bytes,
+            msg=(
+                'Expected TranslationUnitComparison.delta_bytes to equal '
+                'after_bytes - before_bytes.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsComputesResizedFileDeltaBytes(self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=1000,
+            included_files={'gen/sync/sync_entity.pb.cc': 1000},
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=1300,
+            included_files={'gen/sync/sync_entity.pb.cc': 1300},
+            include_chains={},
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            300,
+            comparison.resized_files[0].delta_bytes,
+            msg=(
+                'Expected ResizedFileDelta.delta_bytes to equal '
+                'after_bytes - before_bytes.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsExcludesUnchangedFilesFromResized(
+            self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=1000,
+            included_files={'gen/sync/sync_entity.pb.cc': 1000},
+            include_chains={},
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=1000,
+            included_files={'gen/sync/sync_entity.pb.cc': 1000},
+            include_chains={},
+        )
+
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+
+        self.assertEqual(
+            (),
+            comparison.resized_files,
+            msg=(
+                'Expected CompareTranslationUnitSnapshots to omit unchanged '
+                'files from resized_files.'),
+        )
+
+    def testCompareProbeBaselinesAggregatesBeforeAfterAndDeltaTotalBytes(self):
+        before_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/cert/duration.pb.cc',
+                    total_bytes=1000,
+                    included_files={'gen/net/cert/duration.pb.cc': 1000},
+                    include_chains={},
+                ),
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit=(
+                        'components/sync/model/processor_entity.cc'),
+                    total_bytes=2500,
+                    included_files={
+                        'components/sync/model/processor_entity.cc': 2500,
+                    },
+                    include_chains={},
+                ),
+            ))
+        after_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/cert/duration.pb.cc',
+                    total_bytes=1400,
+                    included_files={'gen/net/cert/duration.pb.cc': 1400},
+                    include_chains={},
+                ),
+            ))
+
+        report = compile_size_probe.CompareProbeBaselines(
+            baseline_name='before',
+            before_baseline=before_baseline,
+            after_baseline=after_baseline,
+        )
+
+        self.assertEqual(
+            400,
+            report.delta_total_bytes,
+            msg=(
+                'Expected CompareProbeBaselines to compute delta_total_bytes '
+                'across the compared subset of translation units.'),
+        )
+
+    def testFormatComparisonReportIncludesHeaderDeltasAndIncludeChains(self):
+        report = compile_size_probe.ProbeComparisonReport(
+            baseline_name='before',
+            before_total_bytes=10000,
+            after_total_bytes=45000,
+            delta_total_bytes=35000,
+            translation_units=(
+                compile_size_probe.TranslationUnitComparison(
+                    translation_unit='gen/net/cert/duration.pb.cc',
+                    before_bytes=10000,
+                    after_bytes=45000,
+                    delta_bytes=35000,
+                    added_headers=(
+                        compile_size_probe.AddedHeaderDelta(
+                            path=(
+                                'third_party/abseil-cpp/absl/container/'
+                                'btree_map.h'),
+                            size_bytes=34668,
+                            include_chain=(
+                                'gen/net/cert/duration.pb.cc',
+                                'gen/net/cert/duration.pb.h',
+                                'third_party/protobuf/src/google/protobuf/'
+                                'extension_set.h',
+                                'third_party/abseil-cpp/absl/container/'
+                                'btree_map.h',
+                            ),
+                        ),
+                    ),
+                    removed_headers=(),
+                    resized_files=(),
+                ),
+            ),
+        )
+
+        formatted_report = compile_size_probe.FormatComparisonReport(report)
+
+        self.assertIn(
+            'via: gen/net/cert/duration.pb.cc -> gen/net/cert/duration.pb.h '
+            '-> third_party/protobuf/src/google/protobuf/extension_set.h '
+            '-> third_party/abseil-cpp/absl/container/btree_map.h',
+            formatted_report,
+            msg=(
+                'Expected FormatComparisonReport to display the #include '
+                'chain for newly added headers.'),
+        )
+
+    def testFormatComparisonReportRendersPositivePercentageWithPlusSign(self):
+        report = compile_size_probe.ProbeComparisonReport(
+            baseline_name='before',
+            before_total_bytes=1000,
+            after_total_bytes=1500,
+            delta_total_bytes=500,
+            translation_units=(
+                compile_size_probe.TranslationUnitComparison(
+                    translation_unit='gen/net/cert/duration.pb.cc',
+                    before_bytes=1000,
+                    after_bytes=1500,
+                    delta_bytes=500,
+                    added_headers=(),
+                    removed_headers=(),
+                    resized_files=(),
+                ),
+            ),
+        )
+
+        formatted_report = compile_size_probe.FormatComparisonReport(report)
+
+        self.assertIn(
+            '(+50.00%, 1,000 B -> 1,500 B)',
+            formatted_report,
+            msg=(
+                'Expected FormatComparisonReport to prefix positive '
+                'percentage deltas with "+".'),
+        )
+
+    def testFormatComparisonReportRendersRemovedResizedAndUnchangedSections(
+            self):
+        report = compile_size_probe.ProbeComparisonReport(
+            baseline_name='before',
+            before_total_bytes=2000,
+            after_total_bytes=1800,
+            delta_total_bytes=-200,
+            translation_units=(
+                compile_size_probe.TranslationUnitComparison(
+                    translation_unit='gen/net/cert/duration.pb.cc',
+                    before_bytes=1500,
+                    after_bytes=1300,
+                    delta_bytes=-200,
+                    added_headers=(),
+                    removed_headers=(
+                        compile_size_probe.RemovedHeaderDelta(
+                            path='third_party/protobuf/src/old_header.h',
+                            size_bytes=300,
+                        ),
+                    ),
+                    resized_files=(
+                        compile_size_probe.ResizedFileDelta(
+                            path='gen/net/cert/duration.pb.h',
+                            before_bytes=1200,
+                            after_bytes=1300,
+                            delta_bytes=100,
+                        ),
+                    ),
+                ),
+                compile_size_probe.TranslationUnitComparison(
+                    translation_unit=(
+                        'components/sync/model/processor_entity.cc'),
+                    before_bytes=500,
+                    after_bytes=500,
+                    delta_bytes=0,
+                    added_headers=(),
+                    removed_headers=(),
+                    resized_files=(),
+                ),
+            ),
+        )
+
+        formatted_report = compile_size_probe.FormatComparisonReport(report)
+
+        self.assertEqual(
+            (
+                'Compile-size comparison against baseline "before":\n'
+                'Total across 2 translation units: 1.95 KiB (2,000 B) -> '
+                '1.76 KiB (1,800 B) (-200 B)\n\n'
+                '=== gen/net/cert/duration.pb.cc: -200 B '
+                '(-13.33%, 1,500 B -> 1,300 B) ===\n'
+                '  Removed headers (1):\n'
+                '    -300 B  third_party/protobuf/src/old_header.h\n'
+                '  Resized files (1):\n'
+                '    +100 B  gen/net/cert/duration.pb.h '
+                '(1,200 B -> 1,300 B)\n\n'
+                '=== components/sync/model/processor_entity.cc: 0 B '
+                '(0.00%, 500 B -> 500 B) ===\n'
+                '  No header changes.'
+            ),
+            formatted_report,
+            msg=(
+                'Expected FormatComparisonReport to render Removed headers, '
+                'Resized files, and "No header changes." sections.'),
+        )
+
+    def testFormatHumanByteSizePrefixesPositiveDeltaWithPlusSign(self):
+        formatted_size = compile_size_probe.FormatHumanByteSize(
+            2048, should_include_sign=True)
+
+        self.assertEqual(
+            '+2.00 KiB (+2,048 B)',
+            formatted_size,
+            msg=(
+                'Expected FormatHumanByteSize(2048, should_include_sign=True) '
+                'to prefix both the KiB value and raw byte count with "+".'),
+        )
+
+    def testFormatHumanByteSizePrefixesNegativeDeltaWithMinusSign(self):
+        formatted_size = compile_size_probe.FormatHumanByteSize(
+            -2048, should_include_sign=True)
+
+        self.assertEqual(
+            '-2.00 KiB (-2,048 B)',
+            formatted_size,
+            msg=(
+                'Expected FormatHumanByteSize(-2048, should_include_sign=True) '
+                'to prefix both the KiB value and raw byte count with "-".'),
+        )
+
+    def testCompareProbeBaselinesRaisesValueErrorForMissingUnitInBeforeBaseline(
+            self):
+        before_baseline = compile_size_probe.ProbeBaseline(translation_units=())
+        after_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/cert/duration.pb.cc',
+                    total_bytes=100,
+                    included_files={'gen/net/cert/duration.pb.cc': 100},
+                    include_chains={},
+                ),
+            ))
+
+        with self.assertRaises(
+                ValueError,
+                msg=(
+                    'Expected CompareProbeBaselines to raise ValueError when '
+                    'an after_baseline unit is absent from before_baseline.')):
+            compile_size_probe.CompareProbeBaselines(
+                baseline_name='before',
+                before_baseline=before_baseline,
+                after_baseline=after_baseline,
+            )
+
+    def testSelectTranslationUnitsToMeasureReturnsSavedBaselineUnitsForCompare(
+            self):
+        before_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='components/custom/custom_target.cc',
+                    total_bytes=100,
+                    included_files={'components/custom/custom_target.cc': 100},
+                    include_chains={},
+                ),
+            ))
+        parsed_arguments = compile_size_probe._ParseCommandLineArguments([
+            '-C',
+            'out/Default',
+            '--compare',
+            'before',
+        ])
+
+        selected_units = compile_size_probe._SelectTranslationUnitsToMeasure(
+            parsed_arguments=parsed_arguments,
+            build_directory='/out/Default',
+            repository_root='/src',
+            before_baseline=before_baseline,
+        )
+
+        self.assertEqual(
+            ['components/custom/custom_target.cc'],
+            selected_units,
+            msg=(
+                'Expected _SelectTranslationUnitsToMeasure to return the '
+                'saved baseline translation units when --compare is invoked '
+                'without --tu.'),
+        )
+
+    def testSelectTranslationUnitsToMeasureRejectsUnknownUnitDuringCompare(
+            self):
+        before_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/cert/duration.pb.cc',
+                    total_bytes=100,
+                    included_files={'gen/net/cert/duration.pb.cc': 100},
+                    include_chains={},
+                ),
+            ))
+        parsed_arguments = compile_size_probe._ParseCommandLineArguments([
+            '-C',
+            'out/Default',
+            '--compare',
+            'before',
+            '--tu',
+            'components/sync/model/processor_entity.cc',
+        ])
+
+        with self.assertRaises(
+                ValueError,
+                msg=(
+                    'Expected _SelectTranslationUnitsToMeasure to raise '
+                    'ValueError before measurement when --compare is passed '
+                    'a --tu path absent from the saved baseline.')):
+            compile_size_probe._SelectTranslationUnitsToMeasure(
+                parsed_arguments=parsed_arguments,
+                build_directory='/out/Default',
+                repository_root='/src',
+                before_baseline=before_baseline,
+            )
+
+    def testSelectTranslationUnitsToMeasureDeduplicatesExtraUnitsDuringCompare(
+            self):
+        before_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit=(
+                        'components/sync/model/processor_entity.cc'),
+                    total_bytes=100,
+                    included_files={
+                        'components/sync/model/processor_entity.cc': 100,
+                    },
+                    include_chains={},
+                ),
+            ))
+        parsed_arguments = compile_size_probe._ParseCommandLineArguments([
+            '-C',
+            'out/Default',
+            '--compare',
+            'before',
+            '--tu',
+            'components/sync/model/processor_entity.cc',
+            '--tu',
+            '//components/sync/model/processor_entity.cc',
+        ])
+        selected_units = compile_size_probe._SelectTranslationUnitsToMeasure(
+            parsed_arguments=parsed_arguments,
+            build_directory='/out/Default',
+            repository_root='/src',
+            before_baseline=before_baseline,
+        )
+
+        self.assertEqual(
+            ['components/sync/model/processor_entity.cc'],
+            selected_units,
+            msg=(
+                'Expected _SelectTranslationUnitsToMeasure to deduplicate '
+                'repeated --tu arguments during --compare.'),
+        )
+
+    @_SKIP_ON_WINDOWS
+    def testCommandLineSaveAndCompareProducesMachineReadableJsonDiff(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                compile_size_probe.DEFAULT_TRANSLATION_UNITS,
+            )
+            extension_set_header = os.path.join(
+                temporary_directory,
+                'third_party',
+                'protobuf',
+                'src',
+                'google',
+                'protobuf',
+                'extension_set.h',
+            )
+            btree_map_header = os.path.join(
+                temporary_directory,
+                'third_party',
+                'abseil-cpp',
+                'absl',
+                'container',
+                'btree_map.h',
+            )
+            _WriteFileWithByteSize(extension_set_header, 2000)
+            _WriteFileWithByteSize(btree_map_header, 34668)
+
+            mode_file_path = os.path.join(temporary_directory, 'mode.txt')
+            with open(mode_file_path, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('before')
+            fake_clang_path = _WriteFakeClangScript(
+                os.path.join(temporary_directory, 'fake_clang.py'),
+                mode_file_path,
+            )
+
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', io.StringIO()),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--save',
+                    'before',
+                ])
+
+            _WriteFileWithByteSize(extension_set_header, 2500)
+            with open(mode_file_path, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('after')
+
+            compare_stdout = io.StringIO()
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', compare_stdout),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--compare',
+                    'before',
+                    '--json',
+                ])
+            parsed_report = json.loads(compare_stdout.getvalue())
+
+        first_unit = parsed_report['translation_units'][0]
+        self.assertEqual(
+            [{
+                'path': 'third_party/abseil-cpp/absl/container/btree_map.h',
+                'size_bytes': 34668,
+                'include_chain': [
+                    'gen/net/cert/root_store_proto_lite/duration.pb.cc',
+                    (
+                        'third_party/protobuf/src/google/protobuf/'
+                        'extension_set.h'
+                    ),
+                    'third_party/abseil-cpp/absl/container/btree_map.h',
+                ],
+            }],
+            first_unit['added_headers'],
+            msg=(
+                'Expected --compare --json to report btree_map.h as an added '
+                'header with its include chain through extension_set.h.'),
+        )
+
+    def testMainReturnsErrorWhenComparedBaselineJsonIsMalformed(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            baseline_directory = (
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    temporary_directory))
+            os.makedirs(baseline_directory, exist_ok=True)
+            broken_path = compile_size_probe.BaselineFilePath(
+                baseline_directory, 'broken')
+            with open(broken_path, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('[]\n')
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(sys, 'platform', 'linux'),
+                mock.patch(
+                    'compile_size_probe.MeasureProbeBaseline',
+                    side_effect=AssertionError(
+                        'MeasureProbeBaseline should not run when the '
+                        'compared baseline JSON is malformed.'),
+                ),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                exit_code = compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--compare',
+                    'broken',
+                ])
+
+        self.assertEqual(
+            (1, True),
+            (
+                exit_code,
+                'Malformed baseline JSON' in captured_stderr.getvalue(),
+            ),
+            msg=(
+                'Expected main --compare to exit 1 with a Malformed baseline '
+                'JSON error on stderr instead of an uncaught TypeError.'),
         )
 
 

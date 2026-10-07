@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Measures compiler input sizes and include chains for protobuf probe targets.
+"""Measures and compares compiler input sizes and include chains for protobuf.
 
 Chromium's `compile-size` trybot measures the total byte size of every source
 file and `#include`d header compiled by a translation unit, using the metric in
@@ -12,9 +12,11 @@ widely included protobuf runtime header or a code generator expansion in
 `protoc` can add hundreds of megabytes across the build, while the bot only
 reports one aggregate delta.
 
-This standalone CLI probes three representative translation units (plus any
-extra translation units passed via `--tu`) in a single `clang++ -M -H` pass per
-file:
+When saving or measuring without a baseline, this standalone CLI probes three
+representative translation units (plus any extra translation units passed via
+`--tu`); when comparing against a saved baseline via `--compare`, it probes the
+baseline's translation units (or the subset selected via `--tu`) in a single
+`clang++ -M -H` pass per file:
 
 1. `gen/net/cert/root_store_proto_lite/duration.pb.cc`: A tiny generated
    message dominated by protobuf runtime headers, Abseil, and libc++, isolating
@@ -176,6 +178,12 @@ class ProbeBaseline:
         """Returns the sum of `total_bytes` across all translation units."""
         return sum(unit.total_bytes for unit in self.translation_units)
 
+    def ByTranslationUnit(self) -> dict[str, TranslationUnitSnapshot]:
+        """Returns snapshots indexed by `translation_unit` path."""
+        return {
+            unit.translation_unit: unit for unit in self.translation_units
+        }
+
     def ToDict(self) -> dict[str, Any]:
         """Serializes this baseline to a JSON-compatible dictionary."""
         return {
@@ -209,6 +217,99 @@ class ProbeBaseline:
                 f'Malformed baseline JSON ({error}); re-run with '
                 f'--save NAME --overwrite.') from error
         return cls(translation_units=snapshots)
+
+
+@dataclasses.dataclass(frozen=True)
+class AddedHeaderDelta:
+    """Describes a newly `#include`d header in a compared translation unit.
+
+    Attributes:
+      path: Normalized path of the newly included header.
+      size_bytes: On-disk size of the newly included header in bytes.
+      include_chain: Tuple of normalized paths from the translation unit to
+        `path` showing how the header was pulled in.
+    """
+
+    path: str
+    size_bytes: int
+    include_chain: tuple[str, ...]
+
+
+@dataclasses.dataclass(frozen=True)
+class RemovedHeaderDelta:
+    """Describes a header that is no longer `#include`d after a change.
+
+    Attributes:
+      path: Normalized path of the removed header.
+      size_bytes: Baseline byte size of the removed header.
+    """
+
+    path: str
+    size_bytes: int
+
+
+@dataclasses.dataclass(frozen=True)
+class ResizedFileDelta:
+    """Describes a header or source file whose byte size changed.
+
+    Attributes:
+      path: Normalized path of the modified header or source file.
+      before_bytes: Byte size in the saved baseline.
+      after_bytes: Byte size in the current measurement.
+      delta_bytes: Signed byte difference (`after_bytes - before_bytes`).
+    """
+
+    path: str
+    before_bytes: int
+    after_bytes: int
+    delta_bytes: int
+
+
+@dataclasses.dataclass(frozen=True)
+class TranslationUnitComparison:
+    """Holds the before/after comparison for a single translation unit.
+
+    Attributes:
+      translation_unit: Normalized path of the compared translation unit.
+      before_bytes: Total compiler input bytes in the saved baseline.
+      after_bytes: Total compiler input bytes in the current measurement.
+      delta_bytes: Signed byte difference (`after_bytes - before_bytes`).
+      added_headers: Newly included headers sorted by `size_bytes` descending.
+      removed_headers: Removed headers sorted by `size_bytes` descending.
+      resized_files: Modified files sorted by `abs(delta_bytes)` descending.
+    """
+
+    translation_unit: str
+    before_bytes: int
+    after_bytes: int
+    delta_bytes: int
+    added_headers: tuple[AddedHeaderDelta, ...]
+    removed_headers: tuple[RemovedHeaderDelta, ...]
+    resized_files: tuple[ResizedFileDelta, ...]
+
+
+@dataclasses.dataclass(frozen=True)
+class ProbeComparisonReport:
+    """Holds the comparison between a saved baseline and a fresh run.
+
+    Attributes:
+      baseline_name: Name of the saved baseline compared against.
+      before_total_bytes: Sum of `before_bytes` across compared units.
+      after_total_bytes: Sum of `after_bytes` across compared units.
+      delta_total_bytes: Signed difference (`after_total_bytes -
+        before_total_bytes`).
+      translation_units: Per-unit comparison results in probe order.
+    """
+
+    baseline_name: str
+    before_total_bytes: int
+    after_total_bytes: int
+    delta_total_bytes: int
+    translation_units: tuple[TranslationUnitComparison, ...]
+
+    def ToDict(self) -> dict[str, Any]:
+        """Serializes this comparison report to a JSON-compatible dict."""
+        return json.loads(json.dumps(dataclasses.asdict(self)))
 
 
 def UnescapeNinjaValue(raw_value: str) -> str:
@@ -951,13 +1052,216 @@ def FormatBaselineSummary(
     return '\n'.join(lines)
 
 
+def _AddedHeaderSortKey(header: AddedHeaderDelta) -> tuple[int, str]:
+    """Orders AddedHeaderDelta entries by size descending, then path."""
+    return (-header.size_bytes, header.path)
+
+
+def _RemovedHeaderSortKey(header: RemovedHeaderDelta) -> tuple[int, str]:
+    """Orders RemovedHeaderDelta entries by size descending, then path."""
+    return (-header.size_bytes, header.path)
+
+
+def _ResizedFileSortKey(resized_file: ResizedFileDelta) -> tuple[int, str]:
+    """Orders ResizedFileDelta entries by |delta_bytes| descending, path."""
+    return (-abs(resized_file.delta_bytes), resized_file.path)
+
+
+def CompareTranslationUnitSnapshots(
+        before_snapshot: TranslationUnitSnapshot,
+        after_snapshot: TranslationUnitSnapshot) -> TranslationUnitComparison:
+    """Computes added, removed, and resized files between two snapshots."""
+    before_files = before_snapshot.included_files
+    after_files = after_snapshot.included_files
+
+    added_paths = set(after_files) - set(before_files)
+    removed_paths = set(before_files) - set(after_files)
+    common_paths = set(before_files) & set(after_files)
+
+    added_headers = sorted(
+        (
+            AddedHeaderDelta(
+                path=path,
+                size_bytes=after_files[path],
+                include_chain=after_snapshot.include_chains.get(path, (path,)),
+            )
+            for path in added_paths
+        ),
+        key=_AddedHeaderSortKey,
+    )
+    removed_headers = sorted(
+        (
+            RemovedHeaderDelta(path=path, size_bytes=before_files[path])
+            for path in removed_paths
+        ),
+        key=_RemovedHeaderSortKey,
+    )
+    resized_files = sorted(
+        (
+            ResizedFileDelta(
+                path=path,
+                before_bytes=before_files[path],
+                after_bytes=after_files[path],
+                delta_bytes=after_files[path] - before_files[path],
+            )
+            for path in common_paths
+            if after_files[path] != before_files[path]
+        ),
+        key=_ResizedFileSortKey,
+    )
+
+    return TranslationUnitComparison(
+        translation_unit=after_snapshot.translation_unit,
+        before_bytes=before_snapshot.total_bytes,
+        after_bytes=after_snapshot.total_bytes,
+        delta_bytes=after_snapshot.total_bytes - before_snapshot.total_bytes,
+        added_headers=tuple(added_headers),
+        removed_headers=tuple(removed_headers),
+        resized_files=tuple(resized_files),
+    )
+
+
+def CompareProbeBaselines(
+        baseline_name: str,
+        before_baseline: ProbeBaseline,
+        after_baseline: ProbeBaseline) -> ProbeComparisonReport:
+    """Compares translation units between before and after baselines.
+
+    Args:
+      baseline_name: Name of the saved `before_baseline` being compared.
+      before_baseline: Previously saved ProbeBaseline snapshot.
+      after_baseline: Newly measured ProbeBaseline snapshot.
+
+    Returns:
+      A ProbeComparisonReport summarizing total and per-unit header changes.
+
+    Raises:
+      ValueError: If any translation unit in `after_baseline` is missing from
+        `before_baseline`.
+    """
+    before_by_unit = before_baseline.ByTranslationUnit()
+    comparisons: list[TranslationUnitComparison] = []
+
+    for after_snapshot in after_baseline.translation_units:
+        translation_unit = after_snapshot.translation_unit
+        before_snapshot = before_by_unit.get(translation_unit)
+        if before_snapshot is None:
+            raise ValueError(
+                f'Translation unit "{translation_unit}" is not present in '
+                f'baseline "{baseline_name}".')
+        comparisons.append(
+            CompareTranslationUnitSnapshots(before_snapshot, after_snapshot))
+
+    before_total = sum(
+        comparison.before_bytes for comparison in comparisons)
+    after_total = sum(
+        comparison.after_bytes for comparison in comparisons)
+    return ProbeComparisonReport(
+        baseline_name=baseline_name,
+        before_total_bytes=before_total,
+        after_total_bytes=after_total,
+        delta_total_bytes=after_total - before_total,
+        translation_units=tuple(comparisons),
+    )
+
+
+def _FormatAddedHeadersLines(
+        added_headers: Sequence[AddedHeaderDelta]) -> list[str]:
+    """Formats the added-headers list and their `#include` chains."""
+    if not added_headers:
+        return []
+    lines = [f'  Added headers ({len(added_headers)}):']
+    for header in added_headers:
+        lines.append(
+            f'    +{header.size_bytes:,} B  {header.path}')
+        if len(header.include_chain) > 1:
+            chain_text = ' -> '.join(header.include_chain)
+            lines.append(f'      via: {chain_text}')
+    return lines
+
+
+def _FormatRemovedHeadersLines(
+        removed_headers: Sequence[RemovedHeaderDelta]) -> list[str]:
+    """Formats the removed-headers list."""
+    if not removed_headers:
+        return []
+    lines = [f'  Removed headers ({len(removed_headers)}):']
+    for header in removed_headers:
+        lines.append(f'    -{header.size_bytes:,} B  {header.path}')
+    return lines
+
+
+def _FormatResizedFilesLines(
+        resized_files: Sequence[ResizedFileDelta]) -> list[str]:
+    """Formats the resized-files list."""
+    if not resized_files:
+        return []
+    lines = [f'  Resized files ({len(resized_files)}):']
+    for resized_file in resized_files:
+        sign = '+' if resized_file.delta_bytes > 0 else ''
+        lines.append(
+            f'    {sign}{resized_file.delta_bytes:,} B  {resized_file.path} '
+            f'({resized_file.before_bytes:,} B -> '
+            f'{resized_file.after_bytes:,} B)')
+    return lines
+
+
+def _FormatTranslationUnitComparisonSection(
+        comparison: TranslationUnitComparison) -> list[str]:
+    """Formats the human-readable section for a single translation unit."""
+    percentage = (
+        (comparison.delta_bytes / comparison.before_bytes) * 100.0
+        if comparison.before_bytes
+        else 0.0
+    )
+    sign = '+' if percentage > 0 else ''
+    formatted_delta = FormatHumanByteSize(
+        comparison.delta_bytes, should_include_sign=True)
+    header_line = (
+        f'=== {comparison.translation_unit}: '
+        f'{formatted_delta} '
+        f'({sign}{percentage:.2f}%, '
+        f'{comparison.before_bytes:,} B -> {comparison.after_bytes:,} B) ==='
+    )
+    lines = [header_line]
+    if (not comparison.added_headers
+            and not comparison.removed_headers
+            and not comparison.resized_files):
+        lines.append('  No header changes.')
+        return lines
+
+    lines.extend(_FormatAddedHeadersLines(comparison.added_headers))
+    lines.extend(_FormatRemovedHeadersLines(comparison.removed_headers))
+    lines.extend(_FormatResizedFilesLines(comparison.resized_files))
+    return lines
+
+
+def FormatComparisonReport(report: ProbeComparisonReport) -> str:
+    """Formats a human-readable comparison report across translation units."""
+    unit_count = len(report.translation_units)
+    unit_label = 'translation unit' if unit_count == 1 else 'translation units'
+    formatted_total_delta = FormatHumanByteSize(
+        report.delta_total_bytes, should_include_sign=True)
+    lines = [
+        f'Compile-size comparison against baseline "{report.baseline_name}":',
+        f'Total across {unit_count} {unit_label}: '
+        f'{FormatHumanByteSize(report.before_total_bytes)} -> '
+        f'{FormatHumanByteSize(report.after_total_bytes)} '
+        f'({formatted_total_delta})',
+    ]
+    for comparison in report.translation_units:
+        lines.append('')
+        lines.extend(_FormatTranslationUnitComparisonSection(comparison))
+    return '\n'.join(lines)
+
+
 def _ParseCommandLineArguments(
         command_line_arguments: Sequence[str] | None) -> argparse.Namespace:
     """Parses command-line arguments for `compile_size_probe.py`."""
     parser = argparse.ArgumentParser(
         description=(
-            'Measures compiler input sizes and #include chains for '
-            'representative //third_party/protobuf translation units.'))
+            'Measures and compares compiler input sizes and #include chains '
+            'for representative //third_party/protobuf translation units.'))
     parser.add_argument(
         '-C',
         dest='build_directory',
@@ -965,13 +1269,20 @@ def _ParseCommandLineArguments(
         metavar='OUT_DIR',
         help='Ninja build directory (for example, out/Default).',
     )
-    parser.add_argument(
+    action_group = parser.add_mutually_exclusive_group()
+    action_group.add_argument(
         '--save',
         dest='save_name',
         metavar='NAME',
         help=(
             'Save the measured baseline under '
             '<OUT_DIR>/.compile_size_probe/<NAME>.json.'),
+    )
+    action_group.add_argument(
+        '--compare',
+        dest='compare_name',
+        metavar='NAME',
+        help='Compare current compiler inputs against saved baseline <NAME>.',
     )
     parser.add_argument(
         '--overwrite',
@@ -986,10 +1297,10 @@ def _ParseCommandLineArguments(
         default=[],
         metavar='PATH',
         help=(
-            'Additional translation unit path to measure (repeatable, added '
-            'to the 3 default representative translation units; gen/... '
-            'resolves under OUT_DIR and other relative paths resolve against '
-            'the Chromium src/ root).'),
+            'Additional translation unit path to append to the defaults with '
+            '--save, or subset filter over saved baseline units when passed '
+            'to --compare (repeatable; gen/... resolves under OUT_DIR and '
+            'other relative paths resolve against the Chromium src/ root).'),
     )
     parser.add_argument(
         '--json',
@@ -1015,21 +1326,54 @@ def _ResolveDefaultClangBinary(repository_root: str) -> str:
 def _SelectTranslationUnitsToMeasure(
         parsed_arguments: argparse.Namespace,
         build_directory: str,
-        repository_root: str) -> list[str]:
-    """Determines the ordered list of normalized translation units to probe."""
+        repository_root: str,
+        before_baseline: ProbeBaseline | None) -> list[str]:
+    """Determines the ordered list of normalized translation units to probe.
+
+    When `before_baseline` is None (`--save` or standalone run), appends any
+    `--tu` paths to `DEFAULT_TRANSLATION_UNITS`. When `before_baseline` is
+    provided (`--compare`), probes all translation units in `before_baseline`
+    unless `--tu` filters to a validated subset of those baseline units.
+    """
     normalized_extras = [
         NormalizeTranslationUnitPath(
             raw_path, build_directory, repository_root)
         for raw_path in parsed_arguments.extra_translation_units
     ]
+    if before_baseline is not None:
+        baseline_units = [
+            unit.translation_unit
+            for unit in before_baseline.translation_units
+        ]
+        units_missing_from_baseline = [
+            unit for unit in normalized_extras if unit not in baseline_units
+        ]
+        if units_missing_from_baseline:
+            raise ValueError(
+                'Translation unit(s) not present in the saved baseline: '
+                f'{", ".join(units_missing_from_baseline)}. Re-run --save '
+                'with --tu to include them in the baseline.')
+        if not normalized_extras:
+            return baseline_units
+        return MergeTranslationUnits((), normalized_extras)
     return MergeTranslationUnits(DEFAULT_TRANSLATION_UNITS, normalized_extras)
 
 
-def _EmitBaselineOutput(
+def _EmitProbeOutput(
         baseline: ProbeBaseline,
         saved_path: str | None,
+        comparison_report: ProbeComparisonReport | None,
         should_output_json: bool) -> None:
-    """Prints either JSON or human-readable output for `baseline`."""
+    """Prints either JSON or human-readable output for the probe run."""
+    if comparison_report is not None:
+        if should_output_json:
+            print(
+                json.dumps(
+                    comparison_report.ToDict(), indent=2, sort_keys=True))
+        else:
+            print(FormatComparisonReport(comparison_report))
+        return
+
     if should_output_json:
         payload = baseline.ToDict()
         if saved_path is not None:
@@ -1066,9 +1410,14 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
                 should_overwrite=parsed_arguments.should_overwrite,
             )
 
+        before_baseline: ProbeBaseline | None = None
+        if parsed_arguments.compare_name is not None:
+            before_baseline = LoadProbeBaseline(
+                baseline_directory, parsed_arguments.compare_name)
+
         translation_units = _SelectTranslationUnitsToMeasure(
-            parsed_arguments, build_directory, repository_root)
-        baseline = MeasureProbeBaseline(
+            parsed_arguments, build_directory, repository_root, before_baseline)
+        current_baseline = MeasureProbeBaseline(
             build_directory=build_directory,
             repository_root=repository_root,
             translation_units=translation_units,
@@ -1079,10 +1428,18 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         saved_path: str | None = None
         if parsed_arguments.save_name is not None:
             saved_path = SaveProbeBaseline(
-                baseline=baseline,
+                baseline=current_baseline,
                 baseline_directory=baseline_directory,
                 baseline_name=parsed_arguments.save_name,
                 should_overwrite=parsed_arguments.should_overwrite,
+            )
+
+        comparison_report: ProbeComparisonReport | None = None
+        if before_baseline is not None:
+            comparison_report = CompareProbeBaselines(
+                baseline_name=parsed_arguments.compare_name,
+                before_baseline=before_baseline,
+                after_baseline=current_baseline,
             )
     except (
             FileNotFoundError,
@@ -1095,9 +1452,10 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         print(f'Error: {error}', file=sys.stderr)
         return 1
 
-    _EmitBaselineOutput(
-        baseline=baseline,
+    _EmitProbeOutput(
+        baseline=current_baseline,
         saved_path=saved_path,
+        comparison_report=comparison_report,
         should_output_json=parsed_arguments.should_output_json,
     )
     return 0
