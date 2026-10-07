@@ -323,7 +323,7 @@ void CVDisplayLinkMac::RunCallbacks(const VSyncParamsMac& params) {
   // Make a local copy first because DisplayLink can be destroyed during the
   // callback.
   auto local_callbacks = callbacks_;
-  for (auto* callback : local_callbacks) {
+  for (VSyncCallbackMac* callback : local_callbacks) {
     callback->callback_for_displaylink_thread_.Run(params);
   }
 }
