@@ -44,8 +44,9 @@ bool IsComponentSupported() {
 }
 
 bool IsOnDemandUpdateSupported() {
-  // `switches::kDisableComponentUpdate` is set by default in
-  // browsertests.
+  // With `switches::kDisableComponentUpdate`, set by default in browser tests,
+  // the component updater refuses on-demand updates. Don't queue one, as
+  // IwaKeyDistributionInfoProvider would otherwise wait for it to time out.
   return IsComponentSupported() &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableComponentUpdate) &&

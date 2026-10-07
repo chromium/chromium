@@ -18,7 +18,6 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
-#include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -48,8 +47,7 @@ void ReadAnythingService::OnReadAnythingShown() {
 void ReadAnythingService::SetupDesktopEngine() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(::switches::kTestType) ||
-      command_line->HasSwitch(switches::kDisableComponentUpdate)) {
+  if (command_line->HasSwitch(::switches::kTestType)) {
     return;
   }
 

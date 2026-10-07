@@ -489,6 +489,14 @@ TEST_F(ComponentUpdaterTest, UpdateChecksDisabled) {
                      future.GetCallback());
   EXPECT_EQ(future.Get(), update_client::Error::UPDATE_DISABLED);
 
+  // Also for components that are not registered, which is the case for the
+  // components normally registered by RegisterComponentsForUpdate().
+  base::test::TestFuture<update_client::Error> unregistered_future;
+  cus.OnDemandUpdate("ihfokbkgjpifnbbojhneepfflplebdkc",
+                     OnDemandUpdater::Priority::FOREGROUND,
+                     unregistered_future.GetCallback());
+  EXPECT_EQ(unregistered_future.Get(), update_client::Error::UPDATE_DISABLED);
+
   // Throttled requests are unblocked right away instead of waiting on an
   // update.
   bool unblocked = false;

@@ -393,20 +393,22 @@ void CrxUpdateService::OnDemandUpdate(const std::string& id,
                                       Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!GetComponent(id)) {
-    if (!callback.is_null()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback),
-                                    update_client::Error::INVALID_ARGUMENT));
-    }
-    return;
-  }
-
+  // Checked before the registration, so that callers get the same answer for
+  // components that are not registered when update checks are disabled.
   if (update_checks_disabled_) {
     if (!callback.is_null()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     update_client::Error::UPDATE_DISABLED));
+    }
+    return;
+  }
+
+  if (!GetComponent(id)) {
+    if (!callback.is_null()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    update_client::Error::INVALID_ARGUMENT));
     }
     return;
   }
