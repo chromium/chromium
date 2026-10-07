@@ -1477,8 +1477,6 @@ source_set("tab_helpers_impl") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/plugins",
       "//chrome/browser/ui/android:context_menu_helper",
-      "//components/sensitive_content",
-      "//components/sensitive_content:features",
       "//content/public/common",
     ]
   } else {

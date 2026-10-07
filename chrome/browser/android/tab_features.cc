@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/android_info.h"
 #include "base/check_is_test.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -126,6 +127,8 @@
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/security_interstitials/core/features.h"
+#include "components/sensitive_content/android/android_sensitive_content_client.h"
+#include "components/sensitive_content/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -583,6 +586,16 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   // Initialize printing helpers for the tab.
   printing::InitializePrintingForWebContents(web_contents);
 #endif
+
+  if (autofill::ContentAutofillClient::FromWebContents(web_contents) &&
+      base::android::android_info::sdk_int() >=
+          base::android::android_info::SdkVersion::SDK_VERSION_V &&
+      base::FeatureList::IsEnabled(
+          sensitive_content::features::kSensitiveContent)) {
+    // Attach AndroidSensitiveContentClient on Android V+.
+    sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(
+        web_contents, "SensitiveContent.Chrome.");
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

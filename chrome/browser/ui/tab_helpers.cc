@@ -101,7 +101,6 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_info.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/tab_android.h"
@@ -109,8 +108,6 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
-#include "components/sensitive_content/android/android_sensitive_content_client.h"
-#include "components/sensitive_content/features.h"
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
@@ -197,20 +194,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     autofill_client_provider.CreateClientForWebContents(web_contents);
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // The sensitive content client has to be instantiated after the autofill
-  // client, because the sensitive content client starts a flow which uses
-  // `ScopedAutofillManagersObservation` and expects `ContentAutofillClient`
-  // to exist, which is gated by enable_browser_autofill.
-  if (enable_browser_autofill &&
-      base::android::android_info::sdk_int() >=
-          base::android::android_info::SdkVersion::SDK_VERSION_V &&
-      base::FeatureList::IsEnabled(
-          sensitive_content::features::kSensitiveContent)) {
-    sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(
-        web_contents, "SensitiveContent.Chrome.");
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }

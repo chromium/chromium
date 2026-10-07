@@ -240,6 +240,8 @@ source_set("tabs_impl") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
     "//components/search",
+    "//components/sensitive_content",
+    "//components/sensitive_content:features",
     "//components/tabs:public",
     "//components/webapps/browser",
     "//content/public/browser",
