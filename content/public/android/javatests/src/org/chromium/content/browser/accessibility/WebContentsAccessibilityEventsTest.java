@@ -261,19 +261,22 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_addDialog() {
-        performTest("add-dialog.html", "add-dialog-expected-android.txt");
+        performTest("add-dialog.html", "add-dialog-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_addDialog_describedBy() {
-        performTest("add-dialog-described-by.html", "add-dialog-described-by-expected-android.txt");
+        performTest("add-dialog-described-by.html", "add-dialog-described-by-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_addDialog_noInfo() {
-        performTest("add-dialog-no-info.html", "add-dialog-no-info-expected-android.txt");
+        performTest("add-dialog-no-info.html", "add-dialog-no-info-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -503,7 +506,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaHiddenSingleDescendantVisibilityHidden() {
         performTest(
                 "aria-hidden-single-descendant-visibility-hidden.html",
-                "aria-hidden-single-descendant-visibility-hidden-expected-android.txt");
+                "aria-hidden-single-descendant-visibility-hidden-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -921,25 +925,29 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_cssDisplayDescendants() {
-        performTest("css-display-descendants.html", "css-display-descendants-expected-android.txt");
+        performTest("css-display-descendants.html", "css-display-descendants-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_cssDisplay() {
-        performTest("css-display.html", "css-display-expected-android.txt");
+        performTest("css-display.html", "css-display-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_cssFlexTextUpdate() {
-        performTest("css-flex-text-update.html", "css-flex-text-update-expected-android.txt");
+        performTest("css-flex-text-update.html", "css-flex-text-update-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_cssVisibilityCollapse() {
-        performTest("css-visibility-collapse.html", "css-visibility-collapse-expected-android.txt");
+        performTest("css-visibility-collapse.html", "css-visibility-collapse-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -947,13 +955,15 @@ public class WebContentsAccessibilityEventsTest {
     public void test_cssVisibilityDescendants() {
         performTest(
                 "css-visibility-descendants.html",
-                "css-visibility-descendants-expected-android.txt");
+                "css-visibility-descendants-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_cssVisibility() {
-        performTest("css-visibility.html", "css-visibility-expected-android.txt");
+        performTest("css-visibility.html", "css-visibility-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1032,7 +1042,8 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_documentTitleChanged() {
-        performTest("document-title-change.html", "document-title-change-expected-android.txt");
+        performTest("document-title-change.html", "document-title-change-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1167,7 +1178,8 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_inputComboboxDialog() {
-        performTest("input-combobox-dialog.html", "input-combobox-dialog-expected-android.txt");
+        performTest("input-combobox-dialog.html", "input-combobox-dialog-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1441,7 +1453,7 @@ public class WebContentsAccessibilityEventsTest {
         performTestWithServer(
                 "navigation-api.html",
                 "navigation-api-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ true);
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1557,7 +1569,8 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_samePageLinkNavigation() {
         performTest(
-                "same-page-link-navigation.html", "same-page-link-navigation-expected-android.txt");
+                "same-page-link-navigation.html", "same-page-link-navigation-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1565,7 +1578,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_scrollHorizontalScrollPercentChanged() {
         performTest(
                 "scroll-horizontal-scroll-percent-change.html",
-                "scroll-horizontal-scroll-percent-change-expected-android.txt");
+                "scroll-horizontal-scroll-percent-change-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1573,7 +1587,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_scrollVerticalScrollPercentChanged() {
         performTest(
                 "scroll-vertical-scroll-percent-change.html",
-                "scroll-vertical-scroll-percent-change-expected-android.txt");
+                "scroll-vertical-scroll-percent-change-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1623,7 +1638,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_tabIndexAddedOnAriaHidden() {
         performTest(
                 "tabindex-added-on-aria-hidden.html",
-                "tabindex-added-on-aria-hidden-expected-android.txt");
+                "tabindex-added-on-aria-hidden-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1631,7 +1647,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_tabIndexAddedOnPlainDiv() {
         performTest(
                 "tabindex-added-on-plain-div.html",
-                "tabindex-added-on-plain-div-expected-android.txt");
+                "tabindex-added-on-plain-div-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1639,7 +1656,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_tabIndexRemoveOnAriaHidden() {
         performTest(
                 "tabindex-removed-on-aria-hidden.html",
-                "tabindex-removed-on-aria-hidden-expected-android.txt");
+                "tabindex-removed-on-aria-hidden-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1647,7 +1665,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_tabIndexRemovedOnPlainDiv() {
         performTest(
                 "tabindex-removed-on-plain-div.html",
-                "tabindex-removed-on-plain-div-expected-android.txt");
+                "tabindex-removed-on-plain-div-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1762,7 +1781,8 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_visibilityHiddenChanged() {
         performTest(
-                "visibility-hidden-changed.html", "visibility-hidden-changed-expected-android.txt");
+                "visibility-hidden-changed.html", "visibility-hidden-changed-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
