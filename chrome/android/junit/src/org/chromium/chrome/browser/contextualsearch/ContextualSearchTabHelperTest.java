@@ -25,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -133,5 +135,17 @@ public class ContextualSearchTabHelperTest {
         // Trigger JNI setup on the new WebContents
         mHelper.onContentChanged(mTab);
         verify(mTabHelperJniMock, times(1)).init(mProfile);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testOnContentChanged_defersNativeAndTemplateUrlInit() {
+        mHelper = ContextualSearchTabHelper.from(mTab);
+        assertNotNull(mHelper);
+
+        mHelper.onContentChanged(mTab);
+
+        verify(mTabHelperJniMock, never()).init(any());
+        verify(mTemplateUrlService, never()).addObserver(any());
     }
 }

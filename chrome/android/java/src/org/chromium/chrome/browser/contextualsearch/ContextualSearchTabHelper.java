@@ -194,18 +194,8 @@ public class ContextualSearchTabHelper
 
     @Override
     public void onContentChanged(Tab tab) {
-        // Native initialization happens after a page loads or content is changed to ensure profile
-        // is initialized.
-        Profile profile = tab.getProfile();
-        if (mNativeHelper == 0 && tab.getWebContents() != null) {
-            mNativeHelper = ContextualSearchTabHelperJni.get().init(profile);
-            assert sNativeHelperMap.get(mNativeHelper) == null;
-            sNativeHelperMap.put(mNativeHelper, this);
-        }
-        if (profile != null && mTemplateUrlService == null) {
-            mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
-            mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
-            if (mTemplateUrlService.isLoaded()) onTemplateURLServiceChanged();
+        if (!ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {
+            ensureNativeAndTemplateUrlServiceInitialized(tab);
         }
         updateHooksForTab(tab);
     }
@@ -302,9 +292,33 @@ public class ContextualSearchTabHelper
     // Private helpers.
     // ============================================================================================
 
+    private void ensureNativeAndTemplateUrlServiceInitialized(Tab tab) {
+        // Native initialization happens after a page loads or content is changed to ensure profile
+        // is initialized.
+        Profile profile = tab.getProfile();
+        if (mNativeHelper == 0 && tab.getWebContents() != null) {
+            mNativeHelper = ContextualSearchTabHelperJni.get().init(profile);
+            assert sNativeHelperMap.get(mNativeHelper) == null;
+            sNativeHelperMap.put(mNativeHelper, this);
+        }
+        if (mTemplateUrlService == null) {
+            mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
+            mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
+            if (mTemplateUrlService.isLoaded()) {
+                if (ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {
+                    mIsDefaultSearchEngineGoogle =
+                            mTemplateUrlService.isDefaultSearchEngineGoogle();
+                } else {
+                    onTemplateURLServiceChanged();
+                }
+            }
+        }
+    }
+
     /**
      * Should be called whenever the Tab's WebContents may have changed. Removes hooks from the
      * existing WebContents, if necessary, and then adds hooks for the new WebContents.
+     *
      * @param tab The current tab.
      */
     private void updateHooksForTab(Tab tab) {
@@ -312,6 +326,10 @@ public class ContextualSearchTabHelper
         boolean webContentsChanged = currentWebContents != mWebContents;
         if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {
             mContextualSearchManager = getContextualSearchManager(tab);
+            if (ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()
+                    && mContextualSearchManager != null) {
+                ensureNativeAndTemplateUrlServiceInitialized(tab);
+            }
             if (webContentsChanged) {
                 // Ensure the hooks are cleared on the old web contents before proceeding. All of
                 // the objects associated with the web content need to be recreated in order for
