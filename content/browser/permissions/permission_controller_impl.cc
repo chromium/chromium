@@ -410,12 +410,9 @@ PermissionControllerImpl::GetSubscriptionsStatuses(
 
 void PermissionControllerImpl::NotifyChangedSubscriptions(
     const SubscriptionsStatusMap& old_statuses) {
-  // A callback may unsubscribe another subscription of this batch, so each
-  // callback is paired with a weak pointer to its subscription and is skipped
-  // if that subscription is gone by the time it would run.
-  std::vector<
-      std::pair<base::WeakPtr<PermissionResultSubscription>, base::OnceClosure>>
-      callbacks;
+  // Callbacks are collected first and run only after the loop below, to prevent
+  // re-entrance issues.
+  std::vector<base::OnceClosure> callbacks;
   for (const auto& it : old_statuses) {
     auto key = it.first;
     PermissionResultSubscription* subscription = subscriptions_.Lookup(key);
@@ -428,15 +425,11 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
       // This is a private method that is called internally if a permission
       // status was set by DevTools. Suppress permission status override
       // verification and always notify listeners.
-      callbacks.emplace_back(subscription->GetWeakPtr(),
-                             base::BindOnce(subscription->callback, new_result,
-                                            /*ignore_status_override=*/true));
+      callbacks.push_back(base::BindOnce(subscription->callback, new_result,
+                                         /*ignore_status_override=*/true));
     }
   }
-  for (auto& [subscription, callback] : callbacks) {
-    if (!subscription) {
-      continue;
-    }
+  for (auto& callback : callbacks) {
     std::move(callback).Run();
   }
 }
@@ -837,6 +830,13 @@ void PermissionControllerImpl::PermissionResultChange(
     SubscriptionId subscription_id,
     PermissionResult result,
     bool ignore_status_override) {
+  PermissionResultSubscription* subscription =
+      subscriptions_.Lookup(subscription_id);
+  // The subscription may have been unsubscribed concurrently (e.g. by another
+  // callback in the same batch).
+  if (!subscription) {
+    return;
+  }
   // Check if the permission status override should be ignored. The verification
   // is suppressed if a permission status change was initiated by DevTools. In
   // all other cases permission status override is always checked.
@@ -844,11 +844,6 @@ void PermissionControllerImpl::PermissionResultChange(
     callback.Run(result);
     return;
   }
-  PermissionResultSubscription* subscription =
-      subscriptions_.Lookup(subscription_id);
-  // Callers must not deliver a change for a subscription that was already
-  // removed.
-  CHECK(subscription);
   std::optional<PermissionResult> permission_result = permission_overrides_.Get(
       url::Origin::Create(subscription->requesting_origin),
       url::Origin::Create(subscription->embedding_origin),

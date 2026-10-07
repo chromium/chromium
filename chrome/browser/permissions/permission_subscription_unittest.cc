@@ -665,6 +665,64 @@ TEST_F(PermissionSubscriptionTest, UnsubscribingPeerFromCallbackDoesNotCrash) {
   EXPECT_EQ(1, first_count + second_count);
 }
 
+// Regression test for crbug.com/40056329: when an IDMap iterator is active
+// (e.g. during re-entrant permission changes or status queries), IDMap defers
+// destroying entries for removed subscriptions until iteration finishes.
+// The subscription has been removed from the map and its queued callback must
+// not be dispatched.
+TEST_F(PermissionSubscriptionTest,
+       UnsubscribingPeerWithActiveIteratorDoesNotCrash) {
+  content::PermissionController* controller = GetPermissionController();
+
+  std::unique_ptr<content::PermissionController::PermissionSubscription>
+      first_subscription;
+  std::unique_ptr<content::PermissionController::PermissionSubscription>
+      second_subscription;
+  int first_count = 0;
+  int second_count = 0;
+
+  // Both callbacks unsubscribe the other one. Whichever runs first therefore
+  // always removes the subscription whose callback is still queued, which makes
+  // the test independent of the unspecified subscription iteration order.
+  first_subscription = content::SubscribeToPermissionResultChange(
+      controller,
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              PermissionType::NOTIFICATIONS),
+      /*render_process_host=*/nullptr, main_rfh(), url(),
+      /*should_include_device_status=*/false,
+      base::BindLambdaForTesting([&](content::PermissionResult) {
+        ++first_count;
+        second_subscription.reset();
+      }));
+
+  second_subscription = content::SubscribeToPermissionResultChange(
+      controller,
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              PermissionType::NOTIFICATIONS),
+      /*render_process_host=*/nullptr, main_rfh(), url(),
+      /*should_include_device_status=*/false,
+      base::BindLambdaForTesting([&](content::PermissionResult) {
+        ++second_count;
+        first_subscription.reset();
+      }));
+
+  {
+    // Simulate an active iterator on the subscriptions map (e.g. from an outer
+    // caller or re-entrant notification) so that IDMap::Remove() defers
+    // erasing entries and keeps their WeakPtr valid.
+    content::PermissionController::SubscriptionsMap::iterator active_iter(
+        GetPermissionManager()->subscriptions());
+
+    SetPermission(PermissionType::NOTIFICATIONS, PermissionStatus::GRANTED);
+
+    // Exactly one of the two callbacks runs; the other subscription is removed
+    // before its queued callback is dispatched.
+    EXPECT_EQ(1, first_count + second_count);
+  }
+}
+
 TEST_P(PermissionSubscriptionGeolocationTest,
        SubscribersAreNotifedOfEmbargoEvents) {
   NavigateAndCommit(url());

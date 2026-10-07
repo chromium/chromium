@@ -678,12 +678,9 @@ void PermissionManager::OnPermissionChanged(
 
   // Callbacks are collected first and run only after both loops below, to
   // prevent re-entrance issues. A callback may unsubscribe another
-  // subscription, so each callback is paired with a weak pointer to its
-  // subscription and is skipped if that subscription is gone by the time it
-  // would run.
-  std::vector<std::pair<base::WeakPtr<content::PermissionResultSubscription>,
-                        base::OnceClosure>>
-      permission_callbacks;
+  // subscription; PermissionResultChange checks that the subscription is still
+  // present in the map before running each permission callback.
+  std::vector<base::OnceClosure> permission_callbacks;
   std::vector<std::pair<base::WeakPtr<ContentSettingsTypeSubscription>,
                         base::OnceClosure>>
       content_settings_callbacks;
@@ -748,8 +745,7 @@ void PermissionManager::OnPermissionChanged(
 
       subscription->permission_result = new_result;
 
-      permission_callbacks.emplace_back(
-          subscription->GetWeakPtr(),
+      permission_callbacks.push_back(
           base::BindOnce(subscription->callback, new_result,
                          /*ignore_status_override=*/false));
     }
@@ -804,10 +800,7 @@ void PermissionManager::OnPermissionChanged(
         base::BindOnce(subscription->callback, new_setting));
   }
 
-  for (auto& [subscription, callback] : permission_callbacks) {
-    if (!subscription) {
-      continue;
-    }
+  for (auto& callback : permission_callbacks) {
     std::move(callback).Run();
   }
   for (auto& [subscription, callback] : content_settings_callbacks) {
