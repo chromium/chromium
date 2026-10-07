@@ -28,7 +28,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
    public:
     virtual void OnAskGemini() = 0;
     virtual void OnCopy() = 0;
-    virtual void OnCopyLink() = 0;
     virtual void OnHide() = 0;
     virtual void OnSettings() = 0;
     virtual void OnWidgetClose() = 0;
@@ -57,8 +56,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
 
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
-
-  void UpdateCopyLinkButton(bool enabled);
 
  private:
   friend class GlicSelectionWidgetTest;

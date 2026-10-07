@@ -164,14 +164,6 @@ void GlicSelectionWidgetController::OnCopy() {
   web_contents()->Copy();
 }
 
-void GlicSelectionWidgetController::OnCopyLink() {
-  Dismiss(DismissReason::kActionTaken);
-  if (content::RenderFrameHost* selected_frame =
-          delegate_->GetSelectedFrame()) {
-    delegate_->CopyLinkToHighlight(selected_frame->GetWeakDocumentPtr());
-  }
-}
-
 void GlicSelectionWidgetController::OnHide() {
   is_hidden_on_current_page_ = true;
 
@@ -279,17 +271,9 @@ GlicSelectionWidgetController::ShowResult GlicSelectionWidgetController::Show(
   return ShowResult::kNoBounds;
 }
 
-bool GlicSelectionWidgetController::Close() {
-  if (!widget_delegate_) {
-    return false;
-  }
-  widget_delegate_->CloseWidget();
-  return true;
-}
-
-void GlicSelectionWidgetController::UpdateCopyLinkButton(bool enabled) {
+void GlicSelectionWidgetController::Close() {
   if (widget_delegate_) {
-    widget_delegate_->UpdateCopyLinkButton(enabled);
+    widget_delegate_->CloseWidget();
   }
 }
 

@@ -20,12 +20,8 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -83,7 +79,6 @@ class GlicSelectionObserver
   content::RenderFrameHost* GetSelectedFrame() const override;
   std::optional<gfx::Rect> GetCurrentSelectionBounds() const override;
   const std::u16string& GetSelectedText() const override;
-  void CopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr) override;
 
   // Notifies the observer that text selection context was sent to the Glic
   // panel from the context menu entry point.
@@ -163,16 +158,6 @@ class GlicSelectionObserver
 
   void OnGlobalPanelShowHide();
 
-  void WriteLinkToClipboard(content::WeakDocumentPtr weak_document_ptr,
-                            const GURL& url);
-
-  void OnLinkGenerated(
-      const GURL& fallback_url,
-      const std::string& selector,
-      shared_highlighting::LinkGenerationError error,
-      shared_highlighting::LinkGenerationReadyStatus ready_status);
-
-  void RequestLinkGeneration(content::RenderFrameHost* rfh);
   void CreatePageContextEligibilityAPI(std::string account);
   void OnPageContextEligibilityAPILoaded(
       std::string account,
@@ -207,8 +192,6 @@ class GlicSelectionObserver
   std::unique_ptr<ShakeTrigger> shake_trigger_;
 
   std::unique_ptr<GlicSelectionWidgetController> widget_controller_;
-  mojo::Remote<blink::mojom::TextFragmentReceiver> text_fragment_remote_;
-  std::optional<GURL> generated_link_;
 
   base::CallbackListSubscription page_context_eligibility_subscription_;
   std::unique_ptr<::optimization_guide::PageContextEligibilityObserver>

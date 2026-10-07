@@ -7,10 +7,8 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -30,19 +28,13 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/prefs/pref_service.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_buffer.h"
-#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace glic {
@@ -267,22 +259,6 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
       test_eligibility_holder_;
 
   TestGlicSelectionObserver* GetObserver() { return observer_.get(); }
-
-  void CallOnLinkGenerated(
-      const GURL& fallback_url,
-      const std::string& selector,
-      shared_highlighting::LinkGenerationError error,
-      shared_highlighting::LinkGenerationReadyStatus ready_status) {
-    observer_->OnLinkGenerated(fallback_url, selector, error, ready_status);
-  }
-
-  void CallCopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr) {
-    observer_->CopyLinkToHighlight(weak_document_ptr);
-  }
-
-  std::optional<GURL> GetGeneratedLink() const {
-    return observer_->generated_link_;
-  }
 
   content::RenderWidgetHost* GetRenderWidgetHost() {
     return web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
@@ -693,59 +669,6 @@ TEST_F(GlicSelectionObserverTest, PrimaryMainFrameResizedDismissesUI) {
   EXPECT_TRUE(observer->dismiss_ui_called());
   EXPECT_EQ(observer->dismiss_ui_reason(),
             GlicSelectionObserver::DismissReason::kExternal);
-}
-
-TEST_F(GlicSelectionObserverTest, OnLinkGeneratedSuccess) {
-  GURL fallback_url("https://example.com");
-  std::string selector = "test-selector";
-
-  CallOnLinkGenerated(
-      fallback_url, selector, shared_highlighting::LinkGenerationError::kNone,
-      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
-
-  EXPECT_TRUE(GetGeneratedLink().has_value());
-  EXPECT_EQ(GetGeneratedLink().value().spec(),
-            "https://example.com/#:~:text=test-selector");
-}
-
-TEST_F(GlicSelectionObserverTest, OnLinkGeneratedEmptySelector) {
-  GURL fallback_url("https://example.com");
-  std::string selector = "";
-
-  CallOnLinkGenerated(
-      fallback_url, selector,
-      shared_highlighting::LinkGenerationError::kEmptySelection,
-      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
-
-  EXPECT_FALSE(GetGeneratedLink().has_value());
-}
-
-TEST_F(GlicSelectionObserverTest, CopyLinkToHighlight) {
-  ui::TestClipboard* clipboard = ui::TestClipboard::CreateForCurrentThread();
-
-  NavigateAndCommit(GURL("https://example.com"));
-
-  GURL fallback_url("https://example.com");
-  std::string selector = "test-selector";
-
-  CallOnLinkGenerated(
-      fallback_url, selector, shared_highlighting::LinkGenerationError::kNone,
-      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
-
-  // Trigger copy to clipboard.
-  CallCopyLinkToHighlight(
-      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
-
-  // Allow clipboard async operations to complete and verify the contents.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    base::test::TestFuture<std::u16string> future;
-    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, std::nullopt,
-                        future.GetCallback());
-    return base::UTF16ToUTF8(future.Get()) ==
-           "https://example.com/#:~:text=test-selector";
-  }));
-
-  ui::Clipboard::DestroyClipboardForCurrentThread();
 }
 
 TEST_F(GlicSelectionObserverTest, SelectionShowOnlyAfterMouseUp) {

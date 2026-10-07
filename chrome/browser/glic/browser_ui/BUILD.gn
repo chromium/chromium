@@ -116,7 +116,6 @@ source_set("impl") {
       "//components/constrained_window",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
-      "//components/omnibox/browser:vector_icons",
       "//components/prefs",
       "//components/signin/public/identity_manager",
       "//components/tabs:public",

@@ -884,7 +884,6 @@ source_set("unit_tests") {
     "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base/clipboard:clipboard_test_support",
   ]
   if (!is_android) {
     sources += [

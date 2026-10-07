@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "content/public/browser/weak_document_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -30,8 +29,6 @@ class GlicSelectionWidgetControllerDelegate {
   // TODO(liuwilliam): This is currently duplicated on `ShakeTriggerClient`.
   // The widget controller might be able to check it without the delegate.
   virtual bool IsSidePanelOpen() const = 0;
-  virtual void CopyLinkToHighlight(
-      content::WeakDocumentPtr weak_document_ptr) = 0;
 };
 
 }  // namespace glic

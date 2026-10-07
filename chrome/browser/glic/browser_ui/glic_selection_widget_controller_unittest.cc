@@ -33,7 +33,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/weak_document_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,8 +57,6 @@ class TestGlicSelectionWidgetControllerDelegate
     return selected_text_;
   }
   bool IsSidePanelOpen() const override { return side_panel_open_; }
-  void CopyLinkToHighlight(
-      content::WeakDocumentPtr weak_document_ptr) override {}
 
   void set_selected_text(const std::u16string& text) { selected_text_ = text; }
   void set_side_panel_open(bool open) { side_panel_open_ = open; }

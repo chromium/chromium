@@ -9,18 +9,14 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget_controller.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -33,31 +29,19 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
-#include "components/shared_highlighting/core/common/disabled_sites.h"
-#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_utils.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/scoped_clipboard_writer.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace glic {
@@ -255,13 +239,6 @@ const std::u16string& GlicSelectionObserver::GetSelectedText() const {
   return last_selected_text_;
 }
 
-void GlicSelectionObserver::CopyLinkToHighlight(
-    content::WeakDocumentPtr weak_document_ptr) {
-  if (generated_link_.has_value() && generated_link_->is_valid()) {
-    WriteLinkToClipboard(weak_document_ptr, generated_link_.value());
-  }
-}
-
 void GlicSelectionObserver::UpdateSelectionStateFromContextMenu(
     const std::u16string& selected_text) {
   UpdateSelectionState(selected_text, /*is_pending_selection=*/false,
@@ -403,9 +380,7 @@ void GlicSelectionObserver::UpdateSelectionState(
   BrowserWindowInterface* bwi = tab_interface->GetBrowserWindowInterface();
 
   if (selected_text.empty()) {
-    if (widget_controller_->Close()) {
-      generated_link_.reset();
-    }
+    widget_controller_->Close();
 
     if (has_sent_selection_context_) {
       SendAdditionalContextToPanel(tab_interface, u"");
@@ -489,12 +464,8 @@ void GlicSelectionObserver::ShowSelectionAffordance(
     const std::u16string& selected_text) {
   GlicSelectionWidgetController::ShowResult result =
       widget_controller_->Show(selected_text);
-  if (result == GlicSelectionWidgetController::ShowResult::kShown) {
-    if (features::kGlicSelectionShowCopyButtons.Get()) {
-      RequestLinkGeneration(GetSelectedFrame());
-    }
-  } else if (result == GlicSelectionWidgetController::ShowResult::kNoBounds &&
-             bounds_retry_count_ < 5) {
+  if (result == GlicSelectionWidgetController::ShowResult::kNoBounds &&
+      bounds_retry_count_ < 5) {
     // Retry showing the widget, bounds might not be available yet due
     // to IPC timing (especially on double click).
     bounds_retry_count_++;
@@ -690,78 +661,6 @@ void GlicSelectionObserver::OnGlobalPanelShowHide() {
 
   UpdateSelectionState(last_selected_text_, /*is_pending_selection=*/false,
                        SelectionSource::kAutomatic);
-}
-
-void GlicSelectionObserver::WriteLinkToClipboard(
-    content::WeakDocumentPtr weak_document_ptr,
-    const GURL& url) {
-  content::RenderFrameHost* rfh = weak_document_ptr.AsRenderFrameHostIfValid();
-  if (!rfh) {
-    return;
-  }
-
-  enterprise_data_protection::CopyTextToClipboard(
-      rfh, base::UTF8ToUTF16(url.spec()));
-
-  if (auto* web_contents_ptr = content::WebContents::FromRenderFrameHost(rfh)) {
-    shared_highlighting::LogDesktopLinkGenerationCopiedLinkType(
-        shared_highlighting::LinkGenerationCopiedLinkType::
-            kCopiedFromNewGeneration);
-
-    if (toast_features::IsEnabled(
-            toast_features::kLinkToHighlightCopiedToast)) {
-      if (auto* tab_interface =
-              tabs::TabInterface::MaybeGetFromContents(web_contents_ptr)) {
-        if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
-          if (auto* toast_controller = ToastController::From(bwi)) {
-            toast_controller->MaybeShowToast(
-                ToastParams(ToastId::kLinkToHighlightCopied));
-          }
-        }
-      }
-    }
-
-    feature_engagement::TrackerFactory::GetForBrowserContext(
-        web_contents_ptr->GetBrowserContext())
-        ->NotifyEvent("iph_desktop_shared_highlighting_used");
-  }
-}
-
-void GlicSelectionObserver::OnLinkGenerated(
-    const GURL& fallback_url,
-    const std::string& selector,
-    shared_highlighting::LinkGenerationError error,
-    shared_highlighting::LinkGenerationReadyStatus ready_status) {
-  if (!selector.empty()) {
-    generated_link_ =
-        shared_highlighting::AppendSelectors(fallback_url, {selector});
-  }
-  widget_controller_->UpdateCopyLinkButton(generated_link_.has_value());
-}
-
-void GlicSelectionObserver::RequestLinkGeneration(
-    content::RenderFrameHost* rfh) {
-  generated_link_.reset();
-  if (!rfh) {
-    return;
-  }
-
-  GURL url = rfh->GetMainFrame()->GetLastCommittedURL();
-  if (url.has_ref()) {
-    url = shared_highlighting::RemoveFragmentSelectorDirectives(url);
-  }
-
-  if (!shared_highlighting::ShouldOfferLinkToText(url)) {
-    return;
-  }
-
-  text_fragment_remote_.reset();
-  rfh->GetRemoteInterfaces()->GetInterface(
-      text_fragment_remote_.BindNewPipeAndPassReceiver());
-
-  text_fragment_remote_->RequestSelectorForSelection(
-      base::BindOnce(&GlicSelectionObserver::OnLinkGenerated,
-                     weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void GlicSelectionObserver::CreatePageContextEligibilityAPI(

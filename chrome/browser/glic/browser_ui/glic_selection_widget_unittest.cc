@@ -72,7 +72,6 @@ class TestWidgetActionDelegate
   void OnAskGemini() override { ask_gemini_called = true; }
   gfx::Rect GetContainerBounds() override { return container_bounds; }
   void OnCopy() override { copy_called = true; }
-  void OnCopyLink() override { copy_link_called = true; }
   void OnHide() override { hide_called = true; }
   void OnSettings() override { settings_called = true; }
   void OnWidgetClose() override { widget_close_called = true; }
@@ -81,7 +80,6 @@ class TestWidgetActionDelegate
   bool widget_close_called = false;
   bool ask_gemini_called = false;
   bool copy_called = false;
-  bool copy_link_called = false;
   bool hide_called = false;
   bool settings_called = false;
 };
@@ -129,30 +127,20 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   ASSERT_EQ(children.size(), 1u);
 
   auto pill_children = children[0]->children();
-  ASSERT_EQ(pill_children.size(), 4u);
+  ASSERT_EQ(pill_children.size(), 3u);
 
   auto* ask_gemini_btn =
       views::AsViewClass<views::MdTextButton>(pill_children[0]);
   auto* copy_btn = views::AsViewClass<views::ImageButton>(pill_children[1]);
-  auto* copy_link_btn =
-      views::AsViewClass<views::ImageButton>(pill_children[2]);
 
-  views::View* close_pill = pill_children[3];
+  views::View* close_pill = pill_children[2];
   auto close_children = close_pill->children();
   ASSERT_EQ(close_children.size(), 1u);
   auto* close_btn = views::AsViewClass<views::ImageButton>(close_children[0]);
 
   ASSERT_TRUE(ask_gemini_btn);
   ASSERT_TRUE(copy_btn);
-  ASSERT_TRUE(copy_link_btn);
   ASSERT_TRUE(close_btn);
-
-  // Verify the copy link button is initially disabled.
-  EXPECT_FALSE(copy_link_btn->GetEnabled());
-
-  // Enable it and test.
-  widget_delegate->UpdateCopyLinkButton(true);
-  EXPECT_TRUE(copy_link_btn->GetEnabled());
 
   // Manually run callbacks since we don't have a widget to receive events.
   views::test::ButtonTestApi(ask_gemini_btn)
@@ -167,13 +155,6 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                      ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_TRUE(test_delegate->copy_called);
-
-  views::test::ButtonTestApi(copy_link_btn)
-      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                  gfx::Point(), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(test_delegate->copy_link_called);
 
   EXPECT_EQ(close_btn->GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_CLOSE));

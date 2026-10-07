@@ -52,7 +52,6 @@ class GlicSelectionWidgetController
   // `GlicSelectionWidgetDelegate::ActionDelegate`:
   void OnAskGemini() override;
   void OnCopy() override;
-  void OnCopyLink() override;
   void OnHide() override;
   void OnSettings() override;
   void OnWidgetClose() override;
@@ -63,9 +62,8 @@ class GlicSelectionWidgetController
   virtual void Dismiss(DismissReason reason);
 
   ShowResult Show(const std::u16string& selected_text);
-  bool Close();
+  void Close();
 
-  void UpdateCopyLinkButton(bool enabled);
   void OnPrimaryPageChanged();
 
  protected:
