@@ -158,9 +158,6 @@ class ManifestAssetManager : public UsageTracker::Observer {
   // Refreshes all solutions for the current factory, if any.
   void RefreshSolutions();
 
-  // Returns a list of properties for the broker state info.
-  std::vector<mojom::BrokerPropertyInfoPtr> GetBrokerProperties() const;
-
   // Returns a list of assets for the broker state info.
   std::vector<mojom::BrokerAssetInfoPtr> GetBrokerAssets() const;
 
@@ -314,9 +311,16 @@ class ManifestAssetManager : public UsageTracker::Observer {
   // Get disk space, and call `UpdateRegistration` when done.
   void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
 
-  // Returns whether the asset should be installed.
-  bool ShouldInstall(const ComponentContext& context,
-                     const proto::OnDemandComponent* component) const;
+  // Policy predicates governing component installation, retention, and
+  // foreground updates.
+  bool CanSupportProactiveDownload() const;
+  // Assuming the component is already registered for (or has installed) the
+  // target version, returns whether it should be retained rather than evicted.
+  bool ShouldRetain(const ComponentContext& context) const;
+  bool ShouldRegisterNewVersion(const ComponentContext& context) const;
+  bool ShouldInstallOrRetain(const ComponentContext& context,
+                             const proto::OnDemandComponent* component) const;
+  bool ShouldRequestForegroundDownload(const ComponentContext& context) const;
 
   bool IsEvictionEnabled() const;
 
@@ -362,9 +366,9 @@ class ManifestAssetManager : public UsageTracker::Observer {
     void Update(std::optional<base::ByteSize> free_space);
 
     bool IsFresh() const;
-    bool CanSupportOnDemandInstall() const;
-    bool CanSupportProactiveDownload() const;
-    std::optional<base::ByteSize> GetFreeSpace() const { return free_space_; }
+    bool IsSufficientForOnDemandInstall() const;
+    bool IsSufficientForBackgroundInstall() const;
+    std::optional<base::ByteSize> free_space() const { return free_space_; }
 
    private:
     std::optional<base::ByteSize> free_space_;

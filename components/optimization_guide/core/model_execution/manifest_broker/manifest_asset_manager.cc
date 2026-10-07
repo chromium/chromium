@@ -327,22 +327,15 @@ bool ManifestAssetManager::DiskSpaceStatus::IsFresh() const {
          (base::Time::Now() - last_evaluated_) < kDiskSpaceFreshnessThreshold;
 }
 
-bool ManifestAssetManager::DiskSpaceStatus::CanSupportOnDemandInstall() const {
+bool ManifestAssetManager::DiskSpaceStatus::IsSufficientForOnDemandInstall()
+    const {
   return free_space_.has_value() &&
          features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
              free_space_.value());
 }
 
-bool ManifestAssetManager::DiskSpaceStatus::CanSupportProactiveDownload()
+bool ManifestAssetManager::DiskSpaceStatus::IsSufficientForBackgroundInstall()
     const {
-  if (!base::FeatureList::IsEnabled(
-          features::kOnDeviceModelBackgroundDownload)) {
-    return false;
-  }
-  if (!base::PowerMonitor::GetInstance()->IsInitialized() ||
-      base::PowerMonitor::GetInstance()->IsOnBatteryPower()) {
-    return false;
-  }
   return free_space_.has_value() &&
          features::IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
              free_space_.value());
@@ -495,7 +488,7 @@ void ManifestAssetManager::UpdateSolutionFactory(
   // solutions until we actually download assets for the new factory.
   factory_ = std::move(factory);
   if (std::optional<base::ByteSize> free_space =
-          disk_space_status_.GetFreeSpace()) {
+          disk_space_status_.free_space()) {
     factory_->UpdateFreeDiskSpace(free_space);
   }
 
@@ -599,7 +592,51 @@ void ManifestAssetManager::OnDiskSpaceEvaluated(
   UpdateRegistrations();
 }
 
-bool ManifestAssetManager::ShouldInstall(
+bool ManifestAssetManager::CanSupportProactiveDownload() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(
+          features::kOnDeviceModelBackgroundDownload)) {
+    return false;
+  }
+  if (!base::PowerMonitor::GetInstance()->IsInitialized() ||
+      base::PowerMonitor::GetInstance()->IsOnBatteryPower()) {
+    return false;
+  }
+  return disk_space_status_.IsSufficientForBackgroundInstall();
+}
+
+bool ManifestAssetManager::ShouldRetain(const ComponentContext& context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If the component already has the target version requested (downloading or
+  // installed), retain it unless eviction is enabled and its priority has
+  // dropped below kRetain.
+  return !IsEvictionEnabled() ||
+         asset_priorities_.IsAtLeast(AssetPriority::kRetain,
+                                     context.asset_id());
+}
+
+bool ManifestAssetManager::ShouldRegisterNewVersion(
+    const ComponentContext& context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(disk_space_status_.IsFresh());
+  if (!disk_space_status_.IsSufficientForOnDemandInstall()) {
+    if (std::optional<base::ByteSize> free_space =
+            disk_space_status_.free_space()) {
+      base::UmaHistogramCounts100(
+          "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+          "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+          free_space->InGiB());
+    }
+    return false;
+  }
+  return asset_priorities_.IsAtLeast(AssetPriority::kBestEffort,
+                                     context.asset_id()) ||
+         (CanSupportProactiveDownload() &&
+          asset_priorities_.IsAtLeast(AssetPriority::kSpeculative,
+                                      context.asset_id()));
+}
+
+bool ManifestAssetManager::ShouldInstallOrRetain(
     const ComponentContext& context,
     const proto::OnDemandComponent* component) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -620,31 +657,17 @@ bool ManifestAssetManager::ShouldInstall(
   // components/component_updater/required_components_controller.h.
   return true;
 #else
-  if (context.requested_version() == component->target_version()) {
-    // The component is either downloading or already installed.
-    return !IsEvictionEnabled() ||
-           asset_priorities_.IsAtLeast(AssetPriority::kRetain,
-                                       context.asset_id());
-  }
-  if (!disk_space_status_.CanSupportOnDemandInstall()) {
-    std::optional<base::ByteSize> free_space =
-        disk_space_status_.GetFreeSpace();
-    if (free_space) {
-      base::UmaHistogramCounts100(
-          "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
-          "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
-          free_space->InGiB());
-    }
-    return false;
-  }
-  if (asset_priorities_.IsAtLeast(AssetPriority::kBestEffort,
-                                  context.asset_id())) {
-    return true;
-  }
-  return disk_space_status_.CanSupportProactiveDownload() &&
-         asset_priorities_.IsAtLeast(AssetPriority::kSpeculative,
-                                     context.asset_id());
+  return context.requested_version() == component->target_version()
+             ? ShouldRetain(context)
+             : ShouldRegisterNewVersion(context);
 #endif
+}
+
+bool ManifestAssetManager::ShouldRequestForegroundDownload(
+    const ComponentContext& context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return asset_priorities_.IsAtLeast(AssetPriority::kUserBlocking,
+                                     context.asset_id());
 }
 
 void ManifestAssetManager::RecordEvictableAssetsCount() const {
@@ -703,7 +726,7 @@ void ManifestAssetManager::UpdateRegistrations() {
     }
     const proto::OnDemandComponent* component =
         factory_->manifest().GetAssetByPublicKey(public_key);
-    if (!ShouldInstall(context, component)) {
+    if (!ShouldInstallOrRetain(context, component)) {
       if (context.NeedsCleanup()) {
         RecordUninstallReason(context, component);
         context.SetUninstalling();
@@ -748,8 +771,7 @@ void ManifestAssetManager::UpdateRegistrations() {
     NotifyFactory(public_key, context);
 
     if (context.state() == ComponentState::kRegistered) {
-      if (asset_priorities_.IsAtLeast(AssetPriority::kUserBlocking,
-                                      context.asset_id())) {
+      if (ShouldRequestForegroundDownload(context)) {
         context.SetOnDemandDownloading();
         // This doesn't change a persistent state, so it's okay to not save.
         delegate_->RequestUpdate(public_key,
@@ -878,19 +900,6 @@ void ManifestAssetManager::NotifyFactory(const std::string& public_key,
   }
   factory_->UpdateAssetState(context.asset_id(),
                              context.AsAssetState(component->target_version()));
-}
-
-std::vector<mojom::BrokerPropertyInfoPtr>
-ManifestAssetManager::GetBrokerProperties() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<mojom::BrokerPropertyInfoPtr> properties;
-  properties.push_back(mojom::BrokerPropertyInfo::New(
-      "Supports Installs",
-      disk_space_status_.CanSupportOnDemandInstall() ? "true" : "false"));
-  properties.push_back(mojom::BrokerPropertyInfo::New(
-      "Supports Proactive Downloads",
-      disk_space_status_.CanSupportProactiveDownload() ? "true" : "false"));
-  return properties;
 }
 
 std::vector<mojom::BrokerAssetInfoPtr> ManifestAssetManager::GetBrokerAssets()
