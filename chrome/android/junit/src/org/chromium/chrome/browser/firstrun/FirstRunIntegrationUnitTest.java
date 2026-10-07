@@ -307,9 +307,8 @@ public final class FirstRunIntegrationUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "large")
-    @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    public void testFirstRunActivityScreenLayoutLarge() {
+    @Config(sdk = 29, qualifiers = "large")
+    public void testFirstRunActivityScreenLayoutLarge_Legacy() {
         Activity firstRunActivity = createActivity(FirstRunActivity.class, new Intent());
         Assert.assertEquals(Color.BLACK, firstRunActivity.getWindow().getStatusBarColor());
     }
