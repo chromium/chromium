@@ -751,15 +751,9 @@ class OnDeviceSpeechRecognitionImplGeminiNanoConversationBrowserTest
             {media::kOnDeviceWebSpeech, media::kOnDeviceWebSpeechGeminiNano}) {}
 };
 
-// TODO(crbug.com/568746562): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AvailableAndInstall DISABLED_AvailableAndInstall
-#else
-#define MAYBE_AvailableAndInstall AvailableAndInstall
-#endif
 IN_PROC_BROWSER_TEST_F(
     OnDeviceSpeechRecognitionImplGeminiNanoConversationBrowserTest,
-    MAYBE_AvailableAndInstall) {
+    AvailableAndInstall) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
       {kEnglishLanguageCode},
@@ -897,17 +891,9 @@ class
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/568746562): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AvailableAndInstallSupportedLanguage \
-  DISABLED_AvailableAndInstallSupportedLanguage
-#else
-#define MAYBE_AvailableAndInstallSupportedLanguage \
-  AvailableAndInstallSupportedLanguage
-#endif
 IN_PROC_BROWSER_TEST_F(
     OnDeviceSpeechRecognitionImplSpeechRecognitionSmallExpertModelMultiLanguageBrowserTest,
-    MAYBE_AvailableAndInstallSupportedLanguage) {
+    AvailableAndInstallSupportedLanguage) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
       {kFrenchLanguageCode}, media::mojom::SpeechRecognitionQuality::kDictation,
@@ -941,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     OnDeviceSpeechRecognitionImplSpeechRecognitionSmallExpertModelBrowserTest,
-    MAYBE_AvailableAndInstall) {
+    AvailableAndInstall) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
       {kEnglishLanguageCode},
