@@ -133,6 +133,19 @@ class WebViewChromium
     private ContentSettingsAdapter mWebSettings;
     // The WebView wrapper for WebContents and required browser components.
     AwContents mAwContents;
+    // Receives callbacks from the WebContent that this WebViewChromium adopts.
+    private final WebContent.ViewHost mWebContentHost =
+            new WebContent.ViewHost() {
+                @Override
+                public void initSettings(AwSettings settings) {
+                    WebViewChromium.this.initSettings(settings);
+                }
+
+                @Override
+                public void onDetached() {
+                    WebViewChromium.this.detachForTransfer();
+                }
+            };
 
     private final WebView.HitTestResult mHitTestResult;
 
@@ -277,7 +290,7 @@ class WebViewChromium
 
             mAwContents =
                     webContent.adopt(
-                            this,
+                            mWebContentHost,
                             browserContext,
                             mWebView,
                             mContext,
