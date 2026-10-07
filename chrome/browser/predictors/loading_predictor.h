@@ -17,13 +17,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
-#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/preconnect_manager.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -39,6 +39,12 @@ namespace predictors {
 class ResourcePrefetchPredictor;
 class LoadingStatsCollector;
 class PrewarmHttpDiskCacheManager;
+
+// The traffic annotation used by default for preconnects issued by the
+// LoadingPredictor. Defined in loading_predictor.cc, because network traffic
+// annotations must not be defined in header files.
+extern const net::NetworkTrafficAnnotationTag
+    kLoadingPredictorPreconnectTrafficAnnotation;
 
 // Entry point for the Loading predictor.
 // From a high-level request (GURL and motivation) and a database of historical

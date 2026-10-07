@@ -20,7 +20,6 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
-#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -32,6 +31,7 @@
 #include "net/base/features.h"
 #include "net/base/reconnect_notifier.h"
 #include "net/socket/next_proto.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/constants.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -41,6 +41,59 @@
 #endif
 
 namespace {
+
+constexpr net::NetworkTrafficAnnotationTag
+    kSearchEnginePreconnectTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("search_engine_preconnect",
+                                            R"(
+    semantics {
+      sender: "Loading Predictor"
+      description:
+        "This request is issued near the start of a navigation to "
+        "speculatively fetch resources that resulting page is predicted to "
+        "request."
+      trigger:
+        "Navigating Chrome (by clicking on a link, bookmark, history item, "
+        "using session restore, etc)."
+      data:
+        "Arbitrary site-controlled data can be included in the URL."
+        "Requests may include cookies."
+      destination: WEBSITE
+      internal {
+        contacts {
+          owners: "//chrome/browser/navigation_predictor/OWNERS"
+        }
+      }
+      user_data {
+        type: SENSITIVE_URL
+        type: WEB_CONTENT
+      }
+      last_reviewed: "2026-09-23"
+    }
+    policy {
+      cookies_allowed: YES
+      cookies_store: "user"
+      setting:
+        "There are a number of ways to prevent this request:"
+        "A) Disable predictive operations under Settings > Performance "
+        "   > Preload pages for faster browsing and searching,"
+        "B) Disable 'Improve search suggestions' under Settings > "
+        "   Sync and Google services > Improve search suggestions"
+      chrome_policy {
+        NetworkPredictionOptions {
+          NetworkPredictionOptions: 2
+        }
+      }
+      chrome_policy {
+        SearchSuggestEnabled {
+          SearchSuggestEnabled: false
+        }
+      }
+    }
+    comments:
+      "This feature can be safely disabled, but enabling it may result in "
+      "faster page loads."
+)");
 
 #if BUILDFLAG(IS_ANDROID)
 const int kDefaultStartupDelayMs = 0;
@@ -385,7 +438,7 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
     // See https://wicg.github.io/connection-allowlists/#threat-model.
     GetPreconnectManager().StartPreconnectUrl(
         preconnect_url, /*allow_credentials=*/true, network_anonymziation_key,
-        predictors::kSearchEnginePreconnectTrafficAnnotation,
+        kSearchEnginePreconnectTrafficAnnotation,
         /*storage_partition_config=*/nullptr,
         network::GetNoOpNetworkRestrictionsId(), std::move(keepalive_config),
         std::move(observer));

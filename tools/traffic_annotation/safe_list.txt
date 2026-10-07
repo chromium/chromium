@@ -341,5 +341,3 @@ missing_new_fields,chrome/browser/ash/file_suggest/item_suggest_cache.cc
 missing_new_fields,extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.cc
 missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc
 
-# Header files with traffic annotations that existed before the new check was introduced.
-all,chrome/browser/predictors/predictors_traffic_annotations.h

@@ -16,7 +16,6 @@
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
-#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
@@ -35,6 +34,61 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace predictors {
+
+// static
+const net::NetworkTrafficAnnotationTag
+    kLoadingPredictorPreconnectTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("predictive_preconnect",
+                                            R"(
+    semantics {
+      sender: "Loading Predictor"
+      description:
+        "This request is issued near the start of a navigation to "
+        "speculatively fetch resources that resulting page is predicted to "
+        "request."
+      trigger:
+        "Navigating Chrome (by clicking on a link, bookmark, history item, "
+        "using session restore, etc)."
+      data:
+        "Arbitrary site-controlled data can be included in the URL."
+        "Requests may include cookies."
+      destination: WEBSITE
+      internal {
+        contacts {
+          owners: "//chrome/browser/predictors/OWNERS"
+        }
+      }
+      user_data {
+        type: SENSITIVE_URL
+        type: WEB_CONTENT
+      }
+      last_reviewed: "2026-09-23"
+    }
+    policy {
+      cookies_allowed: YES
+      cookies_store: "user"
+      setting:
+        "There are a number of ways to prevent this request:"
+        "A) Disable predictive operations under Settings > Performance "
+        "   > Preload pages for faster browsing and searching,"
+        "B) Disable 'Make searches and browsing better' under Settings > "
+        "   Sync and Google services > Make searches and browsing better"
+      chrome_policy {
+        URLBlocklist {
+          URLBlocklist: { entries: '*' }
+        }
+      }
+      chrome_policy {
+        URLAllowlist {
+          URLAllowlist { }
+        }
+      }
+    }
+    comments:
+      "This feature can be safely disabled, but enabling it may result in "
+      "faster page loads. Using either URLBlocklist or URLAllowlist policies "
+      "(or a combination of both) limits the scope of these requests."
+)");
 
 namespace {
 

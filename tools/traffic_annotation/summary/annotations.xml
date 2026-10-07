@@ -548,5 +548,8 @@ Refer to README.md for content description and update process.
  <item id="data_sharing_service_block_person" added_in_milestone="133" content_hash_code="06956fce" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
  <item id="data_sharing_service_leave_group" added_in_milestone="133" content_hash_code="044d5af8" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
  <item id="data_sharing_service_join_group" added_in_milestone="133" content_hash_code="0609a53c" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="search_engine_preconnect" added_in_milestone="132" content_hash_code="06a5ecbd" os_list="linux,windows,android,chromeos" file_path="chrome/browser/navigation_predictor/search_engine_preconnector.cc" />
+ <item id="predictive_preconnect" added_in_milestone="132" content_hash_code="063ba9b5" os_list="linux,windows,android,chromeos" file_path="chrome/browser/predictors/loading_predictor.cc" />
+ <item id="network_hints_preconnect" added_in_milestone="132" content_hash_code="034f1524" os_list="linux,windows,android,chromeos" file_path="chrome/browser/predictors/network_hints_handler_impl.cc" />
  <item id="proxy_config_linux_resolver" added_in_milestone="157" content_hash_code="031b836f" os_list="linux" file_path="net/proxy_resolution/linux/linux_system_proxy_resolution_request.cc" />
 </annotations>

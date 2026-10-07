@@ -42,7 +42,6 @@ source_set("predictors") {
     "predictor_database_factory.h",
     "predictors_enums.h",
     "predictors_switches.h",
-    "predictors_traffic_annotations.h",
     "prefetch_manager.h",
     "prefetch_traffic_annotation.h",
     "resource_prefetch_predictor.h",
