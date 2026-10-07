@@ -444,7 +444,7 @@ void OpenPasswordSearchWithBrowser(Browser* browser) {
 void OpenSettingsWithBrowser(Browser* browser) {
   id<SceneCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
-  [handler maybeShowSettingsFromViewController];
+  [handler showSettingsFromViewController:nil];
 }
 
 // Opens the Set Default Browser settings page.
