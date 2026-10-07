@@ -134,6 +134,8 @@ class WebViewChromium
     private ContentSettingsAdapter mWebSettings;
     // The WebView wrapper for WebContents and required browser components.
     AwContents mAwContents;
+    // The state associated with this WebView. This exists before `initForReal()` is called.
+    private AwWebContent mAwWebContent;
     // Receives callbacks from the AwWebContent that this WebViewChromium adopts.
     private final AwWebContent.ViewHost mWebContentHost =
             new AwWebContent.ViewHost() {
@@ -250,9 +252,11 @@ class WebViewChromium
             // Check that the current thread is the UI thread, which will throw if it was
             // already started using a different thread as the UI thread.
             checkThread();
-            // Mark synchronously here (rather than where it is consumed) since initForReal can be
-            // deferred.
-            WebContentContextWrapper.markUsed(mContext);
+
+            mAwWebContent = WebContentContextWrapper.getWebContent(mContext);
+            if (mAwWebContent == null) {
+                mAwWebContent = new AwWebContent();
+            }
 
             // This will run initForReal synchronously except when the experiment to defer running
             // Chromium startup is enabled.
@@ -285,14 +289,10 @@ class WebViewChromium
                                 AwBrowserContext.getDefaultContextName(), true);
             }
 
-            AwWebContent webContent = WebContentContextWrapper.getWebContent(mContext);
-            if (webContent == null) {
-                webContent = new AwWebContent();
-            }
-            boolean isTransfer = webContent.isInitialized();
+            boolean isTransfer = mAwWebContent.isInitialized();
 
             mAwContents =
-                    webContent.adopt(
+                    mAwWebContent.adopt(
                             mWebContentHost,
                             browserContext,
                             mWebView,
@@ -580,8 +580,8 @@ class WebViewChromium
 
         mIsDestroyed = true;
 
-        AwWebContent webContent = getSharedDestroyedAwWebContent();
-        mAwContents = webContent.getAwContents();
+        mAwWebContent = getSharedDestroyedAwWebContent();
+        mAwContents = mAwWebContent.getAwContents();
         mSharedWebViewChromium.setAwContentsForTransfer(mAwContents);
     }
 

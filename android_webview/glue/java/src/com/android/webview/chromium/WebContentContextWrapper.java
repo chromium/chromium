@@ -58,18 +58,16 @@ public class WebContentContextWrapper extends ContextWrapper {
         return null;
     }
 
-    @UiThread
-    public static void markUsed(Context context) {
-        WebContentContextWrapper wrapper = get(context);
-        if (wrapper != null) {
-            wrapper.markAsUsed();
-        }
-    }
-
-    /** Gets the AwWebContent from the Context chain if it exists, otherwise returns null. */
+    /**
+     * Gets the AwWebContent from the Context chain and mark the wrapper as used if it exists,
+     * otherwise returns null. */
     @UiThread
     public static @Nullable AwWebContent getWebContent(Context context) {
         WebContentContextWrapper wrapper = get(context);
-        return wrapper != null ? wrapper.getWebContent() : null;
+        if (wrapper != null) {
+            wrapper.markAsUsed();
+            return wrapper.getWebContent();
+        }
+        return null;
     }
 }
