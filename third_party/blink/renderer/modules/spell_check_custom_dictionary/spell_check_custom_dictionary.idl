@@ -9,6 +9,6 @@
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
 ] interface SpellCheckCustomDictionary {
-    [CallWith=ScriptState] undefined addWords(sequence<DOMString> words);
-    [CallWith=ScriptState] undefined removeWords(sequence<DOMString> words);
+    undefined addWords(sequence<DOMString> words);
+    undefined removeWords(sequence<DOMString> words);
 };

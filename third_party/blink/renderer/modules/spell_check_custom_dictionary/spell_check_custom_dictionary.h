@@ -11,19 +11,27 @@
 
 namespace blink {
 
+class Document;
+
 class MODULES_EXPORT SpellCheckCustomDictionary final
     : public ScriptWrappable,
       public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  SpellCheckCustomDictionary() = default;
+  explicit SpellCheckCustomDictionary(Document& document);
   ~SpellCheckCustomDictionary() override = default;
 
-  void addWords(ScriptState* script_state, const Vector<String>& words);
-  void removeWords(ScriptState* script_state, const Vector<String>& words);
+  void addWords(const Vector<String>& words);
+  void removeWords(const Vector<String>& words);
 
   void Trace(Visitor*) const override;
+
+ private:
+  // The document this dictionary belongs to. Calls only change this
+  // document's words, whichever realm the calling script runs in, and do
+  // nothing while the document is not the active document of a frame.
+  WeakMember<Document> document_;
 };
 }  // namespace blink
 

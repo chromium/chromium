@@ -96,15 +96,7 @@ SpellCheckProvider::DictionaryUpdateObserverImpl::
 
 void SpellCheckProvider::DictionaryUpdateObserverImpl::OnDictionaryUpdated(
     const std::vector<WebString>& words_added) {
-  // Clear only cache. Current pending requests should continue as they are.
-  owner_->last_request_.clear();
-  owner_->last_results_.clear();
-
-  // owner_->render_frame() is nullptr in unit tests.
-  if (auto* render_frame = owner_->render_frame()) {
-    DCHECK(render_frame->GetWebFrame());
-    render_frame->GetWebFrame()->RemoveSpellingMarkersUnderWords(words_added);
-  }
+  owner_->OnDictionaryUpdated(words_added);
 }
 
 SpellCheckProvider::SpellCheckProvider(content::RenderFrame* render_frame,
@@ -119,6 +111,19 @@ SpellCheckProvider::SpellCheckProvider(content::RenderFrame* render_frame,
 }
 
 SpellCheckProvider::~SpellCheckProvider() {
+}
+
+void SpellCheckProvider::OnDictionaryUpdated(
+    const std::vector<WebString>& words_added) {
+  // Clear only cache. Current pending requests should continue as they are.
+  last_request_.clear();
+  last_results_.clear();
+
+  // render_frame() is nullptr in unit tests.
+  if (auto* frame = render_frame()) {
+    DCHECK(frame->GetWebFrame());
+    frame->GetWebFrame()->RemoveSpellingMarkersUnderWords(words_added);
+  }
 }
 
 void SpellCheckProvider::ResetDictionaryUpdateObserverForTesting() {
@@ -404,8 +409,10 @@ void SpellCheckProvider::SpellCheckCustomDictionaryChanged(
     }
   }
 
-  spellcheck_->SpellCheckCustomDictionaryChanged(effective_added,
-                                                 words_removed);
+  // The word set belongs to this frame's document, so update only this frame.
+  // Notifying through |spellcheck_| would reach every frame in the renderer
+  // process.
+  OnDictionaryUpdated(base::ToVector(effective_added, &WebString::FromUtf8));
 }
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)

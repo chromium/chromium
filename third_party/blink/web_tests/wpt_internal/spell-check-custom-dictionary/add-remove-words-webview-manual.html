@@ -27,6 +27,10 @@
     min-height: 1.6em;
   }
   textarea.editable { width: 100%; height: 3.2em; box-sizing: border-box; }
+  iframe.subframe {
+    width: 100%; height: 150px; border: 1px dashed #888; margin: 8px 0;
+    box-sizing: border-box;
+  }
   button { font-size: 16px; min-height: 44px; padding: 6px 12px; margin: 4px 4px 4px 0; }
   .word { font-family: monospace; font-weight: 600; }
   .status { font-family: monospace; display: block; margin: 2px 0 8px; }
@@ -170,15 +174,48 @@
     <li>Tap <b>Reload this page</b>, come back to this field and tap into it.
         <span class="word">snorpled</span> must be squiggled <b>again</b>: the
         new document starts with an empty dictionary.</li>
-    <li>Reloading also resets Tests 1&ndash;4, so run this before Test 6 and
-        redo any earlier step you still need.</li>
+    <li>Reloading also resets Tests 1&ndash;4, so run this before Tests 6 and
+        7 and redo any earlier step you still need.</li>
   </ol>
   <div class="verdict" data-test="per-document"></div>
 </fieldset>
 
-<!-- Test 6: caps. Runs last: it fills the per-document set permanently. -->
+<!-- Test 6: frame isolation. A same-origin iframe shares the renderer process,
+     and so the spell checker, with this page, but it is a separate document
+     with its own word set. Adding a word in one frame must not touch the
+     other frame's squiggles. Each frame's button calls its own document's
+     dictionary. -->
 <fieldset>
-  <legend>6. Per-document caps (20000 words / 128 bytes per word)</legend>
+  <legend>6. Changes stay in the calling frame</legend>
+  <p>The field on this page and the field inside the iframe below both contain
+     <span class="word">grobnik</span> and <span class="word">plimsy</span>.
+     The iframe is same-origin, so it runs in the same renderer process as this
+     page.</p>
+  <div id="field6" class="editable" spellcheck="true" contenteditable>grobnik and plimsy on the page.</div>
+  <button data-add='["grobnik"]'>page: addWords(["grobnik"])</button>
+  <iframe id="frame6" class="subframe" title="Same-origin iframe for Test 6"></iframe>
+  <ol>
+    <li>Tap into the page's field, then into the iframe's field, and confirm
+        both words are squiggled in <b>both</b>. Give the platform checker a
+        second or two after each tap.</li>
+    <li>Tap <b>page: addWords(["grobnik"])</b>. The squiggle on
+        <span class="word">grobnik</span> should clear on the page, and must
+        <b>stay</b> in the iframe. Look at the iframe <b>without tapping into
+        its field</b>: focusing it re-checks the field and would hide a
+        failure.</li>
+    <li>Tap <b>iframe: addWords(["plimsy"])</b> inside the iframe. The squiggle
+        on <span class="word">plimsy</span> should clear in the iframe, and must
+        <b>stay</b> on the page. Again, don't tap into the page's field
+        first.</li>
+    <li>If a squiggle clears in the frame that did <b>not</b> call
+        <code>addWords</code>, the change leaked into another frame: FAIL.</li>
+  </ol>
+  <div class="verdict" data-test="frame-isolation"></div>
+</fieldset>
+
+<!-- Test 7: caps. Runs last: it fills the per-document set permanently. -->
+<fieldset>
+  <legend>7. Per-document caps (20000 words / 128 bytes per word)</legend>
   <p><b>Run this last.</b> The bulk step fills the per-document set for the rest
      of this document's life, so every earlier <code>addWords</code> would be
      silently dropped afterwards. If you need the earlier tests again, reload
@@ -275,6 +312,38 @@
       setStatus(bulk, `threw: ${e}`, true);
     }
   });
+
+  // Test 6's iframe. srcdoc keeps it same-origin, and so in this renderer
+  // process. Its button calls the iframe document's own dictionary from a
+  // script running in the iframe.
+  document.getElementById('frame6').srcdoc = `<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.55 system-ui, sans-serif; margin: 6px; }
+  .editable {
+    border: 1px solid #888; padding: 10px; margin: 0 0 6px; font-size: 18px;
+    min-height: 1.6em;
+  }
+  button { font-size: 16px; min-height: 44px; padding: 6px 12px; }
+  .status { font-family: monospace; display: block; margin: 2px 0; }
+</style>
+<div class="editable" spellcheck="true" contenteditable>grobnik and plimsy in the iframe.</div>
+<button id="add">iframe: addWords(["plimsy"])</button>
+<span id="status" class="status"></span>
+<script>
+  document.getElementById('add').addEventListener('click', () => {
+    const status = document.getElementById('status');
+    try {
+      document.spellCheckCustomDictionary.addWords(['plimsy']);
+      status.textContent = 'addWords(1 word) ok';
+      status.style.color = '#1a6b1a';
+    } catch (e) {
+      status.textContent = 'threw: ' + e;
+      status.style.color = '#b00020';
+    }
+  });
+<\/script>`;
 
   // PASS / FAIL / N/A per scenario, plus a copyable summary: there is no
   // convenient place to take notes inside the emulator.

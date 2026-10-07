@@ -904,6 +904,38 @@ TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryRemovalDecrementsCount) {
                                 1, 1);
 }
 
+// Verifies that API changes stay in the calling frame. SpellCheck is shared by
+// every frame in the renderer process, so its dictionary observers stand in
+// for the SpellCheckProviders of other frames.
+TEST_F(SpellCheckProviderTest,
+       DocumentCustomDictionaryDoesNotNotifyOtherFrames) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "SpellCheckCustomDictionaryAPI", true);
+
+  class CountingObserver : public DictionaryUpdateObserver {
+   public:
+    void OnDictionaryUpdated(
+        const std::vector<blink::WebString>& words_added) override {
+      ++count;
+    }
+    int count = 0;
+  } other_frame;
+  provider_.spellcheck()->AddDictionaryUpdateObserver(&other_frame);
+
+  auto* client = static_cast<blink::WebTextCheckClient*>(&provider_);
+  client->SpellCheckCustomDictionaryChanged({"Pikachu"}, {});
+  client->SpellCheckCustomDictionaryChanged({}, {"Pikachu"});
+  EXPECT_EQ(other_frame.count, 0);
+
+  // The browser's custom dictionary is process-wide and still reaches every
+  // frame.
+  static_cast<spellcheck::mojom::SpellChecker*>(provider_.spellcheck())
+      ->CustomDictionaryChanged({"Pikachu"}, {});
+  EXPECT_EQ(other_frame.count, 1);
+
+  provider_.spellcheck()->RemoveDictionaryUpdateObserver(&other_frame);
+}
+
 // Verifies that additions beyond kMaxDocumentCustomDictionaryWords are dropped
 // on every platform.
 TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryEnforcesWordCountCap) {

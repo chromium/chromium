@@ -39,6 +39,17 @@ spellcheck_test(
       needsFullCheck: true,
     });
 
+spellcheck_test(
+    '<div contenteditable>zz baz|</div>',
+    document => document.implementation.createHTMLDocument()
+        .spellCheckCustomDictionary.addWords(['zz']),
+    '<div contenteditable>#zz# #baz#</div>',
+    {
+      title: "A frameless document's words do not apply to the frame that " +
+          'created it',
+      needsFullCheck: true,
+    });
+
 const step1 = () => spellcheck_test(
     '<div contenteditable>zz baz zz|</div>',
     () => {},

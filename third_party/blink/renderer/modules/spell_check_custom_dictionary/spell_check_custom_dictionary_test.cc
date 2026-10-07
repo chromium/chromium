@@ -10,6 +10,8 @@
 #include "base/strings/string_util.h"
 #include "components/spellcheck/renderer/spellcheck_provider_test.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -108,10 +110,6 @@ class SpellCheckCustomDictionaryTest : public PageTestBase {
     PageTestBase::TearDown();
   }
 
-  ScriptState* GetScriptState() {
-    return ToScriptStateForMainWorld(GetDocument().GetFrame());
-  }
-
   SpellCheckCustomDictionary* GetDictionary() { return dictionary_; }
 
   TestingSpellCheckProvider* Provider() { return provider_.get(); }
@@ -148,9 +146,6 @@ TEST_F(SpellCheckCustomDictionaryTest, AddRemoveWords) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
 
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
   size_t misspelling_start = 0;
   size_t misspelling_end = 0;
 
@@ -160,12 +155,12 @@ TEST_F(SpellCheckCustomDictionaryTest, AddRemoveWords) {
   EXPECT_EQ(misspelling_start, 0u);
   EXPECT_EQ(misspelling_end, 4u);
 
-  dict->addWords(script_state, {"zzzz"});
+  dict->addWords({"zzzz"});
   Client()->CheckSpelling(text, misspelling_start, misspelling_end, nullptr);
   EXPECT_EQ(misspelling_start, 0u);
   EXPECT_EQ(misspelling_end, 0u);
 
-  dict->removeWords(script_state, {"zzzz"});
+  dict->removeWords({"zzzz"});
   Client()->CheckSpelling(text, misspelling_start, misspelling_end, nullptr);
   EXPECT_EQ(misspelling_start, 0u);
   EXPECT_EQ(misspelling_end, 4u);
@@ -182,9 +177,6 @@ TEST_F(SpellCheckCustomDictionaryTest,
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
 
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
   // Simulate a user gesture so RespondToChangedContents isn't gated out.
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
@@ -199,7 +191,7 @@ TEST_F(SpellCheckCustomDictionaryTest,
   idle.Deactivate();
   ASSERT_EQ(idle.GetState(), State::kInactive);
 
-  dict->removeWords(script_state, {"zzzz"});
+  dict->removeWords({"zzzz"});
 
   EXPECT_EQ(idle.GetState(), State::kHotModeRequested);
 }
@@ -213,9 +205,6 @@ TEST_F(SpellCheckCustomDictionaryTest,
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
 
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
   ASSERT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
 
   IdleSpellCheckController& idle =
@@ -225,7 +214,7 @@ TEST_F(SpellCheckCustomDictionaryTest,
   ASSERT_EQ(idle.GetState(), State::kInactive);
 
   // Should not crash, should not transition to kHotModeRequested.
-  dict->removeWords(script_state, {"zzzz"});
+  dict->removeWords({"zzzz"});
 
   EXPECT_NE(idle.GetState(), State::kHotModeRequested);
 }
@@ -234,13 +223,11 @@ TEST_F(SpellCheckCustomDictionaryTest,
 TEST_F(SpellCheckCustomDictionaryTest, AddWordForwardsValidWord) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->addWords(script_state, {"zzzz"});
+  dict->addWords({"zzzz"});
 
   ASSERT_EQ(client.last_added_.size(), 1u);
   EXPECT_EQ(client.last_added_[0], "zzzz");
@@ -250,13 +237,11 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordForwardsValidWord) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsEmptyWord) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->addWords(script_state, {""});
+  dict->addWords({""});
 
   EXPECT_TRUE(client.last_added_.empty());
 }
@@ -265,13 +250,11 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsEmptyWord) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsAsciiWhitespacePadding) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->addWords(script_state, {" zzzz", "zzzz\t", " zzzz "});
+  dict->addWords({" zzzz", "zzzz\t", " zzzz "});
 
   EXPECT_TRUE(client.last_added_.empty());
 }
@@ -282,13 +265,11 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsAsciiWhitespacePadding) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsUnicodeWhitespacePadding) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->addWords(script_state, {String(u"\u3000zzzz\u3000")});
+  dict->addWords({String(u"\u3000zzzz\u3000")});
 
   EXPECT_TRUE(client.last_added_.empty());
 }
@@ -297,13 +278,11 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsUnicodeWhitespacePadding) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordAllowsNoBreakSpace) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->addWords(script_state, {String(u"\u00A0zzzz\u00A0")});
+  dict->addWords({String(u"\u00A0zzzz\u00A0")});
 
   ASSERT_EQ(client.last_added_.size(), 1u);
   EXPECT_EQ(client.last_added_[0], "\xC2\xA0zzzz\xC2\xA0");
@@ -313,13 +292,11 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordAllowsNoBreakSpace) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordAllowsInternalWhitespace) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->addWords(script_state, {"foo bar"});
+  dict->addWords({"foo bar"});
 
   ASSERT_EQ(client.last_added_.size(), 1u);
   EXPECT_EQ(client.last_added_[0], "foo bar");
@@ -330,15 +307,13 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordAllowsInternalWhitespace) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsUnpairedSurrogate) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
   // "zzzz" followed by a lone high surrogate.
   const UChar kSurrogateWord[] = {'z', 'z', 'z', 'z', 0xD800};
-  dict->addWords(script_state, {String(base::span(kSurrogateWord))});
+  dict->addWords({String(base::span(kSurrogateWord))});
 
   EXPECT_TRUE(client.last_added_.empty());
 }
@@ -348,14 +323,12 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordRejectsUnpairedSurrogate) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordAllowsValidSurrogatePair) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
   // U+1F600 GRINNING FACE (the surrogate pair D83D DE00).
-  dict->addWords(script_state, {String(u"😀")});
+  dict->addWords({String(u"😀")});
 
   ASSERT_EQ(client.last_added_.size(), 1u);
   EXPECT_EQ(client.last_added_[0], "\xF0\x9F\x98\x80");
@@ -365,13 +338,11 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordAllowsValidSurrogatePair) {
 TEST_F(SpellCheckCustomDictionaryTest, AddWordsDropsInvalidKeepsValid) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->addWords(script_state, {"", " skip ", "keep", "foo bar"});
+  dict->addWords({"", " skip ", "keep", "foo bar"});
 
   ASSERT_EQ(client.last_added_.size(), 2u);
   EXPECT_EQ(client.last_added_[0], "keep");
@@ -382,14 +353,12 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordsDropsInvalidKeepsValid) {
 TEST_F(SpellCheckCustomDictionaryTest, RemoveWordRejectsUnpairedSurrogate) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
   const UChar kSurrogateWord[] = {'z', 'z', 'z', 'z', 0xD800};
-  dict->removeWords(script_state, {String(base::span(kSurrogateWord))});
+  dict->removeWords({String(base::span(kSurrogateWord))});
 
   EXPECT_TRUE(client.last_removed_.empty());
 }
@@ -402,13 +371,11 @@ TEST_F(SpellCheckCustomDictionaryTest, RemoveWordRejectsUnpairedSurrogate) {
 TEST_F(SpellCheckCustomDictionaryTest, RemoveWordForwardsEmptyAndWhitespace) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
 
-  dict->removeWords(script_state, {"", " zzzz ", "\tzzzz"});
+  dict->removeWords({"", " zzzz ", "\tzzzz"});
 
   ASSERT_EQ(client.last_removed_.size(), 3u);
   EXPECT_EQ(client.last_removed_[0], "");
@@ -421,8 +388,6 @@ TEST_F(SpellCheckCustomDictionaryTest, RemoveWordForwardsEmptyAndWhitespace) {
 TEST_F(SpellCheckCustomDictionaryTest, RemoveWordTranscodesLikeAdd) {
   SpellCheckCustomDictionary* dict = GetDictionary();
   ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
 
   RecordingTextCheckClient client;
   UseRecordingClient(&client);
@@ -431,14 +396,14 @@ TEST_F(SpellCheckCustomDictionaryTest, RemoveWordTranscodesLikeAdd) {
   // UTF-8 on both the add and remove paths.
   const String emoji{u"😀"};
 
-  dict->addWords(script_state, {emoji});
+  dict->addWords({emoji});
   ASSERT_EQ(client.last_added_.size(), 1u);
   // Capture the added bytes; removeWords() overwrites last_added_ with its own
   // (empty) words_added list.
   const std::string added_bytes = client.last_added_[0];
   EXPECT_EQ(added_bytes, "\xF0\x9F\x98\x80");
 
-  dict->removeWords(script_state, {emoji});
+  dict->removeWords({emoji});
   ASSERT_EQ(client.last_removed_.size(), 1u);
   EXPECT_EQ(client.last_removed_[0], added_bytes);
 }
@@ -451,15 +416,12 @@ TEST_F(SpellCheckCustomDictionaryTest,
   client.enabled_ = false;
   UseRecordingClient(&client);
 
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
-  GetDictionary()->addWords(script_state, {"zzzz"});
+  GetDictionary()->addWords({"zzzz"});
   EXPECT_EQ(client.change_count_, 1);
   ASSERT_EQ(client.last_added_.size(), 1u);
   EXPECT_EQ(client.last_added_[0], "zzzz");
 
-  GetDictionary()->removeWords(script_state, {"zzzz"});
+  GetDictionary()->removeWords({"zzzz"});
   EXPECT_EQ(client.change_count_, 2);
   ASSERT_EQ(client.last_removed_.size(), 1u);
   EXPECT_EQ(client.last_removed_[0], "zzzz");
@@ -473,16 +435,13 @@ TEST_F(SpellCheckCustomDictionaryTest,
   client.enabled_ = false;
   UseRecordingClient(&client);
 
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
   IdleSpellCheckController& idle =
       GetFrame().GetSpellChecker().GetIdleSpellCheckController();
   idle.Deactivate();
 
-  GetDictionary()->removeWords(script_state, {"zzzz"});
+  GetDictionary()->removeWords({"zzzz"});
 
   EXPECT_EQ(client.change_count_, 1);
   EXPECT_EQ(idle.GetState(), IdleSpellCheckController::State::kInactive);
@@ -495,10 +454,7 @@ TEST_F(SpellCheckCustomDictionaryTest,
   SetSpellCheckEnabled(false);
   ASSERT_FALSE(Client()->IsSpellCheckingEnabled());
 
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
-  GetDictionary()->addWords(script_state, {"zzzz"});
+  GetDictionary()->addWords({"zzzz"});
 
   SetSpellCheckEnabled(true);
   InitializeSpellCheck("en-US");
@@ -515,6 +471,49 @@ TEST_F(SpellCheckCustomDictionaryTest,
                           nullptr);
   EXPECT_EQ(misspelling_start, 0u);
   EXPECT_EQ(misspelling_end, 4u);
+}
+
+// A document without a frame, such as one from createHTMLDocument(), has its
+// own dictionary, and calling it must not change the words of the frame whose
+// script created the document.
+TEST_F(SpellCheckCustomDictionaryTest, FramelessDocumentIsNoOp) {
+  RecordingTextCheckClient client;
+  UseRecordingClient(&client);
+
+  Document* frameless = GetDocument().implementation().createHTMLDocument();
+  ASSERT_FALSE(frameless->GetFrame());
+  SpellCheckCustomDictionary* dict =
+      DocumentSpellCheckCustomDictionary::spellCheckCustomDictionary(
+          *frameless);
+  ASSERT_NE(dict, GetDictionary());
+
+  dict->addWords({"zzzz"});
+  dict->removeWords({"zzzz"});
+
+  EXPECT_EQ(client.change_count_, 0);
+}
+
+// A dictionary kept after its document was navigated away from must not
+// change the words of the document now in the frame.
+TEST_F(SpellCheckCustomDictionaryTest, ReplacedDocumentIsNoOp) {
+  RecordingTextCheckClient client;
+  UseRecordingClient(&client);
+
+  Persistent<SpellCheckCustomDictionary> old_dict = GetDictionary();
+  NavigateTo(KURL("https://example.com/"));
+  SpellCheckCustomDictionary* new_dict =
+      DocumentSpellCheckCustomDictionary::spellCheckCustomDictionary(
+          GetDocument());
+  ASSERT_NE(new_dict, old_dict);
+
+  old_dict->addWords({"zzzz"});
+  old_dict->removeWords({"zzzz"});
+  EXPECT_EQ(client.change_count_, 0);
+
+  new_dict->addWords({"zzzz"});
+  EXPECT_EQ(client.change_count_, 1);
+  ASSERT_EQ(client.last_added_.size(), 1u);
+  EXPECT_EQ(client.last_added_[0], "zzzz");
 }
 
 }  // namespace

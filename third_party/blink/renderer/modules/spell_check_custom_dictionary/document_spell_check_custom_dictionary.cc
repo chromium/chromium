@@ -37,7 +37,8 @@ class DocumentSpellCheckCustomDictionaryImpl final
   SpellCheckCustomDictionary* GetOrCreate() {
     if (!spell_check_custom_dictionary_) {
       spell_check_custom_dictionary_ =
-          MakeGarbageCollected<SpellCheckCustomDictionary>();
+          MakeGarbageCollected<SpellCheckCustomDictionary>(
+              *GetSupplementable());
     }
     return spell_check_custom_dictionary_.Get();
   }
