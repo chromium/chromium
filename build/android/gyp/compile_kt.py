@@ -7,6 +7,7 @@
 import argparse
 import logging
 import os
+import platform
 import shutil
 import sys
 import time
@@ -15,6 +16,10 @@ import compile_java
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+
+_KOTLINC_GRAALVM_PATH = os.path.join(
+    build_utils.KOTLIN_HOME, 'bin', 'kotlinc-graalvm'
+)
 
 
 def _RunCompiler(
@@ -160,7 +165,23 @@ def main(argv):
     argv = build_utils.ExpandFileArgs(argv)
     args, source_files = _ParseOptions(argv)
 
-    kotlinc_cmd = [build_utils.KOTLINC_PATH]
+    if sys.platform == 'linux' and platform.machine() == 'x86_64':
+        kotlinc_cmd = [
+            _KOTLINC_GRAALVM_PATH,
+            '-Xmx1G',
+            # The binary cannot infer this from its own location.
+            '-kotlin-home',
+            build_utils.KOTLIN_HOME,
+            # This plugin lives in jars that are not part of the binary.
+            '-Xdisable-default-scripting-plugin',
+        ]
+    else:
+        kotlinc_cmd = [
+            build_utils.KOTLINC_PATH,
+            # We typically set a default of 1G for java commands, see
+            # build_utils.JavaCmd. This may help prevent OOMs.
+            '-J-Xmx1G',
+        ]
 
     kotlinc_cmd += [
         # Keep consistent with javac_args release flag in
@@ -176,9 +197,6 @@ def main(argv):
         '-no-stdlib',
         # Avoid depending on the bundled Kotlin reflect libs.
         '-no-reflect',
-        # We typically set a default of 1G for java commands, see
-        # build_utils.JavaCmd. This may help prevent OOMs.
-        '-J-Xmx1G',
     ]
     if args.compiler_plugin_jar:
         kotlinc_cmd += [
