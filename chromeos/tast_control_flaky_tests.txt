@@ -51,3 +51,6 @@ tast.ui.ChromeCrashReporterMetrics.miss_crashpad
 # b/567899351
 tast.crash.SenderNoConsent.fieldtrial_testing_config_on
 
+# b/570424424 b/570419602
+tast.shimlessrma.CancelFlow.welcome_cancel_critical
+tast.shimlessrma.CancelFlow.welcome_next_cancel_critical
