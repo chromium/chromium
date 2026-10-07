@@ -1230,6 +1230,18 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 // Configures the constraints for the panel layout.
 - (void)applyPanelLayoutConstraints {
+  // Bottom constraints are created in `layoutInParentView:` when moving to a
+  // parent view controller. Trait changes can fire earlier when the view is
+  // added to a parent view with different traits.
+  if (!_outerBottomConstraint || !_innerBottomConstraint) {
+    return;
+  }
+
+  CHECK(_leadingConstraint);
+  CHECK(_trailingConstraint);
+  CHECK(_heightConstraint);
+  CHECK(_widthRestrictedConstraints);
+
   UIView* view = self.view;
 
   [NSLayoutConstraint deactivateConstraints:_widthRestrictedConstraints];
@@ -1271,6 +1283,18 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 // Configures the constraints for the sheet layout.
 - (void)applySheetLayoutConstraints {
+  // Bottom constraints are created in `layoutInParentView:` when moving to a
+  // parent view controller. Trait changes can fire earlier when the view is
+  // added to a parent view with different traits.
+  if (!_outerBottomConstraint || !_innerBottomConstraint) {
+    return;
+  }
+
+  CHECK(_leadingConstraint);
+  CHECK(_trailingConstraint);
+  CHECK(_heightConstraint);
+  CHECK(_widthRestrictedConstraints);
+
   UIView* view = self.view;
 
   [NSLayoutConstraint deactivateConstraints:_sidePanelConstraints];

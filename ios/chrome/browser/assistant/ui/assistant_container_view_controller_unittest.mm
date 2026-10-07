@@ -660,4 +660,41 @@ TEST_F(AssistantContainerViewControllerTest,
   view_controller_.isAnimating = NO;
 }
 
+// Tests that adding the container view to a parent view with different size
+// class traits before `didMoveToParentViewController:` does not crash when
+// trait changes fire before parent-relative bottom constraints are created.
+TEST_F(AssistantContainerViewControllerTest,
+       TraitChangeBeforeDidMoveToParentViewController) {
+  UIViewController* child = [[UIViewController alloc] init];
+  AssistantContainerViewController* container_vc =
+      [[AssistantContainerViewController alloc] initWithViewController:child];
+  container_vc.minimizedDetentHeight = kAssistantContainerMinimizedDetentHeight;
+
+  // Load the view before moving to the parent view controller so trait change
+  // registration in `viewDidLoad` is active.
+  UIView* container_view = container_vc.view;
+  ASSERT_TRUE(container_view);
+
+  UIViewController* parent_vc = [[UIViewController alloc] init];
+  parent_vc.view.frame = window_.bounds;
+  // Force a trait difference relative to the unparented container view.
+  UIUserInterfaceSizeClass initial_size_class =
+      container_vc.traitCollection.horizontalSizeClass;
+  parent_vc.traitOverrides.horizontalSizeClass =
+      initial_size_class == UIUserInterfaceSizeClassRegular
+          ? UIUserInterfaceSizeClassCompact
+          : UIUserInterfaceSizeClassRegular;
+  [window_.rootViewController.view addSubview:parent_vc.view];
+  [window_ layoutIfNeeded];
+
+  [parent_vc addChildViewController:container_vc];
+  [parent_vc.view addSubview:container_view];
+  [parent_vc.view layoutIfNeeded];
+  [container_vc didMoveToParentViewController:parent_vc];
+  [parent_vc.view layoutIfNeeded];
+
+  EXPECT_NE(nil, container_vc.outerBottomConstraint);
+  [parent_vc.view removeFromSuperview];
+}
+
 }  // namespace

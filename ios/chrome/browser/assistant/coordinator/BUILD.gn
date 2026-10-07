@@ -35,3 +35,26 @@ source_set("commands") {
     "//ios/chrome/browser/assistant/ui",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "assistant_container_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/assistant/ui:detent",
+    "//ios/chrome/browser/fullscreen/coordinator",
+    "//ios/chrome/browser/fullscreen/model",
+    "//ios/chrome/browser/fullscreen/public:metrics",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

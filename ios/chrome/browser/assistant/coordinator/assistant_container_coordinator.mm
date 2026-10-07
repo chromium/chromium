@@ -75,6 +75,13 @@ enum class TransitionState {
   BOOL _grabberHidden;
   // The tab grid state being observed.
   TabGridState* _tabGridState;
+  // The last bottom fullscreen progress received from
+  // `FullscreenBrowserAgent`. Unlike the legacy `FullscreenUIUpdater`
+  // (which only forwards progress changes), `FullscreenBrowserAgent`
+  // broadcasts state updates for both progress changes and obscured inset
+  // range changes (such as keyboard appearance). Tracking the last
+  // progress allows ignoring updates where the progress did not change.
+  std::optional<CGFloat> _lastFullscreenProgress;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -423,6 +430,11 @@ enum class TransitionState {
         FullscreenBrowserAgent::FromBrowser(self.browser);
     _fullscreenBrowserAgentObserverBridge =
         std::make_unique<FullscreenBrowserAgentObserverBridge>(self, agent);
+    // Record the initial progress when the container is presented. Even if
+    // the toolbars are currently collapsed (progress == 0), the container
+    // is presented on screen, so we should only react if the progress
+    // changes later (e.g. when the user scrolls).
+    _lastFullscreenProgress = agent->bottom_progress();
   } else {
     FullscreenController* fullscreenController =
         FullscreenController::FromBrowser(self.browser);
@@ -435,6 +447,7 @@ enum class TransitionState {
 - (void)stopFullscreenObservation {
   _fullscreenUIUpdater = nullptr;
   _fullscreenBrowserAgentObserverBridge = nullptr;
+  _lastFullscreenProgress = std::nullopt;
 }
 
 // Called when the view's trait collection changes.
@@ -489,8 +502,17 @@ enum class TransitionState {
 
 #pragma mark - FullscreenBrowserAgentObserving
 
-- (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
-  [self updateForFullscreenProgress:agent->bottom_progress()];
+- (void)fullscreenDidUpdateState:(FullscreenBrowserAgent*)agent {
+  // `DidUpdateState` is also broadcast when `SetKeyboardObscuredInset` updates
+  // `insets.bottom` (e.g. when the keyboard is shown or hidden) without
+  // changing `bottom_progress()`. Re-applying an unchanged progress of 0 would
+  // hide and minimize a container presented while the toolbars were collapsed.
+  CGFloat progress = agent->bottom_progress();
+  if (_lastFullscreenProgress == progress) {
+    return;
+  }
+  _lastFullscreenProgress = progress;
+  [self updateForFullscreenProgress:progress];
 }
 
 #pragma mark - TabGridStateObserving
