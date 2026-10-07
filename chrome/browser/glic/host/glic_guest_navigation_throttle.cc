@@ -23,10 +23,13 @@ void GlicGuestNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
   content::NavigationHandle& handle = registry.GetNavigationHandle();
-  if (handle.IsInMainFrame() && IsGlicGuest(handle.GetWebContents())) {
-    registry.AddThrottle(
-        std::make_unique<GlicGuestNavigationThrottle>(registry));
+  if (!handle.IsInPrimaryMainFrame() && !handle.IsInPrerenderedMainFrame()) {
+    return;
   }
+  if (!IsGlicGuest(handle.GetWebContents())) {
+    return;
+  }
+  registry.AddThrottle(std::make_unique<GlicGuestNavigationThrottle>(registry));
 }
 
 GlicGuestNavigationThrottle::GlicGuestNavigationThrottle(
@@ -37,12 +40,17 @@ GlicGuestNavigationThrottle::~GlicGuestNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 GlicGuestNavigationThrottle::WillStartRequest() {
-  return HandleRequest();
+  return CheckUrl();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 GlicGuestNavigationThrottle::WillRedirectRequest() {
-  return HandleRequest();
+  return CheckUrl();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+GlicGuestNavigationThrottle::WillCommitWithoutUrlLoader() {
+  return CheckUrl();
 }
 
 const char* GlicGuestNavigationThrottle::GetNameForLogging() {
@@ -50,29 +58,26 @@ const char* GlicGuestNavigationThrottle::GetNameForLogging() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-GlicGuestNavigationThrottle::HandleRequest() {
-  GlicWebClientManager* manager =
-      GetWebClientManagerForWebContents(navigation_handle()->GetWebContents());
-  if (!manager) {
-    return PROCEED;
-  }
-
+GlicGuestNavigationThrottle::CheckUrl() {
   const GURL& url = navigation_handle()->GetURL();
 
-  if (url.IsAboutBlank()) {
-    return PROCEED;
-  }
+  GlicWebClientManager* manager =
+      GetWebClientManagerForWebContents(navigation_handle()->GetWebContents());
 
   if (IsAdminBlockedUrl(url)) {
-    manager->OnGuestNavigationBlocked(mojom::GuestPageType::kDisabledByAdmin);
-    return CANCEL;
+    if (manager) {
+      manager->OnGuestNavigationBlocked(mojom::GuestPageType::kDisabledByAdmin);
+    }
+    return CANCEL_AND_IGNORE;
   }
 
   if (!IsGuestOriginAllowed(
           url::Origin::Create(url),
           navigation_handle()->GetWebContents()->GetBrowserContext())) {
-    manager->OnGuestNavigationBlocked(mojom::GuestPageType::kLoadError);
-    return CANCEL;
+    if (manager) {
+      manager->OnGuestNavigationBlocked(mojom::GuestPageType::kLoadError);
+    }
+    return CANCEL_AND_IGNORE;
   }
 
   return PROCEED;

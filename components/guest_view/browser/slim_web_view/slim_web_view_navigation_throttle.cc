@@ -39,6 +39,27 @@ class SlimWebViewNavigationThrottle : public content::NavigationThrottle {
     return CheckUrl(navigation_handle()->GetURL());
   }
 
+  ThrottleCheckResult WillCommitWithoutUrlLoader() override {
+    // Navigations that commit without a URL loader (about:blank, about:srcdoc,
+    // other empty-document schemes) never reach WillStartRequest(). None of the
+    // empty-document URLs are on an HTTP(S) allowlist, and about:blank would
+    // inherit the initiator subframe's origin. Cancel them to prevent moving
+    // an off-allowlist origin into the main frame. Same-document navigations
+    // keep their already-committed allowlisted URL and proceed.
+    //
+    // Note: Only PROCEED, DEFER, and CANCEL_AND_IGNORE are supported for
+    // WillCommitWithoutUrlLoader; BLOCK_REQUEST cannot be used here.
+    const GURL& url = navigation_handle()->GetURL();
+    if (url.IsAboutBlank() || url.IsAboutSrcdoc() ||
+        !url.SchemeIsHTTPOrHTTPS()) {
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
+    if (CheckUrl(url).action() != content::NavigationThrottle::PROCEED) {
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
+    return PROCEED;
+  }
+
   const char* GetNameForLogging() override {
     return "SlimWebViewNavigationThrottle";
   }
@@ -68,12 +89,12 @@ class SlimWebViewNavigationThrottle : public content::NavigationThrottle {
 void MaybeCreateAndAddSlimWebViewNavigationThrottle(
     content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& handle = registry.GetNavigationHandle();
-  if (!handle.IsInMainFrame()) {
+  if (!handle.IsInPrimaryMainFrame() && !handle.IsInPrerenderedMainFrame()) {
     return;
   }
 
   auto* guest = SlimWebViewGuest::FromNavigationHandle(&handle);
-  if (!guest || !guest->HasAllowedOrigins()) {
+  if (!guest || !guest->HasAllowedOrigins(RequestResourceType::kMainFrame)) {
     return;
   }
 

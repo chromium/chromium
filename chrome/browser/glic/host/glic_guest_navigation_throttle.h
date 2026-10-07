@@ -27,10 +27,11 @@ class GlicGuestNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillCommitWithoutUrlLoader() override;
   const char* GetNameForLogging() override;
 
  private:
-  ThrottleCheckResult HandleRequest();
+  ThrottleCheckResult CheckUrl();
 };
 
 }  // namespace glic

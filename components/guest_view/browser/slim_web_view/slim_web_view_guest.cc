@@ -290,6 +290,12 @@ bool SlimWebViewGuest::HasAllowedOrigins() const {
   return !!allowed_origins_params_;
 }
 
+bool SlimWebViewGuest::HasAllowedOrigins(
+    RequestResourceType resource_type) const {
+  return allowed_origins_params_ &&
+         allowed_origins_params_->resource_types.contains(resource_type);
+}
+
 base::expected<void, std::string> SlimWebViewGuest::IsUrlAllowed(
     RequestResourceType resource_type,
     const GURL& url) const {

@@ -435,12 +435,11 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   // Before setting up SSL error detection, configure SSLErrorHandler to invoke
   // the relevant extension API whenever an SSL interstitial is shown.
-  SSLErrorHandler::SetClientCallbackOnInterstitialsShown(
-      base::BindRepeating([](content::WebContents* web_contents,
-                             const GURL& page_url, const std::string& reason,
-                             int net_error_code) {
-        MaybeTriggerSecurityInterstitialShownEvent(
-            web_contents, page_url, reason, net_error_code, "");
+  SSLErrorHandler::SetClientCallbackOnInterstitialsShown(base::BindRepeating(
+      [](content::WebContents* web_contents, const GURL& page_url,
+         const std::string& reason, int net_error_code) {
+        MaybeTriggerSecurityInterstitialShownEvent(web_contents, page_url,
+                                                   reason, net_error_code, "");
       }));
   registry.AddThrottle(std::make_unique<SSLErrorNavigationThrottle>(
       registry, base::BindOnce(&HandleSSLErrorWrapper),
@@ -612,7 +611,6 @@ void CreateAndAddChromeThrottlesForNavigation(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-
   MaybeCreateAndAddVisitedLinkNavigationThrottle(registry);
 
   data_sharing::DataSharingNavigationThrottle::MaybeCreateAndAdd(registry);
@@ -652,4 +650,10 @@ void CreateAndAddChromeThrottlesForCommitWithoutUrlLoader(
   // navigations that commit without a URL loader (e.g. a subframe navigating
   // the main frame to about:blank), which never reach WillStartRequest().
   pwc::PwcNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  glic::GlicGuestNavigationThrottle::MaybeCreateAndAdd(registry);
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
+  guest_view::MaybeCreateAndAddSlimWebViewNavigationThrottle(registry);
+#endif
 }

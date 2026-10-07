@@ -1068,6 +1068,7 @@ source_set("browser_tests") {
       "glic_user_status_browsertest.cc",
       "host/context/glic_tab_data_browsertest.cc",
       "host/glic_focus_browsertest.cc",
+      "host/glic_guest_navigation_throttle_browsertest.cc",
       "host/glic_webui_browsertest.cc",
       "host/guest_util_browsertest.cc",
       "public/glic_enabling_browsertest.cc",

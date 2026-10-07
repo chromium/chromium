@@ -57,6 +57,9 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   // Returns true if an origin allowlist was provided at creation time.
   bool HasAllowedOrigins() const;
+  // Returns true if an origin allowlist was provided at creation time for the
+  // specified resource type.
+  bool HasAllowedOrigins(RequestResourceType resource_type) const;
 
   // Returns an error message if the URL is not allowed, based on scheme and
   // allowed origins.
