@@ -139,6 +139,7 @@ DocumentFragment* ParseHTMLFragmentInternal(
     return fragment;
   }
 
+  CHECK(!sanitizer);
   bool was_valid = fragment->ParseXML(markup, context_element, exception_state,
                                       parser_content_policy);
   if (!was_valid) {
@@ -249,14 +250,11 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
           ? kAllowScriptingContentAndDoNotMarkAlreadyStarted
           : kAllowScriptingContent;
 
-  const bool should_sanitize =
-      options.WillSanitize() ||
-      (config.sanitizer_mode == Sanitizer::Mode::kSafe);
-
-  StreamingSanitizer* streaming_sanitizer = nullptr;
-  if (should_sanitize) {
-    streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
-        config.sanitizer_mode, options, exception_state);
+  StreamingSanitizer* streaming_sanitizer =
+      SanitizerAPI::CreateStreamingSanitizer(config.sanitizer_mode, options,
+                                             exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
   }
 
   if (streaming_sanitizer &&
@@ -268,16 +266,9 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
   DocumentFragment* fragment = ParseHTMLFragmentInternal(
       markup, config.context_element, content_policy,
       config.parse_declarative_shadows, config.force_html,
-      should_sanitize ? ForceInertTemplate::kForce
-                      : ForceInertTemplate::kDontForce,
+      streaming_sanitizer ? ForceInertTemplate::kForce
+                          : ForceInertTemplate::kDontForce,
       config.registry, exception_state, streaming_sanitizer);
-
-  if (fragment && should_sanitize &&
-      (!streaming_sanitizer || !fragment->GetDocument().IsHTMLDocument())) {
-    SanitizerAPI::SanitizeInternal(config.sanitizer_mode,
-                                   config.context_element, fragment, options,
-                                   exception_state);
-  }
 
   if (exception_state.HadException()) {
     return nullptr;

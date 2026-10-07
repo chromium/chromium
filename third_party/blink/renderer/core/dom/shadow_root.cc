@@ -172,7 +172,7 @@ void ShadowRoot::setInnerHTML(
   auto [compliant_string, resolved_options] =
       TrustedTypesCheckForLegacyFragment(
           html, GetExecutionContext(), trusted_types_names::kShadowRoot,
-          trusted_types_names::kInnerHTML, GetDocument().IsXMLDocument(),
+          trusted_types_names::kInnerHTML, !GetDocument().IsHTMLDocument(),
           exception_state);
   if (exception_state.HadException()) {
     return;

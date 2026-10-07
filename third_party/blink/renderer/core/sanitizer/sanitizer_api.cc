@@ -60,46 +60,13 @@ bool SanitizerAPI::AllowMutatingRootElement(
          !svg_names::kScriptTag.Matches(real_element->TagQName());
 }
 
-void SanitizerAPI::SanitizeInternal(Sanitizer::Mode mode,
-                                    const ContainerNode* context_element,
-                                    ContainerNode* root_element,
-                                    FragmentParserOptions options,
-                                    ExceptionState& exception_state) {
-  // Per spec, we need to parse & sanitize into an inert (non-active) document.
-  CHECK(!root_element->GetDocument().IsActive());
-
-  if (exception_state.HadException()) {
-    root_element->setTextContent("");
-    return;
-  }
-
-  if (!AllowMutatingRootElement(mode, context_element)) {
-    root_element->setTextContent("");
-    return;
-  }
-
-  const Sanitizer* sanitizer =
-      SanitizerFromOptions(options, mode, exception_state);
-  if (exception_state.HadException()) {
-    root_element->setTextContent("");
-    return;
-  }
-
-  CHECK(sanitizer);
-  switch (mode) {
-    case Sanitizer::Mode::kSafe:
-      sanitizer->SanitizeSafe(root_element);
-      break;
-    case Sanitizer::Mode::kUnsafe:
-      sanitizer->SanitizeUnsafe(root_element);
-      break;
-  }
-}
-
 StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizer(
     Sanitizer::Mode mode,
     FragmentParserOptions options,
     ExceptionState& exception_state) {
+  if (mode == Sanitizer::Mode::kUnsafe && !options.WillSanitize()) {
+    return nullptr;
+  }
   const Sanitizer* sanitizer =
       SanitizerFromOptions(options, mode, exception_state);
   if (exception_state.HadException()) {

@@ -190,9 +190,9 @@ void Skeleton::HTMLFetchFinished(const String& html, bool success) {
 
 void Skeleton::ParseSkeletonHTML(const String& html) {
   CHECK(skeleton_document_);
-  skeleton_document_->SetContent(html);
-  const Sanitizer* sanitizer = SanitizerBuiltins::GetBaseline();
-  sanitizer->SanitizeSafe(skeleton_document_);
+  skeleton_document_->SetContent(
+      html, MakeGarbageCollected<StreamingSanitizer>(
+                SanitizerBuiltins::GetBaseline(), Sanitizer::Mode::kSafe));
 }
 
 void Skeleton::Trace(Visitor* visitor) const {

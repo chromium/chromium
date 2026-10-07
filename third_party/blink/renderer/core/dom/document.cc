@@ -2012,6 +2012,9 @@ void Document::SetContent(const String& content,
   parser_->Append(content);
   close();
 
+  if (sanitizer) {
+    sanitizer->DidParseDocument(this);
+  }
   sanitizer_ = nullptr;
 }
 
@@ -10277,9 +10280,6 @@ Document* Document::parseHTMLInternal(ExecutionContext* context,
   doc->setAllowDeclarativeShadowRoots(true);
   doc->SetContent(html, sanitizer);
   doc->SetMimeType(keywords::kTextHtml);
-  if (sanitizer) {
-    sanitizer->DidParseDocument(doc);
-  }
   return doc;
 }
 

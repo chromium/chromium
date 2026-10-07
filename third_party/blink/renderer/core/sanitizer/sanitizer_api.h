@@ -18,11 +18,6 @@ class FragmentParserOptions;
 
 class CORE_EXPORT SanitizerAPI final {
  public:
-  static void SanitizeInternal(Sanitizer::Mode mode,
-                               const ContainerNode* context_element,
-                               ContainerNode* root_element,
-                               FragmentParserOptions options,
-                               ExceptionState& exception_state);
   static bool AllowMutatingRootElement(Sanitizer::Mode mode,
                                        const ContainerNode* context_element);
   static StreamingSanitizer* CreateStreamingSanitizer(

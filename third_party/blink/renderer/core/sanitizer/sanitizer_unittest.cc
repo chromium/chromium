@@ -34,9 +34,9 @@ TEST_P(SanitizerTest, SvgSetWithMultipleColons) {
   // Payload from crbug.com/487863654.
   const char* payload =
       R"X(<svg viewBox="0 0 240 80" xmlns:xlink="http://www.w3.org/1999/xlink"><a id="foo"><text x="20" y="20">click me</text></a><set href="#foo" attributeName="xlink:href:x" to="javascript:alert()"></set></svg>)X";
-  SetBodyInnerHTML(payload);
-  Sanitizer::CreateEmpty()->Sanitize(GetDocument().body(),
-                                     Sanitizer::Mode::kSafe);
+  GetDocument().SetContent(
+      payload, MakeGarbageCollected<StreamingSanitizer>(
+                   Sanitizer::CreateEmpty(), Sanitizer::Mode::kSafe));
 
   if (split_on_first_colon) {
     // Splitting on the first colon, per the DOM "validate and extract"

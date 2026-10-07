@@ -958,40 +958,7 @@ void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
   }
 }
 
-void Sanitizer::SanitizeTemplate(Node* node, Mode safe) const {
-  // https://wicg.github.io/sanitizer-api/#sanitize-core,
-  // Step 1.5.5: Recurse into template content.
-  if (IsA<HTMLTemplateElement>(node)) {
-    Node* content = To<HTMLTemplateElement>(node)->content();
-    if (content) {
-      Sanitize(content, safe);
-    }
-  }
-  // Step 1.5.6: Recurse into shadow.
-  if (node->GetShadowRoot()) {
-    Node* shadow_root = &node->GetShadowRoot()->RootNode();
-    CHECK(shadow_root);
-    Sanitize(shadow_root, safe);
-  }
-}
-
-void Sanitizer::SanitizeSafe(Node* root) const {
-  // TODO(vogelheim): This is hideously inefficient, but very easy to implement.
-  // We'll use this for now, so we can fully build out tests & other
-  // infrastructure, and worry about efficiency later.
-  CHECK(!root->GetDocument().IsActive());
-  Sanitizer* safe = MakeGarbageCollected<Sanitizer>();
-  safe->setFrom(*this);
-  safe->removeUnsafe();
-  safe->Sanitize(root, Mode::kSafe);
-}
-
-void Sanitizer::SanitizeUnsafe(Node* root) const {
-  CHECK(!root->GetDocument().IsActive());
-  Sanitize(root, Mode::kUnsafe);
-}
-
-Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
+Sanitizer::Action Sanitizer::ActionForNode(Node* node) const {
   switch (node->getNodeType()) {
     case Node::NodeType::kElementNode: {
       // Step 5: Child implements Element.
@@ -1044,7 +1011,6 @@ Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
     case Node::NodeType::kDocumentTypeNode:
       // Step 2: If child implement DocumentType, then continue.
       // Should only happen when parsing full documents w/ parseHTML.
-      DCHECK(root->IsDocumentNode());
       return Action::kKeep;
     default:
       // Step 1: Assert: child implements Text, Comment, Element, DocType.
@@ -1068,51 +1034,8 @@ void ReplaceWithChildren(Node& node) {
 }
 }  // namespace
 
-void Sanitizer::Sanitize(Node* root, Mode safe) const {
-  // https://wicg.github.io/sanitizer-api/#sanitize-core
-  // This is structured a little differently than the spec, for better
-  // readability. For step 1.5, we may call into helper methods.
-
-  SanitizeTemplate(root, safe);
-  Node* node = NodeTraversal::Next(*root);
-  while (node) {
-    switch (ActionForNode(node, root)) {
-      case Action::kKeepElement: {
-        // This performs Steps 5.5 - 5.9:
-        CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
-        ProcessElement(To<Element>(node), safe);
-        SanitizeTemplate(node, safe);
-        node = NodeTraversal::Next(*node);
-        break;
-      }
-      case Action::kKeep: {
-        CHECK_NE(node->getNodeType(), Node::NodeType::kElementNode);
-        node = NodeTraversal::Next(*node);
-        break;
-      }
-      case Action::kReplaceWithChildren: {
-        // Steps 5.2.*:
-        CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
-        Node* next_node = node->firstChild();
-        if (!next_node) {
-          next_node = NodeTraversal::Next(*node);
-        }
-        ReplaceWithChildren(*node);
-        node = next_node;
-        break;
-      }
-      case Action::kDrop: {
-        Node* next_node = NodeTraversal::NextSkippingChildren(*node);
-        node->parentNode()->removeChild(node);
-        node = next_node;
-        break;
-      }
-    }
-  }
-}
-
 Sanitizer::Action Sanitizer::SanitizeSingleNode(Node* node, Mode safe) const {
-  Action action = ActionForNode(node, node);
+  Action action = ActionForNode(node);
   if (action == Action::kKeepElement) {
     ProcessElement(To<Element>(node), safe);
     return Action::kKeep;
@@ -1518,7 +1441,7 @@ bool Sanitizer::AllowIsAttribute(const QualifiedName& element_name) const {
 void StreamingSanitizer::DidParseDocument(Document* document) {
   Element* root = document->documentElement();
   CHECK(root);
-  switch (sanitizer_->ActionForNode(root, root)) {
+  switch (sanitizer_->ActionForNode(root)) {
     case Sanitizer::Action::kKeepElement:
       sanitizer_->ProcessElement(root, mode_);
       break;

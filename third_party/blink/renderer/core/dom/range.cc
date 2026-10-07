@@ -1011,7 +1011,7 @@ DocumentFragment* Range::createContextualFragment(
       markup, resolved_options, owner_document_->GetExecutionContext(),
       trusted_types_names::kRange,
       trusted_types_names::kCreateContextualFragment,
-      owner_document_->IsXMLDocument(), exception_state);
+      !owner_document_->IsHTMLDocument(), exception_state);
 
   if (exception_state.HadException()) {
     return nullptr;
