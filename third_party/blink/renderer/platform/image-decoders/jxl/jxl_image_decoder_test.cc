@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -156,6 +158,39 @@ TEST_F(JXLImageDecoderTest, DecodeCmykWithIccProfile) {
   expect_color_near(192, 64, SkColorSetRGB(34, 31, 33));
   expect_color_near(192, 192, SkColorSetRGB(236, 27, 68));
   expect_color_near(320, 320, SkColorSetRGB(0, 182, 178));
+}
+
+// Test that a PQ image's intensity_target is reported as its peak luminance.
+// The two fixtures hold identical pixels and differ only in intensity_target.
+TEST_F(JXLImageDecoderTest, PqIntensityTargetIsContentLightLevel) {
+  const auto max_cll = [](const char* file) {
+    auto decoder = CreateJXLDecoder();
+    scoped_refptr<SharedBuffer> data =
+        ReadFileToSharedBuffer(kJxlTestDir, file);
+    CHECK(data);
+    decoder->SetData(data.get(), true);
+    CHECK(decoder->IsSizeAvailable());
+    const gfx::HDRMetadata& hdr_metadata = decoder->GetHDRMetadata();
+    return hdr_metadata.HasCLLI()
+               ? std::optional<float>(hdr_metadata.GetCLLI().fMaxCLL)
+               : std::nullopt;
+  };
+
+  EXPECT_EQ(max_cll("pq_intensity_target_600.jxl"), 600.f);
+  EXPECT_EQ(max_cll("pq_intensity_target_10000.jxl"), 10000.f);
+}
+
+// Test that an SDR image's intensity_target is not reported as HDR metadata.
+TEST_F(JXLImageDecoderTest, SdrImageHasNoContentLightLevel) {
+  auto decoder = CreateJXLDecoder();
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kJxlTestDir, "3x3_srgb_lossless.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+
+  EXPECT_FALSE(decoder->GetHDRMetadata().HasCLLI());
 }
 
 // Test grayscale+alpha fixture carrying an embedded ICC profile.

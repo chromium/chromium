@@ -181,6 +181,8 @@
 ../../web_tests/external/wpt/jpegxl/resources/orientation1_identity.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation6_rotate_90_cw.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation8_rotate_90_ccw.jxl
+../../web_tests/external/wpt/jpegxl/resources/pq_intensity_target_10000.jxl
+../../web_tests/external/wpt/jpegxl/resources/pq_intensity_target_600.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive-1.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive-2.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive-3.jxl

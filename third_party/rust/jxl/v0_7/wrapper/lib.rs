@@ -46,6 +46,7 @@ mod ffi {
         uses_original_profile: bool,
         orientation: u32,
         is_grayscale: bool,
+        intensity_target: f32,
     }
 
     /// Result of a process call.
@@ -482,6 +483,7 @@ impl From<&JxlBasicInfo> for JxlRsBasicInfo {
             // Note: is_grayscale is set by get_basic_info() after checking the
             // color profile, since JxlBasicInfo doesn't contain color info.
             is_grayscale: false,
+            intensity_target: info.tone_mapping.intensity_target,
         }
     }
 }

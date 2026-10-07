@@ -45,6 +45,15 @@ constexpr uint64_t kMaxDecodedSamples = 64ULL * 1024 * 1024;
 constexpr uint64_t kMaxDecodedSamples = 1024ULL * 1024 * 1024;
 #endif
 
+// Content light level metadata is only consumed when tone mapping these
+// transfer functions.
+bool IsToneMappedTransferFunction(const skia::ColorProfile& profile) {
+  skcms_TransferFunction trfn;
+  profile.GetSkColorSpace()->transferFn(&trfn);
+  const skcms_TFType type = skcms_TransferFunction_getType(&trfn);
+  return type == skcms_TFType_PQ || type == skcms_TFType_HLG;
+}
+
 }  // namespace
 
 JXLImageDecoder::JXLImageDecoder(AlphaOption alpha_option,
@@ -160,6 +169,11 @@ bool JXLImageDecoder::SetBasicInfo() {
       return false;
     }
     cmyk_color_profile_ = profile;
+  }
+  // intensity_target is a JPEG XL codestream's only statement of its peak
+  // luminance, which is what CLLI MaxCLL states in other formats.
+  if (profile && IsToneMappedTransferFunction(*profile)) {
+    hdr_metadata_.SetCLLI({.fMaxCLL = basic_info_->intensity_target});
   }
   if (!IgnoresColorSpace() && profile) {
     SetEmbeddedColorProfile(std::move(profile));
