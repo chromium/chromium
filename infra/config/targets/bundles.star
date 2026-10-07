@@ -4449,6 +4449,7 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_mac_specific_gtests",
     targets = [
+        "screen_capture_kit_mac_tests",
         # Face and barcode detection unit tests, which currently only run on
         # Mac OS, and require physical hardware.
         "services_unittests",

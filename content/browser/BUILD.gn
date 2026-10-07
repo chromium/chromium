@@ -2925,6 +2925,8 @@ source_set("browser") {
         "media/capture/desktop_capture_device_mac.h",
         "media/capture/desktop_capture_util_mac.h",
         "media/capture/desktop_capture_util_mac.mm",
+        "media/capture/fake_screen_capture_picker_mac.h",
+        "media/capture/fake_screen_capture_picker_mac.mm",
         "media/capture/io_surface_capture_device_base_mac.cc",
         "media/capture/io_surface_capture_device_base_mac.h",
         "media/capture/mouse_cursor_overlay_controller_mac.mm",

@@ -2217,6 +2217,16 @@ targets.tests.gtest_test(
     name = "sbox_validation_tests",
 )
 
+targets.tests.gtest_test(
+    name = "screen_capture_kit_mac_tests",
+    binary = "content_browsertests",
+    args = [
+        "--use-gpu-in-tests",
+        "--gtest_filter=*ScreenCaptureKitRealCaptureTest.*",
+        "--test-launcher-jobs=1",
+    ],
+)
+
 targets.tests.gpu_telemetry_test(
     name = "screenshot_sync_metal_passthrough_graphite_tests",
     telemetry_test_name = "screenshot_sync",

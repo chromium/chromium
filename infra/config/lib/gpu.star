@@ -43,6 +43,7 @@ _linux_specific_location_filters = []
 
 _mac_specific_location_filters = [
     # Inclusion filters.
+    cq.location_filter(path_regexp = "content/browser/media/capture/.+"),
     cq.location_filter(path_regexp = "services/shape_detection/.+"),
 ]
 

@@ -7,6 +7,7 @@
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
+#include "base/functional/callback_helpers.h"
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
@@ -27,7 +28,9 @@ CreateScreenCaptureKitDeviceMac(
     base::OnceCallback<void(content::DesktopMediaID::Id, SCStream*)>
         stream_created_callback,
     std::unique_ptr<PipScreenCaptureCoordinatorProxy>
-        pip_screen_capture_coordinator_proxy) API_AVAILABLE(macos(13.2));
+        pip_screen_capture_coordinator_proxy,
+    base::OnceClosure stop_callback = base::DoNothing())
+    API_AVAILABLE(macos(13.2));
 
 }  // namespace content
 
