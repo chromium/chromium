@@ -18,10 +18,13 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinPr
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 
 import android.graphics.Color;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -45,6 +49,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,6 +79,10 @@ public class EdgeToEdgeBottomChinMediatorTest {
     private final boolean mIsTablet;
 
     private static final int DEFAULT_HEIGHT = 60;
+    private static final int BAR_COLOR = Color.LTGRAY;
+    private static final int TAB_BACKGROUND_COLOR = Color.BLUE;
+    private static final int BOTTOM_BAR_HEIGHT = 180;
+    private static final int TOTAL_BOTTOM_CONTROLS_HEIGHT = BOTTOM_BAR_HEIGHT + DEFAULT_HEIGHT;
 
     public EdgeToEdgeBottomChinMediatorTest(boolean isTablet) {
         mIsTablet = isTablet;
@@ -450,6 +459,115 @@ public class EdgeToEdgeBottomChinMediatorTest {
                 mModel.get(CAN_SHOW));
 
         assertLayerVisibility(mIsTablet);
+    }
+
+    /**
+     * Tests that the bottom chin remains composited when browser controls scroll back on screen
+     * with BCIV enabled. Viz positions the chin and bottom bar together using the renderer's
+     * offset, which the browser learns only after viz draws it. Dropping the chin from the browser
+     * frame while scrolled off causes it to lag behind the bottom bar when scrolling back on,
+     * exposing the tab background underneath. See crbug.com/568447704.
+     */
+    @Test
+    public void testBciv_chinStillCompositedWhenRendererScrollsControlsBackOn() {
+        // Bind the model to a real scene layer, as EdgeToEdgeBottomChinCoordinator does, so the
+        // assertion is on what is actually submitted in the browser's compositor frame.
+        EdgeToEdgeBottomChinSceneLayer sceneLayer =
+                new EdgeToEdgeBottomChinSceneLayer(null) {
+                    @Override
+                    protected void initializeNative() {}
+                };
+        View androidView = new View(ContextUtils.getApplicationContext());
+        androidView.setLayoutParams(
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+        PropertyModelChangeProcessor.create(
+                mModel,
+                new EdgeToEdgeBottomChinViewBinder.ViewHolder(androidView, sceneLayer),
+                EdgeToEdgeBottomChinViewBinder::bind);
+
+        // Chin can show, BCIV is active and controls are fully shown with the bottom bar's color.
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        onToEdgeChange(DEFAULT_HEIGHT, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        mModel.set(OFFSET_TAG, OffsetTag.createRandom());
+        doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
+        doReturn(0).when(mBrowserControlsStateProvider).getBottomControlOffset();
+        // With BCIV, BottomControlsStacker dispatches the resting offset (0 for the bottom-most
+        // layer) and leaves the actual movement to viz.
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        mMediator.changeBottomChinColor(BAR_COLOR);
+        mMediator.changeBottomChinDividerColor(BAR_COLOR);
+        assertTrue(mModel.get(IS_VISIBLE));
+        assertTrue(sceneLayer.isSceneOverlayTreeShowing());
+        assertEquals(BAR_COLOR, mModel.get(COLOR));
+
+        // The renderer scrolls the controls fully off. The browser learns the new offset, and
+        // TabbedNavigationBarColorController switches the nav bar color to the tab background
+        // because BottomAttachedUiObserver no longer sees visible bottom controls.
+        // isVisible() returns false here (since bottomControlOffset >= HEIGHT), so the color change
+        // is cached and not applied immediately to the model.
+        doReturn(TOTAL_BOTTOM_CONTROLS_HEIGHT)
+                .when(mBrowserControlsStateProvider)
+                .getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        mMediator.changeBottomChinColor(TAB_BACKGROUND_COLOR);
+        mMediator.changeBottomChinDividerColor(TAB_BACKGROUND_COLOR);
+
+        // The renderer now scrolls / animates the controls back on (e.g. to an offset smaller than
+        // the chin height). Viz applies that offset to the bottom bar and chin OffsetTags in the
+        // next frame, before the browser is told about it. The browser frame at this point must
+        // therefore still contain the chin, painted to match the bottom bar it is attached to.
+        // isVisibleBasedOnOffset() remains true because mYOffset is 0, keeping the scene layer
+        // composited with the cached bottom controls color.
+        assertTrue(
+                "The chin must remain in the browser's compositor frame while BCIV controls its"
+                        + " position; otherwise viz moves the bottom bar back on screen before the"
+                        + " browser re-adds the chin, exposing the tab background under the bar.",
+                sceneLayer.isSceneOverlayTreeShowing());
+        assertTrue(mModel.get(IS_VISIBLE));
+        assertEquals(
+                "The composited chin must use the bottom controls color, not the tab background"
+                        + " color that was applied while the controls were scrolled off.",
+                BAR_COLOR,
+                mModel.get(COLOR));
+    }
+
+    @Test
+    public void testBciv_isVisibleFalseWhenStackerHidesChin() {
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        onToEdgeChange(DEFAULT_HEIGHT, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        mModel.set(OFFSET_TAG, OffsetTag.createRandom());
+        doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
+        doReturn(0).when(mBrowserControlsStateProvider).getBottomControlOffset();
+
+        // When the stacker dispatches an offset equal to the chin height, the chin is hidden
+        // (isVisibleBasedOnOffset is false).
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        assertFalse(mModel.get(IS_VISIBLE));
+
+        // When the stacker dispatches the resting offset (0), the chin is visible again.
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertTrue(mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testNonBciv_isVisibleTracksDispatchedOffset() {
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        onToEdgeChange(DEFAULT_HEIGHT, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        mModel.set(OFFSET_TAG, null);
+
+        // When the dispatched offset is less than the chin height, the chin is visible
+        // (isVisibleBasedOnOffset is true).
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT - 1);
+        assertTrue(mModel.get(IS_VISIBLE));
+
+        // When the stacker dispatches an offset equal to the chin height, the chin is hidden
+        // (isVisibleBasedOnOffset is false).
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        assertFalse(mModel.get(IS_VISIBLE));
+
+        // When the stacker dispatches the resting offset (0), the chin is visible again.
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertTrue(mModel.get(IS_VISIBLE));
     }
 
     private void assertLayerVisibility(boolean isTablet) {

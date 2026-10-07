@@ -123,8 +123,11 @@ class EdgeToEdgeBottomChinMediator
                 mEdgeToEdgeController.getBottomInsetPx(),
                 mEdgeToEdgeController.isDrawingToEdge(),
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
-        if (!mDefaultVisibility) mModel.set(Y_OFFSET, mModel.get(HEIGHT));
-        mModel.set(IS_VISIBLE, isVisible());
+        if (!mDefaultVisibility) {
+            mYOffset = mModel.get(HEIGHT);
+            mModel.set(Y_OFFSET, mYOffset);
+        }
+        mModel.set(IS_VISIBLE, isVisibleBasedOnOffset());
         updateHeightAndVisibility();
     }
 
@@ -144,13 +147,38 @@ class EdgeToEdgeBottomChinMediator
         mFullscreenManager.removeObserver(this);
     }
 
+    /**
+     * Returns whether the layer offset ({@code mYOffset}) places the chin within its visible height
+     * ({@code mYOffset < mModel.get(HEIGHT)}). When browser controls in viz (BCIV) is driving the
+     * controls (offsets are not applied by the browser and not animating), BottomControlsStacker
+     * dispatches the chin's resting offset while viz moves the chin using the renderer offset. The
+     * browser only learns renderer offsets after viz has drawn them, so gating compositing on the
+     * browser-dispatched layer offset ensures the chin remains composited when viz scrolls the
+     * bottom controls back on screen, exposing the tab background under them. This matches how
+     * ScrollingBottomViewSceneLayer handles BCIV. See crbug.com/568447704.
+     */
+    private boolean isVisibleBasedOnOffset() {
+        return mYOffset < mModel.get(HEIGHT);
+    }
+
+    /**
+     * Returns whether the chin is on screen, as far as the browser knows. While it is not, color
+     * changes are cached rather than applied (see {@link #onBrowserControlsOffsetUpdate(int)}), so
+     * the chin keeps the color of the bottom controls it is attached to rather than e.g. the tab
+     * background color used while the bottom controls are scrolled off.
+     *
+     * <p>Unlike {@link #isVisibleBasedOnOffset()}, which only evaluates the layer offset dispatched
+     * to this layer to control compositing, this method checks the overall bottom controls offset
+     * when BCIV is active (when an {@code OFFSET_TAG} is present) or delegates to {@link
+     * #isVisibleBasedOnOffset()} otherwise.
+     */
     private boolean isVisible() {
         // This assumes the chin is at the very bottom, or all layers below the chin are scrollable.
         if (mModel.get(OFFSET_TAG) != null) {
             return mBottomControlsStacker.getBrowserControls().getBottomControlOffset()
                     < mModel.get(HEIGHT);
         } else {
-            return mYOffset < mModel.get(HEIGHT);
+            return isVisibleBasedOnOffset();
         }
     }
 
@@ -194,7 +222,7 @@ class EdgeToEdgeBottomChinMediator
         if (heightChanged) mModel.set(HEIGHT, newHeight);
         if (visibilityChanged) mModel.set(CAN_SHOW, newVisibility);
 
-        mModel.set(IS_VISIBLE, isVisible());
+        mModel.set(IS_VISIBLE, isVisibleBasedOnOffset());
 
         boolean layerVisibilityChanged = mLatestLayerVisibility != getLayerVisibility();
         mLatestLayerVisibility = getLayerVisibility();
@@ -312,7 +340,7 @@ class EdgeToEdgeBottomChinMediator
             changeBottomChinDividerColor(mDividerColor);
         }
 
-        mModel.set(IS_VISIBLE, isVisible());
+        mModel.set(IS_VISIBLE, isVisibleBasedOnOffset());
         mModel.set(Y_OFFSET, layerYOffset);
     }
 
