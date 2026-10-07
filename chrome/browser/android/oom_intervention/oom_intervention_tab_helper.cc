@@ -49,7 +49,11 @@ OomInterventionTabHelper::OomInterventionTabHelper(
       crash_reporter::CrashMetricsReporter::GetInstance());
 }
 
-OomInterventionTabHelper::~OomInterventionTabHelper() = default;
+OomInterventionTabHelper::~OomInterventionTabHelper() {
+  if (web_contents()) {
+    WebContentsDestroyed();
+  }
+}
 
 void OomInterventionTabHelper::OnHighMemoryUsage() {
   auto* config = OomInterventionConfig::GetInstance();
@@ -88,7 +92,11 @@ void OomInterventionTabHelper::DeclineInterventionSticky() {
 }
 
 void OomInterventionTabHelper::WebContentsDestroyed() {
+  if (IsLastVisibleWebContents(web_contents())) {
+    SetLastVisibleWebContents(nullptr);
+  }
   StopMonitoring();
+  Observe(nullptr);
 }
 
 void OomInterventionTabHelper::PrimaryMainFrameRenderProcessGone(

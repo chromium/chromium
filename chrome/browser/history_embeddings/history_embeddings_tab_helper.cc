@@ -37,7 +37,11 @@ HistoryEmbeddingsTabHelper::HistoryEmbeddingsTabHelper(
   }
 }
 
-HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() = default;
+HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() {
+  if (web_contents()) {
+    WebContentsDestroyed();
+  }
+}
 
 void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
     int64_t navigation_id,
@@ -187,6 +191,7 @@ void HistoryEmbeddingsTabHelper::WebContentsDestroyed() {
           GetHistoryEmbeddingsService()) {
     service->UpdateVisitMetadata(web_contents(), std::nullopt);
   }
+  Observe(nullptr);
 }
 
 void HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData(

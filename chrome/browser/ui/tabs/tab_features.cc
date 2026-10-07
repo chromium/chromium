@@ -1339,6 +1339,15 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   security_state_event_observer_ =
       std::make_unique<SecurityStateEventObserver>(new_contents);
 
+  enterprise_proxy_tab_helper_.reset();
+  enterprise_proxy_tab_helper_ =
+      GetUserDataFactory()
+          .CreateInstance<enterprise_net::EnterpriseProxyTabHelper>(
+              *tab, *tab, new_contents,
+              EnterpriseProxyErrorServiceFactory::GetForProfile(profile));
+
+  http_auth_cache_status_ = std::make_unique<HttpAuthCacheStatus>(new_contents);
+
   if (search_engine_choice_tab_helper_) {
     search_engine_choice_tab_helper_ =
         std::make_unique<SearchEngineChoiceTabHelper>(new_contents);
@@ -1370,6 +1379,17 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     sad_tab_helper_.reset();
     sad_tab_helper_ = GetUserDataFactory().CreateInstance<SadTabHelper>(
         *tab, *tab, new_contents);
+  }
+
+  from_gws_navigation_and_keep_alive_request_observer_ =
+      FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(new_contents);
+
+  if (auto* contextual_cueing_service =
+          contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
+              profile)) {
+    contextual_cueing_web_contents_observer_ = std::make_unique<
+        contextual_cueing::ContextualCueingWebContentsObserver>(
+        new_contents, contextual_cueing_service);
   }
 
   sync_sessions_router_.reset();
@@ -1451,6 +1471,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
+  if (saas_usage_navigation_observer_) {
+    saas_usage_navigation_observer_ =
+        std::make_unique<enterprise_reporting::SaasUsageNavigationObserver>(
+            new_contents);
+  }
   if (hats_helper_) {
     hats_helper_ = std::make_unique<HatsHelper>(new_contents);
   }
