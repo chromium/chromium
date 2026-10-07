@@ -794,7 +794,10 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 - (void)geminiFloatyInvokedChanged:(BOOL)isInvoked {
   [self updateAssistantButton];
-  [self.layoutState setGeminiFloatyInvoked:isInvoked passKey:PassKey()];
+  // After migration layout state will be updated from assistant container.
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [self.layoutState setGeminiFloatyInvoked:isInvoked passKey:PassKey()];
+  }
 
   if (IsFullscreenRefactoringEnabled()) {
     if (_regularFullscreenBrowserAgent) {

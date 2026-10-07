@@ -83,6 +83,12 @@
 }
 
 - (void)stop {
+  if (self.browser) {
+    if (GeminiBrowserAgent* geminiBrowserAgent =
+            GeminiBrowserAgent::FromBrowser(self.browser)) {
+      geminiBrowserAgent->SetContainerInvoked(false);
+    }
+  }
   if (IsGeminiActorEnabled()) {
     [_containerHandler setAssistantContainerMinimizedDetentHeight:
                            kAssistantContainerMinimizedDetentHeight];
@@ -118,6 +124,8 @@
         actor::ActorServiceFactory::GetForProfile(self.browser->GetProfile());
   }
 
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
   // TODO(crbug.com/535579970): After bottom sheet migration, the startup state
   // can be added to the init params.
   _mediator = [[GeminiContainerMediator alloc]
@@ -125,7 +133,7 @@
                actorService:actorService
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 self.browser->GetProfile())
-               eventHandler:GeminiBrowserAgent::FromBrowser(self.browser)];
+               eventHandler:geminiBrowserAgent];
   _mediator.delegate = self;
   _mediator.startupState = _startupState;
   // TODO(crbug.com/537730178): Delegate the permission prompt request up to
@@ -158,6 +166,9 @@
 
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:_mediator];
+  if (geminiBrowserAgent) {
+    geminiBrowserAgent->SetContainerInvoked(true);
+  }
 
   // Calling connect will result in setting the initial detent
   // which only works after assistant container is presenting.

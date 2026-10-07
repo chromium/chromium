@@ -99,8 +99,14 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if the floaty is currently invoked.
-  bool is_floaty_invoked() const { return is_floaty_invoked_; }
+  // Returns true if the floaty or Gemini container is currently invoked.
+  bool is_floaty_invoked() const {
+    return is_floaty_invoked_ || is_gemini_invoked_;
+  }
+
+  // Sets whether the Gemini container is currently invoked and notifies
+  // observers if the state changed.
+  void SetContainerInvoked(bool is_invoked);
 
   // Returns true if Gemini is available for the active web state.
   bool IsGeminiAvailableForActiveWebState() const;
@@ -453,7 +459,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       ios::provider::GeminiViewState::kUnknown;
 
   // Whether the floaty is currently invoked.
+  // DEPRECATED: Remove after bottom sheet migration.
   bool is_floaty_invoked_ = false;
+
+  // Whether the Gemini container is currently invoked.
+  bool is_gemini_invoked_ = false;
 
   // Tracks the number of times the active tab was switched while the floaty
   // was invoked.

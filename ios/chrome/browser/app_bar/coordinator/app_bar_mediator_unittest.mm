@@ -192,7 +192,8 @@ void ExpectAssistantButtonMenuUserActionCounts(
 - (void)addNewTabInCurrentTabGroup;
 @end
 
-class AppBarMediatorTest : public PlatformTest {
+class AppBarMediatorTest : public PlatformTest,
+                           public testing::WithParamInterface<bool> {
  protected:
   AppBarMediatorTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -992,13 +993,22 @@ TEST_F(AppBarMediatorTest, TestFullscreenEvent) {
 }
 
 // Tests that the assistant button state is correctly updated when the Gemini
-// floaty invocation state changes and Gemini is available.
-TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
+// invocation state changes and Gemini is available.
+TEST_P(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
+  const bool migration_enabled = GetParam();
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
+  if (migration_enabled) {
+    scoped_feature_list.InitWithFeatures(
+        {kPageActionMenu, kAssistantContainer, kIOSGeminiBottomSheetMigration},
+        {});
+  } else {
+    scoped_feature_list.InitWithFeatures({kPageActionMenu},
+                                         {kIOSGeminiBottomSheetMigration});
+  }
 
   GeminiBrowserAgent* agent =
       GeminiBrowserAgent::FromBrowser(regular_browser_.get());
+  ASSERT_TRUE(agent);
 
   // Add active WebState with GeminiTabHelper.
   auto web_state = std::make_unique<web::FakeWebState>();
@@ -1011,25 +1021,33 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
   regular_web_state_list_->InsertWebState(std::move(web_state));
   regular_web_state_list_->ActivateWebStateAt(0);
 
-  // Expect highlighted to be YES when floaty is invoked.
+  // Expect highlighted to be YES when Gemini is invoked.
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:YES
                                        enabled:YES
                                         avatar:nil
                                       signedIn:NO]);
 
-  InvokeFloaty(agent, [[GeminiConfiguration alloc] init]);
+  if (migration_enabled) {
+    agent->SetContainerInvoked(true);
+  } else {
+    InvokeFloaty(agent, [[GeminiConfiguration alloc] init]);
+  }
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 
-  // Expect highlighted to be NO when floaty is dismissed.
+  // Expect highlighted to be NO when Gemini is dismissed.
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
                                        enabled:YES
                                         avatar:nil
                                       signedIn:NO]);
 
-  agent->DismissFloaty();
+  if (migration_enabled) {
+    agent->SetContainerInvoked(false);
+  } else {
+    agent->DismissFloaty();
+  }
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -3192,3 +3210,7 @@ TEST_F(AppBarMediatorTest, TestConsumerUpdatesDeferredUntilSceneUIEnabled) {
   scene_state.UIEnabled = YES;
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
+
+INSTANTIATE_TEST_SUITE_P(AppBarMediatorTest,
+                         AppBarMediatorTest,
+                         testing::Bool());

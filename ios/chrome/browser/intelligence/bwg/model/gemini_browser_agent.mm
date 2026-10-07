@@ -1113,6 +1113,16 @@ void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
   UpdateGeminiLiveIconVisibility();
 }
 
+void GeminiBrowserAgent::SetContainerInvoked(bool is_invoked) {
+  if (is_gemini_invoked_ == is_invoked) {
+    return;
+  }
+  is_gemini_invoked_ = is_invoked;
+  for (auto& observer : observers_) {
+    observer.OnFloatyInvokedChanged(is_gemini_invoked_);
+  }
+}
+
 void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
   if (!is_floaty_invoked_ || !IsFullscreenInitialized()) {
     return;

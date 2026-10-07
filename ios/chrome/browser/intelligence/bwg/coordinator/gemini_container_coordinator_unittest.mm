@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -45,6 +46,7 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_);
     BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
     browser_list->AddBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(browser_.get());
 
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
@@ -179,15 +181,24 @@ TEST_F(GeminiContainerCoordinatorTest,
         container_presented = YES;
       });
 
+  GeminiBrowserAgent* agent = GeminiBrowserAgent::FromBrowser(browser_.get());
+  ASSERT_TRUE(agent);
+  EXPECT_FALSE(agent->is_floaty_invoked());
+
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(mock_second_gemini_handler);
   EXPECT_FALSE(container_presented);
+  EXPECT_FALSE(agent->is_floaty_invoked());
   ASSERT_TRUE(captured_dismiss_completion != nil);
 
   captured_dismiss_completion();
 
   EXPECT_TRUE(container_presented);
+  EXPECT_TRUE(agent->is_floaty_invoked());
+
+  [coordinator_ stop];
+  EXPECT_FALSE(agent->is_floaty_invoked());
 
   [second_browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(GeminiCommands)];

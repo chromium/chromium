@@ -455,6 +455,31 @@ TEST_F(GeminiBrowserAgentTest, TestObserverNotification) {
   gemini_browser_agent_->RemoveObserver(&observer);
 }
 
+// Test that observers are notified when the Gemini container invocation state
+// changes.
+TEST_F(GeminiBrowserAgentTest, TestContainerInvokedObserverNotification) {
+  TestGeminiObserver observer;
+  gemini_browser_agent_->AddObserver(&observer);
+
+  EXPECT_FALSE(gemini_browser_agent_->is_floaty_invoked());
+
+  gemini_browser_agent_->SetContainerInvoked(true);
+  EXPECT_TRUE(gemini_browser_agent_->is_floaty_invoked());
+  EXPECT_TRUE(observer.is_invoked_);
+  EXPECT_EQ(1, observer.call_count_);
+
+  // Setting to the same value does not notify again.
+  gemini_browser_agent_->SetContainerInvoked(true);
+  EXPECT_EQ(1, observer.call_count_);
+
+  gemini_browser_agent_->SetContainerInvoked(false);
+  EXPECT_FALSE(gemini_browser_agent_->is_floaty_invoked());
+  EXPECT_FALSE(observer.is_invoked_);
+  EXPECT_EQ(2, observer.call_count_);
+
+  gemini_browser_agent_->RemoveObserver(&observer);
+}
+
 // Tests the presentation of the BWG overlay and state of tab helper side
 // effects.
 TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
