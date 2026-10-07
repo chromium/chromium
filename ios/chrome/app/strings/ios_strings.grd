@@ -5093,6 +5093,9 @@ You can restart anytime.
       <message name="IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_DESCRIPTION" desc="The description of the NTP theme tip for the Magic Stack.">
         Choose from themes, colors or upload your own photo.
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_IPH" desc="Title for the in-product help bubble suggesting the way to use customize the NTP theme. [Length: unlimited] [iOS only]">
+        Customize your new tab page anytime from here
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_TITLE" desc="The title of the NTP theme tip for the Magic Stack.">
         Customize Your New Tab Page
       </message>

@@ -227,6 +227,11 @@ using ntp_tiles::AimButtonRefactorArm;
 
   BubbleViewControllerPresenter* _fakeboxLensIconBubblePresenter;
   BubbleViewControllerPresenter* _aimBubblePresenter;
+  BubbleViewControllerPresenter* _customizationButtonBubblePresenter;
+
+  // Whether to present the customization button IPH bubble when the
+  // customization menu is dismissed.
+  BOOL _presentCustomizationButtonBubbleOnDismiss;
 }
 
 // Coordinator for the ContentSuggestions.
@@ -538,6 +543,9 @@ using ntp_tiles::AimButtonRefactorArm;
 
   [_aimBubblePresenter dismissAnimated:NO];
   _aimBubblePresenter = nil;
+
+  [_customizationButtonBubblePresenter dismissAnimated:NO];
+  _customizationButtonBubblePresenter = nil;
 
   _identityManager = nullptr;
 
@@ -1372,7 +1380,9 @@ using ntp_tiles::AimButtonRefactorArm;
                            animated:NO];
 }
 
-- (void)openMainCustomizationMenu {
+- (void)openMainCustomizationMenuWithIconBubbleOnDismiss:
+    (BOOL)withIconBubbleOnDismiss {
+  _presentCustomizationButtonBubbleOnDismiss = withIconBubbleOnDismiss;
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
 }
 
@@ -2317,6 +2327,51 @@ using ntp_tiles::AimButtonRefactorArm;
   }
 }
 
+// Scrolls the NTP to the top if needed and presents the Home customization
+// menu button IPH bubble.
+- (void)presentCustomizationButtonBubble {
+  if (!self.isScrolledToTop) {
+    __weak __typeof(self) weakSelf = self;
+    [UIView animateWithDuration:kMaterialDuration1
+        animations:^{
+          [weakSelf setContentOffsetToTop];
+        }
+        completion:^(BOOL finished) {
+          [weakSelf presentCustomizationButtonBubbleNow];
+        }];
+    return;
+  }
+  [self presentCustomizationButtonBubbleNow];
+}
+
+// Presents the Home customization menu button IPH bubble without checking
+// scroll position.
+- (void)presentCustomizationButtonBubbleNow {
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_IPH);
+  UIView* menuButton = [LayoutGuideCenterForBrowser(self.browser)
+      referencedViewUnderName:kFeedIPHNamedGuide];
+  if (!menuButton) {
+    return;
+  }
+  CGPoint anchorPoint =
+      [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
+  anchorPoint.x += menuButton.frame.size.width / 2;
+  anchorPoint.y += menuButton.frame.size.height;
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:BubbleArrowDirectionUp
+                          alignment:BubbleAlignmentTopOrLeading
+                  dismissalCallback:nil];
+  UIViewController* activeVC = [self activeViewController];
+  if (![presenter canPresentInView:activeVC.view anchorPoint:anchorPoint]) {
+    return;
+  }
+  [presenter presentInViewController:activeVC anchorPoint:anchorPoint];
+  _customizationButtonBubblePresenter = presenter;
+}
+
 #pragma mark - HomeCustomizationDelegate
 
 - (void)dismissCustomizationMenu {
@@ -2339,6 +2394,11 @@ using ntp_tiles::AimButtonRefactorArm;
         IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_USER_UPLOAD_NOT_SYNCED_SNACKBAR);
     SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
     [snackbarHandler showSnackbarMessageOverBrowserToolbar:message];
+  }
+
+  if (_presentCustomizationButtonBubbleOnDismiss) {
+    _presentCustomizationButtonBubbleOnDismiss = NO;
+    [self presentCustomizationButtonBubble];
   }
 }
 

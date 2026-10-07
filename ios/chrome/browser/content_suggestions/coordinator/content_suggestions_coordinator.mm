@@ -822,7 +822,7 @@ using segmentation_platform::TipIdentifier;
     case TipIdentifier::kNTPTheme: {
       CHECK(!segmentation_platform::features::
                 IsMagicStackTipsV2IosActionableEnabled());
-      [self.delegate openMainCustomizationMenu];
+      [self.delegate openMainCustomizationMenuWithIconBubbleOnDismiss:YES];
       break;
     }
   }
@@ -1277,7 +1277,7 @@ using segmentation_platform::TipIdentifier;
       [self.delegate openSafariDataImport];
       break;
     case SetUpListItemType::kBackgroundCustomization:
-      [self.delegate openMainCustomizationMenu];
+      [self.delegate openMainCustomizationMenuWithIconBubbleOnDismiss:NO];
       [HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands)
           presentInProductHelpWithType:InProductHelpType::
                                            kHomeBackgroundCustomization];
