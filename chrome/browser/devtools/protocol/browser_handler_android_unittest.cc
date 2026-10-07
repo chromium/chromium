@@ -6,10 +6,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
@@ -479,7 +482,21 @@ TEST(BrowserHandlerAndroidBoundsTest,
 class BrowserHandlerAndroidMutationTest
     : public ChromeRenderViewHostTestHarness {
  protected:
-  void TrackWindow(FakeBaseWindow* window) {
+  // Registers `window` as a live (Activity-attached) browser window.
+  void RegisterLiveWindow(FakeBaseWindow* window) {
+    session_id_ = SessionID::NewUnique();
+    lookup_override_.emplace(
+        BrowserHandlerAndroid::SetBrowserWindowLookupForTesting(
+            base::BindRepeating(
+                [](int live_id, ui::BaseWindow* live_window,
+                   int window_id) -> ui::BaseWindow* {
+                  return window_id == live_id ? live_window : nullptr;
+                },
+                session_id_.id(), base::Unretained(window))));
+  }
+
+  // Tracks `window` as a DevTools-created window whose Activity is pending.
+  void TrackPendingWindow(FakeBaseWindow* window) {
     session_id_ = SessionID::NewUnique();
     browser_window_ = std::make_unique<FakeBrowserWindowInterface>(
         profile(), session_id_, window);
@@ -496,6 +513,8 @@ class BrowserHandlerAndroidMutationTest
   BrowserHandlerAndroid handler_{&dispatcher_, /*target_id=*/""};
   SessionID session_id_ = SessionID::NewUnique();
   std::unique_ptr<FakeBrowserWindowInterface> browser_window_;
+  std::optional<base::AutoReset<BrowserHandlerAndroid::BrowserWindowLookup>>
+      lookup_override_;
 };
 
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsUnknownWindow) {
@@ -512,7 +531,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, RejectsUnknownWindow) {
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsBoundsWithNonNormalState) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds = protocol::Browser::Bounds::Create()
                     .SetWidth(400)
                     .SetWindowState("maximized")
@@ -531,7 +550,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, RejectsBoundsWithNonNormalState) {
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsFullscreen) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("fullscreen").Build();
 
@@ -544,7 +563,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, RejectsFullscreen) {
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsInvalidWindowState) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("invalid").Build();
 
@@ -557,7 +576,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, RejectsInvalidWindowState) {
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsMaximizeFromMinimized) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
                         true);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("maximized").Build();
 
@@ -574,7 +593,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, RejectsMaximizeFromMinimized) {
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsMaximizeFromFullscreen) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), true, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("maximized").Build();
 
@@ -591,7 +610,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, RejectsMaximizeFromFullscreen) {
 TEST_F(BrowserHandlerAndroidMutationTest, MaximizesWindow) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("maximized").Build();
 
@@ -605,7 +624,7 @@ TEST_F(BrowserHandlerAndroidMutationTest,
        MaximizeIsIdempotentForFixedSizeWindow) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, true,
                         false, /*can_resize=*/false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("maximized").Build();
 
@@ -618,7 +637,7 @@ TEST_F(BrowserHandlerAndroidMutationTest,
 TEST_F(BrowserHandlerAndroidMutationTest, MinimizesWindow) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("minimized").Build();
 
@@ -631,7 +650,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, MinimizesWindow) {
 TEST_F(BrowserHandlerAndroidMutationTest, MinimizeIsIdempotent) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
                         true);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("minimized").Build();
 
@@ -644,7 +663,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, MinimizeIsIdempotent) {
 TEST_F(BrowserHandlerAndroidMutationTest, MinimizesMaximizedWindow) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, true,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("minimized").Build();
 
@@ -658,7 +677,7 @@ TEST_F(BrowserHandlerAndroidMutationTest, MinimizesMaximizedWindow) {
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsMinimizeFromFullscreen) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), true, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("minimized").Build();
 
@@ -675,7 +694,7 @@ TEST_F(BrowserHandlerAndroidMutationTest,
        RejectsMutationForFixedSizeAndroidWindow) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, true,
                         false, /*can_resize=*/false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("minimized").Build();
 
@@ -690,31 +709,48 @@ TEST_F(BrowserHandlerAndroidMutationTest,
 }
 
 TEST_F(BrowserHandlerAndroidMutationTest,
-       AllowsMutationWhileAndroidWindowIsPending) {
-  FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 20, 400, 300),
-                        false, false, false,
-                        /*can_resize=*/false);
-  window.SetResizePrecheckResult(
-      ui::WindowResizePrecheckResult::kAndroidNoActivity);
-  TrackWindow(&window);
+       RejectsMutationWhileAndroidWindowIsPending) {
+  // Resizable, so the rejection comes from the pending check, not CanResize().
+  FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
+                        false);
+  TrackPendingWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("minimized").Build();
 
   protocol::Response response = SetWindowBounds(std::move(bounds));
 
-  EXPECT_TRUE(response.IsSuccess());
-  EXPECT_TRUE(window.IsMinimized());
-  auto reported_bounds =
-      BrowserHandlerAndroid::BuildBrowserWindowBounds(&window);
-  EXPECT_EQ("minimized", reported_bounds->GetWindowState(""));
-  EXPECT_EQ(400, reported_bounds->GetWidth());
-  EXPECT_EQ(300, reported_bounds->GetHeight());
+  EXPECT_FALSE(response.IsSuccess());
+  EXPECT_EQ(
+      "Window state or bounds cannot be changed before the Android window "
+      "is created",
+      response.Message());
+  EXPECT_FALSE(window.IsMinimized());
+}
+
+TEST_F(BrowserHandlerAndroidMutationTest,
+       RejectsNormalWithoutBoundsWhileAndroidWindowIsPending) {
+  // A pending window reports default (normal) state, so "normal" with no
+  // bounds would otherwise short-circuit to Success without any mutation.
+  FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, false,
+                        false);
+  TrackPendingWindow(&window);
+  auto bounds = protocol::Browser::Bounds::Create()  // nocheck
+                    .SetWindowState("normal")
+                    .Build();
+
+  protocol::Response response = SetWindowBounds(std::move(bounds));
+
+  EXPECT_FALSE(response.IsSuccess());
+  EXPECT_EQ(
+      "Window state or bounds cannot be changed before the Android window "
+      "is created",
+      response.Message());
 }
 
 TEST_F(BrowserHandlerAndroidMutationTest, RestoresWindow) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), false, true,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("normal").Build();
 
@@ -729,7 +765,7 @@ TEST_F(BrowserHandlerAndroidMutationTest,
        PartialBoundsPreserveUnspecifiedValuesAndRestoreWindow) {
   FakeBaseWindow window(gfx::Rect(10, 20, 800, 600), gfx::Rect(), false, true,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetLeft(30).SetWidth(400).Build();
 
@@ -743,7 +779,7 @@ TEST_F(BrowserHandlerAndroidMutationTest,
 TEST_F(BrowserHandlerAndroidMutationTest, RejectsNormalFromFullscreen) {
   FakeBaseWindow window(gfx::Rect(0, 0, 800, 600), gfx::Rect(), true, false,
                         false);
-  TrackWindow(&window);
+  RegisterLiveWindow(&window);
   auto bounds =
       protocol::Browser::Bounds::Create().SetWindowState("normal").Build();
 

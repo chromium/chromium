@@ -5,9 +5,11 @@
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
 
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -52,23 +54,37 @@ ResolvedWindowState ResolveWindowState(ui::BaseWindow* window) {
 
 // CDP window-state mutations are only observable for resizable Android tasks.
 // Fixed-size tasks continue to report maximized even when backgrounded.
-Response CheckCanChangeWindow(ui::BaseWindow* window, bool is_pending) {
+Response CheckCanChangeWindow(ui::BaseWindow* window) {
   ui::WindowResizePrecheckResult resize_precheck_result;
-  if (window->CanResize(resize_precheck_result) ||
-      (is_pending && resize_precheck_result ==
-                         ui::WindowResizePrecheckResult::kAndroidNoActivity)) {
-    // A DevTools-created Android task can be addressed before its Activity is
-    // attached. ChromeAndroidTask queues state and bounds changes in this case.
+  if (window->CanResize(resize_precheck_result)) {
     return Response::Success();
   }
   return Response::ServerError(
       "Window state or bounds cannot be changed in the current Android "
       "configuration");
 }
+
+BrowserHandlerAndroid::BrowserWindowLookup& GetBrowserWindowLookupOverride() {
+  static base::NoDestructor<BrowserHandlerAndroid::BrowserWindowLookup>
+      lookup_override;
+  return *lookup_override;
+}
 }  // namespace
 
 // static
+base::AutoReset<BrowserHandlerAndroid::BrowserWindowLookup>
+BrowserHandlerAndroid::SetBrowserWindowLookupForTesting(
+    BrowserWindowLookup lookup) {
+  return base::AutoReset<BrowserWindowLookup>(&GetBrowserWindowLookupOverride(),
+                                              std::move(lookup));
+}
+
+// static
 ui::BaseWindow* BrowserHandlerAndroid::FindBrowserWindowById(int window_id) {
+  const BrowserWindowLookup& lookup_override = GetBrowserWindowLookupOverride();
+  if (lookup_override) {
+    return lookup_override.Run(window_id);
+  }
   for (BrowserWindowInterface* bwi : GetAllBrowserWindowInterfaces()) {
     if (bwi->GetSessionID().id() == window_id) {
       return bwi->GetWindow();
@@ -250,6 +266,13 @@ Response BrowserHandlerAndroid::SetWindowBounds(
   if (!window) {
     return Response::ServerError("Browser window not found");
   }
+  // Checked before the state shortcuts below: a pending window's getters
+  // return defaults, so those shortcuts could otherwise report Success.
+  if (is_pending) {
+    return Response::ServerError(
+        "Window state or bounds cannot be changed before the Android window "
+        "is created");
+  }
 
   gfx::Rect bounds = window->GetBounds();
   const bool set_bounds = window_bounds->HasLeft() || window_bounds->HasTop() ||
@@ -285,7 +308,7 @@ Response BrowserHandlerAndroid::SetWindowBounds(
           "To maximize a minimized or fullscreen "
           "window, restore it to normal state first.");
     }
-    Response can_change = CheckCanChangeWindow(window, is_pending);
+    Response can_change = CheckCanChangeWindow(window);
     if (!can_change.IsSuccess()) {
       return can_change;
     }
@@ -301,7 +324,7 @@ Response BrowserHandlerAndroid::SetWindowBounds(
           "To minimize a fullscreen window, restore it to normal "
           "state first.");
     }
-    Response can_change = CheckCanChangeWindow(window, is_pending);
+    Response can_change = CheckCanChangeWindow(window);
     if (!can_change.IsSuccess()) {
       return can_change;
     }
@@ -316,7 +339,7 @@ Response BrowserHandlerAndroid::SetWindowBounds(
     return Response::ServerError("Cannot exit fullscreen on Android");
   }
   if (set_bounds) {
-    Response can_change = CheckCanChangeWindow(window, is_pending);
+    Response can_change = CheckCanChangeWindow(window);
     if (!can_change.IsSuccess()) {
       return can_change;
     }
@@ -325,7 +348,7 @@ Response BrowserHandlerAndroid::SetWindowBounds(
     window->SetBounds(bounds);
   } else if (current_state == protocol::Browser::WindowStateEnum::Minimized ||
              current_state == protocol::Browser::WindowStateEnum::Maximized) {
-    Response can_change = CheckCanChangeWindow(window, is_pending);
+    Response can_change = CheckCanChangeWindow(window);
     if (!can_change.IsSuccess()) {
       return can_change;
     }
