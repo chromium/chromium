@@ -300,6 +300,7 @@ TEST_F(MimeHandlerStreamManagerPdfTest,
 
   NiceMock<content::MockNavigationHandle> navigation_handle1(pdf_url,
                                                              pdf_host1);
+  navigation_handle1.set_has_committed(true);
   ON_CALL(navigation_handle1, IsPdf).WillByDefault(Return(true));
 
   // Before processing the initial content navigation handle, "reload" the URL.
@@ -322,6 +323,7 @@ TEST_F(MimeHandlerStreamManagerPdfTest,
 
   NiceMock<content::MockNavigationHandle> navigation_handle2(pdf_url,
                                                              pdf_host2);
+  navigation_handle2.set_has_committed(true);
   ON_CALL(navigation_handle2, IsPdf).WillByDefault(Return(true));
 
   EXPECT_FALSE(manager->DidContentFrameFinishNavigation(embedder_host));
