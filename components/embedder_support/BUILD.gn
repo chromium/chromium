@@ -58,8 +58,6 @@ static_library("user_agent") {
   deps = [
     ":embedder_support",
     "//build:branding_buildflags",
-    "//components/policy/core/common",
-    "//components/prefs",
     "//components/version_info",
     "//net",
     "//third_party/blink/public/common:headers",
