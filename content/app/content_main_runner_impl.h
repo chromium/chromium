@@ -29,7 +29,7 @@ class DiscardableSharedMemoryManager;
 namespace content {
 
 class BackgroundTracingManagerImpl;
-class BrowserMemoryCoordinator;
+class BrowserMemoryCoordinatorImpl;
 class MojoIpcSupport;
 
 class ContentMainRunnerImpl : public ContentMainRunner {
@@ -64,7 +64,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   std::optional<base::MemoryPressureListenerRegistry>
       memory_pressure_listener_registry_;
 
-  std::unique_ptr<BrowserMemoryCoordinator> browser_memory_coordinator_;
+  std::unique_ptr<BrowserMemoryCoordinatorImpl> browser_memory_coordinator_;
 
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;

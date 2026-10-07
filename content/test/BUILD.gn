@@ -2725,6 +2725,7 @@ test("content_unittests") {
     "../browser/memory/swap_metrics_driver_impl_unittest.cc",
     "../browser/memory_coordinator/browser_memory_coordinator_impl_unittest.cc",
     "../browser/memory_coordinator/child_memory_consumer_registry_host_unittest.cc",
+    "../browser/memory_coordinator/zero_limit_policy_unittest.cc",
     "../browser/metrics/histogram_shared_memory_config_unittest.cc",
     "../browser/metrics/histograms_monitor_unittest.cc",
     "../browser/mojo_binder_policy_applier_unittest.cc",

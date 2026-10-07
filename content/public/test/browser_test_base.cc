@@ -630,7 +630,7 @@ void BrowserTestBase::SetUp() {
   // follows.
 
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
-  auto memory_coordinator = BrowserMemoryCoordinator::CreateForTesting();
+  BrowserMemoryCoordinatorImpl memory_coordinator;
 
   // Unlike other platforms, android_browsertests can reuse the same process for
   // multiple tests. Need to reset startup metrics to allow recording them
@@ -687,6 +687,10 @@ void BrowserTestBase::SetUp() {
     std::optional<int> post_early_initialization_exit_code =
         delegate->PostEarlyInitialization(invoked_in_browser);
     ASSERT_FALSE(post_early_initialization_exit_code.has_value());
+
+    // The memory coordinator policies are feature-gated, so they must be
+    // initialized after the FeatureList.
+    memory_coordinator.InitializePolicies();
 
     // Must be called after PostEarlyInitialization because
     // ScopedBestEffortExecutionFence requires the FeatureList.

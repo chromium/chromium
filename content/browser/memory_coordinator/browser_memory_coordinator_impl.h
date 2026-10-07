@@ -7,8 +7,10 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
+#include "content/browser/memory_coordinator/zero_limit_policy.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
@@ -41,6 +43,12 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
       delete;
 
   ~BrowserMemoryCoordinatorImpl() override;
+
+  // Instantiates the feature-gated policies. Must be called once, after the
+  // FeatureList is initialized. This is separate from the constructor because
+  // the coordinator may be created before the FeatureList in the browser
+  // process.
+  void InitializePolicies();
 
   // BrowserMemoryCoordinator:
   MemoryCoordinatorPolicyManager& policy_manager() override;
@@ -79,6 +87,8 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
   MemoryCoordinatorPolicyRegistration
       memory_pressure_listener_policy_registration_{
           policy_manager_, memory_pressure_listener_policy_};
+
+  std::optional<ZeroLimitPolicy> zero_limit_policy_;
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   size_t diagnostic_observer_count_ = 0u;

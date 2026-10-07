@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 #include "content/common/buildflags.h"
@@ -26,12 +27,6 @@ BrowserMemoryCoordinator& BrowserMemoryCoordinator::Get() {
 }
 
 // static
-std::unique_ptr<BrowserMemoryCoordinator>
-BrowserMemoryCoordinator::CreateForTesting() {
-  return std::make_unique<BrowserMemoryCoordinatorImpl>();
-}
-
-// static
 BrowserMemoryCoordinatorImpl& BrowserMemoryCoordinatorImpl::Get() {
   CHECK(g_instance);
   return *g_instance;
@@ -45,6 +40,15 @@ BrowserMemoryCoordinatorImpl::BrowserMemoryCoordinatorImpl() {
 BrowserMemoryCoordinatorImpl::~BrowserMemoryCoordinatorImpl() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+}
+
+void BrowserMemoryCoordinatorImpl::InitializePolicies() {
+  CHECK(base::FeatureList::GetInstance());
+  CHECK(!zero_limit_policy_);
+
+  if (base::FeatureList::IsEnabled(kMemoryCoordinatorZeroLimit)) {
+    zero_limit_policy_.emplace(policy_manager_);
+  }
 }
 
 MemoryCoordinatorPolicyManager& BrowserMemoryCoordinatorImpl::policy_manager() {

@@ -1313,6 +1313,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     if (post_early_initialization_exit_code.has_value())
       return post_early_initialization_exit_code.value();
 
+    // The memory coordinator policies are feature-gated, so they must be
+    // initialized after the FeatureList.
+    browser_memory_coordinator_->InitializePolicies();
+
     if (HasDisableBestEffortTasksSwitch()) {
       best_effort_fence_.emplace();
     }
