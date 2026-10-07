@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
 #include <stdlib.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <limits>
 #include <tuple>
 
 #include "base/compiler_specific.h"
@@ -13,8 +14,16 @@
 #include "base/debug/alias.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/include/private/SkMalloc.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// nogncheck, because the dependency is conditional on
+// "use_partition_alloc_as_malloc" and "gn check" is blind to "#if".
+#include "partition_alloc/partition_root.h"  // nogncheck
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <malloc.h>
@@ -159,6 +168,8 @@ void* sk_malloc_flags(size_t size, unsigned flags) {
   }
 }
 
+// TODO(crbug.com/501161323): Remove once Skia rolls in
+// https://skia-review.googlesource.com/c/skia/+/1242277.
 size_t sk_malloc_size(void* addr, size_t size) {
   if (!addr) {
     return 0;
@@ -176,4 +187,33 @@ size_t sk_malloc_size(void* addr, size_t size) {
 
   // Guarantee that we return at least `size`
   return std::max(completeSize, size);
+}
+
+size_t sk_malloc_good_size(size_t needed_size) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return allocator_shim::internal::PartitionAllocMalloc::Allocator()
+      ->AllocationCapacityFromRequestedSize(needed_size);
+#elif BUILDFLAG(IS_APPLE)
+  // Fallback for when PartitionAlloc isn't the active system allocator
+  // (e.g., sanitizer builds or platforms where PA-as-malloc is disabled).
+  // Mirrors Skia's default `sk_malloc_good_size`.
+  return std::max(needed_size, malloc_good_size(needed_size));
+#else
+  // Other platforms do not provide malloc_good_size, so pick a reasonable
+  // implementation. Mirrors Skia's default `sk_malloc_good_size`.
+  //
+  // Round up to a nice size. If > 32K align to 4K boundary else up to
+  // max_align_t. The > 32K heuristic is from the JEMalloc behavior (see
+  // SkArenaAlloc for history).
+  static constexpr size_t kMinAlign =
+      alignof(std::max_align_t);                     // likely 8 or 16
+  static constexpr size_t kMaxAlign = 1 << 12;       // 4k
+  static constexpr size_t kMaxAlignLimit = 1 << 15;  // 32k
+  const size_t mask =
+      (needed_size > kMaxAlignLimit ? kMaxAlign : kMinAlign) - 1;
+  if (needed_size > std::numeric_limits<size_t>::max() - mask) {
+    return needed_size;  // aligning would overflow, return the original size
+  }
+  return (needed_size + mask) & ~mask;
+#endif
 }

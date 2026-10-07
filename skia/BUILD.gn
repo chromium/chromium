@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/avx512.gni")
 import("//build/config/compiler/compiler.gni")
@@ -503,11 +504,15 @@ component("skia") {
     ":skia_opts",
     ":skia_switches",
     "//base",
+    "//base/allocator/partition_allocator:buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
     "//third_party/libwebp",
     "//third_party/libwebp:libwebp_webp",
     "//ui/base:features",
   ]
+  if (use_partition_alloc_as_malloc) {
+    deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
+  }
   public_deps = [
     ":buildflags",
     ":rust_bmp_ffi",
