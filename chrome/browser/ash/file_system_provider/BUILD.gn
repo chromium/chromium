@@ -200,7 +200,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/file_manager:test_support",
-    "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/constants",

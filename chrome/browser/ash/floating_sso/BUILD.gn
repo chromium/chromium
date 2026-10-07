@@ -93,7 +93,6 @@ source_set("browser_tests") {
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/constants",
     "//components/keyed_service/content",
