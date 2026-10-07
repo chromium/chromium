@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_data_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -27,7 +30,42 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
+@interface FakeActuationInterventionDelegate
+    : NSObject <ActorTaskInterventionDelegate>
+
+@property(nonatomic, assign) BOOL requestInterventionCalled;
+@property(nonatomic, copy) NSString* promptTitle;
+@property(nonatomic, copy) void (^completionHandler)(void);
+
+@end
+
+@implementation FakeActuationInterventionDelegate
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler {
+  _requestInterventionCalled = YES;
+  _promptTitle = title;
+  _completionHandler = completionHandler;
+}
+
+@end
+
 namespace {
+
+// The serialized identifier of the fixture's fake WebState.
+constexpr int32_t kFakeWebStateID = 123;
+
+// Message carried by the confirmation yield actions under test.
+NSString* const kConfirmationMessage = @"Please confirm this purchase.";
+
+// Mirrors `kConfirmationUserResponse` in `gemini_actuation_handler.mm`.
+// TODO(crbug.com/571050191): Use the localized resource if the string gets
+// localized.
+NSString* const kExpectedUserResponse =
+    @"I agree with what you wanted me to confirm. Please proceed.";
 
 class GeminiActuationHandlerTest : public PlatformTest {
  public:
@@ -43,7 +81,7 @@ class GeminiActuationHandlerTest : public PlatformTest {
     ActorBrowserAgent::CreateForBrowser(browser_.get());
 
     auto fake_web_state = std::make_unique<web::FakeWebState>(
-        web::WebStateID::FromSerializedValue(123));
+        web::WebStateID::FromSerializedValue(kFakeWebStateID));
     fake_web_state->SetWebFramesManager(
         web::ContentWorld::kPageContentWorld,
         std::make_unique<web::FakeWebFramesManager>());
@@ -94,6 +132,55 @@ class GeminiActuationHandlerTest : public PlatformTest {
     GeminiActuationResponse* response = future.Get();
     ASSERT_NE(nil, response);
     EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.resultCode);
+  }
+
+  // Returns a `kConfirmation` yield request carrying `message`.
+  GeminiActuationRequest* CreateConfirmationRequest(NSString* message) {
+    GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
+        initWithReason:GeminiYieldReason::kConfirmation
+         messageToUser:message];
+    return [[GeminiActuationRequest alloc] initWithActionProtos:nil
+                                                     taskUpdate:nil
+                                                    yieldAction:yield_action];
+  }
+
+  // Registers a fake intervention delegate for `task_id` and dispatches a
+  // `kConfirmation` yield request carrying `message`. The request stays pending
+  // until the returned delegate's `completionHandler` runs.
+  FakeActuationInterventionDelegate* DispatchConfirmationRequest(
+      GeminiActuationHandler* handler,
+      actor::ActorTaskId task_id,
+      NSString* message,
+      base::test::TestFuture<GeminiActuationResponse*>& future) {
+    FakeActuationInterventionDelegate* delegate =
+        [[FakeActuationInterventionDelegate alloc] init];
+    actor_service_->SetTaskInterventionDelegate(task_id, delegate);
+    [handler dispatchActuationRequest:CreateConfirmationRequest(message)
+                            forTaskID:task_id
+                      completionBlock:GetCompletionBlock(future)];
+    // `ActorTask` posts the prompt; wait until the prompt is delivered or the
+    // request is answered.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return delegate.requestInterventionCalled || future.IsReady();
+    }));
+    return delegate;
+  }
+
+  // Verifies that `response` reports an accepted confirmation along with an
+  // observation of the fixture's WebState.
+  void ExpectConfirmedResponse(GeminiActuationResponse* response) {
+    ASSERT_NE(nil, response);
+    EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.resultCode);
+    EXPECT_NSEQ(kExpectedUserResponse, response.userResponse);
+    ASSERT_NE(nil, response.serializedActionsResult);
+    optimization_guide::proto::ActionsResult actions_result;
+    ASSERT_TRUE(actions_result.ParseFromArray(
+        [response.serializedActionsResult bytes],
+        [response.serializedActionsResult length]));
+    EXPECT_EQ(static_cast<int32_t>(actor::mojom::ActionResultCode::kOk),
+              actions_result.action_result());
+    ASSERT_EQ(1, actions_result.tabs_size());
+    EXPECT_EQ(kFakeWebStateID, actions_result.tabs(0).id());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -525,11 +612,210 @@ TEST_F(GeminiActuationHandlerTest,
   EXPECT_EQ(actions_result.index_of_failed_action(), 0);
 }
 
-// Tests that `dispatchActuationRequest` routes `kConfirmation`
-// and responds with `kOk`.
+// Tests that a `kConfirmation` yield prompts the user through the intervention
+// delegate and resolves with the user's acceptance and a tab observation.
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation) {
-  TestInterruptReason(GeminiYieldReason::kConfirmation);
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  FakeActuationInterventionDelegate* delegate = DispatchConfirmationRequest(
+      handler, task_id, kConfirmationMessage, future);
+
+  EXPECT_TRUE(delegate.requestInterventionCalled);
+  EXPECT_NSEQ(kConfirmationMessage, delegate.promptTitle);
+  // The request stays pending until the user answers.
+  EXPECT_FALSE(future.IsReady());
+  ASSERT_NE(nil, delegate.completionHandler);
+
+  delegate.completionHandler();
+
+  ExpectConfirmedResponse(future.Get());
+}
+
+// Tests that a `kConfirmation` yield with no message is rejected with
+// `kArgumentsInvalid` without prompting, leaving the task live.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_NoMessage) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  FakeActuationInterventionDelegate* delegate =
+      DispatchConfirmationRequest(handler, task_id, /*message=*/nil, future);
+
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kArgumentsInvalid,
+            response.resultCode);
+  EXPECT_FALSE(delegate.requestInterventionCalled);
+  EXPECT_NE(std::nullopt, actor_service_->GetActiveTaskState());
+}
+
+// Tests that a `kConfirmation` yield without an intervention delegate answers
+// `kTaskWentAway`, since `ActorTask` stops a task it cannot prompt for.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_NoDelegate) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  [handler
+      dispatchActuationRequest:CreateConfirmationRequest(kConfirmationMessage)
+                     forTaskID:task_id
+               completionBlock:GetCompletionBlock(future)];
+
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway, response.resultCode);
+  EXPECT_EQ(std::nullopt, actor_service_->GetActiveTaskState());
+}
+
+// Tests that resolving a confirmation after the actuated tab closed fails the
+// request with `kTabWentAway`.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_TabClosed) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  FakeActuationInterventionDelegate* delegate = DispatchConfirmationRequest(
+      handler, task_id, kConfirmationMessage, future);
+  ASSERT_NE(nil, delegate.completionHandler);
+
+  // Close the actuated tab while the confirmation is pending.
+  fake_web_state_ = nullptr;
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kUserAction);
+
+  delegate.completionHandler();
+
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTabWentAway, response.resultCode);
+}
+
+// Tests that a duplicate confirmation resolution signal completes the request
+// only once.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_DuplicateSignal) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  FakeActuationInterventionDelegate* delegate = DispatchConfirmationRequest(
+      handler, task_id, kConfirmationMessage, future);
+  ASSERT_NE(nil, delegate.completionHandler);
+
+  delegate.completionHandler();
+  ExpectConfirmedResponse(future.Get());
+
+  // A resolution signal with no pending confirmation must be ignored rather
+  // than re-running the consumed callback, which would trip `TestFuture`'s
+  // single-value expectation.
+  [static_cast<id<ActorTaskUpdatesObserver>>(handler)
+      actorTaskDidResolveConfirmationInterruptWithID:task_id];
+  EXPECT_EQ(actor::ActorTaskState::kReflecting,
+            actor_service_->GetActiveTaskState());
+}
+
+// Tests that stopping a task while a confirmation is pending aborts it with
+// `kTaskWentAway`.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_Stopped_Cancels) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  DispatchConfirmationRequest(handler, task_id, kConfirmationMessage, future);
+
+  actor_service_->StopTask(task_id,
+                           actor::ActorTaskStoppedReason::kStoppedByUser);
+
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway, response.resultCode);
+}
+
+// Tests that disconnecting while a confirmation is pending aborts it with
+// `kExecutorDestroyed`.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_Disconnect_Cancels) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  DispatchConfirmationRequest(handler, task_id, kConfirmationMessage, future);
+
+  [handler disconnect];
+
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kExecutorDestroyed,
+            response.resultCode);
+}
+
+// Tests that a second request dispatched while a confirmation is pending is
+// rejected, and that the pending confirmation still resolves normally.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_ConcurrentRequest) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future1;
+  FakeActuationInterventionDelegate* delegate = DispatchConfirmationRequest(
+      handler, task_id, kConfirmationMessage, future1);
+
+  GeminiActuationRequest* request2 =
+      [[GeminiActuationRequest alloc] initWithActionProtos:@[]
+                                                taskUpdate:@"Second Request"
+                                               yieldAction:nil];
+  base::test::TestFuture<GeminiActuationResponse*> future2;
+  [handler dispatchActuationRequest:request2
+                          forTaskID:task_id
+                    completionBlock:GetCompletionBlock(future2)];
+
+  GeminiActuationResponse* response2 = future2.Get();
+  ASSERT_NE(nil, response2);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kArgumentsInvalid,
+            response2.resultCode);
+
+  EXPECT_FALSE(future1.IsReady());
+  ASSERT_NE(nil, delegate.completionHandler);
+  delegate.completionHandler();
+
+  ExpectConfirmedResponse(future1.Get());
+}
+
+// Tests that a second confirmation dispatched while one is pending is rejected
+// without dropping the pending one.
+TEST_F(
+    GeminiActuationHandlerTest,
+    DispatchGeminiActuationRequest_Yield_Confirmation_ConcurrentConfirmation) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  base::test::TestFuture<GeminiActuationResponse*> future1;
+  FakeActuationInterventionDelegate* delegate = DispatchConfirmationRequest(
+      handler, task_id, kConfirmationMessage, future1);
+
+  base::test::TestFuture<GeminiActuationResponse*> future2;
+  [handler
+      dispatchActuationRequest:CreateConfirmationRequest(kConfirmationMessage)
+                     forTaskID:task_id
+               completionBlock:GetCompletionBlock(future2)];
+
+  GeminiActuationResponse* response2 = future2.Get();
+  ASSERT_NE(nil, response2);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kArgumentsInvalid,
+            response2.resultCode);
+
+  EXPECT_FALSE(future1.IsReady());
+  ASSERT_NE(nil, delegate.completionHandler);
+  delegate.completionHandler();
+
+  ExpectConfirmedResponse(future1.Get());
 }
 
 // Tests that `dispatchActuationRequest` routes `kClarification`

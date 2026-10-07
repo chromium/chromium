@@ -6,6 +6,7 @@
 
 #import <map>
 #import <optional>
+#import <set>
 #import <string>
 #import <utility>
 #import <vector>
@@ -15,7 +16,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
@@ -37,6 +37,13 @@ using ActuationCallback = base::OnceCallback<void(GeminiActuationResponse*)>;
 
 // The MIME type for PNG screenshots.
 constexpr char kPNGMimeType[] = "image/png";
+
+// Returned to the SDK as the user's answer once a confirmation prompt has been
+// accepted. Acceptance is the only answer the prompt can report for now.
+// TODO(crbug.com/571050191): Get the string approved and decide whether it
+// should be localized.
+NSString* const kConfirmationUserResponse =
+    @"I agree with what you wanted me to confirm. Please proceed.";
 
 // Populates a TabObservation proto with data from a PageContext.
 void PopulateTabObservationFromPageContext(
@@ -73,6 +80,21 @@ NSData* SerializeProtoToNSData(const ProtoMessage& message) {
   return [NSData dataWithBytes:serialized.data() length:serialized.size()];
 }
 
+// Returned when the task's actuated tab no longer exists.
+GeminiActuationResponse* MakeTabWentAwayResponse() {
+  return [[GeminiActuationResponse alloc]
+      initWithResultCode:actor::mojom::ActionResultCode::kTabWentAway
+            errorMessage:"The actuated tab is no longer available."];
+}
+
+// Returned when a request arrives while another one is pending for the task.
+GeminiActuationResponse* MakeRequestInProgressResponse() {
+  return [[GeminiActuationResponse alloc]
+      initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
+            errorMessage:"An actuation request is already in progress for "
+                         "this task."];
+}
+
 // Maps PageContextWrapperError enums to the corresponding TabObservationResult
 // proto enums.
 optimization_guide::proto::TabObservation::TabObservationResult
@@ -95,26 +117,6 @@ TabObservationResultFromPageContextWrapperError(PageContextWrapperError error) {
     case PageContextWrapperError::kPageNotExtractableError:
       return optimization_guide::proto::TabObservation::
           TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
-  }
-}
-
-// Maps GeminiYieldReason to ActorTaskInterruptReason for task interruptions.
-// Other yield reasons (kTaskComplete, kIrrelevantUserInput, kUnknownReason)
-// stop or pause the task directly in `dispatchActuationRequest` and do not map
-// to an interrupt reason.
-actor::ActorTaskInterruptReason ActorTaskInterruptReasonFromGeminiYieldReason(
-    GeminiYieldReason reason) {
-  switch (reason) {
-    case GeminiYieldReason::kConfirmation:
-      return actor::ActorTaskInterruptReason::kWaitingUserConfirmation;
-    case GeminiYieldReason::kClarification:
-      return actor::ActorTaskInterruptReason::kWaitingUserClarification;
-    case GeminiYieldReason::kUserTakeover:
-      return actor::ActorTaskInterruptReason::kWaitingUserTakeover;
-    case GeminiYieldReason::kUnknownReason:
-    case GeminiYieldReason::kTaskComplete:
-    case GeminiYieldReason::kIrrelevantUserInput:
-      NOTREACHED();
   }
 }
 
@@ -240,7 +242,7 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
 // Parses serialized action protos from `request` and injects session data.
 std::optional<std::vector<optimization_guide::proto::Action>>
 ParseActionsFromRequest(GeminiActuationRequest* request,
-                        web::WebStateID webStateId,
+                        web::WebStateID webStateID,
                         SessionID windowId) {
   if (!request.actionProtos) {
     return std::nullopt;
@@ -252,7 +254,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     if (!action.ParseFromArray([data bytes], [data length])) {
       return std::nullopt;
     }
-    InjectDataIntoAction(action, webStateId, windowId);
+    InjectDataIntoAction(action, webStateID, windowId);
     actions.push_back(action);
   }
   return actions;
@@ -280,6 +282,20 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 
   // Active callbacks awaiting completion, keyed by task ID.
   std::map<actor::ActorTaskId, ActuationCallback> _activeCallbacks;
+
+  // Tasks whose callback in `_activeCallbacks` is pending the user's answer to
+  // a confirmation prompt. A confirmation yield is answered in steps:
+  // 1. `-handleConfirmationYieldWithTaskID:...` stores the callback and asks
+  //    `ActorService` to interrupt the task with the prompt.
+  // 2. Once the user accepts,
+  //    `-actorTaskDidResolveConfirmationInterruptWithID:` requests a fresh
+  //    observation of the actuated tab. Only tasks in this set are handled,
+  //    since other clients of `ActorService` may interrupt.
+  // 3. `-completeConfirmationForTaskID:webStateID:pageContextResponse:` builds
+  //    the response and `-resolveConfirmationForTaskID:withResponse:` answers
+  //    the callback.
+  // A task stop or `-disconnect` answers the pending callback instead.
+  std::set<actor::ActorTaskId> _confirmationTaskIDs;
 }
 
 #pragma mark - Public
@@ -308,6 +324,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     _actorService = nullptr;
   }
   _webStateList = nullptr;
+  _confirmationTaskIDs.clear();
   std::map<actor::ActorTaskId, ActuationCallback> callbacks =
       std::exchange(_activeCallbacks, {});
   for (auto& [taskID, callback] : callbacks) {
@@ -385,9 +402,21 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
   if (yieldAction) {
     switch (yieldAction.reason) {
       case GeminiYieldReason::kConfirmation:
+        [self handleConfirmationYieldWithTaskID:taskID
+                                    yieldAction:yieldAction
+                                completionBlock:completionBlock];
+        break;
       case GeminiYieldReason::kClarification:
+        [self handleInterruptTaskWithID:taskID
+                                 reason:actor::ActorTaskInterruptReason::
+                                            kWaitingUserClarification
+                            yieldAction:yieldAction
+                        completionBlock:completionBlock];
+        break;
       case GeminiYieldReason::kUserTakeover:
         [self handleInterruptTaskWithID:taskID
+                                 reason:actor::ActorTaskInterruptReason::
+                                            kWaitingUserTakeover
                             yieldAction:yieldAction
                         completionBlock:completionBlock];
         break;
@@ -430,6 +459,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 // Aborts any pending request callback when a task stops externally.
 - (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
                     finalState:(actor::ActorTaskState)finalState {
+  _confirmationTaskIDs.erase(taskID);
   auto it = _activeCallbacks.find(taskID);
   if (it != _activeCallbacks.end()) {
     ActuationCallback callback = std::move(it->second);
@@ -441,6 +471,42 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
   _taskToWebStateIDMap.erase(taskID);
 }
 
+// Resolves a pending confirmation request by capturing a fresh observation of
+// the actuated tab. Step 2 of the confirmation flow described at
+// `_confirmationTaskIDs`.
+- (void)actorTaskDidResolveConfirmationInterruptWithID:
+    (actor::ActorTaskId)taskID {
+  // Early-return rather than CHECK: the interrupt may have been raised by
+  // another client of `ActorService`.
+  if (!_confirmationTaskIDs.contains(taskID)) {
+    return;
+  }
+  // `-disconnect` clears both `_confirmationTaskIDs` and `_actorService`, so a
+  // pending confirmation implies a live service.
+  CHECK(_actorService);
+
+  const web::WebStateID webStateID = [self webStateIDForTaskID:taskID];
+  web::WebState* webState =
+      webStateID.valid() ? _actorService->GetWebStateForID(webStateID, taskID)
+                         : nullptr;
+  if (!webState) {
+    // TODO(crbug.com/510404682): Handle tab closure during task execution
+    // gracefully rather than failing the request.
+    [self resolveConfirmationForTaskID:taskID
+                          withResponse:MakeTabWentAwayResponse()];
+    return;
+  }
+
+  __weak GeminiActuationHandler* weakSelf = self;
+  _actorService->RequestTabObservation(
+      taskID, webState,
+      base::BindOnce(^(PageContextWrapperCallbackResponse response) {
+        [weakSelf completeConfirmationForTaskID:taskID
+                                     webStateID:webStateID
+                            pageContextResponse:std::move(response)];
+      }));
+}
+
 #pragma mark - Private
 
 // Executes actions on the task's controlled WebState.
@@ -448,21 +514,19 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                                request:(GeminiActuationRequest*)request
                        completionBlock:
                            (void (^)(GeminiActuationResponse*))completionBlock {
-  web::WebStateID webStateId = [self webStateIDForTaskID:taskID];
-  if (!webStateId.valid() ||
-      !_actorService->GetWebStateForID(webStateId, taskID)) {
+  web::WebStateID webStateID = [self webStateIDForTaskID:taskID];
+  if (!webStateID.valid() ||
+      !_actorService->GetWebStateForID(webStateID, taskID)) {
     // TODO(crbug.com/510404682): Handle tab closure during task execution
     // gracefully rather than failing the request.
     if (completionBlock) {
-      completionBlock([[GeminiActuationResponse alloc]
-          initWithResultCode:actor::mojom::ActionResultCode::kTabWentAway
-                errorMessage:"The actuated tab is no longer available."]);
+      completionBlock(MakeTabWentAwayResponse());
     }
     return;
   }
 
   std::optional<std::vector<optimization_guide::proto::Action>> actions =
-      ParseActionsFromRequest(request, webStateId,
+      ParseActionsFromRequest(request, webStateID,
                               _browserId.value_or(SessionID::InvalidValue()));
   if (!actions.has_value()) {
     if (completionBlock) {
@@ -477,10 +541,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     // TODO(crbug.com/556739755): Add monitoring for concurrent actuation
     // requests.
     if (completionBlock) {
-      completionBlock([[GeminiActuationResponse alloc]
-          initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
-                errorMessage:"An actuation request is already in progress for "
-                             "this task."]);
+      completionBlock(MakeRequestInProgressResponse());
     }
     return;
   }
@@ -497,16 +558,98 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                                 std::move(actionsCallback));
 }
 
-// Interrupts the task for user intervention and unblocks the caller.
+// Interrupts the task to prompt the user with `yieldAction.messageToUser` and
+// holds `completionBlock` until the user answers the prompt.
+- (void)handleConfirmationYieldWithTaskID:(actor::ActorTaskId)taskID
+                              yieldAction:(GeminiYieldAction*)yieldAction
+                          completionBlock:(void (^)(GeminiActuationResponse*))
+                                              completionBlock {
+  CHECK(yieldAction);
+  // `messageToUser` is optional, but `ActorTask` stops a task asked to confirm
+  // without a message, so report a nil or empty message as malformed instead.
+  if (yieldAction.messageToUser.length == 0) {
+    completionBlock([[GeminiActuationResponse alloc]
+        initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
+              errorMessage:"Confirmation yield has no message."]);
+    return;
+  }
+
+  web::WebStateID webStateID = [self webStateIDForTaskID:taskID];
+  if (!webStateID.valid() ||
+      !_actorService->GetWebStateForID(webStateID, taskID)) {
+    // TODO(crbug.com/510404682): Handle tab closure during task execution
+    // gracefully rather than failing the request.
+    completionBlock(MakeTabWentAwayResponse());
+    return;
+  }
+
+  // Replacing a pending callback would drop it unanswered.
+  // TODO(crbug.com/556739755): Add monitoring for concurrent actuation
+  // requests.
+  if (_activeCallbacks.contains(taskID)) {
+    completionBlock(MakeRequestInProgressResponse());
+    return;
+  }
+
+  // Held before `InterruptTask`, which stops the task when no intervention
+  // delegate is registered; the posted stop notification then answers the
+  // request with `kTaskWentAway`.
+  // TODO(crbug.com/548051839): An interrupt ignored because of the task's
+  // current state leaves the request pending until the task stops or the
+  // handler disconnects. Resolve it from the interrupt result instead.
+  // TODO(crbug.com/567035844): Resolve the request when the user declines or
+  // the prompt is dismissed unanswered.
+  _activeCallbacks[taskID] = base::BindOnce(completionBlock);
+  _confirmationTaskIDs.insert(taskID);
+  _actorService->InterruptTask(
+      taskID, actor::ActorTaskInterruptReason::kWaitingUserConfirmation,
+      base::SysNSStringToUTF8(yieldAction.messageToUser));
+}
+
+// Resolves the pending confirmation for `taskID` with the user's acceptance and
+// `pageContextResponse`, the fresh observation of the tab `webStateID`.
+- (void)completeConfirmationForTaskID:(actor::ActorTaskId)taskID
+                           webStateID:(web::WebStateID)webStateID
+                  pageContextResponse:
+                      (PageContextWrapperCallbackResponse)pageContextResponse {
+  const actor::TabObservationResponse observation(
+      webStateID, std::move(pageContextResponse), /*web_state_exists=*/true);
+  optimization_guide::proto::ActionsResult actionsResult;
+  actionsResult.set_action_result(
+      static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
+  PopulateTabObservationFromResponse(actionsResult.add_tabs(), observation);
+
+  GeminiActuationResponse* response = [[GeminiActuationResponse alloc]
+           initWithResultCode:actor::mojom::ActionResultCode::kOk
+                 userResponse:kConfirmationUserResponse
+      serializedActionsResult:SerializeProtoToNSData(actionsResult)];
+  [self resolveConfirmationForTaskID:taskID withResponse:response];
+}
+
+// Answers the pending confirmation for `taskID` with `response`. No-op if the
+// confirmation was already answered, e.g. by a task stop.
+- (void)resolveConfirmationForTaskID:(actor::ActorTaskId)taskID
+                        withResponse:(GeminiActuationResponse*)response {
+  if (!_confirmationTaskIDs.erase(taskID)) {
+    return;
+  }
+  auto it = _activeCallbacks.find(taskID);
+  CHECK(it != _activeCallbacks.end());
+  ActuationCallback callback = std::move(it->second);
+  _activeCallbacks.erase(it);
+  std::move(callback).Run(response);
+}
+
+// Interrupts the task with `reason` for user intervention and unblocks the
+// caller.
 - (void)handleInterruptTaskWithID:(actor::ActorTaskId)taskID
+                           reason:(actor::ActorTaskInterruptReason)reason
                       yieldAction:(GeminiYieldAction*)yieldAction
                   completionBlock:
                       (void (^)(GeminiActuationResponse*))completionBlock {
   CHECK(yieldAction);
   // TODO(crbug.com/556739755): Wire up `yieldAction.messageToUser` to the user
   // intervention prompt / UI flow when intervention UI is integrated.
-  actor::ActorTaskInterruptReason reason =
-      ActorTaskInterruptReasonFromGeminiYieldReason(yieldAction.reason);
   _actorService->InterruptTask(taskID, reason);
   if (completionBlock) {
     completionBlock([[GeminiActuationResponse alloc]
