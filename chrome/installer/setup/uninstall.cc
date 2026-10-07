@@ -154,8 +154,9 @@ class ProcessPathPrefixFilter : public base::ProcessFilter {
     // Test if |entry|'s file path starts with the prefix we're looking for.
     base::Process process(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
                                         FALSE, entry.th32ProcessID));
-    if (!process.IsValid())
+    if (!process.IsValid()) {
       return false;
+    }
 
     DWORD path_len = MAX_PATH;
     wchar_t path_string[MAX_PATH];
@@ -242,11 +243,13 @@ bool ScheduleParentAndGrandparentForDeletion(const base::FilePath& path) {
 // directory is deleted, DELETE_NOT_EMPTY if it is not empty, and DELETE_FAILED
 // otherwise.
 DeleteResult DeleteEmptyDir(const base::FilePath& path) {
-  if (!base::IsDirectoryEmpty(path))
+  if (!base::IsDirectoryEmpty(path)) {
     return DELETE_NOT_EMPTY;
+  }
 
-  if (base::DeletePathRecursively(path))
+  if (base::DeletePathRecursively(path)) {
     return DELETE_SUCCEEDED;
+  }
 
   LOG(ERROR) << "Failed to delete folder: " << path.value();
   return DELETE_FAILED;
@@ -255,8 +258,9 @@ DeleteResult DeleteEmptyDir(const base::FilePath& path) {
 // Get the user data directory.
 base::FilePath GetUserDataDir() {
   base::FilePath path;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &path))
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
     return base::FilePath();
+  }
   return path;
 }
 
@@ -264,18 +268,20 @@ base::FilePath GetUserDataDir() {
 base::FilePath BackupLocalStateFile(const base::FilePath& user_data_dir) {
   base::FilePath backup;
   base::FilePath state_file(user_data_dir.Append(chrome::kLocalStateFilename));
-  if (!base::CreateTemporaryFile(&backup))
+  if (!base::CreateTemporaryFile(&backup)) {
     LOG(ERROR) << "Failed to create temporary file for Local State.";
-  else
+  } else {
     base::CopyFile(state_file, backup);
+  }
   return backup;
 }
 
 // Deletes a given user data directory as well as the containing product
 // directories if they are empty (e.g., "Google\Chrome").
 DeleteResult DeleteUserDataDir(const base::FilePath& user_data_dir) {
-  if (user_data_dir.empty())
+  if (user_data_dir.empty()) {
     return DELETE_SUCCEEDED;
+  }
 
   DeleteResult result = DELETE_SUCCEEDED;
   VLOG(1) << "Deleting user profile " << user_data_dir.value();
@@ -289,8 +295,9 @@ DeleteResult DeleteUserDataDir(const base::FilePath& user_data_dir) {
   if (!product_dir1.empty() &&
       DeleteEmptyDir(product_dir1) == DELETE_SUCCEEDED) {
     const base::FilePath product_dir2(product_dir1.DirName());
-    if (!product_dir2.empty())
+    if (!product_dir2.empty()) {
       DeleteEmptyDir(product_dir2);
+    }
   }
 
   return result;
@@ -310,8 +317,9 @@ DeleteResult DeleteChromeFilesAndFolders(const InstallerState& installer_state,
   DeleteResult result = DELETE_SUCCEEDED;
 
   base::FilePath installer_directory;
-  if (target_path.IsParent(setup_exe))
+  if (target_path.IsParent(setup_exe)) {
     installer_directory = setup_exe.DirName();
+  }
 
   // Enumerate all the files in target_path recursively (breadth-first).
   // We delete a file or folder unless it is a parent/child of the installer
@@ -443,10 +451,11 @@ void RemoveFiletypeRegistration(const InstallerState& installer_state,
       assoc.assign(cleared_assocs[i]);
 
       // Inelegant, but simpler than a pure data-driven approach.
-      if (assoc == L".htm" || assoc == L".html")
+      if (assoc == L".htm" || assoc == L".html") {
         replacement_prog_id = L"htmlfile";
-      else if (assoc == L".xht" || assoc == L".xhtml")
+      } else if (assoc == L".xht" || assoc == L".xhtml") {
         replacement_prog_id = L"xhtmlfile";
+      }
 
       if (!replacement_prog_id) {
         LOG(WARNING) << "No known replacement ProgID for " << assoc
@@ -575,13 +584,15 @@ DeleteResult DeleteChromeDirectoriesIfEmpty(
       result = DeleteEmptyDir(product_directory);
       if (result == DELETE_SUCCEEDED) {
         const base::FilePath vendor_directory(product_directory.DirName());
-        if (!vendor_directory.empty())
+        if (!vendor_directory.empty()) {
           result = DeleteEmptyDir(vendor_directory);
+        }
       }
     }
   }
-  if (result == DELETE_NOT_EMPTY)
+  if (result == DELETE_NOT_EMPTY) {
     result = DELETE_SUCCEEDED;
+  }
   return result;
 }
 
@@ -817,8 +828,9 @@ void RemoveChromeLegacyRegistryKeys(const base::FilePath& chrome_exe) {
 void UninstallFirewallRules(const base::FilePath& chrome_exe) {
   std::unique_ptr<FirewallManager> manager =
       FirewallManager::Create(chrome_exe);
-  if (manager)
+  if (manager) {
     manager->RemoveFirewallRules();
+  }
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -888,8 +900,9 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
     // no --force-uninstall so lets show some UI dialog boxes.
     status = IsChromeActiveOrUserCancelled(installer_state);
     if (status != installer::UNINSTALL_CONFIRMED &&
-        status != installer::UNINSTALL_DELETE_PROFILE)
+        status != installer::UNINSTALL_DELETE_PROFILE) {
       return status;
+    }
 
     const std::wstring suffix(
         ShellUtil::GetCurrentInstallationSuffix(chrome_exe));
@@ -1094,10 +1107,11 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
 
   DeleteResult delete_result = DeleteChromeFilesAndFolders(
       installer_state, base::MakeAbsoluteFilePath(setup_exe));
-  if (delete_result == DELETE_FAILED)
+  if (delete_result == DELETE_FAILED) {
     ret = installer::UNINSTALL_FAILED;
-  else if (delete_result == DELETE_REQUIRES_REBOOT)
+  } else if (delete_result == DELETE_REQUIRES_REBOOT) {
     ret = installer::UNINSTALL_REQUIRES_REBOOT;
+  }
 
   if (delete_profile) {
     DeleteUserDataDir(user_data_dir);
@@ -1112,8 +1126,9 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
 
   // Try and delete the preserved local state once the post-install
   // operations are complete.
-  if (!backup_state_file.empty())
+  if (!backup_state_file.empty()) {
     base::DeleteFile(backup_state_file);
+  }
 
   return ret;
 }
@@ -1206,8 +1221,9 @@ bool MoveSetupOutOfInstallFolder(const base::FilePath& setup_exe) {
   // Change the current directory to the TMP directory. See method comment
   // for details.
   VLOG(1) << "Changing current directory to: " << tmp_dir.value();
-  if (!base::SetCurrentDirectory(tmp_dir))
+  if (!base::SetCurrentDirectory(tmp_dir)) {
     PLOG(ERROR) << "Failed to change the current directory.";
+  }
 
   for (std::vector<base::FilePath>::const_iterator it = setup_files.begin();
        it != setup_files.end(); ++it) {

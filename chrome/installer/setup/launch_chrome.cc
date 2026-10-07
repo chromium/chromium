@@ -24,8 +24,9 @@ base::CommandLine GetPostInstallLaunchCommand(
 }
 
 bool LaunchChromeBrowser(const base::FilePath& application_path) {
-  if (application_path.empty())
+  if (application_path.empty()) {
     return false;
+  }
 
   return base::LaunchProcess(GetPostInstallLaunchCommand(application_path),
                              base::LaunchOptions())
@@ -35,8 +36,9 @@ bool LaunchChromeBrowser(const base::FilePath& application_path) {
 bool LaunchChromeAndWait(const base::FilePath& application_path,
                          const base::CommandLine& options,
                          int32_t* exit_code) {
-  if (application_path.empty())
+  if (application_path.empty()) {
     return false;
+  }
 
   base::CommandLine cmd(application_path.Append(kChromeExe));
   cmd.AppendArguments(options, false);
@@ -56,8 +58,9 @@ bool LaunchChromeAndWait(const base::FilePath& application_path,
   }
   DCHECK_NE(ret, static_cast<int>(STILL_ACTIVE));
 
-  if (exit_code)
+  if (exit_code) {
     *exit_code = ret;
+  }
 
   return true;
 }

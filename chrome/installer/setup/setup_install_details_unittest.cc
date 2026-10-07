@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/installer/setup/setup_install_details.h"
 
 #include <windows.h>
@@ -535,8 +534,9 @@ class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
                                     const wchar_t* app_guid,
                                     const wchar_t* uninstall_args) {
     // Do nothing if there's no value to write.
-    if (!uninstall_args || !*uninstall_args)
+    if (!uninstall_args || !*uninstall_args) {
       return;
+    }
     // Make it appear that the product is installed with the given uninstall
     // args.
     ASSERT_THAT(

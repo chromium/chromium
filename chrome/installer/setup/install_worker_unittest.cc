@@ -185,8 +185,9 @@ void AddChromeToInstallationState(bool system_level,
           .Append(installer::kInstallerDir)
           .Append(installer::kSetupExe));
   product_state.AddUninstallSwitch(installer::switches::kUninstall);
-  if (system_level)
+  if (system_level) {
     product_state.AddUninstallSwitch(installer::switches::kSystemLevel);
+  }
 
   installation_state->SetProductState(system_level, product_state);
 }

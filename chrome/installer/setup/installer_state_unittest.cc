@@ -101,8 +101,9 @@ TEST_F(InstallerStateTest, WithProduct) {
       base::Version found_version(
           installer_state.GetCurrentVersion(machine_state));
       EXPECT_TRUE(found_version.IsValid());
-      if (found_version.IsValid())
+      if (found_version.IsValid()) {
         EXPECT_EQ(current_version, found_version);
+      }
     }
   }
 }

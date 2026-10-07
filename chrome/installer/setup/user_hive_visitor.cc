@@ -80,8 +80,9 @@ ScopedUserHive::ScopedUserHive(const base::FilePath& hive_file) {
 
 ScopedUserHive::~ScopedUserHive() {
   key_.Close();
-  if (subkey_name_.empty())
+  if (subkey_name_.empty()) {
     return;
+  }
   LONG result = ::RegUnLoadKey(HKEY_LOCAL_MACHINE, subkey_name_.c_str());
   if (result != ERROR_SUCCESS) {
     ::SetLastError(result);
@@ -92,8 +93,9 @@ ScopedUserHive::~ScopedUserHive() {
 bool OpenUserHive(const wchar_t* sid, base::win::RegKey* user_hive) {
   DCHECK(user_hive);
   LONG result = user_hive->Open(HKEY_USERS, sid, KEY_ALL_ACCESS);
-  if (result == ERROR_SUCCESS)
+  if (result == ERROR_SUCCESS) {
     return true;
+  }
   if (result == ERROR_FILE_NOT_FOUND) {
     VLOG(1) << "Hive is not loaded for user \"" << sid << "\"";
     return false;
@@ -122,8 +124,9 @@ void VisitUserHives(const HiveVisitor& visitor) {
     base::win::RegKey key;
     if (OpenUserHive(sid, &key)) {
       VLOG(1) << "Found loaded hive for sid \"" << sid << "\"";
-      if (!visitor.Run(sid, &key))
+      if (!visitor.Run(sid, &key)) {
         break;
+      }
       continue;
     }
 
@@ -146,8 +149,9 @@ void VisitUserHives(const HiveVisitor& visitor) {
                   << profile_key_name << "\"";
     }
     key.Close();
-    if (image_path.empty())
+    if (image_path.empty()) {
       continue;
+    }
 
     base::FilePath hive_file(
         base::FilePath(image_path).Append(FILE_PATH_LITERAL("ntuser.dat")));
@@ -160,8 +164,9 @@ void VisitUserHives(const HiveVisitor& visitor) {
     ScopedUserHive user_hive(hive_file);
     if (user_hive.valid()) {
       VLOG(1) << "Loaded and opened hive for sid \"" << sid << "\"";
-      if (!visitor.Run(sid, user_hive.key()))
+      if (!visitor.Run(sid, user_hive.key())) {
         break;
+      }
     }
   }
 }

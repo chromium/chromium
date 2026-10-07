@@ -27,8 +27,9 @@ bool ChannelOverrideWorkItem::DoImpl() {
   // Read the "ap" value.
   installer::AdditionalParameters ap;
 
-  if (IsCurrentChannel(ap.ParseChannel()))
+  if (IsCurrentChannel(ap.ParseChannel())) {
     return true;  // No modification is necessary.
+  }
 
   // Cache the unmodified value for use in rollback.
   original_ap_.emplace();

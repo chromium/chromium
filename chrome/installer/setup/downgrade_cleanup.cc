@@ -47,8 +47,9 @@ std::optional<base::Version> GetLastBreakingInstallerVersion(HKEY reg_root) {
     return std::nullopt;
   }
   base::Version version(base::WideToASCII(last_breaking_installer_version));
-  if (!version.IsValid())
+  if (!version.IsValid()) {
     return std::nullopt;
+  }
   return version;
 }
 // Formats `cmd_line_with_placeholders` by replacing the placeholders with
@@ -70,8 +71,9 @@ std::wstring GetCleanupCommandLine(
   // The `offsets` size and `replacements` size should be equal. If they are
   // not, no command should be returned to avoid running an invalid command
   // line.
-  if (offsets.size() != replacements.size())
+  if (offsets.size() != replacements.size()) {
     cmd.clear();
+  }
   return base::AsWString(std::move(cmd));
 }
 
@@ -153,10 +155,12 @@ std::wstring GetDowngradeCleanupCommandWithPlaceholders(
   downgrade_cleanup_cmd.AppendSwitchNative(
       switches::kCleanupForDowngradeOperation, L"$2");
   InstallUtil::AppendModeAndChannelSwitches(&downgrade_cleanup_cmd);
-  if (installer_state.system_install())
+  if (installer_state.system_install()) {
     downgrade_cleanup_cmd.AppendSwitch(switches::kSystemLevel);
-  if (installer_state.verbose_logging())
+  }
+  if (installer_state.verbose_logging()) {
     downgrade_cleanup_cmd.AppendSwitch(switches::kVerboseLogging);
+  }
   return downgrade_cleanup_cmd.GetCommandLineString();
 }
 
@@ -165,16 +169,18 @@ bool AddDowngradeCleanupItems(const base::Version& new_version,
   DCHECK(new_version.IsValid());
   HKEY reg_root = install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
                                                     : HKEY_CURRENT_USER;
-  if (GetLastBreakingInstallerVersion(reg_root) <= new_version)
+  if (GetLastBreakingInstallerVersion(reg_root) <= new_version) {
     return false;
+  }
 
   std::wstring dowgrade_cleanup_cmd;
   base::win::RegKey(reg_root, install_static::GetClientStateKeyPath().c_str(),
                     KEY_QUERY_VALUE | KEY_WOW64_32KEY)
       .ReadValue(google_update::kRegDowngradeCleanupCommandField,
                  &dowgrade_cleanup_cmd);
-  if (dowgrade_cleanup_cmd.empty())
+  if (dowgrade_cleanup_cmd.empty()) {
     return false;
+  }
 
   auto cleanup_cmd = GetCleanupCommandLine(dowgrade_cleanup_cmd, new_version,
                                            kCleanupOperation);

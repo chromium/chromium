@@ -73,8 +73,9 @@ void InstallerState::Initialize(const base::CommandLine& command_line,
   if (!msi_) {
     const ProductState* product_state =
         machine_state.GetProductState(system_install());
-    if (product_state != nullptr)
+    if (product_state != nullptr) {
       msi_ = product_state->is_msi();
+    }
   }
 
   const bool is_uninstall = command_line.HasSwitch(switches::kUninstall);

@@ -65,12 +65,14 @@ std::wstring UpdateActiveSetupVersionWorkItem::GetUpdatedActiveSetupVersion(
   // If |existing_version| was empty or otherwise corrupted, turn it into a
   // valid one by extending with up to four zeros or truncating to only four
   // components.
-  if (version_components.size() != 4U)
+  if (version_components.size() != 4U) {
     version_components.resize(4U, L"0");
+  }
 
   uint32_t previous_major;
-  if (!base::StringToUint(version_components[MAJOR], &previous_major))
+  if (!base::StringToUint(version_components[MAJOR], &previous_major)) {
     previous_major = 0;
+  }
 
   // Unconditionally update the major version.
   version_components[MAJOR] = kActiveSetupMajorVersion;

@@ -58,8 +58,9 @@ ErrorCode CreateAndDeleteSentinelFile(const base::FilePath& install_dir) {
   base::File file(sentinel_file_path, base::File::FLAG_CREATE |
                                           base::File::FLAG_WRITE |
                                           base::File::FLAG_DELETE_ON_CLOSE);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return SENTINEL_FILE_CREATE_ERROR;
+  }
 
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   return SUCCESS;
@@ -79,8 +80,9 @@ MULTIPROCESS_TEST_MAIN(SetupSingletonTestExclusiveAccessProcessMain) {
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
       GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
-  if (!setup_singleton)
+  if (!setup_singleton) {
     return SETUP_SINGLETON_ACQUISITION_FAILED;
+  }
 
   // Create a sentinel file and delete it after a few milliseconds. This will
   // fail if the sentinel file already exists (which shouldn't be the case since
@@ -102,8 +104,9 @@ MULTIPROCESS_TEST_MAIN(SetupSingletonTestWaitForInterruptProcessMain) {
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
       GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
-  if (!setup_singleton)
+  if (!setup_singleton) {
     return SETUP_SINGLETON_ACQUISITION_FAILED;
+  }
 
   // Signal an event to indicate that this process has acquired the
   // SetupSingleton.
@@ -114,8 +117,9 @@ MULTIPROCESS_TEST_MAIN(SetupSingletonTestWaitForInterruptProcessMain) {
 
   // Wait indefinitely. This should only return when another SetupSingleton is
   // instantiated for |install_dir|.
-  if (!setup_singleton->WaitForInterrupt(base::TimeDelta::Max()))
+  if (!setup_singleton->WaitForInterrupt(base::TimeDelta::Max())) {
     return WAIT_RETURNED_FALSE;
+  }
 
   // Create a sentinel file and delete it after a few milliseconds. This will
   // fail if the sentinel file already exists (which shouldn't be the case since

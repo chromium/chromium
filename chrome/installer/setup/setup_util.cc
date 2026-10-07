@@ -145,8 +145,9 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
   wchar_t rundll32[MAX_PATH];
   DWORD size =
       ExpandEnvironmentStrings(kRunDll32Path, rundll32, std::size(rundll32));
-  if (!size || size >= MAX_PATH)
+  if (!size || size >= MAX_PATH) {
     return false;
+  }
 
   STARTUPINFO startup = {sizeof(STARTUPINFO)};
   PROCESS_INFORMATION pi = {0};
@@ -209,8 +210,9 @@ bool AdjustThreadPriority() {
     return !!result;
   }
 
-  if (priority_class == 0)
+  if (priority_class == 0) {
     PLOG(WARNING) << "Failed to get the process's priority class.";
+  }
 
   return false;
 }
@@ -305,15 +307,17 @@ void DeleteRegistryKeyPartial(
       continue;
     }
     if (result == ERROR_NO_MORE_ITEMS) {
-      if (!did_delete)
+      if (!did_delete) {
         break;  // All subkeys were deleted. The job is done.
+      }
       // Otherwise, loop again.
       did_delete = false;
       index = 0;
       continue;
     }
-    if (result != ERROR_SUCCESS)
+    if (result != ERROR_SUCCESS) {
       break;
+    }
     // Shrink the string to the actual length of the name.
     name.resize(name_length);
 
@@ -376,15 +380,17 @@ void DeleteRegistryKeyPartial(
       break;
     }
     if (result == ERROR_NO_MORE_ITEMS) {
-      if (!did_delete)
+      if (!did_delete) {
         break;  // All values were deleted. The job is done.
+      }
       // Otherwise, loop again.
       did_delete = false;
       index = 0;
       continue;
     }
-    if (result != ERROR_SUCCESS)
+    if (result != ERROR_SUCCESS) {
       break;
+    }
     // Shrink the string to the actual length of the name.
     name.resize(name_length);
 
@@ -416,8 +422,9 @@ bool IsDowngradeAllowed(const InitialPreferences& prefs) {
 
 int GetInstallAge(const InstallerState& installer_state) {
   base::File::Info info;
-  if (!base::GetFileInfo(installer_state.target_path(), &info))
+  if (!base::GetFileInfo(installer_state.target_path(), &info)) {
     return -1;
+  }
   base::TimeDelta age = base::Time::Now() - info.creation_time;
   return age >= base::TimeDelta() ? age.InDays() : -1;
 }
@@ -478,8 +485,9 @@ void RegisterEventLogProvider(const base::FilePath& install_directory,
 
   // if the operation fails we log the error but still continue because none of
   // these are critical for the proper operation of the browser.
-  if (!work_item_list->Do())
+  if (!work_item_list->Do()) {
     work_item_list->Rollback();
+  }
 }
 
 void DeRegisterEventLogProvider() {
@@ -496,14 +504,16 @@ void DeRegisterEventLogProvider() {
 void DoLegacyCleanups(const InstallerState& installer_state,
                       InstallStatus install_status) {
   // Do no harm if the install didn't succeed.
-  if (InstallUtil::GetInstallReturnCode(install_status))
+  if (InstallUtil::GetInstallReturnCode(install_status)) {
     return;
+  }
 
   RemoveLegacyAppCommands(installer_state);
 
   // The cleanups below only apply to normal Chrome, not side-by-side (canary).
-  if (!install_static::InstallDetails::Get().is_primary_mode())
+  if (!install_static::InstallDetails::Get().is_primary_mode()) {
     return;
+  }
 
   RemoveBinariesVersionKey(installer_state);
   RemoveAppLauncherVersionKey(installer_state);
@@ -566,8 +576,9 @@ bool StoreDMToken(const std::string& token) {
     // If the key couldn't be opened on the first iteration (the mandatory
     // location), return failure straight away. Otherwise, continue iterating.
     if (!key.Valid()) {
-      if (succeeded)
+      if (succeeded) {
         continue;
+      }
       // Logging already performed in GetCloudManagementDmTokenLocation.
       return false;
     }
@@ -613,15 +624,17 @@ bool DeleteDMToken() {
                   << " for deletion";
       // If the key couldn't be opened for the mandatory location, return
       // failure immediately. Otherwise, continue iterating.
-      if (!is_browser_location)
+      if (!is_browser_location) {
         return false;
+      }
       continue;
     }
 
     if (!DeleteRegistryValue(key.Handle(), std::wstring(), wow_access,
                              value_name)) {
-      if (!is_browser_location)
+      if (!is_browser_location) {
         return false;  // Logging already performed in `DeleteRegistryValue()`.
+      }
       continue;
     }  // Else ignore the failure to write to the best-effort location.
 

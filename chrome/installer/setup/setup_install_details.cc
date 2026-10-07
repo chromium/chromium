@@ -27,8 +27,9 @@ const install_static::InstallConstants* FindInstallMode(
   for (size_t i = 1; i < install_static::kInstallModes.size(); ++i) {
     const install_static::InstallConstants& mode =
         install_static::kInstallModes[i];
-    if (command_line.HasSwitch(mode.install_switch))
+    if (command_line.HasSwitch(mode.install_switch)) {
       return &mode;
+    }
   }
   // The first mode is always the default if all else fails.
   return &install_static::kInstallModes.front();
@@ -40,8 +41,9 @@ std::optional<std::wstring> GetSwitchValue(
     const base::CommandLine& command_line,
     std::string_view switch_name) {
   std::optional<std::wstring> result;
-  if (command_line.HasSwitch(switch_name))
+  if (command_line.HasSwitch(switch_name)) {
     result = command_line.GetSwitchValueNative(switch_name);
+  }
   return result;
 }
 
@@ -98,8 +100,9 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
       &update_ap, &update_cohort_name);
   details->set_channel(channel.channel_name);
   details->set_channel_origin(channel.origin);
-  if (channel.origin == install_static::ChannelOrigin::kPolicy)
+  if (channel.origin == install_static::ChannelOrigin::kPolicy) {
     details->set_channel_override(*channel_from_cmd_line);
+  }
   details->set_is_extended_stable_channel(channel.is_extended_stable);
   details->set_update_ap(update_ap);
   details->set_update_cohort_name(update_cohort_name);

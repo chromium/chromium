@@ -44,8 +44,9 @@ bool NavigateToUrlWithHttps(const std::wstring& url) {
   info.lpVerb = L"open";
   info.lpFile = url.c_str();
   info.nShow = SW_SHOWNORMAL;
-  if (::ShellExecuteEx(&info))
+  if (::ShellExecuteEx(&info)) {
     return true;
+  }
   PLOG(ERROR) << "Failed to launch default browser for uninstall survey";
   return false;
 }
@@ -60,8 +61,9 @@ bool IsMetricsEnabled(const base::FilePath& file_path) {
   std::unique_ptr<base::Value> root =
       json_deserializer.Deserialize(nullptr, nullptr);
   // Preferences should always have a dictionary root.
-  if (!root || !root->is_dict())
+  if (!root || !root->is_dict()) {
     return false;
+  }
 
   const std::optional<bool> value = root->GetDict().FindBoolByDottedPath(
       metrics::prefs::kMetricsReportingEnabled);
@@ -128,8 +130,9 @@ std::wstring GetDistributionData() {
     crashpad::UUID client_id;
     std::unique_ptr<crashpad::CrashReportDatabase> database(
         crashpad::CrashReportDatabase::InitializeWithoutCreating(crash_dir));
-    if (database && database->GetSettings()->GetClientID(&client_id))
+    if (database && database->GetSettings()->GetClientID(&client_id)) {
       result.append(L"&crash_client_id=").append(client_id.ToWString());
+    }
   }
 
   return result;

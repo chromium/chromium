@@ -63,8 +63,9 @@ bool InstallerCrashReporterClient::GetCrashDumpLocation(
   base::FilePath crash_directory_path;
   bool ret =
       base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_directory_path);
-  if (ret)
+  if (ret) {
     *crash_dir = crash_directory_path.value();
+  }
   return ret;
 }
 
@@ -86,8 +87,9 @@ bool InstallerCrashReporterClient::GetCollectStatsInSample() {
   base::win::RegKey key(HKEY_CURRENT_USER,
                         install_static::GetRegistryPath().c_str(),
                         KEY_QUERY_VALUE | KEY_WOW64_32KEY);
-  if (!key.Valid())
+  if (!key.Valid()) {
     return true;
+  }
   DWORD out_value = 0;
   if (key.ReadValueDW(install_static::kRegValueChromeStatsSample, &out_value) !=
       ERROR_SUCCESS) {

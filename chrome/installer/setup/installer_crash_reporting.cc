@@ -60,8 +60,9 @@ bool GetSystemTemp(base::FilePath* temp) {
       KEY_READ);
   std::wstring temp_wstring;  // presubmit: allow wstring
   bool success = reg_key.ReadValue(L"TEMP", &temp_wstring) == ERROR_SUCCESS;
-  if (success)
+  if (success) {
     *temp = base::FilePath(temp_wstring);  // presubmit: allow wstring
+  }
   return success;
 }
 
@@ -124,8 +125,9 @@ void SetInitialCrashKeys(const InstallerState& state) {
   // This is a Windows registry key, which maxes out at 255 chars.
   static CrashKeyString<256> state_crash_key("state-key");
   const std::wstring state_key = state.state_key();
-  if (!state_key.empty())
+  if (!state_key.empty()) {
     state_crash_key.Set(base::WideToUTF8(state_key));
+  }
 
   // Set crash keys containing the registry values used to determine Chrome's
   // update channel at process startup; see https://crbug.com/41235563.
@@ -144,10 +146,11 @@ void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
 
 void SetCurrentVersionCrashKey(const base::Version& current_version) {
   static crash_reporter::CrashKeyString<32> version_key("current-version");
-  if (current_version.IsValid())
+  if (current_version.IsValid()) {
     version_key.Set(current_version.GetString());
-  else
+  } else {
     version_key.Clear();
+  }
 }
 
 }  // namespace installer

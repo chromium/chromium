@@ -101,8 +101,9 @@ bool SetupSingleton::WaitForInterrupt(base::TimeDelta max_time) const {
 SetupSingleton::ScopedHoldMutex::ScopedHoldMutex() = default;
 
 SetupSingleton::ScopedHoldMutex::~ScopedHoldMutex() {
-  if (mutex_ != INVALID_HANDLE_VALUE)
+  if (mutex_ != INVALID_HANDLE_VALUE) {
     ::ReleaseMutex(mutex_);
+  }
 }
 
 bool SetupSingleton::ScopedHoldMutex::Acquire(HANDLE mutex) {

@@ -193,8 +193,9 @@ bool AddFirewallRulesCallback(const base::FilePath& chrome_path,
 
   // Adding the firewall rule is expected to fail for user-level installs on
   // Vista+. Try anyway in case the installer is running elevated.
-  if (!manager->AddFirewallRules())
+  if (!manager->AddFirewallRules()) {
     LOG(ERROR) << "Failed creating a firewall rules. Continuing with install.";
+  }
 
   // Don't abort installation if the firewall rule couldn't be added.
   return true;
@@ -442,8 +443,9 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
                                       const base::FilePath& setup_path,
                                       const base::Version& new_version,
                                       WorkItemList* install_list) {
-  if (!installer_state.system_install())
+  if (!installer_state.system_install()) {
     return;
+  }
 
   // Register a command to allow Chrome to request Google Update to run
   // setup.exe --store-dmtoken=<token>, which will store the specified token
@@ -477,8 +479,9 @@ void AddEnterpriseUnenrollmentWorkItems(const InstallerState& installer_state,
                                         const base::FilePath& setup_path,
                                         const base::Version& new_version,
                                         WorkItemList* install_list) {
-  if (!installer_state.system_install())
+  if (!installer_state.system_install()) {
     return;
+  }
 
   // Register a command to allow Chrome to request Google Update to run
   // setup.exe --delete-dmtoken, which will delete any existing DMToken from the
@@ -500,8 +503,9 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
                                        const base::FilePath& setup_path,
                                        const base::Version& new_version,
                                        WorkItemList* install_list) {
-  if (!installer_state.system_install())
+  if (!installer_state.system_install()) {
     return;
+  }
 
   // Register a command to allow Chrome to request Google Update to run
   // setup.exe --rotate-dtkey=<dm-token>, which will rotate the key and store
@@ -731,8 +735,9 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
                                 WorkItemList* install_list) {
   // Only update specific brand codes needed for enterprise.
   std::wstring brand;
-  if (!GoogleUpdateSettings::GetBrand(&brand))
+  if (!GoogleUpdateSettings::GetBrand(&brand)) {
     return;
+  }
 
   // Only update if this machine is a managed device, including domain join.
   // Also map in the reverse direction to fix an issue introduced in M136 by
@@ -897,10 +902,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     // Form the mode-specific rename command and register it.
     base::CommandLine product_rename_cmd(installer_path);
     product_rename_cmd.AppendSwitch(switches::kRenameChromeExe);
-    if (installer_state.system_install())
+    if (installer_state.system_install()) {
       product_rename_cmd.AppendSwitch(switches::kSystemLevel);
-    if (installer_state.verbose_logging())
+    }
+    if (installer_state.verbose_logging()) {
       product_rename_cmd.AppendSwitch(switches::kVerboseLogging);
+    }
     InstallUtil::AppendModeAndChannelSwitches(&product_rename_cmd);
     AppCommand(installer::kCmdRenameChromeExe,
                product_rename_cmd.GetCommandLineString())
@@ -1151,16 +1158,18 @@ void AddOldWerHelperRegistrationCleanupItems(HKEY root,
                                              WorkItemList* list) {
   std::wstring value_prefix(target_path.value());
   DCHECK(!value_prefix.empty());
-  if (value_prefix.back() != L'\\')
+  if (value_prefix.back() != L'\\') {
     value_prefix.push_back(L'\\');
+  }
   const std::wstring value_postfix(std::wstring(L"\\") + kWerDll);
   const std::wstring wer_registry_path = GetWerHelperRegistryPath();
   for (base::win::RegistryValueIterator value_iter(
            root, wer_registry_path.c_str(), WorkItem::kWow64Default);
        value_iter.Valid(); ++value_iter) {
     const std::wstring value_name(value_iter.Name());
-    if (value_name.size() <= value_prefix.size() + value_postfix.size())
+    if (value_name.size() <= value_prefix.size() + value_postfix.size()) {
       continue;
+    }
 
     if (base::StartsWith(value_name, value_prefix,
                          base::CompareCase::INSENSITIVE_ASCII) &&
@@ -1284,12 +1293,15 @@ void AppendUninstallCommandLineFlags(const InstallerState& installer_state,
   uninstall_cmd->AppendSwitch(installer::switches::kUninstall);
 
   InstallUtil::AppendModeAndChannelSwitches(uninstall_cmd);
-  if (installer_state.is_msi())
+  if (installer_state.is_msi()) {
     uninstall_cmd->AppendSwitch(installer::switches::kMsi);
-  if (installer_state.system_install())
+  }
+  if (installer_state.system_install()) {
     uninstall_cmd->AppendSwitch(installer::switches::kSystemLevel);
-  if (installer_state.verbose_logging())
+  }
+  if (installer_state.verbose_logging()) {
     uninstall_cmd->AppendSwitch(installer::switches::kVerboseLogging);
+  }
 }
 
 void AddOsUpgradeWorkItems(const InstallerState& installer_state,
@@ -1310,8 +1322,9 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
     // Add the main option to indicate OS upgrade flow.
     cmd_line.AppendSwitch(installer::switches::kOnOsUpgrade);
     InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
-    if (installer_state.system_install())
+    if (installer_state.system_install()) {
       cmd_line.AppendSwitch(installer::switches::kSystemLevel);
+    }
     // Log everything for now.
     cmd_line.AppendSwitch(installer::switches::kVerboseLogging);
     // This will make the updater append
