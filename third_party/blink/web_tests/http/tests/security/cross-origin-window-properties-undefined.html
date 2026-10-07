@@ -2,11 +2,18 @@
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<iframe id="cross-origin-iframe" src="https://localhost:8000/security/resources/blank.html"></iframe>
+<iframe id="cross-origin-iframe" src="http://localhost:8000/security/resources/blank.html"></iframe>
+<iframe id="cross-origin-iframe-with-child-named-then" src="http://localhost:8000/security/resources/frame-with-child-named-then.html"></iframe>
 <!--
-  HTML 7.2.3.3 CrossOriginGetOwnPropertyHelper ( O, P )
-  https://html.spec.whatwg.org/multipage/browsers.html#crossorigingetownpropertyhelper-(-o,-p-)
-  step 3. If P is "then", @@toStringTag, @@hasInstance, or @@isConcatSpreadable, then return PropertyDescriptor{ [[Value]]: undefined, [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: true }.
+  HTML 7.2.3.2 CrossOriginPropertyFallback ( P )
+  https://html.spec.whatwg.org/multipage/nav-history-apis.html#crossoriginpropertyfallback-(-p-)
+  step 1. If P is "then", @@toStringTag, @@hasInstance, or @@isConcatSpreadable, then return PropertyDescriptor{ [[Value]]: undefined, [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: true }.
+
+  WindowProxy [[GetOwnProperty]] ( P )
+  https://html.spec.whatwg.org/multipage/nav-history-apis.html#windowproxy-getownproperty
+  consults W's document-tree child navigable target name property set before
+  falling back to CrossOriginPropertyFallback, so a child navigable named "then"
+  must not be shadowed by the fallback.
 
   Test that window.then and location.then return undefined in case of cross origin.
 -->
@@ -23,17 +30,14 @@ onload = function() {
   }, "Test that 'then' on cross origin window and location returns undefined.");
 
   test(function() {
-    let iframe = document.getElementById('cross-origin-iframe');
+    // This cross origin window has a child browsing context named 'then',
+    // which shouldn't be shadowed by the CrossOriginPropertyFallback.
+    let iframe = document.getElementById('cross-origin-iframe-with-child-named-then');
     let w = iframe.contentWindow;  // cross origin window
     assert_throws_dom('SecurityError', function() { w.document; }, "The window 'w' must be cross origin.");
 
-    // Make a child browsing context named 'then', which shouldn't be shadowed.
-    let child_then_frame = document.createElement('iframe');
-    child_then_frame.name = 'then';
-    child_then_frame.src = 'https://localhost:8000/security/resources/blank.html';
-    document.body.appendChild(child_then_frame);
-
     assert_equals(typeof w.then, 'object', "The value of 'then' must be a WindowProxy.");
+    assert_equals(w.then, w[0], "The value of 'then' must be the child browsing context named 'then'.");
     assert_equals(w.location.then, undefined, "The value of 'location.then' must be undefined.");
   }, "Test that a child browsing context named 'then' is not shadowed.");
 
