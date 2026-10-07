@@ -45,7 +45,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
   # These are only for developer convenience and not on any bots.
   'telemetry_gpu_integration_test_scripts_only',
   # These are defined by an android internal gn_isolate_map.pyl file.
-  'resource_sizes_trichrome_google',
+  'resource_sizes_chrome_and_webview_google',
   'resource_sizes_system_webview_google_bundle',
   'system_webview_google_apk',
   'trichrome_google_64_32_minimal_apks',

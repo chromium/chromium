@@ -45,11 +45,8 @@ def _generate_resource_sizes(
     make_staging_path(),
   ]
   FORWARDED_PARAMS = [
-    ('--trichrome-library', make_chromium_output_path, 'trichrome_library'),
     ('--chrome', make_chromium_output_path, 'chrome'),
-    ('--trichrome-chrome', make_chromium_output_path, 'trichrome_chrome'),
     ('--webview', make_chromium_output_path, 'webview'),
-    ('--trichrome-webview', make_chromium_output_path, 'trichrome_webview'),
   ]
   for switch, fun, key in FORWARDED_PARAMS:
     if key in to_resource_sizes_py:
@@ -97,11 +94,10 @@ def main():
   #      Its fields are:
   #        * resource_size_args: A dict of arguments for resource_sizes.py. Its
   #          sub-fields are:
-  #          * apk_name: Required main input, although for Trichrome this can be
-  #            a placeholder name.
-  #          * trichrome_library: --trichrome-library param (Trichrome only).
-  #          * trichrome_chrome: --trichrome-chrome param (Trichrome only).
-  #          * trichrome_webview: --trichrome-webview param (Trichrome only).
+  #          * apk_name: Required main input, although for multi-container
+  #            tests this can be a placeholder name.
+  #          * chrome: --chrome param.
+  #          * webview: --webview param.
   #        * supersize_input_file: Main input for SuperSize.
 
   parser.add_argument(

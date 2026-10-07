@@ -490,7 +490,7 @@ class JsonUtil:
       "key has an original benchmark name: %s", key[json_constants.BENCHMARK]
     )
     if benchmark_name:
-      # A few example is that "resource_sizes (TrichromeGoogle)" uses
+      # A few example is that "resource_sizes (ChromeAndWebViewGoogle)" uses
       # "resource_sizes" in the result2 json, and "resource_sizes" is used
       # as the benchmark name. Replace it with the proper benchmark name
       # instead.

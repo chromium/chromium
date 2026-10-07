@@ -2839,34 +2839,8 @@ if (_is_default_toolchain) {
         data_deps = [ ":chrome_and_webview_32_minimal_apks" ]
       }
 
-      # TODO(crbug.com/532501271): Remove once no trybot refers to these names.
-      # In-flight patchsets get their analyze_targets / compile_targets from the
-      # infra/config revision on origin/main, so the legacy names must outlive
-      # the CL that renames them.
-      group("trichrome_32_minimal_apks") {
-        deps = [
-          ":chrome_and_webview_32_minimal_apks",
-
-          # The legacy compile target list does not mention any 64-bit group,
-          # but the arm64 size report, which those trybots still request via
-          # arm64_size_config_json, now measures ChromePublic and
-          # SystemWebView64 rather than TrichromeLibrary64. Build them here so
-          # the report keeps working until the recipe change lands.
-          ":chrome_and_webview_64_minimal_apks",
-        ]
-      }
-
-      group("trichrome_64_minimal_apks") {
-        deps = [ ":chrome_and_webview_64_minimal_apks" ]
-      }
-
       android_size_bot_config("resource_size_config") {
         name = "ChromeAndWebView"
-
-        # TODO(crbug.com/532501271): Remove once the recipe's
-        # DEFAULT_SIZE_CONFIG_JSON points at
-        # ChromeAndWebView_size_config.json.
-        legacy_name = "Trichrome"
         mapping_files = [
           "apks/ChromePublic32.aab.mapping",
           "apks/SystemWebView32.aab.mapping",
@@ -2903,10 +2877,6 @@ if (_is_default_toolchain) {
       # this case supersize is run a second time with this config.
       android_size_bot_config("arm64_resource_size_config") {
         name = "ChromeAndWebView64"
-
-        # TODO(crbug.com/532501271): Remove once no trybot passes
-        # arm64_size_config_json=config/TrichromeLibrary64_size_config.json.
-        legacy_name = "TrichromeLibrary64"
         mapping_files = []
 
         archive_files = [

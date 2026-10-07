@@ -65,6 +65,34 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//clank/java:resource_sizes_chrome_and_webview_google",
+        "module_scheme": "single",
+        "name": "resource_sizes_chrome_and_webview_google",
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "cpu": "x86",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "resource_sizes_chrome_and_webview_google"
+      },
+      {
+        "args": [],
+        "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
         "module_name": "//clank/java:resource_sizes_system_webview_google_bundle",
         "module_scheme": "single",
         "name": "resource_sizes_system_webview_google_bundle",
@@ -84,34 +112,6 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "resource_sizes_system_webview_google_bundle"
-      },
-      {
-        "args": [],
-        "merge": {
-          "args": [
-            "--upload-skia-json"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "module_name": "//clank/java:resource_sizes_trichrome_google",
-        "module_scheme": "single",
-        "name": "resource_sizes_trichrome_google",
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
-          },
-          "expiration": 7200,
-          "hard_timeout": 14400,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "resource_sizes_trichrome_google"
       }
     ]
   },
@@ -964,6 +964,34 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//clank/java:resource_sizes_chrome_and_webview_google",
+        "module_scheme": "single",
+        "name": "resource_sizes_chrome_and_webview_google",
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "cpu": "x86",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "resource_sizes_chrome_and_webview_google"
+      },
+      {
+        "args": [],
+        "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
         "module_name": "//clank/java:resource_sizes_system_webview_google_bundle",
         "module_scheme": "single",
         "name": "resource_sizes_system_webview_google_bundle",
@@ -983,34 +1011,6 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "resource_sizes_system_webview_google_bundle"
-      },
-      {
-        "args": [],
-        "merge": {
-          "args": [
-            "--upload-skia-json"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "module_name": "//clank/java:resource_sizes_trichrome_google",
-        "module_scheme": "single",
-        "name": "resource_sizes_trichrome_google",
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
-          },
-          "expiration": 7200,
-          "hard_timeout": 14400,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "resource_sizes_trichrome_google"
       }
     ]
   },
