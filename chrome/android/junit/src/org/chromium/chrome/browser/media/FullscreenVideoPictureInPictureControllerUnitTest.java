@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AppOpsManager;
 import android.app.PictureInPictureParams;
 import android.content.ComponentName;
 import android.content.Context;
@@ -149,6 +150,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     /** Verify that full screen video will try to enter PiP */
     @Test
+    @Config(sdk = Build.VERSION_CODES.R)
     public void attemptPictureInPictureSuccessfully() {
         setHasFullscreenVideo(true);
         mController.attemptPictureInPicture();
@@ -159,6 +161,23 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Test
     public void pictureInPictureFailsWithoutVideo() {
         setHasFullscreenVideo(false);
+        mController.attemptPictureInPicture();
+        assertFalse(mActivity.isInPictureInPictureMode());
+    }
+
+    /**
+     * Verify that Picture in Picture is blocked when disallowed via AppOpsManager system settings.
+     */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void pictureInPictureBlockedWhenAppOpsDisabled() {
+        setHasFullscreenVideo(true);
+        Shadows.shadowOf((AppOpsManager) mActivity.getSystemService(Context.APP_OPS_SERVICE))
+                .setMode(
+                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                        mActivity.getApplicationInfo().uid,
+                        mActivity.getPackageName(),
+                        AppOpsManager.MODE_IGNORED);
         mController.attemptPictureInPicture();
         assertFalse(mActivity.isInPictureInPictureMode());
     }
