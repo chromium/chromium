@@ -327,12 +327,12 @@ steps.
 If everything works, you should see the following in the output:
 
 ```
-Package foo updated as commit <abcdef>
+Package third_party/foo needs update, new git tree: <abcdef>
 ```
 
-Then, you can inspect the workflow result by diffing this commit against the git
-repo with `git diff HEAD <commit>`, or set the Crowbar `--no-dry-run` option to
-write the result into your Git worktree.
+Then, you can inspect the workflow result by diffing this git tree against the
+git repo with `git diff HEAD <tree>`, or set the Crowbar `--no-dry-run` option
+to write the result into your Git worktree.
 
 
 ## Define Auto-Update Behavior
