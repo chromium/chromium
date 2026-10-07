@@ -385,6 +385,8 @@ public class ManageSyncSettingsTest {
             sdk_equals = 29,
             supported_abis_includes = "x86_64",
             message = "crbug.com/444011887")
+    // Required because policies and sync type toggle states leak across batched test runs.
+    @RequiresRestart
     public void testSignInWithManagedDataTypes() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
@@ -512,6 +514,9 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    // Required because removing accounts leaves asynchronous state in AccountManager that hangs
+    // batched runs.
+    @RequiresRestart
     public void testRemoveAccountFromDeviceShouldClearSyncPrefs() {
         SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         signinTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -642,6 +647,9 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    // Required because setting a custom passphrase permanently modifies the shared sync engine
+    // encryption state.
+    @RequiresRestart
     public void testPassphraseCreation() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
