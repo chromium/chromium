@@ -677,7 +677,14 @@ const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
 // Enables process isolation for subframe error pages. See
 // https://crbug.com/40134629.
-BASE_FEATURE(kIsolateSubframeErrorPages, base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(crbug.com/40134629): Enable by default on Android as well.
+BASE_FEATURE(kIsolateSubframeErrorPages,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables the ability to specification a renderer that does not use Java.
