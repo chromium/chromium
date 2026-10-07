@@ -312,8 +312,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileCloseCancels) {
 
   auto notification = bridge_->GetDisplayedNotification(kNotificationId);
   ASSERT_TRUE(notification.has_value());
-  notification->delegate()->Close(
-      /*by_user=*/true);  // parameter doesn't matter
+  notification->delegate()->Close(/*by_user=*/true);
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
@@ -678,8 +677,7 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileCloseCancels) {
 
   auto notification = bridge_->GetDisplayedNotification(kNotificationId);
   ASSERT_TRUE(notification.has_value());
-  notification->delegate()->Close(
-      /*by_user=*/false);  // parameter doesn't matter
+  notification->delegate()->Close(/*by_user=*/true);
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(

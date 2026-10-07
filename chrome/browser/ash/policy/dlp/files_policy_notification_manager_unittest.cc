@@ -1439,11 +1439,15 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
                   /*should_proceed=*/false))
       .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kNotificationId).has_value());
+  EXPECT_TRUE(
+      display_service_tester.GetNotification("dlp_files_1").has_value());
 
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(1, 1)},
-                         /*action_timedout_buckets=*/{});
+                         /*action_timedout_buckets=*/{base::Bucket(action, 1)});
 }
 
 TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
@@ -1481,11 +1485,15 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
                   /*should_proceed=*/false))
       .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kNotificationId).has_value());
+  EXPECT_TRUE(
+      display_service_tester.GetNotification("dlp_files_1").has_value());
 
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(2, 1)},
-                         /*action_timedout_buckets=*/{});
+                         /*action_timedout_buckets=*/{base::Bucket(action, 1)});
 }
 
 INSTANTIATE_TEST_SUITE_P(PolicyFilesNotify,

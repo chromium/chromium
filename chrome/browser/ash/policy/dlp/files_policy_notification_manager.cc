@@ -227,8 +227,12 @@ class PolicyNotificationClickHandler
       : callback_(std::move(callback)) {}
 
   void Close(bool by_user) override {
-    // Treat any close reason as the user clicking the Cancel button.
-    Click(NotificationButton::CANCEL, /*reply=*/std::nullopt);
+    // Treat the user closing the notification as clicking the Cancel button.
+    // Ignore closes by code, such as FilesPolicyNotificationManager's own
+    // dismissal when the warning times out.
+    if (by_user) {
+      Click(NotificationButton::CANCEL, /*reply=*/std::nullopt);
+    }
   }
 
   // message_center::NotificationDelegate overrides:
