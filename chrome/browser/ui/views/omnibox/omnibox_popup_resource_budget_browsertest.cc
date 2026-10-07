@@ -18,6 +18,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,8 +62,8 @@ constexpr size_t kPopupRenderProcessesPerProfile = 1;
 constexpr size_t kExtraWindows = 4;
 
 struct PopupResources {
-  std::vector<content::WebContents*> web_contents;
-  std::set<content::RenderProcessHost*> processes;
+  std::vector<raw_ptr<content::WebContents>> web_contents;
+  std::set<raw_ptr<content::RenderProcessHost>> processes;
   size_t widgets = 0;
 };
 
