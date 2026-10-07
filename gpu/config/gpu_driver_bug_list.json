@@ -1374,7 +1374,6 @@
         "op": ">",
         "value": "0.0.100.0"
       },
-      "hardware_overlay": "unsupported",
       "features": [
         "disable_direct_composition_video_overlays"
       ]
