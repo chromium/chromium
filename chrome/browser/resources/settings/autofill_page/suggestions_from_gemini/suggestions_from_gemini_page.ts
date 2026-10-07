@@ -4,31 +4,32 @@
 
 import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
-import '../../settings_columned_section.css.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared.css.js';
-import '../autofill_shared.css.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {getCss as getCrIconsCss} from 'chrome://resources/cr_elements/cr_icons_lit.css.js';
+import {getCss as getCrSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ModelExecutionEnterprisePolicyValue} from '../../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, SuggestionsFromGeminiAction} from '../../metrics_browser_proxy.js';
-import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import {getCss as getSettingsColumnedSectionCss} from '../../settings_columned_section_lit.css.js';
+import {SettingsViewMixinLit} from '../../settings_page/settings_view_mixin_lit.js';
+import {getCss as getSettingsSharedCss} from '../../settings_shared_lit.css.js';
+import {getCss as getAutofillSharedCss} from '../autofill_shared_lit.css.js';
 
-import {getTemplate} from './suggestions_from_gemini_page.html.js';
+import {getHtml} from './suggestions_from_gemini_page.html.js';
 
 const SettingsSuggestionsFromGeminiPageElementBase =
-    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
+    SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
 const AT_MEMORY_SHORTCUT_PREF_NAME = 'autofill.at_memory.shortcut';
 
@@ -38,48 +39,48 @@ export interface SettingsSuggestionsFromGeminiPageElement {
   };
 }
 
+export type SuggestionsFromGeminiPageElement =
+    SettingsSuggestionsFromGeminiPageElement;
+
 export class SettingsSuggestionsFromGeminiPageElement extends
     SettingsSuggestionsFromGeminiPageElementBase {
   static get is() {
     return 'settings-suggestions-from-gemini-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getAutofillSharedCss(),
+      getCrIconsCss(),
+      getCrSharedStyleCss(),
+      getSettingsColumnedSectionCss(),
+      getSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      isAtMemoryEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isAtMemoryEnabled');
-        },
-      },
-
-      isAtMemoryTriggerCustomizationAllowed_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAtMemoryTriggerCustomizationAllowed');
-        },
-      },
-
-      findAndFillWithGeminiPref_: Object,
-
-      atMemoryShortcutPref_: Object,
-
-      findAndFillWithGeminiSettingsPref_: Object,
+      isAtMemoryEnabled_: {type: Boolean},
+      isAtMemoryTriggerCustomizationAllowed_: {type: Boolean},
+      findAndFillWithGeminiPref_: {type: Object},
+      atMemoryShortcutPref_: {type: Object},
+      findAndFillWithGeminiSettingsPref_: {type: Object},
     };
   }
 
-  declare private isAtMemoryEnabled_: boolean;
-  declare private isAtMemoryTriggerCustomizationAllowed_: boolean;
-  declare private findAndFillWithGeminiPref_:
+  private accessor isAtMemoryEnabled_: boolean =
+      loadTimeData.getBoolean('isAtMemoryEnabled');
+  private accessor isAtMemoryTriggerCustomizationAllowed_: boolean =
+      loadTimeData.getBoolean('isAtMemoryTriggerCustomizationAllowed');
+  protected accessor findAndFillWithGeminiPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  declare private atMemoryShortcutPref_:
+  protected accessor atMemoryShortcutPref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
-  declare private findAndFillWithGeminiSettingsPref_:
+  protected accessor findAndFillWithGeminiSettingsPref_:
       chrome.settingsPrivate.PrefObject<number>|undefined;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -96,41 +97,42 @@ export class SettingsSuggestionsFromGeminiPageElement extends
     });
   }
 
-  private showQualityLogging_(): boolean {
+  protected showQualityLogging_(): boolean {
     return !!this.findAndFillWithGeminiPref_?.value && this.isAtMemoryEnabled_;
   }
 
-  private showDoubleCtrlShortcut_(): boolean {
+  protected showDoubleCtrlShortcut_(): boolean {
     return this.isAtMemoryTriggerCustomizationAllowed_ &&
         !!this.findAndFillWithGeminiPref_?.value;
   }
 
-  private showConsiderNoLoggingEnterprise_(): boolean {
+  protected showConsiderNoLoggingEnterprise_(): boolean {
     return this.findAndFillWithGeminiSettingsPref_?.value ===
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING;
   }
-  private onManageConnectedAppsClick_() {
+
+  protected onManageConnectedAppsClick_() {
     this.metricsBrowserProxy_.recordSuggestionsFromGeminiAction(
         SuggestionsFromGeminiAction.MANAGE_CONNECTED_APPS_CLICK);
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('personalContextConnectedAppsUrl'));
   }
 
-  private onToggleChange_(e: Event) {
+  protected onToggleSettingsBooleanControlChange_(e: Event) {
     const toggle = e.target as SettingsToggleButtonElement;
     this.metricsBrowserProxy_.recordSuggestionsFromGeminiAction(
         toggle.checked ? SuggestionsFromGeminiAction.TOGGLE_ON :
                          SuggestionsFromGeminiAction.TOGGLE_OFF);
   }
 
-  private onAtMemoryShortcutUpdated_(event: CustomEvent<string>) {
+  protected onAtMemoryShortcutUpdated_(event: CustomEvent<string>) {
     PrefService.getInstance().setPrefValue(
         AT_MEMORY_SHORTCUT_PREF_NAME, event.detail);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

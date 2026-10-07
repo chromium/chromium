@@ -11,55 +11,59 @@
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../ai_page/ai_logging_info_bullet.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
-import '../settings_columned_section.css.js';
-import '../settings_shared.css.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 import './walletable_pass_detection_toggle.js';
 
 // </if>
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
-import {getTemplate} from './collapsible_autofill_settings_card.html.js';
+import {getCss} from './collapsible_autofill_settings_card.css.js';
+import {getHtml} from './collapsible_autofill_settings_card.html.js';
 import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
-export interface CollapsibleCardElement {
+export interface CollapsibleAutofillSettingsCardElement {
   $: {
     optInToggle: SettingsToggleButtonElement,
   };
 }
 
-export class CollapsibleCardElement extends SettingsViewMixin
-(PrefServiceObserverMixin(I18nMixin(PolymerElement))) {
+const CollapsibleAutofillSettingsCardElementBase =
+    PrefServiceObserverMixinLit(CrLitElement);
+
+export class CollapsibleAutofillSettingsCardElement extends
+    CollapsibleAutofillSettingsCardElementBase {
   static get is() {
     return 'collapsible-autofill-settings-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Controls the expanded/collapsed state of the details.
        */
-      expanded_: {type: Boolean, value: false},
+      expanded_: {type: Boolean},
 
       /**
          Indicates if a user is eligible to change Enhanced Autofill data.
@@ -70,91 +74,61 @@ export class CollapsibleCardElement extends SettingsViewMixin
          component. If a user is not eligible for Enhanced Autofill and they
          also have no data saved, then they cannot access this page at all.
        */
-      enhancedAutofillEligibleUser_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('userEligibleForAutofillAi');
-        },
-      },
+      enhancedAutofillEligibleUser_: {type: Boolean},
+
       /**
        * Indicates whether the feature `kAutofillAiReauthRequired` is enabled.
        */
       // <if expr="is_win or is_macosx or is_chromeos">
-      autofillAiReauthOnViewingSensitiveDataEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'autofillAiReauthOnViewingSensitiveDataEnabled');
-        },
-      },
+      autofillAiReauthOnViewingSensitiveDataEnabled_: {type: Boolean},
       // </if>
+
       /**
          A "fake" preference object that reflects the state of the opt-in
          toggle for Enhanced Autofill and the presence/absence of an enterprise
          policy. This allows leveraging the settings-toggle-button component
          to reflect enterprise enabled/disabled states.
        */
-      enhancedAutofillOptedIn_: {
-        type: Object,
-        value: () => ({
-          // Does not correspond to an actual pref - this is done to allow
-          // writing it into a GAIA-id keyed dictionary of opt-ins.
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        }),
-      },
+      enhancedAutofillOptedIn_: {type: Object},
 
-      isUserEligibleForWalletablePassDetection_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isUserEligibleForWalletablePassDetection');
-        },
-      },
+      isUserEligibleForWalletablePassDetection_: {type: Boolean},
 
       /**
        * If true, Autofill AI does not depend on whether Autofill for addresses
        * is enabled.
        */
-      autofillSettingsEnterprisePolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'AutofillSettingsEnterprisePolicyEnabled');
-        },
-      },
+      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
 
-      profileEnabledPref_: {
-        type: Object,
-        value: null,
-      },
+      profileEnabledPref_: {type: Object},
 
-      autofillAiEnterprisePolicyPref_: {
-        type: Object,
-        value: null,
-      },
+      autofillAiEnterprisePolicyPref_: {type: Object},
     };
   }
 
-  static get observers() {
-    return [
-      'onEnterprisePolicyChanged_(autofillAiEnterprisePolicyPref_, profileEnabledPref_)',
-    ];
-  }
-
-  declare private expanded_: boolean;
-  declare private enhancedAutofillEligibleUser_: boolean;
+  protected accessor expanded_: boolean = false;
+  protected accessor enhancedAutofillEligibleUser_: boolean =
+      loadTimeData.getBoolean('userEligibleForAutofillAi');
   // <if expr="is_win or is_macosx or is_chromeos">
-  declare private autofillAiReauthOnViewingSensitiveDataEnabled_: boolean;
+  protected accessor autofillAiReauthOnViewingSensitiveDataEnabled_: boolean =
+      loadTimeData.getBoolean('autofillAiReauthOnViewingSensitiveDataEnabled');
   // </if>
-  declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
-  declare private isUserEligibleForWalletablePassDetection_: boolean;
-  declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private profileEnabledPref_:
-      chrome.settingsPrivate.PrefObject<boolean>|null;
-  declare private autofillAiEnterprisePolicyPref_:
+  protected accessor enhancedAutofillOptedIn_:
+      chrome.settingsPrivate.PrefObject<boolean> = {
+    // Does not correspond to an actual pref - this is done to allow
+    // writing it into a GAIA-id keyed dictionary of opt-ins.
+    key: '',
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+  };
+  protected accessor isUserEligibleForWalletablePassDetection_: boolean =
+      loadTimeData.getBoolean('isUserEligibleForWalletablePassDetection');
+  protected accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+      loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
+  protected accessor profileEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  protected accessor autofillAiEnterprisePolicyPref_:
       chrome.settingsPrivate.PrefObject<ModelExecutionEnterprisePolicyValue>|
-      null;
+      undefined;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -181,7 +155,22 @@ export class CollapsibleCardElement extends SettingsViewMixin
     }
   }
 
-  private async onOptInToggleChange_() {
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('autofillAiEnterprisePolicyPref_') ||
+        changedPrivateProperties.has('profileEnabledPref_')) {
+      this.onEnterprisePolicyChanged_();
+    }
+  }
+
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
+  }
+
+  protected async onOptInToggleSettingsBooleanControlChange_() {
     // `setOptInStatus` returns false when the user tries to toggle the opt-in
     // status when they're ineligible.  This shouldn't happen usually but in
     // some cases it can happen (see crbug.com/408145195).
@@ -189,11 +178,15 @@ export class CollapsibleCardElement extends SettingsViewMixin
         (await this.entityDataManager_.setOptInStatus(
             this.$.optInToggle.checked));
     if (!this.enhancedAutofillEligibleUser_) {
-      this.set('enhancedAutofillOptedIn_.value', false);
+      this.enhancedAutofillOptedIn_ = {
+        ...this.enhancedAutofillOptedIn_,
+        value: false,
+      };
     }
   }
 
-  private onChangeAuthenticationRequirementClicked_(e: Event) {
+  // <if expr="is_win or is_macosx or is_chromeos">
+  protected onChangeAuthenticationRequirementClick_(e: Event) {
     e.preventDefault();
     if (!this.enhancedAutofillEligibleUser_) {
       return;
@@ -201,13 +194,20 @@ export class CollapsibleCardElement extends SettingsViewMixin
     this.entityDataManager_.toggleAutofillAiReauthRequirement();
   }
 
+  protected onChangeAuthenticationRequirementChange_(e: Event) {
+    this.onChangeAuthenticationRequirementClick_(e);
+  }
+  // </if>
+
   /**
    * Whether an info bullet regarding logging is shown. Enhanced Autofill only
    * shows logging behaviour information for enterprise clients who have either
    * the feature disabled or just logging disabled.
    */
-  private showLoggingInfoBullet_(prefValue: number): boolean {
-    return prefValue !== ModelExecutionEnterprisePolicyValue.ALLOW;
+  protected showLoggingInfoBullet_(): boolean {
+    return !!this.autofillAiEnterprisePolicyPref_ &&
+        this.autofillAiEnterprisePolicyPref_.value !==
+        ModelExecutionEnterprisePolicyValue.ALLOW;
   }
 
   /**
@@ -228,53 +228,50 @@ export class CollapsibleCardElement extends SettingsViewMixin
         addressAutofillEnabled.enforcement ===
             chrome.settingsPrivate.Enforcement.ENFORCED &&
         !addressAutofillEnabled.value) {
-      this.set(
-          'enhancedAutofillOptedIn_.enforcement',
-          addressAutofillEnabled.enforcement);
-      this.set(
-          'enhancedAutofillOptedIn_.controlledBy',
-          addressAutofillEnabled.controlledBy);
-      // We need to check addressAutofillEnabled.value here.
-      // this.enhancedAutofillEligibleUser_ does consider
-      // addressAutofillEnabled.value, but loadTimeData constants are
-      // refreshed only after page reload.
-      this.set(
-          'enhancedAutofillOptedIn_.value',
-          this.enhancedAutofillEligibleUser_ && addressAutofillEnabled.value);
+      this.enhancedAutofillOptedIn_ = {
+        ...this.enhancedAutofillOptedIn_,
+        enforcement: addressAutofillEnabled.enforcement,
+        controlledBy: addressAutofillEnabled.controlledBy,
+        // We need to check addressAutofillEnabled.value here.
+        // this.enhancedAutofillEligibleUser_ does consider
+        // addressAutofillEnabled.value, but loadTimeData constants are
+        // refreshed only after page reload.
+        value:
+            this.enhancedAutofillEligibleUser_ && addressAutofillEnabled.value,
+      };
       return;
     }
 
     const autofillAiPolicyValue = this.autofillAiEnterprisePolicyPref_.value;
 
     if (autofillAiPolicyValue === ModelExecutionEnterprisePolicyValue.DISABLE) {
-      this.set(
-          'enhancedAutofillOptedIn_.enforcement',
-          chrome.settingsPrivate.Enforcement.ENFORCED);
-      this.set(
-          'enhancedAutofillOptedIn_.controlledBy',
-          chrome.settingsPrivate.ControlledBy.USER_POLICY);
-      this.set('enhancedAutofillOptedIn_.value', false);
+      this.enhancedAutofillOptedIn_ = {
+        ...this.enhancedAutofillOptedIn_,
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        value: false,
+      };
     } else {
-      this.set('enhancedAutofillOptedIn_.enforcement', undefined);
-      this.set('enhancedAutofillOptedIn_.controlledBy', undefined);
+      this.enhancedAutofillOptedIn_ = {
+        ...this.enhancedAutofillOptedIn_,
+        enforcement: undefined,
+        controlledBy: undefined,
+      };
 
       const enhancedAutofillOptedIn =
           await this.entityDataManager_.getOptInStatus();
 
-      if (this.autofillSettingsEnterprisePolicyEnabled_) {
-        this.set(
-            'enhancedAutofillOptedIn_.value',
-            this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn);
-      } else {
-        this.set(
-            'enhancedAutofillOptedIn_.value',
+      this.enhancedAutofillOptedIn_ = {
+        ...this.enhancedAutofillOptedIn_,
+        value: this.autofillSettingsEnterprisePolicyEnabled_ ?
+            this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn :
             this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn &&
-                addressAutofillEnabled.value);
-      }
+                addressAutofillEnabled.value,
+      };
     }
   }
 
-  private showExtensionControlledIndicator_(): boolean {
+  protected showExtensionControlledIndicator_(): boolean {
     if (!this.profileEnabledPref_) {
       return false;
     }
@@ -283,7 +280,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
         !this.profileEnabledPref_.value;
   }
 
-  private optInToggleDisabled_(): boolean {
+  protected optInToggleDisabled_(): boolean {
     if (!this.profileEnabledPref_) {
       return true;
     }
@@ -302,8 +299,13 @@ export class CollapsibleCardElement extends SettingsViewMixin
 
 declare global {
   interface HTMLElementTagNameMap {
-    'collapsible-autofill-settings-card': CollapsibleCardElement;
+    'collapsible-autofill-settings-card':
+        CollapsibleAutofillSettingsCardElement;
   }
 }
 
-customElements.define(CollapsibleCardElement.is, CollapsibleCardElement);
+customElements.define(
+    CollapsibleAutofillSettingsCardElement.is,
+    CollapsibleAutofillSettingsCardElement);
+
+export type CollapsibleCardElement = CollapsibleAutofillSettingsCardElement;

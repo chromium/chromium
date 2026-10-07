@@ -8,9 +8,8 @@ import type {CrShortcutInputElement, SettingsSuggestionsFromGeminiPageElement} f
 import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, SuggestionsFromGeminiAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -68,13 +67,13 @@ suite('SuggestionsFromGeminiPage', function() {
         document.createElement('settings-suggestions-from-gemini-page');
 
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     return page;
   }
 
   test('ManageConnectedAppsClick', async function() {
     const subpage = await setupPage();
-    const row = subpage.shadowRoot!.querySelector<HTMLElement>(
+    const row = subpage.shadowRoot.querySelector<HTMLElement>(
         '#manageConnectedAppsLinkRow');
     assertTrue(!!row);
     assertTrue(isVisible(row));
@@ -91,7 +90,7 @@ suite('SuggestionsFromGeminiPage', function() {
 
   test('QualityLoggingRendersExpectedColumnsAndBullets', async function() {
     const subpage = await setupPage();
-    const columns = subpage.shadowRoot!.querySelectorAll('.column');
+    const columns = subpage.shadowRoot.querySelectorAll('.column');
     assertEquals(2, columns.length);
 
     const firstColumn = columns[0]!;
@@ -131,7 +130,7 @@ suite('SuggestionsFromGeminiPage', function() {
                                    '.cr-secondary-text')!.textContent.trim());
 
     const considerNoLoggingEnterprise =
-        subpage.shadowRoot!.querySelector('#considerNoLoggingEnterprise');
+        subpage.shadowRoot.querySelector('#considerNoLoggingEnterprise');
     assertTrue(!!considerNoLoggingEnterprise);
     assertFalse(isVisible(considerNoLoggingEnterprise));
   });
@@ -139,7 +138,7 @@ suite('SuggestionsFromGeminiPage', function() {
   test('ConsiderNoLoggingEnterpriseVisibility', async function() {
     const subpage = await setupPage();
     const considerNoLoggingEnterprise =
-        subpage.shadowRoot!.querySelector('#considerNoLoggingEnterprise');
+        subpage.shadowRoot.querySelector('#considerNoLoggingEnterprise');
     assertTrue(!!considerNoLoggingEnterprise);
 
     // By default (ALLOW = 0), the bullet should be hidden.
@@ -150,7 +149,7 @@ suite('SuggestionsFromGeminiPage', function() {
     prefService.setPrefValue(
         'autofill.personal_context.find_and_fill_with_gemini_settings',
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(isVisible(considerNoLoggingEnterprise));
     assertEquals(
@@ -165,30 +164,25 @@ suite('SuggestionsFromGeminiPage', function() {
   test('QualityLoggingIsHiddenWhenToggleIsOff', async function() {
     const subpage = await setupPage();
     assertTrue(
-        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
+        isVisible(subpage.shadowRoot.querySelector('#qualityLoggingCard')));
 
     prefService.setPrefValue('generated.find_and_fill_with_gemini', false);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(
-        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
+        isVisible(subpage.shadowRoot.querySelector('#qualityLoggingCard')));
   });
 
   test('QualityLoggingIsHiddenWhenAtMemoryDisabled', async function() {
+    loadTimeData.overrideValues({isAtMemoryEnabled: false});
     const subpage = await setupPage();
-    assertTrue(
-        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
-
-    subpage.set('isAtMemoryEnabled_', false);
-    await flushTasks();
-
     assertFalse(
-        isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
+        isVisible(subpage.shadowRoot.querySelector('#qualityLoggingCard')));
   });
 
   test('ToggleChangeRecordsMetrics', async function() {
     const subpage = await setupPage();
-    const toggle = subpage.shadowRoot!.querySelector<HTMLElement>(
+    const toggle = subpage.shadowRoot.querySelector<HTMLElement>(
         '#suggestionsFromGeminiToggle');
     assertTrue(!!toggle);
 
@@ -220,7 +214,7 @@ suite('SuggestionsFromGeminiPage', function() {
     assertTrue(!!toggleElement);
     assertFalse(isVisible(toggleElement));
 
-    const inputElement = subpage.shadowRoot!.querySelector<HTMLElement>(
+    const inputElement = subpage.shadowRoot.querySelector<HTMLElement>(
         '#atMemoryShortcutSetting cr-shortcut-input');
     assertTrue(!!inputElement);
     assertFalse(isVisible(inputElement));
@@ -233,13 +227,13 @@ suite('SuggestionsFromGeminiPage', function() {
     assertTrue(isVisible(toggleElement));
 
     const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+        subpage.shadowRoot.querySelector<CrShortcutInputElement>(
             '#atMemoryShortcutSetting cr-shortcut-input');
     assertTrue(!!inputElement);
     assertTrue(isVisible(inputElement));
 
     prefService.setPrefValue('generated.find_and_fill_with_gemini', false);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(isVisible(toggleElement));
     assertFalse(isVisible(inputElement));
@@ -253,7 +247,7 @@ suite('SuggestionsFromGeminiPage', function() {
     assertFalse(toggleElement.checked);
 
     toggleElement.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(
         prefService
@@ -262,7 +256,7 @@ suite('SuggestionsFromGeminiPage', function() {
     assertTrue(toggleElement.checked);
 
     toggleElement.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(
         prefService
@@ -274,7 +268,7 @@ suite('SuggestionsFromGeminiPage', function() {
   test('AtMemoryTriggerSettingShowsCurrentShortcut', async function() {
     const subpage = await setupPage();
     const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+        subpage.shadowRoot.querySelector<CrShortcutInputElement>(
             '#atMemoryShortcutSetting cr-shortcut-input');
     assertTrue(!!inputElement);
     assertTrue(isVisible(inputElement));
@@ -283,7 +277,7 @@ suite('SuggestionsFromGeminiPage', function() {
 
     const shortcutString = 'Ctrl+A';
     prefService.setPrefValue('autofill.at_memory.shortcut', shortcutString);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(shortcutString, inputElement.shortcut);
   });
@@ -291,13 +285,13 @@ suite('SuggestionsFromGeminiPage', function() {
   test('AtMemoryTriggerSettingSetsShortcut', async function() {
     const subpage = await setupPage();
     const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+        subpage.shadowRoot.querySelector<CrShortcutInputElement>(
             '#atMemoryShortcutSetting cr-shortcut-input');
     assertTrue(!!inputElement);
 
     inputElement.$.edit.click();
     keyDownOn(inputElement.$.input, 65, ['ctrl']);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
         'Ctrl+A',
@@ -307,15 +301,15 @@ suite('SuggestionsFromGeminiPage', function() {
   test('AtMemoryTriggerSettingClearsShortcut', async function() {
     const subpage = await setupPage();
     prefService.setPrefValue('autofill.at_memory.shortcut', 'Ctrl+A');
-    await flushTasks();
+    await microtasksFinished();
 
     const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+        subpage.shadowRoot.querySelector<CrShortcutInputElement>(
             '#atMemoryShortcutSetting cr-shortcut-input');
     assertTrue(!!inputElement);
 
     inputElement.$.clear.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
         '', prefService.getPref<string>('autofill.at_memory.shortcut').value);
@@ -325,7 +319,7 @@ suite('SuggestionsFromGeminiPage', function() {
     const subpage = await setupPage();
     let focusCalled = false;
     const settingsSubpage =
-        subpage.shadowRoot!.querySelector('settings-subpage');
+        subpage.shadowRoot.querySelector('settings-subpage');
     assertTrue(!!settingsSubpage);
     settingsSubpage.focusBackButton = () => {
       focusCalled = true;

@@ -4,15 +4,13 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
-import type {CollapsibleCardElement} from 'chrome://settings/settings.js';
+import type {CollapsibleAutofillSettingsCardElement} from 'chrome://settings/settings.js';
 import {loadTimeData, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBulletElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -60,7 +58,8 @@ suite('CollapsibleAutofillSettingsCard', function() {
   async function createCollapsibleAutofillSettingsCard(
       eligibleUser: boolean = true,
       autofillSettingsEnterprisePolicyEnabled: boolean = false,
-      optInStatusResponse: boolean = true): Promise<CollapsibleCardElement> {
+      optInStatusResponse: boolean =
+          true): Promise<CollapsibleAutofillSettingsCardElement> {
     entityDataManager.setGetOptInStatusResponse(optInStatusResponse);
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
@@ -68,11 +67,11 @@ suite('CollapsibleAutofillSettingsCard', function() {
           autofillSettingsEnterprisePolicyEnabled,
     });
 
-    const card: CollapsibleCardElement =
+    const card: CollapsibleAutofillSettingsCardElement =
         document.createElement('collapsible-autofill-settings-card');
     document.body.appendChild(card);
 
-    await flushTasks();
+    await microtasksFinished();
     return card;
   }
 
@@ -115,9 +114,8 @@ suite('CollapsibleAutofillSettingsCard', function() {
           /*autofillSettingsEnterprisePolicyEnabled=*/ false,
           params.enhancedAutofillOptedIn);
 
-      const toggle =
-          card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#optInToggle');
+      const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
+          '#optInToggle');
       assertTrue(!!toggle);
       assertEquals(!params.enhancedAutofillEligibleUser, toggle.disabled);
       assertEquals(
@@ -129,7 +127,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
   test('RendersExpectedUI', async function() {
     const card = await createCollapsibleAutofillSettingsCard();
 
-    const firstColumn = card.shadowRoot!.querySelector('.column');
+    const firstColumn = card.shadowRoot.querySelector('.column');
     assertTrue(!!firstColumn);
     const bulletsInFirstColumn = firstColumn.querySelectorAll('li');
     assertEquals(1, bulletsInFirstColumn.length);
@@ -148,7 +146,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
   test('RendersHeader', async function() {
     const card = await createCollapsibleAutofillSettingsCard();
-    const headerText = card.shadowRoot!.querySelector('#header-text');
+    const headerText = card.shadowRoot.querySelector('#header-text');
     assertTrue(!!headerText);
     const mainLabel = headerText.querySelector('div:not(.cr-secondary-text)');
     assertTrue(!!mainLabel);
@@ -171,15 +169,15 @@ suite('CollapsibleAutofillSettingsCard', function() {
         /*autofillSettingsEnterprisePolicyEnabled=*/ false,
         /*optInStatusResponse=*/ false);
 
-    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#optInToggle');
     assertTrue(!!toggle);
 
     toggle.click();
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(await entityDataManager.whenCalled('setOptInStatus'));
     entityDataManager.reset();
-    await flushTasks();
+    await microtasksFinished();
 
     toggle.click();
     assertFalse(await entityDataManager.whenCalled('setOptInStatus'));
@@ -187,11 +185,11 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
   test('IsCollapsedByDefaultAndContentIsHidden', async function() {
     const card = await createCollapsibleAutofillSettingsCard();
-    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    const expandButton = card.shadowRoot.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
     assertFalse(expandButton.expanded, 'Expand button should be collapsed');
 
-    const collapseSection = card.shadowRoot!.querySelector('cr-collapse');
+    const collapseSection = card.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!collapseSection);
     assertFalse(collapseSection.opened, 'Collapse section should be closed');
     assertFalse(
@@ -201,30 +199,30 @@ suite('CollapsibleAutofillSettingsCard', function() {
   test('ExpandsAndCollapsesWhenHeaderIsClicked', async function() {
     const card = await createCollapsibleAutofillSettingsCard();
 
-    const expandButton = card.shadowRoot!.querySelector<CrExpandButtonElement>(
+    const expandButton = card.shadowRoot.querySelector<CrExpandButtonElement>(
         'cr-expand-button');
     assertTrue(!!expandButton);
     const collapseSection =
-        card.shadowRoot!.querySelector<CrCollapseElement>('#expandedContent');
+        card.shadowRoot.querySelector<CrCollapseElement>('#expandedContent');
     assertTrue(!!collapseSection);
 
     assertFalse(expandButton.expanded);
     assertFalse(collapseSection.opened);
 
     expandButton.click();
-    await flush();
+    await microtasksFinished();
 
     assertTrue(expandButton.expanded);
     assertTrue(collapseSection.opened);
 
     expandButton.click();
-    await flush();
+    await microtasksFinished();
 
     assertFalse(expandButton.expanded);
     assertFalse(collapseSection.opened);
 
     expandButton.click();
-    await flush();
+    await microtasksFinished();
 
     assertTrue(expandButton.expanded);
     assertTrue(collapseSection.opened);
@@ -238,7 +236,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
         const enterpriseLogginInfoBullet =
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
+            card.shadowRoot.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
         assertFalse(!!enterpriseLogginInfoBullet);
       });
@@ -252,7 +250,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
         const enterpriseLogginInfoBullet =
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
+            card.shadowRoot.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
         assertTrue(!!enterpriseLogginInfoBullet);
         assertEquals(
@@ -269,7 +267,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
         const enterpriseLogginInfoBullet =
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
+            card.shadowRoot.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
         assertTrue(!!enterpriseLogginInfoBullet);
         assertEquals(
@@ -282,7 +280,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     const card = await createCollapsibleAutofillSettingsCard();
     // The toggle is initially enabled (see the setup() method). Clicking it
     // sets the opt-in status to false.
-    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#optInToggle');
     assertTrue(!!toggle);
     assertFalse(toggle.disabled);
@@ -293,7 +291,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     entityDataManager.setSetOptInStatusResponse(false);
     assertTrue(toggle.checked, 'Toggle should be checked before click');
     toggle.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(
         toggle.checked,
@@ -301,7 +299,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     const optInStatus = await entityDataManager.whenCalled('setOptInStatus');
     assertFalse(optInStatus);
 
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
   });
@@ -309,13 +307,13 @@ suite('CollapsibleAutofillSettingsCard', function() {
   test('DisablingClassicAutofillPrefDisablesTheFeature', async function() {
     const card = await createCollapsibleAutofillSettingsCard();
 
-    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#optInToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
     prefService.setPrefValue('autofill.profile_enabled', false);
-    await flushTasks();
+    await microtasksFinished();
 
     // Check that when the autofill pref is off, the feature is disabled.
     assertTrue(!!toggle);
@@ -330,13 +328,13 @@ suite('CollapsibleAutofillSettingsCard', function() {
             /*autofillSettingsEnterprisePolicyEnabled=*/ true);
 
         const toggle =
-            card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            card.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#optInToggle');
         assertTrue(!!toggle);
         assertTrue(toggle.checked);
 
         prefService.setPrefValue('autofill.profile_enabled', false);
-        await flushTasks();
+        await microtasksFinished();
 
         // Check that even when the address autofill pref is off, the feature is
         // enabled.
@@ -350,49 +348,45 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
         // Expand the card to make the logging bullet visible.
-        const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+        const expandButton = card.shadowRoot.querySelector('cr-expand-button');
         assertTrue(!!expandButton);
         expandButton.click();
-        await flushTasks();
+        await microtasksFinished();
 
         const getLoggingBullet = () =>
-            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBulletElement>(
+            card.shadowRoot.querySelector<SettingsAiLoggingInfoBulletElement>(
                 '#enterpriseInfoBullet');
+        const getPolicyIcon = () =>
+            card.$.optInToggle.shadowRoot!
+                .querySelector<CrPolicyPrefIndicatorElement>(
+                    'cr-policy-pref-indicator');
 
         // Initial state: Policy `ALLOW`.
-        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(card.$.optInToggle.checked);
+        assertFalse(card.$.optInToggle.controlDisabled());
+        assertFalse(!!getPolicyIcon());
         assertFalse(!!getLoggingBullet());
 
         // State: Policy `DISABLE`.
         prefService.setPrefValue(
             AiEnterpriseFeaturePrefName.AUTOFILL_AI,
             ModelExecutionEnterprisePolicyValue.DISABLE);
-        await flushTasks();
+        await microtasksFinished();
 
-        assertFalse(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            chrome.settingsPrivate.Enforcement.ENFORCED,
-            card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            chrome.settingsPrivate.ControlledBy.USER_POLICY,
-            card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertFalse(card.$.optInToggle.checked);
+        assertTrue(card.$.optInToggle.controlDisabled());
+        assertTrue(!!getPolicyIcon());
         assertTrue(!!getLoggingBullet());
 
         // State: Policy `ALLOW` again.
         prefService.setPrefValue(
             AiEnterpriseFeaturePrefName.AUTOFILL_AI,
             ModelExecutionEnterprisePolicyValue.ALLOW);
-        await flushTasks();
+        await microtasksFinished();
 
-        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(card.$.optInToggle.checked);
+        assertFalse(card.$.optInToggle.controlDisabled());
+        assertEquals('none', getPolicyIcon()!.style.display);
         assertFalse(!!getLoggingBullet());
       });
 
@@ -401,10 +395,10 @@ suite('CollapsibleAutofillSettingsCard', function() {
       async function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
-        const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+        const expandButton = card.shadowRoot.querySelector('cr-expand-button');
         assertTrue(!!expandButton);
         expandButton.click();
-        await flushTasks();
+        await microtasksFinished();
 
         const getPolicyIcon = () =>
             card.$.optInToggle.shadowRoot!
@@ -412,11 +406,8 @@ suite('CollapsibleAutofillSettingsCard', function() {
                     'cr-policy-pref-indicator');
 
         // Initial state: Policy `ALLOW`.
-        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(card.$.optInToggle.checked);
+        assertFalse(card.$.optInToggle.disabled);
         assertFalse(!!getPolicyIcon());
 
         // State: Policy `DISABLE`.
@@ -426,15 +417,10 @@ suite('CollapsibleAutofillSettingsCard', function() {
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
           controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
         }]);
-        await flushTasks();
+        await microtasksFinished();
 
-        assertFalse(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            chrome.settingsPrivate.Enforcement.ENFORCED,
-            card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            chrome.settingsPrivate.ControlledBy.USER_POLICY,
-            card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertFalse(card.$.optInToggle.checked);
+        assertTrue(card.$.optInToggle.disabled);
         assertTrue(!!getPolicyIcon());
 
         // State: Policy `ALLOW` again.
@@ -444,13 +430,10 @@ suite('CollapsibleAutofillSettingsCard', function() {
           enforcement: undefined,
           controlledBy: undefined,
         }]);
-        await flushTasks();
+        await microtasksFinished();
 
-        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(card.$.optInToggle.checked);
+        assertFalse(card.$.optInToggle.disabled);
         assertEquals('none', getPolicyIcon()!.style.display);
       });
 
@@ -459,20 +442,17 @@ suite('CollapsibleAutofillSettingsCard', function() {
       async function() {
         const card = await createCollapsibleAutofillSettingsCard();
 
-        const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+        const expandButton = card.shadowRoot.querySelector('cr-expand-button');
         assertTrue(!!expandButton);
         expandButton.click();
-        await flushTasks();
+        await microtasksFinished();
 
         const getExtensionIndicator = () =>
-            card.shadowRoot!.querySelector('#autofillExtensionIndicator');
+            card.shadowRoot.querySelector('#autofillExtensionIndicator');
 
         // Initial state: Extension `ALLOW`.
-        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(card.$.optInToggle.checked);
+        assertFalse(card.$.optInToggle.disabled);
         assertFalse(!!getExtensionIndicator());
 
         // State: Extension `DISABLE`.
@@ -483,15 +463,10 @@ suite('CollapsibleAutofillSettingsCard', function() {
           controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
           extensionId: 'test-extension-id',
         }]);
-        await flushTasks();
+        await microtasksFinished();
 
-        assertFalse(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            chrome.settingsPrivate.Enforcement.ENFORCED,
-            card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            chrome.settingsPrivate.ControlledBy.EXTENSION,
-            card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertFalse(card.$.optInToggle.checked);
+        assertTrue(card.$.optInToggle.disabled);
         assertTrue(!!getExtensionIndicator());
 
         // State: Extension `ALLOW` again.
@@ -502,15 +477,11 @@ suite('CollapsibleAutofillSettingsCard', function() {
           controlledBy: undefined,
           extensionId: undefined,
         }]);
-        await flushTasks();
+        await microtasksFinished();
 
-        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-        assertEquals(
-            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
-        assertEquals(
-            'none', getExtensionIndicator()!.parentElement!.style.display);
+        assertTrue(card.$.optInToggle.checked);
+        assertFalse(card.$.optInToggle.disabled);
+        assertFalse(!!getExtensionIndicator());
       });
 
   test('AddressAutofillDoesNotEnforceTrueValueOnToggle', async function() {
@@ -526,17 +497,16 @@ suite('CollapsibleAutofillSettingsCard', function() {
       extensionId: 'test-extension-id',
     }]);
 
-    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    const expandButton = card.shadowRoot.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
     expandButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const extensionIndicator =
-        card.shadowRoot!.querySelector('#autofillExtensionIndicator');
+        card.shadowRoot.querySelector('#autofillExtensionIndicator');
 
-    assertFalse(card.get('enhancedAutofillOptedIn_.value'));
-    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+    assertFalse(card.$.optInToggle.checked);
+    assertFalse(card.$.optInToggle.disabled);
     assertFalse(!!extensionIndicator);
   });
 
@@ -544,7 +514,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     loadTimeData.overrideValues(
         {isUserEligibleForWalletablePassDetection: true});
     const card = await createCollapsibleAutofillSettingsCard();
-    const component = card.shadowRoot!.querySelector<HTMLElement>(
+    const component = card.shadowRoot.querySelector<HTMLElement>(
         '#walletablePassDetectionToggle');
     assertTrue(!!component);
   });
@@ -553,7 +523,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     loadTimeData.overrideValues(
         {isUserEligibleForWalletablePassDetection: false});
     const card = await createCollapsibleAutofillSettingsCard();
-    const component = card.shadowRoot!.querySelector<HTMLElement>(
+    const component = card.shadowRoot.querySelector<HTMLElement>(
         '#walletablePassDetectionToggle');
     assertFalse(!!component);
   });
@@ -563,7 +533,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     loadTimeData.overrideValues(
         {autofillAiReauthOnViewingSensitiveDataEnabled: false});
     const card = await createCollapsibleAutofillSettingsCard();
-    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#optInAuthenticationToggle');
     assertFalse(isVisible(toggle));
   });
@@ -572,14 +542,14 @@ suite('CollapsibleAutofillSettingsCard', function() {
     loadTimeData.overrideValues(
         {autofillAiReauthOnViewingSensitiveDataEnabled: true});
     const card = await createCollapsibleAutofillSettingsCard();
-    await flushTasks();
+    await microtasksFinished();
 
-    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    const expandButton = card.shadowRoot.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
     expandButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#optInAuthenticationToggle');
     assertTrue(isVisible(toggle));
   });
@@ -588,16 +558,16 @@ suite('CollapsibleAutofillSettingsCard', function() {
     loadTimeData.overrideValues(
         {autofillAiReauthOnViewingSensitiveDataEnabled: true});
     const card = await createCollapsibleAutofillSettingsCard();
-    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#optInAuthenticationToggle');
     assertTrue(!!toggle);
 
     prefService.setPrefValue(authenticationPref, false);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(toggle.checked);
 
     toggle.click();
-    await flushTasks();
+    await microtasksFinished();
     await entityDataManager.whenCalled('toggleAutofillAiReauthRequirement');
   });
 
@@ -606,13 +576,13 @@ suite('CollapsibleAutofillSettingsCard', function() {
         {autofillAiReauthOnViewingSensitiveDataEnabled: true});
     const card = await createCollapsibleAutofillSettingsCard(
         /*eligibleUser=*/ false);
-    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#optInAuthenticationToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
 
     toggle.click();
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(
         0, entityDataManager.getCallCount('toggleAutofillAiReauthRequirement'));
   });

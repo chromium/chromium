@@ -1,11 +1,7 @@
-<style include="cr-shared-style settings-shared cr-icons
-    settings-columned-section">
-</style>
-
 <settings-toggle-button id="toggle"
-    on-settings-boolean-control-change="onChange_"
-    pref="{{walletablePassDetectionOptedIn_}}"
-    disabled="[[ineligibleUser_]]"
+    @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}"
+    .pref="${this.walletablePassDetectionOptedIn_}"
+    ?disabled="${this.ineligibleUser_}"
     no-extension-indicator
     label="$i18n{walletablePassDetectionToggleLabel}"
     sub-label="$i18n{walletablePassDetectionToggleSubLabel}">
