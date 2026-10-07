@@ -171,9 +171,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
                                  const gfx::Rect& bounds) override;
   void ClearKeyboardTriggeredTooltip() override;
   bool IsSurfaceAvailableForCopy() override;
-  void CopyFromSurface(
+  void CopyFromSurfaceImpl(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
+      bool is_copy_request_secure,
       base::TimeDelta timeout,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
       override;

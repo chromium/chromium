@@ -279,11 +279,13 @@ class TestView : public TestRenderWidgetHostView {
   }
 
   // Holds copy requests so tests control when and how they complete.
-  void CopyFromSurface(const gfx::Rect& src_rect,
-                       const gfx::Size& output_size,
-                       base::TimeDelta timeout,
-                       base::OnceCallback<void(const CopyFromSurfaceResult&)>
-                           callback) override {
+  void CopyFromSurfaceImpl(
+      const gfx::Rect& src_rect,
+      const gfx::Size& output_size,
+      bool is_copy_request_secure,
+      base::TimeDelta timeout,
+      base::OnceCallback<void(const CopyFromSurfaceResult&)> callback)
+      override {
     copy_from_surface_callbacks_.push_back(std::move(callback));
   }
   std::vector<base::OnceCallback<void(const CopyFromSurfaceResult&)>>

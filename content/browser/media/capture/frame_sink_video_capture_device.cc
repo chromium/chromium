@@ -323,7 +323,7 @@ void FrameSinkVideoCaptureDevice::AllocateCapturer(
                           base::Unretained(this)));
 
   capturer_->SetFormat(pixel_format);
-
+  capturer_->SetIsSecure(capture_params_.is_secure);
   capturer_->SetMinCapturePeriod(
       base::Microseconds(base::saturated_cast<int64_t>(
           base::Time::kMicrosecondsPerSecond /

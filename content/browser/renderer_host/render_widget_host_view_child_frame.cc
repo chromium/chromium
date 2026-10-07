@@ -1068,9 +1068,10 @@ uint64_t RenderWidgetHostViewChildFrame::GetNSViewId() const {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-void RenderWidgetHostViewChildFrame::CopyFromSurface(
+void RenderWidgetHostViewChildFrame::CopyFromSurfaceImpl(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    bool is_copy_request_secure,
     base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   if (!IsSurfaceAvailableForCopy()) {
@@ -1092,6 +1093,7 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
                         .GetOutScopedBitmapAndMetadata()));
               },
               std::move(callback)));
+  request->set_is_secure(is_copy_request_secure);
 
   // Run result callback on the current thread in case `callback` needs to run
   // on the current thread. See http://crbug.com/1431363.

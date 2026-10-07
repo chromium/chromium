@@ -91,12 +91,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void Focus() override;
   bool HasFocus() override;
   bool IsSurfaceAvailableForCopy() override;
-  void CopyFromSurface(
-      const gfx::Rect& src_rect,
-      const gfx::Size& output_size,
-      base::TimeDelta timeout,
-      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
-      override;
   void Hide() override;
   bool IsShowing() override;
   void WasOccluded() override;
@@ -112,6 +106,13 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   ui::Compositor* GetCompositor() override;
 
   // RenderWidgetHostViewBase implementation.
+  void CopyFromSurfaceImpl(
+      const gfx::Rect& src_rect,
+      const gfx::Size& output_size,
+      bool is_copy_request_secure,
+      base::TimeDelta timeout,
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
+      override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsTouchSequencePotentiallyActiveOnViz() override;
   void RequestInputBackForDragAndDrop(

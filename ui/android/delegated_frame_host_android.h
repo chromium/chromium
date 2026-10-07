@@ -122,11 +122,12 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
+      bool capture_exact_surface_id,
+      bool is_copy_request_secure,
       base::TimeDelta timeout,
       base::OnceCallback<
           void(const base::expected<viz::CopyOutputBitmapWithMetadata,
-                                    viz::CopyOutputResult::Error>&)> callback,
-      bool capture_exact_surface_id);
+                                    viz::CopyOutputResult::Error>&)> callback);
   bool CanCopyFromCompositingSurface() const;
 
   // Should only be called when the host has a content layer. Use this for one-

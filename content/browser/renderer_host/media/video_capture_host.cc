@@ -283,7 +283,10 @@ void VideoCaptureHost::Start(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureHost::Start");
 
-  if (!params.IsValid()) {
+  // Currently there is no use case for requesting secure capture from the
+  // renderer. Reject `params.is_secure` to prevent a compromised renderer from
+  // requesting secure capture.
+  if (!params.IsValid() || params.is_secure) {
     mojo::ReportBadMessage("Invalid video capture params.");
     return;
   }
@@ -369,7 +372,10 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureHost::Resume");
 
-  if (!params.IsValid()) {
+  // Currently there is no use case for requesting secure capture from the
+  // renderer. Reject `params.is_secure` to prevent a compromised renderer from
+  // requesting secure capture.
+  if (!params.IsValid() || params.is_secure) {
     mojo::ReportBadMessage("Invalid video capture params.");
     return;
   }

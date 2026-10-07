@@ -2051,12 +2051,13 @@ bool RenderWidgetHostViewAndroid::HasFallbackSurface() const {
   return delegated_frame_host_->HasFallbackSurface();
 }
 
-void RenderWidgetHostViewAndroid::CopyFromSurface(
+void RenderWidgetHostViewAndroid::CopyFromSurfaceImpl(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    bool is_copy_request_secure,
     base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
-  TRACE_EVENT0("cc", "RenderWidgetHostViewAndroid::CopyFromSurface");
+  TRACE_EVENT0("cc", "RenderWidgetHostViewAndroid::CopyFromSurfaceImpl");
   if (!IsSurfaceAvailableForCopy()) {
     std::move(callback).Run(viz::CopyOutputBitmapWithMetadata());
     return;
@@ -2068,18 +2069,19 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
   }
 
   delegated_frame_host_->CopyFromCompositingSurface(
-      src_subrect, output_size, timeout,
+      src_subrect, output_size, /*capture_exact_surface_id=*/false,
+      is_copy_request_secure, timeout,
       base::BindOnce(
           [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
                  callback,
              const base::expected<viz::CopyOutputBitmapWithMetadata,
                                   viz::CopyOutputResult::Error>& result) {
             TRACE_EVENT0(
-                "cc", "RenderWidgetHostViewAndroid::CopyFromSurface finished");
+                "cc",
+                "RenderWidgetHostViewAndroid::CopyFromSurfaceImpl finished");
             std::move(callback).Run(ToCopyFromSurfaceResult(result));
           },
-          std::move(callback)),
-      /*capture_exact_surface_id=*/false);
+          std::move(callback)));
 }
 
 ui::FilteredGestureProvider*

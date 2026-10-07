@@ -129,9 +129,10 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool RequestRepaintOnNewSurface() override;
   void DestroyImpl() override;
   bool IsSurfaceAvailableForCopy() override;
-  void CopyFromSurface(
+  void CopyFromSurfaceImpl(
       const gfx::Rect& src_rect,
       const gfx::Size& dst_size,
+      bool is_copy_request_secure,
       base::TimeDelta timeout,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
       override;

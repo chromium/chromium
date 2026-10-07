@@ -165,11 +165,12 @@ const viz::FrameSinkId& DelegatedFrameHostAndroid::GetFrameSinkId() const {
 void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    bool capture_exact_surface_id,
+    bool is_copy_request_secure,
     base::TimeDelta timeout,
     base::OnceCallback<
         void(const base::expected<viz::CopyOutputBitmapWithMetadata,
-                                  viz::CopyOutputResult::Error>&)> callback,
-    bool capture_exact_surface_id) {
+                                  viz::CopyOutputResult::Error>&)> callback) {
   DCHECK(CanCopyFromCompositingSurface());
 
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
@@ -202,6 +203,7 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
                     .Run(scoped_bitmap.GetOutScopedBitmapAndMetadata());
               },
               std::move(callback), std::move(keep_surface_alive)));
+  request->set_is_secure(is_copy_request_secure);
 
   // The callback must be executed on the UI thread. Since the result callback
   // can be dispatched on any thread by default, explicitly set the result task

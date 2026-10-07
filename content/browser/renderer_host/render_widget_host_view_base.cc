@@ -201,6 +201,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& dst_size,
     float scale_factor,
+    bool is_copy_request_secure,
     base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   if (!main_host || !main_frame_host) {
@@ -214,7 +215,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
 
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED()
-      << "RenderWidgetHostViewAndroid::CopyFromSurface calls "
+      << "RenderWidgetHostViewAndroid::CopyFromSurfaceImpl calls "
          "DelegatedFrameHostAndroid::CopyFromCompositingSurface directly, "
          "and popups are not supported.";
 #else
@@ -231,7 +232,8 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
   if (!has_popup && !unbounded_window) {
     // No popup or unbounded window - just call CopyFromCompositingSurface
     // once.
-    main_frame_host->CopyFromCompositingSurface(src_subrect, dst_size, timeout,
+    main_frame_host->CopyFromCompositingSurface(src_subrect, dst_size,
+                                                is_copy_request_secure, timeout,
                                                 std::move(callback));
     return;
   }
@@ -263,7 +265,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
          base::WeakPtr<RenderWidgetHostImpl> popup_host,
          base::WeakPtr<DelegatedFrameHost> popup_frame_host,
          const gfx::Rect src_subrect, const gfx::Size dst_size,
-         base::TimeDelta timeout,
+         bool is_copy_request_secure, base::TimeDelta timeout,
          const content::CopyFromSurfaceResult& main_result) {
         RenderWidgetHostViewBase* main_view =
             main_host
@@ -316,7 +318,8 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
           CHECK(has_popup);
           gfx::Rect popup_subrect(src_subrect - offset);
           popup_frame_host->CopyFromCompositingSurface(
-              popup_subrect, dst_size, timeout, std::move(popup_done_callback));
+              popup_subrect, dst_size, is_copy_request_secure, timeout,
+              std::move(popup_done_callback));
           return;
         } else {
           CHECK(unbounded_window);
@@ -324,23 +327,45 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
               base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
               base::NotFatalUntil::M158);
           gfx::Rect popup_subrect(src_subrect - offset);
+          // TODO(crbug.com/390329792): Plumb `is_copy_request_secure` to
+          // `UnboundedSurfaceWindow::CopyFromSurface` if needed.
           unbounded_window->CopyFromSurface(popup_subrect, dst_size, timeout,
                                             std::move(popup_done_callback));
           return;
         }
       },
       std::move(callback), offset_physical, has_popup, main_host, popup_host,
-      popup_frame_host, src_subrect, dst_size, timeout);
+      popup_frame_host, src_subrect, dst_size, is_copy_request_secure, timeout);
 
   // Request the main image (happens first).
   main_frame_host->CopyFromCompositingSurface(
-      src_subrect, dst_size, timeout, std::move(main_image_done_callback));
+      src_subrect, dst_size, is_copy_request_secure, timeout,
+      std::move(main_image_done_callback));
 #endif
 }
 
 void RenderWidgetHostViewBase::CopyFromSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
+    base::TimeDelta timeout,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
+  CopyFromSurfaceImpl(src_rect, output_size, /*is_copy_request_secure=*/false,
+                      timeout, std::move(callback));
+}
+
+void RenderWidgetHostViewBase::CopyFromSurfaceSecure(
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    base::TimeDelta timeout,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
+  CopyFromSurfaceImpl(src_rect, output_size, /*is_copy_request_secure=*/true,
+                      timeout, std::move(callback));
+}
+
+void RenderWidgetHostViewBase::CopyFromSurfaceImpl(
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    bool is_copy_request_secure,
     base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   NOTIMPLEMENTED_LOG_ONCE();

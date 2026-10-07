@@ -454,6 +454,39 @@ TEST_F(VideoCaptureTest, StartAndPauseAndResumeAndStop) {
   StopCapture();
 }
 
+TEST_F(VideoCaptureTest, StartWithIsSecureReportsBadMessage) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  media::VideoCaptureParams params;
+  params.requested_format = media::VideoCaptureFormat(gfx::Size(352, 288), 30,
+                                                      media::PIXEL_FORMAT_I420);
+  params.is_secure = true;
+
+  mojo::Receiver<media::mojom::VideoCaptureObserver> receiver(this);
+  host_remote()->Start(DeviceId(), opened_session_id(), params,
+                       receiver.BindNewPipeAndPassRemote());
+  EXPECT_EQ("Invalid video capture params.",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(VideoCaptureTest, ResumeWithIsSecureReportsBadMessage) {
+  StartCapture();
+
+  EXPECT_CALL(*this, DoOnStateChanged(media::mojom::VideoCaptureState::PAUSED));
+  host_remote()->Pause(DeviceId());
+  host_remote().FlushForTesting();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  media::VideoCaptureParams params;
+  params.requested_format = media::VideoCaptureFormat(gfx::Size(352, 288), 30,
+                                                      media::PIXEL_FORMAT_I420);
+  params.is_secure = true;
+  host_remote()->Resume(DeviceId(), opened_session_id(), params);
+  EXPECT_EQ("Invalid video capture params.",
+            bad_message_observer.WaitForBadMessage());
+
+  StopCapture();
+}
+
 TEST_F(VideoCaptureTest, CloseSessionWithoutStopping) {
   StartCapture();
 

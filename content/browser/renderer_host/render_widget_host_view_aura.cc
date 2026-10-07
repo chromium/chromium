@@ -1206,9 +1206,10 @@ void RenderWidgetHostViewAura::ClearKeyboardTriggeredTooltip() {
   }
 }
 
-void RenderWidgetHostViewAura::CopyFromSurface(
+void RenderWidgetHostViewAura::CopyFromSurfaceImpl(
     const gfx::Rect& src_subrect,
     const gfx::Size& dst_size,
+    bool is_copy_request_secure,
     base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   base::WeakPtr<RenderWidgetHostImpl> popup_host;
@@ -1220,8 +1221,8 @@ void RenderWidgetHostViewAura::CopyFromSurface(
   }
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
       host()->GetWeakPtr(), delegated_frame_host_->GetWeakPtr(), popup_host,
-      popup_frame_host, src_subrect, dst_size, device_scale_factor_, timeout,
-      std::move(callback));
+      popup_frame_host, src_subrect, dst_size, device_scale_factor_,
+      is_copy_request_secure, timeout, std::move(callback));
 }
 
 ui::FilteredGestureProvider*

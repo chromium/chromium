@@ -150,6 +150,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
+      bool is_copy_request_secure,
       base::TimeDelta timeout,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback);
   void CopyFromCompositingSurfaceAsTexture(
@@ -260,6 +261,7 @@ class CONTENT_EXPORT DelegatedFrameHost
       const viz::SurfaceId& surface_id,
       viz::CopyOutputRequest::ResultFormat format,
       viz::CopyOutputRequest::ResultDestination destination,
+      bool is_copy_request_secure,
       base::TimeDelta timeout,
       viz::CopyOutputRequest::CopyOutputRequestCallback callback);
 

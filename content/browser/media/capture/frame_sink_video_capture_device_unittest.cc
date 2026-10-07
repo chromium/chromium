@@ -351,6 +351,7 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     EXPECT_CALL(capturer_, SetMinCapturePeriod(kMinCapturePeriod));
     EXPECT_CALL(capturer_,
                 SetResolutionConstraints(kResolution, kResolution, _));
+    EXPECT_CALL(capturer_, SetIsSecure(false));
     const viz::VideoCaptureTarget target(viz::FrameSinkId{1, 1});
     EXPECT_CALL(
         capturer_,
@@ -673,6 +674,39 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, DoesNotSetVideoRotation) {
   POST_DEVICE_METHOD_CALL(OnUtilizationReport, fake_feedback);
   receiver->ReleaseAccessPermission(buffer_id);
   auto buffer = receiver->TakeBufferHandle(buffer_id);
+  WAIT_FOR_DEVICE_TASKS();
+
+  StopAndDeAllocateSynchronouslyWithExpectations(true /* capturer will stop */);
+}
+
+TEST_F(FrameSinkVideoCaptureDeviceTest, SetsIsSecure) {
+  auto receiver = std::make_unique<MockVideoFrameReceiver>();
+  EXPECT_CALL(*receiver, OnError(_)).Times(0);
+
+  EXPECT_CALL(capturer_, SetFormat(kFormat));
+  EXPECT_CALL(capturer_, SetMinCapturePeriod(kMinCapturePeriod));
+  EXPECT_CALL(capturer_, SetResolutionConstraints(kResolution, kResolution, _));
+  EXPECT_CALL(capturer_, SetIsSecure(true));
+  const viz::VideoCaptureTarget target(viz::FrameSinkId{1, 1});
+  EXPECT_CALL(
+      capturer_,
+      MockChangeTarget(std::optional<viz::VideoCaptureTarget>(target), 0));
+  EXPECT_CALL(
+      capturer_,
+      MockStart(
+          NotNull(),
+          viz::mojom::BufferFormatPreference::kPreferMappableSharedImage));
+
+  EXPECT_FALSE(capturer_.is_bound());
+  POST_DEVICE_METHOD_CALL(OnTargetChanged, target,
+                          /*sub_capture_version=*/0);
+  media::VideoCaptureParams params = GetCaptureParams();
+  params.is_secure = true;
+  POST_DEVICE_METHOD_CALL(AllocateAndStartWithReceiver, params,
+                          std::move(receiver));
+  WAIT_FOR_DEVICE_TASKS();
+  RUN_UI_TASKS();
+  EXPECT_TRUE(capturer_.is_bound());
   WAIT_FOR_DEVICE_TASKS();
 
   StopAndDeAllocateSynchronouslyWithExpectations(true /* capturer will stop */);
