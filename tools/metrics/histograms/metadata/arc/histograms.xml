@@ -1569,68 +1569,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.NearbyShare.ArcBridgeFailure"
-    enum="NearbyShareArcBridgeFailResult" expires_after="2025-03-28">
-  <owner>alanding@google.com</owner>
-  <owner>arc-app-dev@google.com</owner>
-  <summary>
-    Records any ARC Bridge connection / communication failures using
-    NearbyShare.
-  </summary>
-</histogram>
-
-<histogram name="Arc.NearbyShare.DataHandlingFailure"
-    enum="ArcNearbyShareDataHandlingResult" expires_after="2025-03-28">
-  <owner>alanding@google.com</owner>
-  <owner>arc-app-dev@google.com</owner>
-  <summary>
-    Records any data handling errors with sharing text or files using
-    NearbyShare.
-  </summary>
-</histogram>
-
-<histogram name="Arc.NearbyShare.FileStreamComplete.TimeDelta" units="ms"
-    expires_after="2025-03-28">
-  <owner>alanding@google.com</owner>
-  <owner>arc-app-dev@google.com</owner>
-  <summary>
-    Time taken by ARC Nearby Share to transfer file streams from ARC's virtual
-    file system in ContentProviders to Chrome's native file system. The time is
-    only recorded when file stream completes successfully.
-  </summary>
-</histogram>
-
-<histogram name="Arc.NearbyShare.FileStreamFailure" enum="PlatformFileError"
-    expires_after="2025-03-28">
-  <owner>alanding@google.com</owner>
-  <owner>arc-app-dev@google.com</owner>
-  <summary>
-    Records the reason for failing to stream a file using NearbyShare. ARC
-    NearbyShare shares a file after finding a window, and once &quot;share&quot;
-    is clicked, it attempts to send the file.
-  </summary>
-</histogram>
-
-<histogram name="Arc.NearbyShare.IOFailure" enum="ArcNearbyShareIOErrorResult"
-    expires_after="2025-03-28">
-  <owner>alanding@google.com</owner>
-  <owner>arc-app-dev@google.com</owner>
-  <summary>Records any IO errors while using NearbyShare.</summary>
-</histogram>
-
-<histogram name="Arc.NearbyShare.WindowFound" units="units"
-    expires_after="2025-03-28">
-  <owner>alanding@google.com</owner>
-  <owner>arc-app-dev@google.com</owner>
-  <summary>
-    Records the success or failure of attempts to find NearbyShare window. ARC
-    NearbyShare finds a window after the &quot;nearby share&quot; button is
-    clicked in an app. If NearbyShare successfully finds a window,
-    &quot;true&quot; is recorded onto the histogram. &quot;false&quot; is
-    recorded in the case a window is not found.
-  </summary>
-</histogram>
-
 <histogram name="Arc.Net.ArcNetworkError" enum="ArcNetworkError"
     expires_after="2026-12-31">
   <owner>hugobenichi@google.com</owner>

@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -100,7 +99,6 @@ void ArcNearbyShareBridge::StartNearbyShare(
   VLOG(1) << "Creating Nearby Share session";
   if (!session_instance) {
     LOG(ERROR) << "instance is null. Unable to create NearbyShareSessionImpl";
-    UpdateNearbyShareArcBridgeFail(ArcBridgeFailResult::kInstanceIsNull);
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
@@ -108,7 +106,6 @@ void ArcNearbyShareBridge::StartNearbyShare(
   if (session_map_.find(task_id) != session_map_.end()) {
     LOG(ERROR) << "Unable to create NearbyShareSessionImpl since one already "
                << "exists for " << task_id;
-    UpdateNearbyShareArcBridgeFail(ArcBridgeFailResult::kAlreadyExists);
     std::move(callback).Run(mojo::NullRemote());
     return;
   }

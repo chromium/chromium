@@ -13,7 +13,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
@@ -79,7 +78,6 @@ void ShareInfoFileStreamAdapter::StartFileStreaming() {
       url_, offset_, bytes_remaining_, base::Time());
   if (!stream_reader_) {
     LOG(ERROR) << "Failed to create FileStreamReader.";
-    UpdateNearbyShareIOFail(IOErrorResult::kFileReaderFailed);
     OnStreamingFinished(false);
     return;
   }
@@ -131,13 +129,11 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
   if (bytes_read < 0) {
     LOG(ERROR) << " Reached EOF even though there are remaining bytes: "
                << bytes_remaining_;
-    UpdateNearbyShareIOFail(IOErrorResult::kEOFWithRemainingBytes);
     OnStreamingFinished(false);
     return;
   }
   if (bytes_read == 0) {
     LOG(ERROR) << "Read failed with error: " << net::ErrorToString(bytes_read);
-    UpdateNearbyShareIOFail(IOErrorResult::kReadFailed);
     OnStreamingFinished(false);
     return;
   }
@@ -148,7 +144,6 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
     WriteToFile(bytes_read);
   } else {
     LOG(ERROR) << "Unexpected could not find valid endpoint for streamed data.";
-    UpdateNearbyShareIOFail(IOErrorResult::kStreamedDataInvalidEndpoint);
     OnStreamingFinished(false);
   }
 }

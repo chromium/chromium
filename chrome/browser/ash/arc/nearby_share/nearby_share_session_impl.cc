@@ -25,7 +25,6 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
-#include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/error_dialog_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/low_disk_space_dialog_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
@@ -163,7 +162,6 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (arc_window) {
     VLOG(1) << "ARC window found.";
-    UpdateNearbyShareWindowFound(true);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
                                   weak_ptr_factory_.GetWeakPtr(), arc_window));
@@ -384,7 +382,6 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
   if (result.has_value() && result.value() != base::File::FILE_OK) {
     LOG(ERROR) << "Failed to complete file streaming with error: "
                << base::File::ErrorToString(result.value());
-    UpdateNearbyShareFileStreamError(result.value());
     ShowErrorDialog();
     return;
   }
@@ -439,7 +436,6 @@ void NearbyShareSessionImpl::OnTimerFired() {
 
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s).";
-  UpdateNearbyShareWindowFound(false);
   CleanupSession(/*should_cleanup_files=*/true);
 }
 

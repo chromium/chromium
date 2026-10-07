@@ -8,8 +8,6 @@ static_library("nearby_share") {
   sources = [
     "arc_nearby_share_bridge.cc",
     "arc_nearby_share_bridge.h",
-    "arc_nearby_share_uma.cc",
-    "arc_nearby_share_uma.h",
     "nearby_share_session_impl.cc",
     "nearby_share_session_impl.h",
     "share_info_file_handler.cc",

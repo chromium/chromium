@@ -163,9 +163,6 @@ class ShareInfoFileHandler {
   // Timeout timer for asynchronous file streaming tasks.
   base::OneShotTimer file_streaming_timer_;
 
-  // Time when the file streaming is started.
-  base::TimeTicks file_streaming_started_;
-
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ShareInfoFileHandler> weak_ptr_factory_{this};
