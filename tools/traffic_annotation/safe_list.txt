@@ -34,7 +34,6 @@ missing,components/manta/walrus_provider.cc
 
 # Android-specific annotations.
 # TODO(crbug.com/40641204): Complete these.
-missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
 missing,chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsServerFetcher.java
 missing,chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java
 missing,chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java
@@ -59,7 +58,6 @@ missing,chrome/browser/indigo/api_client.cc
 missing,components/gapis/token_downloader.cc
 
 # Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
-missing_new_fields,missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
 missing_new_fields,missing,chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java
 missing_new_fields,chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java
 missing_new_fields,chrome/browser/android/bookmarks/partner_bookmarks_reader.cc

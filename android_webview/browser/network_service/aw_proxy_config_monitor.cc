@@ -43,6 +43,15 @@ constexpr net::NetworkTrafficAnnotationTag kProxyConfigTrafficAnnotation =
           "Proxy configuration."
         destination: OTHER
         destination_other: "The proxy server specified in the configuration."
+        internal {
+          contacts {
+            owners: "//android_webview/OWNERS"
+          }
+        }
+        user_data {
+          type: NONE
+        }
+        last_reviewed: "2026-10-06"
       }
       policy {
         cookies_allowed: NO
