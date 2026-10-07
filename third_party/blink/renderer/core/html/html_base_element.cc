@@ -36,10 +36,13 @@ HTMLBaseElement::HTMLBaseElement(Document& document)
 void HTMLBaseElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kHrefAttr ||
-      params.name == html_names::kTargetAttr)
-    GetDocument().ProcessBaseElement();
-  else
+      params.name == html_names::kTargetAttr) {
+    if (IsInDocumentTree()) {
+      GetDocument().ProcessBaseElement();
+    }
+  } else {
     HTMLElement::ParseAttribute(params);
+  }
 }
 
 Node::InsertionNotificationRequest HTMLBaseElement::InsertedInto(

@@ -234,6 +234,17 @@ void ScriptLoader::DocumentBaseURLChanged() {
   if (GetScriptType() != ScriptTypeAtPrepare::kSpeculationRules) {
     return;
   }
+  // If the entire rule set failed to parse (which ShouldReportUMAForError()
+  // checks: kSourceIsNotJsonObject or kInvalidRulesetLevelTag), do not reparse
+  // it. Top-level parse errors only depend on the original source text and not
+  // the base URL, so reparsing would always fail with the same error and
+  // synchronously re-dispatch error events in AddSpeculationRuleSet() while
+  // EventDispatchForbiddenScope may be active (e.g. during <base> insertion or
+  // removal).
+  if (!speculation_rule_set_ ||
+      speculation_rule_set_->ShouldReportUMAForError()) {
+    return;
+  }
   // We reparse the original source text and generate a new SpeculationRuleSet
   // with the new base URL. Note that any text changes since the first parse
   // will be ignored.
