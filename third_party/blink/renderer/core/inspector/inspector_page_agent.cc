@@ -42,6 +42,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
+#include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -802,6 +804,26 @@ protocol::Response InspectorPageAgent::getAdScriptAncestry(
     *out_ad_script_ancestry = CreateAdAncestryProtocolObject(it->value);
   }
 
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorPageAgent::getSpellCheckCustomDictionary(
+    const String& frame_id,
+    std::unique_ptr<protocol::Array<String>>* words) {
+  LocalFrame* frame =
+      IdentifiersFactory::FrameById(inspected_frames_, frame_id);
+  if (!frame) {
+    return protocol::Response::ServerError("No frame for given id found");
+  }
+  *words = std::make_unique<protocol::Array<String>>();
+  // The words are held by the embedder's text check client, which keeps a
+  // separate set for each frame's document.
+  if (WebTextCheckClient* client =
+          frame->GetSpellChecker().GetTextCheckerClient()) {
+    for (const WebString& word : client->GetSpellCheckCustomDictionaryWords()) {
+      (*words)->push_back(word);
+    }
+  }
   return protocol::Response::Success();
 }
 

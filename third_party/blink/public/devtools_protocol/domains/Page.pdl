@@ -852,6 +852,16 @@ domain Page
       # script). Only sent if frame is labelled as an ad and ids are available.
       optional Network.AdAncestry adScriptAncestry
 
+  # Returns the words that the frame's document added to its spell check custom
+  # dictionary with `document.spellCheckCustomDictionary.addWords()`, sorted.
+  # Page script cannot read the dictionary back; this lets developers inspect
+  # it.
+  experimental command getSpellCheckCustomDictionary
+    parameters
+      FrameId frameId
+    returns
+      array of string words
+
   # Returns present frame tree structure.
   command getFrameTree
     returns

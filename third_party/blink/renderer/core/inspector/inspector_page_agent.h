@@ -153,6 +153,9 @@ class CORE_EXPORT InspectorPageAgent final
       const String& frame_id,
       std::unique_ptr<protocol::Network::AdAncestry>* out_ad_script_ancestry)
       override;
+  protocol::Response getSpellCheckCustomDictionary(
+      const String& frame_id,
+      std::unique_ptr<protocol::Array<String>>* words) override;
   void searchInResource(const String& frame_id,
                         const String& url,
                         const String& query,

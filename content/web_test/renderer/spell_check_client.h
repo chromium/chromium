@@ -65,6 +65,8 @@ class SpellCheckClient : public blink::WebTextCheckClient {
   void SpellCheckCustomDictionaryChanged(
       const std::vector<std::string>& words_added,
       const std::vector<std::string>& words_removed) override;
+  std::vector<blink::WebString> GetSpellCheckCustomDictionaryWords()
+      const override;
 
  private:
   // Returns true if the misspelling at [offset, offset + length) of |text| is

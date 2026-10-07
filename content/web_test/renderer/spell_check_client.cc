@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -157,6 +158,11 @@ void SpellCheckClient::SpellCheckCustomDictionaryChanged(
   if (!added.empty()) {
     frame_->RemoveSpellingMarkersUnderWords(added);
   }
+}
+
+std::vector<blink::WebString>
+SpellCheckClient::GetSpellCheckCustomDictionaryWords() const {
+  return base::ToVector(document_custom_words_, &blink::WebString::FromUtf16);
 }
 
 bool SpellCheckClient::IsDocumentCustomWord(const std::u16string& text,

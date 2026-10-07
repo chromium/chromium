@@ -45,6 +45,13 @@ class WebTextCheckClient {
       const std::vector<std::string>& words_added,
       const std::vector<std::string>& words_removed) {}
 
+  // Returns the words the document added through the SpellCheckCustomDictionary
+  // web API, sorted. The API has no way for page script to read the words back;
+  // this is for DevTools.
+  virtual std::vector<WebString> GetSpellCheckCustomDictionaryWords() const {
+    return {};
+  }
+
  protected:
   virtual ~WebTextCheckClient() = default;
 };

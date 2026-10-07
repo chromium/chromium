@@ -936,6 +936,22 @@ TEST_F(SpellCheckProviderTest,
   provider_.spellcheck()->RemoveDictionaryUpdateObserver(&other_frame);
 }
 
+// Verifies that the words DevTools reads back are the current set, sorted.
+TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryWordsAreSorted) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "SpellCheckCustomDictionaryAPI", true);
+
+  auto* client = static_cast<blink::WebTextCheckClient*>(&provider_);
+  EXPECT_TRUE(client->GetSpellCheckCustomDictionaryWords().empty());
+
+  client->SpellCheckCustomDictionaryChanged({"zeta", "alpha", "Pikachu"}, {});
+  client->SpellCheckCustomDictionaryChanged(/*words_added=*/{"alpha"},
+                                            /*words_removed=*/{"zeta"});
+
+  EXPECT_THAT(client->GetSpellCheckCustomDictionaryWords(),
+              testing::ElementsAre("Pikachu", "alpha"));
+}
+
 // Verifies that additions beyond kMaxDocumentCustomDictionaryWords are dropped
 // on every platform.
 TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryEnforcesWordCountCap) {

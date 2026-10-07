@@ -137,6 +137,8 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   void SpellCheckCustomDictionaryChanged(
       const std::vector<std::string>& words_added,
       const std::vector<std::string>& words_removed) override;
+  std::vector<blink::WebString> GetSpellCheckCustomDictionaryWords()
+      const override;
 
   // Clears the result cache and removes the spelling markers under
   // |words_added| in this frame.

@@ -1,0 +1,13 @@
+Tests that Page.getSpellCheckCustomDictionary returns each frame's spell check custom dictionary words.
+
+Before any words are added:
+main frame: []
+child frame: []
+After adding words:
+main frame: ["Pikachu","alpha","zeta"]
+child frame: ["kappa"]
+After removing a word from the main frame:
+main frame: ["Pikachu","alpha"]
+child frame: ["kappa"]
+Unknown frame: No frame for given id found
+

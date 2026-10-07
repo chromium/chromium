@@ -382,6 +382,12 @@ void SpellCheckProvider::ApplyDocumentCustomWords(const std::u16string& word,
   }
 }
 
+std::vector<WebString> SpellCheckProvider::GetSpellCheckCustomDictionaryWords()
+    const {
+  // |document_custom_words_| is ordered, so the result is already sorted.
+  return base::ToVector(document_custom_words_, &WebString::FromUtf16);
+}
+
 void SpellCheckProvider::SpellCheckCustomDictionaryChanged(
     const std::vector<std::string>& words_added,
     const std::vector<std::string>& words_removed) {
