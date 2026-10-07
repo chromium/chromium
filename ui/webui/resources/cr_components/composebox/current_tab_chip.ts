@@ -64,6 +64,17 @@ export class CurrentTabChipElement extends CurrentTabChipBase {
     return `${htmlEscape(this.currentTab.title)} - ${htmlEscape(domain)}`;
   }
 
+  /**
+   * Returns the label screen readers narrate for this chip, the same as its
+   * button's aria-label.
+   */
+  getA11yLabel(): string {
+    if (!this.currentTab) {
+      return '';
+    }
+    return this.i18n('askAboutTabAriaLabel', this.getCurrentTabChipTitle_());
+  }
+
   protected onCurrentTabButtonClick_(e: Event) {
     e.stopPropagation();
     assert(this.currentTab);

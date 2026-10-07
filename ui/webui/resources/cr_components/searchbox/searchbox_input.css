@@ -177,8 +177,17 @@ cr-searchbox-icon,
   text-overflow: ellipsis;
 }
 
-/* Kept in the accessibility tree but moved offscreen. */
+/* Kept in the accessibility tree but moved offscreen while it has a label. */
 #selectionAnnouncement {
   left: -10000px;
   position: absolute;
+}
+
+/* Without a label, leave it out of the layout altogether. Being positioned,
+   an empty box would otherwise remain in the accessibility tree as a leaf
+   with no text right after the input, and text range comparisons that cross
+   from the end of the input's value into it (e.g. VoiceOver asking for the
+   caret's line) resolve inconsistently. */
+#selectionAnnouncement:empty {
+  display: none;
 }

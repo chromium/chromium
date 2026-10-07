@@ -28,7 +28,7 @@ import {isMac} from '//resources/js/platform.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
@@ -537,19 +537,26 @@ export class OmniboxPopupSearchboxElement extends
             selectionIsNativelySupported(this.selection) ? this.selection :
                                                            kDefaultSelection);
 
+        // Virtual focus changes are narrated via `getSelectionA11yLabel()`, so
+        // these buttons must not announce themselves too.
         const entrypoint = this.getContextualEntrypointButton();
         if (entrypoint) {
+          entrypoint.announcesVirtualFocus = false;
           entrypoint.hasVirtualFocus = this.isContextEntrypointVirtualFocused();
         }
 
         const contextualChip = this.getContextualChipElement();
         if (contextualChip) {
+          if ('announcesVirtualFocus' in contextualChip) {
+            contextualChip.announcesVirtualFocus = false;
+          }
           contextualChip.hasVirtualFocus =
               this.isContextualChipVirtualFocused();
         }
 
         const lensIcon = this.getLensSearchIconElement();
         if (lensIcon) {
+          lensIcon.announcesVirtualFocus = false;
           lensIcon.hasVirtualFocus = this.isLensSearchVirtualFocused();
         }
       } else {
@@ -621,6 +628,20 @@ export class OmniboxPopupSearchboxElement extends
 
   override openContextMenu(): void {
     this.getContextualEntrypointButton()?.showContextMenu();
+  }
+
+  override getSelectionA11yLabel(
+      match: AutocompleteMatch|null, selection: OmniboxPopupSelection): string {
+    switch (selection.state) {
+      case SelectionLineState.kFocusedButtonContextEntrypoint:
+        return this.getContextualEntrypointButton()?.getA11yLabel() || '';
+      case SelectionLineState.kFocusedButtonContextualChip:
+        return this.getContextualChipElement()?.getA11yLabel() || '';
+      case SelectionLineState.kFocusedButtonLensSearch:
+        return this.showLensSearchIcon ? this.i18n('lensSearchHint') : '';
+      default:
+        return super.getSelectionA11yLabel(match, selection);
+    }
   }
 
   override handleVirtualFocusEnter(e: KeyboardEvent): boolean {
@@ -1776,6 +1797,12 @@ export class OmniboxPopupSearchboxElement extends
         inline: inlineText,
         moveCursorToEnd: inlineText.length === 0,
       });
+      if (this.virtualFocusEnabled) {
+        // Narrate the restored selection rather than the restored input text.
+        inputEl.setSelectionA11yLabel(this.getSelectionA11yLabel(
+            defaultMatch ?? null,
+            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0}));
+      }
       this.popupPageHandler_.logEscapeAction(
           OmniboxEscapeAction.kRevertTemporaryText);
       return;

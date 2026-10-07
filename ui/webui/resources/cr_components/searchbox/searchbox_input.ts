@@ -18,7 +18,7 @@ import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_input.css.js';
 import {getHtml} from './searchbox_input.html.js';
-import {afterNextPaint, markOnce} from './utils.js';
+import {afterNextPaint, announce, markOnce} from './utils.js';
 
 // Register --placeholder-opacity as type <number> so that we can animate it.
 CSS.registerProperty({
@@ -116,6 +116,11 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   private pastedInInput_: boolean = false;
   private resizeObserver_: ResizeObserver|null = null;
   private onDocumentSelectionChangeBound_ = () => this.updateEllipsisState_();
+  // Bumped by each `setSelectionA11yLabel()` call, so that a deferred
+  // notification can tell whether it has been superseded.
+  private selectionA11yLabelGeneration_: number = 0;
+  // Whether a selection label's notification is deferred and still pending.
+  private selectionA11yLabelPending_: boolean = false;
 
   constructor() {
     super();
@@ -242,17 +247,43 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   /**
-   * While a suggestion is selected, the input's value previews it. Screen
-   * readers narrate that value change, interrupting the suggestion's own
-   * announcement. Pointing aria-activedescendant at an element holding the
-   * suggestion's label makes screen readers narrate the label instead. Pass an
-   * empty string to narrate the input itself again, e.g. when the user edits.
+   * While a selection is active, the input's value previews it. Screen readers
+   * narrate that value change, drowning out the selection's own announcement.
+   * Like the WebUI toolbar's readonly omnibox, this distracts them from the
+   * input by pointing aria-activedescendant at an offscreen element, then
+   * notifies the label, so that is all they narrate. The distraction has no
+   * role of its own, so screen reader focus stays on the input. This is the
+   * only narration of selection changes, so callers must not announce the
+   * label by other means too. Pass an empty string to narrate the input itself
+   * again, e.g. when the user edits.
    */
   setSelectionA11yLabel(label: string) {
-    this.$.selectionAnnouncement.textContent = label;
-    this.shadowRoot.querySelector<HTMLElement>(
-                       '#input')!.ariaActiveDescendantElement =
-        label ? this.$.selectionAnnouncement : null;
+    const input = this.inputElement;
+    const distraction = this.$.selectionAnnouncement;
+    const wasDistracted = input.ariaActiveDescendantElement === distraction;
+    distraction.textContent = label;
+    input.ariaActiveDescendantElement = label ? distraction : null;
+    const generation = ++this.selectionA11yLabelGeneration_;
+    if (!label) {
+      this.selectionA11yLabelPending_ = false;
+      return;
+    }
+    if (wasDistracted && !this.selectionA11yLabelPending_) {
+      announce(this, label);
+      return;
+    }
+    // Pointing aria-activedescendant at the distraction is reported to screen
+    // readers as a focus change. Notify once that has gone out with the next
+    // accessibility tree update, so that whatever they make of the focus
+    // change, the label is what they narrate last.
+    this.selectionA11yLabelPending_ = true;
+    afterNextPaint(() => {
+      if (generation !== this.selectionA11yLabelGeneration_) {
+        return;  // Superseded by a newer label, or cancelled by an edit.
+      }
+      this.selectionA11yLabelPending_ = false;
+      announce(this, label);
+    });
   }
 
   isMultiline(): boolean {

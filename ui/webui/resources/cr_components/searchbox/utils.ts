@@ -194,25 +194,40 @@ export interface AriaNotificationOptions {
 }
 
 declare global {
+  // The typescript description for ariaNotify in pending.d.ts is missing the
+  // options argument and the Document mixin, so provide them here.
+  // See https://www.w3.org/TR/wai-aria-1.3/#ARIANotifyMixin
   interface HTMLElement {
-    // The typescript description for ariaNotify in pending.d.ts is missing the
-    // options argument, so provide a two-argument overload.
-    // See https://www.w3.org/TR/wai-aria-1.3/#ARIANotifyMixin
+    ariaNotify?(message: string, options: AriaNotificationOptions): void;
+  }
+  interface Document {
     ariaNotify?(message: string, options: AriaNotificationOptions): void;
   }
 }
 
 /**
- * Announces a message to screen readers, using ariaNotify if available,
- * or falling back to cr-a11y-announcer.
+ * Announces a message to screen readers in `element`'s document, using
+ * ariaNotify if available, or falling back to cr-a11y-announcer.
+ *
+ * The notification is posted on the document rather than on `element`.
+ * ariaNotify() is silently dropped while its target has no accessibility
+ * object, and Blink discards the accessibility objects of every descendant of
+ * an element whose pseudo-element gets restyled, recreating them only with the
+ * next accessibility tree update. Elements with pseudo-elements, such as the
+ * omnibox popup's shadow layer, routinely get restyled in the same task as the
+ * announcement, so a notification posted on a descendant would be lost. The
+ * document's accessibility object is never discarded.
  */
 export function announce(element: HTMLElement, message: string): void {
   if (!message) {
     return;
   }
-  if (element.ariaNotify) {
-    element.ariaNotify(message, {priority: 'high'});
+  const doc = element.ownerDocument;
+  if (doc.ariaNotify) {
+    doc.ariaNotify(message, {priority: 'high'});
   } else {
-    getA11yAnnouncer(element).announce(message);
+    // The live region is hosted by the body rather than by `element`, which
+    // may not render children, e.g. an <input>.
+    getA11yAnnouncer(doc.body).announce(message);
   }
 }
