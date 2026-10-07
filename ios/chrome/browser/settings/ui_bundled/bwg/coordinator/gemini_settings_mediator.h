@@ -11,6 +11,7 @@
 
 class AuthenticationService;
 @protocol GeminiSettingsConsumer;
+@protocol GeminiSuggestionsConsumer;
 class PrefService;
 @protocol SceneCommands;
 
@@ -35,6 +36,9 @@ class IdentityManager;
 
 // Usually the view controller.
 @property(nonatomic, weak) id<GeminiSettingsConsumer> consumer;
+
+// Consumer for the Gemini suggestions settings view controller.
+@property(nonatomic, weak) id<GeminiSuggestionsConsumer> suggestionsConsumer;
 
 // Designated initializer. All the parameters should not be null.
 // 'authService': authentication service for the profile.

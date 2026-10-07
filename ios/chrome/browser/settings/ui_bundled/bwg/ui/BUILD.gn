@@ -11,6 +11,7 @@ source_set("ui") {
     "gemini_settings_consumer.h",
     "gemini_settings_view_controller.h",
     "gemini_settings_view_controller.mm",
+    "gemini_suggestions_consumer.h",
     "gemini_suggestions_view_controller.h",
     "gemini_suggestions_view_controller.mm",
   ]
