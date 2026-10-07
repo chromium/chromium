@@ -6,6 +6,8 @@ source_set("topics") {
   sources = [
     "topic_feedback_conversions.cc",
     "topic_feedback_conversions.h",
+    "topics_feedback_exporter.cc",
+    "topics_feedback_exporter.h",
     "topics_feedback_url_util.cc",
     "topics_feedback_url_util.h",
   ]
@@ -15,6 +17,7 @@ source_set("topics") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/webui/context_hub:mojo_bindings",
+    "//components/history/core/browser",
     "//url",
   ]
 }
@@ -23,6 +26,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "topic_feedback_conversions_unittest.cc",
+    "topics_feedback_exporter_unittest.cc",
     "topics_feedback_url_util_unittest.cc",
   ]
 
@@ -30,6 +34,7 @@ source_set("unit_tests") {
     ":topics",
     "//base",
     "//base/test:test_support",
+    "//components/history/core/browser",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

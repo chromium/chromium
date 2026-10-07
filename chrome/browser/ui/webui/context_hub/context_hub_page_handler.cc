@@ -5,35 +5,50 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub_page_handler.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
+#include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
+#include "chrome/common/channel_info.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sessions/core/session_id.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -1131,6 +1146,167 @@ void ContextHubPageHandler::ClearTopicFeedbacks(
     service->ClearTopicFeedbacks();
   }
   std::move(callback).Run();
+}
+
+namespace {
+
+// Returns the Chrome and Topics experiment state recorded in the export.
+context_hub::TopicsFeedbackExportContext BuildTopicsFeedbackExportContext(
+    base::Time now,
+    base::Time window_start,
+    int window_days) {
+  context_hub::TopicsFeedbackExportContext context;
+  context.exported_at = now;
+  context.window_start = window_start;
+  context.window_days = window_days;
+  context.chrome_version = std::string(version_info::GetVersionNumber());
+  context.chrome_channel =
+      std::string(version_info::GetChannelString(chrome::GetChannel()));
+  if (base::FieldTrial* trial = base::FeatureList::GetFieldTrial(
+          browser::context_hub::mojom::kTopics)) {
+    context.finch = context_hub::TopicsFeedbackExportContext::FinchGroup{
+        .trial = trial->trial_name(), .group = trial->group_name()};
+  }
+  base::GetFieldTrialParamsByFeature(browser::context_hub::mojom::kTopics,
+                                     &context.feature_params);
+  return context;
+}
+
+}  // namespace
+
+void ContextHubPageHandler::GetTopicsFeedbackExportPreview(
+    int32_t window_days,
+    GetTopicsFeedbackExportPreviewCallback callback) {
+  if (!context_hub::features::kTopicsFishfoodFeedback.Get()) {
+    receiver_.ReportBadMessage(
+        "GetTopicsFeedbackExportPreview requires fishfood feedback.");
+    return;
+  }
+
+  std::string ldap;
+  if (signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_)) {
+    ldap = context_hub::GetTopicsFeedbackLdap(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email);
+  }
+
+  FetchTopicsFeedbackExportData(
+      base::Time::Now() -
+          base::Days(context_hub::ClampTopicsFeedbackWindowDays(window_days)),
+      base::BindOnce(
+          [](GetTopicsFeedbackExportPreviewCallback callback, std::string ldap,
+             context_hub::TopicsFeedbackExportData data) {
+            std::move(callback).Run(
+                context_hub::BuildTopicsFeedbackExportPreview(data,
+                                                              std::move(ldap)));
+          },
+          std::move(callback), std::move(ldap)));
+}
+
+void ContextHubPageHandler::GenerateTopicsFeedbackBundle(
+    browser::context_hub::mojom::TopicsFeedbackExportOptionsPtr options,
+    GenerateTopicsFeedbackBundleCallback callback) {
+  if (!context_hub::features::kTopicsFishfoodFeedback.Get()) {
+    receiver_.ReportBadMessage(
+        "GenerateTopicsFeedbackBundle requires fishfood feedback.");
+    return;
+  }
+
+  const int window_days =
+      context_hub::ClampTopicsFeedbackWindowDays(options->window_days);
+  const base::Time now = base::Time::Now();
+  const base::Time window_start = now - base::Days(window_days);
+  FetchTopicsFeedbackExportData(
+      window_start,
+      base::BindOnce(
+          [](GenerateTopicsFeedbackBundleCallback callback,
+             const context_hub::TopicsFeedbackExportContext& context,
+             browser::context_hub::mojom::TopicsFeedbackExportOptionsPtr
+                 options,
+             context_hub::TopicsFeedbackExportData data) {
+            std::move(callback).Run(context_hub::BuildTopicsFeedbackBundle(
+                data, context, *options));
+          },
+          std::move(callback),
+          BuildTopicsFeedbackExportContext(now, window_start, window_days),
+          std::move(options)));
+}
+
+void ContextHubPageHandler::FetchTopicsFeedbackExportData(
+    base::Time window_start,
+    base::OnceCallback<void(context_hub::TopicsFeedbackExportData)> callback) {
+  auto data = std::make_unique<context_hub::TopicsFeedbackExportData>();
+  if (context_hub::ContextHubService* service =
+          ContextHubServiceFactory::GetForProfile(profile_)) {
+    data->feedbacks = service->GetTopicFeedbacks();
+  }
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  if (!history_service) {
+    std::move(callback).Run(std::move(*data));
+    return;
+  }
+
+  // The three queries below fill in `data` and then run `barrier`, which owns
+  // `data` and runs `callback` once all three have replied. If this handler
+  // is destroyed first, `topics_task_tracker_` cancels the outstanding
+  // replies, which destroys `barrier` and `data` without running `callback`.
+  context_hub::TopicsFeedbackExportData* data_ptr = data.get();
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      3, base::BindOnce(
+             [](std::unique_ptr<context_hub::TopicsFeedbackExportData> data,
+                base::OnceCallback<void(context_hub::TopicsFeedbackExportData)>
+                    callback) { std::move(callback).Run(std::move(*data)); },
+             std::move(data), std::move(callback)));
+
+  history_service->GetAllJourneys(
+      base::BindOnce(
+          [](context_hub::TopicsFeedbackExportData* data,
+             base::RepeatingClosure done,
+             std::vector<history::journeys::Journey> journeys) {
+            data->journeys = std::move(journeys);
+            done.Run();
+          },
+          base::Unretained(data_ptr), barrier),
+      &topics_task_tracker_);
+
+  history_service->GetUnresolvableJourneysCountForFishfood(
+      base::BindOnce(
+          [](context_hub::TopicsFeedbackExportData* data,
+             base::RepeatingClosure done, size_t count) {
+            data->unresolvable_topics = count;
+            done.Run();
+          },
+          base::Unretained(data_ptr), barrier),
+      &topics_task_tracker_);
+
+  history::QueryOptions options;
+  options.begin_time = window_start;
+  options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kInclude404s;
+  history_service->GetAnnotatedVisits(
+      options, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/false,
+      base::BindOnce(
+          [](context_hub::TopicsFeedbackExportData* data,
+             base::RepeatingClosure done,
+             std::vector<history::AnnotatedVisit> visits) {
+            data->visits.reserve(visits.size());
+            for (const history::AnnotatedVisit& visit : visits) {
+              data->visits.push_back(context_hub::TopicsFeedbackHistoryVisit{
+                  .url = visit.url_row.url(),
+                  .title = visit.url_row.title(),
+                  .visit_time = visit.visit_row.visit_time,
+                  .is_foreign = !visit.visit_row.originator_cache_guid.empty(),
+              });
+            }
+            done.Run();
+          },
+          base::Unretained(data_ptr), barrier),
+      &topics_task_tracker_);
 }
 
 void ContextHubPageHandler::RunTodoTask(const std::string& prompt,

@@ -351,6 +351,70 @@ struct TopicFeedback {
   DuplicateTopicSnapshot? duplicate_of;
 };
 
+// Summary counts of the Topics fishfood feedback export.
+struct TopicsFeedbackExportStats {
+  // Number of resolved Topics.
+  uint32 topics;
+  // Number of exported history visits in the window.
+  uint32 visits;
+  // Number of exported visits in the window not linked to any Topic.
+  uint32 unclustered_visits;
+  // Number of stored Topics whose visits could not all be resolved on this
+  // device; these are not exported.
+  uint32 unresolvable_topics;
+};
+
+// A distinct minimized URL visited in the export window.
+struct TopicsFeedbackExportUrl {
+  url.mojom.Url url;
+  // Title of the most recent visit to `url`.
+  string title;
+  uint32 visit_count;
+};
+
+// A host visited in the export window, shown as a row the rater can redact.
+struct TopicsFeedbackExportDomain {
+  // Canonical host, e.g. "www.example.com".
+  string domain;
+  uint32 visit_count;
+  // Whether the export dialog should exclude this domain by default (internal
+  // Google hosts and Google Workspace surfaces).
+  bool default_excluded;
+  // Distinct URLs under `domain`, most visited first.
+  array<TopicsFeedbackExportUrl> urls;
+};
+
+// What the Topics fishfood feedback export would contain, shown to the rater
+// before generating the bundle.
+struct TopicsFeedbackExportPreview {
+  // Prefilled rater LDAP, from the primary account if it is an @google.com
+  // account; empty otherwise.
+  string ldap;
+  TopicsFeedbackExportStats stats;
+  // Hosts visited in the window, most visited first.
+  array<TopicsFeedbackExportDomain> domains;
+};
+
+// The rater's choices for generating the Topics fishfood feedback bundle.
+struct TopicsFeedbackExportOptions {
+  // Number of days of history to export. Clamped to [1, 14].
+  int32 window_days;
+  // Hosts whose visits are exported as redacted stubs (no URL or title). This
+  // is the complete list: the WebUI prefills it with the preview's
+  // `default_excluded` domains and applies the rater's overrides.
+  array<string> excluded_domains;
+  // Minimized URLs whose visits are exported as redacted stubs.
+  array<url.mojom.Url> excluded_urls;
+  // Whether to drop the page title of every exported visit.
+  bool strip_all_titles;
+  // Hosts whose visits are exported without a page title.
+  array<string> title_stripped_domains;
+  // Free-text description of Topics the rater expected but did not see.
+  string missing_topics;
+  // Rater LDAP written to the bundle.
+  string rater;
+};
+
 // Interface for the browser process to push updates to the WebUI page.
 // Implemented in the renderer process (the Context Hub WebUI).
 interface Page {
@@ -588,6 +652,21 @@ interface PageHandler {
   // Deletes all stored fishfood Topic feedback.
   [RuntimeFeature=kTopics]
   ClearTopicFeedbacks() => ();
+
+  // Returns what the fishfood feedback export would contain for the last
+  // `window_days` days of history (clamped to [1, 14]). Only callable while
+  // the `fishfood_feedback` param of kTopics is enabled.
+  [RuntimeFeature=kTopics]
+  GetTopicsFeedbackExportPreview(int32 window_days)
+      => (TopicsFeedbackExportPreview preview);
+
+  // Returns the fishfood feedback bundle as schema_version 1 JSON: Topics,
+  // minimized history visits in the window (redacted per `options`), stored
+  // Topic feedback and Chrome/Finch context. Only callable while the
+  // `fishfood_feedback` param of kTopics is enabled.
+  [RuntimeFeature=kTopics]
+  GenerateTopicsFeedbackBundle(TopicsFeedbackExportOptions options)
+      => (string json_bundle);
 
   // Invokes Glic with auto-submit in actuation (AutoBrowse) mode to execute
   // `prompt`.

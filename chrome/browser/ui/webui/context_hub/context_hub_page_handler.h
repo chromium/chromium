@@ -11,13 +11,16 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
+#include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -172,10 +175,24 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
                            DeleteTopicFeedbackCallback callback) override;
   void GetTopicFeedbacks(GetTopicFeedbacksCallback callback) override;
   void ClearTopicFeedbacks(ClearTopicFeedbacksCallback callback) override;
+  void GetTopicsFeedbackExportPreview(
+      int32_t window_days,
+      GetTopicsFeedbackExportPreviewCallback callback) override;
+  void GenerateTopicsFeedbackBundle(
+      browser::context_hub::mojom::TopicsFeedbackExportOptionsPtr options,
+      GenerateTopicsFeedbackBundleCallback callback) override;
   void RunTodoTask(const std::string& prompt,
                    RunTodoTaskCallback callback) override;
 
  private:
+  // Gathers the Topics, history visits since `window_start`, unresolvable
+  // Topic count and stored feedback the fishfood feedback export is built
+  // from, then runs `callback`. `callback` is dropped if this handler is
+  // destroyed first.
+  void FetchTopicsFeedbackExportData(
+      base::Time window_start,
+      base::OnceCallback<void(context_hub::TopicsFeedbackExportData)> callback);
+
   mojo::Remote<browser::context_hub::mojom::Page> page_;
   mojo::Receiver<browser::context_hub::mojom::PageHandler> receiver_;
   base::ScopedObservation<context_hub::ContextHubService,

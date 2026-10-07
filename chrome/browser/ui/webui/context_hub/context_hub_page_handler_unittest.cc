@@ -10,16 +10,20 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/prefs.h"
+#include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -30,8 +34,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -135,6 +141,21 @@ class MockHistoryService : public history::HistoryService {
                history::HistoryService::GetJourneyCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));
+  MOCK_METHOD(
+      base::CancelableTaskTracker::TaskId,
+      GetUnresolvableJourneysCountForFishfood,
+      (history::HistoryService::GetUnresolvableJourneysCountForFishfoodCallback
+           callback,
+       base::CancelableTaskTracker* tracker),
+      (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetAnnotatedVisits,
+              (const history::QueryOptions& options,
+               bool compute_redirect_chain_start_properties,
+               bool get_unclustered_visits_only,
+               history::HistoryService::GetAnnotatedVisitsCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (const, override));
 };
 
 std::unique_ptr<KeyedService> BuildMockHistoryService(
@@ -2724,6 +2745,205 @@ TEST_F(ContextHubPageHandlerTest, GetTopic_EmptyId_DoesNotQueryHistory) {
   handler_->GetTopic("", future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       GetTopicsFeedbackExportPreview_FishfoodDisabled_ReportsBadMessage) {
+  EXPECT_CALL(*GetMockHistoryService(), GetAnnotatedVisits).Times(0);
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_->GetTopicsFeedbackExportPreview(5, base::DoNothing());
+  EXPECT_EQ("GetTopicsFeedbackExportPreview requires fishfood feedback.",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       GenerateTopicsFeedbackBundle_FishfoodDisabled_ReportsBadMessage) {
+  EXPECT_CALL(*GetMockHistoryService(), GetAnnotatedVisits).Times(0);
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_->GenerateTopicsFeedbackBundle(
+      browser::context_hub::mojom::TopicsFeedbackExportOptions::New(),
+      base::DoNothing());
+  EXPECT_EQ("GenerateTopicsFeedbackBundle requires fishfood feedback.",
+            bad_message_observer.WaitForBadMessage());
+}
+
+class ContextHubPageHandlerTopicsExportTest : public ContextHubPageHandlerTest {
+ public:
+  ContextHubPageHandlerTopicsExportTest() {
+    fishfood_feature_list_.InitAndEnableFeatureWithParameters(
+        browser::context_hub::mojom::kTopics, {{"fishfood_feedback", "true"}});
+  }
+
+ protected:
+  static history::AnnotatedVisit MakeAnnotatedVisit(
+      const GURL& url,
+      const std::u16string& title,
+      base::Time visit_time,
+      const std::string& originator_cache_guid) {
+    history::AnnotatedVisit visit;
+    visit.url_row = history::URLRow(url);
+    visit.url_row.set_title(title);
+    visit.visit_row.visit_time = visit_time;
+    visit.visit_row.originator_cache_guid = originator_cache_guid;
+    return visit;
+  }
+
+  // Makes the mock HistoryService reply with one Topic containing a visit to
+  // example.com 1 hour ago, that visit, a synced visit to docs.google.com 2
+  // hours ago, a chrome:// visit, and 2 unresolvable Topics. Stores the
+  // options of the visit query in `query_options_`.
+  void ExpectHistoryQueries() {
+    const base::Time now = base::Time::Now();
+    history::journeys::Journey journey(
+        "topic-1", "Topic", now - base::Days(1), std::nullopt, std::nullopt,
+        std::nullopt,
+        {history::journeys::JourneyVisit(GURL("https://example.com/a"), u"A",
+                                         now - base::Hours(1),
+                                         /*is_foreign=*/false)});
+    EXPECT_CALL(*GetMockHistoryService(), GetAllJourneys(_, _))
+        .WillOnce(
+            [journey](history::HistoryService::GetAllJourneysCallback callback,
+                      base::CancelableTaskTracker* tracker) {
+              std::move(callback).Run({journey});
+              return base::CancelableTaskTracker::kBadTaskId;
+            });
+    EXPECT_CALL(*GetMockHistoryService(),
+                GetUnresolvableJourneysCountForFishfood(_, _))
+        .WillOnce(
+            [](history::HistoryService::
+                   GetUnresolvableJourneysCountForFishfoodCallback callback,
+               base::CancelableTaskTracker* tracker) {
+              std::move(callback).Run(2);
+              return base::CancelableTaskTracker::kBadTaskId;
+            });
+    std::vector<history::AnnotatedVisit> visits = {
+        MakeAnnotatedVisit(GURL("https://example.com/a"), u"A",
+                           now - base::Hours(1), /*originator_cache_guid=*/""),
+        MakeAnnotatedVisit(GURL("https://docs.google.com/d"), u"Doc",
+                           now - base::Hours(2), "other-device"),
+        MakeAnnotatedVisit(GURL("chrome://settings"), u"Settings",
+                           now - base::Hours(3), /*originator_cache_guid=*/""),
+    };
+    EXPECT_CALL(
+        *GetMockHistoryService(),
+        GetAnnotatedVisits(_, /*compute_redirect_chain_start_properties=*/
+                           false,
+                           /*get_unclustered_visits_only=*/false, _, _))
+        .WillOnce(
+            [this, visits](
+                const history::QueryOptions& options, bool, bool,
+                history::HistoryService::GetAnnotatedVisitsCallback callback,
+                base::CancelableTaskTracker* tracker) {
+              query_options_ = options;
+              std::move(callback).Run(visits);
+              return base::CancelableTaskTracker::kBadTaskId;
+            });
+  }
+
+  base::test::ScopedFeatureList fishfood_feature_list_;
+  history::QueryOptions query_options_;
+};
+
+TEST_F(ContextHubPageHandlerTopicsExportTest, GetTopicsFeedbackExportPreview) {
+  ExpectHistoryQueries();
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::TopicsFeedbackExportPreviewPtr>
+      future;
+  handler_->GetTopicsFeedbackExportPreview(3, future.GetCallback());
+  browser::context_hub::mojom::TopicsFeedbackExportPreviewPtr preview =
+      future.Take();
+
+  EXPECT_EQ(base::Time::Now() - base::Days(3), query_options_.begin_time);
+  EXPECT_EQ(history::QueryOptions::KEEP_ALL_DUPLICATES,
+            query_options_.duplicate_policy);
+  ASSERT_TRUE(preview);
+  // The profile has no @google.com primary account.
+  EXPECT_EQ("", preview->ldap);
+  EXPECT_EQ(1u, preview->stats->topics);
+  EXPECT_EQ(2u, preview->stats->visits);
+  EXPECT_EQ(1u, preview->stats->unclustered_visits);
+  EXPECT_EQ(2u, preview->stats->unresolvable_topics);
+  ASSERT_EQ(2u, preview->domains.size());
+  EXPECT_EQ("docs.google.com", preview->domains[0]->domain);
+  EXPECT_TRUE(preview->domains[0]->default_excluded);
+  EXPECT_EQ("example.com", preview->domains[1]->domain);
+  EXPECT_FALSE(preview->domains[1]->default_excluded);
+}
+
+TEST_F(ContextHubPageHandlerTopicsExportTest,
+       GetTopicsFeedbackExportPreview_ClampsWindow) {
+  ExpectHistoryQueries();
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::TopicsFeedbackExportPreviewPtr>
+      future;
+  handler_->GetTopicsFeedbackExportPreview(0, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(base::Time::Now() - base::Days(1), query_options_.begin_time);
+}
+
+TEST_F(ContextHubPageHandlerTopicsExportTest, GenerateTopicsFeedbackBundle) {
+  base::test::TestFuture<void> set_future;
+  handler_->SetTopicFeedback(MakeTopicFeedback("topic-1", TopicRating::kLiked),
+                             set_future.GetCallback());
+  ASSERT_TRUE(set_future.Wait());
+  ExpectHistoryQueries();
+
+  auto options =
+      browser::context_hub::mojom::TopicsFeedbackExportOptions::New();
+  options->window_days = 30;
+  options->excluded_domains = {"docs.google.com"};
+  options->missing_topics = "Gardening";
+  options->rater = "alice";
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateTopicsFeedbackBundle(std::move(options),
+                                         future.GetCallback());
+  std::optional<base::DictValue> bundle =
+      base::JSONReader::ReadDict(future.Get(), base::JSON_PARSE_RFC);
+
+  const base::Time window_start = base::Time::Now() - base::Days(14);
+  EXPECT_EQ(window_start, query_options_.begin_time);
+  ASSERT_TRUE(bundle);
+  EXPECT_EQ(14, bundle->FindInt("window_days"));
+  EXPECT_EQ(FormatTopicsFeedbackTime(window_start),
+            *bundle->FindString("window_start"));
+  EXPECT_EQ("alice", *bundle->FindString("rater"));
+  EXPECT_THAT(*bundle->FindStringByDottedPath("chrome.version"),
+              Not(IsEmpty()));
+  EXPECT_EQ("true", *bundle->FindStringByDottedPath(
+                        "feature_params.Topics.fishfood_feedback"));
+  EXPECT_THAT(*bundle->FindDict("stats"), base::test::IsJson(R"({
+    "topics": 1,
+    "visits": 2,
+    "unclustered_visits": 1,
+    "unresolvable_topics": 2
+  })"));
+  const base::ListValue* visits = bundle->FindList("visits");
+  ASSERT_TRUE(visits);
+  ASSERT_EQ(2u, visits->size());
+  const base::DictValue& linked_visit = (*visits)[0].GetDict();
+  EXPECT_EQ("https://example.com/a", *linked_visit.FindString("url"));
+  EXPECT_EQ("topic-1", *linked_visit.FindString("topic_id"));
+  EXPECT_EQ("local", *linked_visit.FindString("device"));
+  EXPECT_EQ(false, linked_visit.FindBool("redacted"));
+  const base::DictValue& redacted_visit = (*visits)[1].GetDict();
+  EXPECT_FALSE(redacted_visit.contains("url"));
+  EXPECT_FALSE(redacted_visit.contains("title"));
+  EXPECT_EQ("synced", *redacted_visit.FindString("device"));
+  EXPECT_EQ(true, redacted_visit.FindBool("redacted"));
+  const base::ListValue* feedbacks =
+      bundle->FindListByDottedPath("feedback.topics");
+  ASSERT_TRUE(feedbacks);
+  ASSERT_EQ(1u, feedbacks->size());
+  EXPECT_EQ("liked", *(*feedbacks)[0].GetDict().FindString("rating"));
+  EXPECT_EQ("Gardening",
+            *bundle->FindStringByDottedPath("feedback.missing_topics"));
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTopicPageImageUrl_NonWebUrl) {
