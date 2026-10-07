@@ -26,6 +26,7 @@ class MockUserDelegate : public UserDelegate {
               GetPolicyScopesNeedingSignals,
               (),
               (const, override));
+  MOCK_METHOD(bool, IsCollectSignalsConsentRequired, (), (const, override));
 };
 
 }  // namespace device_signals

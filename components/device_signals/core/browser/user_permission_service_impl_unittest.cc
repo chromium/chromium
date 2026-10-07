@@ -62,6 +62,12 @@ class UserPermissionServiceImplTest : public testing::Test,
         std::make_unique<testing::StrictMock<MockUserDelegate>>();
     mock_user_delegate_ = mock_user_delegate.get();
 
+    // By default, consent is required so that the regular consent rules apply.
+    // Tests exercising implicit consent override this expectation.
+    EXPECT_CALL(*mock_user_delegate_, IsCollectSignalsConsentRequired())
+        .Times(AnyNumber())
+        .WillRepeatedly(Return(true));
+
     permission_service_ = std::make_unique<UserPermissionServiceImpl>(
         &management_service_, std::move(mock_user_delegate), &test_prefs_);
   }
@@ -502,6 +508,31 @@ TEST_P(UserPermissionServiceImplTest,
     EXPECT_EQ(permission_service_->CanCollectReportSignals(),
               UserPermission::kMissingConsent);
   }
+}
+
+// Tests that signals can be collected without explicit consent on an unmanaged
+// device when the delegate reports that consent is not required.
+TEST_P(UserPermissionServiceImplTest,
+       CanCollectSignals_ConsentNotRequired_BrowserNotManaged) {
+  SetUserAsCloudManaged();
+
+  EXPECT_CALL(*mock_user_delegate_, IsCollectSignalsConsentRequired())
+      .WillOnce(Return(false));
+
+  EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
+}
+
+// Tests that signals can be collected without explicit consent for an
+// unaffiliated user whose user-level policy needs signals, when the delegate
+// reports that consent is not required.
+TEST_P(UserPermissionServiceImplTest,
+       CanCollectSignals_ConsentNotRequired_UnaffiliatedUser) {
+  SetDeviceAsCloudManaged();
+
+  EXPECT_CALL(*mock_user_delegate_, IsCollectSignalsConsentRequired())
+      .WillOnce(Return(false));
+
+  EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
 }
 
 INSTANTIATE_TEST_SUITE_P(, UserPermissionServiceImplTest, testing::Bool());

@@ -58,6 +58,12 @@ class UserDelegate {
   // Returns the currently enabled Scopes for policies known to require signals.
   virtual std::set<policy::PolicyScope> GetPolicyScopesNeedingSignals()
       const = 0;
+
+  // TODO(crbug.com/463390232): Remove this method (and its implementations)
+  // once the explicit consent preference is wired for Android managed
+  // profiles. It only exists to support a temporary consent bypass in
+  // `UserPermissionServiceImpl::CanCollectSignals()`.
+  virtual bool IsCollectSignalsConsentRequired() const = 0;
 };
 
 }  // namespace device_signals

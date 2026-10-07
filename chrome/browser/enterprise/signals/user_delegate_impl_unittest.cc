@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/signin/public/base/consent_level.h"
@@ -167,6 +168,50 @@ TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Empty) {
   EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
             std::set<policy::PolicyScope>());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/463390232): Update these tests once the explicit consent
+// preference is wired for Android managed profiles.
+
+// Tests that consent is not required for a managed user on Android when the
+// DeviceTrustConnectorAndroid feature is enabled.
+TEST_F(UserDelegateImplTest,
+       IsCollectSignalsConsentRequired_FeatureEnabled_ManagedUser) {
+  base::test::ScopedFeatureList feature_list{
+      enterprise_connectors::kDeviceTrustConnectorAndroid};
+  CreateDelegate(/*is_managed_user=*/true);
+  EXPECT_FALSE(user_delegate_->IsCollectSignalsConsentRequired());
+}
+
+// Tests that consent is required for an unmanaged user on Android even when the
+// DeviceTrustConnectorAndroid feature is enabled.
+TEST_F(UserDelegateImplTest,
+       IsCollectSignalsConsentRequired_FeatureEnabled_UnmanagedUser) {
+  base::test::ScopedFeatureList feature_list{
+      enterprise_connectors::kDeviceTrustConnectorAndroid};
+  CreateDelegate(/*is_managed_user=*/false);
+  EXPECT_TRUE(user_delegate_->IsCollectSignalsConsentRequired());
+}
+
+// Tests that consent is required for a managed user on Android when the
+// DeviceTrustConnectorAndroid feature is disabled.
+TEST_F(UserDelegateImplTest,
+       IsCollectSignalsConsentRequired_FeatureDisabled_ManagedUser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      enterprise_connectors::kDeviceTrustConnectorAndroid);
+  CreateDelegate(/*is_managed_user=*/true);
+  EXPECT_TRUE(user_delegate_->IsCollectSignalsConsentRequired());
+}
+#else
+// Tests that consent is always required outside of Android.
+TEST_F(UserDelegateImplTest, IsCollectSignalsConsentRequired_NonAndroid) {
+  base::test::ScopedFeatureList feature_list{
+      enterprise_connectors::kDeviceTrustConnectorAndroid};
+  CreateDelegate(/*is_managed_user=*/true);
+  EXPECT_TRUE(user_delegate_->IsCollectSignalsConsentRequired());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled

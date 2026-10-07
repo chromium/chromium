@@ -10,6 +10,7 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//chrome/browser/enterprise:impl",
+    "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//components/enterprise/device_trust/core:test_support",

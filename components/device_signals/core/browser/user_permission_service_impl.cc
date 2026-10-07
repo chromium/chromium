@@ -120,6 +120,10 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
 
 UserPermission UserPermissionServiceImpl::CanCollectSignals() const {
+  if (!user_delegate_->IsCollectSignalsConsentRequired()) {
+    return UserPermission::kGranted;
+  }
+
   if (HasUserConsented()) {
     return UserPermission::kGranted;
   }

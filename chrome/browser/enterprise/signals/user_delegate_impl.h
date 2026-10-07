@@ -35,6 +35,7 @@ class UserDelegateImpl : public device_signals::UserDelegate {
   bool IsManagedUser() const override;
   bool IsSameUser(const GaiaId& gaia_id) const override;
   std::set<policy::PolicyScope> GetPolicyScopesNeedingSignals() const override;
+  bool IsCollectSignalsConsentRequired() const override;
 
  private:
   const raw_ptr<Profile> profile_;
