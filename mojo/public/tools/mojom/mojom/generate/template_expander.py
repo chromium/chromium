@@ -4,6 +4,7 @@
 
 # Based on third_party/WebKit/Source/build/scripts/template_expander.py.
 
+import functools
 import os.path
 
 from mojom import fileutil
@@ -12,8 +13,29 @@ fileutil.AddLocalRepoThirdPartyDirToModulePath()
 import jinja2  # noqa: E402
 
 
+class _CachedModuleLoader(jinja2.ModuleLoader):
+  def load(self, environment, name, *args, **kwargs):
+    template = super().load(environment, name, *args, **kwargs)
+    key = self.get_template_key(name)
+    # jinja2.ModuleLoader.load() caches imported submodules as attributes on
+    # self.module (where __import__ sets attribute `key`), but looks them up via
+    # getattr(self.module, f"{self.package_name}.{key}", None). Mirror the
+    # attribute under that name so cached template modules are reused.
+    setattr(
+      self.module,
+      f"{self.package_name}.{key}",
+      getattr(self.module, key, None),
+    )
+    return template
+
+
+@functools.lru_cache
+def _GetModuleLoader(path):
+  return _CachedModuleLoader(path)
+
+
 def ApplyTemplate(mojo_generator, path_to_template, params, **kwargs):
-  loader = jinja2.ModuleLoader(
+  loader = _GetModuleLoader(
     os.path.join(
       mojo_generator.bytecode_path,
       "%s.zip" % mojo_generator.GetTemplatePrefix(),
