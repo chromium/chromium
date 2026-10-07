@@ -6853,6 +6853,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6036" label="DecisionModel_Decide"/>
   <int value="6037" label="DecisionModel_Destroy"/>
   <int value="6038" label="SVGPathElementGetPathSegmentAtLength"/>
+  <int value="6039" label="OpaqueRangeDisconnect"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

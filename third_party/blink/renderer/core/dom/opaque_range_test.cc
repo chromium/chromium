@@ -8,10 +8,12 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -192,6 +194,29 @@ TEST_F(OpaqueRangeTest, UseCounterNotFiredForNonTextInput) {
   input->createValueRange(0, 1, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+}
+
+TEST_F(OpaqueRangeTest, UseCounterFiresForDisconnectFromScript) {
+  SetBodyContent("<textarea>Hello</textarea>");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRangeDisconnect));
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(
+      "document.querySelector('textarea').createValueRange(0, 5).disconnect();")
+      ->RunScript(GetDocument().domWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kOpaqueRangeDisconnect));
+}
+
+// Automatic disconnection on element removal is not a web-exposed call, so it
+// must not be counted as a disconnect() call.
+TEST_F(OpaqueRangeTest, UseCounterNotFiredForAutomaticDisconnect) {
+  SetBodyContent("<textarea>Hello</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  textarea->createValueRange(0, 5, ASSERT_NO_EXCEPTION);
+
+  textarea->remove();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRangeDisconnect));
 }
 
 TEST_F(OpaqueRangeTest, HighlightMarkersCreated) {
