@@ -231,14 +231,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // If so, click on the chip to open the bubble.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   LocationBar* lb = browser_view->toolbar()->location_bar();
-  if (lb->GetChipController()->IsPermissionPromptChipVisible() &&
-      !lb->GetChipController()->IsBubbleShowing()) {
-    lb->GetChipController()->chip()->ExecuteForTesting();
-    base::RunLoop().RunUntilIdle();
+  ChipController* chip_controller = lb->GetChipController();
+  if (chip_controller->IsPermissionPromptChipVisible() &&
+      !chip_controller->IsBubbleShowing()) {
+    chip_controller->chip()->ExecuteForTesting();
+    // WebUIPermissionChip resolves the prompt bubble's anchor asynchronously,
+    // once the WebUI has registered the chip element over Mojo. Wait for it so
+    // that the prompt bubble is created.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return !chip_controller->is_waiting_for_anchor_for_testing();
+    }));
   }
 
   // The permissions bubble should now be showing.
-  ASSERT_TRUE(permissions_api.GetPromptWindow());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return permissions_api.GetPromptWindow() != nullptr; }));
 
   base::WeakPtr<views::Widget> extension_popup_widget =
       OpenExtensionPopup(browser(), extension);
