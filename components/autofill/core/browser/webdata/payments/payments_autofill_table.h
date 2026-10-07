@@ -504,6 +504,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // will be completely overwritten.
   void SetAutofillOffers(
       const std::vector<AutofillOfferData>& autofill_offer_data);
+  // Returns the offers with the most recently issued ones first, followed by
+  // offers with an unknown (null) issue time. Ties are broken by offer id, so
+  // that the order is deterministic.
   bool GetAutofillOffers(
       std::vector<std::unique_ptr<AutofillOfferData>>* autofill_offer_data);
 

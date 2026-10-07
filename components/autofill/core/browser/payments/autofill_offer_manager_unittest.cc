@@ -245,4 +245,20 @@ TEST_F(AutofillOfferManagerTest, HiddenTab_DoesNotConsumeAutomaticShow) {
   NavigateTo(GURL(kTestUrl));
 }
 
+// Verify that if several offers apply to a URL, the first matching one in the
+// order returned by `PaymentsDataManager::GetAutofillOffers()` is returned.
+TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnsFirstMatchingOffer) {
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL("https://www.other.com/"), /*is_expired=*/false, "other_site"));
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL(kTestUrl), /*is_expired=*/false, "first_match"));
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL(kTestUrl), /*is_expired=*/false, "second_match"));
+
+  const AutofillOfferData* result =
+      autofill_offer_manager_->GetOfferForUrl(GURL(kTestUrl));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->GetOfferId(), "first_match");
+}
+
 }  // namespace autofill

@@ -67,6 +67,10 @@ CreditCardBenefitBase::BenefitId get_benefit_id(
   return std::visit([](const auto& a) { return a.benefit_id(); }, benefit);
 }
 
+MATCHER_P(HasOfferId, expected_id, "") {
+  return arg->GetOfferId() == expected_id;
+}
+
 class PaymentsAutofillTableTest : public testing::Test {
  public:
   PaymentsAutofillTableTest() = default;
@@ -1493,6 +1497,35 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData_OpaqueOfferIds) {
   EXPECT_TRUE(table_->RemoveAutofillOffer("0123"));
   EXPECT_FALSE(table_->AutofillOfferExists("0123"));
   EXPECT_TRUE(table_->AutofillOfferExists("offer-abc"));
+}
+
+// Tests that offers are returned with the most recently issued ones first,
+// followed by offers with an unknown issue time, with ties broken by offer id.
+TEST_F(PaymentsAutofillTableTest, GetAutofillOffers_SortedByIssueTime) {
+  const GURL origin("http://www.merchant_domain.com/");
+  const Time now = Time::Now();
+  auto offer = [&](std::string offer_id, Time issue_time) {
+    return test::GetPromoCodeOfferData(origin, /*is_expired=*/false,
+                                       std::move(offer_id), issue_time);
+  };
+  // Written out of order, so that the result is only sorted if the query sorts.
+  table_->SetAutofillOffers({
+      offer("unknown_b", /*issue_time=*/Time()),
+      offer("oldest", now - base::Days(3)),
+      offer("tie_b", now - base::Days(2)),
+      offer("newest", now - base::Days(1)),
+      offer("unknown_a", /*issue_time=*/Time()),
+      offer("tie_a", now - base::Days(2)),
+  });
+
+  std::vector<std::unique_ptr<AutofillOfferData>> offers;
+  ASSERT_TRUE(table_->GetAutofillOffers(&offers));
+  EXPECT_THAT(offers,
+              ElementsAre(HasOfferId("newest"), HasOfferId("tie_a"),
+                          HasOfferId("tie_b"), HasOfferId("oldest"),
+                          HasOfferId("unknown_a"), HasOfferId("unknown_b")));
+  // An unknown issue time is read back as unknown.
+  EXPECT_TRUE(offers.back()->GetIssueTime().is_null());
 }
 
 TEST_F(PaymentsAutofillTableTest, AddOrUpdateAutofillOffer) {

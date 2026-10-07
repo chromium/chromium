@@ -242,11 +242,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   virtual std::vector<CreditCardCloudTokenData*> GetCreditCardCloudTokenData()
       const;
 
-  // Returns autofill offer data.
+  // Returns autofill offer data, with the most recently issued offers first, in
+  // the order returned by `PaymentsAutofillTable::GetAutofillOffers()`.
   std::vector<const AutofillOfferData*> GetAutofillOffers() const;
 
   // Returns autofill offer data, but only promo code offers that are not
-  // expired and that are for the given `origin`.
+  // expired and that are for the given `origin`, in the same order as
+  // `GetAutofillOffers()`.
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
 

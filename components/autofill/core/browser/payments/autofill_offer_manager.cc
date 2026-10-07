@@ -36,6 +36,8 @@ bool AutofillOfferManager::IsUrlEligible(
 
 const AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     const GURL& last_committed_primary_main_frame_url) const {
+  // `GetAutofillOffers()` returns the most recently issued offers first, so the
+  // first matching offer is the most recently issued one.
   for (const AutofillOfferData* offer :
        payments_data_manager_->GetAutofillOffers()) {
     if (offer->IsActiveAndEligibleForOrigin(

@@ -1464,7 +1464,9 @@ bool PaymentsAutofillTable::GetAutofillOffers(
   sql::CachedSelectBuilder(
       SQL_FROM_HERE, *db(), s, kOfferDataTable,
       {kOfferId, kOfferRewardAmount, kExpiry, kOfferDetailsUrl, kPromoCode,
-       kValuePropText, kSeeDetailsText, kUsageInstructionsText, kIssueTime});
+       kValuePropText, kSeeDetailsText, kUsageInstructionsText, kIssueTime},
+      /*modifiers=*/
+      base::StrCat({"ORDER BY ", kIssueTime, " DESC, ", kOfferId}));
 
   sql::Statement s_offer_merchant_domain;
   sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s_offer_merchant_domain,
