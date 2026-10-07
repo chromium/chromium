@@ -384,6 +384,8 @@ ChromePermissionMessageRule::GetAllRules() {
       // blocking parts of pages, which is a subset of what the "<all_urls>"
       // access allows. Therefore we display only the "<all_urls>" warning
       // message if both permissions are required.
+      // Hiding the MIME handler warning behind the "<all_urls>" warning is an
+      // intentional compromise to avoid showing too many warnings.
       {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS,
        {APIPermissionID::kHostsAll},
        {APIPermissionID::kDeclarativeWebRequest,
@@ -393,7 +395,8 @@ ChromePermissionMessageRule::GetAllRules() {
         APIPermissionID::kProcesses, APIPermissionID::kTab,
         APIPermissionID::kTopSites, APIPermissionID::kWebNavigation,
         APIPermissionID::kDeclarativeNetRequest,
-        APIPermissionID::kWebAuthenticationProxy}},
+        APIPermissionID::kWebAuthenticationProxy,
+        APIPermissionID::kMimeTypesHandlerPdf}},
       {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS,
        {APIPermissionID::kWebAuthenticationProxy},
        {APIPermissionID::kDeclarativeWebRequest,

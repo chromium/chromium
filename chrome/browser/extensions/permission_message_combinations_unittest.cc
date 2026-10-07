@@ -1294,9 +1294,11 @@ TEST_F(PermissionMessageCombinationsUnittest, NewTabPagePermissionMessages) {
       "Replace the page you see when opening a new tab"));
 }
 
+// Only access to all sites hides the MIME handler warning.
 TEST_F(PermissionMessageCombinationsUnittest,
        MimeTypesHandlerPermissionMessages) {
   static constexpr char kManifest[] = R"({
+    "permissions": [%s],
     "mime_types_handler": {
       "application/pdf": {
         "handler_url": "viewer.html"
@@ -1304,8 +1306,17 @@ TEST_F(PermissionMessageCombinationsUnittest,
     }
   })";
 
-  CreateAndInstall(kManifest);
+  CreateAndInstall(base::StringPrintf(kManifest, ""));
   ASSERT_TRUE(CheckManifestProducesPermissions("Read and display PDF files"));
+
+  CreateAndInstall(base::StringPrintf(kManifest, "\"<all_urls>\""));
+  ASSERT_TRUE(CheckManifestProducesPermissions(
+      "Read and change all your data on all websites"));
+
+  CreateAndInstall(base::StringPrintf(kManifest, "\"https://example.com/*\""));
+  ASSERT_TRUE(CheckManifestProducesPermissions(
+      "Read and change your data on example.com",
+      "Read and display PDF files"));
 }
 
 TEST_F(PermissionMessageCombinationsUnittest,

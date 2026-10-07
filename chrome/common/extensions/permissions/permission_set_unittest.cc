@@ -691,6 +691,7 @@ TEST(PermissionsTest, IsPrivilegeIncrease) {
       {"storage", false},       // none -> storage
       {"notifications", true},  // none -> notifications
       {"mimehandler1", true},   // none -> mime_types_handler
+      {"mimehandler2", false},  // all hosts -> all hosts + mime_types_handler
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
       // All of the below are platform app permissions.
       {"platformapp1", false},  // host permissions for platform apps

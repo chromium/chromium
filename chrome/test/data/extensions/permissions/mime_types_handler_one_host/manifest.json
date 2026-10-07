@@ -1,0 +1,11 @@
+{
+  "name": "MIME types handler with one host",
+  "version": "1",
+  "manifest_version": 3,
+  "host_permissions": ["https://example.com/*"],
+  "mime_types_handler": {
+    "application/pdf": {
+      "handler_url": "viewer.html"
+    }
+  }
+}
