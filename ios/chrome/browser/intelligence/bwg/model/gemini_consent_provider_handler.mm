@@ -13,6 +13,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @interface GeminiConsentProviderHandler () <PrefObserverDelegate>
@@ -49,11 +50,13 @@
 #pragma mark - GeminiConsentProviderDelegate
 
 - (BOOL)isGeminiLiveConsentAccepted {
-  return gemini::DidUserConsentToGeminiLive(_prefService);
+  return gemini::DidUserConsentToGeminiLive(_prefService) &&
+         !ShouldForceGeminiLiveFRE();
 }
 
 - (BOOL)isGeminiLiveIntroShown {
-  return gemini::DidGeminiLiveIntroPlay(_prefService);
+  return gemini::DidGeminiLiveIntroPlay(_prefService) &&
+         !ShouldForceGeminiLiveFRE();
 }
 
 - (BOOL)hasMicrophoneAccess {
@@ -61,7 +64,8 @@
     return NO;
   }
   return [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio] ==
-         AVAuthorizationStatusAuthorized;
+             AVAuthorizationStatusAuthorized &&
+         !ShouldForceGeminiLiveFRE();
 }
 
 - (BOOL)readSetting:(GeminiSetting)setting {

@@ -790,6 +790,9 @@ BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
   if (param == 5) {
     return BWGPromoConsentVariations::kSkipNewUserDelay;
   }
+  if (param == 6) {
+    return BWGPromoConsentVariations::kForceLiveFRE;
+  }
   return BWGPromoConsentVariations::kDisabled;
 }
 
@@ -799,6 +802,11 @@ bool ShouldForceBWGPromo() {
   }
   return BWGPromoConsentVariationsParam() ==
          BWGPromoConsentVariations::kForceFRE;
+}
+
+bool ShouldForceGeminiLiveFRE() {
+  return BWGPromoConsentVariationsParam() ==
+         BWGPromoConsentVariations::kForceLiveFRE;
 }
 
 bool ShouldSkipBWGPromoNewUserDelay() {
