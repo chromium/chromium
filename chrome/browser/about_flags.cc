@@ -599,6 +599,11 @@ const FeatureEntry::Choice kUseAngleChoicesAndroid[] = {
      gl::kANGLEImplementationVulkanName}};
 #endif
 
+const FeatureEntry::Choice kForceWebGpuAdapterChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flag_descriptions::kForceWebGpuAdapterOpenGLES,
+     switches::kUseWebGPUAdapter, "opengles"}};
+
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kDXGIWaitableSwapChain1Frame[] = {
     {"DXGIWaitableSwapChainMaxQueuedFrames", "1"}};
@@ -14030,6 +14035,11 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ttc", flag_descriptions::kTtcName, flag_descriptions::kTtcDescription,
      kOsDesktop | kOsAndroid, FEATURE_VALUE_TYPE(ttc::kTtc)},
+
+    {"force-webgpu-adapter", flag_descriptions::kForceWebGpuAdapterName,
+     flag_descriptions::kForceWebGpuAdapterDescription,
+     kOsAndroid | kOsLinux | kOsWin,
+     MULTI_VALUE_TYPE(kForceWebGpuAdapterChoices)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

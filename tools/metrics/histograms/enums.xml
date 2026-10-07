@@ -16929,6 +16929,7 @@ from previous Chrome versions.
   <int value="616660621" label="ImeInputLogicFst:disabled"/>
   <int value="616717743" label="UIEnableSharedImageCacheForGpu:disabled"/>
   <int value="616919957" label="CameraAppCrosEvents:disabled"/>
+  <int value="617405833" label="use-webgpu-adapter"/>
   <int value="617706826" label="ProfilesReordering:disabled"/>
   <int value="617762656" label="FirstScrollLatencyMeasurement:enabled"/>
   <int value="618407424" label="OmniboxRetainSuggestionsWithHeaders:enabled"/>
