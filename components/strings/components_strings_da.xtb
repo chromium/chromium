@@ -95,7 +95,7 @@
 <translation id="1149617035358809955">verificer din identitet, så dine betalingsoplysninger kan udfyldes</translation>
 <translation id="1150565364351027703">Solbriller</translation>
 <translation id="1150979032973867961">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da operativsystemet på din computer ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
-<translation id="1151858212483238980">Du kan udfylde kort, der er gemt i Google Wallet, automatisk</translation>
+<translation id="1151858212483238980">Du kan bruge kort, der er gemt i Wallet, til automatisk udfyldning.</translation>
 <translation id="1151972924205500581">En adgangskode er påkrævet</translation>
 <translation id="1156303062776767266">Du får vist en lokal eller delt fil</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> lukkede forbindelsen uventet.</translation>
@@ -134,7 +134,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1201895884277373915">Mere fra dette website</translation>
 <translation id="1204184165594298176">{0,plural, =1{FIlen er blokeret, så den ikke kan kopieres}one{<ph name="FILE_COUNT" /> fil er blokeret, så den ikke kan kopieres}other{<ph name="FILE_COUNT" /> filer er blokeret, så de ikke kan kopieres}}</translation>
 <translation id="120509973613679868">Forretningsrejser</translation>
-<translation id="1205344127823614428">Du kan udfylde kort, der er gemt i Google Wallet, automatisk.</translation>
+<translation id="1205344127823614428">Du kan bruge kort, der er gemt i Wallet, til automatisk udfyldning.</translation>
 <translation id="120587177308723209">Fantasy-sport</translation>
 <translation id="1206967143813997005">Ugyldig første signatur</translation>
 <translation id="1209206284964581585">Skjul indtil videre</translation>
