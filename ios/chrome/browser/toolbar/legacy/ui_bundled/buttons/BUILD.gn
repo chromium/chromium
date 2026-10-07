@@ -70,6 +70,7 @@ source_set("unit_tests") {
     ":constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//ui/base",
   ]

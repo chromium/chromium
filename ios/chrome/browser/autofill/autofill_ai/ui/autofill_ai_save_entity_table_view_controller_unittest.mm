@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -167,13 +168,8 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
   EXPECT_EQ(kAutofillAISaveEntityLegalDisclosureId,
             linkFooterView.accessibilityIdentifier);
 
-  UITextView* textView = nil;
-  for (UIView* subview in linkFooterView.contentView.subviews) {
-    if ([subview isKindOfClass:[UITextView class]]) {
-      textView = base::apple::ObjCCastStrict<UITextView>(subview);
-      break;
-    }
-  }
+  UITextView* textView =
+      chrome_test_util::FindViewByClass<UITextView>(linkFooterView.contentView);
   ASSERT_NE(nil, textView);
 
   NSString* expectedText = [NSString
@@ -258,13 +254,8 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
   TableViewLinkHeaderFooterView* linkFooterView =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(footerView);
 
-  UITextView* textView = nil;
-  for (UIView* subview in linkFooterView.contentView.subviews) {
-    if ([subview isKindOfClass:[UITextView class]]) {
-      textView = base::apple::ObjCCastStrict<UITextView>(subview);
-      break;
-    }
-  }
+  UITextView* textView =
+      chrome_test_util::FindViewByClass<UITextView>(linkFooterView.contentView);
   ASSERT_NE(nil, textView);
 
   NSString* expectedText = [NSString
@@ -310,13 +301,8 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
   EXPECT_EQ(kAutofillAISaveEntityLegalDisclosureId,
             linkFooterView.accessibilityIdentifier);
 
-  UITextView* textView = nil;
-  for (UIView* subview in linkFooterView.contentView.subviews) {
-    if ([subview isKindOfClass:[UITextView class]]) {
-      textView = base::apple::ObjCCastStrict<UITextView>(subview);
-      break;
-    }
-  }
+  UITextView* textView =
+      chrome_test_util::FindViewByClass<UITextView>(linkFooterView.contentView);
   ASSERT_NE(nil, textView);
 
   NSString* expectedText = [NSString

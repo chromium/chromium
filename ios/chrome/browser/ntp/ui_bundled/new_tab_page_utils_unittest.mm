@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -29,18 +30,8 @@ TEST_F(NewTabPageUtilsTest, TestCreateMostVisitedContainerView) {
   EXPECT_TRUE(container.clipsToBounds);
   EXPECT_FLOAT_EQ(24.0, container.layer.cornerRadius);
 
-  BOOL has_card_background = NO;
-  BOOL has_collection_view = NO;
-  for (UIView* subview in container.subviews) {
-    if ([subview isKindOfClass:[NTPCardBackgroundView class]]) {
-      has_card_background = YES;
-    }
-    if (subview == collection_view) {
-      has_collection_view = YES;
-    }
-  }
-  EXPECT_TRUE(has_card_background);
-  EXPECT_TRUE(has_collection_view);
+  chrome_test_util::ExpectUniqueSubview<NTPCardBackgroundView>(container);
+  EXPECT_TRUE([container.subviews containsObject:collection_view]);
 }
 
 // Tests that CreateMostVisitedContainerView without background does not include
@@ -54,13 +45,7 @@ TEST_F(NewTabPageUtilsTest, TestCreateMostVisitedContainerViewNoBackground) {
   UIView* container = CreateMostVisitedContainerView(collection_view, NO);
   ASSERT_TRUE(container != nil);
 
-  BOOL has_card_background = NO;
-  for (UIView* subview in container.subviews) {
-    if ([subview isKindOfClass:[NTPCardBackgroundView class]]) {
-      has_card_background = YES;
-    }
-  }
-  EXPECT_FALSE(has_card_background);
+  chrome_test_util::ExpectNoSubview<NTPCardBackgroundView>(container);
 }
 
 // Tests that MostVisitedContainerHeight returns collectionView contentSize plus

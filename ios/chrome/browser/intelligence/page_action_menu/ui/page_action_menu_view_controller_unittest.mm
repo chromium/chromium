@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -43,25 +44,7 @@
 - (void)updateFooterContent;
 @end
 
-namespace {
-// Performs a depth-first traversal of the view hierarchy to find a view with
-// the given accessibility identifier.
-UIView* FindViewByAccessibilityIdentifier(UIView* view, NSString* identifier) {
-  if (!identifier) {
-    return nil;
-  }
-  if ([view.accessibilityIdentifier isEqualToString:identifier]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* found = FindViewByAccessibilityIdentifier(subview, identifier);
-    if (found) {
-      return found;
-    }
-  }
-  return nil;
-}
-}  // namespace
+using chrome_test_util::FindViewById;
 
 // Test fixture for PageActionMenuViewController.
 class PageActionMenuViewControllerTest : public PlatformTest {
@@ -167,7 +150,7 @@ TEST_F(PageActionMenuViewControllerTest,
   [view_controller_ loadViewIfNeeded];
 
   // Access the private button via accessibility identifier.
-  UIButton* geminiButton = (UIButton*)FindViewByAccessibilityIdentifier(
+  UIButton* geminiButton = FindViewById<UIButton>(
       view_controller_.view, kAIHubAskGeminiButtonAccessibilityIdentifier);
   EXPECT_NE(geminiButton, nil);
 
@@ -189,7 +172,7 @@ TEST_F(PageActionMenuViewControllerTest,
 
   [view_controller_ loadViewIfNeeded];
 
-  UIButton* geminiButton = (UIButton*)FindViewByAccessibilityIdentifier(
+  UIButton* geminiButton = FindViewById<UIButton>(
       view_controller_.view, kAIHubAskGeminiButtonAccessibilityIdentifier);
   EXPECT_NE(geminiButton, nil);
 
@@ -330,7 +313,7 @@ TEST_F(PageActionMenuViewControllerTest, LensButtonTapped) {
                entrypoint:LensOverlayEntrypoint::kAIHub
                completion:nil]);
 
-  UIButton* lensButton = (UIButton*)FindViewByAccessibilityIdentifier(
+  UIButton* lensButton = FindViewById<UIButton>(
       view_controller_.view, kAIHubLensButtonAccessibilityIdentifier);
   [view_controller_ handleLensEntryPointTapped:lensButton];
 
@@ -351,7 +334,7 @@ TEST_F(PageActionMenuViewControllerTest, GeminiButtonTapped) {
 
   OCMExpect([mock_delegate_ viewControllerDidTapGemini:view_controller_]);
 
-  UIButton* geminiButton = (UIButton*)FindViewByAccessibilityIdentifier(
+  UIButton* geminiButton = FindViewById<UIButton>(
       view_controller_.view, kAIHubAskGeminiButtonAccessibilityIdentifier);
   [view_controller_ handleGeminiTapped:geminiButton];
 

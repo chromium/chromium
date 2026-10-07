@@ -7,23 +7,11 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
-
-UIView* FindSubViewByID(UIView* view, NSString* accessibility_id) {
-  if (view.accessibilityIdentifier == accessibility_id) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* found_view = FindSubViewByID(subview, accessibility_id);
-    if (found_view) {
-      return found_view;
-    }
-  }
-  return nil;
-}
 
 // The size of the symbol image.
 const CGFloat kSymbolToolbarPointSize = 24;
@@ -103,13 +91,19 @@ TEST_F(ToolbarButtonTest, ToolbarButtonCorrectImageWithHighlight) {
 // subview.
 TEST_F(ToolbarButtonTest, ToolbarButtonBlueDot) {
   EXPECT_FALSE(toolbar_button_.hasBlueDot);
-  EXPECT_EQ(FindSubViewByID(toolbar_button_, kToolbarButtonBlueDotViewID), nil);
+  EXPECT_EQ(chrome_test_util::FindViewById(toolbar_button_,
+                                           kToolbarButtonBlueDotViewID),
+            nil);
 
   toolbar_button_.hasBlueDot = YES;
-  EXPECT_NE(FindSubViewByID(toolbar_button_, kToolbarButtonBlueDotViewID), nil);
+  EXPECT_NE(chrome_test_util::FindViewById(toolbar_button_,
+                                           kToolbarButtonBlueDotViewID),
+            nil);
 
   toolbar_button_.hasBlueDot = NO;
-  EXPECT_EQ(FindSubViewByID(toolbar_button_, kToolbarButtonBlueDotViewID), nil);
+  EXPECT_EQ(chrome_test_util::FindViewById(toolbar_button_,
+                                           kToolbarButtonBlueDotViewID),
+            nil);
 }
 
 // Checks that setting blue dot property correctly updates accessibility value.

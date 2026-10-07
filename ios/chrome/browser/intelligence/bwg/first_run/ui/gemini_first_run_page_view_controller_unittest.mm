@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -19,18 +20,8 @@ const CGFloat kLogoTopGap = 32.0;
 
 // Recursively searches for a view matching the accessibility identifier.
 UIStackView* FindWrapperStackView(UIView* view) {
-  for (UIView* subview in view.subviews) {
-    if ([subview.accessibilityIdentifier
-            isEqualToString:
-                kGeminiFirstRunWrapperStackAccessibilityIdentifier]) {
-      return static_cast<UIStackView*>(subview);
-    }
-    UIStackView* result = FindWrapperStackView(subview);
-    if (result) {
-      return result;
-    }
-  }
-  return nil;
+  return chrome_test_util::FindViewById<UIStackView>(
+      view, kGeminiFirstRunWrapperStackAccessibilityIdentifier);
 }
 }  // namespace
 

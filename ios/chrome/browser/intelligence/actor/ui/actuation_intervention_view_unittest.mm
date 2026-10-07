@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
-#import "ios/chrome/browser/intelligence/actor/ui/test/actor_ui_test_utils.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -30,7 +30,7 @@
 
 namespace {
 
-using intelligence::actor::FindViewByAccessibilityIdentifier;
+using chrome_test_util::FindViewById;
 
 class ActuationInterventionViewTest : public PlatformTest {
  protected:
@@ -43,26 +43,26 @@ class ActuationInterventionViewTest : public PlatformTest {
 
   // Returns the card view inside `view_`.
   UIView* CardView() {
-    return FindViewByAccessibilityIdentifier(
-        view_, kActuationInterventionCardAccessibilityIdentifier);
+    return FindViewById(view_,
+                        kActuationInterventionCardAccessibilityIdentifier);
   }
 
   // Returns the primary action button inside `view_`.
   ChromeButton* PrimaryButton() {
-    return static_cast<ChromeButton*>(FindViewByAccessibilityIdentifier(
-        view_, kActuationInterventionPrimaryButtonAccessibilityIdentifier));
+    return FindViewById<ChromeButton>(
+        view_, kActuationInterventionPrimaryButtonAccessibilityIdentifier);
   }
 
   // Returns the secondary action button inside `view_`.
   ChromeButton* SecondaryButton() {
-    return static_cast<ChromeButton*>(FindViewByAccessibilityIdentifier(
-        view_, kActuationInterventionSecondaryButtonAccessibilityIdentifier));
+    return FindViewById<ChromeButton>(
+        view_, kActuationInterventionSecondaryButtonAccessibilityIdentifier);
   }
 
   // Returns the action button owned by the card layout of `view_`.
   ChromeButton* CardActionButton() {
-    return static_cast<ChromeButton*>(FindViewByAccessibilityIdentifier(
-        view_, kActuationTaskCardActionButtonAccessibilityIdentifier));
+    return FindViewById<ChromeButton>(
+        view_, kActuationTaskCardActionButtonAccessibilityIdentifier);
   }
 
   ActuationInterventionView* view_ = nil;

@@ -29,17 +29,14 @@ source_set("carousel") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "omnibox_popup_carousel_control_unittest.mm",
-    "omnibox_popup_carousel_control_unittest_util.h",
-    "omnibox_popup_carousel_control_unittest_util.mm",
-  ]
+  sources = [ "omnibox_popup_carousel_control_unittest.mm" ]
   deps = [
     ":carousel",
     "//base",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

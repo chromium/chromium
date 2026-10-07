@@ -4,47 +4,32 @@
 
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_unittest_util.h"
 
-#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 
-UIView* GetViewOfClassWithIdentifier(Class ui_class,
-                                     NSString* accessibility_identifier,
-                                     BubbleView* bubble_view) {
-  for (UIView* subview in bubble_view.subviews) {
-    if ([subview isKindOfClass:ui_class] &&
-        subview.accessibilityIdentifier == accessibility_identifier) {
-      return subview;
-    }
-  }
-  return nil;
-}
+using chrome_test_util::FindViewById;
 
 UIButton* GetCloseButtonFromBubbleView(BubbleView* bubble_view) {
-  return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
-      [UIButton class], kBubbleViewCloseButtonIdentifier, bubble_view));
+  return FindViewById<UIButton>(bubble_view, kBubbleViewCloseButtonIdentifier);
 }
 
 UILabel* GetTitleLabelFromBubbleView(BubbleView* bubble_view) {
-  return base::apple::ObjCCastStrict<UILabel>(GetViewOfClassWithIdentifier(
-      [UILabel class], kBubbleViewTitleLabelIdentifier, bubble_view));
+  return FindViewById<UILabel>(bubble_view, kBubbleViewTitleLabelIdentifier);
 }
 
 UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubble_view) {
-  return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
-      [UIButton class], kBubbleViewSnoozeButtonIdentifier, bubble_view));
+  return FindViewById<UIButton>(bubble_view, kBubbleViewSnoozeButtonIdentifier);
 }
 
 UIView* GetArrowViewFromBubbleView(BubbleView* bubble_view) {
-  return GetViewOfClassWithIdentifier(
-      [UIView class], kBubbleViewArrowViewIdentifier, bubble_view);
+  return FindViewById(bubble_view, kBubbleViewArrowViewIdentifier);
 }
 
 UIButton* GetNextButtonFromBubbleView(BubbleView* bubble_view) {
-  return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
-      [UIButton class], kBubbleViewNextButtonIdentifier, bubble_view));
+  return FindViewById<UIButton>(bubble_view, kBubbleViewNextButtonIdentifier);
 }
 
 UIStackView* GetPageControlPageBubbleView(BubbleView* bubble_view) {
-  return base::apple::ObjCCastStrict<UIStackView>(GetViewOfClassWithIdentifier(
-      [UIStackView class], kBubbleViewPageControlIdentifier, bubble_view));
+  return FindViewById<UIStackView>(bubble_view,
+                                   kBubbleViewPageControlIdentifier);
 }

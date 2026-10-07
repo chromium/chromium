@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -33,12 +34,7 @@ class PageActionMenuEntrypointViewTest : public PlatformTest {
   }
 
   bool HasBadge() const {
-    for (UIView* subview in view_.subviews) {
-      if ([subview isKindOfClass:[NewFeatureBadgeView class]]) {
-        return true;
-      }
-    }
-    return false;
+    return chrome_test_util::FindViewByClass<NewFeatureBadgeView>(view_) != nil;
   }
 
   PageActionMenuEntrypointView* view_;

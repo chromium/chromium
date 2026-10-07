@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/bwg/first_run/ui/gemini_first_run_carousel_view.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -14,23 +14,11 @@
 namespace {
 
 UIScrollView* GetScrollView(GeminiFirstRunCarouselView* carousel) {
-  for (UIView* subview in carousel.subviews) {
-    if (UIScrollView* scroll_view =
-            base::apple::ObjCCast<UIScrollView>(subview)) {
-      return scroll_view;
-    }
-  }
-  return nil;
+  return chrome_test_util::FindViewByClass<UIScrollView>(carousel);
 }
 
 UIPageControl* GetPageControl(GeminiFirstRunCarouselView* carousel) {
-  for (UIView* subview in carousel.subviews) {
-    if (UIPageControl* page_control =
-            base::apple::ObjCCast<UIPageControl>(subview)) {
-      return page_control;
-    }
-  }
-  return nil;
+  return chrome_test_util::FindViewByClass<UIPageControl>(carousel);
 }
 
 }  // namespace

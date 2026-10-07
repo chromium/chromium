@@ -29,5 +29,6 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//base/test:test_support",
+    "//ios/chrome/test/app:test_support",
   ]
 }

@@ -5,6 +5,7 @@
 #import "ios/chrome/test/app/uikit_test_util.h"
 
 #import "base/apple/foundation_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_test_util {
 
@@ -19,6 +20,15 @@ UIWindowScene* GetAnyWindowScene() {
   }
 
   return nil;
+}
+
+UILabel* FindLabelWithText(UIView* view, NSString* text) {
+  EXPECT_NE(view, nil);
+  EXPECT_NE(text, nil);
+  return FindViewWithPredicate<UILabel>(view, ^BOOL(UIView* candidate) {
+    UILabel* label = base::apple::ObjCCast<UILabel>(candidate);
+    return [label.text isEqualToString:text];
+  });
 }
 
 }  // namespace chrome_test_util

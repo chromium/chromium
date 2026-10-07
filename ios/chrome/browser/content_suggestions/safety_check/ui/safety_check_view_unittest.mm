@@ -16,6 +16,9 @@
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/platform_test.h"
 
+using chrome_test_util::ExpectSubviewCount;
+using chrome_test_util::ExpectUniqueSubview;
+
 // Tests the SafetyCheckView and subviews.
 class SafetyCheckViewTest : public PlatformTest {
  public:
@@ -30,69 +33,17 @@ class SafetyCheckViewTest : public PlatformTest {
     UIView.animationsEnabled = NO;
   }
 
-  // Iterates a view's subviews recursively, calling the block with each one.
-  void IterateSubviews(UIView* view, bool (^block)(UIView* subview)) {
-    for (UIView* subview in view.subviews) {
-      bool should_break = block(subview);
-
-      if (should_break) {
-        break;
-      }
-
-      IterateSubviews(subview, block);
-    }
-  }
-
-  // Searches recursively through subviews to find one with the given
-  // `accessibility_id`.
-  UIView* FindSubview(NSString* accessibility_id) {
-    __block UIView* found = nil;
-
-    IterateSubviews(_superview, ^bool(UIView* subview) {
-      if (subview.accessibilityIdentifier == accessibility_id) {
-        found = subview;
-
-        return true;
-      }
-
-      return false;
-    });
-
-    return found;
-  }
-
   // Expects a subview with the given `accessibility_id` to either exist or
   // or not.
   void ExpectSubview(NSString* accessibility_id, bool exists) {
-    UIView* subview = FindSubview(accessibility_id);
+    UIView* subview =
+        chrome_test_util::FindViewById(_superview, accessibility_id);
 
     if (exists) {
       EXPECT_NE(subview, nil);
     } else {
       EXPECT_EQ(subview, nil);
     }
-  }
-
-  // Returns a count of subviews of the given `klass`.
-  int CountSubviewsWithClass(UIView* view, Class klass) {
-    __block int count = 0;
-
-    IterateSubviews(view, ^bool(UIView* subview) {
-      if ([subview class] == klass) {
-        count++;
-      }
-
-      return false;
-    });
-
-    return count;
-  }
-
-  // Expects `count` subviews of the given `klass` to exist.
-  void ExpectSubviewCount(int count, Class klass) {
-    int actual_count = CountSubviewsWithClass(_superview, klass);
-
-    EXPECT_EQ(actual_count, count);
   }
 
  protected:
@@ -114,11 +65,11 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithDefaultState) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display one item, i.e. the hero-cell default layout
   // item.
-  ExpectSubviewCount(1, [IconDetailView class]);
+  ExpectUniqueSubview<IconDetailView>(_superview);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kDefaultItemID, true);
@@ -143,11 +94,11 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithRunningState) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display one item, i.e. the hero-cell default layout
   // item.
-  ExpectSubviewCount(1, [IconDetailView class]);
+  ExpectUniqueSubview<IconDetailView>(_superview);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kRunningItemID, true);
@@ -173,11 +124,11 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSinglePasswordsIssue) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display one item, i.e. the hero-cell default layout
   // item.
-  ExpectSubviewCount(1, [IconDetailView class]);
+  ExpectUniqueSubview<IconDetailView>(_superview);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kPasswordItemID, true);
@@ -202,11 +153,11 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleSafeBrowsingIssue) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display one item, i.e. the hero-cell default layout
   // item.
-  ExpectSubviewCount(1, [IconDetailView class]);
+  ExpectUniqueSubview<IconDetailView>(_superview);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kSafeBrowsingItemID, true);
@@ -231,11 +182,11 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleUpdateChromeIssue) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display one item, i.e. the hero-cell default layout
   // item.
-  ExpectSubviewCount(1, [IconDetailView class]);
+  ExpectUniqueSubview<IconDetailView>(_superview);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kUpdateChromeItemID, true);
@@ -262,10 +213,10 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndUpdateChromeIssues) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display two items, i.e. the multi-row layout.
-  ExpectSubviewCount(2, [IconDetailView class]);
+  ExpectSubviewCount<IconDetailView>(_superview, 2);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kUpdateChromeItemID, true);
@@ -292,10 +243,10 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndSafeBrowsingIssues) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display two items, i.e. the multi-row layout.
-  ExpectSubviewCount(2, [IconDetailView class]);
+  ExpectSubviewCount<IconDetailView>(_superview, 2);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kPasswordItemID, true);
@@ -322,10 +273,10 @@ TEST_F(SafetyCheckViewTest,
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
 
   // It should initially display two items, i.e. the multi-row layout.
-  ExpectSubviewCount(2, [IconDetailView class]);
+  ExpectSubviewCount<IconDetailView>(_superview, 2);
 
   ExpectSubview(safety_check::kSafetyCheckViewID, true);
   ExpectSubview(safety_check::kUpdateChromeItemID, true);
@@ -383,8 +334,8 @@ TEST_F(SafetyCheckViewTest, DisplaysDefaultStateWhenPasswordCheckSignedOut) {
 
   [_superview addSubview:view];
 
-  ExpectSubviewCount(1, [SafetyCheckView class]);
-  ExpectSubviewCount(1, [IconDetailView class]);
+  ExpectUniqueSubview<SafetyCheckView>(_superview);
+  ExpectUniqueSubview<IconDetailView>(_superview);
 
   // Ensure it shows the Default state, NOT the "All Safe" state.
   ExpectSubview(safety_check::kSafetyCheckViewID, true);

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -42,35 +43,8 @@
 namespace {
 constexpr CGFloat kMinDragHandleHeight = 24.0;
 
-// Recursively searches for a subview matching the specified
-// accessibilityIdentifier.
-UIView* FindSubviewWithAccessibilityIdentifier(UIView* root,
-                                               NSString* identifier) {
-  if ([root.accessibilityIdentifier isEqualToString:identifier]) {
-    return root;
-  }
-  for (UIView* subview in root.subviews) {
-    if (UIView* match =
-            FindSubviewWithAccessibilityIdentifier(subview, identifier)) {
-      return match;
-    }
-  }
-  return nil;
-}
-
-// Recursively searches for the first subview of type T.
-template <typename T>
-T* FindSubviewByClass(UIView* root) {
-  if ([root isKindOfClass:[T class]]) {
-    return static_cast<T*>(root);
-  }
-  for (UIView* subview in root.subviews) {
-    if (T* match = FindSubviewByClass<T>(subview)) {
-      return match;
-    }
-  }
-  return nil;
-}
+using chrome_test_util::FindViewByClass;
+using chrome_test_util::FindViewById;
 
 // Finds a child view controller of type T.
 template <typename T>
@@ -190,7 +164,7 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffset) {
   [view_controller_ loadViewIfNeeded];
   [view_controller_.view layoutIfNeeded];
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
   UIView* center_content_container = fake_location_bar.superview;
@@ -229,7 +203,7 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffsetCollapsed) {
   [view_controller_ loadViewIfNeeded];
   [view_controller_.view layoutIfNeeded];
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
   CGRect initial_fakebox_frame =
@@ -237,7 +211,7 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffsetCollapsed) {
                                 fromView:fake_location_bar];
 
   UIButton* identity_disc_button =
-      FindSubviewByClass<NTPIdentityDiscButton>(view_controller_.view);
+      FindViewByClass<NTPIdentityDiscButton>(view_controller_.view);
   ASSERT_TRUE(identity_disc_button != nil);
   CGRect initial_identity_frame =
       [view_controller_.view convertRect:identity_disc_button.bounds
@@ -354,7 +328,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   [view_controller_ setMostVisitedTilesConfig:config];
 
   MostVisitedTilesCollectionView* collection_view =
-      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+      FindViewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
   ASSERT_TRUE(collection_view != nil);
   ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
 
@@ -385,7 +359,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   [view_controller_ setMostVisitedTilesConfig:config];
 
   MostVisitedTilesCollectionView* collection_view =
-      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+      FindViewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
   ASSERT_TRUE(collection_view != nil);
   ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
 
@@ -418,7 +392,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   id mock_bottom_sheet = OCMPartialMock(sheet);
 
   MostVisitedTilesCollectionView* collection_view =
-      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+      FindViewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
   ASSERT_TRUE(collection_view != nil);
   ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
 
@@ -432,7 +406,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
        TestDefaultSearchEngineNameUpdatesHintLabel) {
   [view_controller_ loadViewIfNeeded];
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
 
@@ -452,14 +426,13 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
   [view_controller_ loadViewIfNeeded];
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
 
-  UIButton* plus_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPPlusButtonAccessibilityIdentifier));
-  UIImageView* logo_view = FindSubviewByClass<UIImageView>(fake_location_bar);
+  UIButton* plus_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPPlusButtonAccessibilityIdentifier);
+  UIImageView* logo_view = FindViewByClass<UIImageView>(fake_location_bar);
   ASSERT_TRUE(plus_button != nil);
   ASSERT_TRUE(logo_view != nil);
 
@@ -483,12 +456,11 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 TEST_F(NewTabPageRedesignViewControllerTest, TestSetVoiceSearchIsEnabled) {
   [view_controller_ loadViewIfNeeded];
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
-  UIButton* voice_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier));
+  UIButton* voice_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier);
   ASSERT_TRUE(voice_button != nil);
 
   [view_controller_ setVoiceSearchIsEnabled:YES];
@@ -516,12 +488,11 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestPlusButtonAction) {
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
-  UIButton* plus_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPPlusButtonAccessibilityIdentifier));
+  UIButton* plus_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPPlusButtonAccessibilityIdentifier);
   ASSERT_TRUE(plus_button != nil);
 
   OCMExpect([mock_shortcuts_handler openMultimodalActionsMenu]);
@@ -539,12 +510,11 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestVoiceSearchButtonAction) {
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
-  UIButton* voice_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier));
+  UIButton* voice_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier);
   ASSERT_TRUE(voice_button != nil);
 
   OCMExpect([mock_shortcuts_handler preloadVoiceSearch]);
@@ -564,12 +534,11 @@ TEST_F(NewTabPageRedesignViewControllerTest,
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
-  UIButton* voice_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier));
+  UIButton* voice_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPVoiceSearchButtonAccessibilityIdentifier);
   ASSERT_TRUE(voice_button != nil);
 
   OCMExpect([mock_shortcuts_handler preloadVoiceSearch]);
@@ -586,12 +555,11 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestLensButtonAction) {
       OCMProtocolMock(@protocol(NewTabPageShortcutsHandler));
   view_controller_.NTPShortcutsHandler = mock_shortcuts_handler;
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
-  UIButton* lens_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPLensButtonAccessibilityIdentifier));
+  UIButton* lens_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPLensButtonAccessibilityIdentifier);
   ASSERT_TRUE(lens_button != nil);
 
   OCMExpect([mock_shortcuts_handler openLensViewFinder]);
@@ -608,12 +576,11 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
   [view_controller_ loadViewIfNeeded];
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
-  UIButton* lens_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPLensButtonAccessibilityIdentifier));
+  UIButton* lens_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPLensButtonAccessibilityIdentifier);
   ASSERT_TRUE(lens_button != nil);
   lens_button.hidden = YES;
 
@@ -631,12 +598,11 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 
   [view_controller_ loadViewIfNeeded];
 
-  UIView* fake_location_bar = FindSubviewWithAccessibilityIdentifier(
+  UIView* fake_location_bar = FindViewById(
       view_controller_.view, kNTPFakeOmniboxAccessibilityIdentifier);
   ASSERT_TRUE(fake_location_bar != nil);
-  UIButton* lens_button = base::apple::ObjCCastStrict<UIButton>(
-      FindSubviewWithAccessibilityIdentifier(
-          fake_location_bar, kNTPLensButtonAccessibilityIdentifier));
+  UIButton* lens_button = FindViewById<UIButton>(
+      fake_location_bar, kNTPLensButtonAccessibilityIdentifier);
   ASSERT_TRUE(lens_button != nil);
   lens_button.hidden = NO;
 
@@ -672,7 +638,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   [view_controller_.view layoutIfNeeded];
 
   UIButton* identity_disc_button =
-      FindSubviewByClass<NTPIdentityDiscButton>(view_controller_.view);
+      FindViewByClass<NTPIdentityDiscButton>(view_controller_.view);
   ASSERT_TRUE(identity_disc_button != nil);
   UIButton* customization_button = view_controller_.customizationMenuButton;
   ASSERT_TRUE(customization_button != nil);
@@ -899,7 +865,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   [view_controller_ setMostVisitedTilesConfig:config];
 
   MostVisitedTilesCollectionView* mvt_view =
-      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+      FindViewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
   ASSERT_TRUE(mvt_view != nil);
   NewTabPageBottomSheetViewController* sheet =
       FindChildViewController<NewTabPageBottomSheetViewController>(
@@ -958,8 +924,8 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   [view_controller_ bottomSheetViewController:sheet
                            didUpdateTopOffset:midOffset];
 
-  UIView* backdrop_blur = FindSubviewWithAccessibilityIdentifier(
-      view_controller_.view, kNTPBackdropBlurIdentifier);
+  UIView* backdrop_blur =
+      FindViewById(view_controller_.view, kNTPBackdropBlurIdentifier);
   ASSERT_TRUE(backdrop_blur != nil);
   EXPECT_FLOAT_EQ(0.5, backdrop_blur.alpha);
   EXPECT_TRUE(backdrop_blur.userInteractionEnabled);
@@ -990,7 +956,7 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestUpdateADPBadgeWithErrorFound) {
   // Load view so identity disc button is created.
   [view_controller_ loadViewIfNeeded];
   NTPIdentityDiscButton* identity_disc =
-      FindSubviewByClass<NTPIdentityDiscButton>(view_controller_.view);
+      FindViewByClass<NTPIdentityDiscButton>(view_controller_.view);
   ASSERT_TRUE(identity_disc != nil);
   NSString* expected_error_label = l10n_util::GetNSStringF(
       IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,

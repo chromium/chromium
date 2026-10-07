@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -13,21 +14,6 @@ namespace {
 
 NSString* const kTestAttributeName = @"Passport Number";
 NSString* const kTestAttributeValue = @"1234";
-
-// Recursively searches `view` and its subviews for a view with
-// `accessibility_id`.
-UIView* FindViewById(UIView* view, NSString* accessibility_id) {
-  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* found_view = FindViewById(subview, accessibility_id);
-    if (found_view) {
-      return found_view;
-    }
-  }
-  return nil;
-}
 
 }  // namespace
 
@@ -74,7 +60,7 @@ TEST_F(AtMemoryGranularFillCellContentConfigurationTest,
       GetAtMemoryGranularFillChipButtonAccessibilityIdentifier(
           kTestAttributeName);
   UIButton* chip_button =
-      base::apple::ObjCCast<UIButton>(FindViewById(contentView, button_id));
+      chrome_test_util::FindViewById<UIButton>(contentView, button_id);
   ASSERT_NE(chip_button, nil);
   [chip_button sendActionsForControlEvents:UIControlEventTouchUpInside];
 

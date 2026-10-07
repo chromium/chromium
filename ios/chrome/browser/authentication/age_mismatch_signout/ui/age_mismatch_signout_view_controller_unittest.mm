@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -39,14 +40,7 @@ TEST_F(AgeMismatchSignoutViewControllerTest, TestBlockUI) {
 
   EXPECT_FALSE(view_controller_.view.userInteractionEnabled);
 
-  BOOL has_waiting_view = NO;
-  for (UIView* subview in view_controller_.view.subviews) {
-    if ([subview isKindOfClass:[HomeWaitingView class]]) {
-      has_waiting_view = YES;
-      break;
-    }
-  }
-  EXPECT_TRUE(has_waiting_view);
+  chrome_test_util::ExpectUniqueSubview<HomeWaitingView>(view_controller_.view);
 }
 
 // Tests that hideStaySignedOutButton property hides the secondary button in

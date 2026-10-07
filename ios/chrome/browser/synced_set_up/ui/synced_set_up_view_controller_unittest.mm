@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -18,21 +19,6 @@ NSString* const kSyncedSetUpAvatarAccessibilityID =
     @"kSyncedSetUpAvatarAccessibilityID";
 NSString* const kSyncedSetUpTitleAccessibilityID =
     @"kSyncedSetUpTitleAccessibilityID";
-
-// Recursively searches the view hierarchy for a view with the specified
-// accessibility identifier.
-UIView* FindViewById(UIView* view, NSString* accessibility_id) {
-  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* foundView = FindViewById(subview, accessibility_id);
-    if (foundView) {
-      return foundView;
-    }
-  }
-  return nil;
-}
 
 // Helper function to create a dummy `UIImage` for testing.
 UIImage* CreateDummyImage(CGSize size, UIColor* color) {
@@ -71,8 +57,10 @@ TEST_F(SyncedSetUpViewControllerTest, TestViewsExistAfterViewDidLoad) {
   UIView* view = view_controller_.view;
   ASSERT_TRUE(view);
 
-  EXPECT_TRUE(FindViewById(view, kSyncedSetUpAvatarAccessibilityID));
-  EXPECT_TRUE(FindViewById(view, kSyncedSetUpTitleAccessibilityID));
+  EXPECT_TRUE(
+      chrome_test_util::FindViewById(view, kSyncedSetUpAvatarAccessibilityID));
+  EXPECT_TRUE(
+      chrome_test_util::FindViewById(view, kSyncedSetUpTitleAccessibilityID));
 }
 
 // Tests the `-setWelcomeMessage:` consumer method.
@@ -83,8 +71,8 @@ TEST_F(SyncedSetUpViewControllerTest, TestSetWelcomeMessage) {
   NSString* testMessage = @"Welcome, Test User!";
   [view_controller_ setWelcomeMessage:testMessage];
 
-  UILabel* titleLabel =
-      (UILabel*)FindViewById(view, kSyncedSetUpTitleAccessibilityID);
+  UILabel* titleLabel = chrome_test_util::FindViewById<UILabel>(
+      view, kSyncedSetUpTitleAccessibilityID);
   ASSERT_TRUE(titleLabel);
 
   // Wait for the main queue to process the update.
@@ -103,8 +91,8 @@ TEST_F(SyncedSetUpViewControllerTest, TestSetAvatarImage) {
   UIImage* testImage = CreateDummyImage(CGSizeMake(10, 10), UIColor.redColor);
   [view_controller_ setAvatarImage:testImage];
 
-  UIImageView* avatarImageView =
-      (UIImageView*)FindViewById(view, kSyncedSetUpAvatarAccessibilityID);
+  UIImageView* avatarImageView = chrome_test_util::FindViewById<UIImageView>(
+      view, kSyncedSetUpAvatarAccessibilityID);
   ASSERT_TRUE(avatarImageView);
 
   // Wait for the main queue to process the update.

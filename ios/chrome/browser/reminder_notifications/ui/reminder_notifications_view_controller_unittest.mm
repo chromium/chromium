@@ -12,6 +12,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -21,42 +22,27 @@ using ReminderNotificationsViewControllerTest = PlatformTest;
 
 namespace {
 
-// Recursively searches the view hierarchy for a view with the specified
-// accessibility identifier.
-UIView* FindViewById(UIView* view, NSString* accessibility_id) {
-  if (view.accessibilityIdentifier == accessibility_id) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* foundView = FindViewById(subview, accessibility_id);
-    if (foundView) {
-      return foundView;
-    }
-  }
-  return nil;
-}
-
 // Returns whether the view hierarchy contains a title label.
 bool HasTitle(UIView* view) {
-  return FindViewById(view, kConfirmationAlertTitleAccessibilityIdentifier) !=
-         nil;
+  return chrome_test_util::FindViewById(
+             view, kConfirmationAlertTitleAccessibilityIdentifier) != nil;
 }
 
 // Returns whether the view hierarchy contains a subtitle label.
 bool HasSubtitle(UIView* view) {
-  return FindViewById(view,
-                      kConfirmationAlertSubtitleAccessibilityIdentifier) != nil;
+  return chrome_test_util::FindViewById(
+             view, kConfirmationAlertSubtitleAccessibilityIdentifier) != nil;
 }
 
 // Returns whether the view hierarchy contains a primary action button.
 bool HasPrimaryActionButton(UIView* view) {
-  return FindViewById(view, kButtonStackPrimaryActionAccessibilityIdentifier) !=
-         nil;
+  return chrome_test_util::FindViewById(
+             view, kButtonStackPrimaryActionAccessibilityIdentifier) != nil;
 }
 
 // Returns whether the view hierarchy contains a secondary action button.
 bool HasSecondaryActionButton(UIView* view) {
-  return FindViewById(
+  return chrome_test_util::FindViewById(
              view, kButtonStackSecondaryActionAccessibilityIdentifier) != nil;
 }
 
@@ -149,19 +135,10 @@ TEST_F(ReminderNotificationsViewControllerTest, DatePickerTableViewCellConfig) {
 
   // Find the labels (would need to add helper methods or use OCMock for more
   // complex verification)
-  UILabel* titleLabel = nil;
-  UILabel* valueLabel = nil;
-
-  for (UIView* subview in cell.contentView.subviews) {
-    if ([subview isKindOfClass:[UILabel class]]) {
-      UILabel* label = (UILabel*)subview;
-      if ([label.text isEqualToString:@"Test"]) {
-        titleLabel = label;
-      } else if ([label.text isEqualToString:@"Value"]) {
-        valueLabel = label;
-      }
-    }
-  }
+  UILabel* titleLabel =
+      chrome_test_util::FindLabelWithText(cell.contentView, @"Test");
+  UILabel* valueLabel =
+      chrome_test_util::FindLabelWithText(cell.contentView, @"Value");
 
   EXPECT_NE(titleLabel, nil);
   EXPECT_NE(valueLabel, nil);

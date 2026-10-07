@@ -6,8 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_mutator.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -26,58 +28,20 @@ ZeroStateSuggestion* CreateSuggestion(NSString* text, NSString* query) {
 // Recursively finds all chip UIButton instances (with titles) in the view
 // hierarchy.
 NSArray<UIButton*>* FindButtons(UIView* view) {
-  NSMutableArray<UIButton*>* buttons = [NSMutableArray array];
-  if ([view isKindOfClass:[UIButton class]]) {
-    UIButton* button = static_cast<UIButton*>(view);
-    if (button.configuration.title.length > 0) {
-      [buttons addObject:button];
-    }
-  }
-  for (UIView* subview in view.subviews) {
-    [buttons addObjectsFromArray:FindButtons(subview)];
-  }
-  return buttons;
+  return chrome_test_util::FindViewsWithPredicate<UIButton>(
+      view, ^BOOL(UIView* subview) {
+        UIButton* button = base::apple::ObjCCast<UIButton>(subview);
+        return button.configuration.title.length > 0;
+      });
 }
 
 // Recursively finds the close UIButton instance in the view hierarchy.
 UIButton* FindCloseButton(UIView* view) {
-  if ([view isKindOfClass:[UIButton class]]) {
-    UIButton* button = static_cast<UIButton*>(view);
-    if (button.configuration.image && !button.configuration.title.length) {
-      return button;
-    }
-  }
-  for (UIView* subview in view.subviews) {
-    UIButton* found = FindCloseButton(subview);
-    if (found) {
-      return found;
-    }
-  }
-  return nil;
-}
-
-// Recursively finds all UILabel instances in the view hierarchy.
-NSArray<UILabel*>* FindLabels(UIView* view) {
-  NSMutableArray<UILabel*>* labels = [NSMutableArray array];
-  if ([view isKindOfClass:[UILabel class]]) {
-    [labels addObject:static_cast<UILabel*>(view)];
-  }
-  for (UIView* subview in view.subviews) {
-    [labels addObjectsFromArray:FindLabels(subview)];
-  }
-  return labels;
-}
-
-// Recursively finds all UIImageView instances in the view hierarchy.
-NSArray<UIImageView*>* FindImageViews(UIView* view) {
-  NSMutableArray<UIImageView*>* imageViews = [NSMutableArray array];
-  if ([view isKindOfClass:[UIImageView class]]) {
-    [imageViews addObject:static_cast<UIImageView*>(view)];
-  }
-  for (UIView* subview in view.subviews) {
-    [imageViews addObjectsFromArray:FindImageViews(subview)];
-  }
-  return imageViews;
+  return chrome_test_util::FindViewWithPredicate<UIButton>(
+      view, ^BOOL(UIView* subview) {
+        UIButton* button = base::apple::ObjCCast<UIButton>(subview);
+        return button.configuration.image && !button.configuration.title.length;
+      });
 }
 
 }  // namespace
@@ -201,7 +165,8 @@ TEST_F(GeminiZeroStateViewControllerTest, DefaultGreetingWithoutUserFirstName) {
 
   [view_controller_ loadViewIfNeeded];
 
-  NSArray<UILabel*>* labels = FindLabels(view_controller_.view);
+  NSArray<UILabel*>* labels =
+      chrome_test_util::FindViewsByClass<UILabel>(view_controller_.view);
   ASSERT_GE(labels.count, 1u);
   EXPECT_NSEQ(labels[0].text, @"What do you want to work on?");
 }
@@ -214,7 +179,8 @@ TEST_F(GeminiZeroStateViewControllerTest,
 
   [view_controller_ loadViewIfNeeded];
 
-  NSArray<UILabel*>* labels = FindLabels(view_controller_.view);
+  NSArray<UILabel*>* labels =
+      chrome_test_util::FindViewsByClass<UILabel>(view_controller_.view);
   ASSERT_GE(labels.count, 1u);
   EXPECT_NSEQ(labels[0].text, @"What do you want to work on, Alex?");
 }
@@ -226,7 +192,8 @@ TEST_F(GeminiZeroStateViewControllerTest, GreetingWithWhitespaceUserFirstName) {
 
   [view_controller_ loadViewIfNeeded];
 
-  NSArray<UILabel*>* labels = FindLabels(view_controller_.view);
+  NSArray<UILabel*>* labels =
+      chrome_test_util::FindViewsByClass<UILabel>(view_controller_.view);
   ASSERT_GE(labels.count, 1u);
   EXPECT_NSEQ(labels[0].text, @"What do you want to work on?");
 }
@@ -237,7 +204,8 @@ TEST_F(GeminiZeroStateViewControllerTest, GreetingWithEmptyUserFirstName) {
 
   [view_controller_ loadViewIfNeeded];
 
-  NSArray<UILabel*>* labels = FindLabels(view_controller_.view);
+  NSArray<UILabel*>* labels =
+      chrome_test_util::FindViewsByClass<UILabel>(view_controller_.view);
   ASSERT_GE(labels.count, 1u);
   EXPECT_NSEQ(labels[0].text, @"What do you want to work on?");
 }

@@ -141,6 +141,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/composebox/public:theme",
     "//ios/chrome/browser/composebox/shared/ui",
     "//ios/chrome/browser/composebox/shared/ui:ui_constants",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//ui/base",
   ]

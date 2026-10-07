@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -201,20 +202,7 @@ TEST_F(LegacyChromeTableViewControllerTest,
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_ON),
               cell.accessibilityValue);
 
-  auto find_switch = [](UIView* view, auto& self_ref) -> UISwitch* {
-    if ([view isKindOfClass:[UISwitch class]]) {
-      return static_cast<UISwitch*>(view);
-    }
-    for (UIView* subview in view.subviews) {
-      UISwitch* result = self_ref(subview, self_ref);
-      if (result) {
-        return result;
-      }
-    }
-    return nil;
-  };
-
-  UISwitch* switchView = find_switch(cell, find_switch);
+  UISwitch* switchView = chrome_test_util::FindViewByClass<UISwitch>(cell);
   ASSERT_TRUE(switchView);
 
   // Directly toggle switch view (simulating user or VoiceOver interaction).

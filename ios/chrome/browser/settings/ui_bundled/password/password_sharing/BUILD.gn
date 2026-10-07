@@ -230,6 +230,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public/test",
     "//third_party/ocmock",

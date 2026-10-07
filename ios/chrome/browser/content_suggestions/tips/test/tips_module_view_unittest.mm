@@ -14,6 +14,7 @@
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/platform_test.h"
 
+using chrome_test_util::ExpectUniqueSubview;
 using segmentation_platform::TipIdentifier;
 
 // Tests the `TipsModuleView` and subviews.
@@ -30,69 +31,17 @@ class TipsModuleViewTest : public PlatformTest {
     UIView.animationsEnabled = NO;
   }
 
-  // Iterates a view's subviews recursively, calling the block with each one.
-  void IterateSubviews(UIView* view, bool (^block)(UIView* subview)) {
-    for (UIView* subview in view.subviews) {
-      bool should_break = block(subview);
-
-      if (should_break) {
-        break;
-      }
-
-      IterateSubviews(subview, block);
-    }
-  }
-
-  // Searches recursively through subviews to find one with the given
-  // `accessibility_id`.
-  UIView* FindSubview(NSString* accessibility_id) {
-    __block UIView* found = nil;
-
-    IterateSubviews(_superview, ^bool(UIView* subview) {
-      if (subview.accessibilityIdentifier == accessibility_id) {
-        found = subview;
-
-        return true;
-      }
-
-      return false;
-    });
-
-    return found;
-  }
-
   // Expects a subview with the given `accessibility_id` to either exist or
   // or not.
   void ExpectSubview(NSString* accessibility_id, bool exists) {
-    UIView* subview = FindSubview(accessibility_id);
+    UIView* subview =
+        chrome_test_util::FindViewById(_superview, accessibility_id);
 
     if (exists) {
       EXPECT_NE(subview, nil);
     } else {
       EXPECT_EQ(subview, nil);
     }
-  }
-
-  // Returns a count of subviews of the given `klass`.
-  int CountSubviewsWithClass(UIView* view, Class klass) {
-    __block int count = 0;
-
-    IterateSubviews(view, ^bool(UIView* subview) {
-      if ([subview class] == klass) {
-        count++;
-      }
-
-      return false;
-    });
-
-    return count;
-  }
-
-  // Expects `count` subviews of the given `klass` to exist.
-  void ExpectSubviewCount(int count, Class klass) {
-    int actual_count = CountSubviewsWithClass(_superview, klass);
-
-    EXPECT_EQ(actual_count, count);
   }
 
  protected:
@@ -113,7 +62,7 @@ TEST_F(TipsModuleViewTest, DisplaysModuleWithDefaultState) {
 
   // It should initially display one item, i.e. the hero-cell default layout
   // item.
-  ExpectSubviewCount(1, [IconDetailView class]);
+  ExpectUniqueSubview<IconDetailView>(_superview);
 
   ExpectSubview(@"kTipsModuleViewID", true);
   ExpectSubview(@"kLensTranslateAccessibilityID", true);
@@ -175,9 +124,9 @@ TEST_F(TipsModuleViewTest, DisplaysCorrectNumberOfSubviews) {
 
     [_superview addSubview:view];
 
-    ExpectSubviewCount(1, [IconDetailView class]);
-    ExpectSubviewCount(1, [IconView class]);
-    ExpectSubviewCount(1, [TipsModuleView class]);
+    ExpectUniqueSubview<IconDetailView>(_superview);
+    ExpectUniqueSubview<IconView>(_superview);
+    ExpectUniqueSubview<TipsModuleView>(_superview);
 
     [view removeFromSuperview];
   }

@@ -11,6 +11,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_constants.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -25,37 +26,16 @@ NSString* const kVariant = @"Product variant";
 constexpr char kCurrency[] = "USD";
 constexpr char kCountryCode[] = "us";
 
-// Retrieves a view of a specified class with a given accessibility identifier
-// within a given view hierarchy.
-UIView* GetViewOfClassWithIdentifier(Class ui_class,
-                                     NSString* accessibility_id,
-                                     UIView* view) {
-  if ([view isKindOfClass:ui_class] &&
-      view.accessibilityIdentifier == accessibility_id) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* foundView =
-        GetViewOfClassWithIdentifier(ui_class, accessibility_id, subview);
-    if (foundView) {
-      return foundView;
-    }
-  }
-  return nil;
-}
-
 // Retrieves a UILabel with a given accessibility identifier within a given view
 // hierarchy.
 UILabel* GetLabelFromIdentifier(NSString* identifier, UIView* view) {
-  return base::apple::ObjCCastStrict<UILabel>(
-      GetViewOfClassWithIdentifier([UILabel class], identifier, view));
+  return chrome_test_util::FindViewById<UILabel>(view, identifier);
 }
 
 // Retrieves a UIStackView with a given accessibility identifier within a given
 // view hierarchy.
 UIStackView* GetStackViewFromIdentifier(NSString* identifier, UIView* view) {
-  return base::apple::ObjCCastStrict<UIStackView>(
-      GetViewOfClassWithIdentifier([UIStackView class], identifier, view));
+  return chrome_test_util::FindViewById<UIStackView>(view, identifier);
 }
 
 // Creates a PriceInsightsItem based on the provided parameters.

@@ -10,27 +10,10 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller_delegate.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-namespace {
-
-UIView* FindViewWithAccessibilityIdentifier(UIView* root_view,
-                                            NSString* identifier) {
-  if ([root_view.accessibilityIdentifier isEqualToString:identifier]) {
-    return root_view;
-  }
-  for (UIView* subview in root_view.subviews) {
-    UIView* found = FindViewWithAccessibilityIdentifier(subview, identifier);
-    if (found) {
-      return found;
-    }
-  }
-  return nil;
-}
-
-}  // namespace
 
 @interface FakeAutofillAISaveEntityContainerViewControllerDelegate
     : NSObject <AutofillAISaveEntityContainerViewControllerDelegate>
@@ -72,7 +55,7 @@ TEST_F(AutofillAISaveEntityContainerViewControllerTest,
   [controller_ loadViewIfNeeded];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_NE(nil, FindViewWithAccessibilityIdentifier(
+  EXPECT_NE(nil, chrome_test_util::FindViewById(
                      controller_.view, kAutofillAISaveEntityLegalDisclosureId));
 }
 
@@ -83,7 +66,7 @@ TEST_F(AutofillAISaveEntityContainerViewControllerTest,
   [controller_ loadViewIfNeeded];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_EQ(nil, FindViewWithAccessibilityIdentifier(
+  EXPECT_EQ(nil, chrome_test_util::FindViewById(
                      controller_.view, kAutofillAISaveEntityLegalDisclosureId));
 }
 
@@ -94,7 +77,7 @@ TEST_F(AutofillAISaveEntityContainerViewControllerTest,
   [controller_ loadViewIfNeeded];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_EQ(nil, FindViewWithAccessibilityIdentifier(
+  EXPECT_EQ(nil, chrome_test_util::FindViewById(
                      controller_.view, kAutofillAISaveEntityLegalDisclosureId));
 
   autofill::LegalMessageLines lines = {
@@ -105,7 +88,7 @@ TEST_F(AutofillAISaveEntityContainerViewControllerTest,
   [controller_ setLegalMessages:messages];
   [controller_.view layoutIfNeeded];
 
-  EXPECT_NE(nil, FindViewWithAccessibilityIdentifier(
+  EXPECT_NE(nil, chrome_test_util::FindViewById(
                      controller_.view, kAutofillAISaveEntityLegalDisclosureId));
 }
 

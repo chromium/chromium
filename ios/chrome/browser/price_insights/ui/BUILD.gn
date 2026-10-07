@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/strings",
+    "//ios/chrome/test/app:test_support",
     "//ui/base",
     "//url",
   ]

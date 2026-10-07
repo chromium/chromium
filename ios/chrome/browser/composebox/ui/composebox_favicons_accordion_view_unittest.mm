@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -48,9 +49,7 @@ TEST_F(ComposeboxFaviconsAccordionViewTest, TestUpdateWithLessThanMaxImages) {
   [view updateWithImages:@[ image1, image2 ]];
 
   EXPECT_EQ(view.arrangedSubviews.count, 2u);
-  for (UIView* subview in view.arrangedSubviews) {
-    EXPECT_TRUE([subview isKindOfClass:[UIImageView class]]);
-  }
+  chrome_test_util::ExpectSubviewCount<UIImageView>(view, 2u);
 }
 
 TEST_F(ComposeboxFaviconsAccordionViewTest, TestUpdateWithExactMaxImages) {
@@ -62,9 +61,7 @@ TEST_F(ComposeboxFaviconsAccordionViewTest, TestUpdateWithExactMaxImages) {
   [view updateWithImages:@[ image1, image2, image3 ]];
 
   EXPECT_EQ(view.arrangedSubviews.count, 3u);
-  for (UIView* subview in view.arrangedSubviews) {
-    EXPECT_TRUE([subview isKindOfClass:[UIImageView class]]);
-  }
+  chrome_test_util::ExpectSubviewCount<UIImageView>(view, 3u);
 }
 
 TEST_F(ComposeboxFaviconsAccordionViewTest, TestUpdateWithMoreThanMaxImages) {

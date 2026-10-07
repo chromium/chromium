@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
-#import "ios/chrome/browser/intelligence/actor/ui/test/actor_ui_test_utils.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -36,7 +36,7 @@
 
 namespace {
 
-using intelligence::actor::FindViewByAccessibilityIdentifier;
+using chrome_test_util::FindViewById;
 using ActuationWorklogViewControllerTest = PlatformTest;
 
 // Test that switching display modes updates subview visibility.
@@ -44,12 +44,12 @@ TEST_F(ActuationWorklogViewControllerTest, TestSetDisplayMode) {
   ActuationWorklogViewController* view_controller =
       [[ActuationWorklogViewController alloc] init];
 
-  UIView* compact_view = FindViewByAccessibilityIdentifier(
-      view_controller.view, kCompactWorklogAccessibilityIdentifier);
-  UIView* full_scroll_view = FindViewByAccessibilityIdentifier(
+  UIView* compact_view = FindViewById(view_controller.view,
+                                      kCompactWorklogAccessibilityIdentifier);
+  UIView* full_scroll_view = FindViewById(
       view_controller.view, kFullWorklogScrollViewAccessibilityIdentifier);
-  UIView* header_view = FindViewByAccessibilityIdentifier(
-      view_controller.view, kActuationHeaderAccessibilityIdentifier);
+  UIView* header_view = FindViewById(view_controller.view,
+                                     kActuationHeaderAccessibilityIdentifier);
   ASSERT_NE(header_view, nil);
 
   // Expanded worklog.
@@ -106,15 +106,13 @@ TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
   [consumer updateWorklogWithItem:item chip:nil animated:NO];
   [consumer reset];
 
-  ActuationHeaderView* header_view =
-      static_cast<ActuationHeaderView*>(FindViewByAccessibilityIdentifier(
-          view_controller.view, kActuationHeaderAccessibilityIdentifier));
+  ActuationHeaderView* header_view = FindViewById<ActuationHeaderView>(
+      view_controller.view, kActuationHeaderAccessibilityIdentifier);
   ASSERT_NE(header_view, nil);
   EXPECT_EQ(header_view.title, nil);
 
-  UIScrollView* scroll_view =
-      static_cast<UIScrollView*>(FindViewByAccessibilityIdentifier(
-          view_controller.view, kFullWorklogScrollViewAccessibilityIdentifier));
+  UIScrollView* scroll_view = FindViewById<UIScrollView>(
+      view_controller.view, kFullWorklogScrollViewAccessibilityIdentifier);
   ASSERT_NE(scroll_view, nil);
   EXPECT_TRUE(CGPointEqualToPoint(scroll_view.contentOffset, CGPointZero));
 }
@@ -133,7 +131,7 @@ TEST_F(ActuationWorklogViewControllerTest, TestInterventionFlow) {
   // Force view load.
   EXPECT_NE(view_controller.view, nil);
 
-  UIView* card_view = FindViewByAccessibilityIdentifier(
+  UIView* card_view = FindViewById(
       view_controller.view, kActuationInterventionCardAccessibilityIdentifier);
   ASSERT_NE(card_view, nil);
   EXPECT_TRUE(card_view.hidden);
@@ -146,10 +144,9 @@ TEST_F(ActuationWorklogViewControllerTest, TestInterventionFlow) {
 
   // Verify mutator dispatch on button tap. A card intervention renders the
   // card's own action button, not the standalone intervention button.
-  ChromeButton* action_button =
-      static_cast<ChromeButton*>(FindViewByAccessibilityIdentifier(
-          view_controller.view,
-          kActuationTaskCardActionButtonAccessibilityIdentifier));
+  ChromeButton* action_button = FindViewById<ChromeButton>(
+      view_controller.view,
+      kActuationTaskCardActionButtonAccessibilityIdentifier);
   ASSERT_NE(action_button, nil);
   EXPECT_NSEQ(action_button.title, @"Continue");
   [action_button sendActionsForControlEvents:UIControlEventTouchUpInside];

@@ -9,33 +9,13 @@
 #import "ios/chrome/browser/intelligence/bwg/first_run/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace {
-
-// Helper function to find a UILabel with a given text recursively.
-UILabel* FindLabelWithText(UIView* view, NSString* text) {
-  if ([view isKindOfClass:[UILabel class]]) {
-    UILabel* label = static_cast<UILabel*>(view);
-    if ([label.text isEqualToString:text]) {
-      return label;
-    }
-  }
-  for (UIView* subview in view.subviews) {
-    UILabel* result = FindLabelWithText(subview, text);
-    if (result) {
-      return result;
-    }
-  }
-  return nil;
-}
-
-}  // namespace
 
 class GeminiPromoViewControllerTest : public PlatformTest {
  protected:
@@ -79,7 +59,8 @@ TEST_F(GeminiPromoViewControllerTest, ShowsImageRemixRowWhenEnabled) {
 
   NSString* remixTitle =
       l10n_util::GetNSString(IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_TITLE);
-  UILabel* remixLabel = FindLabelWithText(view_controller_.view, remixTitle);
+  UILabel* remixLabel =
+      chrome_test_util::FindLabelWithText(view_controller_.view, remixTitle);
   EXPECT_NE(nil, remixLabel);
 }
 
@@ -90,7 +71,8 @@ TEST_F(GeminiPromoViewControllerTest, HidesImageRemixRowWhenDisabled) {
 
   NSString* remixTitle =
       l10n_util::GetNSString(IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_TITLE);
-  UILabel* remixLabel = FindLabelWithText(view_controller_.view, remixTitle);
+  UILabel* remixLabel =
+      chrome_test_util::FindLabelWithText(view_controller_.view, remixTitle);
   EXPECT_EQ(nil, remixLabel);
 }
 

@@ -723,6 +723,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/common/ui/confirmation_alert:unit_tests",
     "//ios/chrome/common/ui/reauthentication:unit_tests",
     "//ios/chrome/common/ui/util:unit_tests",
+    "//ios/chrome/test/app:unit_tests",
     "//ios/chrome/test/providers/signin:trusted_vault_provider",
     "//ios/testing:http_server_bundle_data",
     "//ios/testing/earl_grey:unit_tests",

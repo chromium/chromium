@@ -5,10 +5,11 @@
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/omnibox_popup_carousel_control.h"
 
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
-#import "ios/chrome/browser/omnibox/ui/popup/carousel/omnibox_popup_carousel_control_unittest_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -56,7 +57,8 @@ TEST_F(OmniboxPopupCarouselControlTest, AccessibilityText) {
 
 // Tests that the label of CarouselItem is present and correct.
 TEST_F(OmniboxPopupCarouselControlTest, LabelIsPresentAndCorrect) {
-  UILabel* label = GetLabelFromCarouselControl(carousel_control_);
+  UILabel* label = chrome_test_util::FindViewById<UILabel>(
+      carousel_control_, kOmniboxCarouselControlLabelAccessibilityIdentifier);
   EXPECT_TRUE(label);
   EXPECT_EQ(label.text, carousel_item_.title);
 }

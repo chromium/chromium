@@ -6,7 +6,6 @@
 
 #import <string>
 
-#import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
@@ -17,66 +16,40 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/common/uikit_ui_util.h"
-
-namespace {
-
-// Returns the subview of `parentView` corresponding to the
-// ContentSuggestionsViewController. Returns nil if it is not in its subviews.
-UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
-                                           UIView* parentView) {
-  if (parentView.accessibilityIdentifier == accessibilityID) {
-    return parentView;
-  }
-  if (parentView.subviews.count == 0) {
-    return nil;
-  }
-  for (UIView* view in parentView.subviews) {
-    UIView* resultView =
-        SubviewWithAccessibilityIdentifier(accessibilityID, view);
-    if (resultView) {
-      return resultView;
-    }
-  }
-  return nil;
-}
-
-}  // namespace
 
 namespace ntp_home {
 
 UIView* NTPView() {
-  return base::apple::ObjCCast<UIView>(SubviewWithAccessibilityIdentifier(
-      kNTPViewIdentifier, GetAnyKeyWindow()));
+  return chrome_test_util::FindViewById(GetAnyKeyWindow(), kNTPViewIdentifier);
 }
 
 UICollectionView* CollectionView() {
-  return base::apple::ObjCCast<UICollectionView>(
-      SubviewWithAccessibilityIdentifier(kNTPCollectionViewIdentifier,
-                                         GetAnyKeyWindow()));
+  return chrome_test_util::FindViewById<UICollectionView>(
+      GetAnyKeyWindow(), kNTPCollectionViewIdentifier);
 }
 
 UICollectionView* ContentSuggestionsCollectionView() {
-  return base::apple::ObjCCast<UICollectionView>(
-      SubviewWithAccessibilityIdentifier(
-          kContentSuggestionsCollectionIdentifier, GetAnyKeyWindow()));
+  return chrome_test_util::FindViewById<UICollectionView>(
+      GetAnyKeyWindow(), kContentSuggestionsCollectionIdentifier);
 }
 
 UIView* FakeOmnibox() {
-  return SubviewWithAccessibilityIdentifier(FakeOmniboxAccessibilityID(),
-                                            GetAnyKeyWindow());
+  return chrome_test_util::FindViewById(GetAnyKeyWindow(),
+                                        FakeOmniboxAccessibilityID());
 }
 
 UILabel* DiscoverHeaderLabel() {
-  return base::apple::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
-      DiscoverHeaderTitleAccessibilityID(), GetAnyKeyWindow()));
+  return chrome_test_util::FindViewById<UILabel>(
+      GetAnyKeyWindow(), DiscoverHeaderTitleAccessibilityID());
 }
 
 SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(
     NSString* accessibility_id) {
-  return base::apple::ObjCCast<SetUpListItemView>(
-      SubviewWithAccessibilityIdentifier(accessibility_id, GetAnyKeyWindow()));
+  return chrome_test_util::FindViewById<SetUpListItemView>(GetAnyKeyWindow(),
+                                                           accessibility_id);
 }
 
 NewTabPageColorPalette* CurrentBackgroundColor() {

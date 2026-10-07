@@ -66,11 +66,9 @@ source_set("unit_tests") {
     "actor_overlay_view_controller_unittest.mm",
     "actuation_intervention_view_unittest.mm",
     "actuation_worklog_view_controller_unittest.mm",
-    "test/actor_ui_test_utils_unittest.mm",
   ]
   deps = [
     ":ui",
-    "test:test_support",
     "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene/state",
@@ -79,6 +77,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",

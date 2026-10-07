@@ -29,6 +29,7 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//ios/chrome/browser/intelligence/zero_state_suggestions",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

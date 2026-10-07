@@ -13,6 +13,7 @@
 @class SetUpListItemView;
 @class NewTabPageColorPalette;
 
+// All searches in this file are depth-first.
 namespace ntp_home {
 // Returns the parent view containing all NTP content. Returns nil if it is not
 // in the view hierarchy.
