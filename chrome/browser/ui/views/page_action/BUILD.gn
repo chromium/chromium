@@ -125,7 +125,6 @@ source_set("page_action_test_support") {
 
   deps = [
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/interaction",
@@ -205,7 +204,6 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":page_action",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",

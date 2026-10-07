@@ -59,7 +59,6 @@ source_set("browser_tests") {
     ":back_to_opener",
     ":impl",
     "//chrome/app:command_ids",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_tabstrip",

@@ -26,7 +26,6 @@ source_set("impl") {
     "//chrome/app/vector_icons",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/indigo/resources:indigo_strings",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views/controls",
     "//components/strings:components_strings",

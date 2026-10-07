@@ -37,7 +37,6 @@ source_set("browser_tests") {
     ":bruschetta",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/bruschetta",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//ui/views:test_support",

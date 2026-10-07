@@ -53,7 +53,6 @@ source_set("browser_tests") {
   deps = [
     ":exclusive_access",
     "//chrome/app:command_ids",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/views/frame",

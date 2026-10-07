@@ -70,7 +70,6 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "eye_dropper_view_aura_interactive_uitest.cc" ]
       deps = [
         ":eye_dropper",
-        "//chrome/browser/ui",
         "//chrome/test:test_support_ui",
         "//components/eye_dropper",
         "//content/public/browser",
@@ -112,7 +111,6 @@ if (!is_android) {
     deps = [
       ":eye_dropper",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/test:dialog",
       "//chrome/test:test_support_ui",
       "//content/public/browser",

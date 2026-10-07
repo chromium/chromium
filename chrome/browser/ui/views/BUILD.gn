@@ -1753,7 +1753,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/link_capturing",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/favicon",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:intent_picker_tab_helper",
     "//chrome/browser/ui:tab_dialogs",

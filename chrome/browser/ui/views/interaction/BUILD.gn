@@ -30,7 +30,6 @@ source_set("browser_tests") {
   sources = [ "browser_elements_views_browsertest.cc" ]
   deps = [
     ":interaction",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/toolbar",

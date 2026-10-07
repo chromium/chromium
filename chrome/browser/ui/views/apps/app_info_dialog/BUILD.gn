@@ -102,7 +102,6 @@ if (!is_android) {
       ":app_info_dialog",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/test:dialog",
       "//chrome/test:test_support",

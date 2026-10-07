@@ -174,7 +174,6 @@ if (!is_android) {
         ":accessibility",
         "//base/test:test_support",
         "//chrome/browser/preloading:test_support",
-        "//chrome/browser/ui",
         "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui:browser_window_header",
