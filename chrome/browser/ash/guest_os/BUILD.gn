@@ -215,7 +215,6 @@ source_set("browser_tests") {
     ":guest_os",
     "//base/test:test_support",
     "//chrome/browser/ash/crostini:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/cicerone",

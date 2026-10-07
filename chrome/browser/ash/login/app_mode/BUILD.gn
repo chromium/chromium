@@ -78,7 +78,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/extensions",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/ash/keyboard:ash_test_support",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login:test_support",

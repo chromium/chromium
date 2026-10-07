@@ -99,7 +99,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login/osauth",

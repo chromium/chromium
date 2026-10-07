@@ -85,7 +85,6 @@ source_set("browser_tests") {
     ":kerberos",
     "//ash/constants",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//content/test:test_support",
   ]

@@ -137,7 +137,6 @@ if (!is_chromeos_device) {
       "//chrome/browser",
       "//chrome/browser/feature_engagement",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",

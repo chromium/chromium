@@ -128,7 +128,6 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
     "//chromeos/ash/components/chaps_util:test_support",

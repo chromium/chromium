@@ -203,7 +203,6 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support_ui",
