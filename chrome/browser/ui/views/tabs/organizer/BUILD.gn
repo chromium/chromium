@@ -8,7 +8,6 @@ source_set("organizer") {
   sources = [
     "layout_constants.h",
     "organizer_panel_controls_view.h",
-    "organizer_panel_utils.h",
     "organizer_panel_view.h",
     "organizer_tray_view.h",
   ]
@@ -44,7 +43,6 @@ source_set("impl") {
   sources = [
     "organizer_panel_controls_view.cc",
     "organizer_panel_host.cc",
-    "organizer_panel_utils.cc",
     "organizer_panel_view.cc",
     "organizer_tray_view.cc",
   ]

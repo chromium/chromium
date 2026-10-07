@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 source_set("organizer") {
   sources = [
     "organizer_panel_controller.h",
+    "organizer_panel_utils.h",
     "organizer_prefs.h",
   ]
 
@@ -25,6 +26,7 @@ source_set("organizer") {
 source_set("impl") {
   sources = [
     "organizer_panel_controller.cc",
+    "organizer_panel_utils.cc",
     "organizer_prefs.cc",
   ]
 

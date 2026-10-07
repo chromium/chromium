@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "extensions/browser/extension_util.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"

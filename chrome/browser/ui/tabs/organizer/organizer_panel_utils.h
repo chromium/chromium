@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_
+#ifndef CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_
+#define CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_
 
 #include "base/feature.h"
 #include "base/feature_list.h"
@@ -26,4 +26,4 @@ bool IsShowExtensionsSidePanelUiInOrganizerPanelEnabled();
 
 }  // namespace organizer_panel
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_
+#endif  // CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_

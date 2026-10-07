@@ -17,7 +17,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #endif
 
 namespace extensions::side_panel_util {
