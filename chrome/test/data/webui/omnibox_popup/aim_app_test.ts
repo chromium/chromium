@@ -50,6 +50,7 @@ suite('AimAppTest', function() {
   });
 
   teardown(() => {
+    document.body.style.width = '';
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
@@ -435,45 +436,75 @@ suite('AimAppTest', function() {
 
   test('adjusts size on voice permissions dialogue changed', async () => {
     const app: OmniboxAimAppElement = document.createElement('omnibox-aim-app');
+    document.body.style.width = '600px';
     document.body.appendChild(app);
     await microtasksFinished();
 
-    // Simulate the event being fired with specific dimensions.
-    app.$.composebox.dispatchEvent(
-        new CustomEvent('voice-permission-prompt-changed', {
-          detail: {
-            isOpened: true,
-            height: 120,
-            width: 250,
-          },
-          bubbles: true,
-          composed: true,
-        }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const composebox = app.$.composebox as any;
+    composebox.showVoiceSearch = true;
+    composebox.inVoiceSearchMode = true;
+    await composebox.updateComplete;
+
+    const voiceSearch = composebox.$.voiceSearch;
+    assertTrue(!!voiceSearch);
+    const voiceSearchContainer =
+        voiceSearch.shadowRoot.querySelector('#container');
+    assertTrue(!!voiceSearchContainer);
+
+    // Ensure composebox maintains full container width in voice search mode
+    // instead of falling back to the 337px default width.
+    assertEquals(
+        600, Math.round(app.$.composebox.getBoundingClientRect().width));
+
+    // Simulate the event being fired from voice search with specific
+    // dimensions larger than the default 121px voice search height.
+    voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+      detail: {
+        isOpened: true,
+        height: 220,
+        width: 250,
+      },
+      bubbles: true,
+      composed: true,
+    }));
 
     await microtasksFinished();
+    await composebox.updateComplete;
+    await voiceSearch.updateComplete;
 
-    // Verify CSS custom properties are updated on composebox.
+    // Verify CSS custom properties and computed min dimensions are updated on
+    // composebox and the voice search overlay container.
     assertTrue(app.$.composebox.classList.contains('has-permission-prompt'));
     assertEquals(
-        '120px',
+        '220px',
         app.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_height'));
     assertEquals(
         '250px',
         app.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_width'));
+    assertEquals('220px', window.getComputedStyle(voiceSearch).minHeight);
+    assertEquals('250px', window.getComputedStyle(voiceSearch).minWidth);
+    assertEquals(
+        '220px', window.getComputedStyle(voiceSearchContainer).minHeight);
+    assertEquals(
+        220, Math.round(app.$.composebox.getBoundingClientRect().height));
+    assertEquals(
+        220, Math.round(voiceSearchContainer.getBoundingClientRect().height));
 
     // Simulate the dialogue closing.
-    app.$.composebox.dispatchEvent(
-        new CustomEvent('voice-permission-prompt-changed', {
-          detail: {isOpened: false, height: 0, width: 0},
-          bubbles: true,
-          composed: true,
-        }));
+    voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
+      detail: {isOpened: false, height: 0, width: 0},
+      bubbles: true,
+      composed: true,
+    }));
 
     await microtasksFinished();
+    await composebox.updateComplete;
+    await voiceSearch.updateComplete;
 
-    // Verify CSS custom properties are reset.
+    // Verify CSS custom properties are reset while full width is preserved.
     assertFalse(app.$.composebox.classList.contains('has-permission-prompt'));
     assertEquals(
         '',
@@ -483,6 +514,9 @@ suite('AimAppTest', function() {
         '',
         app.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_width'));
+    assertEquals(
+        600, Math.round(app.$.composebox.getBoundingClientRect().width));
+    document.body.style.width = '';
   });
 
   test(

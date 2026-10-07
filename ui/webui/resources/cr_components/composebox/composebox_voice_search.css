@@ -321,6 +321,12 @@
   pointer-events: none;
 }
 
+:host(.permission-prompt-showing) {
+  --voice-search-minimum-height: var(--cr_composebox_minimum_height, 121px);
+  min-height: var(--cr_composebox_minimum_height, 121px);
+  min-width: var(--cr_composebox_minimum_width, 0);
+}
+
 /* Hide submit/stop buttons (if applicable) if permission prompt is showing. */
 :host(.permission-prompt-showing) #bottomActions {
   display: none;

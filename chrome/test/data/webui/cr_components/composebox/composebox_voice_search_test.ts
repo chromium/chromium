@@ -1161,8 +1161,14 @@ suite('ComposeboxVoiceSearch', () => {
 
 
         // Verify: classes were added to elements.
+        const animatedSearchElement =
+            composeboxElement.shadowRoot.querySelector(
+                '#animatedSearchElement')!;
+        assertTrue(!!animatedSearchElement);
         assertTrue(
             voiceSearchElement.classList.contains('permission-prompt-showing'));
+        assertTrue(animatedSearchElement.classList.contains(
+            'permission-prompt-showing'));
 
         // Verify: voice search remains open because permission prompt is open.
         assertTrue(
@@ -1177,6 +1183,8 @@ suite('ComposeboxVoiceSearch', () => {
         assertFalse(voiceSearchElement.isPermissionPromptOpen);
         assertFalse(
             voiceSearchElement.classList.contains('permission-prompt-showing'));
+        assertFalse(animatedSearchElement.classList.contains(
+            'permission-prompt-showing'));
 
         // Simulate blur event again.
         window.dispatchEvent(new Event('blur'));
@@ -1536,6 +1544,11 @@ suite('ComposeboxVoiceSearch', () => {
 
         // With permission prompt:
         voiceSearchElement.isPermissionPromptOpen = true;
+        voiceSearchElement.classList.add('permission-prompt-showing');
+        voiceSearchElement.style.setProperty(
+            '--cr_composebox_minimum_height', '220px');
+        voiceSearchElement.style.setProperty(
+            '--cr_composebox_minimum_width', '312px');
         await voiceSearchElement.updateComplete;
 
         assertTrue(
@@ -1545,9 +1558,25 @@ suite('ComposeboxVoiceSearch', () => {
         // Should be absolute since `isListening`='true'.
         assertEquals(
             'absolute', window.getComputedStyle(voiceSearchElement).position);
+        // When permission prompt opens via onVoicePermissionChanged,
+        // `isListening` is set to false so voiceSearchElement becomes static
+        // and sizes to `--cr_composebox_minimum_height`.
+        composeboxElement.isListening = false;
+        await composeboxElement.updateComplete;
+        assertEquals(
+            'static', window.getComputedStyle(voiceSearchElement).position);
+        assertEquals(
+            '220px', window.getComputedStyle(voiceSearchElement).minHeight);
+        assertEquals('220px', window.getComputedStyle(container).minHeight);
+        assertEquals(220, Math.round(container.getBoundingClientRect().height));
 
         // With error but no permission prompt:
         voiceSearchElement.isPermissionPromptOpen = false;
+        voiceSearchElement.classList.remove('permission-prompt-showing');
+        voiceSearchElement.style.removeProperty(
+            '--cr_composebox_minimum_height');
+        voiceSearchElement.style.removeProperty(
+            '--cr_composebox_minimum_width');
         mockSpeechRecognition.onerror!
             ({error: 'network'} as SpeechRecognitionErrorEvent);
         await microtasksFinished();

@@ -806,41 +806,57 @@ export const ComposeboxEmbedderMixin =
         // rather than inside composebox: Omnibox Everywhere.
         // Receives events from the inner voice search component.
         onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>) {
+          const voiceSearchElement =
+              this.shadowRoot?.querySelector<ComposeboxVoiceSearchElement>(
+                  '#voiceSearch');
+          const audioAnimation =
+              this.shadowRoot?.querySelector<SearchAnimatedGlowElement>(
+                  '#animatedSearchElement');
+
           if (e.detail.isOpened) {
-            // Only for when the permission prompt is showing, fire a resize
-            // event if the permission prompt has a height and width.
+            // Update composebox height/width defaults to be larger
+            // for permission prompt showing.
+            if (voiceSearchElement) {
+              voiceSearchElement.classList.add(PERMISSION_PROMPT_CSS_CLASS);
+              if (e.detail.height > 0 && e.detail.width > 0) {
+                voiceSearchElement.style.setProperty(
+                    '--cr_composebox_minimum_height', `${e.detail.height}px`);
+                voiceSearchElement.style.setProperty(
+                    '--cr_composebox_minimum_width', `${e.detail.width}px`);
+              }
+            }
+
+            // Fire a resize event for the composebox if the permission prompt
+            // has a height and width. This acts as the non-default height and
+            // width of the composebox, otherwise the default width/height
+            // above are used.
             if (e.detail.height > 0 && e.detail.width > 0) {
               this.fire('voice-permission-prompt-changed', e.detail);
             }
             // Not listening if no permission granted. Needed to turn off
             // animation.
             this.isListening = false;
+
+            // Hide the audio wave animation.
+            if (audioAnimation) {
+              audioAnimation.classList.add(PERMISSION_PROMPT_CSS_CLASS);
+            }
           } else {
             // Listening is set as `true` if permission is granted.
             this.isListening =
                 this.inVoiceSearchMode && !this.hasVoiceSearchError;
             this.fire('voice-permission-prompt-changed', e.detail);
-          }
 
-          const audioAnimation =
-              this.shadowRoot?.querySelector<SearchAnimatedGlowElement>(
-                  '#animatedSearchElement');
-          if (audioAnimation) {
-            if (e.detail.isOpened) {  // Permission prompt opened.
-              audioAnimation.classList.add(PERMISSION_PROMPT_CSS_CLASS);
-            } else {  // Permission prompt closed.
+            if (audioAnimation) {
               audioAnimation.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
             }
-          }
 
-          const voiceSearchElement =
-              this.shadowRoot?.querySelector<ComposeboxVoiceSearchElement>(
-                  '#voiceSearch');
-          if (voiceSearchElement) {
-            if (e.detail.isOpened) {  // Permission prompt opened.
-              voiceSearchElement.classList.add(PERMISSION_PROMPT_CSS_CLASS);
-            } else {  // Permission prompt closed.
+            if (voiceSearchElement) {
               voiceSearchElement.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
+              voiceSearchElement.style.removeProperty(
+                  '--cr_composebox_minimum_height');
+              voiceSearchElement.style.removeProperty(
+                  '--cr_composebox_minimum_width');
             }
           }
         }
