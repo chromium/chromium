@@ -1524,24 +1524,6 @@
             ]
         }
     ],
-    "AutocorrectByDefault": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "block": "[]"
-                    },
-                    "enable_features": [
-                        "AutocorrectByDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAddressUserPerceptionSurveyUS": [
         {
             "platforms": [

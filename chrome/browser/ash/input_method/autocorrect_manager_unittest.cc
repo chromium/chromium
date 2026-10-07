@@ -507,15 +507,6 @@ std::vector<base::test::FeatureRef> DisabledFeatures() {
   return {ash::features::kImeRuleConfig};
 }
 
-std::vector<base::test::FeatureRef>
-DisabledFeaturesIncludingAutocorrectByDefault() {
-  return {ash::features::kImeRuleConfig, ash::features::kAutocorrectByDefault};
-}
-
-std::vector<base::test::FeatureRef> RequiredForAutocorrectByDefault() {
-  return {ash::features::kAutocorrectByDefault};
-}
-
 class AutocorrectManagerTest : public testing::Test {
  protected:
   AutocorrectManagerTest()
@@ -1316,9 +1307,6 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(
     AutocorrectManagerTest,
     InsertingEnoughCharsRecordsMetricWhenAcceptingAutocorrectEnabledByDefault) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
@@ -1369,9 +1357,6 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(
     AutocorrectManagerTest,
     InsertingCharsRecordsMetricsWhenClearingAutocorrectWhenEnabledByDefault) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
@@ -1471,9 +1456,6 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(
     AutocorrectManagerTest,
     OnSurroundingRecordsMetricsCorrectlyForNullInputContextWhenEnabledByDefault) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
   // Create a pending autocorrect range.
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
@@ -1540,9 +1522,6 @@ TEST_F(AutocorrectManagerTest,
 
 TEST_F(AutocorrectManagerTest,
        MovingCursorToRangeEndRecordsMetricsForShownUndoWindowEnableByDefault) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
@@ -1645,9 +1624,6 @@ TEST_F(AutocorrectManagerTest, OnBlurRecordsMetricsWhenClearingRange) {
 
 TEST_F(AutocorrectManagerTest,
        OnBlurRecordsMetricsWhenClearingRangeEnabledByDefault) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
 
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
@@ -2088,9 +2064,6 @@ TEST_F(AutocorrectManagerTest, UndoRecordsMetricsAfterRevert) {
 }
 
 TEST_F(AutocorrectManagerTest, UndoRecordsMetricsAfterRevertEnableByDefault) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
 
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
@@ -2470,9 +2443,6 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForLowerCasedLetter) {
 }
 
 TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForDefaultPkAccepted) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.HandleAutocorrect(gfx::Range(0, 8), u"françaisss", u"français");
 
@@ -2554,9 +2524,6 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForPkRejected) {
 }
 
 TEST_F(AutocorrectManagerTest, RecordQualityBreakdownDefaultForPkRejected) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.HandleAutocorrect(gfx::Range(0, 8), u"françaisss", u"français");
 
@@ -2813,26 +2780,9 @@ TEST_F(AutocorrectManagerTest, RecordRejectionForPkControlBackspace) {
   histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
 }
 
-TEST_F(
-    AutocorrectManagerTest,
-    IsNotDisabledWhenNoSuggestionProviderAndAutocorrectByDefaultFlagIsDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/DisabledFeaturesIncludingAutocorrectByDefault());
-
-  manager_.OnActivate(kUsEnglishEngineId);
-  manager_.OnFocus(kContextId);
-
-  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
-}
-
 TEST_F(AutocorrectManagerTest,
        IsNotDisabledWhenNoSuggestionProviderAndUserExplicitlyEnablesPref) {
   EnableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -2843,9 +2793,6 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(AutocorrectManagerTest,
        IsNotDisabledWhenNoSuggestionProviderAndUserExplicitlyDisablesPref) {
   DisableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -2856,9 +2803,6 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(AutocorrectManagerTest,
        IsNotDisabledWhenNoSuggestionProviderAndVkIsVisible) {
   keyboard_client_->set_keyboard_enabled_for_test(true);
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -2884,27 +2828,9 @@ INSTANTIATE_TEST_SUITE_P(
       return ToString(info.param);
     });
 
-TEST_P(NotDisabledByInvalidSuggestionProvider,
-       WhenAutocorrectByDefaultFlagDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/DisabledFeaturesIncludingAutocorrectByDefault());
-  const AutocorrectSuggestionProvider& provider = GetParam();
-
-  manager_.OnActivate(kUsEnglishEngineId);
-  manager_.OnFocus(kContextId);
-  manager_.OnConnectedToSuggestionProvider(provider);
-
-  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
-}
-
 TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyEnablesPref) {
   const AutocorrectSuggestionProvider& provider = GetParam();
   EnableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -2916,9 +2842,6 @@ TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyEnablesPref) {
 TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyDisablesPref) {
   const AutocorrectSuggestionProvider& provider = GetParam();
   DisableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -2930,9 +2853,6 @@ TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyDisablesPref) {
 TEST_P(NotDisabledByInvalidSuggestionProvider, WhenVkIsVisible) {
   const AutocorrectSuggestionProvider& provider = GetParam();
   keyboard_client_->set_keyboard_enabled_for_test(true);
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -2943,9 +2863,6 @@ TEST_P(NotDisabledByInvalidSuggestionProvider, WhenVkIsVisible) {
 
 TEST_F(AutocorrectManagerTest,
        IsDisabledWhenNoSuggestionProviderAndUserInDefaultBucket) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -2971,9 +2888,6 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(EnabledByValidSuggestionProvider,
        IsNotDisabledWhenUserInDefaultBucketAndValidSuggestionProviderUsed) {
   const AutocorrectSuggestionProvider& provider = GetParam();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -3000,9 +2914,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DisabledByInvalidSuggestionProvider, WhenUserInDefaultExperiment) {
   const AutocorrectSuggestionProvider& provider = GetParam();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -3428,9 +3339,6 @@ TEST_P(PkAllLangsUserPreferenceMetric,
 
 TEST_F(AutocorrectManagerTest,
        RecordsCorrectMetricForEnabledByDefaultWithEnglish) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
@@ -3461,9 +3369,6 @@ class PkEnabledByDefaultTest
 TEST_P(PkEnabledByDefaultTest, ItIsEnabledByDefaultWhenFlagIsEnabled) {
   const PkEnabledByDefaultCase& test_case = GetParam();
   PrefService* prefs = profile_->GetPrefs();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
   if (test_case.autocorrect_level) {
     SetAutocorrectPreferenceTo(*profile_, test_case.engine_id,
                                *test_case.autocorrect_level);
@@ -3475,27 +3380,6 @@ TEST_P(PkEnabledByDefaultTest, ItIsEnabledByDefaultWhenFlagIsEnabled) {
 
   EXPECT_EQ(before, test_case.preference_before);
   EXPECT_EQ(after, test_case.preference_after);
-}
-
-TEST_P(PkEnabledByDefaultTest, ItIsNotEnabledByDefaultWhenFlagIsDisabled) {
-  const PkEnabledByDefaultCase& test_case = GetParam();
-  PrefService* prefs = profile_->GetPrefs();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/DisabledFeaturesIncludingAutocorrectByDefault());
-  if (test_case.autocorrect_level) {
-    SetAutocorrectPreferenceTo(*profile_, kUsEnglishEngineId,
-                               *test_case.autocorrect_level);
-  }
-
-  auto before = GetPhysicalKeyboardAutocorrectPref(*prefs, kUsEnglishEngineId);
-  manager_.OnActivate(test_case.engine_id);
-  auto after = GetPhysicalKeyboardAutocorrectPref(*prefs, kUsEnglishEngineId);
-
-  // Because the flag is disabled then the preference should not change.
-  EXPECT_EQ(before, test_case.preference_before);
-  EXPECT_EQ(after, test_case.preference_before);
 }
 
 INSTANTIATE_TEST_SUITE_P(

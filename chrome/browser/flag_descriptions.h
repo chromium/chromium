@@ -7421,11 +7421,6 @@ inline constexpr char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "
     "feature";
 
-inline constexpr char kAutocorrectByDefaultName[] =
-    "CrOS autocorrect by default";
-inline constexpr char kAutocorrectByDefaultDescription[] =
-    "Enables autocorrect by default experiment on ChromeOS";
-
 inline constexpr char kAutocorrectParamsTuningName[] =
     "CrOS autocorrect params tuning";
 inline constexpr char kAutocorrectParamsTuningDescription[] =

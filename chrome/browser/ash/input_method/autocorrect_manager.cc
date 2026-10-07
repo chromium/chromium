@@ -328,8 +328,7 @@ bool IsAutocorrectSuggestionInSurroundingText(
 
 bool UserInAutocorrectByDefaultBucket(const PrefService& prefs,
                                       const std::string& engine_id) {
-  return base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
-         IsUsEnglishId(engine_id) && !IsVkAutocorrect() &&
+  return IsUsEnglishId(engine_id) && !IsVkAutocorrect() &&
          GetPhysicalKeyboardAutocorrectPref(prefs, engine_id) ==
              AutocorrectPreference::kEnabledByDefault;
 }
@@ -689,8 +688,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
   auto autocorrect_pref =
       GetPhysicalKeyboardAutocorrectPref(*pref_service, engine_id);
 
-  if (base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
-      autocorrect_pref == AutocorrectPreference::kDefault &&
+  if (autocorrect_pref == AutocorrectPreference::kDefault &&
       IsUsEnglishId(engine_id) &&
       // This class is instantiated with NativeInputMethodEngineObserver, which
       // must exist at all times in the system to provide typing (including

@@ -424,13 +424,13 @@ TEST_F(NativeInputMethodEngineTest,
 
 TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
-  SetEmptyPrefs(testing_profile);
+  SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
+                        /*predictive_writing_enabled=*/false);
 
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutocorrectByDefault,
-                             features::kAssistMultiWord});
+      /*disabled_features=*/{features::kAssistMultiWord});
 
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
@@ -729,8 +729,7 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
   const InputMethodMetadataCase& test_case = GetParam();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      {features::kAutocorrectByDefault},
-      {features::kImeRuleConfig, features::kAssistMultiWord});
+      {}, {features::kImeRuleConfig, features::kAssistMultiWord});
   TestingProfile testing_profile;
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(testing_profile.GetPrefs(),
                                                    kEngineIdUs);

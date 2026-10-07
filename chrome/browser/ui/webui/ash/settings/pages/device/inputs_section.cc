@@ -289,9 +289,6 @@ void AddInputMethodOptionsLoadTimeData(
       "isPhysicalKeyboardPredictiveWritingAllowed",
       base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
           is_physical_keyboard_predictive_writing_allowed);
-  html_source->AddBoolean(
-      "autocorrectEnableByDefault",
-      base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
 }
 
 }  // namespace

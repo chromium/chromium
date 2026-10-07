@@ -6,11 +6,9 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/test/base/testing_profile.h"
@@ -55,7 +53,6 @@ class PrefChangeRecorderTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 struct AutocorrectPrefChangeCase {
@@ -264,24 +261,9 @@ class RecordsEnabledByDefaultTransitions
     : public PrefChangeRecorderTest,
       public testing::WithParamInterface<EnabledByDefaultMetricCase> {};
 
-TEST_P(RecordsEnabledByDefaultTransitions, RecordsNothingIfTheFlagIsDisabled) {
-  const EnabledByDefaultMetricCase& test_case = GetParam();
-  base::HistogramTester histograms_;
-  feature_list_.InitWithFeatures({}, {features::kAutocorrectByDefault});
-
-  // Start observing changes ...
-  PrefChangeRecorder recorder(profile_.GetPrefs());
-  // Simulate the user being marked as active in the enabled by default group.
-  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
-                                                   test_case.engine_id);
-
-  histograms_.ExpectTotalCount(test_case.metric_name, 0);
-}
-
 TEST_P(RecordsEnabledByDefaultTransitions, RecordsDefaultToEnabledByDefault) {
   const EnabledByDefaultMetricCase& test_case = GetParam();
   base::HistogramTester histograms_;
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
 
   // Start observing changes ...
   PrefChangeRecorder recorder(profile_.GetPrefs());
@@ -300,7 +282,6 @@ TEST_P(RecordsEnabledByDefaultTransitions, RecordsEnabledByDefaultToDisabled) {
   const EnabledByDefaultMetricCase& test_case = GetParam();
   base::HistogramTester histograms_;
   FakeInputMethodOptions options(profile_.GetPrefs(), test_case.engine_id);
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
 
   // User was previously marked as active in the enabled by default group.
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
@@ -321,7 +302,6 @@ TEST_P(RecordsEnabledByDefaultTransitions,
   const EnabledByDefaultMetricCase& test_case = GetParam();
   base::HistogramTester histograms_;
   FakeInputMethodOptions options(profile_.GetPrefs(), test_case.engine_id);
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
 
   // User was previously marked as active in the enabled by default group.
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
@@ -342,7 +322,6 @@ TEST_P(RecordsEnabledByDefaultTransitions,
   const EnabledByDefaultMetricCase& test_case = GetParam();
   base::HistogramTester histograms_;
   FakeInputMethodOptions options(profile_.GetPrefs(), test_case.engine_id);
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
 
   // User was previously marked as active in the enabled by default group.
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),

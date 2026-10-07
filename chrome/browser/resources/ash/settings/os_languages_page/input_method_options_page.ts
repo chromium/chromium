@@ -364,9 +364,6 @@ export class SettingsInputMethodOptionsPageElement extends
    */
   private getDefaultValueOverrides_(engineId: string):
       {[OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]?: 1} {
-    if (!loadTimeData.getBoolean('autocorrectEnableByDefault')) {
-      return {};
-    }
     const enabledByDefaultKey =
         PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT;
     const prefBlob = this.getPref<PrefsObjectType>(PREFS_PATH).value;

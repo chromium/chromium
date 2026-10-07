@@ -7,9 +7,7 @@
 #include <string>
 #include <string_view>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
@@ -42,10 +40,6 @@ AutocorrectPreference GetAutocorrectPrefFor(
 
 bool IsPkAutocorrectEnabledByDefault(const PrefService& pref_service,
                                      std::string_view engine_id) {
-  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault)) {
-    return false;
-  }
-
   const base::DictValue& settings =
       pref_service.GetDict(ash::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* enabled_by_default = settings.FindByDottedPath(
@@ -65,9 +59,6 @@ AutocorrectPreference GetPhysicalKeyboardAutocorrectPref(
   }
   auto preference = GetAutocorrectPrefFor(kPkAutocorrectLevelPrefName,
                                           pref_service, engine_id);
-  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault)) {
-    return preference;
-  }
   return (preference == AutocorrectPreference::kDefault &&
           IsPkAutocorrectEnabledByDefault(pref_service, engine_id))
              ? AutocorrectPreference::kEnabledByDefault
@@ -84,9 +75,6 @@ AutocorrectPreference GetVirtualKeyboardAutocorrectPref(
 bool SetPhysicalKeyboardAutocorrectAsEnabledByDefault(
     PrefService* pref_service,
     std::string_view engine_id) {
-  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault)) {
-    return false;
-  }
   base::Value* result =
       ScopedDictPrefUpdate(pref_service,
                            ash::prefs::kLanguageInputMethodSpecificSettings)
