@@ -61,9 +61,12 @@ using ScopedWlResource = std::unique_ptr<wl_resource, WlResourceDeleter>;
 class WaylandRemoteShellTest : public test::ExoTestBase {
  public:
   WaylandRemoteShellTest()
-      : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    current_ = this;
+  }
   WaylandRemoteShellTest(const WaylandRemoteShellTest&) = delete;
   WaylandRemoteShellTest& operator=(const WaylandRemoteShellTest&) = delete;
+  ~WaylandRemoteShellTest() override { current_ = nullptr; }
 
   // test::ExoTestBase:
   void SetUp() override {
@@ -118,16 +121,16 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
 
   wl_resource* wl_remote_surface() { return wl_remote_surface_resource_.get(); }
 
-  static std::vector<RemoteShellEventType> remote_shell_event_sequence() {
+  std::vector<RemoteShellEventType> remote_shell_event_sequence() const {
     return remote_shell_event_sequence_;
   }
 
-  static std::vector<WaylandRemoteShell::BoundsChangeData>
-  remote_shell_requested_bounds_changes() {
+  std::vector<WaylandRemoteShell::BoundsChangeData>
+  remote_shell_requested_bounds_changes() const {
     return remote_shell_requested_bounds_changes_;
   }
 
-  static int last_desktop_focus_state() { return last_desktop_focus_state_; }
+  int last_desktop_focus_state() const { return last_desktop_focus_state_; }
 
  private:
   std::unique_ptr<Display> display_;
@@ -140,11 +143,14 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
 
   std::unique_ptr<WaylandRemoteShell> shell_;
 
-  static std::vector<RemoteShellEventType> remote_shell_event_sequence_;
-  static std::vector<WaylandRemoteShell::BoundsChangeData>
+  // The event mapping callbacks are captureless, so they record through this.
+  static WaylandRemoteShellTest* current_;
+
+  std::vector<RemoteShellEventType> remote_shell_event_sequence_;
+  std::vector<WaylandRemoteShell::BoundsChangeData>
       remote_shell_requested_bounds_changes_;
 
-  static uint32_t last_desktop_focus_state_;
+  uint32_t last_desktop_focus_state_ = 0;
 
   const WaylandRemoteShellEventMapping test_event_mapping_ = {
       /*send_window_geometry_changed=*/+[](struct wl_resource*,
@@ -171,9 +177,9 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
           int32_t width,
           int32_t height,
           uint32_t reason) {
-        remote_shell_event_sequence_.push_back(
+        current_->remote_shell_event_sequence_.push_back(
             RemoteShellEventType::kSendBoundsChanged);
-        remote_shell_requested_bounds_changes_.emplace_back(
+        current_->remote_shell_requested_bounds_changes_.emplace_back(
             (((int64_t)display_id_hi << 32) | display_id_lo),
             gfx::Rect(x, y, width, height),
             static_cast<zcr_remote_surface_v1_bounds_change_reason>(reason));
@@ -182,7 +188,7 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       +[](struct wl_resource*, struct wl_resource*, struct wl_resource*) {},
       /*send_desktop_focus_state_changed=*/
       +[](struct wl_resource*, uint32_t state) {
-        last_desktop_focus_state_ = state;
+        current_->last_desktop_focus_state_ = state;
       },
       /*send_workspace_info=*/
       +[](struct wl_resource*,
@@ -204,7 +210,7 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
           int32_t,
           uint32_t,
           struct wl_array*) {
-        remote_shell_event_sequence_.push_back(
+        current_->remote_shell_event_sequence_.push_back(
             RemoteShellEventType::kSendWorkspaceInfo);
       },
       /*send_drag_finished=*/
@@ -223,11 +229,7 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*has_bounds_change_reason_float=*/true,
   };
 };
-std::vector<RemoteShellEventType>
-    WaylandRemoteShellTest::remote_shell_event_sequence_;
-std::vector<WaylandRemoteShell::BoundsChangeData>
-    WaylandRemoteShellTest::remote_shell_requested_bounds_changes_;
-uint32_t WaylandRemoteShellTest::last_desktop_focus_state_ = 0;
+WaylandRemoteShellTest* WaylandRemoteShellTest::current_ = nullptr;
 
 // Test that all bounds change requests are deferred while the tablet transition
 // is happening until it's finished.

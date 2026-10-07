@@ -23,18 +23,18 @@ namespace {
 
 class WaylandProtocolLoggerTest : public test::WaylandServerTest {
  public:
-  WaylandProtocolLoggerTest() = default;
+  WaylandProtocolLoggerTest() { current_ = this; }
   WaylandProtocolLoggerTest(const WaylandProtocolLoggerTest&) = delete;
   WaylandProtocolLoggerTest& operator=(const WaylandProtocolLoggerTest&) =
       delete;
-  ~WaylandProtocolLoggerTest() override = default;
+  ~WaylandProtocolLoggerTest() override { current_ = nullptr; }
 
   // test::WaylandServerTest:
   void SetUp() override {
     WaylandProtocolLogger::SetHandlerFuncForTesting(
         [](void* user_data, wl_protocol_logger_type type,
            const wl_protocol_logger_message* message) {
-          messages_.push_back(
+          current_->messages_.push_back(
               WaylandProtocolLogger::FormatMessage(type, message));
         });
     test::WaylandServerTest::SetUp();
@@ -49,10 +49,12 @@ class WaylandProtocolLoggerTest : public test::WaylandServerTest {
     test::WaylandServerTest::TearDown();
   }
 
-  static std::vector<std::vector<std::string>> messages_;
-};
+  std::vector<std::vector<std::string>> messages_;
 
-std::vector<std::vector<std::string>> WaylandProtocolLoggerTest::messages_ = {};
+ private:
+  // The logger handler is a captureless callback, so it records through this.
+  static inline WaylandProtocolLoggerTest* current_ = nullptr;
+};
 
 class ClientData : public test::TestClient::CustomData {
  public:
