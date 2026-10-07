@@ -2474,6 +2474,119 @@ BuildUserReidentificationIssue(
   return issue;
 }
 
+protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
+    blink::mojom::GenericIssueErrorType error_type) {
+  switch (error_type) {
+    case blink::mojom::GenericIssueErrorType::kFormLabelForNameError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::FormLabelForNameError;
+    case blink::mojom::GenericIssueErrorType::kFormDuplicateIdForInputError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormDuplicateIdForInputError;
+    case blink::mojom::GenericIssueErrorType::kFormInputWithNoLabelError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormInputWithNoLabelError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormAutocompleteAttributeEmptyError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormAutocompleteAttributeEmptyError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormEmptyIdAndNameAttributesForInputError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormEmptyIdAndNameAttributesForInputError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormAriaLabelledByToNonExistingIdError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormAriaLabelledByToNonExistingIdError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormLabelHasNeitherForNorNestedInputError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormLabelHasNeitherForNorNestedInputError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormLabelForMatchesNonExistingIdError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormLabelForMatchesNonExistingIdError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormInputHasWrongButWellIntendedAutocompleteValueError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormInputHasWrongButWellIntendedAutocompleteValueError;
+    case blink::mojom::GenericIssueErrorType::kResponseWasBlockedByORB:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ResponseWasBlockedByORB;
+    case blink::mojom::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          NavigationEntryMarkedSkippable;
+    case blink::mojom::GenericIssueErrorType::kBackUINavigationWouldSkipAd:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          BackUINavigationWouldSkipAd;
+    case blink::mojom::GenericIssueErrorType::
+        kAutofillAndManualTextPolicyControlledFeaturesInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillAndManualTextPolicyControlledFeaturesInfo;
+    case blink::mojom::GenericIssueErrorType::
+        kAutofillPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillPolicyControlledFeatureInfo;
+    case blink::mojom::GenericIssueErrorType::
+        kManualTextPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ManualTextPolicyControlledFeatureInfo;
+    case blink::mojom::GenericIssueErrorType::
+        kFormModelContextParameterMissingTitleAndDescription:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextParameterMissingTitleAndDescription;
+    case blink::mojom::GenericIssueErrorType::kFormModelContextMissingToolName:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextMissingToolName;
+    case blink::mojom::GenericIssueErrorType::
+        kFormModelContextMissingToolDescription:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextMissingToolDescription;
+    case blink::mojom::GenericIssueErrorType::
+        kFormModelContextRequiredParameterMissingName:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextRequiredParameterMissingName;
+    case blink::mojom::GenericIssueErrorType::
+        kFormModelContextParameterMissingName:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextParameterMissingName;
+    case blink::mojom::GenericIssueErrorType::
+        kGeolocationPromptWithoutUserGesture:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          GeolocationPromptWithoutUserGesture;
+  }
+}
+
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildGenericIssue(
+    const blink::mojom::GenericIssueDetailsPtr& issue_details) {
+  auto generic_issue_details =
+      protocol::Audits::GenericIssueDetails::Create()
+          .SetErrorType(
+              GenericIssueErrorTypeToProtocol(issue_details->error_type))
+          .Build();
+  if (issue_details->frame_id) {
+    generic_issue_details->SetFrameId(*issue_details->frame_id);
+  }
+  if (issue_details->violating_node_id) {
+    generic_issue_details->SetViolatingNodeId(issue_details->violating_node_id);
+  }
+  if (issue_details->violating_node_attribute) {
+    generic_issue_details->SetViolatingNodeAttribute(
+        *issue_details->violating_node_attribute);
+  }
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetGenericIssueDetails(std::move(generic_issue_details))
+          .Build();
+  return protocol::Audits::InspectorIssue::Create()
+      .SetCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
+      .SetDetails(std::move(protocol_issue_details))
+      .Build();
+}
+
 }  // namespace
 
 void ReportBrowserInitiatedIssue(
@@ -2527,6 +2640,8 @@ void BuildAndReportBrowserInitiatedIssue(
         info->details->email_verification_request_details);
   } else if (info->code == blink::mojom::InspectorIssueCode::kWebInstallIssue) {
     issue = BuildWebInstallIssue(info->details->web_install_issue_details);
+  } else if (info->code == blink::mojom::InspectorIssueCode::kGenericIssue) {
+    issue = BuildGenericIssue(info->details->generic_issue_details);
   } else {
     NOTREACHED() << "Unsupported type of browser-initiated issue";
   }
@@ -2820,88 +2935,6 @@ void ApplyNetworkContextParamsOverrides(
       target_handler->ApplyNetworkContextParamsOverrides(browser_context,
                                                          context_params);
     }
-  }
-}
-
-protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
-    blink::mojom::GenericIssueErrorType error_type) {
-  switch (error_type) {
-    case blink::mojom::GenericIssueErrorType::kFormLabelForNameError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::FormLabelForNameError;
-    case blink::mojom::GenericIssueErrorType::kFormDuplicateIdForInputError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormDuplicateIdForInputError;
-    case blink::mojom::GenericIssueErrorType::kFormInputWithNoLabelError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormInputWithNoLabelError;
-    case blink::mojom::GenericIssueErrorType::
-        kFormAutocompleteAttributeEmptyError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormAutocompleteAttributeEmptyError;
-    case blink::mojom::GenericIssueErrorType::
-        kFormEmptyIdAndNameAttributesForInputError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormEmptyIdAndNameAttributesForInputError;
-    case blink::mojom::GenericIssueErrorType::
-        kFormAriaLabelledByToNonExistingIdError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormAriaLabelledByToNonExistingIdError;
-    case blink::mojom::GenericIssueErrorType::
-        kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
-    case blink::mojom::GenericIssueErrorType::
-        kFormLabelHasNeitherForNorNestedInputError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormLabelHasNeitherForNorNestedInputError;
-    case blink::mojom::GenericIssueErrorType::
-        kFormLabelForMatchesNonExistingIdError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormLabelForMatchesNonExistingIdError;
-    case blink::mojom::GenericIssueErrorType::
-        kFormInputHasWrongButWellIntendedAutocompleteValueError:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormInputHasWrongButWellIntendedAutocompleteValueError;
-    case blink::mojom::GenericIssueErrorType::kResponseWasBlockedByORB:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          ResponseWasBlockedByORB;
-    case blink::mojom::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          NavigationEntryMarkedSkippable;
-    case blink::mojom::GenericIssueErrorType::kBackUINavigationWouldSkipAd:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          BackUINavigationWouldSkipAd;
-    case blink::mojom::GenericIssueErrorType::
-        kAutofillAndManualTextPolicyControlledFeaturesInfo:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          AutofillAndManualTextPolicyControlledFeaturesInfo;
-    case blink::mojom::GenericIssueErrorType::
-        kAutofillPolicyControlledFeatureInfo:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          AutofillPolicyControlledFeatureInfo;
-    case blink::mojom::GenericIssueErrorType::
-        kManualTextPolicyControlledFeatureInfo:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          ManualTextPolicyControlledFeatureInfo;
-    case blink::mojom::GenericIssueErrorType::
-        kFormModelContextParameterMissingTitleAndDescription:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormModelContextParameterMissingTitleAndDescription;
-    case blink::mojom::GenericIssueErrorType::kFormModelContextMissingToolName:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormModelContextMissingToolName;
-    case blink::mojom::GenericIssueErrorType::
-        kFormModelContextMissingToolDescription:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormModelContextMissingToolDescription;
-    case blink::mojom::GenericIssueErrorType::
-        kFormModelContextRequiredParameterMissingName:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormModelContextRequiredParameterMissingName;
-    case blink::mojom::GenericIssueErrorType::
-        kFormModelContextParameterMissingName:
-      return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormModelContextParameterMissingName;
   }
 }
 

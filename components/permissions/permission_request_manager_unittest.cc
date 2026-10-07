@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -51,9 +52,14 @@
 #include "content/test/test_render_frame_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/android_permission_util.h"
+#endif
 
 namespace permissions {
 
@@ -65,6 +71,12 @@ using Decision = PermissionUiSelector::Decision;
 using testing::SizeIs;
 
 constexpr int kPermissionTypeGeolocationWithOptions = 139;
+
+MATCHER_P(MatchesGenericIssue, expected_error_type, "") {
+  return arg->code == blink::mojom::InspectorIssueCode::kGenericIssue &&
+         arg->details->generic_issue_details &&
+         arg->details->generic_issue_details->error_type == expected_error_type;
+}
 
 }  // namespace
 
@@ -3280,6 +3292,115 @@ TEST_F(PermissionRequestManagerTest, CancelActiveRequest) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   Accept();
   EXPECT_TRUE(request1_state.granted);
+}
+
+TEST_F(PermissionRequestManagerTest,
+       GeolocationPromptWithoutUserGestureReportDevtoolsIssue) {
+  content::TestRenderFrameHost* test_rfh =
+      static_cast<content::TestRenderFrameHost*>(
+          web_contents()->GetPrimaryMainFrame());
+
+  base::MockRepeatingCallback<void(const blink::mojom::InspectorIssueInfoPtr&)>
+      issue_callback;
+  test_rfh->set_report_inspector_issue_callback(issue_callback.Get());
+
+  // 1. Geolocation request without user gesture reports an issue.
+  {
+    EXPECT_CALL(issue_callback, Run(MatchesGenericIssue(
+                                    blink::mojom::GenericIssueErrorType::
+                                        kGeolocationPromptWithoutUserGesture)));
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(test_rfh, std::move(request));
+    WaitForBubbleToBeShown();
+    Accept();
+    testing::Mock::VerifyAndClearExpectations(&issue_callback);
+  }
+
+  // 2. Geolocation request with user gesture does not report an issue.
+  {
+    EXPECT_CALL(issue_callback, Run).Times(0);
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(test_rfh, std::move(request));
+    WaitForBubbleToBeShown();
+    Accept();
+    testing::Mock::VerifyAndClearExpectations(&issue_callback);
+  }
+
+  // 3. Other permission request (e.g. camera) without user gesture does not
+  // report this issue.
+  {
+    EXPECT_CALL(issue_callback, Run).Times(0);
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kCameraStream, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(test_rfh, std::move(request));
+    WaitForBubbleToBeShown();
+    Accept();
+    testing::Mock::VerifyAndClearExpectations(&issue_callback);
+  }
+
+  // 4. Embedded permission element initiated request does not report an issue.
+  {
+#if BUILDFLAG(IS_ANDROID)
+    base::AutoReset<bool> enable_system_location =
+        EnableSystemLocationSettingForTesting();
+#endif
+    EXPECT_CALL(issue_callback, Run).Times(0);
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+        /*embedded_permission_element_initiated=*/true,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(test_rfh, std::move(request));
+    WaitForBubbleToBeShown();
+    Accept();
+    testing::Mock::VerifyAndClearExpectations(&issue_callback);
+  }
+
+  // 5. Geolocation request without user gesture after a same-origin navigation
+  // does not report an issue.
+  NavigateAndCommit(GURL("https://www.google.com/foo"));
+  test_rfh = static_cast<content::TestRenderFrameHost*>(
+      web_contents()->GetPrimaryMainFrame());
+  test_rfh->set_report_inspector_issue_callback(issue_callback.Get());
+  {
+    EXPECT_CALL(issue_callback, Run).Times(0);
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(test_rfh, std::move(request));
+    WaitForBubbleToBeShown();
+    Accept();
+    testing::Mock::VerifyAndClearExpectations(&issue_callback);
+  }
+
+  // 6. Cross-origin navigation resets same-origin navigation state, so issue is
+  // reported again.
+  NavigateAndCommit(GURL("https://www.youtube.com/foo"));
+  test_rfh = static_cast<content::TestRenderFrameHost*>(
+      web_contents()->GetPrimaryMainFrame());
+  test_rfh->set_report_inspector_issue_callback(issue_callback.Get());
+  {
+    EXPECT_CALL(issue_callback, Run(MatchesGenericIssue(
+                                    blink::mojom::GenericIssueErrorType::
+                                        kGeolocationPromptWithoutUserGesture)));
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(test_rfh, std::move(request));
+    WaitForBubbleToBeShown();
+    Accept();
+    testing::Mock::VerifyAndClearExpectations(&issue_callback);
+  }
 }
 
 class PermissionRequestManagerEnforceGestureTest

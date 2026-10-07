@@ -539,6 +539,10 @@ class PermissionRequestManager
 
   void RecordPostPromptSessionDuration();
 
+  void MaybeReportGeolocationPromptWithoutUserGestureInspectorIssue(
+      const PermissionRequest* request,
+      content::RenderFrameHost* source_frame);
+
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;
 

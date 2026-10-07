@@ -58,6 +58,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -346,6 +347,9 @@ void PermissionRequestManager::AddRequest(
   // the frame is navigated, we still record the correct source_id.
   request->set_ukm_source_id(source_frame->GetPageUkmSourceId());
 
+  MaybeReportGeolocationPromptWithoutUserGestureInspectorIssue(request.get(),
+                                                               source_frame);
+
   QueueRequest(source_frame, std::move(request));
 
   if (!IsRequestInProgress()) {
@@ -354,6 +358,27 @@ void PermissionRequestManager::AddRequest(
   }
 
   ReprioritizeCurrentRequestIfNeeded();
+}
+
+void PermissionRequestManager::
+    MaybeReportGeolocationPromptWithoutUserGestureInspectorIssue(
+        const PermissionRequest* request,
+        content::RenderFrameHost* source_frame) {
+  if (request->request_type() == RequestType::kGeolocation &&
+      !request->IsEmbeddedPermissionElementInitiated() &&
+      request->GetGestureType() == PermissionRequestGestureType::NO_GESTURE &&
+      !had_same_origin_navigation_) {
+    auto details = blink::mojom::InspectorIssueDetails::New();
+    auto generic_issue_details = blink::mojom::GenericIssueDetails::New();
+    generic_issue_details->error_type = blink::mojom::GenericIssueErrorType::
+        kGeolocationPromptWithoutUserGesture;
+    generic_issue_details->frame_id =
+        source_frame->GetDevToolsFrameToken().ToString();
+    details->generic_issue_details = std::move(generic_issue_details);
+    auto issue_info = blink::mojom::InspectorIssueInfo::New(
+        blink::mojom::InspectorIssueCode::kGenericIssue, std::move(details));
+    source_frame->ReportInspectorIssue(std::move(issue_info));
+  }
 }
 
 void PermissionRequestManager::CancelAllRequestsWithType(

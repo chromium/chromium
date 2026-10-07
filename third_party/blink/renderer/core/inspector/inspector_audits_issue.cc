@@ -197,6 +197,10 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
         kFormModelContextParameterMissingName:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormModelContextParameterMissingName;
+    case mojom::blink::GenericIssueErrorType::
+        kGeolocationPromptWithoutUserGesture:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          GeolocationPromptWithoutUserGesture;
   }
 }
 

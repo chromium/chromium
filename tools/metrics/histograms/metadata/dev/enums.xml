@@ -1305,6 +1305,7 @@ Called by update_protocol_commands_enum.py.-->
       label="GenericIssue::AutofillAndManualTextPolicyControlledFeaturesInfo"/>
   <int value="115" label="GenericIssue::AutofillPolicyControlledFeatureInfo"/>
   <int value="116" label="GenericIssue::ManualTextPolicyControlledFeatureInfo"/>
+  <int value="117" label="GenericIssue::GeolocationPromptWithoutUserGesture"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

@@ -47,6 +47,7 @@ include_rules = [
   "+services/network/public/cpp/permissions_policy/permissions_policy.h",
   "+third_party/blink/public/common/web_preferences",
   "+third_party/blink/public/mojom/bluetooth",
+  "+third_party/blink/public/mojom/devtools/inspector_issue.mojom.h",
   "+third_party/blink/public/mojom/permissions/permission_status.mojom.h",
   "+third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h",
   "+third_party/blink/public/mojom/permissions/permission.mojom.h",

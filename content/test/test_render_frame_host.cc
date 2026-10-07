@@ -147,6 +147,9 @@ void TestRenderFrameHost::AddMessageToConsole(
 
 void TestRenderFrameHost::ReportInspectorIssue(
     blink::mojom::InspectorIssueInfoPtr issue) {
+  if (report_inspector_issue_callback_) {
+    report_inspector_issue_callback_.Run(issue);
+  }
   if (issue->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue) {
     switch (issue->details->heavy_ad_issue_details->reason) {
       case blink::mojom::HeavyAdReason::kNetworkTotalLimit:

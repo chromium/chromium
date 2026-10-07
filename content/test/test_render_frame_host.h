@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/navigation_client.mojom-forward.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
@@ -180,6 +182,15 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // returns the total number of FedCM issues of any type sent to DevTools.
   int GetEmailVerificationRequestIssueCount(
       std::optional<blink::mojom::EmailVerificationRequestResult> status_type);
+
+  using ReportInspectorIssueCallback =
+      base::RepeatingCallback<void(const blink::mojom::InspectorIssueInfoPtr&)>;
+
+  // Sets a callback to be called when ReportInspectorIssue is invoked.
+  void set_report_inspector_issue_callback(
+      ReportInspectorIssueCallback callback) {
+    report_inspector_issue_callback_ = std::move(callback);
+  }
 
   // If set, navigations will appear to have cleared the history list in the
   // RenderFrame (DidCommitProvisionalLoadParams::history_list_was_cleared).
@@ -351,6 +362,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // ReportInspectorIssue.
   std::unordered_map<blink::mojom::EmailVerificationRequestResult, int>
       email_verification_request_counts_;
+
+  ReportInspectorIssueCallback report_inspector_issue_callback_;
 
   TestRenderFrameHostCreationObserver child_creation_observer_;
 
