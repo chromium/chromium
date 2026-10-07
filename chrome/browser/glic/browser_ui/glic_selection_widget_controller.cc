@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
@@ -307,7 +308,8 @@ void GlicSelectionWidgetController::ShowSelectionOverlay() {
   }
 
   // When the side panel is open, let the web client start the capture session.
-  if (glic_keyed_service_ && delegate_->IsSidePanelOpen() &&
+  if (glic_keyed_service_ &&
+      GlicSidePanelCoordinator::IsShowing(tab_interface) &&
       controller->state() == OverlayBaseController::State::kOff) {
     GlicInvokeOptions options(
         Target(*tab_interface),

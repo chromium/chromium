@@ -26,9 +26,6 @@ class GlicSelectionWidgetControllerDelegate {
   // screen coordinates. Returns `std::nullopt` otherwise.
   virtual std::optional<gfx::Rect> GetCurrentSelectionBounds() const = 0;
   virtual const std::u16string& GetSelectedText() const = 0;
-  // TODO(liuwilliam): This is currently duplicated on `ShakeTriggerClient`.
-  // The widget controller might be able to check it without the delegate.
-  virtual bool IsSidePanelOpen() const = 0;
 };
 
 }  // namespace glic

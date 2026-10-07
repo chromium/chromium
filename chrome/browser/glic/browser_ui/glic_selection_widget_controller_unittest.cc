@@ -56,14 +56,11 @@ class TestGlicSelectionWidgetControllerDelegate
   const std::u16string& GetSelectedText() const override {
     return selected_text_;
   }
-  bool IsSidePanelOpen() const override { return side_panel_open_; }
 
   void set_selected_text(const std::u16string& text) { selected_text_ = text; }
-  void set_side_panel_open(bool open) { side_panel_open_ = open; }
 
  private:
   std::u16string selected_text_;
-  bool side_panel_open_ = true;
 };
 
 class TestGlicSelectionWidgetController : public GlicSelectionWidgetController {
@@ -131,10 +128,6 @@ class GlicSelectionWidgetControllerTest
  protected:
   TestGlicSelectionWidgetController* GetController() {
     return controller_.get();
-  }
-
-  void set_mock_side_panel_open(bool value) {
-    delegate_.set_side_panel_open(value);
   }
 
   bool ShouldShowSelectionWidget() {
@@ -380,25 +373,6 @@ TEST_F(GlicSelectionWidgetControllerTest,
 
   TestGlicSelectionWidgetController* controller = GetController();
   ASSERT_TRUE(controller);
-
-  CallOnAskGemini();
-
-  EXPECT_TRUE(controller->dismiss_called());
-  EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
-            controller->dismiss_reason());
-  EXPECT_TRUE(controller->show_selection_overlay_called());
-}
-
-TEST_F(GlicSelectionWidgetControllerTest,
-       OnAskGeminiWithSmallChipWhenSidePanelClosedShowsOverlay) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kGlicSelectionSmallChip,
-                                 features::kGlicSelectionOverlayPrompt},
-                                {});
-
-  TestGlicSelectionWidgetController* controller = GetController();
-  ASSERT_TRUE(controller);
-  set_mock_side_panel_open(false);
 
   CallOnAskGemini();
 
