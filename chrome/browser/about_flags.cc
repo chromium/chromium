@@ -14082,6 +14082,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kClankStartupTabOptimizations)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"browsing-history-filter-by-actor",
+     flag_descriptions::kBrowsingHistoryFilterByActorName,
+     flag_descriptions::kBrowsingHistoryFilterByActorDescription, kOsAll,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByActor)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

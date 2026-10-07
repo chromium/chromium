@@ -144,6 +144,12 @@ BASE_FEATURE(kBrowsingHistoryFilterByDevice, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables browser history filtering by domain.
 BASE_FEATURE(kBrowsingHistoryFilterByDomain, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_IOS)
+// Enables browser history filtering by actor on Android. On desktop this
+// changes the existing actor filter UI to dropdown menu.
+BASE_FEATURE(kBrowsingHistoryFilterByActor, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_IOS)
+
 // If enabled, the WebHistoryService will use a new API for querying browsing
 // history (https://footprints-pa.googleapis.com/...) instead of the old and
 // deprecated one (https://history.google.com/history/api/...).

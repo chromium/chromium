@@ -1597,6 +1597,15 @@
     "expiry_milestone": 152
   },
   {
+    "name": "browsing-history-filter-by-actor",
+    "owners": [
+      "rainhard@google.com",
+      "azamatmz@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "browsing-history-filter-by-device",
     "owners": [
       "rainhard@google.com",
