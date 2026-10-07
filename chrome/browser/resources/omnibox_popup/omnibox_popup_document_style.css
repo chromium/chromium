@@ -24,8 +24,8 @@ body {
 /* Set when the page, rather than the Views frame, paints the popup's drop
    shadow. The document goes transparent so the shadow composites over what is
    behind the popup, and reserves the margin the shadow needs. The shadow
-   itself is drawn by '.omnibox-shadow-layer' in
-   omnibox_popup_shared_style.css. */
+   itself, '--omnibox-webui-shadow' from omnibox_popup_shared_style.css, is
+   drawn by each popup's root element. */
 /* LINT.IfChange(ShadowMargin) */
 body:has([webui-shadow-enabled_]) {
   background-color: transparent;

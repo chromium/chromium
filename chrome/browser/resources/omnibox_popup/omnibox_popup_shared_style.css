@@ -75,7 +75,16 @@
    * https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/skia_paint_util.cc;l=77
    *
    * kColorShadowBase is Google Grey 800 in light mode and black in dark
-   * mode. It is E_CPONLY, so there is no generated CSS variable for it. */
+   * mode. It is E_CPONLY, so there is no generated CSS variable for it.
+   *
+   * Each popup draws this as a plain box-shadow on its root element
+   * ('#inputWrapper' in omnibox_popup_searchbox.css, '#content' in
+   * aim_app.css). Do not move it to a ::before/::after pseudo-element of the
+   * root: Blink discards an element's entire accessibility subtree whenever
+   * one of its pseudo-elements is restyled (Element::UpdatePseudoElement), so
+   * a pseudo-element on the root made every keystroke and selection change
+   * destroy and recreate the accessibility nodes of the whole popup,
+   * including the one screen readers were on. */
   --omnibox-webui-shadow-base-rgb: 60, 64, 67;
   --omnibox-webui-shadow:
       0 0 12px rgba(var(--omnibox-webui-shadow-base-rgb), 0.08),
@@ -87,19 +96,6 @@
   :host {
     --omnibox-webui-shadow-base-rgb: 0, 0, 0;
   }
-}
-
-.omnibox-shadow-layer {
-  position: relative;
-}
-
-.omnibox-shadow-layer::before {
-  border-radius: inherit;
-  box-shadow: var(--omnibox-webui-shadow);
-  content: '';
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
 }
 
 cr-searchbox-dropdown {
