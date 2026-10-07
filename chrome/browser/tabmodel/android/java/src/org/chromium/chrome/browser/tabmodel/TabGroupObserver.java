@@ -106,11 +106,9 @@ public interface TabGroupObserver {
      * This method is called after a new tab group is created, either through drag and drop, the tab
      * selection editor, or by longpressing a link on a tab and using the context menu.
      *
-     * <p>TODO(crbug.com/517544602): Rename to onTabGroupCreated for consistency with native.
-     *
      * @param tabGroupId The tab group ID of the newly created group.
      */
-    default void didCreateNewGroup(Token tabGroupId) {}
+    default void onTabGroupCreated(Token tabGroupId) {}
 
     /**
      * This method is called after a new title is set on a tab group.

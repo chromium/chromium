@@ -290,9 +290,9 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didCreateNewGroup(Token tabGroupId) {
+            public void onTabGroupCreated(Token tabGroupId) {
                 if (!mIsObserving) return;
-                LogUtils.log(TAG, "didCreateNewGroup");
+                LogUtils.log(TAG, "onTabGroupCreated");
                 LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
                 if (groupExistsInSync(localTabGroupId)) return;
 

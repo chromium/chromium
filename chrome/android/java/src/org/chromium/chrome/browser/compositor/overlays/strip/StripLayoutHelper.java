@@ -302,7 +302,7 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didCreateNewGroup(Token tabGroupId) {
+                public void onTabGroupCreated(Token tabGroupId) {
                     rebuildStripViews();
                 }
 

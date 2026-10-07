@@ -708,8 +708,8 @@ public class TabGroupSyncLocalObserverUnitTest {
     }
 
     @Test
-    public void testDidCreateNewGroup() {
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(TOKEN_1);
+    public void testOnTabGroupCreated() {
+        mTabGroupObserverCaptor.getValue().onTabGroupCreated(TOKEN_1);
         verify(mTabGroupSyncService, times(1)).addGroup(mSavedTabGroupCaptor.capture());
         Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
     }

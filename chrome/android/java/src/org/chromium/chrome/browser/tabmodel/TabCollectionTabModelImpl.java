@@ -2335,7 +2335,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         while (groupObservers.hasNext()) {
             TabGroupObserver observer = groupObservers.next();
             if (willCreateNewGroup) {
-                observer.didCreateNewGroup(destinationTabGroupId);
+                observer.onTabGroupCreated(destinationTabGroupId);
             }
 
             for (Token tabGroupId : candidateTabGroupIds) {

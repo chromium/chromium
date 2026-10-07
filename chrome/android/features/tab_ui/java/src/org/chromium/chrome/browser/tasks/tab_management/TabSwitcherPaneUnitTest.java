@@ -1037,7 +1037,7 @@ public class TabSwitcherPaneUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         reset(mUserEducationHelper);
 
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mToken);
+        mTabGroupObserverCaptor.getValue().onTabGroupCreated(mToken);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mUserEducationHelper).requestShowIph(argThat(remoteGroupIph()));
@@ -1110,7 +1110,7 @@ public class TabSwitcherPaneUnitTest {
 
         // Case 1: no token (not a group card or out of bounds).
         when(mTabSwitcherPaneCoordinator.getTabGroupIdForIndex(1)).thenReturn(null);
-        observer.didCreateNewGroup(mToken);
+        observer.onTabGroupCreated(mToken);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper).requestShowIph(argThat(remoteGroupIph()));
 
@@ -1119,7 +1119,7 @@ public class TabSwitcherPaneUnitTest {
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         when(mTabSwitcherPaneCoordinator.getTabGroupIdForIndex(1)).thenReturn(tabGroupId);
         when(mTabGroupSyncService.getGroup(localTabGroupId)).thenReturn(null);
-        observer.didCreateNewGroup(mToken);
+        observer.onTabGroupCreated(mToken);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(2)).requestShowIph(argThat(remoteGroupIph()));
 
@@ -1127,7 +1127,7 @@ public class TabSwitcherPaneUnitTest {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = "My collab";
         when(mTabGroupSyncService.getGroup(localTabGroupId)).thenReturn(savedTabGroup);
-        observer.didCreateNewGroup(mToken);
+        observer.onTabGroupCreated(mToken);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(3)).requestShowIph(argThat(remoteGroupIph()));
 
@@ -1135,13 +1135,13 @@ public class TabSwitcherPaneUnitTest {
         savedTabGroup.collaborationId = null;
         savedTabGroup.creatorCacheGuid = "test guid";
         when(mTabGroupSyncService.isRemoteDevice("test guid")).thenReturn(false);
-        observer.didCreateNewGroup(mToken);
+        observer.onTabGroupCreated(mToken);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(4)).requestShowIph(argThat(remoteGroupIph()));
 
         // Case 5: no anchor view.
         savedTabGroup.creatorCacheGuid = null;
-        observer.didCreateNewGroup(mToken);
+        observer.onTabGroupCreated(mToken);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(5)).requestShowIph(argThat(remoteGroupIph()));
     }

@@ -546,7 +546,7 @@ public class ModelTrackingOrchestrator {
     private TabGroupObserver createVisualDataUpdateObserver(boolean incognito) {
         return new TabGroupObserver() {
             @Override
-            public void didCreateNewGroup(Token tabGroupId) {
+            public void onTabGroupCreated(Token tabGroupId) {
                 mGroupIncognitoStatus.put(tabGroupId, incognito);
             }
 

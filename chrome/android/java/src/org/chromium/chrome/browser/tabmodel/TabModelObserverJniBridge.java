@@ -227,7 +227,7 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
     // TabGroupObserver implementation.
 
     @Override
-    public final void didCreateNewGroup(Token tabGroupId) {
+    public final void onTabGroupCreated(Token tabGroupId) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
                 .onTabGroupCreated(mNativeTabModelObserverJniBridge, tabGroupId);

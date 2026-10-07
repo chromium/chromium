@@ -1057,7 +1057,7 @@ public class TabCollectionTabModelImplTest {
         assertTabsInOrderAre(tabs);
 
         CallbackHelper didMergeTabToGroupHelper = new CallbackHelper();
-        CallbackHelper didCreateNewGroupHelper = new CallbackHelper();
+        CallbackHelper onTabGroupCreatedHelper = new CallbackHelper();
 
         TabGroupObserver observer =
                 new TabGroupObserver() {
@@ -1069,9 +1069,9 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didCreateNewGroup(Token tabGroupId) {
+                    public void onTabGroupCreated(Token tabGroupId) {
                         assertEquals(tab0.getTabGroupId(), tabGroupId);
-                        didCreateNewGroupHelper.notifyCalled();
+                        onTabGroupCreatedHelper.notifyCalled();
                     }
                 };
 
@@ -1087,7 +1087,7 @@ public class TabCollectionTabModelImplTest {
                 });
 
         didMergeTabToGroupHelper.waitForOnly();
-        didCreateNewGroupHelper.waitForOnly();
+        onTabGroupCreatedHelper.waitForOnly();
 
         assertTabsInOrderAre(tabs);
     }
@@ -2390,16 +2390,16 @@ public class TabCollectionTabModelImplTest {
         Tab tab1 = createTab();
         assertTabsInOrderAre(List.of(tab0, tab1));
 
-        CallbackHelper didCreateNewGroupHelper = new CallbackHelper();
+        CallbackHelper onTabGroupCreatedHelper = new CallbackHelper();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabGroupObserver observer =
                             new TabGroupObserver() {
                                 @Override
-                                public void didCreateNewGroup(Token tabGroupId) {
+                                public void onTabGroupCreated(Token tabGroupId) {
                                     assertEquals(tab0.getTabGroupId(), tabGroupId);
-                                    didCreateNewGroupHelper.notifyCalled();
+                                    onTabGroupCreatedHelper.notifyCalled();
                                 }
                             };
                     mCollectionModel.addTabGroupObserver(observer);
@@ -2415,7 +2415,7 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(2, mCollectionModel.getTabsInGroup(tab0.getTabGroupId()).size());
                 });
 
-        didCreateNewGroupHelper.waitForOnly();
+        onTabGroupCreatedHelper.waitForOnly();
     }
 
     @Test

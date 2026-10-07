@@ -79,7 +79,7 @@ public class TabGroupVisualDataDialogManager {
     private final @StringRes int mDialogTitleRes;
     // TODO(b/333921547): This class uses a member model rather than an instanced model in the
     // #showDialog call due to the possibility of a double show call being triggered for the
-    // didCreateNewGroup observer and a fix that tackles that. Once the root cause has been fixed,
+    // onTabGroupCreated observer and a fix that tackles that. Once the root cause has been fixed,
     // revert this to an instanced model within the function call for a proper lifecycle.
     private @Nullable PropertyModel mModel;
     private @Nullable ModalDialogManagerObserver mModalDialogManagerObserver;

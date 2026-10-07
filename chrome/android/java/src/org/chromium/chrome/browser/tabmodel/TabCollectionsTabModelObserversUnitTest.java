@@ -815,7 +815,7 @@ public class TabCollectionsTabModelObserversUnitTest {
         verify(mTabModelObserver).onFinishingMultipleTabClosure(eq(List.of(tab1, tab2)), eq(false));
     }
 
-    // didCreateNewGroup
+    // onTabGroupCreated
 
     @Test
     public void testOnTabGroupCreated() {
@@ -831,7 +831,7 @@ public class TabCollectionsTabModelObserversUnitTest {
 
         reset(mTabGroupObserver);
         Token groupId = mTabModel.createTabGroup(List.of(tab1, tab2));
-        verify(mTabGroupObserver).didCreateNewGroup(eq(groupId));
+        verify(mTabGroupObserver).onTabGroupCreated(eq(groupId));
     }
 
     // willRemoveTabGroup

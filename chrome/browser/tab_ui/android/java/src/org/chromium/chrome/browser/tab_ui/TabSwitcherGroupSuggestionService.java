@@ -209,7 +209,7 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void didCreateNewGroup(Token tabGroupId) {
+                public void onTabGroupCreated(Token tabGroupId) {
                     clearSuggestions();
                 }
 

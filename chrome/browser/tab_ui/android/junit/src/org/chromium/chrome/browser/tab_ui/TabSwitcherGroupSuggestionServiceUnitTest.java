@@ -303,7 +303,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         Token tabGroupId = new Token(1L, 2L);
 
         reset(mSuggestionLifecycleObserverHandler);
-        observer.didCreateNewGroup(tabGroupId);
+        observer.onTabGroupCreated(tabGroupId);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
