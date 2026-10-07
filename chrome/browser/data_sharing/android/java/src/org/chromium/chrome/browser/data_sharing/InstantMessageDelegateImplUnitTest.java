@@ -78,8 +78,8 @@ import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -88,7 +88,6 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 public class InstantMessageDelegateImplUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
-    private static final int TAB_ID = 1;
     private static final String MESSAGE_CONTENT_1 = "Message Content 1";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -139,7 +138,7 @@ public class InstantMessageDelegateImplUnitTest {
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         when(mIsActiveWindowSupplier.get()).thenReturn(false);
 
@@ -209,7 +208,6 @@ public class InstantMessageDelegateImplUnitTest {
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
 
-        when(mTabModel.getRelatedTabList(anyInt())).thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
         ArgumentMatcher<LoadUrlParams> matcher =
                 (LoadUrlParams params) ->
@@ -228,7 +226,6 @@ public class InstantMessageDelegateImplUnitTest {
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
 
-        when(mTabModel.getRelatedTabList(anyInt())).thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
         ArgumentMatcher<LoadUrlParams> matcher =
                 (LoadUrlParams params) ->
@@ -247,7 +244,6 @@ public class InstantMessageDelegateImplUnitTest {
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
 
-        when(mTabModel.getRelatedTabList(anyInt())).thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
 
         // Should not trigger any navigation.

@@ -756,7 +756,7 @@ public class TabListMediator implements TabListNotificationHandler {
                             onGroupClosedFrom(tabId);
                             TabUiUtils.closeTabGroup(
                                     tabModel,
-                                    tabId,
+                                    closingTab.getTabGroupId(),
                                     tabClosingSource,
                                     allowUndo,
                                     /* hideTabGroups= */ true,
@@ -2821,7 +2821,7 @@ public class TabListMediator implements TabListNotificationHandler {
             onGroupClosedFrom(tabId);
             TabUiUtils.closeTabGroup(
                     tabModel,
-                    tabId,
+                    tabGroupId,
                     tabClosingSource,
                     allowUndo,
                     hideTabGroups,

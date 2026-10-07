@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityActionHandler;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -71,10 +70,9 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
         assert savedTabGroup != null;
         assert savedTabGroup.localId != null;
         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-        int rootId = tabModel.getGroupLastShownTabId(savedTabGroup.localId.tabGroupId);
-        assert rootId != Tab.INVALID_TAB_ID;
 
-        TabGroupUtils.openUrlInGroup(tabModel, url, rootId, TabLaunchType.FROM_TAB_GROUP_UI);
+        TabGroupUtils.openUrlInGroup(
+                tabModel, url, savedTabGroup.localId.tabGroupId, TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     @Override

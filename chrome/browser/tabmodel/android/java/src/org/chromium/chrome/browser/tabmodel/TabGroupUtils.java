@@ -118,15 +118,15 @@ public class TabGroupUtils {
      *
      * @param tabModel The {@link TabModel} to act on.
      * @param url The url to load the new tab with.
-     * @param parentId The ID of one of the tabs in the tab group.
+     * @param tabGroupId The {@link Token} of the tab group.
      * @param type The launch type of the new tab.
      */
     public static void openUrlInGroup(
-            TabModel tabModel, String url, int parentId, @TabLaunchType int type) {
-        List<Tab> relatedTabs = tabModel.getRelatedTabList(parentId);
-        if (relatedTabs.isEmpty()) return;
+            TabModel tabModel, String url, @Nullable Token tabGroupId, @TabLaunchType int type) {
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
+        if (tabsInGroup.isEmpty()) return;
 
-        Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
+        Tab lastTab = tabsInGroup.get(tabsInGroup.size() - 1);
         TabCreator tabCreator = tabModel.getTabCreator();
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         tabCreator.createNewTab(loadUrlParams, type, lastTab);

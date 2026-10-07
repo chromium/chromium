@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -179,12 +180,22 @@ public class TabGroupUtilsUnitTest {
 
     @Test
     public void testOpenUrlInGroup() {
-        when(mTabModel.getRelatedTabList(eq(TAB1_ID))).thenReturn(Arrays.asList(mTab1));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID1)).thenReturn(List.of(mTab1));
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         @TabLaunchType int launchType = TabLaunchType.FROM_TAB_GROUP_UI;
         String url = JUnitTestGURLs.URL_1.getSpec();
-        TabGroupUtils.openUrlInGroup(mTabModel, url, TAB1_ID, launchType);
+
+        // Null group should do nothing.
+        TabGroupUtils.openUrlInGroup(mTabModel, url, /* tabGroupId= */ null, launchType);
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+
+        // Empty group should do nothing.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+        TabGroupUtils.openUrlInGroup(mTabModel, url, TAB_GROUP_ID2, launchType);
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+
+        TabGroupUtils.openUrlInGroup(mTabModel, url, TAB_GROUP_ID1, launchType);
         ArgumentMatcher<LoadUrlParams> matcher = params -> TextUtils.equals(params.getUrl(), url);
         verify(mTabCreator).createNewTab(argThat(matcher), eq(launchType), eq(mTab1));
     }

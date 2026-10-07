@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
@@ -36,6 +37,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -45,7 +47,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -54,7 +59,6 @@ import java.util.List;
 /** Unit tests for {@link TabUiUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabUiUtilsUnitTest {
-    private static final int TAB_ID = 123;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
     private static final Token TAB_GROUP_ID_2 = new Token(3L, 4L);
 
@@ -68,6 +72,7 @@ public class TabUiUtilsUnitTest {
     @Mock private Tab mTab3;
     @Mock private Tab mTab4;
     @Mock private CollaborationService mCollaborationService;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private Callback<Boolean> mDidCloseTabsCallback;
     @Mock private Callback<Boolean> mContentSensitivitySetter;
     @Mock private Runnable mFinishBlocking;
@@ -80,17 +85,15 @@ public class TabUiUtilsUnitTest {
         List<Tab> tabsToClose = List.of(mTab);
 
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabsToClose);
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
     }
 
     @Test
     public void testCloseTabGroup_NoTab() {
         TabUiUtils.closeTabGroup(
                 mTabModel,
-                Tab.INVALID_TAB_ID,
+                /* tabGroupId= */ null,
                 TabClosingSource.UNKNOWN,
                 /* allowUndo= */ true,
                 /* hideTabGroups= */ false,
@@ -112,7 +115,7 @@ public class TabUiUtilsUnitTest {
         // Act
         TabUiUtils.closeTabGroup(
                 mTabModel,
-                TAB_ID,
+                TAB_GROUP_ID,
                 TabClosingSource.UNKNOWN,
                 shouldAllowUndo,
                 /* hideTabGroups= */ false,
@@ -135,7 +138,7 @@ public class TabUiUtilsUnitTest {
 
         TabUiUtils.closeTabGroup(
                 mTabModel,
-                TAB_ID,
+                TAB_GROUP_ID,
                 TabClosingSource.TABLET_TAB_STRIP,
                 /* allowUndo= */ true,
                 hideTabGroups,
@@ -186,7 +189,7 @@ public class TabUiUtilsUnitTest {
 
         TabUiUtils.closeTabGroup(
                 mTabModel,
-                TAB_ID,
+                TAB_GROUP_ID,
                 TabClosingSource.TABLET_TAB_STRIP,
                 /* allowUndo= */ true,
                 hideTabGroups,
@@ -368,5 +371,37 @@ public class TabUiUtilsUnitTest {
         assertFalse(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID, /* toPrevious= */ true));
         verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testStartShareTabGroupFlow_NullOrNonExistentGroup() {
+        TabUiUtils.startShareTabGroupFlow(
+                mTabModel,
+                mDataSharingTabManager,
+                /* tabGroupId= */ null,
+                CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON);
+        verifyNoInteractions(mDataSharingTabManager);
+
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID_2)).thenReturn(false);
+        TabUiUtils.startShareTabGroupFlow(
+                mTabModel,
+                mDataSharingTabManager,
+                TAB_GROUP_ID_2,
+                CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON);
+        verifyNoInteractions(mDataSharingTabManager);
+    }
+
+    @Test
+    public void testStartShareTabGroupFlow() {
+        TabUiUtils.startShareTabGroupFlow(
+                mTabModel,
+                mDataSharingTabManager,
+                TAB_GROUP_ID,
+                CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON);
+        verify(mDataSharingTabManager)
+                .createOrManageFlow(
+                        eq(EitherGroupId.createLocalId(new LocalTabGroupId(TAB_GROUP_ID))),
+                        eq(CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON),
+                        any());
     }
 }

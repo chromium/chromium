@@ -2204,12 +2204,9 @@ public class TabGridDialogMediatorUnitTest {
     private void createTabGroup(List<Tab> tabs, Token tabGroupId) {
         when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
-        int lastShownTabId = tabs.get(0).getId();
-        when(mTabModel.getGroupLastShownTabId(tabGroupId)).thenReturn(lastShownTabId);
         for (Tab tab : tabs) {
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
-            when(mTabModel.getRelatedTabList(tab.getId())).thenReturn(tabs);
         }
     }
 

@@ -362,8 +362,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             return;
         }
 
-        int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
-        TabGroupUtils.openUrlInGroup(tabModel, url, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
+        TabGroupUtils.openUrlInGroup(tabModel, url, tabGroupId, TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     private void showTabChange(

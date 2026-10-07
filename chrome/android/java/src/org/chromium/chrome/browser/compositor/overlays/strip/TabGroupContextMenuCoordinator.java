@@ -239,10 +239,9 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             @TabStripLayoutType int tabStripLayout) {
         return (menuId, tabGroupId, collaborationId, listViewTouchTracker) -> {
             TabModel tabModel = tabModelSupplier.get();
-            int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
-            EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+            if (!tabModel.tabGroupExists(tabGroupId)) return;
 
-            if (tabId == Tab.INVALID_TAB_ID) return;
+            EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
 
             if (menuId == R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(tabModel, tabGroupId);
@@ -251,8 +250,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             } else if (menuId == R.id.close_tab_group) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
-                        tabModelSupplier.get(),
-                        tabId,
+                        tabModel,
+                        tabGroupId,
                         tabClosingSource,
                         allowUndo,
                         /* hideTabGroups= */ true,
@@ -262,8 +261,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             } else if (menuId == R.id.delete_tab_group) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
-                        tabModelSupplier.get(),
-                        tabId,
+                        tabModel,
+                        tabGroupId,
                         tabClosingSource,
                         allowUndo,
                         /* hideTabGroups= */ false,
@@ -272,12 +271,11 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         GroupMenuAction.DELETE_GROUP, tabStripLayout);
             } else if (menuId == R.id.open_new_tab_in_group) {
                 UrlConstantResolver resolver =
-                        UrlConstantResolverFactory.getForProfile(
-                                tabModelSupplier.get().getProfile());
+                        UrlConstantResolverFactory.getForProfile(tabModel.getProfile());
                 TabGroupUtils.openUrlInGroup(
-                        tabModelSupplier.get(),
+                        tabModel,
                         resolver.getNtpUrl(),
-                        tabId,
+                        tabGroupId,
                         TabLaunchType.FROM_TAB_GROUP_UI);
                 TabStripMenuMetricsUtils.recordGroupMenuUserAction(
                         GroupMenuAction.NEW_TAB_IN_GROUP, tabStripLayout);

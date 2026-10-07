@@ -34,7 +34,6 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link DataSharingFaviconProvider}. */
@@ -65,10 +64,7 @@ public class RecentActivityActionHandlerUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mTab1);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getGroupLastShownTabId(TOKEN_1)).thenReturn(TAB_ID_1);
-        List<Tab> relatedTabs = new ArrayList<>();
-        relatedTabs.add(mTab1);
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(relatedTabs);
+        when(mTabModel.getTabsInGroup(TOKEN_1)).thenReturn(List.of(mTab1));
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         // Setup saved tab group with a single tab.

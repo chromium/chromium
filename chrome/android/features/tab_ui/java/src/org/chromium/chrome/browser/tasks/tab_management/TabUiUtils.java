@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.view.Gravity;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -57,7 +55,7 @@ public class TabUiUtils {
      * Closes a tab group and maybe shows a confirmation dialog.
      *
      * @param tabModel The {@link TabModel} to act on.
-     * @param tabId The ID of one of the tabs in the tab group.
+     * @param tabGroupId The {@link Token} of the tab group to close.
      * @param tabClosingSource The tab closing source, e.g. the tablet tab strip.
      * @param allowUndo Whether to allow undo of the tab group closure.
      * @param hideTabGroups Whether to hide or delete the tab group.
@@ -65,18 +63,12 @@ public class TabUiUtils {
      */
     public static void closeTabGroup(
             TabModel tabModel,
-            int tabId,
+            @Nullable Token tabGroupId,
             @TabClosingSource int tabClosingSource,
             boolean allowUndo,
             boolean hideTabGroups,
             @Nullable Callback<Boolean> didCloseCallback) {
-        @Nullable Tab tab = tabModel.getTabById(tabId);
-        if (tab == null) {
-            Callback.runNullSafe(didCloseCallback, false);
-            return;
-        }
-        TabClosureParams.Builder builder =
-                TabClosureParams.forCloseTabGroup(tabModel, tab.getTabGroupId());
+        TabClosureParams.Builder builder = TabClosureParams.forCloseTabGroup(tabModel, tabGroupId);
         if (builder == null) {
             Callback.runNullSafe(didCloseCallback, false);
             return;
@@ -281,29 +273,24 @@ public class TabUiUtils {
     }
 
     /**
-     * Create share flows to initiate tab group share.
+     * Starts the share flow for a tab group.
      *
-     * @param activity that contains the current tab group.
      * @param tabModel The {@link TabModel} to act on.
      * @param dataSharingTabManager The {@link DataSharingTabManager} managing communication between
      *     UI and DataSharing services.
-     * @param tabId The local id of the tab.
-     * @param tabGroupDisplayName The display name of the current group title.
+     * @param tabGroupId The {@link Token} of the tab group.
+     * @param entry The entry point for the share flow.
      */
     public static void startShareTabGroupFlow(
-            Activity activity,
             TabModel tabModel,
             DataSharingTabManager dataSharingTabManager,
-            int tabId,
-            String tabGroupDisplayName,
+            @Nullable Token tabGroupId,
             @CollaborationServiceShareOrManageEntryPoint int entry) {
-        Tab tab = tabModel.getTabById(tabId);
-        // The tab may have been closed in parallel with the share starting. Skip if this happens.
-        if (tab == null) return;
+        // The tab group may have been closed in parallel with the share starting. Skip if this
+        // happens.
+        if (tabGroupId == null || !tabModel.tabGroupExists(tabGroupId)) return;
 
-        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
-        if (localTabGroupId == null) return;
-
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         dataSharingTabManager.createOrManageFlow(
                 EitherGroupId.createLocalId(localTabGroupId), entry, CallbackUtils.emptyCallback());
     }
