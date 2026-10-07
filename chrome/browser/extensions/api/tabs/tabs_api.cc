@@ -3244,6 +3244,11 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
     }
   }
 
+  if (PictureInPictureWindowManager::IsChildWebContents(web_contents)) {
+    return RespondNow(
+        Error(tabs_constants::kNotAllowedForPictureInPictureError));
+  }
+
   web_contents->GetController().Reload(
       bypass_cache ? content::ReloadType::BYPASSING_CACHE
                    : content::ReloadType::NORMAL,

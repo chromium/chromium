@@ -44,6 +44,7 @@
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/test_standalone_window_controller.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -6115,6 +6116,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   std::string error =
       utils::RunFunctionAndReturnError(function.get(), args, profile());
   EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
+}
+
+// Verifies that TabsReloadFunction returns kNotAllowedForPictureInPictureError
+// when targeting a Document Picture-in-Picture child WebContents.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsReload_PictureInPictureWindowRejected) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+      GetActiveWebContents(), web_contents.get());
+  ASSERT_TRUE(
+      PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
+
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+  standalone_controller.SetBrowserWindowInterfaceForLookup(
+      browser_window_interface());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ReloadPipTabTest").Build();
+  auto function = base::MakeRefCounted<TabsReloadFunction>();
+  function->set_extension(extension.get());
+  std::string args = base::StringPrintf("[%d]", tab_id);
+  std::string error =
+      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError, error);
 }
 
 }  // namespace extensions
