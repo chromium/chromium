@@ -105,6 +105,8 @@ CopyBundleToCacheCommand::~CopyBundleToCacheCommand() = default;
 void CopyBundleToCacheCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   CHECK(lock);
   lock_ = std::move(lock);
+  GetMutableDebugValue().Set("app_id", url_info_.app_id());
+  GetMutableDebugValue().Set("web_bundle_id", url_info_.web_bundle_id().id());
 
   const WebApp* app = lock_->registrar().GetAppById(
       url_info_.app_id(), WebAppFilter::IsIsolatedApp());
@@ -136,6 +138,13 @@ void CopyBundleToCacheCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
 void CopyBundleToCacheCommand::CommandComplete(
     const CopyBundleToCacheResult& result) {
+  if (result.has_value()) {
+    GetMutableDebugValue().Set("cached_bundle_path",
+                               result->cached_bundle_path().LossyDisplayName());
+  } else {
+    GetMutableDebugValue().Set("error",
+                               CopyBundleToCacheErrorToString(result.error()));
+  }
   CompleteAndSelfDestruct(
       result.has_value() ? CommandResult::kSuccess : CommandResult::kFailure,
       result);

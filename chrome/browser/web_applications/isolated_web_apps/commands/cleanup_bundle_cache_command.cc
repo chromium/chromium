@@ -118,6 +118,8 @@ void CleanupBundleCacheCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   CHECK(lock);
   lock_ = std::move(lock);
+  GetMutableDebugValue().Set("iwas_to_keep_in_cache_count",
+                             static_cast<int>(iwas_to_keep_in_cache_.size()));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -130,6 +132,9 @@ void CleanupBundleCacheCommand::StartWithLock(
 
 void CleanupBundleCacheCommand::CommandComplete(
     const CleanupBundleCacheResult& result) {
+  GetMutableDebugValue().Set("result", result.has_value()
+                                           ? result->ToString()
+                                           : result.error().ToString());
   CompleteAndSelfDestruct(
       result.has_value() ? CommandResult::kSuccess : CommandResult::kFailure,
       result);

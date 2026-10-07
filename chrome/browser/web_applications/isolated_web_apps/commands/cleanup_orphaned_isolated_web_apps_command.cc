@@ -234,6 +234,9 @@ void CleanupOrphanedIsolatedWebAppsCommand::
 }
 
 void CleanupOrphanedIsolatedWebAppsCommand::CommandComplete(bool success) {
+  GetMutableDebugValue().Set("number_of_deleted_directories",
+                             number_of_deleted_directories_);
+  GetMutableDebugValue().Set("success", success);
   auto result = GetResult(number_of_deleted_directories_, success);
 
   RecordOutcomeMetric(result);

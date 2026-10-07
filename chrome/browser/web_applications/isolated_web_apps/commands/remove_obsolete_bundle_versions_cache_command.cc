@@ -144,6 +144,8 @@ void RemoveObsoleteBundleVersionsCacheCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   CHECK(lock);
   lock_ = std::move(lock);
+  GetMutableDebugValue().Set("app_id", url_info_.app_id());
+  GetMutableDebugValue().Set("web_bundle_id", url_info_.web_bundle_id().id());
 
   ASSIGN_OR_RETURN(const IwaVersion installed_version,
                    GetIwaVersion(lock_->registrar(), url_info_.app_id()),
@@ -163,6 +165,9 @@ void RemoveObsoleteBundleVersionsCacheCommand::StartWithLock(
 
 void RemoveObsoleteBundleVersionsCacheCommand::CommandComplete(
     const RemoveObsoleteBundleVersionsResult& result) {
+  GetMutableDebugValue().Set("result", result.has_value()
+                                           ? result->ToString()
+                                           : result.error().ToString());
   CompleteAndSelfDestruct(
       result.has_value() ? CommandResult::kSuccess : CommandResult::kFailure,
       result);
