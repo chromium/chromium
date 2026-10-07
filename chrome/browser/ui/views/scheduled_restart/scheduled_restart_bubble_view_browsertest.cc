@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -66,6 +67,10 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
   auto widget = ScheduledRestartBubbleView::ShowBubble(browser());
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_EQ(
+      widget->GetRootView()->GetViewAccessibility().GetCachedDescription(),
+      l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
 
   auto* dialog_delegate = widget->widget_delegate()->AsDialogDelegate();
   ASSERT_TRUE(dialog_delegate);

@@ -31,6 +31,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -205,7 +206,12 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble).release(),
                                                 std::move(on_close));
   if (widget) {
-    widget->Show();
+    // Show as inactive so the bubble does not steal focus (e.g. from the
+    // Omnibox when opening a New Tab Page), and add an accessible description
+    // explaining how to focus the bubble.
+    widget->GetRootView()->GetViewAccessibility().SetDescription(
+        l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
+    widget->ShowInactive();
     base::RecordAction(base::UserMetricsAction("ScheduledRestart_BubbleShown"));
   }
   return widget;
