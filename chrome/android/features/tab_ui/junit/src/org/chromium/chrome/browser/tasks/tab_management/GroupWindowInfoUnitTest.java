@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,6 +91,8 @@ public class GroupWindowInfoUnitTest {
         assertEquals(JUnitTestGURLs.URL_2, info.faviconUrls.get(1));
         assertEquals(GroupWindowState.IN_CURRENT, info.groupWindowState);
         assertEquals(123456789L, info.lastModifiedTimeMs);
+        assertNull(info.collaborationId);
+        assertFalse(info.isArchived);
     }
 
     @Test
@@ -150,6 +154,8 @@ public class GroupWindowInfoUnitTest {
         assertEquals(JUnitTestGURLs.URL_2, info.faviconUrls.get(1));
         assertEquals(GroupWindowState.IN_CURRENT, info.groupWindowState);
         assertEquals(2000L, info.lastModifiedTimeMs);
+        assertNull(info.collaborationId);
+        assertFalse(info.isArchived);
     }
 
     @Test
@@ -397,5 +403,29 @@ public class GroupWindowInfoUnitTest {
 
         assertEquals(5, info.tabCount);
         assertEquals(TabGroupFaviconCluster.CORNER_COUNT, info.faviconUrls.size());
+    }
+
+    @Test
+    public void testForSyncedGroup_collaborationAndArchived() {
+        Token token = new Token(41L, 42L);
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = new LocalTabGroupId(token);
+        savedGroup.syncId = "sync-collab";
+        savedGroup.title = "Collab Group";
+        savedGroup.color = TabGroupColorId.GREEN;
+        savedGroup.updateTimeMs = 555555L;
+        savedGroup.collaborationId = "collab-xyz";
+        savedGroup.archivalTimeMs = 999999L;
+        savedGroup.savedTabs = List.of(new SavedTabGroupTab());
+
+        GroupWindowInfo info =
+                GroupWindowInfo.forSyncedGroup(
+                        mContext, mTabModel, savedGroup, GroupWindowState.HIDDEN);
+
+        assertEquals(token, info.localId);
+        assertEquals("sync-collab", info.syncId);
+        assertEquals("collab-xyz", info.collaborationId);
+        assertTrue(info.isArchived);
+        assertEquals(GroupWindowState.HIDDEN, info.groupWindowState);
     }
 }

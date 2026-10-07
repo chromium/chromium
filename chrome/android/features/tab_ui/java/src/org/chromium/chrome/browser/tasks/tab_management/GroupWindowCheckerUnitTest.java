@@ -676,4 +676,23 @@ public class GroupWindowCheckerUnitTest {
         assertTrue(mSyncUtils.hasOtherGroups(Token.createRandom()));
         assertFalse(mSyncUtils.hasOtherGroups(token1));
     }
+
+    @Test
+    public void testFromSavedTabGroup() {
+        Token token = Token.createRandom();
+        SavedTabGroup group = createSavedTabGroup(token, "Test Group");
+        group.collaborationId = "collab-1";
+        group.archivalTimeMs = 12345L;
+        group.savedTabs.add(new SavedTabGroupTab());
+
+        List<Tab> tabList = List.of(mTab1);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+        when(mTab1.getTabGroupId()).thenReturn(token);
+
+        GroupWindowInfo info = mSyncUtils.fromSavedTabGroup(group);
+        assertEquals(GroupWindowState.IN_CURRENT, info.groupWindowState);
+        assertEquals("collab-1", info.collaborationId);
+        assertTrue(info.isArchived);
+        assertEquals("Test Group", info.title);
+    }
 }

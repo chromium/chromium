@@ -112,7 +112,9 @@ public class TabGroupUiUtilsUnitTest {
                 1,
                 Collections.emptyList(),
                 windowState,
-                0L);
+                0L,
+                /* collaborationId= */ null,
+                /* isArchived= */ false);
     }
 
     @Test

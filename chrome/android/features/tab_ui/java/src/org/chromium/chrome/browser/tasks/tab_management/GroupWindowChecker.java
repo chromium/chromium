@@ -105,12 +105,7 @@ public class GroupWindowChecker {
 
             @GroupWindowState int groupWindowState = getState(savedTabGroup);
             if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
-                groupList.add(
-                        GroupWindowInfo.forSyncedGroup(
-                                mContext,
-                                getTabModelForGroup(savedTabGroup),
-                                savedTabGroup,
-                                groupWindowState));
+                groupList.add(fromSavedTabGroup(savedTabGroup));
             }
         }
     }
@@ -143,6 +138,17 @@ public class GroupWindowChecker {
                 }
             }
         }
+    }
+
+    /**
+     * Returns a {@link GroupWindowInfo} for the given {@link SavedTabGroup}.
+     *
+     * @param savedTabGroup The saved tab group to convert.
+     */
+    public GroupWindowInfo fromSavedTabGroup(SavedTabGroup savedTabGroup) {
+        @GroupWindowState int state = getState(savedTabGroup);
+        return GroupWindowInfo.forSyncedGroup(
+                mContext, getTabModelForGroup(savedTabGroup), savedTabGroup, state);
     }
 
     /**

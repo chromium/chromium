@@ -35,6 +35,8 @@ public class GroupWindowInfo {
     public final List<GURL> faviconUrls;
     public final @GroupWindowState int groupWindowState;
     public final long lastModifiedTimeMs;
+    public final @Nullable String collaborationId;
+    public final boolean isArchived;
 
     /**
      * Constructs a new {@link GroupWindowInfo} instance.
@@ -47,6 +49,8 @@ public class GroupWindowInfo {
      * @param faviconUrls The favicon URLs for tabs in the group.
      * @param groupWindowState The {@link GroupWindowState} of the group.
      * @param lastModifiedTimeMs The last modified time of the group in milliseconds.
+     * @param collaborationId The collaboration ID string, if available.
+     * @param isArchived Whether the tab group is archived.
      */
     public GroupWindowInfo(
             @Nullable Token localId,
@@ -56,7 +60,9 @@ public class GroupWindowInfo {
             int tabCount,
             List<GURL> faviconUrls,
             @GroupWindowState int groupWindowState,
-            long lastModifiedTimeMs) {
+            long lastModifiedTimeMs,
+            @Nullable String collaborationId,
+            boolean isArchived) {
         this.localId = localId;
         this.syncId = syncId;
         this.title = title;
@@ -65,6 +71,8 @@ public class GroupWindowInfo {
         this.faviconUrls = faviconUrls;
         this.groupWindowState = groupWindowState;
         this.lastModifiedTimeMs = lastModifiedTimeMs;
+        this.collaborationId = collaborationId;
+        this.isArchived = isArchived;
     }
 
     /**
@@ -140,6 +148,8 @@ public class GroupWindowInfo {
                 resolveLastModifiedTimeMs(localTabModel, localGroupId, localTabs, savedGroup);
         String syncId = savedGroup != null ? savedGroup.syncId : null;
 
+        String collaborationId = savedGroup != null ? savedGroup.collaborationId : null;
+        boolean isArchived = savedGroup != null && savedGroup.archivalTimeMs != null;
         return new GroupWindowInfo(
                 localGroupId,
                 syncId,
@@ -148,7 +158,9 @@ public class GroupWindowInfo {
                 tabCount,
                 faviconUrls,
                 state,
-                lastModifiedTimeMs);
+                lastModifiedTimeMs,
+                collaborationId,
+                isArchived);
     }
 
     private static int resolveTabCount(
