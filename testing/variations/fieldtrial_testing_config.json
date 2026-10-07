@@ -8637,6 +8637,27 @@
             ]
         }
     ],
+    "GpuInitOptimization": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GpuInitOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "GpuPersistentCache": [
         {
             "platforms": [
