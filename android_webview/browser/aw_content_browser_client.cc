@@ -1406,16 +1406,6 @@ bool AwContentBrowserClient::ShouldPreconnectNavigation(
   return false;
 }
 
-void AwContentBrowserClient::OnDisplayInsecureContent(
-    content::WebContents* web_contents) {
-  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
-  if (aw_settings) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Android.WebView.OptionallyBlockableMixedContentLoaded.Mode",
-        aw_settings->GetMixedContentMode(),
-        AwSettings::MixedContentMode::COUNT);
-  }
-}
 
 blink::mojom::OriginTrialsSettingsPtr
 AwContentBrowserClient::GetOriginTrialsSettings() {

@@ -289,7 +289,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context) override;
   bool ShouldPreconnectNavigation(
       content::RenderFrameHost* render_frame_host) override;
-  void OnDisplayInsecureContent(content::WebContents* web_contents) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
   bool IsFullCookieAccessAllowed(
       content::BrowserContext* browser_context,
