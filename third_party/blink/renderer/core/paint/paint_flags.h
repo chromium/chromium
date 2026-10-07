@@ -37,7 +37,7 @@ enum : unsigned {
 
   // Used to suppress painting of PII and other sensitive content, allowing
   // the result to be used in WebGL, WebGPU and 2D Canvas.
-  kPrivacyPreserving = 1 << 6,
+  kReadBackAllowedRendering = 1 << 6,
 };
 }  // namespace PaintFlag
 

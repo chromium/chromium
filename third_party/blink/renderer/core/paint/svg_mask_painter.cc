@@ -283,7 +283,7 @@ void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
   if (!masker) {
     return;
   }
-  if ((paint_flags & PaintFlag::kPrivacyPreserving) &&
+  if ((paint_flags & PaintFlag::kReadBackAllowedRendering) &&
       !masker->GetElement()->IsInCanvasSubtree()) {
     return;
   }

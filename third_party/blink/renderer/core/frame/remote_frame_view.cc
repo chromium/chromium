@@ -409,7 +409,7 @@ void RemoteFrameView::Paint(const PaintInfo& paint_info,
     context.Restore();
   }
 
-  if (GetFrame().GetCcLayer() && !paint_info.IsPrivacyPreserving()) {
+  if (GetFrame().GetCcLayer() && !paint_info.IsReadBackAllowedRendering()) {
     gfx::Point origin = gfx::PointAtOffsetFromOrigin(paint_offset);
     if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
       origin += DeprecatedLocation().OffsetFromOrigin();

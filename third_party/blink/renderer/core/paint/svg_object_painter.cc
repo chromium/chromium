@@ -31,7 +31,7 @@ bool ApplyPaintResource(
     return false;
   }
 
-  if (paint_flags & PaintFlag::kPrivacyPreserving &&
+  if (paint_flags & PaintFlag::kReadBackAllowedRendering &&
       !uri_resource->GetElement()->IsInCanvasSubtree()) {
     return false;
   }

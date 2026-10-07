@@ -117,8 +117,8 @@ struct CORE_EXPORT PaintInfo {
   bool IsRenderingResourceSubtree() const {
     return paint_flags_ & PaintFlag::kPaintingResourceSubtree;
   }
-  bool IsPrivacyPreserving() const {
-    return paint_flags_ & PaintFlag::kPrivacyPreserving;
+  bool IsReadBackAllowedRendering() const {
+    return paint_flags_ & PaintFlag::kReadBackAllowedRendering;
   }
 
   bool ShouldSkipBackground() const { return skips_background_; }

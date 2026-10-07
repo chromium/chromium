@@ -129,11 +129,11 @@ std::optional<Color> DefaultForegroundColor(
     const ComputedStyle& originating_style,
     PseudoId pseudo,
     mojom::blink::ColorScheme color_scheme,
-    bool preserve_privacy,
+    bool is_read_back_allowed_rendering,
     SearchTextIsActiveMatch search_text_is_active_match) {
   switch (pseudo) {
     case kPseudoIdSelection:
-      if (preserve_privacy) {
+      if (is_read_back_allowed_rendering) {
         return LayoutTheme::GetTheme().SystemColor(
             CSSValueID::kHighlighttext, color_scheme,
             document.GetColorProviderForPainting(color_scheme), false);
@@ -180,11 +180,11 @@ Color DefaultBackgroundColor(
     const Document& document,
     PseudoId pseudo,
     mojom::blink::ColorScheme color_scheme,
-    bool preserve_privacy,
+    bool is_read_back_allowed_rendering,
     SearchTextIsActiveMatch search_text_is_active_match) {
   switch (pseudo) {
     case kPseudoIdSelection:
-      if (preserve_privacy ||
+      if (is_read_back_allowed_rendering ||
           document.GetFrame()->Selection().FrameIsFocusedAndActive()) {
         // CSS Color 4 defines `Highlight` as the background of selected items,
         // so active selection and the `Highlight` system color should match,
@@ -227,18 +227,18 @@ std::optional<Color> DefaultHighlightColor(
     const ComputedStyle* pseudo_style,
     PseudoId pseudo,
     const CSSProperty& property,
-    bool preserve_privacy,
+    bool is_read_back_allowed_rendering,
     SearchTextIsActiveMatch search_text_is_active_match) {
   mojom::blink::ColorScheme color_scheme =
       UsedColorScheme(originating_style, pseudo_style);
   if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
     return DefaultBackgroundColor(document, pseudo, color_scheme,
-                                  preserve_privacy,
+                                  is_read_back_allowed_rendering,
                                   search_text_is_active_match);
   }
   DCHECK(property.IDEquals(CSSPropertyID::kColor));
   return DefaultForegroundColor(document, originating_style, pseudo,
-                                color_scheme, preserve_privacy,
+                                color_scheme, is_read_back_allowed_rendering,
                                 search_text_is_active_match);
 }
 
@@ -275,11 +275,11 @@ Color HighlightStyleUtils::ResolveColor(
     PseudoId pseudo,
     const CSSProperty& property,
     std::optional<Color> current_color,
-    bool preserve_privacy,
+    bool is_read_back_allowed_rendering,
     SearchTextIsActiveMatch search_text_is_active_match) {
   std::optional<Color> maybe_color = MaybeResolveColor(
       document, originating_style, pseudo_style, pseudo, property,
-      preserve_privacy, search_text_is_active_match);
+      is_read_back_allowed_rendering, search_text_is_active_match);
   if (maybe_color) {
     return maybe_color.value();
   }
@@ -299,7 +299,7 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
     const ComputedStyle* pseudo_style,
     PseudoId pseudo,
     const CSSProperty& property,
-    bool preserve_privacy,
+    bool is_read_back_allowed_rendering,
     SearchTextIsActiveMatch search_text_is_active_match) {
   if (UseForcedColors(document, originating_style, pseudo_style)) {
     return ForcedColor(
@@ -309,9 +309,9 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
         document.IsInWebAppScope() && document.IsInitialProfile());
   }
   if (UseDefaultHighlightColors(pseudo_style, pseudo, property)) {
-    return DefaultHighlightColor(document, originating_style, pseudo_style,
-                                 pseudo, property, preserve_privacy,
-                                 search_text_is_active_match);
+    return DefaultHighlightColor(
+        document, originating_style, pseudo_style, pseudo, property,
+        is_read_back_allowed_rendering, search_text_is_active_match);
   }
   if (pseudo_style) {
     bool is_current_color = false;
@@ -323,7 +323,8 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
   }
   if (!property.IDEquals(CSSPropertyID::kColor)) {
     return MaybeResolveColor(document, originating_style, pseudo_style, pseudo,
-                             GetCSSPropertyColor(), preserve_privacy,
+                             GetCSSPropertyColor(),
+                             is_read_back_allowed_rendering,
                              search_text_is_active_match);
   }
   return std::nullopt;
@@ -360,7 +361,7 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
     Node* node,
     std::optional<Color> current_layer_color,
     PseudoId pseudo,
-    bool preserve_privacy,
+    bool is_read_back_allowed_rendering,
     SearchTextIsActiveMatch search_text_is_active_match,
     const AtomicString& pseudo_argument) {
   if (pseudo == kPseudoIdSelection) {
@@ -371,9 +372,10 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
 
   const ComputedStyle* pseudo_style =
       HighlightPseudoStyle(style, pseudo, pseudo_argument);
-  Color result = ResolveColor(
-      document, style, pseudo_style, pseudo, GetCSSPropertyBackgroundColor(),
-      current_layer_color, preserve_privacy, search_text_is_active_match);
+  Color result =
+      ResolveColor(document, style, pseudo_style, pseudo,
+                   GetCSSPropertyBackgroundColor(), current_layer_color,
+                   is_read_back_allowed_rendering, search_text_is_active_match);
   if (pseudo == kPseudoIdSelection) {
     if (NodeIsReplaced(node)) {
       // Avoid that ::selection full obscures selected replaced elements like
@@ -472,7 +474,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
 
     maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
                                     pseudo, GetCSSPropertyColor(),
-                                    paint_info.IsPrivacyPreserving(),
+                                    paint_info.IsReadBackAllowedRendering(),
                                     search_text_is_active_match);
     if (maybe_color) {
       highlight_style.current_color = maybe_color.value();
@@ -512,7 +514,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
 
     maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
                                     pseudo, GetCSSPropertyBackgroundColor(),
-                                    paint_info.IsPrivacyPreserving(),
+                                    paint_info.IsReadBackAllowedRendering(),
                                     search_text_is_active_match);
     if (maybe_color) {
       background_color = maybe_color.value();

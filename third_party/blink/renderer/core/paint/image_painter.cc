@@ -112,7 +112,7 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
   paint_info.context.Clip(ToPixelSnappedRect(focus_rect));
   const auto& outline_color_property = GetCSSPropertyOutlineColor();
   const Color outline_color =
-      paint_info.IsPrivacyPreserving()
+      paint_info.IsReadBackAllowedRendering()
           ? outline_color_property.ColorIncludingFallback(
                 /*visited_link=*/false, *area_element_style,
                 /*is_current_color=*/nullptr)
@@ -131,7 +131,7 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
     if (content_rect.IsEmpty()) {
       return;
     }
-    if (paint_info.IsPrivacyPreserving() &&
+    if (paint_info.IsReadBackAllowedRendering() &&
         !layout_image_.ImageResource()->IsCorsSameOrigin()) {
       return;
     }

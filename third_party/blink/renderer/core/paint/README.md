@@ -590,7 +590,7 @@ information.
 *   **Special paint flags**: When painting the children of a `content=drawable`
     canvas in `PaintLayerPainter::PaintChildren`, we apply special paint flags:
     *   `PaintFlag::kOmitCompositingInfo`: Prevents compositing of descendants.
-    *   `PaintFlag::kPrivacyPreserving`: Ensures no sensitive or privacy-
+    *   `PaintFlag::kReadBackAllowedRendering`: Ensures no sensitive or privacy-
         sensitive information (such as cross-origin iframe/image data, visited
         links, spelling markers, or system themes) is exposed during canvas
         drawing or invalidations.

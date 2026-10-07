@@ -208,7 +208,7 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
     return;
   }
 
-  if ((paint_info.GetPaintFlags() & PaintFlag::kPrivacyPreserving) &&
+  if ((paint_info.GetPaintFlags() & PaintFlag::kReadBackAllowedRendering) &&
       !element_->GetExecutionContext()->GetSecurityOrigin()->CanReadContent(
           element_->GetDocument().CompleteURL(element_->Url()))) {
     return;

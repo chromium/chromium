@@ -266,7 +266,7 @@ void SVGShapePainter::PaintMarkers(const PaintInfo& paint_info) {
       *client, style.MarkerMidResource());
   auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
       *client, style.MarkerEndResource());
-  if (paint_info.IsPrivacyPreserving()) {
+  if (paint_info.IsReadBackAllowedRendering()) {
     if (marker_start && marker_start->GetElement() &&
         !marker_start->GetElement()->IsInCanvasSubtree()) {
       marker_start = nullptr;

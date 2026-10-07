@@ -360,7 +360,7 @@ void HighlightPainter::SelectionPaintState::PaintSelectionBackground(
     const std::optional<AffineTransform>& rotation) {
   const Color color = HighlightStyleUtils::HighlightBackgroundColor(
       document, style, node, selection_style_.style.current_color,
-      kPseudoIdSelection, paint_info.IsPrivacyPreserving(),
+      kPseudoIdSelection, paint_info.IsReadBackAllowedRendering(),
       SearchTextIsActiveMatch::kNo);
   HighlightPainter::PaintHighlightBackground(context, style, color,
                                              PhysicalSelectionRect(), rotation);
@@ -464,8 +464,8 @@ HighlightPainter::HighlightPainter(
             *text_node, fragment_paint_info_.from, fragment_paint_info_.to);
         DCHECK(fragment_dom_offsets_);
         markers_ = controller.ComputeMarkersToPaint(*text_node);
-        if (!paint_info.IsPrivacyPreserving()) {
-          // When preserving privacy, only paint custom highlights and
+        if (!paint_info.IsReadBackAllowedRendering()) {
+          // For read-back allowed rendering, only paint custom highlights and
           // find-in-page. This check only protects markers painted with the
           // highlight overlay system.
           target_ = controller.MarkersFor(
@@ -614,7 +614,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
       case DocumentMarker::kSuggestion: {
         // Editing markers are transient and reflect uncommitted content, so do
         // not draw them.
-        if (paint_info_.IsPrivacyPreserving()) {
+        if (paint_info_.IsReadBackAllowedRendering()) {
           break;
         }
 
@@ -648,7 +648,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
       case DocumentMarker::kGlic: {
         // GLIC markers may be related to agentic AI or other features that the
         // document origin would not normally have access to.
-        if (phase == kBackground && !paint_info_.IsPrivacyPreserving()) {
+        if (phase == kBackground && !paint_info_.IsReadBackAllowedRendering()) {
           PaintBackgroundForGlicMarker(marker, text, paint_start_offset,
                                        paint_end_offset);
         }

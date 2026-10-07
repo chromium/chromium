@@ -34,7 +34,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
   if (!should_display_poster && !media_player)
     return;
 
-  if (paint_info.IsPrivacyPreserving()) {
+  if (paint_info.IsReadBackAllowedRendering()) {
     if (should_display_poster) {
       if (!layout_video_.ImageResource()->IsCorsSameOrigin()) {
         return;

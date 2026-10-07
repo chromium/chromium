@@ -41,7 +41,7 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
   paint_rect.Move(paint_offset);
 
   auto* canvas = To<HTMLCanvasElement>(layout_html_canvas_.GetNode());
-  if (paint_info.IsPrivacyPreserving() && !canvas->OriginClean()) {
+  if (paint_info.IsReadBackAllowedRendering() && !canvas->OriginClean()) {
     return;
   }
 

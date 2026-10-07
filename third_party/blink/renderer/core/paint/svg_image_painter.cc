@@ -51,7 +51,7 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
     return;
   }
 
-  if (paint_info.IsPrivacyPreserving() &&
+  if (paint_info.IsReadBackAllowedRendering() &&
       !layout_svg_image_.ImageResource()->IsCorsSameOrigin()) {
     return;
   }

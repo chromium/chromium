@@ -351,7 +351,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   }
 
   const bool is_painting_canvas_subtree =
-      paint_flags & PaintFlag::kPrivacyPreserving;
+      paint_flags & PaintFlag::kReadBackAllowedRendering;
   const bool is_non_drawable_in_canvas_subtree =
       is_painting_canvas_subtree && !object.FirstFragment()
                                          .LocalBorderBoxProperties()
@@ -641,8 +641,8 @@ PaintResult PaintLayerPainter::PaintChildren(
             canvas->GetExecutionContext()) &&
         canvas->IsContentDrawable()) {
       // We need to paint the children for later use by drawElementImage, but
-      // make sure we enforce privacy-preserving paint behavior.
-      paint_flags |= PaintFlag::kPrivacyPreserving;
+      // make sure we enforce read-back allowed rendering behavior.
+      paint_flags |= PaintFlag::kReadBackAllowedRendering;
       // TODO(https://crbug.com/480074850): Determine how hit test data works
       // in non-composited subtrees, and test if this is needed.
       paint_flags |= PaintFlag::kOmitCompositingInfo;

@@ -150,7 +150,7 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
     filter_clip = nullptr;
   }
 
-  if (paint_info_.GetPaintFlags() & PaintFlag::kPrivacyPreserving) {
+  if (paint_info_.GetPaintFlags() & PaintFlag::kReadBackAllowedRendering) {
     while (effect && (effect->Unalias().IsInTaintedSubtree())) {
       filter_clip = nullptr;
       effect = effect->Parent();
