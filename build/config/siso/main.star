@@ -101,6 +101,18 @@ def init(ctx):
             "./obj/chrome/browser/ash/guest_os/public/public/guest_os_mount_provider.o": "crbug.com/565544340",
             "./obj/chrome/browser/ash/policy/tools/device_policy_remover_generated/device_policy_remover.o": "crbug.com/570313021",
             "./obj/chrome/browser/ui/views/upgrade_notification_controller/upgrade_notification_controller.o": "crbug.com/555387059",
+            "./obj/chrome/common/apps/platform_apps/api/api_features/api_features.o": "crbug.com/570385211",
+            "./obj/chrome/common/apps/platform_apps/api/permission_features/permission_features.o": "crbug.com/570385211",
+            "./obj/chrome/common/controlled_frame/api/api_features/api_features.o": "crbug.com/570385211",
+            "./obj/chrome/common/extensions/api/api_features/api_features.o": "crbug.com/570385211",
+            "./obj/chrome/common/extensions/api/manifest_features/manifest_features.o": "crbug.com/570385211",
+            "./obj/chrome/common/extensions/api/permission_features/permission_features.o": "crbug.com/570385211",
+            "./obj/chrome/common/extensions/extension_features_unittest/extension_features_unittest.o": "crbug.com/570385211",
+            "./obj/extensions/common/api/api_features/api_features.o": "crbug.com/570385211",
+            "./obj/extensions/common/api/behavior_features/behavior_features.o": "crbug.com/570385211",
+            "./obj/extensions/common/api/manifest_features/manifest_features.o": "crbug.com/570385211",
+            "./obj/extensions/common/api/permission_features/permission_features.o": "crbug.com/570385211",
+            "./obj/tools/json_schema_compiler/test/features_compiler_test/features_compiler_test.o": "crbug.com/570385211",
         },
         # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
         # This is necessary for cross platform build actions. e.g. node binary for typescript
