@@ -172,6 +172,12 @@ void RecordPdfLoadedWithInkTextAnnotations(
 void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations);
 
+// Reports whether the PDF being saved contains any brush/highlighter strokes.
+void RecordSaveHasStrokes(bool has_strokes);
+
+// Reports whether the PDF being saved contains any text annotations.
+void RecordSaveHasTextAnnotations(bool has_text_annotations);
+
 // Reports the number of text annotations added when saving.
 // Note that only one of `RecordTextAnnotationAddedCountOnSave()` or
 // `RecordTextAnnotationRemovedCountOnSave()` should be called for any given

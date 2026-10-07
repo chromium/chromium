@@ -417,6 +417,9 @@ void PdfInkModule::OnGeometryChanged() {
 }
 
 void PdfInkModule::RecordMetricsOnSave() {
+  RecordSaveHasStrokes(HasStrokes());
+  RecordSaveHasTextAnnotations(!text_id_map_.empty());
+
   if (!baseline_text_annotation_count_.has_value()) {
     return;
   }
@@ -2026,6 +2029,20 @@ bool PdfInkModule::MaybeSetDrawingBrush() {
   pending_drawing_brush_state_.reset();
 
   return true;
+}
+
+bool PdfInkModule::HasStrokes() const {
+  for (const auto& [page_index, page_strokes] : strokes_) {
+    if (std::ranges::any_of(page_strokes, &FinishedStrokeState::should_draw)) {
+      return true;
+    }
+  }
+  for (const auto& [page_index, page_shapes] : loaded_v2_shapes_) {
+    if (std::ranges::any_of(page_shapes, &LoadedV2ShapeState::should_draw)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void PdfInkModule::MaybeSetCursor() {

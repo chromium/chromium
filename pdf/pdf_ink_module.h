@@ -472,6 +472,10 @@ class PdfInkModule {
   // Returns whether the drawing brush was set or not.
   bool MaybeSetDrawingBrush();
 
+  // Returns whether there are any active brush/highlighter strokes in the
+  // document, including shapes loaded from the PDF.
+  bool HasStrokes() const;
+
   // Returns the transform and the clip page rect needed to render strokes on
   // page `page_index`.
   TransformAndClipRect GetTransformAndClipRect(int page_index);

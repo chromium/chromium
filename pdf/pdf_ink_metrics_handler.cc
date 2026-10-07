@@ -222,6 +222,15 @@ void RecordPdfLoadedWithV2InkAnnotations(
                                 loaded_with_annotations);
 }
 
+void RecordSaveHasStrokes(bool has_strokes) {
+  base::UmaHistogramBoolean("PDF.Ink2SaveHasStrokes", has_strokes);
+}
+
+void RecordSaveHasTextAnnotations(bool has_text_annotations) {
+  base::UmaHistogramBoolean("PDF.Ink2SaveHasTextAnnotations",
+                            has_text_annotations);
+}
+
 void RecordTextAnnotationAddedCountOnSave(size_t count) {
   base::UmaHistogramCounts100("PDF.Ink2TextAnnotationAddedCountOnSave", count);
 }

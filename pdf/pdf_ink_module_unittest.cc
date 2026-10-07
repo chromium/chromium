@@ -2392,6 +2392,8 @@ TEST_F(PdfInkModuleTextTest,
 TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveNoLoadedAnnotations) {
   base::HistogramTester histograms;
   ink_module().RecordMetricsOnSave();
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", false, 1);
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
 }
@@ -2401,6 +2403,8 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveNoChange) {
 
   base::HistogramTester histograms;
   ink_module().RecordMetricsOnSave();
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", true, 1);
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
 }
@@ -2428,6 +2432,8 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveAdded) {
 
   base::HistogramTester histograms;
   ink_module().RecordMetricsOnSave();
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", true, 1);
   histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 1, 1);
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
 }
@@ -2449,6 +2455,8 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveRemoved) {
 
   base::HistogramTester histograms;
   ink_module().RecordMetricsOnSave();
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+  histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", true, 1);
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
   histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationRemovedCountOnSave", 1,
                                 1);
@@ -2479,6 +2487,8 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveMultipleSaves) {
 
     base::HistogramTester histograms;
     ink_module().RecordMetricsOnSave();
+    histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+    histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", true, 1);
     histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 1,
                                   1);
     histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
@@ -2512,6 +2522,8 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveMultipleSaves) {
 
     base::HistogramTester histograms;
     ink_module().RecordMetricsOnSave();
+    histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+    histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", true, 1);
     histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave", 2,
                                   1);
     histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave", 0);
@@ -2532,6 +2544,8 @@ TEST_F(PdfInkModuleTextTest, RecordMetricsOnSaveMultipleSaves) {
 
     base::HistogramTester histograms;
     ink_module().RecordMetricsOnSave();
+    histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+    histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", true, 1);
     histograms.ExpectTotalCount("PDF.Ink2TextAnnotationAddedCountOnSave", 0);
     histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationRemovedCountOnSave", 1,
                                   1);
@@ -5182,6 +5196,139 @@ TEST_P(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
 
   histograms().ExpectUniqueSample(kInputDeviceMetric,
                                   StrokeMetricInputDeviceType::kPen, 2);
+}
+
+TEST_P(PdfInkModuleMetricsTest, RecordMetricsOnSaveWithStrokes) {
+  InitializeSimpleSinglePageBasicLayout();
+
+  {
+    base::HistogramTester save_histograms;
+    ink_module().RecordMetricsOnSave();
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", false,
+                                       1);
+  }
+
+  // Draw a pen stroke.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  {
+    base::HistogramTester save_histograms;
+    ink_module().RecordMetricsOnSave();
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", true, 1);
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", false,
+                                       1);
+  }
+
+  // Undo the stroke.
+  PerformUndo();
+
+  {
+    base::HistogramTester save_histograms;
+    ink_module().RecordMetricsOnSave();
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", false,
+                                       1);
+  }
+
+  // Redo the stroke.
+  PerformRedo();
+
+  {
+    base::HistogramTester save_histograms;
+    ink_module().RecordMetricsOnSave();
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", true, 1);
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", false,
+                                       1);
+  }
+}
+
+TEST_P(PdfInkModuleMetricsTest, RecordMetricsOnSaveWithLoadedV2Shapes) {
+  constexpr int kPageIndex = 0;
+  constexpr InkModeledShapeId kShapeId0(0);
+
+  const auto ink_points = base::ToVector(
+      kMousePoints,
+      [](const gfx::PointF& point) { return InkPointFromGfxPoint(point); });
+  std::optional<ink::Mesh> mesh0 =
+      CreateInkMeshFromPolylineForTesting(ink_points);
+  ASSERT_TRUE(mesh0.has_value());
+  auto shape0 =
+      ink::PartitionedMesh::FromMeshes(base::span_from_ref(mesh0.value()));
+  ASSERT_TRUE(shape0.ok());
+
+  EXPECT_CALL(client(), LoadV2InkPathsFromPdf())
+      .WillOnce(Return(PdfInkModuleClient::DocumentV2InkPathShapesMap{
+          {kPageIndex, PdfInkModuleClient::PageV2InkPathShapesMap{
+                           {kShapeId0, *shape0},
+                       }}}));
+
+  InitializeSimpleSinglePageBasicLayout();
+  EnableDrawAnnotationMode();
+
+  {
+    base::HistogramTester save_histograms;
+    ink_module().RecordMetricsOnSave();
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", true, 1);
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", false,
+                                       1);
+  }
+
+  // Erase the loaded V2 shape.
+  EXPECT_CALL(client(),
+              UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/false));
+  SelectEraserTool();
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
+
+  {
+    base::HistogramTester save_histograms;
+    ink_module().RecordMetricsOnSave();
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", false, 1);
+    save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", false,
+                                       1);
+  }
+}
+
+TEST_P(PdfInkModuleMetricsTest,
+       RecordMetricsOnSaveWithStrokesAndTextAnnotations) {
+  InitializeSimpleSinglePageBasicLayout();
+
+  EXPECT_CALL(client(), LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(DocumentInkTextBoxesMap()));
+  EXPECT_TRUE(ink_module().OnMessage(base::DictValue()
+                                         .Set("type", "getAllTextAnnotations")
+                                         .Set("messageId", "bar")));
+
+  // Draw a pen stroke.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Add a text annotation.
+  static constexpr FontId kFontId(123);
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+
+  base::DictValue finish_data =
+      SampleFinishTextAnnotationData(/*frontend_id=*/1, kFontId,
+                                     /*page_index=*/0, /*pdf_zoom=*/1.0);
+  base::ListValue typefaces;
+  typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+  finish_data.Set("newTypefaces", std::move(typefaces));
+
+  EXPECT_CALL(client(), AddFont(_, _, _));
+  EXPECT_CALL(client(), DrawText(_, _, _, _, _, _));
+
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateFinishTextAnnotationMessage(std::move(finish_data))));
+
+  base::HistogramTester save_histograms;
+  ink_module().RecordMetricsOnSave();
+  save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasStrokes", true, 1);
+  save_histograms.ExpectUniqueSample("PDF.Ink2SaveHasTextAnnotations", true, 1);
+  save_histograms.ExpectUniqueSample("PDF.Ink2TextAnnotationAddedCountOnSave",
+                                     1, 1);
+  save_histograms.ExpectTotalCount("PDF.Ink2TextAnnotationRemovedCountOnSave",
+                                   0);
 }
 
 class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
