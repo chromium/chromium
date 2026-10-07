@@ -50,6 +50,30 @@ std::string MakeLayerName(std::string_view debug_name) {
                             : base::StrCat({kBaseName, "-", debug_name});
 }
 
+using Appearance = decoration::DecorationSource::Appearance;
+
+// Returns the bounds of a decoration layer that frames `content_bounds` with
+// `margins`. Decoration margins are negative, so this expands outwards.
+gfx::Rect GetFramingBounds(const gfx::Rect& content_bounds,
+                           const gfx::Insets& margins) {
+  gfx::Rect bounds = content_bounds;
+  bounds.Inset(margins);
+  return bounds;
+}
+
+// Converts the content-relative `occlusion_rect` into the ninebox space of a
+// decoration layer with `margins`, where the content sits inset by `-margins`.
+// See nine_patch_layer.h.
+gfx::Rect ToNineboxOcclusion(const gfx::Rect& occlusion_rect,
+                             const gfx::Insets& margins) {
+  if (occlusion_rect.IsEmpty()) {
+    return gfx::Rect();
+  }
+  gfx::Rect occlusion = occlusion_rect;
+  occlusion.Offset(-margins.left(), -margins.top());
+  return occlusion;
+}
+
 }  // namespace
 
 // static
@@ -115,6 +139,7 @@ void Decoration::SetRoundedCorners(
 
 void Decoration::OnImplicitAnimationsCompleted() {
   std::unique_ptr<ui::Layer> to_be_deleted = fading_layer_owner_.ReleaseLayer();
+  fading_appearance_ = std::nullopt;
   // The size needed for layer() may be smaller now that |fading_layer()| is
   // removed.
   UpdateAppearance();
@@ -169,6 +194,7 @@ void Decoration::CrossFadeToNewAppearance(base::TimeDelta duration) {
   // The old decoration layer is the new fading out layer.
   DCHECK(decoration_layer());
   fading_layer_owner_.Reset(decoration_layer_owner_.ReleaseLayer());
+  fading_appearance_ = active_appearance_;
   RecreateDecorationLayer();
   decoration_layer()->SetOpacity(0.f);
 
@@ -199,7 +225,7 @@ void Decoration::UpdateAppearanceImmediately() {
 
   // Compare only the appearance, so geometry or occlusion changes don't
   // re-upload the image.
-  const std::optional<decoration::DecorationSource::Appearance> appearance =
+  const std::optional<Appearance> appearance =
       details.has_value() ? std::make_optional(details->appearance)
                           : std::nullopt;
 
@@ -225,48 +251,40 @@ void Decoration::UpdateAppearanceImmediately() {
     active_appearance_ = appearance;
   }
 
-  // Decoration margins are negative, so this expands outwards from
-  // |content_bounds_|.
-  const gfx::Insets margins =
-      appearance.has_value() ? appearance->margins : gfx::Insets();
-  gfx::Rect new_layer_bounds = content_bounds_;
-  new_layer_bounds.Inset(margins);
-  gfx::Rect decoration_layer_bounds(new_layer_bounds.size());
+  const gfx::Insets margins = appearance.value_or(Appearance()).margins;
+  const gfx::Rect decoration_bounds =
+      GetFramingBounds(content_bounds_, margins);
 
-  // When there's an old decoration fading out, the bounds of layer() have to be
-  // big enough to encompass both decorations.
+  // While cross-fading, also re-frame the old (fading) decoration around the
+  // current content using the margins it was drawn with, so it doesn't stay
+  // at a stale size if the content bounds change mid-fade.
+  const gfx::Insets fading_margins =
+      fading_appearance_.value_or(Appearance()).margins;
+  const gfx::Rect fading_bounds =
+      fading_layer() && !content_bounds_.IsEmpty()
+          ? GetFramingBounds(content_bounds_, fading_margins)
+          : gfx::Rect();
+
+  // layer() must be big enough to encompass both decorations.
+  gfx::Rect layer_bounds = decoration_bounds;
+  layer_bounds.Union(fading_bounds);
+  layer()->SetBounds(layer_bounds);
+  last_layer_bounds_ = layer_bounds;
+
+  // Child layers are positioned relative to layer().
+  const gfx::Vector2d layer_offset = layer_bounds.OffsetFromOrigin();
+  const gfx::Rect occlusion_rect =
+      details.has_value() ? details->occlusion_rect : gfx::Rect();
+
+  decoration_layer()->SetBounds(decoration_bounds - layer_offset);
+  decoration_layer()->UpdateNinePatchOcclusion(
+      ToNineboxOcclusion(occlusion_rect, margins));
+
   if (fading_layer()) {
-    const gfx::Rect old_layer_bounds = layer()->bounds();
-    gfx::Rect combined_layer_bounds = old_layer_bounds;
-    combined_layer_bounds.Union(new_layer_bounds);
-    layer()->SetBounds(combined_layer_bounds);
-
-    // If this is reached via SetContentBounds, we might hypothetically need
-    // to change the size of the fading layer, but the fade is so fast it's
-    // not really an issue.
-    gfx::Rect fading_layer_bounds(fading_layer()->bounds());
-    fading_layer_bounds.Offset(old_layer_bounds.origin() -
-                               combined_layer_bounds.origin());
-    fading_layer()->SetBounds(fading_layer_bounds);
-
-    decoration_layer_bounds.Offset(new_layer_bounds.origin() -
-                                   combined_layer_bounds.origin());
-  } else {
-    layer()->SetBounds(new_layer_bounds);
+    fading_layer()->SetBounds(fading_bounds - layer_offset);
+    fading_layer()->UpdateNinePatchOcclusion(
+        ToNineboxOcclusion(occlusion_rect, fading_margins));
   }
-
-  last_layer_bounds_ = layer()->bounds();
-
-  decoration_layer()->SetBounds(decoration_layer_bounds);
-
-  // The source works in content coordinates, the ninebox in decoration layer
-  // space, where the content sits inset by `-margins`. See nine_patch_layer.h.
-  gfx::Rect occlusion_bounds;
-  if (details.has_value() && !details->occlusion_rect.IsEmpty()) {
-    occlusion_bounds = details->occlusion_rect;
-    occlusion_bounds.Offset(-margins.left(), -margins.top());
-  }
-  decoration_layer()->UpdateNinePatchOcclusion(occlusion_bounds);
 }
 
 }  // namespace ui

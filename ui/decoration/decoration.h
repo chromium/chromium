@@ -156,6 +156,10 @@ class COMPONENT_EXPORT(UI_DECORATION) Decoration final
   // animated out.
   ui::LayerOwner fading_layer_owner_;
 
+  // The appearance drawn by `fading_layer()`, used to keep it framing the
+  // content while it fades out.
+  std::optional<decoration::DecorationSource::Appearance> fading_appearance_;
+
   // The layer bounds since content bounds were last set.
   gfx::Rect last_layer_bounds_;
 };

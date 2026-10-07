@@ -274,6 +274,37 @@ TEST_F(DecorationTest, CrossFade) {
   EXPECT_FALSE(decoration().fading_layer_for_testing());
 }
 
+// The fading layer keeps framing the content with its own margins if the
+// content changes during a cross-fade.
+TEST_F(DecorationTest, FadingLayerTracksContentBounds) {
+  decoration().SetContentBounds(gfx::Rect(0, 0, 100, 100));
+
+  set_details(MakeDetails(20));
+  source().TriggerChanged(base::Milliseconds(100));
+  ASSERT_TRUE(decoration().fading_layer_for_testing());
+
+  decoration().SetContentBounds(gfx::Rect(10, 10, 50, 50));
+
+  EXPECT_EQ(gfx::Rect(-10, -10, 90, 90), decoration().layer()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 90, 90),
+            decoration().decoration_layer_for_testing()->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, 70, 70),
+            decoration().fading_layer_for_testing()->bounds());
+}
+
+// The fading layer collapses if the content becomes empty during a cross-fade.
+TEST_F(DecorationTest, FadingLayerCollapsesForEmptyContent) {
+  decoration().SetContentBounds(gfx::Rect(0, 0, 100, 100));
+
+  source().TriggerChanged(base::Milliseconds(100));
+  ASSERT_TRUE(decoration().fading_layer_for_testing());
+
+  decoration().SetContentBounds(gfx::Rect());
+
+  EXPECT_TRUE(decoration().layer()->bounds().IsEmpty());
+  EXPECT_TRUE(decoration().fading_layer_for_testing()->bounds().IsEmpty());
+}
+
 // Without details there is nothing to draw: the decoration layer is hidden but
 // keeps its nine-patch configuration, so details that come back are not
 // re-uploaded.
