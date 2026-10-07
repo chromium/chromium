@@ -6,7 +6,8 @@
 """Creates several files used by the size trybot to monitor size regressions.
 
 To test locally:
-1. Run diagnose_bloat.py to create some entries in out/binary-size-results
+1. Run diagnose_bloat.py --target=chrome_and_webview_32_minimal_apks to create
+   some entries in out/binary-size-results
 2. Run this script with:
 HASH1=some hash within out/binary-size-results
 HASH2=some hash within out/binary-size-results
@@ -16,7 +17,7 @@ tools/binary_size/trybot_commit_size_checker.py \
     --review-subject "Testing 123" \
     --review-url "https://google.com" \
     --size-config-json-name \
-        out/binary-size-build/config/Trichrome_size_config.json \
+        out/binary-size-build/config/ChromeAndWebView_size_config.json \
     --before-dir out/binary-size-results/$HASH1 \
     --after-dir out/binary-size-results/$HASH2 \
     --results-path output.json \
@@ -469,7 +470,7 @@ def _GenerateBinarySizePluginDetails(metrics, sizediff_filename):
       # The Gerrit plugin looks for this name to put it in the summary.
       name = 'Android Binary Size'
     elif log_name == _RESOURCE_SIZES_64_LOG:
-      name = 'Android Binary Size (arm64 high end) (TrichromeLibrary64.apk)'
+      name = 'Android Binary Size (arm64 high end)'
     listing = {
       'name': name,
       'delta': '{} {}'.format(_FormatNumber(delta.actual), delta.units),
@@ -593,7 +594,7 @@ def main():
     config = json.load(fh)
 
   if args.local_test:
-    size_filename = 'Trichrome32.minimal.apks.size'
+    size_filename = 'ChromeAndWebView32.minimal.apks.size'
   else:
     size_filename = config['supersize_input_file'] + '.size'
 

@@ -310,14 +310,6 @@ if (_is_default_toolchain) {
     }
   }
 
-  if (is_official_build && !android_64bit_target_cpu) {
-    # Used for binary size monitoring.
-    create_app_bundle_minimal_apks("trichrome_webview_minimal_apks") {
-      deps = [ ":$_main_trichrome_webview_bundle_target" ]
-      bundle_path = "$root_build_dir/apks/TrichromeWebView.aab"
-    }
-  }
-
   # Trichrome WebView APK for a 64-bit Chrome.
   if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
     template("trichrome_webview_64_32_tmpl") {
@@ -395,14 +387,14 @@ if (_is_default_toolchain) {
 
     if (is_official_build) {
       # Used for binary size monitoring.
-      create_app_bundle_minimal_apks("trichrome_webview_64_minimal_apks") {
-        deps = [ ":trichrome_webview_64_bundle" ]
-        bundle_path = "$root_build_dir/apks/TrichromeWebView64.aab"
+      create_app_bundle_minimal_apks("system_webview_64_minimal_apks") {
+        deps = [ ":system_webview_64_bundle" ]
+        bundle_path = "$root_build_dir/apks/SystemWebView64.aab"
       }
 
-      create_app_bundle_minimal_apks("trichrome_webview_32_minimal_apks") {
-        deps = [ ":trichrome_webview_32_bundle" ]
-        bundle_path = "$root_build_dir/apks/TrichromeWebView32.aab"
+      create_app_bundle_minimal_apks("system_webview_32_minimal_apks") {
+        deps = [ ":system_webview_32_bundle" ]
+        bundle_path = "$root_build_dir/apks/SystemWebView32.aab"
       }
     }
   }

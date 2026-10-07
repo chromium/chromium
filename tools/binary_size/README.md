@@ -64,19 +64,19 @@ and Linux (although Linux symbol diffs have issues, as noted below).
 ### Example Usage
 
 ``` bash
-# Build and diff trichrome_bundle HEAD^ and HEAD.
+# Build and diff chrome_public_32_bundle HEAD^ and HEAD.
 tools/binary_size/diagnose_bloat.py HEAD -v
 
 # Build and diff using jj.
 tools/binary_size/diagnose_bloat.py @ --jj -v
 
-# Build and diff trichrome_google_bundle HEAD^ and HEAD.
+# Build and diff chrome_32_bundle HEAD^ and HEAD.
 tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal -v
 
-# Build and diff trichrome_google_64_32_bundle HEAD^ and HEAD.
-tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal --arm64 -v
+# Build and diff system_webview_google_64_bundle HEAD^ and HEAD.
+tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal --webview --arm64 -v
 
-# Build and diff trichrome_bundle HEAD^ and HEAD without is_official_build.
+# Build and diff chrome_public_32_bundle HEAD^ and HEAD without is_official_build.
 tools/binary_size/diagnose_bloat.py HEAD --gn-args="is_official_build=false" -v
 
 # Build and diff all contiguous revs in range BEFORE_REV..AFTER_REV for src/v8.

@@ -220,6 +220,71 @@ pkg.Clz -> Ja1:
     self.assertNotIn('kMyFeatureAdded', output_text)
     self.assertNotIn('kMyFeatureRemoved', output_text)
 
+  def testResourceSizesDiffCombinedUsesMax(self):
+    def make_charts(
+      chrome_norm,
+      webview_norm,
+      chrome_base,
+      webview_base,
+      chrome_methods,
+      webview_methods,
+      combined_methods,
+    ):
+      return {
+        'Specifics': {
+          'Chrome_normalized apk size': {
+            'value': chrome_norm,
+            'units': 'bytes',
+          },
+          'WebView_normalized apk size': {
+            'value': webview_norm,
+            'units': 'bytes',
+          },
+          'Combined_normalized apk size': {
+            'value': chrome_norm + webview_norm,
+            'units': 'bytes',
+          },
+        },
+        'base': {
+          'Chrome_Size with hindi': {'value': chrome_base, 'units': 'bytes'},
+          'WebView_Size with hindi': {'value': webview_base, 'units': 'bytes'},
+          'Combined_Size with hindi': {
+            'value': chrome_base + webview_base,
+            'units': 'bytes',
+          },
+        },
+        'Dex': {
+          'Chrome_unique methods': {'value': chrome_methods, 'units': 'count'},
+          'WebView_unique methods': {
+            'value': webview_methods,
+            'units': 'count',
+          },
+          'Combined_unique methods': {
+            'value': combined_methods,
+            'units': 'count',
+          },
+        },
+      }
+
+    before_charts = make_charts(
+      180_000_000, 110_000_000, 90_000_000, 80_000_000, 50_000, 40_000, 60_000
+    )
+    # Shared +10KB in normalized size, WebView-only -20KB in base module,
+    # +10 methods in Chrome and +5 in WebView with +12 unique across both.
+    after_charts = make_charts(
+      180_010_000, 110_010_000, 90_000_000, 79_980_000, 50_010, 40_005, 60_012
+    )
+
+    diff = trybot_commit_size_checker.diagnose_bloat.ResourceSizesDiff()
+    with mock.patch.object(
+      diff, '_LoadResults', side_effect=[before_charts, after_charts]
+    ):
+      diff.ProduceDiff('before', 'after')
+
+    self.assertEqual(10_000, diff.summary_stat.value)
+    self.assertEqual(-20_000, diff.CombinedSizeChangeForSection('base'))
+    self.assertEqual(12, diff.CombinedSizeChangeForSection('Dex'))
+
   def testUseAlternativeIfMissing(self):
     # The reference build is from main and only stages the legacy names, while
     # the patched build asks for the renamed ones.

@@ -198,6 +198,9 @@ template("write_ssargs") {
   if (defined(invoker.symbols_dir)) {
     _extra_args += " --symbols-dir ${invoker.symbols_dir}"
   }
+  if (defined(invoker.no_java) && invoker.no_java) {
+    _extra_args += " --no-java"
+  }
 
   # Base names (i.e., no full path) are used because .ssargs files specifies
   # files using paths relative to itself. It is expected for |ssargs_path| to

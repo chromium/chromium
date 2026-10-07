@@ -145,7 +145,7 @@ class ResourceSizesDiff(BaseDiff):
       for subsection_name, value, units in results:
         if 'normalized' in subsection_name:
           items.append([section_name, subsection_name, value, units])
-    if len(items) > 1:  # Handle Trichrome.
+    if len(items) > 1:  # Handle multi-container targets.
       items = [item for item in items if 'Combined_normalized' in item[1]]
     if len(items) == 1:
       [section_name, subsection_name, value, units] = items[0]
@@ -185,6 +185,20 @@ class ResourceSizesDiff(BaseDiff):
     for section, section_dict in after.items():
       if self._include_sections and section not in self._include_sections:
         continue
+      container_deltas_by_trace = collections.defaultdict(list)
+      for subsection, v in section_dict.items():
+        if subsection.startswith('Combined_'):
+          continue
+        if (
+          section in before
+          and subsection in before[section]
+          and v['units'] == before[section][subsection]['units']
+        ):
+          _, sep, trace_title = subsection.partition('_')
+          if sep:
+            container_deltas_by_trace[trace_title].append(
+              v['value'] - before[section][subsection]['value']
+            )
       for subsection, v in section_dict.items():
         # Ignore entries when resource_sizes.py chartjson format has changed.
         if (
@@ -199,10 +213,23 @@ class ResourceSizesDiff(BaseDiff):
             subsection,
           )
         else:
+          delta = v['value'] - before[section][subsection]['value']
+          if (
+            subsection.startswith('Combined_')
+            and subsection != 'Combined_unique methods'
+          ):
+            trace_title = subsection[len('Combined_') :]
+            container_deltas = container_deltas_by_trace.get(trace_title)
+            if container_deltas:
+              delta = (
+                max(container_deltas)
+                if any(d > 0 for d in container_deltas)
+                else min(container_deltas)
+              )
           self._diff[section].append(
             _DiffResult(
               subsection,
-              v['value'] - before[section][subsection]['value'],
+              delta,
               v['units'],
             )
           )
@@ -261,6 +288,7 @@ class _BuildHelper:
     self.target = args.target
     self.target_os = args.target_os
     self.use_reclient = args.use_reclient
+    self.webview = args.webview
     self.apk_name_override = args.custom_apk_name
     self.main_lib_path_override = args.custom_main_lib_path
     self._SetDefaults()
@@ -294,59 +322,67 @@ class _BuildHelper:
     # my_great_apk -> MyGreat.apk
     apk_name = ''.join(s.title() for s in self.target.split('_')[:-1]) + '.apk'
     if self.is_bundle:
-      # trichrome_32_minimal_apks -> Trichrome32Minimal.apk
-      #                           -> Trichrome32.minimal.apks
+      # chrome_public_32_minimal_apks -> ChromePublic32Minimal.apk
+      #                               -> ChromePublic32.minimal.apks
       apk_name = apk_name.replace('Minimal.apk', '.minimal.apks')
     return apk_name.replace('Webview', 'WebView')
 
   @property
   def supersize_input(self):
-    if self.IsTrichrome():
-      suffix = self.TrichromeSuffix()
-      return os.path.join(
-        self.output_directory, 'apks', f'Trichrome{suffix}.ssargs'
-      )
+    if self.IsMultiContainer():
+      suffix = self.SizeTargetSuffix()
+      branding = 'Google' if self.IsGoogleBranded() else ''
+      basename = f'ChromeAndWebView{branding}{suffix}.ssargs'
+      return os.path.join(self.output_directory, 'apks', basename)
     return self.abs_apk_paths[0]
 
   @property
   def apk_paths(self):
-    if self.IsTrichrome():
-      suffix = self.TrichromeSuffix()
-      return [
-        os.path.join('apks', f'TrichromeChrome{suffix}.minimal.apks'),
-        os.path.join('apks', f'TrichromeWebView{suffix}.minimal.apks'),
-        os.path.join('apks', f'TrichromeLibrary{suffix}.apk'),
-      ]
+    if self.IsMultiContainer():
+      suffix = self.SizeTargetSuffix()
+      chrome_suffix = '32' if suffix == '32' else ''
+      if self.IsGoogleBranded():
+        basenames = [
+          f'Chrome{chrome_suffix}.minimal.apks',
+          f'SystemWebViewGoogle{suffix}.minimal.apks',
+        ]
+      else:
+        basenames = [
+          f'ChromePublic{chrome_suffix}.minimal.apks',
+          f'SystemWebView{suffix}.minimal.apks',
+        ]
+      return [os.path.join('apks', b) for b in basenames]
 
     return [os.path.join('apks', self.apk_name)]
 
   @property
-  def main_lib_path(self):
+  def main_lib_paths(self):
     # TODO(agrieve): Could maybe extract from .apk or GN?
     if self.main_lib_path_override:
-      return self.main_lib_path_override
+      return [self.main_lib_path_override]
     if self.IsLinux():
-      return 'chrome'
-    if 'monochrome' in self.target or 'trichrome' in self.target:
-      ret = 'lib.unstripped/libmonochrome.so'
-    elif 'webview' in self.target:
-      ret = 'lib.unstripped/libwebviewchromium.so'
+      return ['chrome']
+    if self.SizeTargetSuffix() == '32':
+      lib_dir = 'android_clang_arm/lib.unstripped'
     else:
-      ret = 'lib.unstripped/libchrome.so'
-    return ret
+      lib_dir = 'lib.unstripped'
+    if self.IsMultiContainer():
+      return [
+        f'{lib_dir}/libchrome.so',
+        f'{lib_dir}/libwebviewchromium.so',
+      ]
+    if 'webview' in self.target:
+      return [f'{lib_dir}/libwebviewchromium.so']
+    return [f'{lib_dir}/libchrome.so']
 
   @property
-  def abs_main_lib_path(self):
-    return os.path.join(self.output_directory, self.main_lib_path)
-
-  @property
-  def map_file_path(self):
-    return self.main_lib_path + '.map.gz'
+  def abs_main_lib_paths(self):
+    return [os.path.join(self.output_directory, x) for x in self.main_lib_paths]
 
   @property
   def size_name(self):
     if self.IsLinux():
-      return os.path.basename(self.main_lib_path) + '.size'
+      return os.path.basename(self.main_lib_paths[0]) + '.size'
     return self.apk_name + '.size'
 
   def _SetDefaults(self):
@@ -369,16 +405,37 @@ class _BuildHelper:
     if not self.target:
       if self.IsLinux():
         self.target = 'chrome'
-      elif self.enable_chrome_android_internal:
-        if 'target_cpu="arm64"' in self.extra_gn_args_str:
-          self.target = 'trichrome_google_64_minimal_apks'
+      elif self.webview:
+        if self.enable_chrome_android_internal:
+          prefix = 'system_webview_google'
         else:
-          self.target = 'trichrome_google_32_minimal_apks'
+          prefix = 'system_webview'
+        if 'target_cpu="arm64"' in self.extra_gn_args_str:
+          self.target = f'{prefix}_64_minimal_apks'
+        else:
+          self.target = f'{prefix}_32_minimal_apks'
       else:
-        if 'target_cpu="arm64"' in self.extra_gn_args_str:
-          self.target = 'trichrome_64_minimal_apks'
+        if self.enable_chrome_android_internal:
+          prefix = 'chrome'
         else:
-          self.target = 'trichrome_32_minimal_apks'
+          prefix = 'chrome_public'
+        if 'target_cpu="arm64"' in self.extra_gn_args_str:
+          self.target = f'{prefix}_minimal_apks'
+        else:
+          self.target = f'{prefix}_32_minimal_apks'
+      return
+
+    # Binary size is measured on Chrome + WebView everywhere now, so no
+    # remaining Trichrome target can be measured. Reject them with a useful
+    # message rather than failing later on a missing .apks file.
+    if 'trichrome' in self.target:
+      _Die(
+        'Target "%s" is a legacy Trichrome target, which is no longer '
+        'supported by binary size tools. To diagnose older commits that '
+        'used Trichrome, please check out and run diagnose_bloat.py from a '
+        'commit prior to the Chrome and WebView size migration.',
+        self.target,
+      )
 
   def _GenGnCmd(self):
     gn_args = 'is_official_build=true'
@@ -428,21 +485,21 @@ class _BuildHelper:
   def IsAndroid(self):
     return self.target_os == 'android'
 
-  def IsTrichrome(self):
-    return 'trichrome' in self.target
+  def IsMultiContainer(self):
+    """Whether the target builds several APKs that are measured together."""
+    return 'chrome_and_webview' in self.target
 
-  def TrichromeSuffix(self):
-    assert self.IsTrichrome()
-    ret = ''
-    if '_google' in self.target:
-      ret = 'Google'
-    if '64_32' in self.target:
-      ret += '6432'
-    elif '64' in self.target:
-      ret += '64'
-    elif '32' in self.target:
-      ret += '32'
-    return ret
+  def IsGoogleBranded(self):
+    """Whether the target builds //clank's Google-branded APKs."""
+    return '_google' in self.target
+
+  def SizeTargetSuffix(self):
+    """Returns the filename suffix used by size targets: '', '32', or '64'."""
+    if '64' in self.target:
+      return '64'
+    if '32' in self.target:
+      return '32'
+    return ''
 
   def IsLinux(self):
     return self.target_os == 'linux'
@@ -484,19 +541,25 @@ class _BuildArchive:
       self._ArchiveResourceSizes()
     self._ArchiveSizeFile()
     if self._save_unstripped:
-      self._ArchiveFile(self.build.abs_main_lib_path)
+      for path in self.build.abs_main_lib_paths:
+        self._ArchiveFile(path)
     self.metadata.Write()
     assert self.Exists()
 
   def Exists(self):
     ret = self.metadata.Exists() and os.path.exists(self.archived_size_path)
     if self._save_unstripped:
-      ret = ret and os.path.exists(self.archived_unstripped_path)
+      ret = ret and all(
+        os.path.exists(p) for p in self.archived_unstripped_paths
+      )
     return ret
 
   @property
-  def archived_unstripped_path(self):
-    return os.path.join(self.dir, os.path.basename(self.build.main_lib_path))
+  def archived_unstripped_paths(self):
+    return [
+      os.path.join(self.dir, os.path.basename(p))
+      for p in self.build.main_lib_paths
+    ]
 
   @property
   def archived_size_path(self):
@@ -511,11 +574,10 @@ class _BuildArchive:
       '--chromium-output-dir',
       self.build.output_directory,
     ]
-    if self.build.IsTrichrome():
+    if self.build.IsMultiContainer():
       get_apk = lambda t: next(x for x in self.build.abs_apk_paths if t in x)
-      cmd += ['--trichrome-chrome', get_apk('Chrome')]
-      cmd += ['--trichrome-webview', get_apk('WebView')]
-      cmd += ['--trichrome-library', get_apk('Library')]
+      cmd += ['--chrome', get_apk('Chrome')]
+      cmd += ['--webview', get_apk('WebView')]
       cmd += [self.build.apk_name]
     else:
       cmd += [self.build.abs_apk_paths[0]]
@@ -532,10 +594,12 @@ class _BuildArchive:
     supersize_cmd = [_SUPERSIZE_PATH, 'archive', self.archived_size_path]
     if self.build.IsAndroid():
       supersize_cmd += ['-f', self.build.supersize_input]
-      if os.path.exists(self.build.abs_main_lib_path):
-        supersize_cmd += ['--aux-elf-file', self.build.abs_main_lib_path]
+      if len(self.build.abs_main_lib_paths) == 1 and os.path.exists(
+        self.build.abs_main_lib_paths[0]
+      ):
+        supersize_cmd += ['--aux-elf-file', self.build.abs_main_lib_paths[0]]
     else:
-      supersize_cmd += ['--elf-file', self.build.abs_main_lib_path]
+      supersize_cmd += ['--elf-file', self.build.abs_main_lib_paths[0]]
     supersize_cmd += ['--output-directory', self.build.output_directory]
     if self._supersize_archive_args:
       supersize_cmd.extend(self._supersize_archive_args.split())
@@ -1148,15 +1212,20 @@ def main():
   build_group.add_argument(
     '--target',
     help='GN target to build. Linux default: chrome. '
-    'Android default: trichrome_32_minimal_apks or '
-    'trichrome_google_32_minimal_apks (depending on '
-    '--enable-chrome-android-internal).',
+    'Android default: chrome_public_32_minimal_apks or '
+    'chrome_32_minimal_apks (depending on '
+    '--enable-chrome-android-internal), or the corresponding '
+    'system_webview_* target when --webview is passed.',
+  )
+  build_group.add_argument(
+    '--webview',
+    action='store_true',
+    help='Default to measuring WebView rather than Chrome.',
   )
   build_group.add_argument(
     '--arm64',
     action='store_true',
-    help='Adds target_cpu="arm64" and sets the default '
-    'target to trichrome_64_minimal_apks',
+    help='Adds target_cpu="arm64" and uses the 64-bit default target.',
   )
   build_group.add_argument(
     '--custom-apk-name',
@@ -1185,6 +1254,8 @@ def main():
   logging.basicConfig(
     level=log_level, format='%(levelname).1s %(relativeCreated)6d %(message)s'
   )
+  if args.target and args.webview:
+    parser.error('--webview cannot be used with --target')
   if args.target and args.target.endswith('_bundle'):
     parser.error('Bundle targets must use _minimal_apks variants')
   if args.arm64:
