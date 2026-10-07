@@ -43,23 +43,11 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include <wrl/client.h>
-
-#include "base/command_line.h"
 #include "base/enterprise_util.h"
-#include "base/process/kill.h"
-#include "base/process/launch.h"
-#include "base/process/process.h"
-#include "base/threading/platform_thread.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/win/scoped_variant.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/google/google_update_app_command.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/helper.h"
 #include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/installation_state.h"
-#include "chrome/installer/util/util_constants.h"
 #include "components/policy/core/common/management/management_service.h"
 #endif
 
@@ -105,6 +93,7 @@ base::Time GetReleaseTimeFromVersion(const base::Version& version) {
 using ::component_updater::PlatformRuntimeComponentInstallerPolicy;
 using ::component_updater::PlatformRuntimeInstallationResult;
 using ::component_updater::PlatformRuntimeInstallerDelegate;
+using ::component_updater::ProductComponentInstallResult;
 
 bool IsPathOnNetworkDrive(const base::FilePath& path) {
   if (path.empty()) {
@@ -120,19 +109,25 @@ bool IsPathOnNetworkDrive(const base::FilePath& path) {
   return ::GetDriveType(root_path.value().c_str()) == DRIVE_REMOTE;
 }
 
-// Maps installer return codes to PlatformRuntimeInstallationResult, breaking
-// down internal errors for system installs (managed device and network drive of
-// the staged inner CRX).
-PlatformRuntimeInstallationResult MapInstallerExitCode(
-    DWORD exit_code,
+// Maps ProductComponentInstallResult to PlatformRuntimeInstallationResult,
+// breaking down internal errors for system installs (managed device and network
+// drive of the staged inner CRX).
+PlatformRuntimeInstallationResult ToPlatformRuntimeInstallationResult(
+    ProductComponentInstallResult result,
     const base::FilePath& inner_crx,
     bool is_system_install) {
-  switch (exit_code) {
-    case installer::INSTALL_COMPONENT_SUCCESS:
+  switch (result) {
+    case ProductComponentInstallResult::kSuccess:
       return PlatformRuntimeInstallationResult::kSuccess;
-    case installer::INSTALL_COMPONENT_ALREADY_EXISTS:
+    case ProductComponentInstallResult::kAlreadyExists:
       return PlatformRuntimeInstallationResult::kAlreadyExists;
-    case installer::INSTALL_COMPONENT_FAILED_INTERNAL: {
+    case ProductComponentInstallResult::kCommandNotFound:
+      return PlatformRuntimeInstallationResult::kCommandNotFound;
+    case ProductComponentInstallResult::kNotInstalled:
+      return PlatformRuntimeInstallationResult::kNotInstalled;
+    case ProductComponentInstallResult::kLaunchFailed:
+      return PlatformRuntimeInstallationResult::kLaunchFailed;
+    case ProductComponentInstallResult::kFailedInternal: {
       if (is_system_install) {
         // App Command can likely fail due to permission errors if the staged
         // inner CRX is on a network path, or if the device is managed. Break
@@ -157,122 +152,24 @@ PlatformRuntimeInstallationResult MapInstallerExitCode(
       }
       return PlatformRuntimeInstallationResult::kFailedInternal;
     }
-    case installer::INSTALL_COMPONENT_FAILED_SIGNATURE:
+    case ProductComponentInstallResult::kSignatureVerificationFailed:
       return PlatformRuntimeInstallationResult::kFailedSignature;
-    case installer::INSTALL_COMPONENT_INVALID_INPUT:
+    case ProductComponentInstallResult::kFailedInvalidInput:
       return PlatformRuntimeInstallationResult::kFailedInvalidInput;
-    default:
+    case ProductComponentInstallResult::kFailedComAccessDenied:
+      return PlatformRuntimeInstallationResult::kFailedComAccessDenied;
+    case ProductComponentInstallResult::kFailedComServerDied:
+      return PlatformRuntimeInstallationResult::kFailedComServerDied;
+    case ProductComponentInstallResult::kFailedComInvalidArg:
+      return PlatformRuntimeInstallationResult::kFailedComInvalidArg;
+    case ProductComponentInstallResult::kFailedComUnexpected:
+      return PlatformRuntimeInstallationResult::kFailedComUnexpected;
+    case ProductComponentInstallResult::kFailedComOther:
+      return PlatformRuntimeInstallationResult::kFailedComOther;
+    case ProductComponentInstallResult::kIncompatibleBaseVersion:
+    case ProductComponentInstallResult::kOtherInstallerError:
       return PlatformRuntimeInstallationResult::kFailedOther;
   }
-}
-
-// Maps COM and RPC HRESULT errors returned during AppCommand execution to
-// PlatformRuntimeInstallationResult.
-PlatformRuntimeInstallationResult MapComErrorToInstallationResult(HRESULT hr) {
-  switch (hr) {
-    case E_ACCESSDENIED:
-      return PlatformRuntimeInstallationResult::kFailedComAccessDenied;
-    case RPC_E_SERVER_DIED:
-    case RPC_E_DISCONNECTED:
-    case HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE):
-      return PlatformRuntimeInstallationResult::kFailedComServerDied;
-    case E_INVALIDARG:
-      return PlatformRuntimeInstallationResult::kFailedComInvalidArg;
-    case E_UNEXPECTED:
-      return PlatformRuntimeInstallationResult::kFailedComUnexpected;
-    default:
-      return PlatformRuntimeInstallationResult::kFailedComOther;
-  }
-}
-
-// Installs the component for system-level Chrome via elevated Google Update
-// AppCommand (IAppCommandWeb).
-PlatformRuntimeInstallationResult InstallSystemLevel(
-    const base::FilePath& inner_crx,
-    PlatformRuntimeInstallerDelegate* delegate) {
-  TRACE_EVENT("update_client", "InstallSystemLevel");
-  auto app_command_expected =
-      delegate->GetAppCommand(installer::kCmdInstallComponent);
-  if (!app_command_expected.has_value()) {
-    return PlatformRuntimeInstallationResult::kCommandNotFound;
-  }
-
-  Microsoft::WRL::ComPtr<IAppCommandWeb> app_command =
-      std::move(app_command_expected.value());
-  base::win::ScopedVariant inner_crx_var(inner_crx.value().c_str());
-  const VARIANT& empty = base::win::ScopedVariant::kEmptyVariant;
-  HRESULT hr = app_command->execute(inner_crx_var, empty, empty, empty, empty,
-                                    empty, empty, empty, empty);
-  if (FAILED(hr)) {
-    return MapComErrorToInstallationResult(hr);
-  }
-
-  UINT status = 0;
-  while (true) {
-    hr = app_command->get_status(&status);
-    if (FAILED(hr)) {
-      return MapComErrorToInstallationResult(hr);
-    }
-    if (status == COMMAND_STATUS_ERROR) {
-      return PlatformRuntimeInstallationResult::kLaunchFailed;
-    }
-    if (status == COMMAND_STATUS_COMPLETE) {
-      break;
-    }
-    base::PlatformThread::Sleep(base::Seconds(1));
-  }
-
-  DWORD exit_code = 0;
-  hr = app_command->get_exitCode(&exit_code);
-  if (FAILED(hr)) {
-    return MapComErrorToInstallationResult(hr);
-  }
-
-  return MapInstallerExitCode(exit_code, inner_crx,
-                              /*is_system_install=*/true);
-}
-
-// Installs the component for per-user Chrome by directly executing child
-// setup.exe.
-PlatformRuntimeInstallationResult InstallUserLevel(
-    const base::FilePath& inner_crx,
-    PlatformRuntimeInstallerDelegate* delegate) {
-  TRACE_EVENT("update_client", "InstallUserLevel");
-  installer::ProductState product_state;
-  if (!product_state.Initialize(/*system_install=*/false)) {
-    return PlatformRuntimeInstallationResult::kNotInstalled;
-  }
-  base::FilePath setup_path = product_state.GetSetupPath();
-  if (setup_path.empty()) {
-    return PlatformRuntimeInstallationResult::kCommandNotFound;
-  }
-
-  base::CommandLine cmd(setup_path);
-  cmd.AppendSwitchPath(installer::switches::kInstallComponent, inner_crx);
-  cmd.AppendSwitch(installer::switches::kVerboseLogging);
-  InstallUtil::AppendModeAndChannelSwitches(&cmd);
-
-  base::LaunchOptions options;
-  options.start_hidden = true;
-  ::SetLastError(ERROR_SUCCESS);
-  base::Process process = delegate->LaunchProcess(cmd, options);
-  if (!process.IsValid()) {
-    const DWORD error_code = ::GetLastError();
-    if (error_code == ERROR_FILE_NOT_FOUND ||
-        error_code == ERROR_PATH_NOT_FOUND) {
-      return PlatformRuntimeInstallationResult::kCommandNotFound;
-    }
-    return PlatformRuntimeInstallationResult::kLaunchFailed;
-  }
-
-  component_updater::PlatformRuntimeComponentInstallerPolicy::
-      ScopedAllowWaitForExit allow_wait_for_exit;
-  int exit_code = 0;
-  if (!process.WaitForExit(&exit_code)) {
-    return PlatformRuntimeInstallationResult::kLaunchFailed;
-  }
-  return MapInstallerExitCode(static_cast<DWORD>(exit_code), inner_crx,
-                              /*is_system_install=*/false);
 }
 #endif
 
@@ -280,27 +177,8 @@ PlatformRuntimeInstallationResult InstallUserLevel(
 
 namespace component_updater {
 
-#if BUILDFLAG(IS_WIN)
-base::expected<Microsoft::WRL::ComPtr<IAppCommandWeb>, HRESULT>
-PlatformRuntimeInstallerDelegate::GetAppCommand(
-    const std::wstring& command_name) {
-  return GetUpdaterAppCommand(command_name);
-}
-
-base::Process PlatformRuntimeInstallerDelegate::LaunchProcess(
-    const base::CommandLine& cmd,
-    const base::LaunchOptions& options) {
-  return base::LaunchProcess(cmd, options);
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 PlatformRuntimeComponentInstallerPolicy::
-    PlatformRuntimeComponentInstallerPolicy()
-#if BUILDFLAG(IS_WIN)
-    : installer_delegate_(std::make_unique<PlatformRuntimeInstallerDelegate>())
-#endif
-{
-}
+    PlatformRuntimeComponentInstallerPolicy() = default;
 
 #if BUILDFLAG(IS_WIN)
 PlatformRuntimeComponentInstallerPolicy::
@@ -353,9 +231,13 @@ PlatformRuntimeComponentInstallerPolicy::OnCustomInstall(
   }
 
   base::ElapsedTimer timer;
+  ProductComponentInstallResult install_result =
+      installer_delegate_
+          ? InstallProductComponentForTesting(inner_crx, /*user_data_dir=*/{},
+                                              installer_delegate_.get())
+          : InstallProductComponent(inner_crx);
   PlatformRuntimeInstallationResult result =
-      is_system ? InstallSystemLevel(inner_crx, installer_delegate_.get())
-                : InstallUserLevel(inner_crx, installer_delegate_.get());
+      ToPlatformRuntimeInstallationResult(install_result, inner_crx, is_system);
 
   base::UmaHistogramMediumTimes(histogram_duration_name, timer.Elapsed());
   base::UmaHistogramEnumeration(histogram_result_name, result);

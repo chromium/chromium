@@ -227,7 +227,7 @@ int NumberOfPhysicalCores();
 }  // namespace system
 }  // namespace chromeos
 namespace component_updater {
-class PlatformRuntimeComponentInstallerPolicy;
+class ScopedAllowWaitForProductComponentInstallExit;
 }  // namespace component_updater
 namespace content {
 class BrowserGpuChannelHostFactory;
@@ -775,7 +775,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class blink::WorkerThread;
   friend class blink::scheduler::NonMainThreadImpl;
   friend class cc::CategorizedWorkerPoolJob;
-  friend class component_updater::PlatformRuntimeComponentInstallerPolicy;
+  friend class component_updater::ScopedAllowWaitForProductComponentInstallExit;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
   friend class content::DWriteFontCollectionProxy;

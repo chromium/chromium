@@ -27,6 +27,7 @@ source_set("component_updater") {
     "crowd_deny_component_installer.h",
     "first_party_sets_component_installer.h",
     "indigo_component_installer.h",
+    "install_product_component.h",
     "mei_preload_component_installer.h",
     "pki_metadata_component_installer.h",
     "pki_metadata_component_installer_policy.h",
@@ -125,6 +126,7 @@ source_set("impl") {
     "crowd_deny_component_installer.cc",
     "first_party_sets_component_installer.cc",
     "indigo_component_installer.cc",
+    "install_product_component.cc",
     "mei_preload_component_installer.cc",
     "pki_metadata_component_installer.cc",
     "pki_metadata_component_installer_policy.cc",
@@ -265,15 +267,20 @@ source_set("impl") {
   }
 
   if (is_win) {
-    sources += [ "updater_state_win.cc" ]
+    sources += [
+      "install_product_component_win.cc",
+      "updater_state_win.cc",
+    ]
     if (is_chrome_branded) {
       sources += [ "recovery_improved_component_installer_win.cc" ]
     }
     deps += [
       "//chrome/browser/enterprise",
       "//chrome/browser/google",
+      "//chrome/common/child_module",
       "//chrome/elevation_service:public_headers",
       "//chrome/installer/util:with_no_strings",
+      "//chrome/updater/app/server/win:updater_legacy_idl",
     ]
   }
 
@@ -339,6 +346,7 @@ source_set("unit_tests") {
     "chrome_component_updater_configurator_unittest.cc",
     "crl_set_component_installer_unittest.cc",
     "indigo_component_installer_unittest.cc",
+    "install_product_component_unittest.cc",
     "optimization_guide_on_device_model_installer_unittest.cc",
     "origin_trials_component_installer_unittest.cc",
     "pki_metadata_component_installer_unittest.cc",
@@ -416,6 +424,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/enterprise",
       "//chrome/browser/google",
+      "//chrome/common/child_module",
       "//chrome/install_static/test:test_support",
       "//chrome/installer/util:with_no_strings",
       "//chrome/updater/app/server/win:updater_legacy_idl",

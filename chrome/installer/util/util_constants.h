@@ -131,6 +131,7 @@ enum InstallStatus {
                                       // due to a conflict during upload.
   CONFIGURE_APP_CONTAINER_SANDBOX_SUCCESS = 78,
   CONFIGURE_APP_CONTAINER_SANDBOX_FAILED = 79,
+  // LINT.IfChange(InstallComponent)
   INSTALL_COMPONENT_SUCCESS = 80,  // Successfully installed component DLL to
                                    // system dir.
   INSTALL_COMPONENT_FAILED_INTERNAL = 81,  // Failed to install component DLL
@@ -142,6 +143,7 @@ enum InstallStatus {
   INSTALL_COMPONENT_INVALID_INPUT = 84,     // Failed due to invalid input
                                          // structure, manifest, or unsupported
                                          // component.
+  // LINT.ThenChange(/chrome/browser/component_updater/install_product_component_win.cc:MapInstallerExitCode)
   MAX_INSTALL_STATUS = 85,  // When adding a new result, bump this and update
                             // the SetupInstallResult enum in enums.xml.
 };
