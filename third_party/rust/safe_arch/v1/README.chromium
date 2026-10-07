@@ -1,0 +1,11 @@
+Name: safe_arch
+URL: https://crates.io/crates/safe_arch
+Version: 1.2.0
+Revision: d45ee8c53c38fdddee2eade0a5ddef1a3c677b4c
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/safe_arch-v1/LICENSE-APACHE.md
+Shipped: no
+Security Critical: no
+
+Description: Crate that exposes `core::arch` safely via `#[cfg()]`.

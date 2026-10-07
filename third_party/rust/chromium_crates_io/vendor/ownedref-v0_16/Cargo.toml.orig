@@ -1,0 +1,43 @@
+[package]
+name = "ownedref"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "Library to pass around references that will be owned types on deserialization"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "shmem", "no-std"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["embedded", "os", "no-std"]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+default = []
+document-features = ["dep:document-features"]
+
+#! # Feature Flags
+#! ### General Features
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true, features = ["std"] }
+
+[dependencies]
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+
+libafl_core = { workspace = true }
+serde = { workspace = true, features = ["alloc", "derive"] }
+
+[lints]
+workspace = true

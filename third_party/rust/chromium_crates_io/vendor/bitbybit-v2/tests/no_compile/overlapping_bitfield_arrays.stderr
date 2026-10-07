@@ -1,0 +1,10 @@
+error: bitfield!: Detected overlap of field `u8_array` with other field
+ --> tests/no_compile/overlapping_bitfield_arrays.rs:4:1
+  |
+4 | / struct Test {
+5 | |     #[bits(8..=15, rw)]
+6 | |     overlapping_bits: u8,
+7 | |     #[bits(0..=7, rw)]
+8 | |     u8_array: [u8; 2],
+9 | | }
+  | |_^

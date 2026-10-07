@@ -1,0 +1,11 @@
+Name: bitbybit
+URL: https://crates.io/crates/bitbybit
+Version: 2.0.1
+Revision: a098b6457ca9246b2affce928b1f74750c9d50f8
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/bitbybit-v2/LICENSE
+Shipped: no
+Security Critical: no
+
+Description: Efficient implementation of bit-fields where several numbers are packed within a larger number and bit-enums. Useful for drivers, so it works in no_std environments

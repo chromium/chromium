@@ -1,0 +1,5 @@
+error: bitfield!: Field field requires 65 bits, but only has (64)
+ --> tests/no_compile/invalid_bit_pos/invalid_bit_pos_u64.rs:5:5
+  |
+5 |     #[bit(64, rw)]
+  |     ^^^^^^^^^^^^^^

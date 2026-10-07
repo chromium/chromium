@@ -1,0 +1,61 @@
+[package]
+name = "serde_anymap"
+description = "A map that can retrieve values by type - and is SerDe serializable"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "shmem", "no-std"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["embedded", "os", "no-std"]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+default = ["std", "stable_anymap"]
+document-features = ["dep:document-features"]
+
+#! # Feature Flags
+#! ### General Features
+
+## Enables features that need rust's `std` lib to work, like print, env, ... support
+std = ["libafl_core/std", "erased-serde/std", "serde/std"]
+
+## Create keys that are more stable between compilations
+stable_anymap = []
+serdeany_autoreg = ["ctor"]
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true, features = ["std"] }
+
+[dependencies]
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+
+ctor = { workspace = true, optional = true }
+erased-serde = { workspace = true, default-features = false, features = [
+  "alloc",
+] }
+hashbrown = { workspace = true, features = [
+  "serde",
+  "default-hasher",
+  "raw-entry",
+] }
+libafl_core = { workspace = true }
+postcard = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+static_assertions = { workspace = true }
+
+[lints]
+workspace = true

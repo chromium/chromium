@@ -1,0 +1,5 @@
+error: The enum has 2 variants, it is exhaustive for 1 bits. Either remove variants, use a larger storage type, or mark this enum as 'exhaustive = true'.
+ --> tests/no_compile/exhaustive_bitenum.rs:3:28
+  |
+3 | #[bitenum(u1, exhaustive = false)]
+  |                            ^^^^^

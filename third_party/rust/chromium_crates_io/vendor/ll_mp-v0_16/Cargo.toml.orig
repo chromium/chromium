@@ -1,0 +1,96 @@
+[package]
+name = "ll_mp"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "A library for low level message passing"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "ipc", "no-std"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["os", "no-std"]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+default = ["std", "alloc", "gzip", "llmp_compression", "llmp_small_maps"]
+document-features = ["dep:document-features"]
+
+#! # Feature Flags
+#! ### General Features
+
+## Enables features that need rust's `std` lib to work, like print, env, ... support
+std = [
+  "alloc",
+  "exceptional/std",
+  "hostname",
+  "libafl_core/std",
+  "nix",
+  "no_std_time/std",
+  "serial_test",
+  "shmem_providers/std",
+]
+
+## Enables all features that allocate in `no_std`
+alloc = [
+  "exceptional/alloc",
+  "libafl_core/alloc",
+  "libafl_core/serde",
+  "no_std_time/alloc",
+  "postcard",
+  "shmem_providers/alloc",
+]
+
+## Enables gzip compression in certain parts of the lib
+gzip = ["miniz_oxide", "alloc"]
+
+#! ### LLMP features
+
+## If set, llmp will bind to 0.0.0.0, allowing cross-device communication. Binds to localhost by default.
+llmp_bind_public = ["alloc"]
+
+## Enables llmp compression using GZip
+llmp_compression = ["alloc", "gzip"]
+
+## Enables debug output for LLMP (also needs a `logger` installed)
+llmp_debug = ["alloc", "std"]
+
+## Reduces the initial map size for llmp
+llmp_small_maps = ["alloc"]
+
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+
+[dependencies]
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+exceptional = { workspace = true }
+hostname = { version = "0.4.2", optional = true }                  # Is there really no gethostname in the stdlib?
+libafl_core = { workspace = true, features = ["serde"] }
+log = { workspace = true }
+miniz_oxide = { version = "0.9.1", optional = true }
+nix = { workspace = true, features = ["socket"], optional = true }
+no_std_time = { workspace = true }
+postcard = { workspace = true, optional = true }                   # no_std compatible serde serialization format
+serde = { workspace = true, features = ["alloc", "derive"] }
+serial_test = { workspace = true, optional = true }
+shmem_providers = { workspace = true }
+tuple_list = { workspace = true }
+
+[[example]]
+name = "llmp_test"
+path = "./examples/llmp_test/main.rs"
+required-features = ["std"]
+
+[lints]
+workspace = true

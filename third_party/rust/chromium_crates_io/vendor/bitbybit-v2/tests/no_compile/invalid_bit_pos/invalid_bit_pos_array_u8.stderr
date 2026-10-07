@@ -1,0 +1,5 @@
+error: bitfield!: Field multi_bit_field requires 9 bits, but only has (8)
+ --> tests/no_compile/invalid_bit_pos/invalid_bit_pos_array_u8.rs:5:5
+  |
+5 |     #[bits([0, 8], rw)]
+  |     ^^^^^^^^^^^^^^^^^^^

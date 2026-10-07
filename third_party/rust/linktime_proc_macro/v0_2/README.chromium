@@ -1,0 +1,11 @@
+Name: linktime-proc-macro
+URL: https://crates.io/crates/linktime-proc-macro
+Version: 0.2.3
+Revision: 00ca36a7ed6d959d01866feeeec078a79b6dfa3f
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/linktime-proc-macro-v0_2/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: proc-macro helpers for linktime crates (ctors, dtors, linker sections)

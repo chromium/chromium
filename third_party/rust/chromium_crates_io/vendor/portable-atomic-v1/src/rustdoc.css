@@ -1,0 +1,92 @@
+/*
+ * Adapted from https://github.com/TheBevyFlock/bevy_cli/blob/d3e79396595f675798af5be8be56efbfd2737ba0/bevy_lint/assets/rustdoc.css.
+ * Adjusted to work well with our GFM (GitHub Flavored Markdown) to CommonMark converter.
+ */
+
+/*
+ * Extended theme configuration.
+ *
+ * These colors are based off Github's (blue for notes, green for tips, etc.), though the exact
+ * colors are taken from `rustdoc`'s themes.
+ */
+:root[data-theme="light"] {
+  --rustdoc-alert-note: #2196f3;
+  --rustdoc-alert-tip: #068000;
+  --rustdoc-alert-important: #6e4fc9;
+  --rustdoc-alert-warning: #ff8e00;
+  --rustdoc-alert-caution: #be2525;
+}
+:root[data-theme="dark"] {
+  --rustdoc-alert-note: #008dfd;
+  --rustdoc-alert-tip: #2bab63;
+  --rustdoc-alert-important: #b78cf2;
+  --rustdoc-alert-warning: #ff8e00;
+  --rustdoc-alert-caution: #d93d3d;
+}
+:root[data-theme="ayu"] {
+  --rustdoc-alert-note: #39afd7;
+  --rustdoc-alert-tip: #b8cc52;
+  --rustdoc-alert-important: #a37acc;
+  --rustdoc-alert-warning: #ff8e00;
+  --rustdoc-alert-caution: #df3600;
+}
+
+/*
+ * Alerts are siblings to the `.warning` class, and as such use many of the same rules.
+ *
+ * The first `<p>` in a alert must be the title, as it will be colored and styled differently.
+ */
+.rustdoc-alert {
+  border-left: 2px solid;
+  margin: 0 0 0.75em 0;
+  position: relative;
+  overflow-x: visible !important;
+}
+
+/* Remove the existing quote margin and setup some padding instead. */
+.rustdoc-alert blockquote {
+  margin: 0;
+  padding: 14px;
+}
+
+/* Make the alert title the same sans-serif font and size as headings. */
+.rustdoc-alert blockquote > p:first-child {
+  font-family: "Fira Sans", Arial, sans-serif;
+  font-size: 1.125rem;
+}
+
+/* Color styles for different kinds of alerts. */
+.rustdoc-alert.rustdoc-alert-note {
+  border-left-color: var(--rustdoc-alert-note);
+}
+.rustdoc-alert.rustdoc-alert-note blockquote > p:first-child {
+  color: var(--rustdoc-alert-note);
+}
+
+.rustdoc-alert.rustdoc-alert-tip {
+  border-left-color: var(--rustdoc-alert-tip);
+}
+.rustdoc-alert.rustdoc-alert-tip blockquote > p:first-child {
+  color: var(--rustdoc-alert-tip);
+}
+
+.rustdoc-alert.rustdoc-alert-important {
+  border-left-color: var(--rustdoc-alert-important);
+}
+.rustdoc-alert.rustdoc-alert-important blockquote > p:first-child {
+  color: var(--rustdoc-alert-important);
+}
+
+.rustdoc-alert.rustdoc-alert-warning {
+  border-left-color: var(--rustdoc-alert-warning);
+}
+.rustdoc-alert.rustdoc-alert-warning blockquote > p:first-child {
+  color: var(--rustdoc-alert-warning);
+}
+
+.rustdoc-alert.rustdoc-alert-caution {
+  border-left-color: var(--rustdoc-alert-caution);
+}
+.rustdoc-alert.rustdoc-alert-caution blockquote > p:first-child {
+  color: var(--rustdoc-alert-caution);
+}

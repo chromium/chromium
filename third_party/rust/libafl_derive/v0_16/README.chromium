@@ -1,0 +1,11 @@
+Name: libafl_derive
+URL: https://crates.io/crates/libafl_derive
+Version: 0.16.1
+Revision: 92ad89454765440c7c03b87b11d5dbde753f9633
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/libafl_derive-v0_16/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Derive proc-macro crate for LibAFL

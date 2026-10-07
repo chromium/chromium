@@ -1,0 +1,90 @@
+[package]
+name = "shmem_providers"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "Platform independent shared memory providers for Windows, Linux, Android, iOS, ..."
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "shmem", "no-std"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["embedded", "os", "no-std"]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+default = ["std", "alloc"]
+document-features = ["dep:document-features"]
+
+#! # Feature Flags
+#! ### General Features
+
+## Enables features that need rust's `std` lib to work, like print, env, ... support
+std = [
+  "alloc",
+  "libafl_core/std",
+  "uds",
+  "nix",
+  "libafl_core/nix",
+  "serial_test",
+  "uuid",
+]
+
+## Enables all features that allocate in `no_std`
+alloc = ["libafl_core/alloc", "hashbrown", "postcard", "libafl_core/postcard"]
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+
+[dependencies]
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+fast_rands = { workspace = true }
+libafl_core = { workspace = true }
+log = { workspace = true }
+postcard = { workspace = true, optional = true } # no_std compatible serde serialization format
+serde = { workspace = true, features = ["derive"] }
+hashbrown = { workspace = true, features = [
+  "serde",
+  "default-hasher",
+], default-features = false, optional = true } # A faster hashmap, nostd compatible
+
+# optional-dev deps (change when target.'cfg(accessible(::std))'.test-dependencies will be stable)
+serial_test = { workspace = true, optional = true, default-features = false, features = [
+  "logging",
+] }
+uuid = { workspace = true, optional = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
+uds = { version = "0.4.2", optional = true, default-features = false }
+nix = { workspace = true, optional = true, default-features = false, features = [
+  "fs",
+  "signal",
+  "socket",
+  "poll",
+] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+  "Win32_Foundation",
+  "Win32_Security",
+  "Win32_System_Console",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Kernel",
+  "Win32_System_Memory",
+  "Win32_System_SystemInformation",
+  "Win32_System_Threading",
+] }
+
+[lints]
+workspace = true

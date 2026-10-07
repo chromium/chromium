@@ -1,0 +1,53 @@
+[package]
+name = "wide"
+description = "A crate to help you go wide."
+version = "1.7.1"
+authors = ["Lokathor <zefria@gmail.com>"]
+autotests = false
+repository = "https://github.com/Lokathor/wide"
+readme = "README.md"
+keywords = ["simd", "wide", "lokathor"]
+categories = ["data-structures", "hardware-support"]
+edition = "2024"
+license = "Zlib OR Apache-2.0 OR MIT"
+
+# When updating, also update CI workflows and the badge in the README.
+rust-version = "1.89"
+
+[features]
+default = ["std"]
+
+# Activate `std` within the crate. Currently this gives a much faster `sqrt`
+# impl when an explicit hardware sqrt isn't available.
+std = []
+serde = ["dep:serde_core"]
+
+[target.'cfg(target_arch = "x86")'.dependencies]
+safe_arch = { version = "1.2.0", features = ["bytemuck"] }
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+safe_arch = { version = "1.2.0", features = ["bytemuck"] }
+
+[dependencies]
+serde_core = { version = "1", default-features = false, optional = true }
+bytemuck = "1.24.0"
+
+[dev-dependencies]
+bincode = { version = "1.3.3" }
+criterion = { version = "0.7.0", default-features = false }
+
+[[test]]
+name = "tests"
+path = "tests/main.rs"
+
+[[bench]]
+name = "fma_benchmarks"
+harness = false
+
+[[bench]]
+name = "math_benchmarks"
+harness = false
+
+[[bench]]
+name = "u8_shift"
+harness = false

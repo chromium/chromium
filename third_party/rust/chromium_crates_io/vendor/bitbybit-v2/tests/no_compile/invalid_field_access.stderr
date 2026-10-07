@@ -1,0 +1,5 @@
+error: bitfield!: Invalid ident 'ro'. Expected r, rw, w or stride
+ --> tests/no_compile/invalid_field_access.rs:5:19
+  |
+5 |     #[bits(0..=8, ro)]
+  |                   ^^

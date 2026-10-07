@@ -1,0 +1,127 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "portable_atomic"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/cfgs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/gen/build.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/gen/utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/arm_linux.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/aarch64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/intrinsics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/powerpc64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/riscv64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/s390x.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic128/x86_64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic64/arm_linux.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic64/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic64/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/atomic64/riscv32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/avr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/core_atomic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/aarch64_aa64reg.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/aarch64_apple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/aarch64_fuchsia.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/aarch64_illumos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/aarch64_windows.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/auxv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/powerpc64_aix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/riscv_linux.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/detect/x86_64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/fallback/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/fallback/outline_atomics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/fallback/seq_lock.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/fallback/seq_lock_common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/fallback/seq_lock_wide.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/fallback/utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/float/aarch64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/float/int.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/float/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/interrupt/armv4t.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/interrupt/armv6m.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/interrupt/avr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/interrupt/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/interrupt/msp430.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/interrupt/riscv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/interrupt/xtensa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/msp430.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/riscv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/imp/x86.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/tests/helper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/tests/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/utils.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_name = "portable-atomic"
+  cargo_pkg_description = "Portable atomic types including support for 128-bit atomics, atomic float, etc."
+  cargo_pkg_repository = "https://github.com/taiki-e/portable-atomic"
+  cargo_pkg_version = "1.15.0"
+
+  allow_unsafe = true
+
+  features = [ "fallback" ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/build.rs"
+  build_sources = [
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/build.rs",
+  ]
+  build_script_inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/../version.rs",
+    "//third_party/rust/chromium_crates_io/vendor/portable-atomic-v1/src/gen/build.rs",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

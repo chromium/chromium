@@ -1,0 +1,5 @@
+error: bitfield!: Field field requires 17 bits, but only has (16)
+ --> tests/no_compile/invalid_bit_pos/invalid_bits_pos_u16.rs:5:5
+  |
+5 |     #[bits(15..=16, rw)]
+  |     ^^^^^^^^^^^^^^^^^^^^

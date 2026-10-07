@@ -1,0 +1,52 @@
+[package]
+name = "minibsod"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "A library to dump current register states, etc., on crash"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "bsod"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["os"]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+document-features = ["dep:document-features"]
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+
+[dependencies]
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+libc = { workspace = true }
+exceptional = { workspace = true, features = ["alloc"] }
+
+[target.'cfg(target_vendor = "apple")'.dependencies]
+mach2 = "0.6.0"
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+  "Win32_Foundation",
+  "Win32_Security",
+  "Win32_System_Console",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Kernel",
+  "Win32_System_Memory",
+  "Win32_System_SystemInformation",
+  "Win32_System_Threading",
+] }
+
+[lints]
+workspace = true

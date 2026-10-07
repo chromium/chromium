@@ -1,0 +1,11 @@
+Name: nix
+URL: https://crates.io/crates/nix
+Version: 0.31.3
+Revision: b5933ca178802b558a667514f717a86b3a1cedcc
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/nix-v0_31/LICENSE
+Shipped: no
+Security Critical: no
+
+Description: Rust friendly bindings to *nix APIs

@@ -1,0 +1,25 @@
+[package]
+name = "nonzero_macros"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "Macros for compile-time checked `NonZero` integers and safe `NonNull` pointer creation in `no_std` environments."
+documentation = "https://docs.rs/nonzero_macros"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["macros", "no_std", "const", "safety"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["no-std", "development-tools"]
+
+[lints]
+workspace = true
+
+[features]
+document-features = ["dep:document-features"]
+
+[dependencies]
+document-features = { version = "0.2.12", optional = true }

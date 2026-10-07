@@ -1,0 +1,6 @@
+{
+  "git": {
+    "sha1": "92ad89454765440c7c03b87b11d5dbde753f9633"
+  },
+  "path_in_vcs": "crates/no_std_time"
+}

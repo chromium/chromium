@@ -1,0 +1,11 @@
+Name: nonzero_macros
+URL: https://crates.io/crates/nonzero_macros
+Version: 0.16.1
+Revision: 92ad89454765440c7c03b87b11d5dbde753f9633
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/nonzero_macros-v0_16/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Macros for compile-time checked `NonZero` integers and safe `NonNull` pointer creation in `no_std` environments.

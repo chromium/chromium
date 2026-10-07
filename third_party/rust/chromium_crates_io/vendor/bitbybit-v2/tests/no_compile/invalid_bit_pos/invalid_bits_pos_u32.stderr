@@ -1,0 +1,5 @@
+error: bitfield!: Field field requires 33 bits, but only has (32)
+ --> tests/no_compile/invalid_bit_pos/invalid_bits_pos_u32.rs:5:5
+  |
+5 |     #[bits(31..=32, rw)]
+  |     ^^^^^^^^^^^^^^^^^^^^

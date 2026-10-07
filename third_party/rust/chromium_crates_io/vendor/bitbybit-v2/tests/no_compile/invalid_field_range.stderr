@@ -1,0 +1,48 @@
+error: bitfield!: Field invalid_range has type u8, which doesn't match the number of bits (9) that are being used for it
+ --> tests/no_compile/invalid_field_range.rs:7:20
+  |
+7 |     invalid_range: u8,
+  |                    ^^
+
+error[E0599]: no method named `with_c` found for struct `PartialTest<true, true, false>` in the current scope
+  --> tests/no_compile/invalid_field_range.rs:30:59
+   |
+10 | #[bitfield(u8)]
+   | --------------- method `with_c` not found for this struct
+...
+30 |     Test::builder().with_a(u4::new(1)).with_b(u4::new(1)).with_c(true).build();
+   |                                                           ^^^^^^ method not found in `PartialTest<true, true, false>`
+   |
+   = note: the method was found for
+           - `PartialTest<false, b, false>`
+help: one of the expressions' fields has a method of the same name
+   |
+30 |     Test::builder().with_a(u4::new(1)).with_b(u4::new(1)).0.with_c(true).build();
+   |                                                           ++
+
+error[E0599]: no method named `build` found for struct `PartialTest<false, false, true>` in the current scope
+  --> tests/no_compile/invalid_field_range.rs:31:34
+   |
+10 | #[bitfield(u8)]
+   | --------------- method `build` not found for this struct
+...
+31 |     Test::builder().with_c(true).build();
+   |                                  ^^^^^ method not found in `PartialTest<false, false, true>`
+   |
+   = note: the method was found for
+           - `PartialTest<true, true, false>`
+
+error[E0599]: no function or associated item named `builder` found for struct `Test2` in the current scope
+  --> tests/no_compile/invalid_field_range.rs:32:12
+   |
+20 | #[bitfield(u8)]
+   | --------------- function or associated item `builder` not found for this struct
+...
+32 |     Test2::builder().with_a(u4::new(1)).with_b(u4::new(1)).build();
+   |            ^^^^^^^ function or associated item not found in `Test2`
+   |
+note: if you're trying to build a new `Test2`, consider using `Test2::new_with_raw_value` which returns `Test2`
+  --> tests/no_compile/invalid_field_range.rs:21:8
+   |
+21 | struct Test2 {
+   |        ^^^^^

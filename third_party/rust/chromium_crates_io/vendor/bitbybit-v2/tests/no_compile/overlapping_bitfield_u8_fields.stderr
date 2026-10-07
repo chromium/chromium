@@ -1,0 +1,131 @@
+error: bitfield!: Detected overlap of field `lower_bits` with other field
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:5:1
+   |
+ 5 | / struct Test {
+ 6 | |     #[bits(7..=14, rw)]
+ 7 | |     overlapping_bits: u8,
+ 8 | |     #[bits(0..=7, rw)]
+ 9 | |     lower_bits: u8,
+10 | | }
+   | |_^
+
+error[E0599]: no function or associated item named `builder` found for struct `TestSometimesUnconstructable` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:46:35
+   |
+12 | #[bitfield(u16)]
+   | ---------------- function or associated item `builder` not found for this struct
+...
+46 |     TestSometimesUnconstructable::builder().with_lower_bits(0).with_bit_upper(u4::new(0)).build();
+   |                                   ^^^^^^^ function or associated item not found in `TestSometimesUnconstructable`
+   |
+note: if you're trying to build a new `TestSometimesUnconstructable`, consider using `TestSometimesUnconstructable::new_with_raw_value` which returns `TestSometimesUnconstructable`
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:13:8
+   |
+13 | struct TestSometimesUnconstructable {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `with_a` found for struct `PartialTestAllowed<true, true, false, false, false>` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:48:75
+   |
+27 | #[bitfield(u16)]
+   | ---------------- method `with_a` not found for this struct
+...
+48 |     TestAllowed::builder().with_upper(u4::new(0)).with_lower(u12::new(0)).with_a(u2::new(0)).build();
+   |                                                                           ^^^^^^ method not found in `PartialTestAllowed<true, true, false, false, false>`
+   |
+   = note: the method was found for
+           - `PartialTestAllowed<upper, false, c, b, false>`
+help: one of the expressions' fields has a method of the same name
+   |
+48 |     TestAllowed::builder().with_upper(u4::new(0)).with_lower(u12::new(0)).0.with_a(u2::new(0)).build();
+   |                                                                           ++
+
+error[E0599]: no function or associated item named `builder` found for struct `TestSometimesUnconstructable` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:49:35
+   |
+12 | #[bitfield(u16)]
+   | ---------------- function or associated item `builder` not found for this struct
+...
+49 |     TestSometimesUnconstructable::builder().with_lower_bits(0).with_bit_upper(u4::new(0)).with_middle_bits(0).build();
+   |                                   ^^^^^^^ function or associated item not found in `TestSometimesUnconstructable`
+   |
+note: if you're trying to build a new `TestSometimesUnconstructable`, consider using `TestSometimesUnconstructable::new_with_raw_value` which returns `TestSometimesUnconstructable`
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:13:8
+   |
+13 | struct TestSometimesUnconstructable {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `build` found for struct `PartialTestAllowed<true, false, false, false, false>` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:51:51
+   |
+27 | #[bitfield(u16)]
+   | ---------------- method `build` not found for this struct
+...
+51 |     TestAllowed::builder().with_upper(u4::new(0)).build();
+   |                                                   ^^^^^ method not found in `PartialTestAllowed<true, false, false, false, false>`
+   |
+   = note: the method was found for
+           - `PartialTestAllowed<false, false, true, true, true>`
+           - `PartialTestAllowed<true, false, true, true, true>`
+           - `PartialTestAllowed<true, true, false, false, false>`
+           - `PartialTestAllowed<true, true, false, true, true>`
+
+error[E0599]: no method named `build` found for struct `PartialTestAllowed<false, false, false, true, false>` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:52:38
+   |
+27 | #[bitfield(u16)]
+   | ---------------- method `build` not found for this struct
+...
+52 |     TestAllowed::builder().with_b(0).build();
+   |                                      ^^^^^ method not found in `PartialTestAllowed<false, false, false, true, false>`
+   |
+   = note: the method was found for
+           - `PartialTestAllowed<false, false, true, true, true>`
+           - `PartialTestAllowed<true, false, true, true, true>`
+           - `PartialTestAllowed<true, true, false, false, false>`
+           - `PartialTestAllowed<true, true, false, true, true>`
+
+error[E0599]: no function or associated item named `builder` found for struct `TestSometimesUnconstructable` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:54:35
+   |
+12 | #[bitfield(u16)]
+   | ---------------- function or associated item `builder` not found for this struct
+...
+54 |     TestSometimesUnconstructable::builder().with_lower_bits(0).build();
+   |                                   ^^^^^^^ function or associated item not found in `TestSometimesUnconstructable`
+   |
+note: if you're trying to build a new `TestSometimesUnconstructable`, consider using `TestSometimesUnconstructable::new_with_raw_value` which returns `TestSometimesUnconstructable`
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:13:8
+   |
+13 | struct TestSometimesUnconstructable {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no function or associated item named `builder` found for struct `TestSometimesUnconstructable` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:55:35
+   |
+12 | #[bitfield(u16)]
+   | ---------------- function or associated item `builder` not found for this struct
+...
+55 |     TestSometimesUnconstructable::builder().with_middle_bits(0).build();
+   |                                   ^^^^^^^ function or associated item not found in `TestSometimesUnconstructable`
+   |
+note: if you're trying to build a new `TestSometimesUnconstructable`, consider using `TestSometimesUnconstructable::new_with_raw_value` which returns `TestSometimesUnconstructable`
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:13:8
+   |
+13 | struct TestSometimesUnconstructable {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no function or associated item named `builder` found for struct `TestUnconstructable` in the current scope
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:56:26
+   |
+21 | #[bitfield(u16)]
+   | ---------------- function or associated item `builder` not found for this struct
+...
+56 |     TestUnconstructable::builder().with_bits(0).build();
+   |                          ^^^^^^^ function or associated item not found in `TestUnconstructable`
+   |
+note: if you're trying to build a new `TestUnconstructable`, consider using `TestUnconstructable::new_with_raw_value` which returns `TestUnconstructable`
+  --> tests/no_compile/overlapping_bitfield_u8_fields.rs:22:8
+   |
+22 | struct TestUnconstructable {
+   |        ^^^^^^^^^^^^^^^^^^^

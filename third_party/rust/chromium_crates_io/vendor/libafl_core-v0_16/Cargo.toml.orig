@@ -1,0 +1,68 @@
+[package]
+name = "libafl_core"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "A platform-independent shared memory library for Rust"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "shmem", "no-std"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["embedded", "os", "no-std"]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+default = []
+document-features = ["dep:document-features"]
+#! # Feature Flags
+#! ### General Features
+
+## Enables features that need rust's `std` lib to work, like print, env, ... support
+std = ["alloc"]
+
+## Enables all features that allocate in `no_std`
+alloc = []
+
+## Stores the backtraces of all generated `Error`s. Good for debugging, but may come with a slight performance hit.
+errors_backtrace = ["std", "dep:backtrace"]
+
+## Enable python error conversion
+python = ["dep:pyo3"]
+
+## Enables nix error conversion
+nix = ["dep:nix"]
+
+## Enables postcard error conversion
+postcard = ["dep:postcard"]
+
+## Enables Serde support for some types
+serde = ["dep:serde", "alloc"]
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+
+[dependencies]
+document-features = { workspace = true, optional = true }
+backtrace = { workspace = true, default-features = true, optional = true }
+postcard = { workspace = true, optional = true }
+nix = { workspace = true, optional = true }
+pyo3 = { workspace = true, optional = true }
+nonzero_macros = { workspace = true }
+serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+
+[target.'cfg(windows)'.dependencies]
+windows-result = "0.4.1"
+
+
+[lints]
+workspace = true

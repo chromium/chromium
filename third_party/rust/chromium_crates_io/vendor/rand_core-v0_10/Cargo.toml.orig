@@ -1,0 +1,27 @@
+[package]
+name = "rand_core"
+version = "0.10.1"
+authors = ["The Rand Project Developers"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/rust-random/rand_core"
+documentation = "https://docs.rs/rand_core"
+homepage = "https://rust-random.github.io/book"
+description = "Core random number generation traits and tools for implementation."
+keywords = ["random", "rng"]
+categories = ["algorithms", "no-std"]
+edition = "2024"
+rust-version = "1.85"
+exclude = ["/.github"]
+
+[lints.rust]
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+undocumented_unsafe_blocks = "warn"
+
+[package.metadata.docs.rs]
+# To build locally:
+# cargo +nightly doc --open
+rustdoc-args = ["--generate-link-to-definition"]

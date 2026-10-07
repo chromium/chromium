@@ -1,0 +1,11 @@
+Name: link-section
+URL: https://crates.io/crates/link-section
+Version: 0.19.3
+Revision: 00ca36a7ed6d959d01866feeeec078a79b6dfa3f
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/link-section-v0_19/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Link-time initialized slices for Rust, with full support for Linux, macOS, Windows, WASM and many more platforms.

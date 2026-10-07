@@ -1,0 +1,34 @@
+[package]
+name = "build_id2"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "Updated and maintained build id library"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "build-id"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["os"]
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = []
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+
+[dependencies]
+uuid = { workspace = true }
+ahash = { workspace = true }
+
+[lints]
+workspace = true

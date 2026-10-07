@@ -1,0 +1,58 @@
+[package]
+name = "fast_rands"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "Non-cryptographically, but quite fast, RNG implementations"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["os", "shmem", "no-std"]
+edition = "2024"
+rust-version = "1.93.1"
+categories = ["embedded", "os", "no-std"]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+default = ["std", "alloc"]
+document-features = ["dep:document-features"]
+
+#! # Feature Flags
+#! ### General Features
+
+## Enables features that need rust's `std` lib to work, like print, env, ... support
+std = ["alloc"]
+
+## Enables all features that allocate in `no_std`
+alloc = []
+
+## If set, libafl_rand's `rand` implementations will implement `rand_core::CoreRng`
+## and, inversely, all seedable `rand_core::RngCore` types can be used as Rng for LibAFL.
+rand_trait = ["rand_core"]
+
+## Enable python support for Rand
+python = ["pyo3"]
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+
+[dependencies]
+serde = { workspace = true, default-features = false, features = [
+  "alloc",
+  "derive",
+] } # serialization lib
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+rand_core = { version = "0.10.1", optional = true }
+pyo3 = { workspace = true, optional = true, features = ["serde", "macros"] }
+
+[lints]
+workspace = true

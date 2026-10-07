@@ -147,13 +147,8 @@ allow_unsafe = true
 group = 'test'
 allow_first_party_usage = false
 
-# TODO: Remove multiple versions of the `arbitrary-int` crate:
-# arbitrary-int@1.3.0, arbitrary-int@2.1.0
-# LibAFL makes use of arbitrary-int@2.1.0 as a dependency, but arbitrary-int@1.3.0
-# was already preexisting in the codebase.
 [crate.arbitrary-int.extra_kv]
 allow_unsafe = true
-multiversion_cleanup_bug = "https://crbug.com/493648954"
 
 [crate.array-init]
 extra_kv = { allow_unsafe = true }
@@ -192,6 +187,10 @@ extra_kv = { allow_unsafe = false }
 
 [crate.bitflags.extra_kv]
 allow_unsafe = false
+
+[crate.build_id2]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = false }
 
 [crate.bytemuck.extra_kv]
 allow_unsafe = true
@@ -260,6 +259,12 @@ extra_kv = { allow_unsafe = true }
 [crate.core-foundation-sys]
 extra_kv = { allow_unsafe = true }
 
+[crate.core_affinity2]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+# TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
+remove_deps = ['windows']
+
 [crate.core_maths.extra_kv]
 allow_unsafe = false
 
@@ -267,10 +272,7 @@ allow_unsafe = false
 allow_unsafe = true
 
 [crate.ctor]
-extra_kv = { allow_unsafe = false }
-
-[crate.ctor-proc-macro]
-extra_input_roots = ["../README.md"]
+extra_input_roots = ["../docs"]
 extra_kv = { allow_unsafe = false }
 
 [crate.cxx]
@@ -323,14 +325,6 @@ multiversion_cleanup_bug = "https://crbug.com/482994758"
 [crate.displaydoc.extra_kv]
 allow_unsafe = false
 
-[crate.dtor]
-extra_input_roots = ["../README.md"]
-extra_kv = { allow_unsafe = false }
-
-[crate.dtor-proc-macro]
-extra_input_roots = ["../README.md"]
-extra_kv = { allow_unsafe = false }
-
 [crate.either.extra_kv]
 allow_unsafe = true
 
@@ -342,8 +336,18 @@ group = 'test'
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
+[crate.exceptional]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+# TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
+remove_deps = ['windows', 'windows-core']
+
 [crate.extended]
 extra_kv = { allow_unsafe = false }
+
+[crate.fast_rands]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
 
 [crate.fastbloom]
 extra_input_roots = ["../README.md"]
@@ -396,11 +400,8 @@ group = 'safe'
 allow_first_party_usage = false
 extra_input_roots = ["../README.md"]
 
-# TODO: Remove multiple versions of the `getrandom` crate:
-# getrandom@0.3.4, getrandom@0.4.1
 [crate.getrandom.extra_kv]
 allow_unsafe = true
-multiversion_cleanup_bug = "https://crbug.com/493648964"
 
 [crate.gimli]
 allow_first_party_usage = false
@@ -414,9 +415,6 @@ extra_kv = { allow_unsafe = false }
 # https://github.com/rust-lang/ (and we already implicitly trust maintainers of
 # `rustc`).
 allow_unsafe = true
-# TODO: Remove multiple versions of the `hashbrown` crate:
-# hashbrown@0.15.5, hashbrown@0.16.0
-multiversion_cleanup_bug = "https://crbug.com/454033406"
 
 [crate.heck.extra_kv]
 allow_unsafe = false
@@ -626,6 +624,12 @@ extra_kv = {allow_unsafe = true}
 # TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
 remove_deps = ['once_cell', 'windows', 'winapi', 'windows-core', 'windows-result']
 
+[crate.libafl_core]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+# TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
+remove_deps = ['windows-result']
+
 [crate.libafl_derive]
 group = 'test'
 extra_kv = {allow_unsafe = false}
@@ -643,8 +647,20 @@ extra_build_script_input_roots = ['../configure.rs']
 # `rustc`).
 extra_kv = { allow_unsafe = true }
 
+[crate.link-section]
+extra_input_roots = ["../docs"]
+extra_kv = { allow_unsafe = true }
+
+[crate.linktime-proc-macro]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = false }
+
 [crate.litemap.extra_kv]
 allow_unsafe = false
+
+[crate.ll_mp]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
 
 [crate.llguidance]
 extra_kv = { allow_unsafe = true }
@@ -671,6 +687,12 @@ extra_kv = { allow_unsafe = true }
 [crate.memoffset]
 extra_kv = { allow_unsafe = false }
 
+[crate.minibsod]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+# TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
+remove_deps = ['windows']
+
 [crate.minijinja]
 extra_kv = { allow_unsafe = true }
 
@@ -695,6 +717,14 @@ extra_kv = { allow_unsafe = false }
 group = 'test'
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
+
+[crate.no_std_time]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+
+[crate.nonzero_macros]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = false }
 
 [crate.num-bigint.extra_kv]
 allow_unsafe = true
@@ -736,6 +766,10 @@ extra_kv = { allow_unsafe = true }
 [crate.ordered-float]
 extra_kv = { allow_unsafe = true }
 
+[crate.ownedref]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+
 [crate.parking_lot]
 extra_kv = { allow_unsafe = true }
 
@@ -749,6 +783,10 @@ allow_unsafe = false
 # https://crbug.com/396419181.
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
+
+[crate.portable-atomic]
+extra_build_script_input_roots = ['gen/build.rs', '../version.rs']
+extra_kv = { allow_unsafe = true }
 
 [crate.postcard]
 group = 'test'
@@ -845,6 +883,10 @@ extra_kv = { allow_unsafe = true }
 build_script_outputs = [ "private.rs" ]
 extra_kv = { allow_unsafe = false }
 
+[crate.serde_anymap]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+
 [crate.serde_core]
 build_script_outputs = [ "private.rs" ]
 extra_kv = { allow_unsafe = true }
@@ -871,6 +913,12 @@ extra_kv = { allow_unsafe = false }
 extra_kv = { allow_unsafe = true, extra_deps = ["//third_party/brotli:dec"] }
 remove_build_rs = true
 remove_deps = ['cc'] # Only used in build.rs
+
+[crate.shmem_providers]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+# TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
+remove_deps = ['windows']
 
 [crate.simd-adler32.extra_kv]
 allow_unsafe = true
@@ -1006,6 +1054,10 @@ extra_kv = { allow_unsafe = true }
 [crate.tuple_list]
 extra_kv = { allow_unsafe = false }
 
+[crate.tuple_list_ex]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = true }
+
 [crate.typed-arena]
 extra_kv = { allow_unsafe = true }
 
@@ -1080,7 +1132,7 @@ extra_kv = { allow_unsafe = true }
 group = 'test'
 allow_first_party_usage = false
 license = "Zlib"
-license_files = ["LICENSE-ZLIB.md"]
+license_files = ["LICENSE-ZLIB.txt"]
 extra_kv = { allow_unsafe = true }
 
 [crate.winapi-util.extra_kv]
