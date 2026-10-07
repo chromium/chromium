@@ -709,10 +709,10 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
     } else if (!hosted_url.is_valid()) {
       LOG(ERROR) << "Invalid URL";
       open_result = OfficeDriveOpenErrors::kInvalidAlternateUrl;
-    } else if (hosted_url.GetHost() == "drive.google.com") {
+    } else if (hosted_url.host() == "drive.google.com") {
       LOG(ERROR) << "URL was from drive.google.com";
       open_result = OfficeDriveOpenErrors::kDriveAlternateUrl;
-    } else if (hosted_url.GetHost() != "docs.google.com") {
+    } else if (hosted_url.host() != "docs.google.com") {
       LOG(ERROR) << "URL was not from docs.google.com";
       open_result = OfficeDriveOpenErrors::kUnexpectedAlternateUrl;
     } else {
