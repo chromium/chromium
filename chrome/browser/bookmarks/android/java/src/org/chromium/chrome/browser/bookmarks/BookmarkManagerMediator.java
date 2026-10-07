@@ -390,6 +390,7 @@ class BookmarkManagerMediator
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
     private final Set<PowerBookmarkType> mCurrentPowerFilter = new HashSet<>();
     private final CallbackController mCallbackController = new CallbackController();
+    private final Callback<Boolean> mBackPressSupplierObserver = (x) -> onBackPressStateChanged();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
                     TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
@@ -449,7 +450,7 @@ class BookmarkManagerMediator
         mSelectableListLayout = selectableListLayout;
         mSelectableListLayout
                 .getHandleBackPressChangedSupplier()
-                .addSyncObserverAndPostIfNonNull((x) -> onBackPressStateChanged());
+                .addSyncObserverAndPostIfNonNull(mBackPressSupplierObserver);
         mSelectionDelegate = selectionDelegate;
         mRecyclerView = recyclerView;
         mDragReorderableRecyclerViewAdapter = dragReorderableRecyclerViewAdapter;
@@ -561,10 +562,13 @@ class BookmarkManagerMediator
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
-        if (mShoppingService != null
-                && CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
+        if (mShoppingService != null) {
             mShoppingService.removeSubscriptionsObserver(mSubscriptionsObserver);
         }
+        mDragTouchHandler.removeDragListener(mDragListener);
+        mSelectableListLayout
+                .getHandleBackPressChangedSupplier()
+                .removeObserver(mBackPressSupplierObserver);
 
         for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();

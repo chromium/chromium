@@ -776,6 +776,22 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    public void testDestroy_RemovesRegisteredListeners() {
+        finishLoading();
+        verify(mShoppingService).addSubscriptionsObserver(mSubscriptionsObserver.capture());
+        verify(mDragTouchHandler).addDragListener(mDragListenerArgumentCaptor.capture());
+        assertTrue(mSelectableListLayoutHandleBackPressChangedSupplier.hasObservers());
+
+        // Eligibility at teardown must not decide whether the registered observer is removed.
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+        mMediator.onDestroy();
+
+        verify(mShoppingService).removeSubscriptionsObserver(mSubscriptionsObserver.getValue());
+        verify(mDragTouchHandler).removeDragListener(mDragListenerArgumentCaptor.getValue());
+        assertFalse(mSelectableListLayoutHandleBackPressChangedSupplier.hasObservers());
+    }
+
+    @Test
     public void onBackPressed_SelectableListLayoutIntercepts() {
         finishLoading();
 
