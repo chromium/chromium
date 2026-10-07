@@ -25,6 +25,8 @@ source_set("selection") {
     "selection_suggestion_tool.cc",
     "selection_suggestion_tool.h",
     "shake_trigger.cc",
+    "text_selection_context.cc",
+    "text_selection_context.h",
   ]
 
   public_deps = [

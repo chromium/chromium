@@ -36,12 +36,15 @@ source_set("browser_ui") {
     sources += [
       "glic_iph_controller.h",
       "glic_selection_widget.h",
+      "glic_selection_widget_controller.h",
       "glic_vector_icon_manager.h",
     ]
 
     public_deps += [
+      ":selection_widget_controller_delegate",
       "//chrome/browser/actor:types",
       "//components/actor/core:task_id",
+      "//components/content_settings/core/browser",
     ]
   } else {
     sources += [ "glic_toast.h" ]
@@ -65,6 +68,7 @@ source_set("impl") {
     sources += [
       "glic_iph_controller.cc",
       "glic_selection_widget.cc",
+      "glic_selection_widget_controller.cc",
       "glic_vector_icon_manager.cc",
     ]
   } else {
@@ -90,12 +94,18 @@ source_set("impl") {
       "//chrome/browser:primitives",
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/notifications",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/frame:contents_capture_border_view",
       "//chrome/browser/ui/views/frame:contents_container_view",
@@ -104,9 +114,14 @@ source_set("impl") {
       "//chrome/common:buildflags",
       "//chrome/common:chrome_features",
       "//components/constrained_window",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
       "//components/omnibox/browser:vector_icons",
       "//components/prefs",
+      "//components/signin/public/identity_manager",
+      "//components/tabs:public",
       "//content/public/browser",
+      "//ui/base",
       "//ui/strings",
       "//ui/strings:ui_strings__strings_grit",
     ]
@@ -121,6 +136,14 @@ source_set("impl") {
 }
 
 if (!is_android) {
+  source_set("selection_widget_controller_delegate") {
+    sources = [ "glic_selection_widget_controller_delegate.h" ]
+    public_deps = [
+      "//content/public/browser",
+      "//ui/gfx/geometry",
+    ]
+  }
+
   source_set("glow_controller") {
     sources = [ "context_sharing_border_view_controller_impl.h" ]
     deps = [
@@ -207,7 +230,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "glic_button_controller_unittest.cc" ]
   if (!is_android) {
-    sources += [ "glic_selection_widget_unittest.cc" ]
+    sources += [
+      "glic_selection_widget_controller_unittest.cc",
+      "glic_selection_widget_unittest.cc",
+    ]
   }
   deps = [
     ":browser_ui",
@@ -231,6 +257,21 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
   ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/actor",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/glic/suggestions",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/tabs:test_support",
+      "//ui/base",
+    ]
+  }
 
   if (is_chromeos) {
     deps += [ "//chrome/browser/ash/test:test_support" ]

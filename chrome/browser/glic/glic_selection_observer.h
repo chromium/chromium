@@ -14,13 +14,11 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/browser_ui/glic_selection_widget_controller_delegate.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
-#include "components/content_settings/core/browser/content_settings_observer.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/render_widget_host.h"
@@ -41,7 +39,6 @@ class TabInterface;
 }  // namespace tabs
 
 class BrowserWindowInterface;
-enum class ToastId;
 
 namespace optimization_guide {
 class PageContextEligibilityObserver;
@@ -50,13 +47,13 @@ class PageContextEligibility;
 
 namespace glic {
 
-class GlicSelectionWidgetDelegate;
 class GlicKeyedService;
+class GlicSelectionWidgetController;
 
 class GlicSelectionObserver
     : public content::WebContentsObserver,
       public content::RenderWidgetHost::InputEventObserver,
-      public content_settings::Observer,
+      public GlicSelectionWidgetControllerDelegate,
       public ShakeTriggerClient {
  public:
   DECLARE_USER_DATA(GlicSelectionObserver);
@@ -82,6 +79,12 @@ class GlicSelectionObserver
   void OnTextSelectionChanged(content::RenderFrameHost* render_frame_host,
                               std::u16string_view selected_text) override;
 
+  // `GlicSelectionWidgetControllerDelegate`:
+  content::RenderFrameHost* GetSelectedFrame() const override;
+  std::optional<gfx::Rect> GetCurrentSelectionBounds() const override;
+  const std::u16string& GetSelectedText() const override;
+  void CopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr) override;
+
   // Notifies the observer that text selection context was sent to the Glic
   // panel from the context menu entry point.
   void UpdateSelectionStateFromContextMenu(const std::u16string& selected_text);
@@ -89,14 +92,6 @@ class GlicSelectionObserver
   bool has_sent_selection_context() const {
     return has_sent_selection_context_;
   }
-
-  // Returns the bounds of the tab's current text selection if it exists, in
-  // screen coordinates. Returns `std::nullopt` otherwise.
-  std::optional<gfx::Rect> GetCurrentSelectionBounds() const;
-
-  // Returns the frame holding the tab's most recent text selection, or
-  // `nullptr` if there is none.
-  content::RenderFrameHost* GetSelectedFrame() const;
 
   // Dismisses the selection UI.
   // Virtual for testing.
@@ -123,12 +118,6 @@ class GlicSelectionObserver
       content::RenderWidgetHost::InputEventObserver::InputEventSource source)
       override;
 
-  // `content_settings::Observer`:
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsTypeSet content_type_set) override;
-
   // Updates the Glic UI (widget or panel) with the selected text.
   // Virtual for testing.
   virtual void UpdateSelectionState(const std::u16string& text,
@@ -154,34 +143,25 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual void ShowSelectionAffordance(const std::u16string& selected_text);
 
-  // Returns true if the selection widget should be shown for the current page.
-  bool ShouldShowSelectionWidget();
-
-  // Shows the selection overlay.
-  // Virtual for testing.
-  virtual void ShowSelectionOverlay();
-
   // Called when the page context eligibility changes.
   // Virtual for testing.
   virtual void OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus status);
 
+  bool IsPageContextEligible() const;
+
+  ::optimization_guide::PageContextEligibilityObserver* page_context_tracker() {
+    return page_context_tracker_.get();
+  }
+
  private:
-  void UpdatePageBlockedState();
+  friend class GlicSelectionObserverTest;
+
   void ProcessPendingSelection();
   void ResetPendingSelection();
   void ProcessInputEvent(std::unique_ptr<blink::WebInputEvent> event);
 
   void OnGlobalPanelShowHide();
-
-  void OnAskGemini();
-  void OnCopy();
-  void OnCopyLink();
-  void OnHide();
-  void OnSettings();
-  void ShowHiddenToast(ToastId toast_id);
-
-  void CopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr);
 
   void WriteLinkToClipboard(content::WeakDocumentPtr weak_document_ptr,
                             const GURL& url);
@@ -223,44 +203,13 @@ class GlicSelectionObserver
   // True during active user selection (mouse drag or key hold) to defer UI
   // updates until the input event completes.
   bool is_selecting_ = false;
-  // True if a dismissal metric has already been recorded for the shown widget.
-  bool dismissal_recorded_ = false;
 
   std::unique_ptr<ShakeTrigger> shake_trigger_;
 
-  // Private bridge implementation of
-  // GlicSelectionWidgetDelegate::ActionDelegate. This is required because
-  // GlicSelectionObserver (in the //chrome/browser/glic) cannot directly
-  // implement the UI-defined ActionDelegate interface to prevent circular
-  // target dependencies in the build configuration.
-  class WidgetActionDelegate;
-
-  void OnWidgetClose();
-
-  std::unique_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
-  std::unique_ptr<WidgetActionDelegate> action_delegate_;
+  std::unique_ptr<GlicSelectionWidgetController> widget_controller_;
   mojo::Remote<blink::mojom::TextFragmentReceiver> text_fragment_remote_;
   std::optional<GURL> generated_link_;
 
-  friend class GlicSelectionObserverTest;
-
- protected:
-  // True if the user temporarily blocked the selection widget for the current
-  // page load.
-  bool is_hidden_on_current_page_ = false;
-  // True if the site is blocked from showing the inline cue by user settings or
-  // default blocklist.
-  bool is_site_blocked_on_current_page_ = false;
-
-  bool IsPageContextEligible() const;
-
-  ::optimization_guide::PageContextEligibilityObserver* page_context_tracker() {
-    return page_context_tracker_.get();
-  }
-
- private:
-  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
-      content_settings_observation_{this};
   base::CallbackListSubscription page_context_eligibility_subscription_;
   std::unique_ptr<::optimization_guide::PageContextEligibilityObserver>
       page_context_tracker_;

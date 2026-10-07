@@ -8,13 +8,11 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
@@ -27,11 +25,8 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/glic_enums.mojom-shared.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/prefs/pref_service.h"
@@ -48,7 +43,6 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace glic {
@@ -102,7 +96,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     show_selection_affordance_called_ = false;
     last_affordance_text_.reset();
     mock_side_panel_open_ = true;
-    show_selection_overlay_called_ = false;
   }
 
   // Expose methods for testing.
@@ -111,14 +104,12 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   using GlicSelectionObserver::OnPageContextEligibilityChanged;
   using GlicSelectionObserver::RenderFrameCreated;
   using GlicSelectionObserver::RenderFrameDeleted;
-  using GlicSelectionObserver::ShouldShowSelectionWidget;
 
   void set_call_base_update_selection_state(bool value) {
     call_base_update_selection_state_ = value;
   }
 
   void set_mock_panel_showing(bool value) { mock_panel_showing_ = value; }
-  void set_mock_side_panel_open(bool value) { mock_side_panel_open_ = value; }
   bool BaseIsSidePanelOpen() const {
     return GlicSelectionObserver::IsSidePanelOpen();
   }
@@ -138,10 +129,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   }
   const std::optional<std::u16string>& last_affordance_text() const {
     return last_affordance_text_;
-  }
-
-  bool show_selection_overlay_called() const {
-    return show_selection_overlay_called_;
   }
 
  protected:
@@ -174,11 +161,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
 
   bool IsSidePanelOpen() const override { return mock_side_panel_open_; }
 
-  void ShowSelectionOverlay() override {
-    show_selection_overlay_called_ = true;
-    GlicSelectionObserver::ShowSelectionOverlay();
-  }
-
  private:
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;
@@ -192,7 +174,6 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   std::optional<std::u16string> last_sent_context_;
   bool show_selection_affordance_called_ = false;
   std::optional<std::u16string> last_affordance_text_;
-  bool show_selection_overlay_called_ = false;
 };
 
 }  // namespace
@@ -286,18 +267,6 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
       test_eligibility_holder_;
 
   TestGlicSelectionObserver* GetObserver() { return observer_.get(); }
-
-  bool ShouldShowSelectionWidget() {
-    return observer_->ShouldShowSelectionWidget();
-  }
-
-  void CallOnHide() { observer_->OnHide(); }
-  void CallOnAskGemini() { observer_->OnAskGemini(); }
-  // Sets the selected text, then clicks Ask Gemini.
-  void CallOnAskGemini(const std::u16string& selected_text) {
-    observer_->last_selected_text_ = selected_text;
-    observer_->OnAskGemini();
-  }
 
   void CallOnLinkGenerated(
       const GURL& fallback_url,
@@ -1280,40 +1249,8 @@ TEST_F(GlicSelectionObserverTest, IdentityManagerIntegration) {
   observer_.reset();
 }
 
-TEST_F(GlicSelectionObserverTest, OnHideHidesSelectionWidget) {
-  GURL url("https://example.com");
-  NavigateAndCommit(url);
-  TestGlicSelectionObserver* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            settings_map->GetContentSetting(
-                url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
-  EXPECT_TRUE(ShouldShowSelectionWidget());
-
-  CallOnHide();
-  EXPECT_FALSE(ShouldShowSelectionWidget());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            settings_map->GetContentSetting(
-                url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
-}
-
 TEST_F(GlicSelectionObserverTest, BaseIsSidePanelOpenReturnsFalseWithoutTab) {
   EXPECT_FALSE(observer_->BaseIsSidePanelOpen());
-}
-
-TEST_F(GlicSelectionObserverTest, SelectionWordCountMetrics) {
-  base::HistogramTester histogram_tester;
-
-  std::u16string text = u"   one   two\nthree\t ";
-  CallOnAskGemini(text);
-
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Selection.WidgetClicked.SelectionLength.PreFre", text.length(), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Selection.WidgetClicked.SelectionWordCount.PreFre", 3, 1);
 }
 
 class GlicSelectionObserverPromptTest : public GlicSelectionObserverTest {
@@ -1362,105 +1299,6 @@ class GlicSelectionObserverPromptTest : public GlicSelectionObserverTest {
 };
 
 TEST_F(GlicSelectionObserverPromptTest,
-       InvokeGlicFromSelectionAffordanceExplainCta) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kGlicSelectionPrompt,
-        {{"auto_send_prompt", "true"}, {"cta", "explain"}}}},
-      {});
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  EXPECT_CALL(
-      *mock_glic_service(),
-      InvokeWithAutoSubmit(
-          testing::_,
-          testing::Field(&GlicInvokeOptions::prompts,
-                         testing::ElementsAre(l10n_util::GetStringUTF8(
-                             IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_EXPLAIN)))))
-      .Times(1);
-
-  CallOnAskGemini(u"Sample selected text");
-}
-
-TEST_F(GlicSelectionObserverPromptTest,
-       InvokeGlicFromSelectionAffordanceTellMeAboutThisCta) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kGlicSelectionPrompt,
-        {{"auto_send_prompt", "true"}, {"cta", "tell_me_about_this"}}}},
-      {});
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  EXPECT_CALL(
-      *mock_glic_service(),
-      InvokeWithAutoSubmit(
-          testing::_,
-          testing::Field(&GlicInvokeOptions::prompts,
-                         testing::ElementsAre(l10n_util::GetStringUTF8(
-                             IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME)))))
-      .Times(1);
-
-  CallOnAskGemini(u"Sample selected text");
-}
-
-TEST_F(GlicSelectionObserverPromptTest,
-       InvokeGlicFromSelectionAffordanceAutoSendDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kGlicSelectionPrompt, {{"auto_send_prompt", "false"}}}}, {});
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  EXPECT_CALL(
-      *mock_glic_service(),
-      Invoke(testing::Field(&GlicInvokeOptions::prompts, testing::IsEmpty())))
-      .Times(1);
-
-  CallOnAskGemini(u"Sample selected text");
-}
-
-// The selected text flow has no live mode UI, so its invocations opt out
-// rather than pulling a live conversation into the tab's side panel.
-TEST_F(GlicSelectionObserverPromptTest,
-       InvokeGlicFromSelectionAffordanceOptsOutOfLiveMode) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kGlicSelectionPrompt, {{"auto_send_prompt", "false"}}}}, {});
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  EXPECT_CALL(*mock_glic_service(),
-              Invoke(testing::Field(&GlicInvokeOptions::target,
-                                    testing::Field(&Target::live_mode_behavior,
-                                                   LiveModeBehavior::kFail))))
-      .Times(1);
-
-  CallOnAskGemini(u"Sample selected text");
-}
-
-TEST_F(GlicSelectionObserverPromptTest,
        SendAdditionalContextToPanelOptsOutOfLiveMode) {
   tabs::MockTabInterface mock_tab;
   MockBrowserWindowInterface mock_bwi;
@@ -1499,28 +1337,6 @@ TEST_F(GlicSelectionObserverPromptTest, ShakeInvokesRegionCapture) {
       .Times(1);
 
   SimulateMouseShake();
-}
-
-TEST_F(GlicSelectionObserverTest, ShouldShowSelectionWidgetSiteBlocked) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt,
-      {{features::kGlicSelectionDefaultBlockedSites.name,
-        "https://blocked-site.com"}});
-
-  NavigateAndCommit(GURL("https://blocked-site.com/page"));
-  EXPECT_FALSE(observer_->ShouldShowSelectionWidget());
-
-  NavigateAndCommit(GURL("https://allowed-site.com/page"));
-  EXPECT_TRUE(observer_->ShouldShowSelectionWidget());
-
-  HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetContentSettingDefaultScope(GURL("https://allowed-site.com/page"),
-                                      GURL("https://allowed-site.com/page"),
-                                      ContentSettingsType::INLINE_CUE_MENU,
-                                      CONTENT_SETTING_BLOCK);
-
-  EXPECT_FALSE(observer_->ShouldShowSelectionWidget());
 }
 
 TEST_F(GlicSelectionObserverTest,
@@ -1646,58 +1462,6 @@ TEST_F(GlicSelectionObserverTest,
   EXPECT_FALSE(observer->has_sent_selection_context());
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"", *observer->last_sent_context());
-}
-
-TEST_F(GlicSelectionObserverTest, OnAskGeminiWithSmallChipDismissesUI) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionSmallChip);
-
-  TestGlicSelectionObserver* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  CallOnAskGemini();
-
-  EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
-            observer->dismiss_ui_reason());
-  EXPECT_TRUE(observer->show_selection_overlay_called());
-}
-
-TEST_F(GlicSelectionObserverTest,
-       OnAskGeminiWithSmallChipAndOverlayPromptDismissesUI) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kGlicSelectionSmallChip,
-                                 features::kGlicSelectionOverlayPrompt},
-                                {});
-
-  TestGlicSelectionObserver* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  CallOnAskGemini();
-
-  EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
-            observer->dismiss_ui_reason());
-  EXPECT_TRUE(observer->show_selection_overlay_called());
-}
-
-TEST_F(GlicSelectionObserverTest,
-       OnAskGeminiWithSmallChipWhenSidePanelClosedShowsOverlay) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kGlicSelectionSmallChip,
-                                 features::kGlicSelectionOverlayPrompt},
-                                {});
-
-  TestGlicSelectionObserver* observer = GetObserver();
-  ASSERT_TRUE(observer);
-  observer->set_mock_side_panel_open(false);
-
-  CallOnAskGemini();
-
-  EXPECT_TRUE(observer->dismiss_ui_called());
-  EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
-            observer->dismiss_ui_reason());
-  EXPECT_TRUE(observer->show_selection_overlay_called());
 }
 
 }  // namespace glic

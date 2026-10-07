@@ -163,6 +163,7 @@ source_set("glic") {
     ]
 
     public_deps += [
+      "//chrome/browser/glic/browser_ui:selection_widget_controller_delegate",
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/glic/selection:shake_trigger",
       "//chrome/browser/optimization_guide",

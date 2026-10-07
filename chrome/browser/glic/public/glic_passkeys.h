@@ -71,7 +71,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class GlicApiTestPasskeys;
   friend class GlicExperimentalTriggeringCoordinator;
   friend class GlicCueTarget;
-  friend class GlicSelectionObserver;
+  friend class GlicSelectionWidgetController;
   friend class SelectionOverlayController;
   friend class SelectionSuggestion;
   friend class ::indigo::IndigoPageActionController;
