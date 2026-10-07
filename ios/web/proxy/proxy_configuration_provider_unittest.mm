@@ -120,6 +120,15 @@ class ProxyConfigurationProviderTest : public PlatformTest {
     }
   }
 
+  void TearDown() override {
+    // Ensure no proxyConfigurations outlive these tests to avoid flake of
+    // unrelated tests.
+    WKWebsiteDataStore* data_store = [WKWebsiteDataStore defaultDataStore];
+    data_store.proxyConfigurations = @[];
+
+    PlatformTest::TearDown();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   web::ScopedTestingWebClient web_client_;
