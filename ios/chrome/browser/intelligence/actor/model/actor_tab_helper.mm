@@ -4,11 +4,16 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 
+#import "base/functional/bind.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+#import "ios/web/public/web_state.h"
 
 ActorTabHelper::ActorTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {}
+    : web_state_(web_state) {
+  web_state_observation_.Observe(web_state);
+}
 
 ActorTabHelper::~ActorTabHelper() = default;
 
@@ -18,6 +23,8 @@ void ActorTabHelper::SetControlState(actor::ActorControlState control_state) {
   }
   const actor::ActorControlState previous_control_state = control_state_;
   control_state_ = control_state;
+  ApplyKeepRenderProcessAlive();
+
   control_state_callbacks_.Notify(previous_control_state, control_state);
 
   const bool previous_active =
@@ -63,4 +70,33 @@ void ActorTabHelper::AddObserver(ActorTabHelperObserver* observer) {
 
 void ActorTabHelper::RemoveObserver(ActorTabHelperObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+#pragma mark - web::WebStateObserver
+
+void ActorTabHelper::WasHidden(web::WebState* web_state) {
+  if (control_state_ == actor::ActorControlState::kInactive) {
+    return;
+  }
+
+  // The browser resets keep-alive synchronously right after `WasHidden()`, so
+  // re-applying it must be deferred to a posted task.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ActorTabHelper::ApplyKeepRenderProcessAlive,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  web_state_observation_.Reset();
+  web_state_ = nullptr;
+}
+
+#pragma mark - Private
+
+void ActorTabHelper::ApplyKeepRenderProcessAlive() {
+  if (!web_state_) {
+    return;
+  }
+  web_state_->SetKeepRenderProcessAlive(control_state_ !=
+                                        actor::ActorControlState::kInactive);
 }

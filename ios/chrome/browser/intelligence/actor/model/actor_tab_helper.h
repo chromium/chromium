@@ -7,8 +7,11 @@
 
 #import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
@@ -19,7 +22,8 @@ class ActorTabHelperObserver;
 
 // `ActorTabHelper` is a tab helper used to track Actor-related state that is
 // tab-bound.
-class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
+class ActorTabHelper : public web::WebStateObserver,
+                       public web::WebStateUserData<ActorTabHelper> {
  public:
   // When the `ActorControlState` changes, this callback is invoked with
   // the previous and new control states.
@@ -43,6 +47,8 @@ class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
 
   // Sets the `ActorControlState` for the associated `WebState`,
   // notifying registered callbacks and observers if the control state changes.
+  // The render process is kept alive while the control state is not
+  // `kInactive`.
   void SetControlState(actor::ActorControlState control_state);
 
   // Sets whether the tab is actively undergoing actuation by an `ActorTask`.
@@ -76,9 +82,16 @@ class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
   // Removes `observer` from the list of observers.
   void RemoveObserver(ActorTabHelperObserver* observer);
 
+  // web::WebStateObserver:
+  void WasHidden(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
+
  private:
   friend class web::WebStateUserData<ActorTabHelper>;
   explicit ActorTabHelper(web::WebState* web_state);
+
+  // Applies the keep-alive derived from `control_state_` to the WebState.
+  void ApplyKeepRenderProcessAlive();
 
   // The current actor control state of the associated WebState.
   actor::ActorControlState control_state_ = actor::ActorControlState::kInactive;
@@ -86,6 +99,10 @@ class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
   // The `WebState` associated with the `ActorTabHelper`. Outlives the helper
   // since the helper's lifetime is bound to the user data of the `WebState`.
   raw_ptr<web::WebState> web_state_ = nullptr;
+
+  // Observation of `web_state_`.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 
   // The list of observers registered to receive notifications.
   base::ObserverList<ActorTabHelperObserver> observers_;
@@ -96,6 +113,8 @@ class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
   // The list of callbacks registered to receive actuation state changes.
   // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
   ActuationStateCallbackList actuation_state_callbacks_;
+
+  base::WeakPtrFactory<ActorTabHelper> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TAB_HELPER_H_

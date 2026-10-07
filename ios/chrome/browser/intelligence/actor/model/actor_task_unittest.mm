@@ -1142,35 +1142,33 @@ TEST_F(ActorTaskTest, InsertWebState_AdjacentPlacement) {
   EXPECT_EQ(b_ptr, browser->GetWebStateList()->GetWebStateAt(2));
 }
 
-// Test that `SetKeepRenderProcessAlive` is enabled for all controlled
-// `WebState`s for the entire duration of the task and is reset when the task
-// stops or is destroyed.
-TEST_F(ActorTaskTest, SetKeepRenderProcessAliveOnControlledWebStates) {
+// Test that keep-alive on controlled `WebState`s follows the control state
+// pushed to their `ActorTabHelper`: on while the task is in a controlling
+// state, off otherwise, and cleared when the task stops or is destroyed.
+TEST_F(ActorTaskTest, KeepRenderProcessAliveFollowsControlState) {
   auto web_state1 = std::make_unique<TestKeepAliveWebState>();
   auto web_state2 = std::make_unique<TestKeepAliveWebState>();
+  ActorTabHelper::CreateForWebState(web_state1.get());
+  ActorTabHelper::CreateForWebState(web_state2.get());
 
   EXPECT_FALSE(web_state1->keep_render_process_alive());
   EXPECT_FALSE(web_state2->keep_render_process_alive());
 
-  // Add `web_state1` while task is in `kInit`. It should immediately be marked
-  // keep-alive for the task duration.
+  // Add `web_state1` while the task is in `kInit`. The control state is
+  // `kInactive`, so keep-alive is not applied yet.
   AddControlledWebState(web_state1->GetWeakPtr());
-  EXPECT_TRUE(web_state1->keep_render_process_alive());
+  EXPECT_FALSE(web_state1->keep_render_process_alive());
 
-  // Transition to `kActing`.
+  // Transition to `kActing`: the tab becomes actor-controlled and keep-alive.
   SetTaskState(ActorTaskState::kActing);
   EXPECT_TRUE(web_state1->keep_render_process_alive());
 
-  // Add `web_state2` while in `kActing`. It should also be marked keep-alive.
+  // Add `web_state2` while in `kActing`. It should immediately be keep-alive.
   AddControlledWebState(web_state2->GetWeakPtr());
   EXPECT_TRUE(web_state2->keep_render_process_alive());
 
-  // Transition across non-actuating states (`kPausedByUser`, `kReflecting`,
-  // `kWaitingOnUser`). Keep-alive should persist for the task duration.
-  SetTaskState(ActorTaskState::kPausedByUser);
-  EXPECT_TRUE(web_state1->keep_render_process_alive());
-  EXPECT_TRUE(web_state2->keep_render_process_alive());
-
+  // `kReflecting` and `kWaitingOnUser` are controlling states, so keep-alive
+  // persists across them.
   SetTaskState(ActorTaskState::kReflecting);
   EXPECT_TRUE(web_state1->keep_render_process_alive());
   EXPECT_TRUE(web_state2->keep_render_process_alive());
@@ -1179,17 +1177,20 @@ TEST_F(ActorTaskTest, SetKeepRenderProcessAliveOnControlledWebStates) {
   EXPECT_TRUE(web_state1->keep_render_process_alive());
   EXPECT_TRUE(web_state2->keep_render_process_alive());
 
-  // Stopping the task should reset keep-alive to false.
+  // Stopping the task resets the control state to `kInactive`, which clears
+  // keep-alive.
   task_->Stop(ActorTaskStoppedReason::kTaskComplete);
   EXPECT_FALSE(web_state1->keep_render_process_alive());
   EXPECT_FALSE(web_state2->keep_render_process_alive());
 
-  // Verify that destroying an active task also resets keep-alive.
+  // Verify that destroying an active task also clears keep-alive.
   auto web_state3 = std::make_unique<TestKeepAliveWebState>();
+  ActorTabHelper::CreateForWebState(web_state3.get());
   auto scoped_task = std::make_unique<ActorTask>(
       ActorTaskId(42), "Scoped Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()));
+  scoped_task->Act({}, "update", base::DoNothing());
   scoped_task->AddControlledWebState(web_state3.get());
   EXPECT_TRUE(web_state3->keep_render_process_alive());
 

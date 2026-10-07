@@ -167,7 +167,6 @@ ActorTask::ActorTask(ActorTaskId task_id,
 
 ActorTask::~ActorTask() {
   SetControlStateOnWebStates(ActorControlState::kInactive);
-  SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
   load_timeout_timer_.Stop();
 
   StopHeartbeatTimer();
@@ -252,9 +251,6 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
         {{"web_state_id", base::NumberToString(
                               web_state->GetUniqueIdentifier().identifier())}});
     controlled_web_states_.push_back(web_state->GetWeakPtr());
-    if (!IsTerminalState(state_)) {
-      web_state->SetKeepRenderProcessAlive(/*keep_alive=*/true);
-    }
 
     // Attach a policy decider to intercept and gate implicit navigations
     // (e.g., link clicks, redirects) against origin policies.
@@ -292,7 +288,6 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   // hardcoding `kCancelled`.
   // `SetState` also transitions the web states to `kInactive` control state.
   SetState(ActorTaskState::kCancelled);
-  SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
 
   StopHeartbeatTimer();
   const bool success = stop_reason == ActorTaskStoppedReason::kTaskComplete ||
@@ -542,16 +537,6 @@ void ActorTask::SetControlStateOnWebStates(ActorControlState control_state) {
       continue;
     }
     tab_helper->SetControlState(control_state);
-  }
-}
-
-void ActorTask::SetKeepRenderProcessAliveOnControlledWebStates(
-    bool keep_alive) {
-  for (const base::WeakPtr<web::WebState>& web_state_weak :
-       controlled_web_states_) {
-    if (web::WebState* web_state = web_state_weak.get()) {
-      web_state->SetKeepRenderProcessAlive(keep_alive);
-    }
   }
 }
 

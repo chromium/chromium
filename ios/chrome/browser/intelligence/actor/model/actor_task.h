@@ -203,9 +203,6 @@ class ActorTask : public web::WebStateObserver,
   // `control_state`.
   void SetControlStateOnWebStates(ActorControlState control_state);
 
-  // Sets `SetKeepRenderProcessAlive` on all controlled `WebState`s.
-  void SetKeepRenderProcessAliveOnControlledWebStates(bool keep_alive);
-
   // Sets the task state and logs the transition.
   void SetState(ActorTaskState new_state);
 
