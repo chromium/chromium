@@ -103,6 +103,7 @@
 *TabSessionSourceTest.*
 *TabletProductivityUserModelTest.*
 *TipsManagerTest.*
+*TipsNotificationsEphemeralModuleTest.*
 *TipsNotificationsRankerTest.*
 *TrainingDataCacheTest.*
 *TrainingDataCollectorImplTest.*

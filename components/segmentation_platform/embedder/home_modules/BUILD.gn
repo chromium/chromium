@@ -44,6 +44,8 @@ static_library("home_modules") {
       "ntp_theme_ephemeral_module.h",
       "save_passwords_ephemeral_module.cc",
       "save_passwords_ephemeral_module.h",
+      "tips_notifications_ephemeral_module.cc",
+      "tips_notifications_ephemeral_module.h",
     ]
   }
 
@@ -119,6 +121,7 @@ source_set("unit_tests") {
       "lens_ephemeral_module_unittest.cc",
       "ntp_theme_ephemeral_module_unittest.cc",
       "save_passwords_ephemeral_module_unittest.cc",
+      "tips_notifications_ephemeral_module_unittest.cc",
     ]
   }
 
