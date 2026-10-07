@@ -1,3 +1,0 @@
-include_rules = [
-  "+base/json/json_reader.h",
-]

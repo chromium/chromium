@@ -174,7 +174,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="10" label="Challenge using SPC (S)"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/payments/web_payments_observer.h:ThreeDSecureTransactionStatus) -->
+<!-- LINT.ThenChange(//components/payments/core/web_payments_telemetry.h:ThreeDSecureTransactionStatus) -->
 
 </enums>
 

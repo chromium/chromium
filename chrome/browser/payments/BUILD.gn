@@ -28,9 +28,7 @@ source_set("impl") {
     "//components/payments/core",
     "//content/public/browser",
     "//net",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
-    "//url",
   ]
 
   if (!is_android) {
@@ -190,7 +188,6 @@ source_set("unittests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/fuzztest",
   ]
 
   if (is_android) {

@@ -14,29 +14,6 @@ class WebContents;
 
 namespace payments {
 
-// All possible values for the 3D-Secure transaction status field. This is used
-// in 3D-Secure Challenge Responses (cRes).
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(ThreeDSecureTransactionStatus)
-enum class ThreeDSecureTransactionStatus {
-  kUnknown = 0,
-  kJSONEncrypted = 1,
-  kSuccess = 2,
-  kDenied = 3,
-  kCouldNotBePerformed = 4,
-  kAttemptsProcessingPerformed = 5,
-  kChallengeRequired = 6,
-  kChallengeRequiredDecoupled = 7,
-  kRejected = 8,
-  kInformationalOnly = 9,
-  kChallengeUsingSPC = 10,
-  kMaxValue = kChallengeUsingSPC,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:ThreeDSecureTransactionStatus)
-
 // WebPaymentsObserver observes changes in the web contents, to measure web
 // payments flows.
 //

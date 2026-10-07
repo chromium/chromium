@@ -1024,6 +1024,8 @@ test("components_unittests") {
     "PwgEncoderFuzzTest.EncodeDoesNotCrash",
     "RustStreamFramerFuzzTest.FeedDoesNotCrashOnArbitraryChunks",
     "TranslateUtilFuzzTest.GetTranslateSecurityOriginDoesNotCrash",
+    "WebPaymentsTelemetryFuzzTest.ThreeDSecureTelemetryChallengePostData",
+    "WebPaymentsTelemetryFuzzTest.ThreeDSecureTelemetryChallengeResponseValue",
   ]
 }
 
