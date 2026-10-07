@@ -2,6 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# NOTE: Please do not add new test source files (e.g. *_unittest.cc,
+# *_browsertest.cc, *_interactive_uitest.cc, *_test.mm) to this file. Instead,
+# add them to the BUILD.gn file of the directory that contains them, e.g.
+# chrome/browser/my_feature/BUILD.gn.
+#
+# That may mean adding a source_set("unit_tests"), source_set("browser_tests")
+# or source_set("interactive_ui_tests") target there, and adding it to the deps
+# of the corresponding test target in this file. For an example of a directory
+# with test_support, unit_tests, browser_tests and interactive_ui_tests
+# targets, see //chrome/browser/ui/views/tab_sharing/BUILD.gn and its reference
+# below.
+
 import("//build/cipd/cipd.gni")
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
