@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
@@ -102,8 +103,14 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
   content::RunAllPendingInMessageLoop();
 }
 
+// TODO(crbug.com/533059187): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowPasswordsBubbleOrPage DISABLED_ShowPasswordsBubbleOrPage
+#else
+#define MAYBE_ShowPasswordsBubbleOrPage ShowPasswordsBubbleOrPage
+#endif
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTestToolbarPinningOnly,
-                       ShowPasswordsBubbleOrPage) {
+                       MAYBE_ShowPasswordsBubbleOrPage) {
   const GURL passwords_url = GURL("chrome://password-manager/");
   PinnedToolbarActionsModel::Get(browser()->GetProfile())
       ->UpdatePinnedState(kActionShowPasswordsBubbleOrPage, true);
