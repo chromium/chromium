@@ -504,6 +504,7 @@ static_library("test_support") {
 
 source_set("common_constants") {
   configs += [ "//components/policy:component_implementation" ]
+  public_deps = [ "//build:branding_buildflags" ]
   deps = [ "//base" ]
   sources = [
     "../../policy_export.h",

@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_SWITCHES_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_SWITCHES_H_
 
-#include "components/policy/policy_export.h"
-
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/policy/policy_export.h"
 
 namespace policy {
 namespace switches {
@@ -25,6 +25,10 @@ extern const char kDisablePolicyKeyVerification[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kForceDeviceOwnership[];
+#endif
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kUseFakeDmserver[];
 #endif
 
 }  // namespace switches

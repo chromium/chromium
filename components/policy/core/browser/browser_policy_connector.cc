@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "build/branding_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
@@ -32,6 +33,11 @@
 namespace policy {
 
 namespace {
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const char kDefaultFakeDmserverUrl[] =
+    "http://127.0.0.1:6112/device_management";
+#endif
 
 // The URL for the device management server.
 const char kDefaultDeviceManagementServerUrl[] =
@@ -54,8 +60,7 @@ DeviceManagementService* g_device_management_service_for_testing = nullptr;
 
 BrowserPolicyConnector::BrowserPolicyConnector(
     const HandlerListFactory& handler_list_factory)
-    : BrowserPolicyConnectorBase(handler_list_factory) {
-}
+    : BrowserPolicyConnectorBase(handler_list_factory) {}
 
 BrowserPolicyConnector::~BrowserPolicyConnector() = default;
 
@@ -82,10 +87,11 @@ void BrowserPolicyConnector::ScheduleServiceInitialization(
     int64_t delay_milliseconds) {
   // Skip device initialization if the BrowserPolicyConnector was never
   // initialized (unit tests).
-  if (device_management_service_)
+  if (device_management_service_) {
     device_management_service_->ScheduleInitialization(delay_milliseconds);
-  else
+  } else {
     CHECK_IS_TEST();
+  }
 }
 
 bool BrowserPolicyConnector::ProviderHasPolicies(
@@ -94,13 +100,21 @@ bool BrowserPolicyConnector::ProviderHasPolicies(
     return false;
   }
   for (const auto& pair : provider->policies()) {
-    if (!pair.second.empty())
+    if (!pair.second.empty()) {
       return true;
+    }
   }
   return false;
 }
 
 std::string BrowserPolicyConnector::GetDeviceManagementUrl() const {
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeDmserver)) {
+    return GetUrlOverride(switches::kDeviceManagementUrl,
+                          kDefaultFakeDmserverUrl);
+  }
+#endif
   return GetUrlOverride(switches::kDeviceManagementUrl,
                         kDefaultDeviceManagementServerUrl);
 }
@@ -129,10 +143,11 @@ std::string BrowserPolicyConnector::GetUrlOverride(
     std::string_view default_value) const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(flag)) {
-    if (IsCommandLineSwitchSupported())
+    if (IsCommandLineSwitchSupported()) {
       return command_line->GetSwitchValueASCII(flag);
-    else
+    } else {
       LOG(WARNING) << flag << " not supported on this channel";
+    }
   }
   return std::string(default_value);
 }
