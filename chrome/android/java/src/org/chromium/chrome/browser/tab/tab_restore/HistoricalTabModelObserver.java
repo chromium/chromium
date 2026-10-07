@@ -141,7 +141,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             List<Tab> groupTabs = new ArrayList<>();
             groupTabs.add(tab);
             HistoricalEntry historicalGroup =
-                    new HistoricalEntry(tabGroupId, title, color, groupTabs);
+                    new HistoricalEntry(
+                            tabGroupId, title, color, groupTabs, /* savedTabGroupSyncId= */ null);
             entries.add(historicalGroup);
             tabGroupIdToGroup.put(tabGroupId, historicalGroup);
         }

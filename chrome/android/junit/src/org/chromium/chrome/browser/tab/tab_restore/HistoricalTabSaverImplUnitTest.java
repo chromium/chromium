@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -94,7 +93,11 @@ public class HistoricalTabSaverImplUnitTest {
     public void testCreateHistoricalGroup_Empty() {
         HistoricalEntry group =
                 new HistoricalEntry(
-                        new Token(1L, 2L), "Foo", TabGroupColorId.GREY, Arrays.asList(new Tab[0]));
+                        new Token(1L, 2L),
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[0]),
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
         assertEquals(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID, entryId);
@@ -191,7 +194,12 @@ public class HistoricalTabSaverImplUnitTest {
         List<Tab> tabList = List.of(tab0, tab1);
         Token tabGroupId = new Token(728L, 324789L);
         HistoricalEntry group =
-                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
+                new HistoricalEntry(
+                        tabGroupId,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        tabList,
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId
         int entryId =
                 mHistoricalTabSaver.createHistoricalBulkClosure(Collections.singletonList(group));
@@ -222,9 +230,6 @@ public class HistoricalTabSaverImplUnitTest {
         List<Tab> tabList = List.of(tab0, tab1);
         Token tabGroupId = new Token(728L, 324789L);
         String syncId = "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
-        assertNull(
-                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList)
-                        .getSavedTabGroupSyncId());
         HistoricalEntry group =
                 new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList, syncId);
         assertEquals(syncId, group.getSavedTabGroupSyncId());
@@ -258,7 +263,12 @@ public class HistoricalTabSaverImplUnitTest {
         List<Tab> tabList = List.of(tab0, tab1);
         Token tabGroupId = new Token(1L, 2L);
         HistoricalEntry group =
-                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
+                new HistoricalEntry(
+                        tabGroupId,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        tabList,
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
         assertEquals(22, entryId);
 
@@ -285,7 +295,12 @@ public class HistoricalTabSaverImplUnitTest {
 
         Token tabGroupId = new Token(1L, 2L);
         HistoricalEntry group =
-                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, List.of(tab));
+                new HistoricalEntry(
+                        tabGroupId,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        List.of(tab),
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
         assertEquals(22, entryId);
 
@@ -316,7 +331,12 @@ public class HistoricalTabSaverImplUnitTest {
         List<Tab> tabList = List.of(tab0, tab1, tab2);
         Token tabGroupId = new Token(4L, 5L);
         HistoricalEntry group =
-                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
+                new HistoricalEntry(
+                        tabGroupId,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        tabList,
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
         assertEquals(22, entryId);
 
@@ -376,7 +396,12 @@ public class HistoricalTabSaverImplUnitTest {
         List<Tab> tabList = List.of(tab0, tab0, tab0);
         Token tabGroupId = new Token(4L, 5L);
         HistoricalEntry group =
-                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
+                new HistoricalEntry(
+                        tabGroupId,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        tabList,
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
         assertEquals(22, entryId);
 
@@ -461,14 +486,16 @@ public class HistoricalTabSaverImplUnitTest {
                         new Token(27839L, 4789L),
                         "Incognito",
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab2, tab3})));
+                        Arrays.asList(new Tab[] {tab2, tab3}),
+                        /* savedTabGroupSyncId= */ null));
         Token tabGroupId1 = new Token(789L, 3289L);
         entries.add(
                 new HistoricalEntry(
                         tabGroupId1,
                         "Group 1",
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab4, tab5, tab6})));
+                        Arrays.asList(new Tab[] {tab4, tab5, tab6}),
+                        /* savedTabGroupSyncId= */ null));
         entries.add(new HistoricalEntry(tab7));
         Token tabGroupId2 = new Token(347389L, 47893L);
         entries.add(
@@ -476,11 +503,16 @@ public class HistoricalTabSaverImplUnitTest {
                         tabGroupId2,
                         "Group 2",
                         TabGroupColorId.BLUE,
-                        Arrays.asList(new Tab[] {tab8, tab9})));
+                        Arrays.asList(new Tab[] {tab8, tab9}),
+                        /* savedTabGroupSyncId= */ null));
         Token tabGroupId3 = new Token(289L, 7489L);
         entries.add(
                 new HistoricalEntry(
-                        tabGroupId3, "Group 3", TabGroupColorId.RED, List.of(tab10, tab11)));
+                        tabGroupId3,
+                        "Group 3",
+                        TabGroupColorId.RED,
+                        List.of(tab10, tab11),
+                        /* savedTabGroupSyncId= */ null));
         @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalBulkClosure(entries);
         assertEquals(33, entryId);
 
@@ -546,7 +578,11 @@ public class HistoricalTabSaverImplUnitTest {
         Token tabGroupId2 = new Token(789L, 1011L);
         entries.add(
                 new HistoricalEntry(
-                        tabGroupId2, "Group 2", TabGroupColorId.BLUE, List.of(tab4, tab5)));
+                        tabGroupId2,
+                        "Group 2",
+                        TabGroupColorId.BLUE,
+                        List.of(tab4, tab5),
+                        /* savedTabGroupSyncId= */ null));
         int entryId = mHistoricalTabSaver.createHistoricalBulkClosure(entries);
         assertEquals(33, entryId);
 

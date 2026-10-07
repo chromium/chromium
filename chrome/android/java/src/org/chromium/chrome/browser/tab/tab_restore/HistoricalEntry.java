@@ -51,24 +51,8 @@ public class HistoricalEntry {
      * @param groupTitle The title of the group or null if the default group name should be used.
      * @param groupColor The {@link TabGroupColorId} of the group.
      * @param tabs The list of {@link Tab} in this group.
-     */
-    public HistoricalEntry(
-            Token tabGroupId,
-            @Nullable String groupTitle,
-            @TabGroupColorId int groupColor,
-            List<Tab> tabs) {
-        this(tabGroupId, groupTitle, groupColor, tabs, /* savedTabGroupSyncId= */ null);
-    }
-
-    /**
-     * Constructor for a tab group that is closing.
-     *
-     * @param tabGroupId The tab group id of the group.
-     * @param groupTitle The title of the group or null if the default group name should be used.
-     * @param groupColor The {@link TabGroupColorId} of the group.
-     * @param tabs The list of {@link Tab} in this group.
-     * @param savedTabGroupSyncId The sync id (SavedTabGroup sync GUID string) of the saved tab
-     *     group this entry came from, or null if unknown.
+     * @param savedTabGroupSyncId The saved tab group's sync id (a base::Uuid string), or null if
+     *     none.
      */
     public HistoricalEntry(
             Token tabGroupId,

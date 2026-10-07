@@ -218,7 +218,8 @@ public class HistoricalTabSaverImplTest {
                         new Token(1L, 2L),
                         "Foo",
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab0, tab1}));
+                        Arrays.asList(new Tab[] {tab0, tab1}),
+                        /* savedTabGroupSyncId= */ null);
         HistogramWatcher watcher = expectOnlySaveDuration(SAVE_DURATION_GROUP);
         @TabRestoreEntryId int id = TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
         watcher.assertExpected();
@@ -256,7 +257,8 @@ public class HistoricalTabSaverImplTest {
                         new Token(3L, 4L),
                         "Foo",
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}),
+                        /* savedTabGroupSyncId= */ null);
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -291,7 +293,8 @@ public class HistoricalTabSaverImplTest {
                         new Token(3L, 7L),
                         "Foo",
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}),
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId int id = TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         List<List<HistoricalEntry>> empty = new ArrayList<>();
@@ -316,7 +319,8 @@ public class HistoricalTabSaverImplTest {
                         new Token(3784L, 5498L),
                         null,
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab0, tab1}));
+                        Arrays.asList(new Tab[] {tab0, tab1}),
+                        /* savedTabGroupSyncId= */ null);
         @TabRestoreEntryId int id = TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -347,7 +351,8 @@ public class HistoricalTabSaverImplTest {
                         new Token(9L, 38490L),
                         "baz",
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab1, tab2})));
+                        Arrays.asList(new Tab[] {tab1, tab2}),
+                        /* savedTabGroupSyncId= */ null));
         expectedEntries.add(new HistoricalEntry(tab3));
         HistogramWatcher watcher = expectOnlySaveDuration(SAVE_DURATION_BULK);
         @TabRestoreEntryId
@@ -444,7 +449,8 @@ public class HistoricalTabSaverImplTest {
                         new Token(78493L, 4389L),
                         "baz",
                         TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab1, tab2})));
+                        Arrays.asList(new Tab[] {tab1, tab2}),
+                        /* savedTabGroupSyncId= */ null));
         TabRestoreServiceUtils.createWindowEntry(mTabModel, window);
         expectedEntries.add(window);
 
@@ -453,7 +459,8 @@ public class HistoricalTabSaverImplTest {
                         new Token(43L, 389L),
                         "group",
                         TabGroupColorId.BLUE,
-                        Arrays.asList(new Tab[] {tab3, tab2}));
+                        Arrays.asList(new Tab[] {tab3, tab2}),
+                        /* savedTabGroupSyncId= */ null);
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
         expectedEntries.add(Arrays.asList(new HistoricalEntry[] {group}));
 
