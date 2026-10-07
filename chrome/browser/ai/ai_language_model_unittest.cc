@@ -170,19 +170,6 @@ std::vector<blink::mojom::AILanguageModelPromptContentPtr> ToContentVector(
   return vector;
 }
 
-optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
-  optimization_guide::proto::FeatureTextSafetyConfiguration safety_config;
-  safety_config.set_feature(
-      optimization_guide::proto::MODEL_EXECUTION_FEATURE_PROMPT_API);
-  safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-
-  auto* check = safety_config.add_request_check();
-  check->mutable_input_template()->Add(
-      FieldSubstitution("%s", StringValueField()));
-
-  return safety_config;
-}
-
 // Build a mojo prompt struct with the specified `role` and `text`
 blink::mojom::AILanguageModelPromptPtr MakePrompt(Role role,
                                                   const std::string& text,
@@ -326,7 +313,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
 
     proto::SolutionConfig solution_config;
     *solution_config.mutable_feature() = config;
-    *solution_config.mutable_safety() = CreateSafetyConfig();
     return solution_config;
   }
 
@@ -1342,93 +1328,6 @@ TEST_F(AILanguageModelTest, MeasureInputUsage) {
   base::test::TestFuture<std::optional<uint32_t>> measure_future;
   session->MeasureInputUsage(MakeInput("foo"), measure_future.GetCallback());
   EXPECT_EQ(measure_future.Get(), std::string("UfooE").size());
-}
-
-TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
-  SetSolutionConfig([&]() {
-    auto solution_config = CreateSolution();
-    solution_config.mutable_feature()->set_can_skip_text_safety(false);
-    return solution_config;
-  }());
-
-  auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  options->initial_prompts.push_back(MakePrompt(Role::kSystem, "unsafe"));
-
-  TestCreateLanguageModelClient language_model_client;
-  GetAIManagerRemote()->CreateLanguageModel(
-      language_model_client.BindNewPipeAndPassRemote(), std::move(options),
-      mojo::NullRemote());
-  auto result = language_model_client.result().Take();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error,
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-}
-
-TEST_F(AILanguageModelTest, TextSafetyInput) {
-  SetSolutionConfig([&]() {
-    auto solution_config = CreateSolution();
-    solution_config.mutable_feature()->set_can_skip_text_safety(false);
-    return solution_config;
-  }());
-
-  fake_broker_->settings().set_execute_result({"hi"});
-  auto session = CreateSession();
-  EXPECT_THAT(Prompt(*session, MakeInput("safe")), ElementsAre("hi"));
-
-  // Fake text safety checker looks for the string "unsafe".
-  AITestUtils::TestStreamingResponder responder;
-  session->Prompt(MakeInput("unsafe"), nullptr, responder.BindRemote());
-  EXPECT_FALSE(responder.WaitForCompletion());
-  EXPECT_EQ(responder.error_status(),
-            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
-}
-
-TEST_F(AILanguageModelTest, TextSafetyOutput) {
-  SetSolutionConfig([&]() {
-    auto solution_config = CreateSolution();
-    solution_config.mutable_feature()->set_can_skip_text_safety(false);
-    solution_config.mutable_safety()
-        ->mutable_partial_output_checks()
-        ->set_minimum_tokens(1000);
-    return solution_config;
-  }());
-
-  // Fake text safety checker looks for the string "unsafe".
-  fake_broker_->settings().set_execute_result(
-      {"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
-  auto session = CreateSession();
-  AITestUtils::TestStreamingResponder responder;
-  session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
-  EXPECT_FALSE(responder.WaitForCompletion());
-  EXPECT_EQ(responder.error_status(),
-            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
-  EXPECT_TRUE(responder.responses().empty());
-}
-
-TEST_F(AILanguageModelTest, TextSafetyOutputPartial) {
-  SetSolutionConfig([&]() {
-    auto solution_config = CreateSolution();
-    solution_config.mutable_feature()->set_can_skip_text_safety(false);
-    solution_config.mutable_safety()
-        ->mutable_partial_output_checks()
-        ->set_minimum_tokens(3);
-    solution_config.mutable_safety()
-        ->mutable_partial_output_checks()
-        ->set_token_interval(2);
-    return solution_config;
-  }());
-
-  // Fake text safety checker looks for the string "unsafe".
-  fake_broker_->settings().set_execute_result(
-      {"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
-  auto session = CreateSession();
-  AITestUtils::TestStreamingResponder responder;
-  session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
-  EXPECT_FALSE(responder.WaitForCompletion());
-  EXPECT_EQ(responder.error_status(),
-            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
-  // Partial checks should still allow some output to stream.
-  EXPECT_THAT(responder.responses(), ElementsAre("abc", "de", "fg"));
 }
 
 TEST_F(AILanguageModelTest, QueuesOperations) {

@@ -19,9 +19,7 @@
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
-#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -37,7 +35,6 @@
 // for model execution.
 class AILanguageModel : public AIContextBoundObject,
                         public blink::mojom::AILanguageModel,
-                        public optimization_guide::TextSafetyClient,
                         public on_device_model::mojom::ContextClient {
  public:
   using PromptApiMetadata = optimization_guide::proto::PromptApiMetadata;
@@ -176,11 +173,6 @@ class AILanguageModel : public AIContextBoundObject,
   // AIContextBoundObject:
   void SetPriority(on_device_model::mojom::Priority priority) override;
 
-  // optimization_guide::TextSafetyClient:
-  void StartSession(
-      mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> session)
-      override;
-
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override;
 
@@ -198,11 +190,6 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           create_client,
       std::optional<uint32_t> token_count);
-  void InitializeSafetyChecksComplete(
-      on_device_model::mojom::InputPtr input,
-      mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
-          create_client,
-      optimization_guide::SafetyChecker::Result safety_result);
 
   void ForkInternal(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
@@ -269,11 +256,9 @@ class AILanguageModel : public AIContextBoundObject,
   // Whether a task is currently running.
   bool task_running_ = false;
 
-  std::unique_ptr<optimization_guide::SafetyChecker> safety_checker_;
   base::WeakPtr<optimization_guide::ModelClient> model_client_;
 
-  // Holds state for any currently active prompt. This holds a reference to
-  // `safety_checker_` so must be ordered after that member.
+  // Holds state for any currently active prompt.
   std::unique_ptr<PromptState> prompt_state_;
 
   base::WeakPtr<OptimizationGuideLogger> logger_;
