@@ -939,19 +939,23 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    public void testUpdateActionButtonVisibility_ComposeplateHiddenWhenIncognitoDisabled() {
-        setupMockSubCoordinators();
-
-        mCoordinator.setIsComposeplateEnabledForTesting(TriState.TRUE);
-        mCoordinator.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
-
-        // Disables incognito mode.
+    public void testComposeplateDisabledWhenIncognitoDisabled() {
+        // Incognito availability is read when the coordinator is created, so recreate it after
+        // disabling incognito mode.
+        mCoordinator.destroy();
         IncognitoUtils.setEnabledForTesting(false);
-        mCoordinator.updateActionButtonVisibility();
+        createCoordinator();
 
-        // Verifies that even when composeplate is enabled and Google is the search provider,
-        // disabling incognito mode hides the composeplate button.
-        verify(mMockComposeplate).setVisibility(eq(false), anyBoolean());
+        // Verifies that even when Google is the search provider and offers an AI Mode entry point,
+        // disabling incognito mode prevents the composeplate from being enabled or created.
+        assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
+
+        // Switching the default search engine doesn't enable the composeplate either.
+        changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ true);
+        changeSearchEngine(/* isGoogle= */ true, /* hasAiModeButtonUiConfig= */ true);
+        assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
     }
 
     /** Verifies that a monochrome resource icon is tinted like the other composeplate icons. */
