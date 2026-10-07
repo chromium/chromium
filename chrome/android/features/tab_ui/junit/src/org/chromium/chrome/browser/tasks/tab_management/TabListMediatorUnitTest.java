@@ -5805,10 +5805,10 @@ public class TabListMediatorUnitTest {
                         /* asyncImageFactory= */ null,
                         (_) -> "Alice changed");
 
-        Map<Integer, TabCardLabelData> dataMap = new HashMap<>();
-        dataMap.put(TAB2_ID, tabCardLabelData);
+        Map<Token, TabCardLabelData> dataMap = new HashMap<>();
+        dataMap.put(TAB_GROUP_ID, tabCardLabelData);
 
-        mMediator.updateTabCardLabels(dataMap);
+        mMediator.updateTabGroupCardLabels(dataMap);
 
         String targetString1 =
                 "Expand shared tab group with 2 tabs, color Grey, with label Alice changed.";
@@ -5832,8 +5832,8 @@ public class TabListMediatorUnitTest {
                         .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
                         .resolve(mContext));
 
-        dataMap.replace(TAB2_ID, null);
-        mMediator.updateTabCardLabels(dataMap);
+        dataMap.replace(TAB_GROUP_ID, null);
+        mMediator.updateTabGroupCardLabels(dataMap);
         String targetString3 = "Expand shared Cool Tabs tab group with 2 tabs, color Grey.";
         assertEquals(
                 targetString3,

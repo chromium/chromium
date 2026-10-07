@@ -2684,6 +2684,23 @@ public class TabListMediator implements TabListNotificationHandler {
         forAllTabListItems(labelData.keySet(), updateTabCardLabel);
     }
 
+    @Override
+    public void updateTabGroupCardLabels(Map<Token, TabCardLabelData> labelData) {
+        assert mTabListConfig.tabUiType == UiType.TAB
+                : "Tab card labels are only supported for tab card UI type.";
+
+        for (int i = 0; i < mModelList.size(); i++) {
+            PropertyModel model = mModelList.get(i).model;
+            if (!TabProperties.isTabGroupHeader(model)) continue;
+
+            Token tabGroupId = assumeNonNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
+            if (labelData.containsKey(tabGroupId)) {
+                model.set(TabProperties.TAB_CARD_LABEL_DATA, labelData.get(tabGroupId));
+                updateDescriptionString(model);
+            }
+        }
+    }
+
     private void forAllTabListItems(
             Set<Integer> tabIdsToBeUpdated, Callback<PropertyModel> updateCallback) {
         for (int i = 0; i < mModelList.size(); i++) {

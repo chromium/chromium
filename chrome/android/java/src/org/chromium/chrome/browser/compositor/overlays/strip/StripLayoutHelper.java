@@ -5269,6 +5269,11 @@ public class StripLayoutHelper
         // Not implemented for tablet tab strip.
     }
 
+    @Override
+    public void updateTabGroupCardLabels(Map<Token, TabCardLabelData> labelData) {
+        // Not implemented for tablet tab strip.
+    }
+
     @SuppressLint("HandlerLeak")
     private class StripTabEventHandler extends Handler {
         @Override

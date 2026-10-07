@@ -20,12 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A partial implementation for pushing labels to to a {@link TabListNotificationHandler} for some
- * sort of tab object, like actual tabs or tab groups. Can be triggered by {{@link #showAll()}} or
- * concrete implementations may trigger of other observers.
+ * A partial implementation for pushing labels to a {@link TabListNotificationHandler} for some sort
+ * of tab object, like actual tabs or tab groups. Can be triggered by {@link #showAll()} or concrete
+ * implementations may trigger off other observers.
+ *
+ * @param <KeyT> The identifier key type for the tab object.
  */
 @NullMarked
-public abstract class TabObjectLabeller extends TabObjectNotificationUpdater {
+public abstract class TabObjectLabeller<KeyT> extends TabObjectNotificationUpdater {
     public TabObjectLabeller(
             Profile profile, TabListNotificationHandler tabListNotificationHandler) {
         super(profile, tabListNotificationHandler);
@@ -33,33 +35,33 @@ public abstract class TabObjectLabeller extends TabObjectNotificationUpdater {
 
     @Override
     public void showAll() {
-        Map<Integer, TabCardLabelData> cardLabels = new HashMap<>();
+        Map<KeyT, TabCardLabelData> cardLabels = new HashMap<>();
         for (PersistentMessage message : getAllMessages()) {
             if (shouldApply(message)) {
-                cardLabels.put(getTabId(message), buildLabelData(message));
+                cardLabels.put(getKey(message), buildLabelData(message));
             }
         }
         if (!cardLabels.isEmpty()) {
-            mTabListNotificationHandler.updateTabCardLabels(cardLabels);
+            applyLabels(cardLabels);
         }
     }
 
     @Override
     protected void incrementalShow(PersistentMessage message) {
         if (shouldApply(message)) {
-            int tabId = getTabId(message);
-            Map<Integer, TabCardLabelData> cardLabels =
-                    Collections.singletonMap(tabId, buildLabelData(message));
-            mTabListNotificationHandler.updateTabCardLabels(cardLabels);
+            KeyT key = getKey(message);
+            Map<KeyT, TabCardLabelData> cardLabels =
+                    Collections.singletonMap(key, buildLabelData(message));
+            applyLabels(cardLabels);
         }
     }
 
     @Override
     protected void incrementalHide(PersistentMessage message) {
         if (shouldApply(message)) {
-            int tabId = getTabId(message);
-            Map<Integer, TabCardLabelData> cardLabels = Collections.singletonMap(tabId, null);
-            mTabListNotificationHandler.updateTabCardLabels(cardLabels);
+            KeyT key = getKey(message);
+            Map<KeyT, TabCardLabelData> cardLabels = Collections.singletonMap(key, null);
+            applyLabels(cardLabels);
         }
     }
 
@@ -72,8 +74,20 @@ public abstract class TabObjectLabeller extends TabObjectNotificationUpdater {
     /** Fetch all relevant messages that should be shown. */
     protected abstract List<PersistentMessage> getAllMessages();
 
-    /** Return the associated tab id for a given message. */
-    protected abstract int getTabId(PersistentMessage message);
+    /**
+     * Returns the identifier key for a given message.
+     *
+     * @param message The {@link PersistentMessage} to extract the key from.
+     * @return The identifier key for the target tab object.
+     */
+    protected abstract KeyT getKey(PersistentMessage message);
+
+    /**
+     * Pushes the given label map to {@link TabListNotificationHandler}.
+     *
+     * @param cardLabels Map of identifier keys to {@link TabCardLabelData} to apply.
+     */
+    protected abstract void applyLabels(Map<KeyT, TabCardLabelData> cardLabels);
 
     /** Returns a fetcher for the avatar image if there is one, otherwise null. */
     protected AsyncImageView.@Nullable Factory getAsyncImageFactory(PersistentMessage message) {

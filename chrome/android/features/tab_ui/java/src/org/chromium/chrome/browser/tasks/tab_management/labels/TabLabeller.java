@@ -36,11 +36,12 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /** Pushes label updates to UI for tabs. */
 @NullMarked
-public class TabLabeller extends TabObjectLabeller {
+public class TabLabeller extends TabObjectLabeller<Integer> {
     private final Context mContext;
     private final DataSharingUIDelegate mDataSharingUiDelegate;
     private final NullableObservableSupplier<Token> mTabGroupIdSupplier;
@@ -64,7 +65,7 @@ public class TabLabeller extends TabObjectLabeller {
                 && Objects.equals(
                         mTabGroupIdSupplier.get(), MessageUtils.extractTabGroupId(message))
                 && message.type == PersistentNotificationType.DIRTY_TAB
-                && getTabId(message) != Tab.INVALID_TAB_ID
+                && getKey(message) != Tab.INVALID_TAB_ID
                 && getTextRes(message) != Resources.ID_NULL;
     }
 
@@ -90,8 +91,13 @@ public class TabLabeller extends TabObjectLabeller {
     }
 
     @Override
-    protected int getTabId(PersistentMessage message) {
+    protected Integer getKey(PersistentMessage message) {
         return MessageUtils.extractTabId(message);
+    }
+
+    @Override
+    protected void applyLabels(Map<Integer, TabCardLabelData> cardLabels) {
+        mTabListNotificationHandler.updateTabCardLabels(cardLabels);
     }
 
     @Override

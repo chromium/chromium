@@ -9,9 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandler;
 import org.chromium.chrome.tab_ui.R;
@@ -20,10 +18,11 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 
 import java.util.List;
+import java.util.Map;
 
 /** Pushes label updates to UI for tab groups. */
 @NullMarked
-public class TabGroupLabeller extends TabObjectLabeller {
+public class TabGroupLabeller extends TabObjectLabeller<Token> {
     private final NullableObservableSupplier<TabModel> mTabModelSupplier;
 
     public TabGroupLabeller(
@@ -37,10 +36,12 @@ public class TabGroupLabeller extends TabObjectLabeller {
     @Override
     protected boolean shouldApply(PersistentMessage message) {
         TabModel tabModel = mTabModelSupplier.get();
+        Token tabGroupId = MessageUtils.extractTabGroupId(message);
         return tabModel != null
                 && !tabModel.isOffTheRecord()
                 && message.type == PersistentNotificationType.DIRTY_TAB_GROUP
-                && getTabId(message) != Tab.INVALID_TAB_ID;
+                && tabGroupId != null
+                && tabModel.tabGroupExists(tabGroupId);
     }
 
     @Override
@@ -54,18 +55,12 @@ public class TabGroupLabeller extends TabObjectLabeller {
     }
 
     @Override
-    protected int getTabId(PersistentMessage message) {
-        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
-        if (tabGroupId == null) {
-            return Tab.INVALID_TAB_ID;
-        } else {
-            // Tabs in the TabListMediator are represented by the last shown tab ID in a tab group.
-            // This is a workaround to achieve compatibility. Longer term, TabListMediator needs to
-            // be refactored to accept either rootId or even better tabGroupId as the identifier for
-            // tab groups. See https://crbug.com/387509285.
-            TabModel tabModel = mTabModelSupplier.get();
-            assumeNonNull(tabModel);
-            return tabModel.getGroupLastShownTabId(tabGroupId);
-        }
+    protected Token getKey(PersistentMessage message) {
+        return assumeNonNull(MessageUtils.extractTabGroupId(message));
+    }
+
+    @Override
+    protected void applyLabels(Map<Token, TabCardLabelData> cardLabels) {
+        mTabListNotificationHandler.updateTabGroupCardLabels(cardLabels);
     }
 }
