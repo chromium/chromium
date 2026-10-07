@@ -94,11 +94,9 @@ constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 class FakeBrowser {
  public:
   explicit FakeBrowser(BrowserWindowCreateParams params)
-      : FakeBrowser(
-            DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params))) {}
+      : FakeBrowser(CreateBrowserWindow(std::move(params))) {}
 
-  explicit FakeBrowser(std::unique_ptr<BrowserWindowInterface> browser)
-      : browser_(std::move(browser)) {
+  explicit FakeBrowser(BrowserWindowInterface* browser) : browser_(browser) {
     if (browser_->GetType() !=
         BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
       // Add a tab to the browser to ensure that `CloseAllTabs()` works.
@@ -111,13 +109,7 @@ class FakeBrowser {
                                           weak_ptr_.GetWeakPtr()));
   }
 
-  ~FakeBrowser() {
-    if (browser_ && !browser_->GetTabStripModel()->empty()) {
-      // This is required to prevent a DCHECK crash in the destructor of
-      // `Browser` if tabs remain open.
-      browser_->GetTabStripModel()->CloseAllTabs();
-    }
-  }
+  ~FakeBrowser() { RemoveBrowser(); }
 
   [[nodiscard]] bool WaitForBrowserClose() { return closed_future_.Wait(); }
   bool IsClosed() { return closed_future_.IsReady(); }
@@ -139,10 +131,23 @@ class FakeBrowser {
         base::BindOnce(&FakeBrowser::RemoveBrowser, weak_ptr_.GetWeakPtr()));
   }
 
-  void RemoveBrowser() { browser_.reset(); }
+  void RemoveBrowser() {
+    if (!browser_) {
+      return;
+    }
+    BrowserWindowInterface* browser = browser_.ExtractAsDangling();
+    if (!browser->GetTabStripModel()->empty()) {
+      // This is required to prevent a DCHECK crash in the destructor of
+      // `Browser` if tabs remain open.
+      browser->GetTabStripModel()->CloseAllTabs();
+    }
+    if (!browser->IsDeleteScheduled()) {
+      UnloadController::From(browser)->OnWindowCloseComplete();
+    }
+  }
 
   base::test::TestFuture<void> closed_future_;
-  std::unique_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   base::WeakPtrFactory<FakeBrowser> weak_ptr_{this};
 };
 
