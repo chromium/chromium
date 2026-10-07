@@ -772,6 +772,13 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                                   const base::TimeTicks& now,
                                   const char* net_log_reason_utf8);
 
+  // Destroys |socket| immediately for direct connections, or queues it for
+  // asynchronous destruction when using a proxy, where destroying a tunneled
+  // socket can synchronously drain a shared session and reentrantly complete
+  // ConnectJobs in |this|.
+  void QueueDestroySocket(std::unique_ptr<StreamSocket> socket);
+  void DestroyQueuedSockets();
+
   // Called when a preconnect connect job completes.
   void OnPreconnectConnectJobComplete(
       PreconnectCompletionCallback callback,
@@ -814,6 +821,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   std::set<raw_ptr<HigherLayeredPool, SetExperimental>> higher_pools_;
 
   const raw_ptr<SSLClientContext> ssl_client_context_;
+
+  std::vector<std::unique_ptr<StreamSocket>> sockets_queued_for_destruction_;
 
 #if DCHECK_IS_ON()
   // Reentrancy guard for RequestSocketInternal().
