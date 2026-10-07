@@ -5,6 +5,7 @@
 #include "chrome/browser/readaloud/read_aloud_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -210,8 +211,19 @@ class FakePlaybackController
       std::move(pause_callback_).Run();
     }
   }
-  void SeekToWord(uint32_t segment_index, uint32_t character_offset) override {}
-  void SeekToTime(base::TimeDelta position) override {}
+  void SeekToWord(uint32_t segment_index, uint32_t character_offset) override {
+    last_seek_segment_index_ = segment_index;
+    last_seek_character_offset_ = character_offset;
+    if (seek_to_word_callback_) {
+      std::move(seek_to_word_callback_).Run();
+    }
+  }
+  void SeekToTime(base::TimeDelta position) override {
+    last_seek_time_ = position;
+    if (seek_to_time_callback_) {
+      std::move(seek_to_time_callback_).Run();
+    }
+  }
   void SetVoice(const std::string& voice_id) override {}
   void SetPlaybackRate(float rate) override {
     last_playback_rate_ = rate;
@@ -230,6 +242,12 @@ class FakePlaybackController
   void set_pause_callback(base::OnceClosure callback) {
     pause_callback_ = std::move(callback);
   }
+  void set_seek_to_word_callback(base::OnceClosure callback) {
+    seek_to_word_callback_ = std::move(callback);
+  }
+  void set_seek_to_time_callback(base::OnceClosure callback) {
+    seek_to_time_callback_ = std::move(callback);
+  }
   void set_playback_rate_callback(base::OnceClosure callback) {
     set_playback_rate_callback_ = std::move(callback);
   }
@@ -241,6 +259,15 @@ class FakePlaybackController
 
   int play_count() const { return play_count_; }
   int pause_count() const { return pause_count_; }
+  std::optional<uint32_t> last_seek_segment_index() const {
+    return last_seek_segment_index_;
+  }
+  std::optional<uint32_t> last_seek_character_offset() const {
+    return last_seek_character_offset_;
+  }
+  std::optional<base::TimeDelta> last_seek_time() const {
+    return last_seek_time_;
+  }
   float last_playback_rate() const { return last_playback_rate_; }
   void set_initialize_audio_callback(base::OnceClosure callback) {
     initialize_audio_callback_ = std::move(callback);
@@ -273,9 +300,14 @@ class FakePlaybackController
   base::OnceClosure set_text_content_callback_;
   base::OnceClosure play_callback_;
   base::OnceClosure pause_callback_;
+  base::OnceClosure seek_to_word_callback_;
+  base::OnceClosure seek_to_time_callback_;
   base::OnceClosure set_playback_rate_callback_;
   int play_count_ = 0;
   int pause_count_ = 0;
+  std::optional<uint32_t> last_seek_segment_index_;
+  std::optional<uint32_t> last_seek_character_offset_;
+  std::optional<base::TimeDelta> last_seek_time_;
   float last_playback_rate_ = 1.0f;
   base::OnceClosure initialize_audio_callback_;
   int initialize_audio_called_count_ = 0;
@@ -1222,6 +1254,50 @@ TEST_F(ReadAloudServiceTest, SetPlaybackRateForwardedToUtility) {
   service()->SetPlaybackRate(1.5f);
   run_loop.Run();
   EXPECT_FLOAT_EQ(fake_controller()->last_playback_rate(), 1.5f);
+}
+
+TEST_F(ReadAloudServiceTest, SeekForwardedToUtility) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  base::RunLoop run_loop;
+  fake_controller()->set_seek_to_time_callback(run_loop.QuitClosure());
+  service()->Seek(base::Seconds(12));
+  run_loop.Run();
+  EXPECT_EQ(fake_controller()->last_seek_time(), base::Seconds(12));
+}
+
+TEST_F(ReadAloudServiceTest, SeekIgnoresNegativeAndMaxTime) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  service()->Seek(base::Seconds(-1));
+  service()->Seek(base::TimeDelta::Max());
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->last_seek_time(), std::nullopt);
+}
+
+TEST_F(ReadAloudServiceTest, SeekToWordForwardedToUtility) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  base::RunLoop run_loop;
+  fake_controller()->set_seek_to_word_callback(run_loop.QuitClosure());
+  service()->SeekToWord(/*segment_index=*/2, /*character_offset=*/15);
+  run_loop.Run();
+  EXPECT_EQ(fake_controller()->last_seek_segment_index(), 2u);
+  EXPECT_EQ(fake_controller()->last_seek_character_offset(), 15u);
+}
+
+TEST_F(ReadAloudServiceTest, SeekToWordIgnoresNegativeIndices) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  service()->SeekToWord(/*segment_index=*/-1, /*character_offset=*/0);
+  service()->SeekToWord(/*segment_index=*/0, /*character_offset=*/-1);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->last_seek_segment_index(), std::nullopt);
+  EXPECT_EQ(fake_controller()->last_seek_character_offset(), std::nullopt);
 }
 
 TEST_F(ReadAloudServiceTest, SetPlaybackMode) {

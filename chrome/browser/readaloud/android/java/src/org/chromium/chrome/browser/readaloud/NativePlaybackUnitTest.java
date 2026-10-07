@@ -167,6 +167,9 @@ public class NativePlaybackUnitTest {
         mPlayback.seekRelative(50L);
         verify(mBridgeMock).seekRelative(50L);
 
+        mPlayback.seekToWord(2, 15);
+        verify(mBridgeMock).seekToWord(2, 15);
+
         mPlayback.setRate(1.5f);
         verify(mBridgeMock).setPlaybackRate(1.5f);
 

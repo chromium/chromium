@@ -157,8 +157,9 @@ class ReadAloudService
   // Stops audio playback and releases playback resources.
   void Stop();
 
-  // Seeks to the start of the word at the specified index in the text (e.g., tap-to-seek).
-  void SeekToWordIndex(int word_index);
+  // Seeks to the word at the specified segment index and character offset
+  // (e.g., tap-to-seek).
+  void SeekToWord(int segment_index, int character_offset);
 
   // Seeks to a specific absolute time offset from the beginning of the audio.
   void Seek(base::TimeDelta absolute_time);

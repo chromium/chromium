@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_READALOUD_ANDROID_READ_ALOUD_BRIDGE_H_
 #define CHROME_BROWSER_READALOUD_ANDROID_READ_ALOUD_BRIDGE_H_
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -75,7 +76,7 @@ class ReadAloudBridge : public ReadAloudService::Delegate {
   void Play(JNIEnv* env, content::WebContents* web_contents);
   void Pause(JNIEnv* env);
   void Stop(JNIEnv* env);
-  void SeekToWordIndex(JNIEnv* env, jint word_index);
+  void SeekToWord(JNIEnv* env, int32_t segment_index, int32_t character_offset);
   void Seek(JNIEnv* env, jlong absolute_time_nanos);
   void SeekRelative(JNIEnv* env, jlong offset_nanos);
   void SetPlaybackRate(JNIEnv* env, jfloat rate);
@@ -83,9 +84,9 @@ class ReadAloudBridge : public ReadAloudService::Delegate {
   void SetLanguageCode(JNIEnv* env, const std::string& language_code);
   void PreviewVoice(JNIEnv* env, const std::string& voice_id);
   void StopVoicePreview(JNIEnv* env);
-  void SetPlaybackMode(JNIEnv* env, jint mode);
+  void SetPlaybackMode(JNIEnv* env, int32_t mode);
   void SetHighlightingEnabled(JNIEnv* env, jboolean enabled);
-  void SendFeedback(JNIEnv* env, jint feedback_type);
+  void SendFeedback(JNIEnv* env, int32_t feedback_type);
   void CheckReadability(JNIEnv* env, const GURL& url);
   void Destroy(JNIEnv* env);
 

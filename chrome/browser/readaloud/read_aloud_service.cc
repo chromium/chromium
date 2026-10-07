@@ -115,8 +115,24 @@ void ReadAloudService::ResetPlayback() {
   ResetUtilityConnection();
 }
 
-void ReadAloudService::SeekToWordIndex(int word_index) {}
-void ReadAloudService::Seek(base::TimeDelta absolute_time) {}
+void ReadAloudService::SeekToWord(int segment_index, int character_offset) {
+  if (segment_index < 0 || character_offset < 0) {
+    return;
+  }
+  if (utility_player_.is_bound()) {
+    utility_player_->SeekToWord(static_cast<uint32_t>(segment_index),
+                                static_cast<uint32_t>(character_offset));
+  }
+}
+
+void ReadAloudService::Seek(base::TimeDelta absolute_time) {
+  if (absolute_time.is_negative() || absolute_time.is_max()) {
+    return;
+  }
+  if (utility_player_.is_bound()) {
+    utility_player_->SeekToTime(absolute_time);
+  }
+}
 void ReadAloudService::SeekRelative(base::TimeDelta offset) {}
 void ReadAloudService::SetPlaybackRate(float rate) {
   if (utility_player_.is_bound()) {

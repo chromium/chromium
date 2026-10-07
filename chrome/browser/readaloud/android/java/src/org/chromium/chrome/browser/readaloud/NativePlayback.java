@@ -252,7 +252,7 @@ class NativePlayback implements Playback {
     @Override
     public void seekToWord(int paragraphIndex, int wordIndex) {
         ThreadUtils.assertOnUiThread();
-        // TODO(b/522834235): Implement word seeking in the native service.
+        mNativeBridge.seekToWord(paragraphIndex, wordIndex);
     }
 
     @Override

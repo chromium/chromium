@@ -114,8 +114,8 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.stop();
         verify(mNativeBridgeNatives).stop(eq(NATIVE_PTR));
 
-        mBridge.seekToWordIndex(42);
-        verify(mNativeBridgeNatives).seekToWordIndex(eq(NATIVE_PTR), eq(42));
+        mBridge.seekToWord(2, 15);
+        verify(mNativeBridgeNatives).seekToWord(eq(NATIVE_PTR), eq(2), eq(15));
 
         mBridge.seek(5000L);
         verify(mNativeBridgeNatives).seek(eq(NATIVE_PTR), eq(5000L));
@@ -158,7 +158,7 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.play(mWebContents);
         mBridge.pause();
         mBridge.stop();
-        mBridge.seekToWordIndex(42);
+        mBridge.seekToWord(2, 15);
         mBridge.seek(5000L);
         mBridge.seekRelative(200L);
         mBridge.setPlaybackRate(1.5f);
@@ -174,7 +174,7 @@ public class ReadAloudNativeBridgeUnitTest {
         verify(mNativeBridgeNatives, never()).play(anyLong(), any());
         verify(mNativeBridgeNatives, never()).pause(anyLong());
         verify(mNativeBridgeNatives, never()).stop(anyLong());
-        verify(mNativeBridgeNatives, never()).seekToWordIndex(anyLong(), anyInt());
+        verify(mNativeBridgeNatives, never()).seekToWord(anyLong(), anyInt(), anyInt());
         verify(mNativeBridgeNatives, never()).seek(anyLong(), anyLong());
         verify(mNativeBridgeNatives, never()).seekRelative(anyLong(), anyLong());
         verify(mNativeBridgeNatives, never()).setPlaybackRate(anyLong(), anyFloat());
