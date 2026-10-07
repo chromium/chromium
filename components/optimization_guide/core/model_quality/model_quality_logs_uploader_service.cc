@@ -71,6 +71,17 @@ void RecordUploadStatusHistogram(proto::LogAiDataRequest::FeatureCase feature,
       status);
 }
 
+// The various model quality user feedback.
+enum class ModelQualityUserFeedback {
+  kUnknown = 0,
+  kThumbsDown = 1,
+  kThumbsUp = 2,
+
+  // Keep in sync with OptimizationGuideUserFeedback in
+  // tools/metrics/histograms/metadata/optimization/enums.xml.
+  kMaxValue = kThumbsUp,
+};
+
 // Sets user feedback for the ModelExecutionFeature corresponding to the
 // `log_entry`.
 void RecordUserFeedbackHistogram(proto::LogAiDataRequest* log_ai_data_request) {

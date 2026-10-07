@@ -175,17 +175,6 @@ enum class ModelDeliveryEvent {
   kMaxValue = kModelDownloadDueToModelLoadFailure,
 };
 
-// The various model quality user feedback.
-enum class ModelQualityUserFeedback {
-  kUnknown = 0,
-  kThumbsDown = 1,
-  kThumbsUp = 2,
-
-  // Keep in sync with OptimizationGuideUserFeedback in
-  // tools/metrics/histograms/metadata/optimization/enums.xml.
-  kMaxValue = kThumbsUp,
-};
-
 // Status of a request to fetch from the optimization guide service.
 // This enum must remain synchronized with the enum
 // |OptimizationGuideFetcherRequestStatus| in
@@ -213,30 +202,6 @@ enum class FetcherRequestStatus {
 
   // Insert new values before this line.
   kMaxValue = kUserNotSignedIn
-};
-
-// Status of a model quality logs upload request.
-enum class ModelQualityLogsUploadStatus {
-  kUnknown = 0,
-  // Logs upload was successful.
-  kUploadSuccessful = 1,
-  // Upload is disabled due to logging feature not enabled.
-  kLoggingNotEnabled = 2,
-  // Upload was not successful because of network error.
-  kNetError = 3,
-  // Upload is disabled due to metrics reporting being disabled in
-  // chrome://settings.
-  kMetricsReportingDisabled = 4,
-  // Upload is disabled due to enterprise policy.
-  kDisabledDueToEnterprisePolicy = 5,
-  // Upload is disabled because the feature is not enabled for the user.
-  kFeatureNotEnabledForUser = 6,
-
-  // Insert new values before this line.
-  // This enum must remain synchronized with the enum
-  // |OptimizationGuideModelQualityLogsUploadStatus| in
-  // tools/metrics/histograms/metadata/optimization/enums.xml.
-  kMaxValue = kFeatureNotEnabledForUser,
 };
 
 // Performance class of this device.
