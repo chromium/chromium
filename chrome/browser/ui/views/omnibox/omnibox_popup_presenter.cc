@@ -113,6 +113,12 @@ bool OmniboxPopupPresenter::ShouldEvictOnHide() const {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIEvictOnHide);
 }
 
+bool OmniboxPopupPresenter::ShouldDestroyWidgetOnHide() const {
+  return base::FeatureList::IsEnabled(
+             omnibox::kOmniboxWebUIDestroyWidgetOnHide) ||
+         OmniboxPopupPresenterBase::ShouldDestroyWidgetOnHide();
+}
+
 bool OmniboxPopupPresenter::ShouldSizeWebViewToPreferredHeight() const {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxWebUISizeWebViewToPreferredHeight);

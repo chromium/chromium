@@ -212,8 +212,11 @@ class OmniboxPopupPresenterBase
   // Whether the widget should be torn down when the popup is hidden and rebuilt
   // when it is shown again, rather than simply hidden and re-shown. Guards
   // against the reshown native window presenting compositor content left over
-  // from the previous show.
-  bool ShouldDestroyWidgetOnHide() const;
+  // from the previous show. The base implementation applies
+  // `kOmniboxFullWebUIDestroyWidgetOnHide` to every popup when the full
+  // WebUI omnibox is enabled; subclasses may additionally enable it via a
+  // per-popup flag.
+  virtual bool ShouldDestroyWidgetOnHide() const;
 
   // True only while `Hide()` is deliberately destroying the widget so that the
   // next `Show()` rebuilds it. `WidgetDestroyed()` overrides must consult this
