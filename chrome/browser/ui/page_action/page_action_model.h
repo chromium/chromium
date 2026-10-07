@@ -99,6 +99,8 @@ class PageActionModelInterface {
                                         bool is_suppressed) = 0;
   virtual void SetExemptFromOmniboxSuppression(PageActionPassKey pass_key,
                                                bool is_exempt) = 0;
+  // True if omnibox suppression is active and not exempted.
+  virtual bool IsAffectedByOmniboxSuppression() const = 0;
   virtual void SetIsChipShowing(PageActionPassKey pass_key,
                                 bool is_chip_showing) = 0;
   virtual void SetDidAnimateImage(PageActionPassKey pass_key) = 0;
@@ -222,6 +224,7 @@ class PageActionModel : public PageActionModelInterface {
 
   void SetExemptFromOmniboxSuppression(PageActionPassKey pass_key,
                                        bool is_exempt) override;
+  bool IsAffectedByOmniboxSuppression() const override;
 
   void SetIsChipShowing(PageActionPassKey pass_key,
                         bool is_chip_showing) override;

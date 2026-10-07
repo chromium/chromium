@@ -111,6 +111,9 @@ PageActionControllerImpl::PageActionControllerImpl(
     }
   }
   chip_selector_ = CreateChipSelector(
+      base::BindRepeating(
+          &PageActionControllerImpl::IsPageActionSuppressedByOmnibox,
+          base::Unretained(this)),
       base::BindRepeating(&PageActionControllerImpl::DoShowSuggestionChip,
                           base::Unretained(this)),
       base::BindRepeating(&PageActionControllerImpl::DoHideSuggestionChip,
@@ -336,6 +339,11 @@ ScopedPageActionActivity PageActionControllerImpl::AddActivity(
   return ScopedPageActionActivity(*this, action_id);
 }
 
+bool PageActionControllerImpl::IsPageActionSuppressedByOmnibox(
+    actions::ActionId page_action_id) {
+  return FindPageActionModel(page_action_id).IsAffectedByOmniboxSuppression();
+}
+
 void PageActionControllerImpl::DecrementActivityCounter(
     actions::ActionId action_id) {
   auto it = activity_counters_.find(action_id);
@@ -551,6 +559,7 @@ void PageActionControllerImpl::SetShouldHidePageActions(
     model->SetIsSuppressedByOmnibox(PageActionPassKey(),
                                     should_hide_page_actions);
   }
+  chip_selector_->ReevaluateAfterSuppressionChange();
 }
 
 void PageActionControllerImpl::OnActionsChanged() {

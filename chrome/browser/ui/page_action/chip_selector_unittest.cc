@@ -225,6 +225,8 @@ class PriorityChipSelectorTest : public testing::Test {
  public:
   void SetUp() override {
     selector = std::make_unique<internal::PriorityChipSelector>(
+        base::BindRepeating(&PriorityChipSelectorTest::IsSuppressedCallback,
+                            base::Unretained(this)),
         base::BindRepeating(&PriorityChipSelectorTest::ShowChipCallback,
                             base::Unretained(this)),
         base::BindRepeating(&PriorityChipSelectorTest::HideChipCallback,
@@ -238,6 +240,10 @@ class PriorityChipSelectorTest : public testing::Test {
   }
 
  protected:
+  bool IsSuppressedCallback(actions::ActionId page_action_id) {
+    return suppressed_actions_.contains(page_action_id);
+  }
+
   void ShowChipCallback(actions::ActionId page_action_id,
                         const SuggestionChipConfig& config) {
     calls.emplace_back("show_chip", page_action_id);
@@ -256,6 +262,7 @@ class PriorityChipSelectorTest : public testing::Test {
     calls.emplace_back("hide_anchored_message", page_action_id);
   }
 
+  std::set<actions::ActionId> suppressed_actions_;
   std::unique_ptr<internal::PriorityChipSelector> selector;
   std::vector<std::pair<std::string, actions::ActionId>> calls;
 };
@@ -288,6 +295,11 @@ TEST_F(PriorityChipSelectorTest, LowerPriorityIgnored) {
                                   PageActionPriorityCategory::kContextualCue});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
+
+  // Now hide the higher-priority chip; lower one should expand.
+  selector->RequestChipHide(0);
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
+                                 Pair("show_chip", 1)));
 }
 
 TEST_F(PriorityChipSelectorTest, SamePriorityIgnored) {
@@ -299,6 +311,52 @@ TEST_F(PriorityChipSelectorTest, SamePriorityIgnored) {
                                   PageActionPriorityCategory::kContextualCue});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
+}
+
+TEST_F(PriorityChipSelectorTest, SamePriorityReevalSuppression) {
+  selector->RequestChipShow(
+      0, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+  selector->RequestChipShow(
+      1, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
+
+  // Suppress chip 0 and ask to reevaluate priorities; chip 1 should show up.
+  suppressed_actions_.insert(0);
+  selector->ReevaluateAfterSuppressionChange();
+
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
+                                 Pair("show_chip", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest, PriorityChangeReevalSuppression) {
+  selector->RequestChipShow(
+      0, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+  selector->RequestChipShow(
+      1, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+  // Change priority of action 1; that should make it expand in preference to
+  // 0.
+  selector->RequestChipShow(
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
+                                 Pair("show_chip", 1)));
+
+  // Suppress chip 1; we should get 0 to expand.
+  calls.clear();
+  suppressed_actions_.insert(1);
+  selector->ReevaluateAfterSuppressionChange();
+  EXPECT_THAT(calls, ElementsAre(Pair("hide_chip", 1), Pair("show_chip", 0)));
+
+  // Unsuppress chip 1, it should be what's expanded, with 0 collapsed again.
+  calls.clear();
+  suppressed_actions_.erase(1);
+  selector->ReevaluateAfterSuppressionChange();
+  EXPECT_THAT(calls, ElementsAre(Pair("hide_chip", 0), Pair("show_chip", 1)));
 }
 
 TEST_F(PriorityChipSelectorTest, PrivacySecurityAllowsMultipleChips) {
@@ -609,6 +667,7 @@ class PriorityChipSelectorPmcTest : public testing::Test {
     pmc_.Init(session_provider_, storage_service_,
               user_education::ProductMessagingPolicyImpl::CreateDefault());
     selector = std::make_unique<internal::PriorityChipSelector>(
+        base::BindRepeating([](actions::ActionId) { return false; }),
         base::BindRepeating(&PriorityChipSelectorPmcTest::ShowChipCallback,
                             base::Unretained(this)),
         base::BindRepeating(&PriorityChipSelectorPmcTest::HideChipCallback,
@@ -1017,6 +1076,7 @@ TEST_F(PriorityChipSelectorPmcTest, ActiveTabOnlyDisabled_ShowsImmediately) {
 
 TEST_F(PriorityChipSelectorPmcTest, NullPmc_ShowsImmediately) {
   auto null_pmc_selector = std::make_unique<internal::PriorityChipSelector>(
+      base::BindRepeating([](actions::ActionId) { return false; }),
       base::BindRepeating(&PriorityChipSelectorPmcTest::ShowChipCallback,
                           base::Unretained(this)),
       base::BindRepeating(&PriorityChipSelectorPmcTest::HideChipCallback,

@@ -489,6 +489,8 @@ class PageActionControllerImpl : public PageActionController,
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
 
+  bool IsPageActionSuppressedByOmnibox(actions::ActionId page_action_id);
+
   // Called by ScopedPageActionActivity when it's destroyed.
   void DecrementActivityCounter(actions::ActionId action_id) override;
 

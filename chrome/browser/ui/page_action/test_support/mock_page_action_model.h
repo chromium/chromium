@@ -186,6 +186,7 @@ class MockPageActionModel : public PageActionModelInterface {
               SetExemptFromOmniboxSuppression,
               (PageActionPassKey, bool is_exempt),
               (override));
+  MOCK_METHOD(bool, IsAffectedByOmniboxSuppression, (), (const, override));
   MOCK_METHOD(void,
               SetAnimationStyle,
               (PageActionPassKey, PageActionAnimationStyle style),

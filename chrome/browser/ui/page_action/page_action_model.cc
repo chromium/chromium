@@ -246,6 +246,10 @@ void PageActionModel::SetExemptFromOmniboxSuppression(PageActionPassKey,
   NotifyChange(Property::kExemptFromOmniboxSuppression);
 }
 
+bool PageActionModel::IsAffectedByOmniboxSuppression() const {
+  return is_suppressed_by_omnibox_ && !is_exempt_from_omnibox_suppression_;
+}
+
 void PageActionModel::SetIsChipShowing(PageActionPassKey,
                                        bool is_chip_showing) {
   did_show_chip_ |= is_chip_showing;

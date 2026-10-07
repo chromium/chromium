@@ -138,12 +138,15 @@ void DefaultChipSelector::DowngradeQueuedAnchoredMessageRequests() {
   }
 }
 
+void DefaultChipSelector::ReevaluateAfterSuppressionChange() {}
+
 struct PriorityChipSelector::PendingAnchoredMessage {
   actions::ActionId page_action_id;
   AnchoredMessageConfig config;
 };
 
 PriorityChipSelector::PriorityChipSelector(
+    base::RepeatingCallback<bool(actions::ActionId)> is_suppressed_callback,
     base::RepeatingCallback<void(actions::ActionId,
                                  const SuggestionChipConfig&)>
         show_chip_callback,
@@ -154,7 +157,8 @@ PriorityChipSelector::PriorityChipSelector(
     base::RepeatingCallback<void(actions::ActionId)>
         hide_anchored_message_callback,
     user_education::ProductMessagingController* product_messaging_controller)
-    : show_chip_callback_(show_chip_callback),
+    : is_suppressed_callback_(std::move(is_suppressed_callback)),
+      show_chip_callback_(show_chip_callback),
       hide_chip_callback_(hide_chip_callback),
       show_anchored_message_callback_(show_anchored_message_callback),
       hide_anchored_message_callback_(hide_anchored_message_callback),
@@ -168,6 +172,18 @@ void PriorityChipSelector::RequestChipShow(actions::ActionId page_action_id,
                                            const SuggestionChipConfig& config) {
   // Manual User Action is only supported for anchored messages
   CHECK(config.priority != PageActionPriorityCategory::kUserInteraction);
+
+  bool previously_requested = false;
+  for (auto& [id, registered_config] : requested_chips_) {
+    if (id == page_action_id) {
+      registered_config = config;
+      previously_requested = true;
+    }
+  }
+  if (!previously_requested) {
+    requested_chips_.emplace_back(page_action_id, config);
+  }
+
   if (active_chips_.contains(page_action_id)) {
     // This chip is already showing, but may have been triggered at a different
     // priority.
@@ -176,7 +192,7 @@ void PriorityChipSelector::RequestChipShow(actions::ActionId page_action_id,
       return;
     }
     // Different priority, hide, then reshow
-    RequestChipHide(page_action_id);
+    HideChip(page_action_id);
   }
   if (pending_anchored_message_ &&
       pending_anchored_message_->page_action_id == page_action_id) {
@@ -217,6 +233,19 @@ void PriorityChipSelector::RequestChipShow(actions::ActionId page_action_id,
 }
 
 void PriorityChipSelector::RequestChipHide(actions::ActionId page_action_id) {
+  std::erase_if(
+      requested_chips_,
+      [page_action_id](
+          const std::pair<actions::ActionId, SuggestionChipConfig>& entry)
+          -> bool { return entry.first == page_action_id; });
+
+  HideChip(page_action_id);
+  // Hiding this chip may have opened space for another chip to expand; this
+  // in particular matters when hiding the omnibox.
+  ReevaluateAfterChange();
+}
+
+void PriorityChipSelector::HideChip(actions::ActionId page_action_id) {
   if (!active_chips_.contains(page_action_id)) {
     return;
   }
@@ -361,6 +390,27 @@ void PriorityChipSelector::OnTabActiveChanged(bool is_tab_active) {
   ShowChip(page_action_id, {.priority = priority});
 }
 
+void PriorityChipSelector::ReevaluateAfterSuppressionChange() {
+  ReevaluateAfterChange();
+}
+
+void PriorityChipSelector::ReevaluateAfterChange() {
+  // Hide chips that got suppressed by omnibox popup; iterating over
+  // `requested_chips_` since `active_chips_` may change.
+  for (auto& [id, _] : requested_chips_) {
+    if (active_chips_.contains(id) && is_suppressed_callback_.Run(id)) {
+      HideChip(id);
+    }
+  }
+
+  // Now give other chips a chance to show.
+  for (const auto& [id, config] : requested_chips_) {
+    if (!is_suppressed_callback_.Run(id)) {
+      RequestChipShow(id, config);
+    }
+  }
+}
+
 void PriorityChipSelector::HideAllActive() {
   CancelPendingAnchoredMessage();
   for (const auto chip_id : active_chips_) {
@@ -501,6 +551,7 @@ void PriorityChipSelector::DowngradeQueuedAnchoredMessageRequests() {
 }  // namespace internal
 
 std::unique_ptr<ChipSelector> CreateChipSelector(
+    base::RepeatingCallback<bool(actions::ActionId)> is_suppressed_callback,
     base::RepeatingCallback<void(actions::ActionId,
                                  const SuggestionChipConfig&)>
         show_chip_callback,
@@ -513,7 +564,8 @@ std::unique_ptr<ChipSelector> CreateChipSelector(
     user_education::ProductMessagingController* product_messaging_controller) {
   if (base::FeatureList::IsEnabled(features::kPageActionsPrioritySelector)) {
     return std::make_unique<internal::PriorityChipSelector>(
-        show_chip_callback, hide_chip_callback, show_anchored_message_callback,
+        std::move(is_suppressed_callback), show_chip_callback,
+        hide_chip_callback, show_anchored_message_callback,
         hide_anchored_message_callback, product_messaging_controller);
   }
   return std::make_unique<internal::DefaultChipSelector>(
