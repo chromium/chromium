@@ -369,6 +369,7 @@ source_set("unit_tests") {
     "//components/variations:test_support",
     "//components/version_info:channel",
     "//ios/chrome/browser/cobrowse/model:factory",
+    "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/shared/metrics:unit_tests",

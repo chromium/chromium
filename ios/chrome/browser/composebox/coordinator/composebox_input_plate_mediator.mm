@@ -1263,6 +1263,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   if (!webState || !page_context) {
+    [self handleFailedAttachment:identifier];
     return;
   }
 
@@ -1295,11 +1296,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                          (std::unique_ptr<lens::ContextualInputData>)inputData {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_contextualSearchSession) {
+    [self handleFailedAttachment:identifier];
     return;
   }
 
   web::WebStateID webStateID = _latestTabSelectionMapping[identifier];
   if (!webStateID.valid()) {
+    [self handleFailedAttachment:identifier];
     return;
   }
 

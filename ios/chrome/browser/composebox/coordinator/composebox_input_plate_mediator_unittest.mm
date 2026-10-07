@@ -38,6 +38,8 @@
 #import "components/version_info/channel.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_event.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
@@ -174,6 +176,44 @@
 }
 
 - (void)disableSending:(BOOL)disableSending {
+}
+
+@end
+
+// Fake debugger logger that records the logged events.
+@interface FakeComposeboxDebuggerLogger : NSObject <ComposeboxDebuggerLogger>
+
+// Returns the number of logged `QueryAttachment` events of type `event`.
+- (NSUInteger)countForQueryAttachmentEvent:
+    (composebox_debugger::event::QueryAttachment)event;
+
+@end
+
+@implementation FakeComposeboxDebuggerLogger {
+  NSCountedSet<NSString*>* _eventDescriptions;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _eventDescriptions = [[NSCountedSet alloc] init];
+  }
+  return self;
+}
+
+- (void)logEvent:(ComposeboxDebuggerEvent*)event {
+  [_eventDescriptions addObject:event.eventDescription];
+}
+
+- (NSUInteger)countForQueryAttachmentEvent:
+    (composebox_debugger::event::QueryAttachment)event {
+  // `ComposeboxDebuggerEvent` only exposes its type through its description, so
+  // match the description of a reference event of the same type.
+  ComposeboxDebuggerEvent* referenceEvent = [ComposeboxDebuggerEvent
+      queryAttachmentEvent:event
+                  withType:composebox_debugger::AttachmentType::kUnknown
+                     title:@""];
+  return [_eventDescriptions countForObject:referenceEvent.eventDescription];
 }
 
 @end
@@ -1984,6 +2024,86 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   EXPECT_EQ(consumer.items.count, 0U);
   EXPECT_EQ(consumer.updateStateCallCount, 0U);
+}
+
+// Tests that when tab page context extraction or tab upload fails early, the
+// tab attachment is cleaned up via `handleFailedAttachment:` instead of
+// remaining in `consumer.items`, and is logged to the debugger as a failed
+// upload.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       FailedTabExtractionAndUploadCleanUpAttachment) {
+  using composebox_debugger::event::QueryAttachment;
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+  // Keep a strong reference, as `debugLogger` is weak.
+  FakeComposeboxDebuggerLogger* logger =
+      [[FakeComposeboxDebuggerLogger alloc] init];
+  mediator.debugLogger = logger;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  // 1. Null `page_context` in `handlePageContextResponse:webState:identifier:`
+  // removes the item.
+  base::UnguessableToken id_1 = [mediator
+      createInputItemForWebState:active_web_state
+                          source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  [mediator handlePageContextResponse:nullptr
+                             webState:active_web_state
+                           identifier:id_1];
+  EXPECT_EQ(consumer.items.count, 0U);
+  // Page context extraction is part of the upload, so its failure is logged
+  // as a failed upload. The removal is logged too.
+  // TODO(crbug.com/571041300): Revisit if extraction gets its own event.
+  EXPECT_EQ(
+      [logger countForQueryAttachmentEvent:QueryAttachment::kUploadFailed], 1U);
+  EXPECT_EQ([logger countForQueryAttachmentEvent:QueryAttachment::kRemoved],
+            1U);
+
+  // 2. Valid `page_context` when `_contextualSearchSession` is null fails in
+  // `uploadTabForIdentifier:inputData:` and removes the item.
+  base::UnguessableToken id_2 = [mediator
+      createInputItemForWebState:active_web_state
+                          source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  auto page_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  page_context->mutable_annotated_page_content();
+  [mediator handlePageContextResponse:std::move(page_context)
+                             webState:active_web_state
+                           identifier:id_2];
+  EXPECT_EQ(consumer.items.count, 0U);
+  // Failing to start the upload is logged as a failed upload too, along with
+  // the removal.
+  EXPECT_EQ(
+      [logger countForQueryAttachmentEvent:QueryAttachment::kUploadFailed], 2U);
+  EXPECT_EQ([logger countForQueryAttachmentEvent:QueryAttachment::kRemoved],
+            2U);
 }
 
 }  // namespace
