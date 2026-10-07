@@ -7,7 +7,7 @@
 #include <memory>
 #include <string_view>
 
-#include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/change_password_tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
@@ -36,11 +36,8 @@ ToolRequest::CreateToolResult ChangePasswordToolRequest::CreateTool(
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
-  // TODO(b/561935036): Instantiate ChangePasswordTool once implemented.
-  return {/*tool=*/nullptr,
-          MakeResult(mojom::ActionResultCode::kNotImplemented,
-                     /*requires_page_stabilization=*/false,
-                     "ChangePasswordTool is not implemented yet.")};
+  return {std::make_unique<ChangePasswordTool>(task_id, tool_delegate, *tab),
+          MakeOkResult()};
 }
 
 void ChangePasswordToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
