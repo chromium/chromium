@@ -66,6 +66,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_group_home/constants.h"
@@ -14099,6 +14100,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowsingHistoryFilterByActorName,
      flag_descriptions::kBrowsingHistoryFilterByActorDescription, kOsAll,
      FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByActor)},
+
+    {"ttc", flag_descriptions::kTtcName, flag_descriptions::kTtcDescription,
+     kOsDesktop | kOsAndroid, FEATURE_VALUE_TYPE(ttc::kTtc)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

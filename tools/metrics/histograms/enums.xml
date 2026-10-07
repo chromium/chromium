@@ -19185,6 +19185,7 @@ from previous Chrome versions.
   <int value="1285905715" label="WebXRHitTest:enabled"/>
   <int value="1286195560" label="enable-download-warning-improvements"/>
   <int value="1286692760" label="NtpMiddleSlotPromoDismissal:enabled"/>
+  <int value="1287416217" label="Ttc:disabled"/>
   <int value="1287511314"
       label="UseMlServiceForNonLongformHandwritingOnAllBoards:enabled"/>
   <int value="1287625114" label="EnableIncognitoShortcutOnDesktop:disabled"/>
@@ -20490,6 +20491,7 @@ from previous Chrome versions.
   <int value="1680381128" label="SmartZoom:enabled"/>
   <int value="1680524929" label="AutofillEnableSupportForLandmark:disabled"/>
   <int value="1680963577" label="IgnoreDeviceFlexArcEnabledPolicy:disabled"/>
+  <int value="1681207816" label="Ttc:enabled"/>
   <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
   <int value="1681510941" label="AndroidElegantTextHeight:disabled"/>
   <int value="1681612611" label="CodeBasedRBD:disabled"/>

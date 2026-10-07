@@ -1829,6 +1829,9 @@ inline constexpr char kActorNotificationIntentRoutingDescription[] =
     "Enables routing Actor task notifications to Glic and restoring "
     "conversations on Android.";
 
+inline constexpr char kTtcName[] = "TTC";
+inline constexpr char kTtcDescription[] = "Enables the TTC feature.";
+
 inline constexpr char kActorObserveScreenshotDefaultName[] =
     "Actor observe screenshot default";
 inline constexpr char kActorObserveScreenshotDefaultDescription[] =

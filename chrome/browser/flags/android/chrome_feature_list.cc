@@ -22,6 +22,7 @@
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome_feature_list.h"
@@ -624,6 +625,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kUpdateTabGroupColors,
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &themes::kCrossDeviceThemeTracker,
+    &ttc::kTtc,
     &universal_optout::features::kUniversalOptOut,
     &universal_optout::features::kUniversalOptOutSettings,
     &visited_url_ranking::features::kGroupSuggestionService,
