@@ -136,7 +136,8 @@ bool IsEligibleForPasswordChange(PasswordManagerClient* client,
   }
 
   return preferred_match && preferred_match->change_password_url.is_valid() &&
-         preferred_match->password_issues.contains(InsecureType::kLeaked);
+         (preferred_match->password_issues.contains(InsecureType::kLeaked) ||
+          base::FeatureList::IsEnabled(features::kMarkAllCredentialsAsLeaked));
 }
 #endif
 

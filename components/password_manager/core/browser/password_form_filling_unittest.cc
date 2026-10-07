@@ -613,6 +613,33 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageLoadForLeakedPassword) {
           kPasswordChangeOngoing,
       1);
 }
+
+TEST_F(PasswordFormFillingTest,
+       NoFillOnPageLoadWithMarkAllCredentialsAsLeaked) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kMarkAllCredentialsAsLeaked};
+  base::HistogramTester histogram_tester;
+  saved_match_.change_password_url =
+      GURL("https://example.com/.well-known/change-password/");
+
+  std::vector<PasswordForm> best_matches = {saved_match_};
+  const std::vector<PasswordForm> federated_matches = {};
+
+  EXPECT_CALL(client_, IsPasswordChangeOngoing).WillOnce(Return(false));
+  EXPECT_CALL(password_change_service_, IsPasswordChangeAvailable)
+      .WillRepeatedly(testing::Return(true));
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches,
+      &saved_match_, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FirstWaitForUsernameReason",
+      PasswordFormMetricsRecorder::WaitForUsernameReason::
+          kPasswordChangeOngoing,
+      1);
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that the when there is a single preferred match, and no extra
