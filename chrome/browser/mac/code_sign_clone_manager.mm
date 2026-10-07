@@ -9,7 +9,6 @@
 #include <fcntl.h>
 #include <paths.h>
 #include <stdint.h>
-#include <sys/attr.h>
 #include <sys/clonefile.h>
 #include <sys/fcntl.h>
 #include <sys/ioccom.h>
@@ -32,7 +31,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
@@ -41,11 +39,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 
@@ -85,7 +81,6 @@ extern "C" char* _dirhelper(dirhelper_which_t which,
 namespace {
 
 constexpr char kContentsMacOS[] = "Contents/MacOS";
-constexpr char kContentsInfoPlist[] = "Contents/Info.plist";
 constexpr char kCodeSignClone[] = "code_sign_clone";
 constexpr int kMkdtempFormatXCount = 6;
 
@@ -272,10 +267,6 @@ base::FilePath GetAbsoluteUniqueCloneTempDirForSuffix(
       clone_temp_dir.Append(base::StrCat({kCodeSignClone, ".", suffix})));
 }
 
-void RecordHardLinkError(int error) {
-  base::UmaHistogramSparse("Mac.AppHardLinkError", error);
-}
-
 // Unlink the destination main executable and replace it with a hard link to
 // source main executable.
 bool HardLinkMainExecutable(const base::FilePath& source_path,
@@ -293,18 +284,12 @@ bool HardLinkMainExecutable(const base::FilePath& source_path,
       source_path.Append(kContentsMacOS).Append(main_executable_name);
   if (link(source_main_executable_path.value().c_str(),
            destination_main_executable_path.value().c_str()) != 0) {
-    RecordHardLinkError(errno);
     DPLOG(ERROR) << "link " << std::quoted(source_main_executable_path.value())
                  << ", "
                  << std::quoted(destination_main_executable_path.value());
     return false;
   }
-  RecordHardLinkError(0);
   return true;
-}
-
-void RecordClonefileError(int error) {
-  base::UmaHistogramSparse("Mac.AppClonefileError", error);
 }
 
 // Copy-on-write clones `source_path` to `destination_path`. The `source_path`
@@ -322,12 +307,10 @@ bool CloneApp(const base::FilePath& source_path,
   // FB13814551: clonefile directories
   if (clonefile(source_path.value().c_str(), destination_path.value().c_str(),
                 0) != 0) {
-    RecordClonefileError(errno);
     DPLOG(ERROR) << "clonefile " << std::quoted(source_path.value()) << ", "
                  << std::quoted(destination_path.value());
     return false;
   }
-  RecordClonefileError(0);
 
   // The top top level directory created by `clonefile` has the quarantine
   // attribute set. The rest of the directory tree does not have the attribute
@@ -426,86 +409,6 @@ bool ValidateUniqueTempDirPath(const base::FilePath& unique_temp_dir_path) {
   return unique_temp_dir_path.value().starts_with(prefix.value());
 }
 
-void RecordCloneCount() {
-  base::FilePath clone_temp_dir;
-  if (!GetCloneTempDir(&clone_temp_dir)) {
-    return;
-  }
-
-  struct attrlist attr_list = {
-      // `man 2 getattrlist` explains `ATTR_BIT_MAP_COUNT` must be set.
-      .bitmapcount = ATTR_BIT_MAP_COUNT,
-
-      // Get the entry count of the provided dir. The "." and ".." entries are
-      // not included in the count.
-      .dirattr = ATTR_DIR_ENTRYCOUNT,
-  };
-
-  struct alignas(4) {
-    uint32_t length;
-    uint32_t entry_count;
-  } __attribute__((packed)) attr_buff;
-
-  //
-  // Count the number of entries in the clone temp dir. The count would be 2 in
-  // this example:
-  //  /private/var/folders/.../X/org.chromium.Chromium.code_sign_clone/
-  //    code_sign_clone.123456
-  //    code_sign_clone.654321
-  //
-  if (getattrlist(clone_temp_dir.value().c_str(), &attr_list, &attr_buff,
-                  sizeof(attr_buff), 0) != 0) {
-    return;
-  }
-  CHECK_GE(sizeof(attr_buff), attr_buff.length, base::NotFatalUntil::M161);
-
-  // Record the clone count. Each running instance of Chrome maintains a clone
-  // of itself. Only a handful (~1-5) of in use clones are expected to be
-  // present at a given time. We don't need granularity over 100. A high count
-  // indicates a more robust cleanup approach is needed.
-  base::UmaHistogramCounts100("Mac.AppCodeSignCloneCount",
-                              attr_buff.entry_count);
-}
-
-// Don't renumber these values. They are recorded in UMA metrics.
-// See enum MacCloneExists in enums.xml.
-enum class MacCloneExists {
-  kExists = 0,
-  kMissingMainExecutable = 1,
-  kMissingInfoPlist = 2,
-  kMissingMainExecutableAndInfoPlist = 3,
-  kMaxValue = kMissingMainExecutableAndInfoPlist,
-};
-
-MacCloneExists CloneExists(const base::FilePath& clone_app_path,
-                           const base::FilePath& main_executable_name) {
-  // Check for the existence of both the main executable and the Info.plist,
-  // both are needed for dynamic validation. We have observed that during
-  // cleanup, `dirhelper` does not remove hard links. The main executable is a
-  // hard link while the Info.plist is a non-linked regular file. Checking both
-  // for existence provides a more accurate existence metric.
-  base::FilePath main_executable_path =
-      clone_app_path.Append(kContentsMacOS).Append(main_executable_name);
-  base::FilePath info_plist_path = clone_app_path.Append(kContentsInfoPlist);
-  bool main_executable_exists = base::PathExists(main_executable_path);
-  bool info_plist_exists = base::PathExists(info_plist_path);
-  if (main_executable_exists && info_plist_exists) {
-    return MacCloneExists::kExists;
-  } else if (!main_executable_exists && info_plist_exists) {
-    return MacCloneExists::kMissingMainExecutable;
-  } else if (main_executable_exists && !info_plist_exists) {
-    return MacCloneExists::kMissingInfoPlist;
-  } else if (!main_executable_exists && !info_plist_exists) {
-    return MacCloneExists::kMissingMainExecutableAndInfoPlist;
-  } else {
-    NOTREACHED();
-  }
-}
-
-void RecordCloneExists(MacCloneExists exists) {
-  base::UmaHistogramEnumeration("Mac.AppCodeSignCloneExists", exists);
-}
-
 }  // namespace
 
 namespace code_sign_clone_manager {
@@ -562,8 +465,6 @@ CodeSignCloneManager::~CodeSignCloneManager() {
 void CodeSignCloneManager::Clone(const base::FilePath& src_path,
                                  const base::FilePath& main_executable_name,
                                  CloneCallback callback) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
   // Intentionally avoiding `base::ScopedTempDir()`. The temp dir is
   // expected to exist beyond the lifetime of this process. The temp dir
   // will be deleted by the clone-cleanup helper process after the browser
@@ -626,33 +527,12 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
     return;
   }
 
-  base::TimeDelta delta = base::TimeTicks::Now() - start_time;
-  base::UmaHistogramTimes("Mac.AppCodeSignCloneCreationTime", delta);
-
   // Let `~CodeSignCloneManager` know it needs to clean up. `Clone` is run from
   // a posted task which is guaranteed to finish once it has started. It will
   // block shutdown until complete. `ThreadPoolInstance::Shutdown` is run before
   // `~CodeSignCloneManager`. `Clone` and ` ~CodeSignCloneManager` will never
   // overlap, it is safe to set `needs_cleanup_` from this task.
   needs_cleanup_ = true;
-
-  // Record a baseline metric.
-  RecordCloneExists(MacCloneExists::kExists);
-
-  // Once the clone is created, start a timer that periodically checks for the
-  // clone's existence. `base::RepeatingTimer` is not thread safe. It must be
-  // created, started and stopped from the same thread / sequence.
-  // `clone_exists_timer_` is created on the main thread, post a task to the
-  // main thread to start the timer. The timer will be stopped during
-  // `~CodeSignCloneManager` which also happens on the main thread.
-  // `base::Unretained(this)` is safe here for the same reason `needs_cleanup_`
-  // doesn't need synchronization.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CodeSignCloneManager::StartCloneExistsTimer,
-                                base::Unretained(this), clone_app_path,
-                                main_executable_name));
-
-  RecordCloneCount();
 
   // TODO(https://crbug.com/343784575): Search for inactive clones and clean
   // them up if the clone count gets too high.
@@ -682,47 +562,6 @@ base::FilePath CodeSignCloneManager::GetCloneTemporaryDirectoryForTesting() {
   base::FilePath clone_temp_dir;
   GetCloneTempDir(&clone_temp_dir);
   return clone_temp_dir;
-}
-
-void CodeSignCloneManager::StartCloneExistsTimer(
-    const base::FilePath& clone_app_path,
-    const base::FilePath& main_executable_name) {
-  // `base::Unretained(this)` is safe here because `~CodeSignCloneManager`
-  // cancels the timer.
-  clone_exists_timer_.Start(
-      FROM_HERE, base::Days(1),
-      base::BindRepeating(&CodeSignCloneManager::CloneExistsTimerFire,
-                          base::Unretained(this), clone_app_path,
-                          main_executable_name));
-}
-
-void CodeSignCloneManager::StopCloneExistsTimer() {
-  clone_exists_timer_.Stop();
-}
-
-void CodeSignCloneManager::CloneExistsTimerFire(
-    const base::FilePath& clone_app_path,
-    const base::FilePath& main_executable_name) {
-  // `CloneExists` may block, perform the work on a background thread.
-  if (!task_runner_->RunsTasksInCurrentSequence()) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&CodeSignCloneManager::CloneExistsTimerFire,
-                                  base::Unretained(this), clone_app_path,
-                                  main_executable_name));
-    return;
-  }
-
-  MacCloneExists exists = CloneExists(clone_app_path, main_executable_name);
-
-  // If the clone still exists, do nothing. Otherwise, record the state and stop
-  // the timer.
-  if (exists == MacCloneExists::kExists) {
-    return;
-  }
-  RecordCloneExists(exists);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CodeSignCloneManager::StopCloneExistsTimer,
-                                base::Unretained(this)));
 }
 
 namespace internal {

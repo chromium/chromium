@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/timer/timer.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/common/main_function_params.h"
 
 namespace code_sign_clone_manager {
@@ -121,14 +121,8 @@ class CodeSignCloneManager {
   void Clone(const base::FilePath& src_path,
              const base::FilePath& main_executable_name,
              CloneCallback callback);
-  void StartCloneExistsTimer(const base::FilePath& clone_app_path,
-                             const base::FilePath& main_executable_name);
-  void StopCloneExistsTimer();
-  void CloneExistsTimerFire(const base::FilePath& clone_app_path,
-                            const base::FilePath& main_executable_name);
 
   std::string unique_temp_dir_suffix_;
-  base::RepeatingTimer clone_exists_timer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   bool needs_cleanup_ = false;
 };
