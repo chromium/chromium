@@ -258,21 +258,6 @@ public class BackgroundTabPool
     }
 
     /**
-     * Removes a tab by its associated placeholder tab ID from live entries, placeholder mappings,
-     * and cached state.
-     *
-     * @param placeholderTabId The placeholder ID of the tab to remove.
-     */
-    // TODO(b/542694245): Refactor callers to use removeTabById directly and remove this method.
-    public void removeTab(@TabId int placeholderTabId) {
-        checkNotDestroyed();
-        Integer tabId = mPlaceholderToTabId.get(placeholderTabId);
-        if (tabId != null) {
-            removeTabById(tabId);
-        }
-    }
-
-    /**
      * Removes a tab by its unique tab ID completely from live in-memory entries, placeholder
      * mappings, association storage, and the persistent TabCache.
      *

@@ -305,7 +305,7 @@ public class BackgroundTabPoolTest {
         assertEquals(0, secondPool.getLiveTabCount());
         assertEquals(1, secondPool.getAllPlaceholderTabIds().size());
 
-        secondPool.removeTab(PLACEHOLDER_ID);
+        secondPool.removeTabById(TAB_ID_1);
         assertTrue(secondPool.isEmpty());
         assertTrue(secondPool.getAllPlaceholderTabIds().isEmpty());
     }
@@ -330,7 +330,7 @@ public class BackgroundTabPoolTest {
     }
 
     @Test
-    public void testRemoveTab_clearsFromTabCache() {
+    public void testRemoveTabById_clearsFromTabCache() {
         Tab tab = createMockTab(TAB_ID_1);
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
@@ -350,7 +350,7 @@ public class BackgroundTabPoolTest {
                 PLACEHOLDER_ID,
                 mPool.getAssociationStoreForTesting().getPlaceholderTabId(TAB_ID_1));
 
-        mPool.removeTab(PLACEHOLDER_ID);
+        mPool.removeTabById(TAB_ID_1);
         mExecutor.runAll();
 
         assertNull(mPool.getLiveTab(TAB_ID_1));
@@ -436,7 +436,7 @@ public class BackgroundTabPoolTest {
     }
 
     @Test
-    public void testRemoveTabByPlaceholderIdCallsOnEmptyCallback() {
+    public void testRemoveTabByIdCallsOnEmptyCallback() {
         Tab tab = createMockTab(TAB_ID_1);
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
@@ -450,7 +450,7 @@ public class BackgroundTabPoolTest {
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
         assertFalse(mPool.isEmpty());
 
-        mPool.removeTab(PLACEHOLDER_ID);
+        mPool.removeTabById(TAB_ID_1);
         assertTrue(mPool.isEmpty());
         assertEquals(0, mPool.getLiveTabCount());
         assertFalse(mPool.hasPlaceholder(PLACEHOLDER_ID));
@@ -643,7 +643,6 @@ public class BackgroundTabPoolTest {
         assertThrows(AssertionError.class, () -> mPool.getAllPlaceholderTabIds());
         assertThrows(AssertionError.class, () -> mPool.claimTabIdsWithoutPlaceholders());
         assertThrows(AssertionError.class, () -> mPool.hasPlaceholder(PLACEHOLDER_ID));
-        assertThrows(AssertionError.class, () -> mPool.removeTab(PLACEHOLDER_ID));
         assertThrows(AssertionError.class, () -> mPool.removeTabById(TAB_ID_1));
         assertThrows(AssertionError.class, () -> mPool.clearAll());
         assertThrows(AssertionError.class, () -> mPool.cleanupPostRestore());
