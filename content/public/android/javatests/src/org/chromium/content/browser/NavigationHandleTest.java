@@ -67,7 +67,11 @@ public class NavigationHandleTest {
     public void url() throws Throwable {
         NavigationHandle handle =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mNavController.loadUrl(new LoadUrlParams(URL_2)));
+                        () ->
+                                mNavController
+                                        .loadUrl(new LoadUrlParams(URL_2))
+                                        .getNavigationHandle());
+        Assert.assertNotNull(handle);
         Assert.assertEquals(URL_2, handle.getUrl().getSpec());
     }
 

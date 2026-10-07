@@ -67,6 +67,12 @@ struct OpenURLParams;
 // NOTE: Embedders may expose these reasons in external APIs.
 // When adding a value, please check and update embedder mappings (e.g. in
 // //android_webview).
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.content_public.browser.navigation_controller)
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
+// LINT.IfChange(NavigationNotStartedReason)
 enum class NavigationNotStartedReason {
   // The URL, or the virtual URL of an outermost main frame, was non-empty and
   // failed to parse. Commonly reached when an embedder passes along raw user
@@ -106,6 +112,7 @@ enum class NavigationNotStartedReason {
   // back.
   kCancelledDuringStart,
 };
+// LINT.ThenChange(//android_webview/java/src/org/chromium/android_webview/AwContents.java:NavigationNotStartedReason)
 
 // A NavigationController manages session history, i.e., a back-forward list
 // of navigation entries.

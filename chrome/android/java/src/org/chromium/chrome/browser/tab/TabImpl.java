@@ -114,7 +114,7 @@ import org.chromium.components.tabs.TabAlert;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.NavigationResult;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.ViewFocusChangeSuppression;
@@ -1099,8 +1099,8 @@ class TabImpl implements Tab, TabInternal {
         }
 
         params.setUrl(fixedUrlSpec);
-        NavigationHandle handle = mWebContents.getNavigationController().loadUrl(params);
-        return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, handle);
+        NavigationResult result = mWebContents.getNavigationController().loadUrl(params);
+        return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, result.getNavigationHandle());
     }
 
     @Override

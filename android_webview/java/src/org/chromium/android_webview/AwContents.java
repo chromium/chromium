@@ -122,6 +122,7 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.content_public.browser.NavigationResult;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -132,6 +133,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
+import org.chromium.content_public.browser.navigation_controller.NavigationNotStartedReason;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
@@ -2542,9 +2544,16 @@ public class AwContents implements SmartClipProvider {
         loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
         loadUrlParams.setOverrideUserAgent(UserAgentOverrideOption.TRUE);
 
-        NavigationHandle handle = mNavigationController.loadUrl(loadUrlParams);
+        NavigationResult result = mNavigationController.loadUrl(loadUrlParams);
+        NavigationHandle handle = result.getNavigationHandle();
         if (handle == null) {
-            throw new IllegalArgumentException("Invalid URL: " + params.url);
+            int reason = assertNonNull(result.getNotStartedReason());
+            if (reason == NavigationNotStartedReason.DUPLICATE_NAVIGATION_IGNORED) {
+                handle = result.getOngoingNavigationHandle();
+            }
+            if (handle == null) {
+                throw createExceptionForNotStartedReason(reason, params.url);
+            }
         }
 
         // The behavior of WebViewClassic uses the populateVisitedLinks callback in WebKit.
@@ -2557,6 +2566,43 @@ public class AwContents implements SmartClipProvider {
 
         return mNavigationClient.getOrUpdateAwNavigationFor(handle);
     }
+
+    // LINT.IfChange(NavigationNotStartedReason)
+    @VisibleForTesting
+    public static RuntimeException createExceptionForNotStartedReason(
+            @NavigationNotStartedReason int reason, String url) {
+        switch (reason) {
+            case NavigationNotStartedReason.INVALID_URL:
+                return new IllegalArgumentException("Invalid URL: " + url);
+            case NavigationNotStartedReason.OVERSIZED_URL:
+                return new IllegalArgumentException("URL length exceeds maximum allowed limit");
+            case NavigationNotStartedReason.BLOCKED_RENDERER_DEBUG_URL:
+                return new IllegalArgumentException("Renderer debug URLs are blocked: " + url);
+            case NavigationNotStartedReason.DISALLOWED_SCHEME:
+                return new IllegalArgumentException("URL scheme is not permitted: " + url);
+            case NavigationNotStartedReason.RENDERER_DEBUG_URL_HANDLED:
+                return new IllegalArgumentException("URL does not result in a navigation: " + url);
+            case NavigationNotStartedReason.ATTACHING_INNER_DELEGATE:
+                return new IllegalStateException(
+                        "Cannot navigate while frame is attaching an inner delegate");
+            case NavigationNotStartedReason.DUPLICATE_NAVIGATION_IGNORED:
+                return new IllegalStateException(
+                        "Navigation was ignored because an identical navigation is already"
+                                + " ongoing: "
+                                + url);
+            case NavigationNotStartedReason.CONTEXT_SHUTDOWN:
+                return new IllegalStateException(
+                        "Cannot navigate because the context is shutting down");
+            case NavigationNotStartedReason.CANCELLED_DURING_START:
+                return new IllegalStateException(
+                        "Navigation was cancelled synchronously during start");
+            default:
+                throw new IllegalArgumentException(
+                        "Unhandled NavigationNotStartedReason: " + reason);
+        }
+    }
+
+    // LINT.ThenChange(//content/public/browser/navigation_controller.h:NavigationNotStartedReason)
 
     /** WebView.postUrl. */
     public void postUrl(String url, byte[] postData) {
@@ -2780,10 +2826,11 @@ public class AwContents implements SmartClipProvider {
 
         AwLoadUrlMetricsObserver.setPendingLoadUrlTimestamp(
                 SystemClock.uptimeMillis(), mWebContents);
-        NavigationHandle result = mNavigationController.loadUrl(params);
-        RecordHistogram.recordBooleanHistogram("Android.WebView.LoadUrl.Success", result != null);
+        NavigationResult result = mNavigationController.loadUrl(params);
+        boolean success = result.getNavigationHandle() != null;
+        RecordHistogram.recordBooleanHistogram("Android.WebView.LoadUrl.Success", success);
 
-        if (result == null) {
+        if (!success) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.WebView.LoadUrl.FailureScheme",
                     schemeForUrl(params.getUrl()),

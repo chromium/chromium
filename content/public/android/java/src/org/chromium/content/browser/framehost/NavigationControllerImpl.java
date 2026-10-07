@@ -21,8 +21,9 @@ import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.content_public.browser.NavigationResult;
+import org.chromium.content_public.browser.navigation_controller.NavigationNotStartedReason;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -174,8 +175,8 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public @Nullable NavigationHandle loadUrl(LoadUrlParams params) {
-        NavigationHandle navigationHandle = null;
+    public NavigationResult loadUrl(LoadUrlParams params) {
+        NavigationResult result = null;
         if (mNativeNavigationControllerAndroid != 0) {
             String headers =
                     params.getExtraHeaders() == null
@@ -205,7 +206,7 @@ import org.chromium.url.Origin;
                             currentTimestamp - params.getIntentReceivedTimestamp());
                 }
             }
-            navigationHandle =
+            result =
                     NavigationControllerImplJni.get()
                             .loadUrl(
                                     mNativeNavigationControllerAndroid,
@@ -238,12 +239,17 @@ import org.chromium.url.Origin;
                                     params.getIsPdf(),
                                     params.getRemoveExtraHeadersOnCrossOriginRedirect(),
                                     params.getInternalScrollToTextFragment());
-            // Use the navigation handle object to store user data passed in.
-            if (navigationHandle != null) {
-                navigationHandle.setUserDataHost(params.takeNavigationHandleUserData());
+            // Store passed in user data on the navigation handle, except in the case of a duplicate
+            // navigation.
+            if (result != null
+                    && result.getNavigationHandle() != null
+                    && result.getNotStartedReason() == null) {
+                result.getNavigationHandle().setUserDataHost(params.takeNavigationHandleUserData());
             }
         }
-        return navigationHandle;
+        return result != null
+                ? result
+                : NavigationResult.createFailure(NavigationNotStartedReason.CONTEXT_SHUTDOWN);
     }
 
     @Override
@@ -453,7 +459,7 @@ import org.chromium.url.Origin;
 
         void reloadBypassingCache(long nativeNavigationControllerAndroid, boolean checkForRepost);
 
-        NavigationHandle loadUrl(
+        NavigationResult loadUrl(
                 long nativeNavigationControllerAndroid,
                 String url,
                 int loadUrlType,

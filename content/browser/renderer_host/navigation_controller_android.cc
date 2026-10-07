@@ -16,8 +16,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "content/browser/android/additional_navigation_params.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,6 +38,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
+#include "content/public/android/content_jni_headers/NavigationResult_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
@@ -337,15 +341,37 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
         ConvertJavaStringToUTF8(env, internal_scroll_to_text_fragment);
   }
 
-  base::WeakPtr<NavigationHandle> handle =
-      navigation_controller_->LoadURLWithParams(params);
+  base::expected<base::WeakPtr<NavigationHandle>, NavigationNotStartedReason>
+      result = navigation_controller_->LoadURLWithParamsForResult(params);
 
-  if (!handle) {
-    return nullptr;
+  if (!result.has_value()) {
+    if (result.error() ==
+        NavigationNotStartedReason::kDuplicateNavigationIgnored) {
+      FrameTreeNode* root_node = navigation_controller_->frame_tree().root();
+      CHECK(root_node);
+      NavigationRequest* ongoing_request = root_node->navigation_request();
+      CHECK(ongoing_request);
+      CHECK_GT(ongoing_request->GetIgnoredDuplicateNavigationCount(), 0u);
+      return Java_NavigationResult_createDuplicateIgnored(
+          env, base::android::ScopedJavaLocalRef<jobject>(
+                   ongoing_request->GetJavaNavigationHandle()));
+    }
+    return Java_NavigationResult_createFailure(
+        env, static_cast<int32_t>(result.error()));
   }
 
-  return base::android::ScopedJavaLocalRef<jobject>(
-      handle->GetJavaNavigationHandle());
+  base::WeakPtr<NavigationHandle> handle = result.value();
+  if (!handle) {
+    // Navigation was cancelled synchronously during start before a handle could
+    // be returned.
+    return Java_NavigationResult_createFailure(
+        env, static_cast<int32_t>(
+                 NavigationNotStartedReason::kCancelledDuringStart));
+  }
+
+  return Java_NavigationResult_createSuccess(
+      env, base::android::ScopedJavaLocalRef<jobject>(
+               handle->GetJavaNavigationHandle()));
 }
 
 void NavigationControllerAndroid::ClearHistory(JNIEnv* env) {
