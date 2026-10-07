@@ -101,8 +101,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
     std::vector<BlobStatusCallback> build_started_callbacks;
   };
 
-  BlobEntry(const std::string& content_type,
-            const std::string& content_disposition);
+  explicit BlobEntry(const std::string& content_type);
 
   BlobEntry(const BlobEntry&) = delete;
   BlobEntry& operator=(const BlobEntry&) = delete;
@@ -127,10 +126,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
   size_t refcount() const { return refcount_; }
 
   const std::string& content_type() const { return content_type_; }
-
-  const std::string& content_disposition() const {
-    return content_disposition_;
-  }
 
   // Total size of this blob in bytes.
   uint64_t total_size() const { return size_; }
@@ -164,7 +159,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
 
   // Metadata.
   std::string content_type_;
-  std::string content_disposition_;
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> items_;
 

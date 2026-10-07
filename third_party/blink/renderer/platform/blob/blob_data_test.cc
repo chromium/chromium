@@ -144,7 +144,6 @@ class BlobDataHandleTest : public testing::Test {
     auto& reg = mock_blob_registry_.registrations[0];
     EXPECT_EQ(handle->MaybeUuid(), reg.uuid);
     EXPECT_EQ(type.IsNull() ? "" : type, reg.content_type);
-    EXPECT_EQ("", reg.content_disposition);
     ASSERT_EQ(expected_elements.size(), reg.elements.size());
     for (wtf_size_t i = 0; i < expected_elements.size(); ++i) {
       const auto& expected = expected_elements[i].element;
@@ -216,7 +215,6 @@ TEST_F(BlobDataHandleTest, CreateEmpty) {
   const auto& reg = mock_blob_registry_.registrations[0];
   EXPECT_EQ(handle->MaybeUuid(), reg.uuid);
   EXPECT_EQ("", reg.content_type);
-  EXPECT_EQ("", reg.content_disposition);
   EXPECT_EQ(0u, reg.elements.size());
 }
 

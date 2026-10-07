@@ -130,7 +130,6 @@ PrefetchedSignedExchangeCacheAdapter::CreateBlobBuilderFromStream(
   auto blob_builder_from_stream =
       std::make_unique<storage::BlobBuilderFromStream>(
           blob_context_getter.Run(), "" /* content_type */,
-          "" /* content_disposition */,
           base::BindOnce(
               &PrefetchedSignedExchangeCacheAdapter::StreamingBlobDoneOnIO,
               std::move(adapter)),

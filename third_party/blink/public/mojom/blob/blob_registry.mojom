@@ -27,7 +27,7 @@ interface BlobRegistry {
   // Registers a new blob with the blob registry.
   // TODO(crbug.com/41465194): get rid of the UUID return value.
   Register(pending_receiver<blink.mojom.Blob> blob,
-                  string content_type, string content_disposition,
+                  string content_type,
                   array<DataElement> elements) => (string uuid);
 
   // Creates a new blob out of a data pipe.
@@ -39,8 +39,7 @@ interface BlobRegistry {
   // If something goes wrong (for example the blob system doesn't have enough
   // available space to store all the data from the stream) null will be
   // returned.
-  RegisterFromStream(string content_type, string content_disposition,
-                     uint64 length_hint,
+  RegisterFromStream(string content_type, uint64 length_hint,
                      handle<data_pipe_consumer> data,
                      pending_associated_remote<ProgressClient>? progress_client)
       => (SerializedBlob? blob);

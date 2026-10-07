@@ -48,9 +48,8 @@ void BlobEntry::BuildingState::CancelRequestsAndAbort() {
     std::move(build_aborted_callback).Run();
 }
 
-BlobEntry::BlobEntry(const std::string& content_type,
-                     const std::string& content_disposition)
-    : content_type_(content_type), content_disposition_(content_disposition) {}
+BlobEntry::BlobEntry(const std::string& content_type)
+    : content_type_(content_type) {}
 BlobEntry::~BlobEntry() = default;
 
 void BlobEntry::AppendSharedBlobItem(

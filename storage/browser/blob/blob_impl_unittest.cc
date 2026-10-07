@@ -239,7 +239,7 @@ TEST_F(BlobImplTest, ReadAll_WithoutClient) {
 TEST_F(BlobImplTest, ReadAll_BrokenBlob) {
   const std::string kId = "id";
   auto handle = context_->AddBrokenBlob(
-      kId, "", "", BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
+      kId, "", BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
 
   mojo::Remote<blink::mojom::Blob> remote;
   BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
@@ -379,7 +379,7 @@ TEST_F(BlobImplTest, ReadRange_UnboundedLength) {
 TEST_F(BlobImplTest, ReadRange_BrokenBlob) {
   const std::string kId = "id";
   auto handle = context_->AddBrokenBlob(
-      kId, "", "", BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
+      kId, "", BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
 
   mojo::Remote<blink::mojom::Blob> remote;
   BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());

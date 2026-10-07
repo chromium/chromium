@@ -156,7 +156,6 @@ ScopedFakeBlobRegistry::~ScopedFakeBlobRegistry() {
 
 void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
                                 const String& content_type,
-                                const String& content_disposition,
                                 Vector<mojom::blink::DataElementPtr> elements,
                                 RegisterCallback callback) {
   const String uuid = CreateCanonicalUuidString();
@@ -164,8 +163,8 @@ void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
   if (support_binary_blob_bodies_) {
     body_elements = std::move(elements);
   } else {
-    registrations.push_back(Registration{
-        uuid, content_type, content_disposition, std::move(elements)});
+    registrations.push_back(
+        Registration{uuid, content_type, std::move(elements)});
   }
 
   // DataElementReader will delete itself when it creates FakeBlob.
@@ -180,7 +179,6 @@ void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
 
 void FakeBlobRegistry::RegisterFromStream(
     const String& content_type,
-    const String& content_disposition,
     uint64_t expected_length,
     mojo::ScopedDataPipeConsumerHandle data,
     mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,

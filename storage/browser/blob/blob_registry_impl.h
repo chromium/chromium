@@ -57,12 +57,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
 
   void Register(mojo::PendingReceiver<blink::mojom::Blob> blob,
                 const std::string& content_type,
-                const std::string& content_disposition,
                 std::vector<blink::mojom::DataElementPtr> elements,
                 RegisterCallback callback) override;
   void RegisterFromStream(
       const std::string& content_type,
-      const std::string& content_disposition,
       uint64_t expected_length,
       mojo::ScopedDataPipeConsumerHandle data,
       mojo::PendingAssociatedRemote<blink::mojom::ProgressClient>

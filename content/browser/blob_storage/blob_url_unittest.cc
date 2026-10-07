@@ -78,7 +78,6 @@ const char kTestDataHandleData1[] = "data handle test data1.";
 const char kTestDataHandleData2[] = "data handle test data2.";
 const char kTestDiskCacheSideData[] = "test side data";
 const char kTestContentType[] = "foo/bar";
-const char kTestContentDisposition[] = "attachment; filename=foo.txt";
 
 const char kFileSystemURLOrigin[] = "http://remote";
 const storage::FileSystemType kFileSystemType =
@@ -548,7 +547,6 @@ TEST_F(BlobURLTest, TestGetRangeRequest3) {
 
 TEST_F(BlobURLTest, TestExtraHeaders) {
   blob_data_->set_content_type(kTestContentType);
-  blob_data_->set_content_disposition(kTestContentDisposition);
   blob_data_->AppendData(kTestData1);
   expected_status_code_ = 200;
   expected_response_ = kTestData1;
@@ -558,11 +556,6 @@ TEST_F(BlobURLTest, TestExtraHeaders) {
   EXPECT_TRUE(response_headers_->GetMimeType(&content_type));
   EXPECT_EQ(kTestContentType, content_type);
   EXPECT_FALSE(response_metadata_.has_value());
-  size_t iter = 0;
-  std::string content_disposition;
-  EXPECT_TRUE(response_headers_->EnumerateHeader(&iter, "Content-Disposition",
-                                                 &content_disposition));
-  EXPECT_EQ(kTestContentDisposition, content_disposition);
 }
 
 TEST_F(BlobURLTest, TestSideData) {
@@ -593,7 +586,7 @@ TEST_F(BlobURLTest, TestZeroSizeSideData) {
 
 TEST_F(BlobURLTest, BrokenBlob) {
   blob_handle_ = blob_context_.AddBrokenBlob(
-      "uuid", "", "", storage::BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
+      "uuid", "", storage::BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
   TestErrorRequest(net::ERR_BLOB_INVALID_CONSTRUCTION_ARGUMENTS);
 }
 

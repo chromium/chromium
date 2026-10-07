@@ -84,8 +84,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataHandle {
   const std::string& uuid() const;
   // May be accessed on any thread.
   const std::string& content_type() const;
-  // May be accessed on any thread.
-  const std::string& content_disposition() const;
   // May be accessed on any thread. In rare cases where the blob is created
   // as a file from javascript, this will be kUnknownSize.
   uint64_t size() const;
@@ -105,7 +103,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataHandle {
    public:
     BlobDataHandleShared(const std::string& uuid,
                          const std::string& content_type,
-                         const std::string& content_disposition,
                          uint64_t size,
                          BlobStorageContext* context);
 
@@ -121,7 +118,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataHandle {
 
     const std::string uuid_;
     const std::string content_type_;
-    const std::string content_disposition_;
     const uint64_t size_;
     base::WeakPtr<BlobStorageContext> context_;
   };
@@ -129,7 +125,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataHandle {
   friend class BlobStorageContext;
   BlobDataHandle(const std::string& uuid,
                  const std::string& content_type,
-                 const std::string& content_disposition,
                  uint64_t size,
                  BlobStorageContext* context,
                  base::SequencedTaskRunner* io_task_runner);

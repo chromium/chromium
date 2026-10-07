@@ -34,7 +34,6 @@ namespace {
 
 const char kEmptyBlobStorageMessage[] = "No available blob data.";
 const char kContentType[] = "Content Type: ";
-const char kContentDisposition[] = "Content Disposition: ";
 const char kCount[] = "Count: ";
 const char kIndex[] = "Index: ";
 const char kType[] = "Type: ";
@@ -143,8 +142,7 @@ std::string ViewBlobInternalsJob::GenerateHTML(
          blob_storage_context->registry().blob_map_) {
       AddHTMLBoldText(uuid_entry_pair.first, &out);
       BlobEntry* entry = uuid_entry_pair.second.get();
-      GenerateHTMLForBlobData(*entry, entry->content_type(),
-                              entry->content_disposition(), entry->refcount(),
+      GenerateHTMLForBlobData(*entry, entry->content_type(), entry->refcount(),
                               &out);
     }
     // TODO(crbug.com/40709731): Bring back information about blob URLs.
@@ -156,7 +154,6 @@ std::string ViewBlobInternalsJob::GenerateHTML(
 void ViewBlobInternalsJob::GenerateHTMLForBlobData(
     const BlobEntry& blob_data,
     const std::string& content_type,
-    const std::string& content_disposition,
     size_t refcount,
     std::string* out) {
   StartHTMLList(out);
@@ -165,8 +162,6 @@ void ViewBlobInternalsJob::GenerateHTMLForBlobData(
   AddHTMLListItem(kStatus, StatusToString(blob_data.status()), out);
   if (!content_type.empty())
     AddHTMLListItem(kContentType, content_type, out);
-  if (!content_disposition.empty())
-    AddHTMLListItem(kContentDisposition, content_disposition, out);
 
   bool has_multi_items = blob_data.items().size() > 1;
   if (has_multi_items) {

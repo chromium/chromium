@@ -26,7 +26,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ViewBlobInternalsJob {
  private:
   static void GenerateHTMLForBlobData(const BlobEntry& blob_data,
                                       const std::string& content_type,
-                                      const std::string& content_disposition,
                                       size_t refcount,
                                       std::string* out);
 };

@@ -72,10 +72,6 @@ scoped_refptr<net::HttpResponseHeaders> GenerateHeaders(
     }
     headers->SetHeader(net::HttpRequestHeaders::kContentType,
                        blob_handle->content_type());
-    if (!blob_handle->content_disposition().empty()) {
-      headers->SetHeader("Content-Disposition",
-                         blob_handle->content_disposition());
-    }
   }
 
   return headers;

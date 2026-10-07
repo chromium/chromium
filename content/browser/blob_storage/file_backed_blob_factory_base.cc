@@ -63,7 +63,7 @@ void ContinueRegisterBlob(
   if (!security_check_success) {
     std::unique_ptr<storage::BlobDataHandle> handle =
         blob_storage_context->context()->AddBrokenBlob(
-            uuid, content_type, /*content_disposition=*/"",
+            uuid, content_type,
             storage::BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE);
     storage::BlobImpl::Create(std::move(handle), std::move(blob));
     return;

@@ -643,7 +643,7 @@ TEST_F(BlobStorageContextTest, TestUnknownBrokenAndBuildingBlobReference) {
 
   // Create a broken blob.
   std::unique_ptr<BlobDataHandle> broken_handle =
-      context_->AddBrokenBlob(kBrokenId, "", "", BlobStatus::ERR_OUT_OF_MEMORY);
+      context_->AddBrokenBlob(kBrokenId, "", BlobStatus::ERR_OUT_OF_MEMORY);
   EXPECT_TRUE(broken_handle->GetBlobStatus() == BlobStatus::ERR_OUT_OF_MEMORY);
   EXPECT_TRUE(context_->registry().HasEntry(kBrokenId));
 

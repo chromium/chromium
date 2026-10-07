@@ -399,15 +399,14 @@ std::unique_ptr<BlobDataSnapshot> BlobDataBuilder::CreateSnapshot() const {
   items.reserve(items_.size());
   for (const auto& item : items_)
     items.push_back(item->item());
-  return base::WrapUnique(new BlobDataSnapshot(
-      uuid_, content_type_, content_disposition_, std::move(items)));
+  return base::WrapUnique(
+      new BlobDataSnapshot(uuid_, content_type_, std::move(items)));
 }
 
 void PrintTo(const BlobDataBuilder& x, std::ostream* os) {
   DCHECK(os);
   *os << "<BlobDataBuilder>{uuid: " << x.uuid()
-      << ", content_type: " << x.content_type_
-      << ", content_disposition: " << x.content_disposition_ << ", items: [";
+      << ", content_type: " << x.content_type_ << ", items: [";
   for (const auto& item : x.items_) {
     PrintTo(*item->item(), os);
     *os << ", ";

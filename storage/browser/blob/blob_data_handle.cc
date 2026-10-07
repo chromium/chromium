@@ -29,12 +29,10 @@ namespace storage {
 BlobDataHandle::BlobDataHandleShared::BlobDataHandleShared(
     const std::string& uuid,
     const std::string& content_type,
-    const std::string& content_disposition,
     uint64_t size,
     BlobStorageContext* context)
     : uuid_(uuid),
       content_type_(content_type),
-      content_disposition_(content_disposition),
       size_(size),
       context_(context->AsWeakPtr()) {
   context_->IncrementBlobRefCount(uuid);
@@ -51,16 +49,11 @@ BlobDataHandle::BlobDataHandleShared::~BlobDataHandleShared() {
 
 BlobDataHandle::BlobDataHandle(const std::string& uuid,
                                const std::string& content_type,
-                               const std::string& content_disposition,
                                uint64_t size,
                                BlobStorageContext* context,
                                base::SequencedTaskRunner* io_task_runner)
     : io_task_runner_(io_task_runner),
-      shared_(new BlobDataHandleShared(uuid,
-                                       content_type,
-                                       content_disposition,
-                                       size,
-                                       context)) {
+      shared_(new BlobDataHandleShared(uuid, content_type, size, context)) {
   DCHECK(io_task_runner_.get());
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 }
@@ -128,10 +121,6 @@ const std::string& BlobDataHandle::uuid() const {
 
 const std::string& BlobDataHandle::content_type() const {
   return shared_->content_type_;
-}
-
-const std::string& BlobDataHandle::content_disposition() const {
-  return shared_->content_disposition_;
 }
 
 uint64_t BlobDataHandle::size() const {

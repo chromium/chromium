@@ -340,7 +340,6 @@ class BlobBuilderFromStream::WritePipeToFutureDataHelper
 BlobBuilderFromStream::BlobBuilderFromStream(
     base::WeakPtr<BlobStorageContext> context,
     std::string content_type,
-    std::string content_disposition,
     ResultCallback callback,
     scoped_refptr<base::RefCountedString> creator_identity)
     : kMemoryBlockSize(std::min(
@@ -353,7 +352,6 @@ BlobBuilderFromStream::BlobBuilderFromStream(
       context_(std::move(context)),
       callback_(std::move(callback)),
       content_type_(std::move(content_type)),
-      content_disposition_(std::move(content_disposition)),
       creator_identity_(std::move(creator_identity)) {
   DCHECK(context_);
 }
@@ -681,7 +679,7 @@ void BlobBuilderFromStream::OnSuccess() {
   std::move(callback_).Run(
       this, context_->AddFinishedBlob(
                 base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                content_type_, content_disposition_, std::move(items_)));
+                content_type_, std::move(items_)));
 }
 
 bool BlobBuilderFromStream::ShouldStoreNextBlockOnDisk(uint64_t length_hint) {

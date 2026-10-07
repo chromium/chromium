@@ -1112,7 +1112,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, BrokenBlobResponse) {
 
   // Create the broken blob.
   std::unique_ptr<storage::BlobDataHandle> blob_handle =
-      blob_context_.AddBrokenBlob(kBrokenUUID, "", "",
+      blob_context_.AddBrokenBlob(kBrokenUUID, "",
                                   storage::BlobStatus::ERR_OUT_OF_MEMORY);
   auto blob = blink::mojom::SerializedBlob::New();
   blob->uuid = kBrokenUUID;

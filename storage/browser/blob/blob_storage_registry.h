@@ -35,8 +35,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageRegistry {
   // Creates the blob entry with a refcount of 1 and a state of PENDING. If
   // the blob is already in use, we return null.
   BlobEntry* CreateEntry(const std::string& uuid,
-                         const std::string& content_type,
-                         const std::string& content_disposition);
+                         const std::string& content_type);
 
   // Removes the blob entry with the given uuid. This does not unmap any
   // URLs that are pointing to this uuid. Returns if the entry existed.

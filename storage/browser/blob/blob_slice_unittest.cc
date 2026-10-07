@@ -16,7 +16,6 @@
 namespace storage {
 namespace {
 const char kType[] = "type";
-const char kDisposition[] = "";
 const char kId[] = "uuid";
 }  // namespace
 
@@ -77,7 +76,7 @@ class BlobSliceTest : public testing::Test {
 TEST_F(BlobSliceTest, FullItem) {
   const size_t kSize = 5u;
 
-  BlobEntry data(kType, kDisposition);
+  BlobEntry data(kType);
   scoped_refptr<ShareableBlobDataItem> item = CreateDataItem(kSize);
   data.AppendSharedBlobItem(item);
 
@@ -91,7 +90,7 @@ TEST_F(BlobSliceTest, FullItem) {
 TEST_F(BlobSliceTest, SliceSingleItem) {
   const size_t kSize = 5u;
 
-  BlobEntry data(kType, kDisposition);
+  BlobEntry data(kType);
   scoped_refptr<ShareableBlobDataItem> item = CreateDataItem(kSize);
   data.AppendSharedBlobItem(item);
 
@@ -107,7 +106,7 @@ TEST_F(BlobSliceTest, SliceSingleLastItem) {
   const size_t kSize1 = 5u;
   const size_t kSize2 = 10u;
 
-  BlobEntry data(kType, kDisposition);
+  BlobEntry data(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateDataItem(kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateDataItem(kSize2);
   data.AppendSharedBlobItem(item1);
@@ -125,7 +124,7 @@ TEST_F(BlobSliceTest, SliceAcrossTwoItems) {
   const size_t kSize1 = 5u;
   const size_t kSize2 = 10u;
 
-  BlobEntry data(kType, kDisposition);
+  BlobEntry data(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateDataItem(kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateDataItem(kSize2);
   data.AppendSharedBlobItem(item1);
@@ -144,7 +143,7 @@ TEST_F(BlobSliceTest, SliceFileAndLastItem) {
   const size_t kSize1 = 5u;
   const size_t kSize2 = 10u;
 
-  BlobEntry data(kType, kDisposition);
+  BlobEntry data(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateFileItem(0u, kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateDataItem(kSize2);
   data.AppendSharedBlobItem(item1);
@@ -164,7 +163,7 @@ TEST_F(BlobSliceTest, SliceAcrossLargeItem) {
   const size_t kSize2 = 10u;
   const size_t kSize3 = 10u;
 
-  BlobEntry data(kType, kDisposition);
+  BlobEntry data(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateDataItem(kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateFileItem(0u, kSize2);
   scoped_refptr<ShareableBlobDataItem> item3 = CreateDataItem(kSize3);
@@ -183,7 +182,7 @@ TEST_F(BlobSliceTest, SliceAcrossLargeItem) {
 }
 
 TEST_F(BlobSliceTest, SliceTempFileItem) {
-  BlobEntry data(kType, kDisposition);
+  BlobEntry data(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateTempFileItem(1u, 10u);
   data.AppendSharedBlobItem(item1);
 

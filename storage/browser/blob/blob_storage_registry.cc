@@ -23,13 +23,10 @@ BlobStorageRegistry::~BlobStorageRegistry() {
   // So it shouldn't matter.
 }
 
-BlobEntry* BlobStorageRegistry::CreateEntry(
-    const std::string& uuid,
-    const std::string& content_type,
-    const std::string& content_disposition) {
+BlobEntry* BlobStorageRegistry::CreateEntry(const std::string& uuid,
+                                            const std::string& content_type) {
   DCHECK(!blob_map_.contains(uuid));
-  std::unique_ptr<BlobEntry> entry =
-      std::make_unique<BlobEntry>(content_type, content_disposition);
+  std::unique_ptr<BlobEntry> entry = std::make_unique<BlobEntry>(content_type);
   BlobEntry* entry_ptr = entry.get();
   blob_map_[uuid] = std::move(entry);
   return entry_ptr;

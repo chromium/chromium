@@ -1206,7 +1206,7 @@ void FileSystemManagerImpl::ContinueRegisterBlob(
   } else {
     std::unique_ptr<storage::BlobDataHandle> handle =
         blob_storage_context_->context()->AddBrokenBlob(
-            uuid, content_type, "",
+            uuid, content_type,
             storage::BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE);
     storage::BlobImpl::Create(std::move(handle), std::move(blob_receiver));
   }

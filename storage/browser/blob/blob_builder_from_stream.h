@@ -54,7 +54,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobBuilderFromStream {
 
   BlobBuilderFromStream(base::WeakPtr<BlobStorageContext> context,
                         std::string content_type,
-                        std::string content_disposition,
                         ResultCallback callback,
                         scoped_refptr<base::RefCountedString> creator_identity);
   ~BlobBuilderFromStream();
@@ -158,7 +157,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobBuilderFromStream {
   ResultCallback callback_;
 
   std::string content_type_;
-  std::string content_disposition_;
 
   // Identity of the blob creator. Used for tracking memory usage per creator.
   const scoped_refptr<base::RefCountedString> creator_identity_;

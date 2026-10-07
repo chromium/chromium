@@ -48,7 +48,7 @@ std::unique_ptr<PrefetchedSignedExchangeCacheEntry> CreateCacheEntry(
   inner_response->headers = headers;
   entry->SetInnerResponse(std::move(inner_response));
   std::unique_ptr<storage::BlobDataHandle> blob_handle =
-      blob_context->AddBrokenBlob("broken_uuid", "", "",
+      blob_context->AddBrokenBlob("broken_uuid", "",
                                   storage::BlobStatus::ERR_OUT_OF_MEMORY);
   entry->SetBlobDataHandle(std::move(blob_handle));
   entry->SetSignatureExpireTime(base::Time::Now() + base::Days(1));

@@ -33,9 +33,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataSnapshot {
     return items_;
   }
   const std::string& content_type() const { return content_type_; }
-  const std::string& content_disposition() const {
-    return content_disposition_;
-  }
   size_t GetMemoryUsage() const;
 
   const std::string& uuid() const { return uuid_; }
@@ -46,17 +43,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataSnapshot {
   friend COMPONENT_EXPORT(STORAGE_BROWSER) void PrintTo(
       const BlobDataSnapshot& x,
       ::std::ostream* os);
+  BlobDataSnapshot(const std::string& uuid, const std::string& content_type);
   BlobDataSnapshot(const std::string& uuid,
                    const std::string& content_type,
-                   const std::string& content_disposition);
-  BlobDataSnapshot(const std::string& uuid,
-                   const std::string& content_type,
-                   const std::string& content_disposition,
                    const std::vector<scoped_refptr<BlobDataItem>>& items);
 
   const std::string uuid_;
   const std::string content_type_;
-  const std::string content_disposition_;
 
   // Non-const for constrution in BlobStorageContext
   std::vector<scoped_refptr<BlobDataItem>> items_;
@@ -66,9 +59,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataSnapshot {
 
 inline bool operator==(const BlobDataSnapshot& a, const BlobDataSnapshot& b) {
   if (a.content_type() != b.content_type()) {
-    return false;
-  }
-  if (a.content_disposition() != b.content_disposition()) {
     return false;
   }
   if (a.items().size() != b.items().size()) {

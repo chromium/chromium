@@ -97,14 +97,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageContext
   std::unique_ptr<BlobDataHandle> AddFinishedBlob(
       const std::string& uuid,
       const std::string& content_type,
-      const std::string& content_disposition,
       std::vector<scoped_refptr<ShareableBlobDataItem>> items);
 
-  std::unique_ptr<BlobDataHandle> AddBrokenBlob(
-      const std::string& uuid,
-      const std::string& content_type,
-      const std::string& content_disposition,
-      BlobStatus reason);
+  std::unique_ptr<BlobDataHandle> AddBrokenBlob(const std::string& uuid,
+                                                const std::string& content_type,
+                                                BlobStatus reason);
 
   size_t blob_count() const { return registry_.blob_count(); }
 
@@ -140,7 +137,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageContext
   std::unique_ptr<BlobDataHandle> AddFutureBlob(
       const std::string& uuid,
       const std::string& content_type,
-      const std::string& content_disposition,
       BuildAbortedCallback build_aborted_callback);
 
   // Same as BuildBlob, but for a blob that was previously registered by calling

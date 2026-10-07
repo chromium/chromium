@@ -82,8 +82,7 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
       mojo::ScopedDataPipeConsumerHandle handle) override {
     DCHECK(BlobDataHandle::GetBlobRegistry());
     BlobDataHandle::GetBlobRegistry()->RegisterFromStream(
-        mime_type_ ? mime_type_ : "", /*content_disposition=*/"",
-        /*length_hint=*/0, std::move(handle),
+        mime_type_ ? mime_type_ : "", /*length_hint=*/0, std::move(handle),
         mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>(),
         blink::BindOnce(
             &FetchDataLoaderAsBlobHandle::FinishedCreatingFromDataPipe,

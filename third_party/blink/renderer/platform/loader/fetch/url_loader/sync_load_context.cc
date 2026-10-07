@@ -232,7 +232,7 @@ void SyncLoadContext::OnReceivedResponse(
     blob_response_started_ = true;
 
     download_to_blob_registry_->RegisterFromStream(
-        String(response_->head->mime_type), "",
+        String(response_->head->mime_type),
         std::max<int64_t>(0, response_->head->content_length), std::move(body),
         mojo::NullAssociatedRemote(),
         base::BindOnce(&SyncLoadContext::OnFinishCreatingBlob,

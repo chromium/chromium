@@ -26,7 +26,6 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
   struct Registration {
     String uuid;
     String content_type;
-    String content_disposition;
     Vector<mojom::blink::DataElementPtr> elements;
   };
   Vector<Registration> registrations;
@@ -34,13 +33,11 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
  private:
   void Register(mojo::PendingReceiver<mojom::blink::Blob>,
                 const String& content_type,
-                const String& content_disposition,
                 Vector<mojom::blink::DataElementPtr> elements,
                 RegisterCallback) override;
 
   void RegisterFromStream(
       const String& content_type,
-      const String& content_disposition,
       uint64_t expected_length,
       mojo::ScopedDataPipeConsumerHandle,
       mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,

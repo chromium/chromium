@@ -100,7 +100,7 @@ class BlobBuilderFromStreamTestWithDelayedLimits
     uint64_t length_hint = GetLengthHint(data.length());
     BlobBuilderFromStream* finished_builder = nullptr;
     BlobBuilderFromStream builder(
-        context_->AsWeakPtr(), kContentType, kContentDisposition,
+        context_->AsWeakPtr(), kContentType,
         base::BindLambdaForTesting([&](BlobBuilderFromStream* result_builder,
                                        std::unique_ptr<BlobDataHandle> blob) {
           finished_builder = result_builder;
@@ -181,7 +181,6 @@ class BlobBuilderFromStreamTestWithDelayedLimits
 
  protected:
   const std::string kContentType = "content/type";
-  const std::string kContentDisposition = "disposition";
 
   base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
@@ -207,7 +206,7 @@ TEST_P(BlobBuilderFromStreamTest, CallbackCalledOnAbortBeforeDeletion) {
   base::RunLoop loop;
   BlobBuilderFromStream* builder_ptr = nullptr;
   auto builder = std::make_unique<BlobBuilderFromStream>(
-      context_->AsWeakPtr(), "", "",
+      context_->AsWeakPtr(), "",
       base::BindLambdaForTesting([&](BlobBuilderFromStream* result_builder,
                                      std::unique_ptr<BlobDataHandle> blob) {
         EXPECT_EQ(builder_ptr, result_builder);
@@ -230,7 +229,6 @@ TEST_P(BlobBuilderFromStreamTest, EmptyStream) {
   EXPECT_FALSE(result->uuid().empty());
   EXPECT_EQ(BlobStatus::DONE, result->GetBlobStatus());
   EXPECT_EQ(kContentType, result->content_type());
-  EXPECT_EQ(kContentDisposition, result->content_disposition());
   EXPECT_EQ(0u, result->size());
 
   // Verify memory usage.
@@ -379,7 +377,7 @@ TEST_F(BlobBuilderFromStreamTest, HintTooLargeForQuota) {
   base::RunLoop loop;
   std::unique_ptr<BlobDataHandle> result;
   BlobBuilderFromStream builder(
-      context_->AsWeakPtr(), "", "",
+      context_->AsWeakPtr(), "",
       base::BindLambdaForTesting(
           [&](BlobBuilderFromStream*, std::unique_ptr<BlobDataHandle> blob) {
             result = std::move(blob);
@@ -407,7 +405,7 @@ TEST_F(BlobBuilderFromStreamTest, HintTooLargeForQuotaAndNoDisk) {
   base::RunLoop loop;
   std::unique_ptr<BlobDataHandle> result;
   BlobBuilderFromStream builder(
-      context_->AsWeakPtr(), "", "",
+      context_->AsWeakPtr(), "",
       base::BindLambdaForTesting(
           [&](BlobBuilderFromStream*, std::unique_ptr<BlobDataHandle> blob) {
             result = std::move(blob);
@@ -441,7 +439,7 @@ TEST_P(BlobBuilderFromStreamTest, ProgressEvents) {
   base::RunLoop loop;
   std::unique_ptr<BlobDataHandle> result;
   BlobBuilderFromStream builder(
-      context_->AsWeakPtr(), "", "",
+      context_->AsWeakPtr(), "",
       base::BindLambdaForTesting(
           [&](BlobBuilderFromStream*, std::unique_ptr<BlobDataHandle> blob) {
             result = std::move(blob);
@@ -480,7 +478,7 @@ TEST_F(BlobBuilderFromStreamTestWithDelayedLimits, LargeStream) {
   base::RunLoop loop;
   std::unique_ptr<BlobDataHandle> result;
   BlobBuilderFromStream builder(
-      context_->AsWeakPtr(), kContentType, kContentDisposition,
+      context_->AsWeakPtr(), kContentType,
       base::BindLambdaForTesting([&](BlobBuilderFromStream* result_builder,
                                      std::unique_ptr<BlobDataHandle> blob) {
         result = std::move(blob);

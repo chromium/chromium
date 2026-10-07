@@ -322,8 +322,7 @@ void BlobDataHandle::Register(Vector<mojom::blink::DataElementPtr> elements) {
   TRACE_EVENT0("Blob", "Registry::RegisterBlob");
   GetThreadSpecificRegistry()->Register(
       blob_remote_.InitWithNewPipeAndPassReceiver(),
-      type_.IsNull() ? "" : type_, /*content_disposition=*/"",
-      std::move(elements),
+      type_.IsNull() ? "" : type_, std::move(elements),
       base::BindOnce(&BlobDataHandle::DidGetUuid, base::RetainedRef(this)));
 }
 
