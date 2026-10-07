@@ -515,6 +515,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/common/notifications",
       "//chrome/installer/setup:lib",
+      "//chrome/test/base:process_helpers_win",
     ]
   }
 

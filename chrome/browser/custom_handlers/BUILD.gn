@@ -89,5 +89,8 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gtest",
     ]
+    if (is_mac) {
+      deps += [ "//chrome/test/base:test_utils_mac" ]
+    }
   }
 }

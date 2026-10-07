@@ -186,10 +186,6 @@ static_library("test_support") {
     "//chrome/test/base:testing_profile_impl",
   ]
 
-  if (is_android) {
-    public_deps += [ "//chrome/test/base:android_ui_test_utils" ]
-  }
-
   sources = []
 
   if (enable_guest_view) {
@@ -499,10 +495,7 @@ static_library("test_support") {
       "//chrome/browser:chrome_browser_application_mac",
       "//components/upload_list",
     ]
-    public_deps += [
-      "//chrome/test/base:test_utils_mac",
-      "//components/crash/core/app",
-    ]
+    public_deps += [ "//components/crash/core/app" ]
   }
 
   if (is_win) {
@@ -510,7 +503,6 @@ static_library("test_support") {
     public_deps += [
       "//chrome/chrome_elf:crash",
       "//chrome/install_static/test:test_support",
-      "//chrome/test/base:process_helpers_win",
       "//components/crash/core/app",
       "//third_party/wtl",
     ]
@@ -987,6 +979,7 @@ if (is_android) {
       "//chrome/browser/webid",
       "//chrome/browser/webid:android_browsertests",
       "//chrome/renderer:android_browsertests",
+      "//chrome/test/base:android_ui_test_utils",
       "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:browser_tests_runner",
       "//chrome/test/base:chrome_test_launcher",

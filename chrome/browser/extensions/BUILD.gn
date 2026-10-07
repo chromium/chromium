@@ -2575,6 +2575,8 @@ source_set("browser_tests") {
   ]
   if (!is_android) {
     deps += [ "//chrome/test/base:test_browser_window" ]
+  } else {
+    deps += [ "//chrome/test/base:android_ui_test_utils" ]
   }
   deps += [
     "//chrome/test/base:tracing",
@@ -2650,6 +2652,10 @@ source_set("browser_tests") {
       "//components/onc",
       "//components/wifi:test_support",
     ]
+  }
+
+  if (is_mac) {
+    deps += [ "//chrome/test/base:test_utils_mac" ]
   }
 
   if (is_win || is_mac || is_linux) {

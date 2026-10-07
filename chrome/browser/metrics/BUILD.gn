@@ -765,6 +765,7 @@ source_set("platform_browser_tests") {
     deps += [
       "//chrome/browser/optimization_guide",
       "//chrome/browser/ui/android/tab_model:test_support",
+      "//chrome/test/base:android_ui_test_utils",
     ]
   }
 

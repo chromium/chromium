@@ -735,6 +735,7 @@ if (enable_devtools_frontend) {
 
       deps += [
         "//chrome/browser/ui/android/tab_model:test_support",
+        "//chrome/test/base:android_ui_test_utils",
         "//components/privacy_sandbox/privacy_sandbox_attestations",
       ]
     }

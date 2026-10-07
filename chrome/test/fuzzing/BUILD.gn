@@ -29,6 +29,7 @@ if (fuzzing_engine_supports_custom_main && !is_android) {
     ]
     deps = [
       ":in_process_fuzzer_buildflags",
+      "//chrome/test/base:testing_browser_process_impl",
       "//testing/libfuzzer:fuzzing_engine_no_main",
     ]
     if (!is_android) {
