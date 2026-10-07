@@ -18,6 +18,8 @@ source_set("model") {
     "actor_task.mm",
     "actor_web_state_policy_decider.h",
     "actor_web_state_policy_decider.mm",
+    "posted_observer_list.h",
+    "posted_observer_list.mm",
   ]
   public_deps = [
     "//components/actor/core:journal",
@@ -102,6 +104,7 @@ source_set("unit_tests") {
     "actor_tab_helper_unittest.mm",
     "actor_task_unittest.mm",
     "actor_web_state_policy_decider_unittest.mm",
+    "posted_observer_list_unittest.mm",
   ]
   deps = [
     ":model",

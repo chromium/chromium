@@ -21,15 +21,15 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
 @class BackgroundContinuedProcessingTaskContext;
-@class CRBProtocolObservers;
 @class NSError;
+@class PostedObserverList<ObserverType>;
 @protocol ActorTaskInterventionDelegate;
+@protocol ActorTaskUpdatesObserver;
 
 class Browser;
 class BrowserList;
@@ -79,14 +79,14 @@ class ActorTask : public web::WebStateObserver,
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
 
-  // Adds an observer to be notified of task state transitions and tool
-  // executions. Registration is posted: `observer` first receives
-  // `didRegisterAsObserverForTaskID:` with the task state at call time, then
-  // only the notifications posted after this call.
+  // Adds an observer of task state transitions and tool executions. `observer`
+  // first receives a posted `didRegisterAsObserverForTaskID:` with the task
+  // state at call time, then exactly the notifications posted after this call.
+  // No-op if `observer` is already added.
   void AddObserver(id<ActorTaskUpdatesObserver> observer);
 
-  // Removes `observer`, including a registration that has not run yet. Pending
-  // notifications are not delivered to `observer`.
+  // Removes `observer` and drops its pending notifications, including the
+  // registration snapshot.
   void RemoveObserver(id<ActorTaskUpdatesObserver> observer);
 
   const std::string& title() const { return title_; }
@@ -355,16 +355,10 @@ class ActorTask : public web::WebStateObserver,
   // The delegate handling user intervention UI. Weak reference.
   __weak id<ActorTaskInterventionDelegate> intervention_delegate_ = nil;
 
-  // List of registered observers notified of task state changes and tool
-  // executions. `CRBProtocolObservers` itself is held strongly, but the
-  // observers inside are held weakly.
-  __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* observers_;
-
-  // Observers whose posted registration has not run yet. Used as a weak set
-  // with the same lifetime and removal semantics as `observers_`, so that the
-  // posted registration outlives the task and observers can remove themselves
-  // from `dealloc`.
-  __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* pending_observers_;
+  // Observers notified of task state changes and tool executions. Posted, so
+  // observers cannot re-enter the task mid-transition, and `Act()` callers get
+  // their reply before observers see the resulting state change.
+  __strong PostedObserverList<id<ActorTaskUpdatesObserver>>* observers_ = nil;
 
   // Active context for background continued processing, if requested.
   __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =

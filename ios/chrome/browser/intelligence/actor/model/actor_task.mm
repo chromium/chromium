@@ -9,7 +9,6 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/ios/crb_protocol_observers.h"
 #import "base/location.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -25,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
+#import "ios/chrome/browser/intelligence/actor/model/posted_observer_list.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -107,78 +107,25 @@ void PostActReply(ActCallback callback, mojom::ActionResultCode code) {
       FROM_HERE, base::BindOnce(std::move(callback), MakeActionResults(code)));
 }
 
-// Sends a notification to `targets`. The block must not capture the
-// `ActorTask`, which may be destroyed before the notification is delivered.
-using ObserverNotification =
-    void (^)(CRBProtocolObservers<ActorTaskUpdatesObserver>* targets);
-
-// Posts `notification` to the observers registered in `observers` when it
-// runs. Observers are never notified synchronously, so they cannot re-enter the
-// task (e.g. by stopping it) from within a task method.
-void PostToAllObservers(
-    CRBProtocolObservers<ActorTaskUpdatesObserver>* observers,
-    ObserverNotification notification) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        notification(observers);
-      }));
-}
-
-// Sends `didRegisterAsObserverForTaskID:` to a single observer.
-using RegistrationNotification =
-    void (^)(id<ActorTaskUpdatesObserver> observer);
-
-// Returns whether `observer` is registered in `observers`.
-bool ContainsObserver(CRBProtocolObservers<ActorTaskUpdatesObserver>* observers,
-                      id<ActorTaskUpdatesObserver> observer) {
-  __block bool contains = false;
-  [observers executeOnObservers:^(id<ActorTaskUpdatesObserver> candidate) {
-    contains |= candidate == observer;
-  }];
-  return contains;
-}
-
-// Moves `observer` from `pending_observers` to `observers` and sends it
-// `notify_registered`. No-op if `observer` was deallocated or removed from
-// `pending_observers` since the registration was posted.
-void CompletePendingRegistration(
-    CRBProtocolObservers<ActorTaskUpdatesObserver>* observers,
-    CRBProtocolObservers<ActorTaskUpdatesObserver>* pending_observers,
-    id<ActorTaskUpdatesObserver> observer,
-    RegistrationNotification notify_registered) {
-  if (!observer || !ContainsObserver(pending_observers, observer)) {
-    return;
-  }
-  [pending_observers removeObserver:observer];
-  [observers addObserver:observer];
+// Sends `observer` the snapshot of a task taken when it registered.
+void SendRegistrationSnapshot(id<ActorTaskUpdatesObserver> observer,
+                              ActorTaskId task_id,
+                              NSString* title,
+                              NSString* task_update,
+                              ActorTaskState state,
+                              NSArray<NSNumber*>* web_state_ids) {
   // TODO(crbug.com/501043031): Remove the check once `didRegister` is a
   // required protocol method.
-  if ([observer
+  if (![observer
           respondsToSelector:@selector(didRegisterAsObserverForTaskID:taskTitle:
                                        taskUpdate:currentState:webStates:)]) {
-    notify_registered(observer);
+    return;
   }
-}
-
-// Adds `observer` to `pending_observers` and posts its move to `observers`,
-// followed by `notify_registered`. Removing `observer` from
-// `pending_observers` before the registration runs cancels it. Like
-// notifications, the registration must not capture the `ActorTask`, which may
-// be destroyed before it runs.
-void PostObserverRegistration(
-    CRBProtocolObservers<ActorTaskUpdatesObserver>* observers,
-    CRBProtocolObservers<ActorTaskUpdatesObserver>* pending_observers,
-    id<ActorTaskUpdatesObserver> observer,
-    RegistrationNotification notify_registered) {
-  [pending_observers addObserver:observer];
-  // Captured weakly so that a pending registration does not extend the
-  // lifetime of `observer`.
-  __weak id<ActorTaskUpdatesObserver> weak_observer = observer;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        CompletePendingRegistration(observers, pending_observers, weak_observer,
-                                    notify_registered);
-      }));
+  [observer didRegisterAsObserverForTaskID:task_id
+                                 taskTitle:title
+                                taskUpdate:task_update
+                              currentState:state
+                                 webStates:web_state_ids];
 }
 
 }  // namespace
@@ -214,13 +161,8 @@ ActorTask::ActorTask(ActorTaskId task_id,
   CHECK(!allow_incognito_web_states_);
   engine_ = std::make_unique<ActorEngine>(/*execution_updates_delegate=*/this,
                                           /*owner_task=*/this);
-  observers_ = static_cast<CRBProtocolObservers<ActorTaskUpdatesObserver>*>(
-      [CRBProtocolObservers
-          observersWithProtocol:@protocol(ActorTaskUpdatesObserver)]);
-  pending_observers_ =
-      static_cast<CRBProtocolObservers<ActorTaskUpdatesObserver>*>(
-          [CRBProtocolObservers
-              observersWithProtocol:@protocol(ActorTaskUpdatesObserver)]);
+  observers_ = [[PostedObserverList alloc]
+      initWithProtocol:@protocol(ActorTaskUpdatesObserver)];
 }
 
 ActorTask::~ActorTask() {
@@ -247,23 +189,14 @@ void ActorTask::AddObserver(id<ActorTaskUpdatesObserver> observer) {
   NSString* title = base::SysUTF8ToNSString(title_);
   NSString* task_update = base::SysUTF8ToNSString(last_task_update_);
   const ActorTaskState state = state_;
-  RegistrationNotification notify_registered =
-      ^(id<ActorTaskUpdatesObserver> target) {
-        [target didRegisterAsObserverForTaskID:task_id
-                                     taskTitle:title
-                                    taskUpdate:task_update
-                                  currentState:state
-                                     webStates:web_state_ids];
-      };
-  // Registration is posted, so that `observer` skips the notifications posted
-  // before this call, which the snapshot already reflects, and receives the
-  // snapshot ahead of the later ones.
-  PostObserverRegistration(observers_, pending_observers_, observer,
-                           notify_registered);
+  [observers_ addObserver:observer
+             onRegistered:^(id<ActorTaskUpdatesObserver> target) {
+               SendRegistrationSnapshot(target, task_id, title, task_update,
+                                        state, web_state_ids);
+             }];
 }
 
 void ActorTask::RemoveObserver(id<ActorTaskUpdatesObserver> observer) {
-  [pending_observers_ removeObserver:observer];
   [observers_ removeObserver:observer];
 }
 
@@ -344,10 +277,9 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
 
     const ActorTaskId task_id = task_id_;
     const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-    PostToAllObservers(
-        observers_, ^(CRBProtocolObservers<ActorTaskUpdatesObserver>* targets) {
-          [targets actorTaskWithID:task_id didAddWebState:web_state_id];
-        });
+    [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
+      [observers actorTaskWithID:task_id didAddWebState:web_state_id];
+    }];
   }
 }
 
@@ -372,10 +304,9 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   // `ActorTaskLifecycleObserver`.
   const ActorTaskId task_id = task_id_;
   const ActorTaskState final_state = state_;
-  PostToAllObservers(
-      observers_, ^(CRBProtocolObservers<ActorTaskUpdatesObserver>* targets) {
-        [targets actorTaskDidStopWithID:task_id finalState:final_state];
-      });
+  [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
+    [observers actorTaskDidStopWithID:task_id finalState:final_state];
+  }];
 }
 
 void ActorTask::Pause(bool from_actor) {
@@ -473,10 +404,9 @@ void ActorTask::OnInterruptConfirmationResolved() {
   }
   Uninterrupt(ActorTaskState::kReflecting);
   const ActorTaskId task_id = task_id_;
-  PostToAllObservers(
-      observers_, ^(CRBProtocolObservers<ActorTaskUpdatesObserver>* targets) {
-        [targets actorTaskDidResolveConfirmationInterruptWithID:task_id];
-      });
+  [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
+    [observers actorTaskDidResolveConfirmationInterruptWithID:task_id];
+  }];
 }
 
 void ActorTask::Uninterrupt(ActorTaskState resumed_state) {
@@ -643,12 +573,11 @@ void ActorTask::SetState(ActorTaskState new_state) {
   }
 
   const ActorTaskId task_id = task_id_;
-  PostToAllObservers(
-      observers_, ^(CRBProtocolObservers<ActorTaskUpdatesObserver>* targets) {
-        [targets actorTaskWithID:task_id
-                  didChangeState:new_state
-                       fromState:old_state];
-      });
+  [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
+    [observers actorTaskWithID:task_id
+                didChangeState:new_state
+                     fromState:old_state];
+  }];
 }
 
 void ActorTask::OnActCompleted(std::vector<ActionResult> results) {
@@ -732,13 +661,12 @@ void ActorTask::OnWillExecuteTool(ToolType tool_type,
 
   const ActorTaskId task_id = task_id_;
   NSString* task_update = base::SysUTF8ToNSString(last_task_update_);
-  PostToAllObservers(
-      observers_, ^(CRBProtocolObservers<ActorTaskUpdatesObserver>* targets) {
-        [targets actorTaskWithID:task_id
-                 willExecuteTool:tool_type
-                      taskUpdate:task_update
-                      onWebState:web_state_id];
-      });
+  [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
+    [observers actorTaskWithID:task_id
+               willExecuteTool:tool_type
+                    taskUpdate:task_update
+                    onWebState:web_state_id];
+  }];
 }
 
 Browser* ActorTask::GetBrowserForWindowId(int32_t window_id) const {

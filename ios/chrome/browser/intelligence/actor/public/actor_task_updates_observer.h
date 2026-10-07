@@ -15,10 +15,10 @@ class WebStateID;
 
 // The ActorTask updates observer protocol (1-to-N). Used for passive
 // state broadcasts. All methods are posted to the current sequence, never
-// called synchronously, and carry a snapshot of the task at posting time. They
-// are delivered to the observers registered at delivery time. Registration is
-// posted too, together with `didRegisterAsObserverForTaskID:`, so it is the
-// first message an observer receives.
+// called synchronously, and carry a snapshot of the task at posting time. An
+// observer receives a notification if and only if it was posted after the
+// observer registers and is delivered before it unregisters. The first one is
+// `didRegisterAsObserverForTaskID:`, if implemented.
 @protocol ActorTaskUpdatesObserver <NSObject>
 
 // TODO(crbug.com/501043031): Remove @optional when API stabilizes.
