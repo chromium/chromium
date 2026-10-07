@@ -282,6 +282,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         // Setup: No crashed windows on disk.
         mCrashedWindows.clear();
         ChromeMultiInstancePersistentStore.resetForTesting();
+        ChromeMultiInstancePersistentStore.ensureInitialized();
         writeCrashExitReasonToPrefs();
 
         // Act & Verify.
@@ -311,6 +312,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         // Setup: No crashed windows, but crash exit reason in prefs.
         mCrashedWindows.clear();
         ChromeMultiInstancePersistentStore.resetForTesting();
+        ChromeMultiInstancePersistentStore.ensureInitialized();
         writeCrashExitReasonToPrefs();
 
         // Act.

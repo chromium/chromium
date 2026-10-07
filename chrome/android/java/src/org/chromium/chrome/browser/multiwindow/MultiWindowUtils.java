@@ -1608,7 +1608,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                 }
             }
         }
-        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId, totalCount);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunch(windowId, totalCount);
     }
 
     /**
