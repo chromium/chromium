@@ -330,8 +330,15 @@ export class OmniboxPopupSearchboxElement extends
   // True if the user has typed directly into the WebUI DOM input element since
   // the last `onSetInputState_` invocation.
   private hasDirectUserDomInput_: boolean = false;
-  // True after the initial `onSetInputState_` has arrived from native Views to
-  // synchronize input state.
+  // True once `SetInputState` has arrived for the current popup show. Gates
+  // `onSearchboxInputTextUpdated_` so keystrokes that race the first
+  // `SetInputState` are buffered via `hasDirectUserDomInput_` instead of
+  // querying autocomplete with partial text.
+  //
+  // Set only on `SetInputState` and reset only on `ClearPopup`.
+  // `SetFocus(false)` must not reset it, the popup can stay open across a blur,
+  // and refocus arrives as `SetFocus(true)` with no new `SetInputState`
+  // (b/565453332).
   private hasReceivedInitialInputState_: boolean = false;
   private fullUrlShown_: boolean = false;
   private urlEmphasis_: UrlEmphasis|null = null;
@@ -1390,7 +1397,6 @@ export class OmniboxPopupSearchboxElement extends
    * clicking outside.
    */
   private handleFocusLost_() {
-    this.hasReceivedInitialInputState_ = false;
     this.hasDirectUserDomInput_ = false;
     this.selectAllOnMouseRelease_ = false;
     this.getInputElement().setSelectionRange(0, 0);
