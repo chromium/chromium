@@ -775,6 +775,8 @@ inline LayoutStateScenePassKey PassKey() {
 
 - (void)showAssistantWithNewSession {
   [self closeAssistant];
+  // Close any active gemini session.
+  [self dismissGeminiFlowWithCompletion:nil];
   [self showAssistant];
 }
 
@@ -2870,6 +2872,9 @@ inline LayoutStateScenePassKey PassKey() {
 
 // Starts the Gemini session directly via the browser agent.
 - (void)startGeminiSessionWithStartupState:(GeminiStartupState*)startupState {
+  // Close any active assistant aim session.
+  [self closeAssistant];
+
   UIViewController* baseViewController = IsUseSceneViewControllerEnabled()
                                              ? _viewController
                                              : self.activeViewController;
