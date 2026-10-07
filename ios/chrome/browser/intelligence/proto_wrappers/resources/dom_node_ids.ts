@@ -7,18 +7,40 @@
  */
 
 const DOM_NODE_ID_MANAGER_SYMBOL = Symbol.for('__gCrWebDomNodeIdManager');
+const UNIQUE_ID_SYMBOL = Symbol.for('__gCrUniqueID');
 
+interface IndexableDocument extends Document {
+  [UNIQUE_ID_SYMBOL]?: number;
+}
+
+interface IndexableElement extends Element {
+  [UNIQUE_ID_SYMBOL]?: number;
+}
+
+const nodeTypeGetter =
+    Object.getOwnPropertyDescriptor(Node.prototype, 'nodeType')?.get;
 const ownerDocumentGetter =
     Object.getOwnPropertyDescriptor(Node.prototype, 'ownerDocument')?.get;
 
+// Returns the nodeType of the node. Directly calls the prototype getter to
+// protect against DOM clobbering (e.g. `<form><input name="nodeType">`).
+function safeNodeType(node: Node): number {
+  return nodeTypeGetter ? nodeTypeGetter.call(node) : node.nodeType;
+}
+
+// Returns whether the node is an Element. Uses `safeNodeType` to work across
+// same-origin frame realms where `instanceof Element` is false.
+function isElementNode(node: Node): node is IndexableElement {
+  return safeNodeType(node) === Node.ELEMENT_NODE;
+}
+
 // Returns the owner document of the node, or the node itself if it is already a
-// Document. Directly calls the prototype to protect against DOM stomping.
+// Document. Directly calls the prototype to protect against DOM clobbering and
+// checks `nodeType === Node.DOCUMENT_NODE` to work across same-origin frame
+// realms where `instanceof Document` is false.
 export function safeOwnerDocument(node: Node): Document|null {
-  if (node instanceof Document) {
-    return node;
-  }
-  if (node.ownerDocument instanceof Document) {
-    return node.ownerDocument;
+  if (safeNodeType(node) === Node.DOCUMENT_NODE) {
+    return node as Document;
   }
   return ownerDocumentGetter ? ownerDocumentGetter.call(node) :
                                node.ownerDocument;
@@ -30,21 +52,29 @@ class DomNodeIdManager {
   private readonly domNodeRegistry = new FinalizationRegistry<number>((id) => {
     this.domNodeReverseMap.delete(id);
   });
-  private nextDomNodeId = 1;
 
   /**
    * Gets the ID for a node, creating one if it doesn't exist.
    */
   getOrCreateNodeId(node: Node): number {
-    let id = this.domNodeIdMap.get(node);
-    if (id === undefined) {
-      // Assign an ID to the node.
-      id = this.nextDomNodeId;
-      this.nextDomNodeId = id + 1;
-      this.domNodeIdMap.set(node, id);
-      this.domNodeReverseMap.set(id, new WeakRef(node));
-      this.domNodeRegistry.register(node, id);
+    const existingId = this.domNodeIdMap.get(node);
+    if (existingId !== undefined) {
+      return existingId;
     }
+
+    const ownerDoc = safeOwnerDocument(node) as IndexableDocument;
+    ownerDoc[UNIQUE_ID_SYMBOL] ??= 1;
+
+    // Only stamp `UNIQUE_ID_SYMBOL` on Element nodes. Non-element nodes (like
+    // Document and Text nodes) also receive IDs, and setting
+    // `[UNIQUE_ID_SYMBOL]` on a Document would overwrite the document counter.
+    const id = isElementNode(node) ?
+        (node[UNIQUE_ID_SYMBOL] ??= ownerDoc[UNIQUE_ID_SYMBOL]++) :
+        ownerDoc[UNIQUE_ID_SYMBOL]++;
+
+    this.domNodeIdMap.set(node, id);
+    this.domNodeReverseMap.set(id, new WeakRef(node));
+    this.domNodeRegistry.register(node, id);
     return id;
   }
 
@@ -52,7 +82,14 @@ class DomNodeIdManager {
    * Gets the ID for a node if it already exists.
    */
   getNodeId(node: Node): number|null {
-    return this.domNodeIdMap.get(node) ?? null;
+    const id = this.domNodeIdMap.get(node);
+    if (id !== undefined) {
+      return id;
+    }
+    if (isElementNode(node) && node[UNIQUE_ID_SYMBOL] !== undefined) {
+      return this.getOrCreateNodeId(node);
+    }
+    return null;
   }
 
   /**
@@ -90,8 +127,8 @@ function getManager(nodeWindow: Window): DomNodeIdManager {
   return nodeWindow[DOM_NODE_ID_MANAGER_SYMBOL];
 }
 
-// TODO(crbug.com/484985334): Look into using this for generating the IDs for
-// autofill. Both could use the same pool of IDs.
+// TODO(crbug.com/484985334): Extract and unify the shared document-scoped
+// unique ID generation with Autofill (`renderer_id.ts`).
 /**
  * Gets the ID for a node, creating one if it doesn't exist.
  * Uses a global map and counter stored on the window tied to the `node`.

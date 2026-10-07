@@ -365,8 +365,10 @@ bool ExtractFormFieldData(const base::DictValue& field,
     FieldRendererId field_renderer_id;
     StringToUint(*renderer_id, &field_renderer_id.value());
     field_data->set_renderer_id(field_renderer_id);
+    field_data->set_form_control_ax_id(field_renderer_id.value());
   } else {
     field_data->set_renderer_id(FieldRendererId());
+    field_data->set_form_control_ax_id(0);
   }
 
   // Optional fields.

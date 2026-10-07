@@ -158,4 +158,42 @@ TEST_F(DomNodeIdsJavascriptTest, GetNodeById_ElementDeleted) {
   EXPECT_TRUE([get_result boolValue]);
 }
 
+// Tests that getOrCreateNodeId reuses an element's existing Autofill
+// `__gCrUniqueID` symbol ID and advances the shared document counter so
+// subsequent nodes do not collide, including for elements inside a same-origin
+// iframe.
+TEST_F(DomNodeIdsJavascriptTest, GetOrCreateNodeId_SharesAutofillUniqueIdPool) {
+  NSString* script = base::SysUTF8ToNSString(base::StringPrintf(R"(
+      (() => {
+        const uniqueIdSymbol = Symbol.for('__gCrUniqueID');
+        const div = document.getElementById('%s');
+        div[uniqueIdSymbol] = 7;
+        document[uniqueIdSymbol] = 8;
+
+        const iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        const childDoc = iframe.contentDocument;
+        const childDiv = childDoc.createElement('div');
+        childDoc.body.appendChild(childDiv);
+        childDiv[uniqueIdSymbol] = 11;
+        childDoc[uniqueIdSymbol] = 12;
+
+        const api = __gCrWeb.getRegisteredApi('dom_node_ids_test');
+        const getOrCreate = api.getFunction('getOrCreateNodeId');
+        const divId = getOrCreate(div);
+        const bodyId = getOrCreate(document.body);
+        const childDivId = getOrCreate(childDiv);
+        const childBodyId = getOrCreate(childDoc.body);
+        const childDocId = getOrCreate(childDoc);
+        iframe.remove();
+        return divId === 7 && bodyId === 8 && document[uniqueIdSymbol] === 9 &&
+               childDivId === 11 && childBodyId === 12 && childDocId === 13 &&
+               childDoc[uniqueIdSymbol] === 14;
+      })();
+  )",
+                                                                kTestDivId));
+  id result = web::test::ExecuteJavaScript(web_view(), script);
+  EXPECT_TRUE([result boolValue]);
+}
+
 }  // namespace

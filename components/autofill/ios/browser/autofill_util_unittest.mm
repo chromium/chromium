@@ -198,6 +198,8 @@ TEST_F(AutofillUtilTest, ExtractFormFieldData_PropertiesMask) {
   FormFieldData field_data;
   ExtractFormFieldData(field, *field_data_manager, &field_data);
 
+  EXPECT_EQ(FieldRendererId(1), field_data.renderer_id());
+  EXPECT_EQ(1, field_data.form_control_ax_id());
   EXPECT_EQ(u"my@mail", field_data.user_input());
   EXPECT_EQ(FieldPropertiesFlags::kUserTyped, field_data.properties_mask());
 }
