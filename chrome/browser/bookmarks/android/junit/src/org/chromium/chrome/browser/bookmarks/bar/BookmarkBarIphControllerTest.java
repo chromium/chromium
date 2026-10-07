@@ -10,7 +10,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 
 import org.junit.Assert;
@@ -23,11 +23,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.R;
@@ -55,13 +57,10 @@ import java.util.List;
 /** Unit tests for {@link BookmarkBarIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkBarIphControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Context mContext;
     @Mock private AppMenuHandler mAppMenuHandler;
-    @Mock private View mToolbarMenuButton;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
@@ -75,8 +74,8 @@ public class BookmarkBarIphControllerTest {
     @Mock private PrefService mPrefService;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
-    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
+    private View mToolbarMenuButton;
     private BookmarkBarIphController mController;
     private final SettableNonNullObservableSupplier<Boolean> mXrSpaceModeSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -103,15 +102,10 @@ public class BookmarkBarIphControllerTest {
         when(mPrefService.getInteger(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
                 .thenReturn(BookmarkBarVisibilityState.ALWAYS_HIDE);
 
-        // Mock the .post() call to run immediately.
-        when(mToolbarMenuButton.post(mRunnableCaptor.capture()))
-                .thenAnswer(
-                        invocation -> {
-                            mRunnableCaptor.getValue().run();
-                            return true;
-                        });
-
-        when(mToolbarMenuButton.getContext()).thenReturn(mContext);
+        // Attach the button to a window so that View#post() runs on the main looper.
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mToolbarMenuButton = new View(activity);
+        activity.setContentView(mToolbarMenuButton);
 
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.BOOKMARK_BAR_VISIBILITY_FEATURE))
@@ -130,6 +124,7 @@ public class BookmarkBarIphControllerTest {
     @Test
     public void testShowIph() {
         mController.showIph();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyIphCommand();
     }
 
@@ -137,6 +132,7 @@ public class BookmarkBarIphControllerTest {
     @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testShowIph_TriState() {
         mController.showIph();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyIphCommand();
     }
 
@@ -154,6 +150,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(false);
 
         mController.bookmarkModelLoaded();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyIphCommand();
     }
 
@@ -173,6 +170,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(false);
 
         mController.bookmarkModelLoaded();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyIphCommand();
     }
 
@@ -190,6 +188,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(true);
 
         mController.bookmarkModelLoaded();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
@@ -204,6 +203,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(false);
 
         mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyIphCommand();
     }
 
@@ -221,6 +221,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(false);
 
         mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
@@ -235,6 +236,7 @@ public class BookmarkBarIphControllerTest {
         when(mChildBookmarkItem.isFolder()).thenReturn(true);
 
         mController.bookmarkNodeAdded(mDesktopFolderItem, 0, /* addedByUser= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
@@ -246,6 +248,7 @@ public class BookmarkBarIphControllerTest {
                 BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
 
         mController.showIph();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
@@ -257,6 +260,7 @@ public class BookmarkBarIphControllerTest {
                 .thenReturn(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
 
         mController.showIph();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 

@@ -14,13 +14,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.DIVIDER;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.FOOTER_COMMAND;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.IS_DEFAULT_A11Y_FOCUS_REQUESTED;
 import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION;
 import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED;
 import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION;
@@ -58,21 +58,20 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Controller tests for the password accessory sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PasswordAccessorySheetControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
     @Mock private Profile mProfile;
     @Mock private Callback<Integer> mMockObserver;
 
+    private AccessorySheetTabView mView;
     private PasswordAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
 
     @Before
     public void setUp() {
-        when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
+        mView = new AccessorySheetTabView(ContextUtils.getApplicationContext(), null);
         mCoordinator =
                 new PasswordAccessorySheetCoordinator(
                         RuntimeEnvironment.application, mProfile, null);
@@ -94,24 +93,22 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testSetsViewAdapterOnTabCreation() {
-        when(mMockView.getParent()).thenReturn(mMockView);
         KeyboardAccessoryData.Tab tab = mCoordinator.getTab();
         assertNotNull(tab);
         assertNotNull(tab.getListener());
-        tab.getListener().onTabCreated(mMockView);
-        verify(mMockView).setAdapter(any());
+        tab.getListener().onTabCreated(mView);
+        assertNotNull(mView.getAdapter());
     }
 
     @Test
     public void testRequestDefaultFocus() {
         AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
 
-        when(mMockView.getParent()).thenReturn(mMockView);
         KeyboardAccessoryData.Tab tab = mCoordinator.getTab();
-        tab.getListener().onTabCreated(mMockView);
+        tab.getListener().onTabCreated(mView);
         tab.getListener().onTabShown();
 
-        verify(mMockView).requestDefaultA11yFocus();
+        assertTrue(mCoordinator.mModel.get(IS_DEFAULT_A11Y_FOCUS_REQUESTED));
     }
 
     @Test

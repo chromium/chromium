@@ -8,11 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -27,9 +24,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -42,7 +40,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -55,7 +52,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
@@ -73,7 +69,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG,
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImprovedBookmarkRowTest {
     private static final String TITLE = "Test title";
     private static final String DESCRIPTION = "Test description";
@@ -84,15 +79,10 @@ public class ImprovedBookmarkRowTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock View mView;
-    @Mock ViewGroup mViewGroup;
     @Mock ListMenuDelegate mListMenuDelegate;
     @Mock Runnable mPopupListener;
     @Mock Runnable mOpenBookmarkCallback;
     @Mock LazyOneshotSupplier<Drawable> mMockDrawableSupplier;
-
-    RoundedCornerImageView mStartImageView;
-    @Spy ViewPropertyAnimator mStartImageViewAnimator;
 
     @Captor ArgumentCaptor<Callback<Drawable>> mDrawableCallbackCaptor;
 
@@ -110,16 +100,6 @@ public class ImprovedBookmarkRowTest {
         // every text direction to the legacy FIRST_STRONG default instead of the direction set on
         // the view. Chrome's manifest does declare it.
         mActivity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
-        mStartImageView =
-                spy(
-                        new RoundedCornerImageView(mActivity) {
-                            @Override
-                            public ViewPropertyAnimator animate() {
-                                ViewPropertyAnimator animator = super.animate();
-                                mStartImageViewAnimator = spy(animator);
-                                return mStartImageViewAnimator;
-                            }
-                        });
         mDrawable =
                 new BitmapDrawable(
                         mActivity.getResources(),
@@ -205,17 +185,18 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testNullAccessoryViewClearsExistingViews() {
-        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, mView);
+        View accessoryView = new View(mActivity);
+        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, accessoryView);
         Assert.assertEquals(
                 0,
                 ((ViewGroup) mImprovedBookmarkRow.findViewById(R.id.custom_content_container))
-                        .indexOfChild(mView));
+                        .indexOfChild(accessoryView));
 
         mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, null);
         Assert.assertEquals(
                 -1,
                 ((ViewGroup) mImprovedBookmarkRow.findViewById(R.id.custom_content_container))
-                        .indexOfChild(mView));
+                        .indexOfChild(accessoryView));
     }
 
     @Test
@@ -336,53 +317,45 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testAccessoryViewHasParent() {
-        doReturn(mViewGroup).when(mView).getParent();
-        doAnswer(
-                        (invocation) -> {
-                            doReturn(null).when(mView).getParent();
-                            return null;
-                        })
-                .when(mViewGroup)
-                .removeView(mView);
+        View accessoryView = new View(mActivity);
+        FrameLayout oldParent = new FrameLayout(mActivity);
+        oldParent.addView(accessoryView);
 
-        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, mView);
-        verify(mViewGroup).removeView(mView);
+        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, accessoryView);
+        Assert.assertEquals(0, oldParent.getChildCount());
+        Assert.assertEquals(
+                mImprovedBookmarkRow.findViewById(R.id.custom_content_container),
+                accessoryView.getParent());
     }
 
     @Test
     public void testSetStartImageDrawable() {
-        mImprovedBookmarkRow.setStartImageViewForTesting(mStartImageView);
+        ImageView startImageView = mImprovedBookmarkRow.findViewById(R.id.start_image);
+        // Preset a sentinel alpha so that reaching full alpha proves the fade-in ran.
+        startImageView.setAlpha(0.5f);
 
         mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mDrawableSupplier);
 
         RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(mDrawable, startImageView.getDrawable());
 
-        verify(mStartImageView).setImageDrawable(null);
-        verify(mStartImageView).setImageDrawable(mDrawable);
-        verify(mStartImageView).setAlpha(0f);
-        verify(mStartImageView).animate();
-        verify(mStartImageViewAnimator).alpha(1f);
-        verify(mStartImageViewAnimator).setDuration(ImprovedBookmarkRow.BASE_ANIMATION_DURATION_MS);
-        verify(mStartImageViewAnimator).start();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        Assert.assertEquals(1f, startImageView.getAlpha(), 0f);
     }
 
     @Test
     public void testSetStartImageDrawable_nullDrawableDoesNotAnimate() {
-        mImprovedBookmarkRow.setStartImageViewForTesting(mStartImageView);
+        ImageView startImageView = mImprovedBookmarkRow.findViewById(R.id.start_image);
+        startImageView.setAlpha(0.5f);
 
         mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mNullDrawableSupplier);
 
-        RobolectricUtil.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mStartImageView, times(2)).setImageDrawable(null);
-        verify(mStartImageView, never()).setAlpha(0f);
-        verify(mStartImageView, never()).animate();
-        verify(mStartImageViewAnimator, never()).alpha(1f);
-        verify(mStartImageViewAnimator, never())
-                .setDuration(ImprovedBookmarkRow.BASE_ANIMATION_DURATION_MS);
-        verify(mStartImageViewAnimator, never()).start();
+        Assert.assertNull(startImageView.getDrawable());
+        Assert.assertEquals(0.5f, startImageView.getAlpha(), 0f);
     }
 
     @Test

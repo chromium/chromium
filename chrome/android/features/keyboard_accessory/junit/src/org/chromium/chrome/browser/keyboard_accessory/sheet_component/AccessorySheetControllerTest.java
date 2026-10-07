@@ -9,11 +9,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.BACKGROUND;
@@ -30,11 +28,16 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.Gravity;
-import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.view.View;
 
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -44,10 +47,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -63,16 +68,37 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
 /** Controller tests for the keyboard accessory bottom sheet component. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AccessorySheetControllerTest {
+    /** Reports a controllable vertical scroll offset so canScrollVertically(-1) can be driven. */
+    private static class FixedScrollLayoutManager extends LinearLayoutManager {
+        int mScrollOffset;
+
+        FixedScrollLayoutManager(Context context) {
+            super(context);
+        }
+
+        @Override
+        public int computeVerticalScrollOffset(RecyclerView.State state) {
+            return mScrollOffset;
+        }
+
+        @Override
+        public int computeVerticalScrollExtent(RecyclerView.State state) {
+            return 10;
+        }
+
+        @Override
+        public int computeVerticalScrollRange(RecyclerView.State state) {
+            return 100;
+        }
+    }
+
     private static final int DEFAULT_BG_COLOR = Color.LTGRAY;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private PropertyObservable.PropertyObserver<PropertyKey> mMockPropertyObserver;
     @Mock private ListObservable.ListObserver<Void> mTabListObserver;
-    @Mock private AccessorySheetView mMockView;
-    @Mock private RecyclerView mMockRecyclerView;
     @Mock private SheetVisibilityDelegate mSheetVisibilityDelegate;
     @Mock private AccessorySheetVisualStateProvider.Observer mVisualObserver;
 
@@ -86,6 +112,7 @@ public class AccessorySheetControllerTest {
                 new Tab("Passwords", 0, null, 0, 0, null)
             };
 
+    private AccessorySheetView mView;
     private AccessorySheetCoordinator mCoordinator;
     private AccessorySheetMediator mMediator;
     private PropertyModel mModel;
@@ -93,11 +120,19 @@ public class AccessorySheetControllerTest {
     @Before
     public void setUp() {
         SemanticColorUtils.setDefaultBgColorForTesting(DEFAULT_BG_COLOR);
-        when(mMockView.getLayoutParams()).thenReturn(new ViewGroup.LayoutParams(0, 0));
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        // AccessorySheetView expects CoordinatorLayout.LayoutParams.
+        CoordinatorLayout parent = new CoordinatorLayout(activity);
+        mView =
+                (AccessorySheetView)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.keyboard_accessory_sheet, parent, false);
+        parent.addView(mView);
         mCoordinator =
                 new AccessorySheetCoordinator(
                         RuntimeEnvironment.application.getApplicationContext(),
-                        new FakeViewProvider<>(mMockView),
+                        new FakeViewProvider<>(mView),
                         mSheetVisibilityDelegate);
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
@@ -122,6 +157,9 @@ public class AccessorySheetControllerTest {
         mMediator.show();
         verify(mMockPropertyObserver).onPropertyChanged(mModel, VISIBLE);
         assertThat(mModel.get(VISIBLE), is(true));
+        // The view provider delivers the view asynchronously.
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertThat(mView.getVisibility(), is(View.VISIBLE));
         verify(mVisualObserver).onAccessorySheetStateChanged(true, DEFAULT_BG_COLOR);
 
         // Calling show again does nothing.
@@ -137,6 +175,7 @@ public class AccessorySheetControllerTest {
         verify(mVisualObserver, times(2)).onAccessorySheetStateChanged(false, DEFAULT_BG_COLOR);
 
         assertThat(mModel.get(VISIBLE), is(false));
+        assertThat(mView.getVisibility(), is(View.GONE));
     }
 
     @Test
@@ -193,15 +232,19 @@ public class AccessorySheetControllerTest {
     @Test
     public void testScrollingChangesShadowVisibility() {
         assertThat(mModel.get(TOP_SHADOW_VISIBLE), is(false));
+        RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+        FixedScrollLayoutManager layoutManager =
+                new FixedScrollLayoutManager(RuntimeEnvironment.application);
+        recyclerView.setLayoutManager(layoutManager);
 
         // If the list was scrolled far enough that the top is hidden, show the top shadow.
-        when(mMockRecyclerView.canScrollVertically(eq(-1))).thenReturn(true);
-        mCoordinator.getScrollListener().onScrolled(mMockRecyclerView, 0, 10);
+        layoutManager.mScrollOffset = 10;
+        mCoordinator.getScrollListener().onScrolled(recyclerView, 0, 10);
         assertThat(mModel.get(TOP_SHADOW_VISIBLE), is(true));
 
         // If the list was scrolled back to the top, hide the shadow again.
-        when(mMockRecyclerView.canScrollVertically(eq(-1))).thenReturn(false);
-        mCoordinator.getScrollListener().onScrolled(mMockRecyclerView, 0, -10);
+        layoutManager.mScrollOffset = 0;
+        mCoordinator.getScrollListener().onScrolled(recyclerView, 0, -10);
         assertThat(mModel.get(TOP_SHADOW_VISIBLE), is(false));
     }
 

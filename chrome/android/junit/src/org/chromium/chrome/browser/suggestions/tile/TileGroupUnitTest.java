@@ -63,8 +63,35 @@ import java.util.List;
 
 /** Unit tests for {@link TileGroup}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TileGroupUnitTest {
+    private static class FakeImageFetcher extends ImageFetcher {
+        private final List<LargeIconCallback> mCallbackList = new ArrayList<>();
+
+        public FakeImageFetcher() {
+            super(null);
+        }
+
+        @Override
+        public void makeLargeIconRequest(GURL url, int size, LargeIconCallback callback) {
+            mCallbackList.add(callback);
+        }
+
+        public void fulfillLargeIconRequests(Bitmap bitmap, int color, boolean isColorDefault) {
+            for (LargeIconCallback callback : mCallbackList) {
+                callback.onLargeIconAvailable(bitmap, color, isColorDefault, IconType.INVALID);
+            }
+            mCallbackList.clear();
+        }
+
+        public int getPendingIconCallbackCount() {
+            return mCallbackList.size();
+        }
+
+        public void fulfillLargeIconRequests() {
+            fulfillLargeIconRequests(Bitmap.createBitmap(1, 1, Config.ALPHA_8), Color.BLACK, false);
+        }
+    }
+
     private static final int MAX_TILES_TO_FETCH = 4;
     private static final int TILE_TITLE_LINES = 1;
     private static final String[] URLS = {"https://www.google.com/", "https://tellmedadjokes.com/"};
@@ -77,8 +104,6 @@ public class TileGroupUnitTest {
     @Mock private ContextMenuManager mContextMenuManager;
     @Mock private OfflinePageBridge mOfflinePageBridge;
     @Mock private ImageFetcher mMockImageFetcher;
-    @Mock private SuggestionsTileView mSuggestionsTileView1;
-    @Mock private SuggestionsTileView mSuggestionsTileView2;
 
     private Context mContext;
     private FakeMostVisitedSites mMostVisitedSites;
@@ -392,10 +417,10 @@ public class TileGroupUnitTest {
 
         // Initialise the layout with views whose URLs don't match the ones of the new tiles.
         MostVisitedTilesLayout layout = setupView();
-        SuggestionsTileView view1 = mSuggestionsTileView1;
+        SuggestionsTileView view1 = buildTileView(createSiteSuggestion("https://example.com/1"));
         layout.addView(view1);
 
-        SuggestionsTileView view2 = mSuggestionsTileView2;
+        SuggestionsTileView view2 = buildTileView(createSiteSuggestion("https://example.com/2"));
         layout.addView(view2);
 
         // The tiles should be updated, the old ones removed.
@@ -426,12 +451,10 @@ public class TileGroupUnitTest {
 
         // Initialise the layout with views whose URLs match the ones of the new tiles.
         MostVisitedTilesLayout layout = new MostVisitedTilesLayout(mContext, null);
-        SuggestionsTileView view1 = mSuggestionsTileView1;
-        when(view1.getData()).thenReturn(sites.get(0));
+        SuggestionsTileView view1 = buildTileView(sites.get(0));
         layout.addView(view1);
 
-        SuggestionsTileView view2 = mSuggestionsTileView2;
-        when(view2.getData()).thenReturn(sites.get(1));
+        SuggestionsTileView view2 = buildTileView(sites.get(1));
         layout.addView(view2);
 
         // The tiles should be updated, the old ones reused.
@@ -536,6 +559,11 @@ public class TileGroupUnitTest {
         return new MostVisitedTilesLayout(mContext, null);
     }
 
+    private SuggestionsTileView buildTileView(SiteSuggestion site) {
+        return mTileRenderer.buildTileView(
+                new Tile(site, /* index= */ 0), setupView(), /* setupDelegate= */ null);
+    }
+
     private void refreshData(TileGroup tileGroup) {
         MostVisitedTilesLayout layout = setupView();
         refreshData(tileGroup, layout);
@@ -592,33 +620,5 @@ public class TileGroupUnitTest {
         return tileView != null
                 && (tileView instanceof TextView)
                 && ((TextView) tileView).getText().toString().equals("Add new");
-    }
-
-    private static class FakeImageFetcher extends ImageFetcher {
-        private final List<LargeIconCallback> mCallbackList = new ArrayList<>();
-
-        public FakeImageFetcher() {
-            super(null);
-        }
-
-        @Override
-        public void makeLargeIconRequest(GURL url, int size, LargeIconCallback callback) {
-            mCallbackList.add(callback);
-        }
-
-        public void fulfillLargeIconRequests(Bitmap bitmap, int color, boolean isColorDefault) {
-            for (LargeIconCallback callback : mCallbackList) {
-                callback.onLargeIconAvailable(bitmap, color, isColorDefault, IconType.INVALID);
-            }
-            mCallbackList.clear();
-        }
-
-        public int getPendingIconCallbackCount() {
-            return mCallbackList.size();
-        }
-
-        public void fulfillLargeIconRequests() {
-            fulfillLargeIconRequests(Bitmap.createBitmap(1, 1, Config.ALPHA_8), Color.BLACK, false);
-        }
     }
 }

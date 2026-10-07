@@ -25,7 +25,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -50,7 +49,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
      * design (this is the minimum time a user is guaranteed to pay attention to something).
      */
-    @VisibleForTesting static final int BASE_ANIMATION_DURATION_MS = 218;
+    private static final int BASE_ANIMATION_DURATION_MS = 218;
 
     @IntDef({Location.TOP, Location.MIDDLE, Location.BOTTOM, Location.SOLO})
     @Retention(RetentionPolicy.SOURCE)
@@ -431,10 +430,6 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     }
 
     // Testing specific methods below.
-
-    public void setStartImageViewForTesting(RoundedCornerImageView startImageView) {
-        mStartImageView = startImageView;
-    }
 
     public boolean isSelectedForTesting() {
         return mIsSelected;
