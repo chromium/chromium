@@ -1907,7 +1907,9 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
   }
 
   if (sync_item->is_system_folder != app_item->is_system_folder()) {
-    CHECK(!sync_item->is_system_folder, base::NotFatalUntil::M160);
+    // TODO(crbug.com/569773784): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!sync_item->is_system_folder);
     sync_item->is_system_folder = app_item->is_system_folder();
     // Do not mark the item as changed - the persistent value is not expected to
     // be persisted to local state, nor synced. Also, it's expected to be set as
