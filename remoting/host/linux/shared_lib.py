@@ -281,8 +281,11 @@ def display_manager_is_gdm():
     pass
 
   for process in psutil.process_iter():
-    if process.name() in ['gdm', 'gdm3']:
-      return True
+    try:
+      if process.name() in ['gdm', 'gdm3']:
+        return True
+    except (psutil.NoSuchProcess, psutil.AccessDenied):
+      pass
 
   return False
 
