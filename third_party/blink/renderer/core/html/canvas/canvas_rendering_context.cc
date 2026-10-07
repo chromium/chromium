@@ -234,8 +234,15 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   // Element size in physical coordinates.
   gfx::RectF src_rect(drawable_paint_record->paint_state.box_size);
   if (sx && sy && swidth && sheight) {
-    float dpr = drawable_paint_record->paint_state.effective_zoom;
+    if (!CanvasRenderingContext::ValidateRectForCanvas(*sx, *sy, *swidth,
+                                                       *sheight)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The source rect is empty or not finite");
+      return nullptr;
+    }
     AdjustRectForCanvas(*sx, *sy, *swidth, *sheight);
+    float dpr = drawable_paint_record->paint_state.effective_zoom;
     src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
 

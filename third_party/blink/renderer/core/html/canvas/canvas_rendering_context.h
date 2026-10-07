@@ -333,6 +333,10 @@ class CORE_EXPORT CanvasRenderingContext
   template <typename T>
   static void AdjustRectForCanvas(T& x, T& y, T& width, T& height);
 
+  // Returns false if any rect parameter is NaN or infiinite; otherwise true.
+  template <typename T>
+  static bool ValidateRectForCanvas(T x, T y, T width, T height);
+
   void Trace(Visitor*) const override;
   virtual void Stop() = 0;
 
@@ -393,6 +397,15 @@ void CanvasRenderingContext::AdjustRectForCanvas(T& x,
     height = -height;
     y -= height;
   }
+}
+
+template <typename T>
+bool CanvasRenderingContext::ValidateRectForCanvas(T x,
+                                                   T y,
+                                                   T width,
+                                                   T height) {
+  return (std::isfinite(x) && std::isfinite(y) && std::isfinite(width) &&
+          std::isfinite(height) && (width || height));
 }
 
 }  // namespace blink

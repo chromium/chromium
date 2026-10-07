@@ -1826,6 +1826,10 @@ void BaseRenderingContext2D::DrawElementInternal(
   float dpr = drawable_paint_record->paint_state.effective_zoom;
   gfx::RectF src_rect(drawable_paint_record->paint_state.box_size);
   if (sx && sy && swidth && sheight) {
+    if (!CanvasRenderingContext::ValidateRectForCanvas(*sx, *sy, *swidth,
+                                                       *sheight)) {
+      return;
+    }
     AdjustRectForCanvas(*sx, *sy, *swidth, *sheight);
     src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
@@ -1853,6 +1857,9 @@ void BaseRenderingContext2D::DrawElementInternal(
     dw = *dwidth;
     dh = *dheight;
     AdjustRectForCanvas(x, y, dw, dh);
+  }
+  if (!CanvasRenderingContext::ValidateRectForCanvas(x, y, dw, dh)) {
+    return;
   }
   gfx::RectF dst_rect(x, y, dw, dh);
 

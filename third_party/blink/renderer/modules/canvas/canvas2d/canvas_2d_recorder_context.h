@@ -627,9 +627,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                       CanvasRenderingContext2DState::PaintType,
                       CanvasRenderingContext2DState::ImageType);
 
-  template <typename T>
-  bool ValidateRectForCanvas(T x, T y, T width, T height);
-
   bool RectContainsTransformedRect(const gfx::RectF&, const SkIRect&) const;
 
   virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
@@ -945,15 +942,6 @@ void Canvas2DRecorderContext::CompositedDraw(
   draw_func(c, &foreground_flags);
   c->restore();
   c->setMatrix(ctm);
-}
-
-template <typename T>
-bool Canvas2DRecorderContext::ValidateRectForCanvas(T x,
-                                                    T y,
-                                                    T width,
-                                                    T height) {
-  return (std::isfinite(x) && std::isfinite(y) && std::isfinite(width) &&
-          std::isfinite(height) && (width || height));
 }
 
 ALWAYS_INLINE void Canvas2DRecorderContext::SetTransform(
