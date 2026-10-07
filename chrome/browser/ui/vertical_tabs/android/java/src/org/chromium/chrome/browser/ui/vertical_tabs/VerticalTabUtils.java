@@ -236,7 +236,7 @@ public class VerticalTabUtils {
      * Returns the expanded vertical tabs rail width in dp that the user last chose by dragging the
      * rail's resize handle, or {@code 0} if the user has never resized the rail.
      */
-    public static int getUserResizedWidthDp() {
+    public static int getUserResizedWidthDpFromSharedPref() {
         return ChromeSharedPreferences.getInstance()
                 .readInt(
                         ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP,
@@ -253,7 +253,7 @@ public class VerticalTabUtils {
      * @param widthDp The user-chosen width in dp. A non-positive value clears the preference, so
      *     the rail width is determined automatically from the window size again.
      */
-    public static void setUserResizedWidthDp(int widthDp) {
+    public static void setUserResizedWidthDpInSharedPref(int widthDp) {
         if (widthDp <= 0) {
             ChromeSharedPreferences.getInstance()
                     .removeKey(ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP);
@@ -344,7 +344,7 @@ public class VerticalTabUtils {
      * @param enabled Whether expand-on-hover should be enabled.
      * @param entryPoint The entry point from which the user changed the setting.
      */
-    public static void setExpandOnHoverEnabled(
+    public static void setExpandOnHoverEnabledInSharedPref(
             boolean enabled, @ExpandOnHoverToggleEntryPoint int entryPoint) {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_EXPAND_ON_HOVER, enabled);

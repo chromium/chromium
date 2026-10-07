@@ -25,11 +25,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link VerticalTabRailCollapseController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,6 +40,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
     @Mock private VerticalTabRailCollapseController.RailStateChangeDelegate mMockDelegate;
     @Mock private Callback<@RailCollapseState Integer> mMockSetRailStateCallback;
     @Mock private Callback<Boolean> mMockCollapseButtonEnabledCallback;
+    @Mock private WindowAndroid mMockWindowAndroid;
 
     private VerticalTabRailCollapseController mController;
 
@@ -51,7 +51,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
 
     private VerticalTabRailCollapseController createController() {
         return new VerticalTabRailCollapseController(
-                mMockSetRailStateCallback, mMockCollapseButtonEnabledCallback);
+                mMockSetRailStateCallback, mMockCollapseButtonEnabledCallback, mMockWindowAndroid);
     }
 
     private void hoverInsideRail() {
@@ -64,8 +64,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
 
     @After
     public void tearDown() {
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
+        VerticalTabUtils.resetSharedPrefsForTesting();
     }
 
     @Test
@@ -347,5 +346,30 @@ public class VerticalTabRailCollapseControllerUnitTest {
 
         verify(mMockDelegate, never()).handleUserRequestedStateChange();
         verify(mMockSetRailStateCallback).onResult(RailCollapseState.COLLAPSED);
+    }
+
+    @Test
+    public void testObservesWindowUntilDestroyed() {
+        verify(mMockWindowAndroid).addActivityStateObserver(mController);
+        mController.destroy();
+        verify(mMockWindowAndroid).removeActivityStateObserver(mController);
+    }
+
+    @Test
+    public void testTopResumed_WritesThisWindowPreferenceToSharedPrefs() {
+        mController.toggleCollapseState();
+
+        // Another window becomes active and persists its own preference.
+        VerticalTabUtils.setRailCollapsedInSharedPref(false);
+        // This window keeps its own preference in memory.
+        assertTrue(mController.isCollapsedByUserForTesting());
+
+        // Losing top resumed does not write.
+        mController.onActivityTopResumedChanged(false);
+        assertFalse(VerticalTabUtils.isRailCollapsedFromSharedPref());
+
+        // Becoming top resumed writes this window's preference, so a new window inherits it.
+        mController.onActivityTopResumedChanged(true);
+        assertTrue(VerticalTabUtils.isRailCollapsedFromSharedPref());
     }
 }

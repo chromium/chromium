@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Map;
 
@@ -73,6 +74,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Mock private VerticalTabListCoordinator mMockTabListCoordinator;
     @Mock private SideUiCoordinator mMockSideUiCoordinator;
     @Mock private Tab mTab;
+    @Mock private WindowAndroid mMockWindowAndroid;
 
     private VerticalTabRailCollapseController mCollapseController;
     private VerticalTabsSideUiCoordinator mCoordinator;
@@ -106,12 +108,14 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         mCollapseController =
                 new VerticalTabRailCollapseController(
                         mMockTabListCoordinator::setRailCollapseState,
-                        mMockTabListCoordinator::setCollapseButtonEnabled);
+                        mMockTabListCoordinator::setCollapseButtonEnabled,
+                        mMockWindowAndroid);
         when(mMockTabListCoordinator.getCollapseController()).thenReturn(mCollapseController);
 
         mCoordinator =
                 new VerticalTabsSideUiCoordinator(
                         mActivity,
+                        mMockWindowAndroid,
                         mMockSideUiCoordinator,
                         mMockTabListCoordinator,
                         mIsVerticalTabsActiveSupplier);
@@ -784,9 +788,57 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         assertFalse(VerticalTabUtils.isRailCollapsedFromSharedPref());
         assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
-        assertEquals(300, VerticalTabUtils.getUserResizedWidthDp());
+        assertEquals(300, VerticalTabUtils.getUserResizedWidthDpFromSharedPref());
         // The persisted width is used once the drag is over.
         assertShowableWidth(ViewUtils.dpToPx(mActivity, 300), mWideWindowWidth);
+    }
+
+    @Test
+    public void testUserResizedWidth_KeptPerWindowAndWrittenOnTopResumed() {
+        enableManualResize();
+        mCoordinator.onResizeCommitted(ViewUtils.dpToPx(mActivity, 300));
+
+        // Another window becomes active and persists a different width.
+        VerticalTabUtils.setUserResizedWidthDpInSharedPref(350);
+
+        // This window keeps its own width.
+        assertShowableWidth(ViewUtils.dpToPx(mActivity, 300), mWideWindowWidth);
+
+        // Losing top resumed does not write.
+        mCoordinator.onActivityTopResumedChanged(false);
+        assertEquals(350, VerticalTabUtils.getUserResizedWidthDpFromSharedPref());
+
+        // Becoming top resumed writes this window's width, so a new window inherits it.
+        mCoordinator.onActivityTopResumedChanged(true);
+        assertEquals(300, VerticalTabUtils.getUserResizedWidthDpFromSharedPref());
+    }
+
+    @Test
+    public void testUserResizedWidth_RestoredFromSharedPreferences() {
+        enableManualResize();
+        mCoordinator.destroy();
+        VerticalTabUtils.setUserResizedWidthDpInSharedPref(300);
+        // The previous tab list view is still attached to the destroyed coordinator's root view.
+        mTabListView = new View(mActivity);
+        when(mMockTabListCoordinator.getView()).thenReturn(mTabListView);
+
+        mCoordinator =
+                new VerticalTabsSideUiCoordinator(
+                        mActivity,
+                        mMockWindowAndroid,
+                        mMockSideUiCoordinator,
+                        mMockTabListCoordinator,
+                        mIsVerticalTabsActiveSupplier);
+
+        assertShowableWidth(ViewUtils.dpToPx(mActivity, 300), mWideWindowWidth);
+    }
+
+    @Test
+    public void testObservesWindowUntilDestroyed() {
+        verify(mMockWindowAndroid).addActivityStateObserver(mCoordinator);
+        mCoordinator.destroy();
+        verify(mMockWindowAndroid).removeActivityStateObserver(mCoordinator);
+        mCoordinator = null;
     }
 
     @Test

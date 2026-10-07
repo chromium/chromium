@@ -248,7 +248,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
         DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
-        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
+                false, ExpandOnHoverToggleEntryPoint.SETTINGS);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         initializeCoordinatorForTesting(TabStripLayoutType.VERTICAL);
 

@@ -85,7 +85,7 @@ class VerticalTabCollapseButtonContextMenuCoordinator {
     Delegate getListMenuDelegate() {
         return (model, view) -> {
             if (model.get(MENU_ITEM_ID) == R.id.toggle_expand_tabs_on_hover_menu_id) {
-                VerticalTabUtils.setExpandOnHoverEnabled(
+                VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
                         !VerticalTabUtils.isExpandOnHoverEnabled(),
                         ExpandOnHoverToggleEntryPoint.COLLAPSE_BUTTON_CONTEXT_MENU);
             }

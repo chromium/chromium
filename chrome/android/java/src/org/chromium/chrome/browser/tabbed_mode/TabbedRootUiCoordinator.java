@@ -2476,6 +2476,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mVerticalTabsSideUiCoordinator =
                     new VerticalTabsSideUiCoordinator(
                             mActivity,
+                            mWindowAndroid,
                             mSideUiCoordinator,
                             new VerticalTabListCoordinator(
                                     mActivity,

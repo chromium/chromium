@@ -425,7 +425,8 @@ public class VerticalTabRailHoverControllerUnitTest {
 
     @Test
     public void testExpandOnHoverTurnedOffByUser_IgnoresEvents() {
-        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
+                false, ExpandOnHoverToggleEntryPoint.SETTINGS);
         clearInvocations(mCollapseController);
 
         dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
@@ -441,7 +442,7 @@ public class VerticalTabRailHoverControllerUnitTest {
         // Turned off from a context menu, which is still showing.
         mIsContextMenuShowing = true;
 
-        VerticalTabUtils.setExpandOnHoverEnabled(
+        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
                 false, ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU);
 
         // The rail collapses right away instead of waiting for the menu to be dismissed.
@@ -457,11 +458,13 @@ public class VerticalTabRailHoverControllerUnitTest {
 
     @Test
     public void testExpandOnHoverTurnedOnByUser_NextHoverExpands() {
-        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
+                false, ExpandOnHoverToggleEntryPoint.SETTINGS);
         clearInvocations(mCollapseController);
 
         // Turning it on syncs Side UI, as the setting changes whether the rail can be resized.
-        VerticalTabUtils.setExpandOnHoverEnabled(true, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
+                true, ExpandOnHoverToggleEntryPoint.SETTINGS);
         verify(mCollapseController).onExpandOnHoverSettingChanged();
         verify(mCollapseController, never()).setHovering(anyBoolean());
         assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
@@ -476,7 +479,8 @@ public class VerticalTabRailHoverControllerUnitTest {
         verify(mWindowAndroid).removeActivityStateObserver(mHoverController);
 
         dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
-        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
+                false, ExpandOnHoverToggleEntryPoint.SETTINGS);
 
         verifyNoInteractions(mCollapseController);
     }

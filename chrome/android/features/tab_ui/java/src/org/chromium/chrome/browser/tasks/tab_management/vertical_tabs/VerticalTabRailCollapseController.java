@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Controller for managing the vertical tab rail's expanded/collapsed state.
@@ -23,8 +24,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidth
  *
  * <ul>
  *   <li>The user preference, {@link RailCollapseState#EXPANDED} or {@link
- *       RailCollapseState#COLLAPSED}, changed by {@link #toggleCollapseState()} and persisted in
- *       shared prefs.
+ *       RailCollapseState#COLLAPSED}, changed by {@link #toggleCollapseState()}.
  *   <li>Whether the pointer is hovering the rail, fed by {@link VerticalTabRailHoverController}
  *       through {@link #setHovering(boolean)}.
  *   <li>The window width constraint, from {@link #setWindowWidthBoundary(int)}, supplied by {@link
@@ -34,9 +34,14 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidth
  * <p>Everything else (the effective {@link #getEffectiveRailCollapseState()} and whether the
  * collapse button is enabled) is derived from those inputs and pushed to the view layer by {@link
  * #applyEffectiveState()}.
+ *
+ * <p>The user preference belongs to this window. It is loaded from shared prefs once, at
+ * construction, and is written back when the user changes it and whenever this window becomes the
+ * top resumed activity. Shared prefs therefore hold the preference of the last active window, which
+ * a new window (e.g. one created by dragging a tab out of this window) starts with.
  */
 @NullMarked
-class VerticalTabRailCollapseController {
+class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateObserver {
     /**
      * Delegate that carries out a user-requested rail state change. At most one may be registered;
      * when none is, the controller applies the change itself.
@@ -76,6 +81,7 @@ class VerticalTabRailCollapseController {
 
     private final Callback<@RailCollapseState Integer> mSetRailCollapseStateCallback;
     private final Callback<Boolean> mSetCollapseButtonEnabledCallback;
+    private final WindowAndroid mWindowAndroid;
     private final SettableNonNullObservableSupplier<@RailCollapseState Integer>
             mRailCollapseStateSupplier;
     private @Nullable RailStateChangeDelegate mRailStateChangeDelegate;
@@ -97,25 +103,42 @@ class VerticalTabRailCollapseController {
      *     view layer.
      * @param setCollapseButtonEnabledCallback Applies the derived collapse button enabled state to
      *     the view layer.
+     * @param windowAndroid The window hosting the rail, used to observe whether its activity is the
+     *     top resumed activity.
      */
     VerticalTabRailCollapseController(
             Callback<@RailCollapseState Integer> setRailCollapseStateCallback,
-            Callback<Boolean> setCollapseButtonEnabledCallback) {
+            Callback<Boolean> setCollapseButtonEnabledCallback,
+            WindowAndroid windowAndroid) {
         mSetRailCollapseStateCallback = setRailCollapseStateCallback;
         mSetCollapseButtonEnabledCallback = setCollapseButtonEnabledCallback;
+        mWindowAndroid = windowAndroid;
         mIsCollapsedByUser = VerticalTabUtils.isRailCollapsedFromSharedPref();
         mRailCollapseStateSupplier =
                 ObservableSuppliers.createNonNull(getEffectiveRailCollapseState());
+        mWindowAndroid.addActivityStateObserver(this);
     }
 
-    /** Cleans up the registered delegate. */
+    /** Cleans up the registered delegate and stops observing the window. */
     void destroy() {
         mRailStateChangeDelegate = null;
+        mWindowAndroid.removeActivityStateObserver(this);
     }
 
     /** Sets the delegate that carries out user-requested rail state changes. */
     void setRailStateChangeDelegate(@Nullable RailStateChangeDelegate delegate) {
         mRailStateChangeDelegate = delegate;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // WindowAndroid.ActivityStateObserver implementation.
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onActivityTopResumedChanged(boolean isTopResumedActivity) {
+        if (!isTopResumedActivity) return;
+        // Make this window's preference the one a new window starts with.
+        VerticalTabUtils.setRailCollapsedInSharedPref(mIsCollapsedByUser);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

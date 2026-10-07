@@ -379,7 +379,7 @@ public class TabPositionSettingsFragmentTest {
         // Changing the user setting elsewhere (e.g. a context menu) updates the switch.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        VerticalTabUtils.setExpandOnHoverEnabled(
+                        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
                                 true, ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU));
         CriteriaHelper.pollUiThread(expandOnHoverSwitch::isChecked);
     }

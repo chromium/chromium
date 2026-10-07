@@ -328,7 +328,7 @@ public class TabStripContextMenuCoordinator {
                             R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);
                 }
             } else if (model.get(MENU_ITEM_ID) == R.id.toggle_expand_tabs_on_hover_menu_id) {
-                VerticalTabUtils.setExpandOnHoverEnabled(
+                VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
                         !VerticalTabUtils.isExpandOnHoverEnabled(),
                         ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU);
             } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {

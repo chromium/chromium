@@ -348,7 +348,7 @@ public class VerticalTabListCoordinator {
         }
         mCollapseController =
                 new VerticalTabRailCollapseController(
-                        this::setRailCollapseState, this::setCollapseButtonEnabled);
+                        this::setRailCollapseState, this::setCollapseButtonEnabled, mWindowAndroid);
         mModelList = new TabListModel();
 
         mContainerView =

@@ -84,7 +84,8 @@ public class VerticalTabCollapseButtonContextMenuCoordinatorUnitTest {
 
     @Test
     public void testShowMenu_ExpandOnHoverOff_ShowsTurnOnItem() {
-        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
+                false, ExpandOnHoverToggleEntryPoint.SETTINGS);
 
         mCoordinator.showMenu(mRectProvider, /* isIncognito= */ false);
 

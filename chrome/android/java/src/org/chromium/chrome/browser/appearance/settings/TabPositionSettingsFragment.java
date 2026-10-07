@@ -85,7 +85,7 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
                 NullUtil.assertNonNull(findPreference(PREF_EXPAND_TABS_ON_HOVER_SWITCH));
         mExpandOnHoverSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
-                    VerticalTabUtils.setExpandOnHoverEnabled(
+                    VerticalTabUtils.setExpandOnHoverEnabledInSharedPref(
                             (boolean) newValue, ExpandOnHoverToggleEntryPoint.SETTINGS);
                     return true;
                 });
