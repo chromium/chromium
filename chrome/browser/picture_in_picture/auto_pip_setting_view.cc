@@ -75,6 +75,10 @@ AutoPipSettingView::AutoPipSettingView(
 
   set_use_custom_frame(true);
   set_frame_margins({.contents = kBubbleMargins, .title = kBubbleTitleMargins});
+  set_shadow_config({.shadow_type = views::BubbleBorder::STANDARD_SHADOW,
+                     .elevation = kBubbleBorderMdShadowElevation});
+  set_border_style({.draw_border_stroke = true});
+  set_corner_radius(kBubbleBorderCornerRadius);
 
   set_close_on_deactivate(false);
 
@@ -247,23 +251,6 @@ gfx::Rect AutoPipSettingView::GetAnchorRect() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // views::WidgetDelegate:
-std::unique_ptr<views::FrameView> AutoPipSettingView::CreateFrameView(
-    views::Widget* widget) {
-  // Create the customized bubble border.
-  std::unique_ptr<views::BubbleBorder> bubble_border =
-      std::make_unique<views::BubbleBorder>(
-          arrow(), views::BubbleBorder::STANDARD_SHADOW);
-  bubble_border->set_rounded_corners(
-      gfx::RoundedCornersF(kBubbleBorderCornerRadius));
-  bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
-  bubble_border->set_draw_border_stroke(true);
-
-  auto frame = BubbleDialogDelegate::CreateFrameView(widget);
-  static_cast<views::BubbleFrameView*>(frame.get())
-      ->SetBubbleBorder(std::move(bubble_border));
-  return frame;
-}
-
 void AutoPipSettingView::OnWidgetInitialized() {
   GetBubbleFrameView()->SetTitleView(std::move(dialog_title_view_));
 }

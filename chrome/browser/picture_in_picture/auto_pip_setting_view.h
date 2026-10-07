@@ -57,8 +57,6 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   gfx::Rect GetAnchorRect() const override;
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::FrameView> CreateFrameView(
-      views::Widget* widget) override;
   void OnWidgetInitialized() override;
 
   const std::u16string& get_origin_text_for_testing() const {
