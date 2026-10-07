@@ -4,6 +4,7 @@
 
 package org.chromium.base.test.transit;
 
+import android.app.Activity;
 import android.util.Pair;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner.ClassCleanupHook;
@@ -84,6 +85,21 @@ public class TrafficControl {
         for (Runnable listener : sHopOffListeners) {
             listener.run();
         }
+    }
+
+    /**
+     * Hop on Public Transit at |destination| in |activity|, without performing any action.
+     *
+     * <p>For test utils whose UI is already in the state |destination| models, which is the common
+     * case. Shorthand for {@code Triggers.noopTo().hopOnTo(activity, destination, facilities)}; use
+     * {@link TripBuilder#hopOnTo(Activity, Station, Facility[])} with a trigger to hop on as the
+     * result of an action.
+     *
+     * @return |destination|, now ACTIVE.
+     */
+    public static <T extends Station<?>> T hopOnAt(
+            Activity activity, T destination, Facility<?>... facilities) {
+        return Triggers.noopTo().hopOnTo(activity, destination, facilities);
     }
 
     public static List<Pair<String, String>> getAllStationsNames() {

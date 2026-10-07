@@ -842,7 +842,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_PORTRAIT);
         addArchivedTab(new GURL("https://www.google.com/"), "test 2");
 
-        TabUiTestHelper.enterTabSwitcher(mCtaTestRule.getActivity());
+        // The rotation can letterbox the window and show a popup that swallows an Espresso click.
+        TabUiTestHelper.enterTabSwitcherProgrammatically(cta);
         mRenderTestRule.render(
                 cta.findViewById(R.id.pane_frame), "archived_tabs_message_tablet_portrait");
 
