@@ -1180,3 +1180,9 @@ bool IsAimCobrowseWebSelectionSearchEnabled() {
   return IsAimCobrowseEnabled() &&
          base::FeatureList::IsEnabled(kAimCobrowseWebSelectionSearch);
 }
+
+BASE_FEATURE(kAppBarAssistantCustomization, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAppBarAssistantCustomizationEnabled() {
+  return base::FeatureList::IsEnabled(kAppBarAssistantCustomization);
+}

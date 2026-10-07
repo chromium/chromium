@@ -707,4 +707,32 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonEnabledState) {
   EXPECT_TRUE(button.accessibilityTraits & UIAccessibilityTraitNotEnabled);
 }
 
+// Tests that the assistant button menu isn't offered while the assistant
+// button is disabled, e.g. on the tab grid, and is offered again once enabled.
+TEST_F(AppBarViewControllerTest, TestAssistantButtonMenuDisabledButton) {
+  UIButton* button = assistantButton();
+  ASSERT_TRUE(button);
+  UIMenu* menu = [UIMenu menuWithTitle:@"Test" children:@[]];
+  [view_controller_ setMenu:menu forButtonType:AppBarButtonTypeAssistant];
+  UIContextMenuInteraction* interaction =
+      [[UIContextMenuInteraction alloc] initWithDelegate:view_controller_];
+  [button addInteraction:interaction];
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                highlighted:NO
+                                    enabled:NO
+                                     avatar:nil
+                                   signedIn:NO];
+  EXPECT_FALSE([view_controller_ contextMenuInteraction:interaction
+                         configurationForMenuAtLocation:CGPointZero]);
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  EXPECT_TRUE([view_controller_ contextMenuInteraction:interaction
+                        configurationForMenuAtLocation:CGPointZero]);
+}
+
 }  // namespace

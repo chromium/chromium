@@ -35,15 +35,21 @@ bool IsLensOverlayEntrypointAvailable(LensOverlayEntrypoint entrypoint,
                                       TemplateURLService* template_url_service,
                                       web::WebState* web_state,
                                       UITraitCollection* trait_collection) {
-  if (!web_state) {
-    return false;
-  }
-
   if (!profile_prefs || !IsLensOverlayAllowedByPolicy(profile_prefs)) {
     return false;
   }
 
   if (!search_engines::SupportsSearchImageWithLens(template_url_service)) {
+    return false;
+  }
+
+  // The App Bar entrypoint doesn't depend on the current page, so that it is
+  // offered consistently, even when there is no tab.
+  if (entrypoint == LensOverlayEntrypoint::kAppBar) {
+    return true;
+  }
+
+  if (!web_state) {
     return false;
   }
 
@@ -87,4 +93,14 @@ bool IsLensOverlayEntrypointAvailable(LensOverlayEntrypoint entrypoint,
       NOTIMPLEMENTED();
       return false;
   }
+}
+
+bool IsLensOverlayEntrypointEnabled(LensOverlayEntrypoint entrypoint,
+                                    const PrefService* profile_prefs,
+                                    TemplateURLService* template_url_service,
+                                    web::WebState* web_state,
+                                    UITraitCollection* trait_collection) {
+  return web_state && IsLensOverlayEntrypointAvailable(
+                          entrypoint, profile_prefs, template_url_service,
+                          web_state, trait_collection);
 }

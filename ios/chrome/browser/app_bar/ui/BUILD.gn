@@ -16,6 +16,10 @@ source_set("constants") {
 
 source_set("ui") {
   sources = [
+    "app_bar_assistant_button_menu_factory.h",
+    "app_bar_assistant_button_menu_factory.mm",
+    "app_bar_assistant_button_symbol.h",
+    "app_bar_assistant_button_symbol.mm",
     "app_bar_background_view.h",
     "app_bar_background_view.mm",
     "app_bar_consumer.h",
@@ -60,7 +64,10 @@ source_set("ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "app_bar_view_controller_unittest.mm" ]
+  sources = [
+    "app_bar_assistant_button_menu_factory_unittest.mm",
+    "app_bar_view_controller_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":ui",
@@ -71,6 +78,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/scene/state:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

@@ -45,3 +45,18 @@ const char kAppBarAssistantButtonTappedHistogram[] =
 
 const char kAppBarAssistantButtonStateOnLoadHistogram[] =
     "IOS.AppBar.AssistantButtonStateOnLoad";
+
+std::optional<AppBarAssistantButtonState>
+AssistantButtonStateFromPreferredState(
+    AppBarAssistantButtonPreferredState preferred_state) {
+  switch (preferred_state) {
+    case AppBarAssistantButtonPreferredState::kDefault:
+      return std::nullopt;
+    case AppBarAssistantButtonPreferredState::kLens:
+      return AppBarAssistantButtonState::kLens;
+    case AppBarAssistantButtonPreferredState::kAsk:
+      return AppBarAssistantButtonState::kAsk;
+    case AppBarAssistantButtonPreferredState::kAccount:
+      return AppBarAssistantButtonState::kAccount;
+  }
+}

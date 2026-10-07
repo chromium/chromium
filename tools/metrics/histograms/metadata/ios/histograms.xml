@@ -357,6 +357,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.AppBar.AssistantButtonDefaultStateOnLoad"
+    enum="IOSAppBarAssistantButtonState" expires_after="2027-03-07">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <summary>
+    The state that the assistant button in the App Bar would show if the user
+    hadn't chosen an entry point in the menu shown when long pressing it. Only
+    recorded for users who chose an entry point, once per App Bar
+    initialization, along with IOS.AppBar.AssistantButtonStateOnLoad and
+    IOS.AppBar.AssistantButtonPreferredStateOnLoad.
+  </summary>
+</histogram>
+
+<histogram name="IOS.AppBar.AssistantButtonPreferredStateOnLoad"
+    enum="IOSAppBarAssistantButtonPreferredState" expires_after="2027-03-07">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <summary>
+    The entry point chosen by the user for the assistant button in the App Bar,
+    in the menu shown when long pressing it, or Default if the user didn't
+    choose any. Recorded once per App Bar initialization, along with
+    IOS.AppBar.AssistantButtonStateOnLoad.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppBar.AssistantButtonStateOnLoad"
     enum="IOSAppBarAssistantButtonState" expires_after="2027-03-07">
   <owner>gambard@chromium.org</owner>
