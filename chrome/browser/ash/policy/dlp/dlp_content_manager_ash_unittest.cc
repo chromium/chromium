@@ -28,7 +28,6 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -48,6 +47,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 using ::testing::_;
 using ::testing::Mock;
@@ -139,6 +139,8 @@ class DlpContentManagerAshTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
+    message_center::MessageCenter::Initialize();
+
     ASSERT_TRUE(profile_manager_.SetUp());
     LoginFakeUser();
     SetReportQueueForReportingManager();
@@ -149,9 +151,11 @@ class DlpContentManagerAshTest : public testing::Test {
   }
 
   void TearDown() override {
-    testing::Test::TearDown();
-
     helper_.ResetWarnNotifierForTesting();
+
+    message_center::MessageCenter::Shutdown();
+
+    testing::Test::TearDown();
   }
 
   void SetReportQueueForReportingManager() {
@@ -632,9 +636,6 @@ TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
 }
 
 TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
-  // Needs to be set because CheckPrintingRestriction() will show the blocked
-  // notification.
-  NotificationDisplayServiceTester display_service_tester(profile());
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(
@@ -846,9 +847,6 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
 }
 
 TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
-  // Needs to be set because CheckCaptureModeInitRestriction() will show the
-  // blocked notification.
-  NotificationDisplayServiceTester display_service_tester(profile());
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(
@@ -1017,9 +1015,6 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
-  // Needs to be set because CheckScreenshotRestriction() will show the blocked
-  // notification.
-  NotificationDisplayServiceTester display_service_tester(profile());
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(
@@ -1176,9 +1171,6 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedCancelled) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
-  // Needs to be set because CheckScreenShareRestriction() will show the blocked
-  // notification.
-  NotificationDisplayServiceTester display_service_tester(profile());
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(

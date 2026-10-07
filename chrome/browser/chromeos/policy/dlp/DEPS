@@ -19,10 +19,12 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/enterprise/data_controls",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/common",
   "+chrome/grit",
+
+  "+ui/message_center/message_center.h",
+  "+ui/message_center/public/cpp",
 ]
 
 specific_include_rules = {

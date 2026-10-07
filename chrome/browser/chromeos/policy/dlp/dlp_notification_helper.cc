@@ -6,17 +6,16 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -38,21 +37,20 @@ constexpr char kVideoCaptureStoppedNotificationId[] =
     "video_capture_dlp_stopped";
 constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
-void OnNotificationClicked(const std::string id) {
+void OnNotificationClicked(const std::string& id) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 
-  NotificationDisplayServiceFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->Close(NotificationHandler::Type::TRANSIENT, id);
+  message_center::MessageCenter::Get()->RemoveNotification(id,
+                                                           /*by_user=*/false);
 }
 
 void ShowDlpNotification(const std::string& id,
                          const std::u16string& title,
                          const std::u16string& message) {
-  message_center::Notification notification(
+  auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
       /*icon=*/ui::ImageModel(), /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
@@ -63,15 +61,13 @@ void ShowDlpNotification(const std::string& id,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&OnNotificationClicked, id)));
   // Set critical warning color.
-  notification.set_accent_color_id(ui::kColorSysError);
-  notification.set_vector_small_image(features::IsRoundedIconsEnabled()
-                                          ? vector_icons::kDomainIcon
-                                          : vector_icons::kBusinessOldIcon);
-  notification.set_renotify(true);
-  NotificationDisplayServiceFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->Display(NotificationHandler::Type::TRANSIENT, notification,
-                /*metadata=*/nullptr);
+  notification->set_accent_color_id(ui::kColorSysError);
+  notification->set_vector_small_image(features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kDomainIcon
+                                           : vector_icons::kBusinessOldIcon);
+  notification->set_renotify(true);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 std::string GetScreenSharePausedNotificationId(const std::string& share_id) {
@@ -100,14 +96,8 @@ void ShowDlpScreenShareDisabledNotification(const std::u16string& app_title) {
 }
 
 void HideDlpScreenSharePausedNotification(const std::string& share_id) {
-  auto* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
-  if (notification_display_service) {
-    notification_display_service->Close(
-        NotificationHandler::Type::TRANSIENT,
-        GetScreenSharePausedNotificationId(share_id));
-  }
+  message_center::MessageCenter::Get()->RemoveNotification(
+      GetScreenSharePausedNotificationId(share_id), /*by_user=*/false);
 }
 
 void ShowDlpScreenSharePausedNotification(const std::string& share_id,
@@ -120,14 +110,8 @@ void ShowDlpScreenSharePausedNotification(const std::string& share_id,
 }
 
 void HideDlpScreenShareResumedNotification(const std::string& share_id) {
-  auto* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
-  if (notification_display_service) {
-    notification_display_service->Close(
-        NotificationHandler::Type::TRANSIENT,
-        GetScreenShareResumedNotificationId(share_id));
-  }
+  message_center::MessageCenter::Get()->RemoveNotification(
+      GetScreenShareResumedNotificationId(share_id), /*by_user=*/false);
 }
 
 void ShowDlpScreenShareResumedNotification(const std::string& share_id,

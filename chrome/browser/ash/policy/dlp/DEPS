@@ -36,7 +36,6 @@ specific_include_rules = {
     "+chrome/browser/policy/messaging_layer/public",
   ],
   ".*test(_.*)?\\.(cc|h)": [
-    "+chrome/browser/notifications",
     "+chrome/test/base",
   ],
   ".*browsertest\\.cc": [

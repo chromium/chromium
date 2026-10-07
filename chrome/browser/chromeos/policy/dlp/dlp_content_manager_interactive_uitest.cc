@@ -22,7 +22,6 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -43,6 +42,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 using testing::_;
 
@@ -105,6 +105,11 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
  public:
   DlpContentManagerBrowserTest() = default;
   ~DlpContentManagerBrowserTest() override = default;
+
+  bool HasNotification(const std::string& notification_id) {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+               notification_id) != nullptr;
+  }
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
@@ -175,9 +180,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NotificationDisplayServiceTester display_service_tester(
-      browser()->GetProfile());
-
   base::MockCallback<WarningCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
 
@@ -188,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
   // Start printing and check that there is no notification when printing is not
   // restricted.
   printing::test::StartPrint(web_contents);
-  EXPECT_FALSE(
-      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_FALSE(HasNotification(kPrintBlockedNotificationId));
   CheckEvents(DlpRulesManager::Restriction::kPrinting,
               DlpRulesManager::Level::kBlock, 0u);
 }
@@ -544,9 +545,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NotificationDisplayServiceTester display_service_tester(
-      browser()->GetProfile());
-
   // Set up the mocks for directly calling CheckPrintingRestriction().
   base::MockCallback<WarningCallback> cb;
   testing::InSequence s;
@@ -572,8 +570,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   StartPrint(print_manager, web_contents);
 
   // Check for notification about printing restriction.
-  EXPECT_TRUE(
-      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_TRUE(HasNotification(kPrintBlockedNotificationId));
 
   // Wait for the recording service to receive reports.
   EXPECT_TRUE(record_check_future.Wait());
@@ -594,9 +591,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NotificationDisplayServiceTester display_service_tester(
-      browser()->GetProfile());
-
   // Set up printing restriction.
   helper_->ChangeConfidentiality(web_contents, GetPrintReported());
   // Printing should be reported, but still allowed whether we call
@@ -612,8 +606,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting).Times(0);
   StartPrint(print_manager, web_contents);
 
-  EXPECT_FALSE(
-      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_FALSE(HasNotification(kPrintBlockedNotificationId));
 
   // Wait for the recording service to receive reports.
   EXPECT_TRUE(record_check_future.Wait());
@@ -622,8 +615,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   SetupDlpRulesManager();
   SetupReportQueue();
-  NotificationDisplayServiceTester display_service_tester(
-      browser()->GetProfile());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -650,8 +641,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
                                               false, false, false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   // There should be no notification about printing restriction.
-  EXPECT_FALSE(
-      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_FALSE(HasNotification(kPrintBlockedNotificationId));
 
   // Wait for the recording service to receive reports.
   EXPECT_TRUE(record_check_future.Wait());
@@ -692,8 +682,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
                        TabShareWarnedDuringAllowed) {
   SetupReporting();
-  NotificationDisplayServiceTester display_service_tester(
-      browser()->GetProfile());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
