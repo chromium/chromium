@@ -343,9 +343,23 @@ void WidgetBase::Shutdown(bool delay_release) {
             [](scoped_refptr<scheduler::WidgetScheduler> scheduler,
                scoped_refptr<WidgetInputHandlerManager> manager,
                std::unique_ptr<LayerTreeView> view) {
+              const bool released_view = !!view;
               view.reset();
               manager.reset();
               scheduler->Shutdown();
+              if (released_view &&
+                  base::FeatureList::IsEnabled(
+                      features::kFlushGpuChannelOnLayerTreeViewRelease)) {
+                // Releasing the LayerTreeView destroyed its SharedImages (e.g.
+                // all of its tile resources). Their destruction requests are
+                // deferred GPU channel messages, which are only sent with the
+                // next flush, or after GpuChannelHost::kDelayForEnsuringFlush.
+                // On an idle page the next flush is often the next
+                // navigation's first raster, and the GPU service then has to
+                // destroy the whole backlog before it can create that
+                // navigation's SharedImages. Send them right away instead.
+                Platform::Current()->FlushGpuChannelIfEstablished();
+              }
             },
             std::move(widget_scheduler_),
             std::move(widget_input_handler_manager_),

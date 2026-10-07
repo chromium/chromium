@@ -331,6 +331,8 @@ void Platform::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   std::move(callback).Run(nullptr);
 }
 
+void Platform::FlushGpuChannelIfEstablished() {}
+
 gfx::ColorSpace Platform::GetRenderingColorSpace() const {
   return {};
 }

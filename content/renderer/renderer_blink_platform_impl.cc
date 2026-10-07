@@ -5,6 +5,8 @@
 #include "content/renderer/renderer_blink_platform_impl.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -580,6 +582,18 @@ RendererBlinkPlatformImpl::EstablishGpuChannelSync() {
 void RendererBlinkPlatformImpl::EstablishGpuChannel(
     EstablishGpuChannelCallback callback) {
   RenderThreadImpl::current()->EstablishGpuChannel(std::move(callback));
+}
+
+void RendererBlinkPlatformImpl::FlushGpuChannelIfEstablished() {
+  RenderThreadImpl* render_thread = RenderThreadImpl::current();
+  if (!render_thread) {
+    return;
+  }
+  // GetGpuChannel() never establishes a channel. It returns null if there is no
+  // channel or if it was lost.
+  if (gpu::GpuChannelHost* gpu_channel = render_thread->GetGpuChannel()) {
+    gpu_channel->EnsureFlush(std::numeric_limits<uint32_t>::max());
+  }
 }
 
 bool RendererBlinkPlatformImpl::RTCSmoothnessAlgorithmEnabled() {

@@ -489,6 +489,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kFilteringScrollPredictionFilterParam);
 
+// Flushes the GPU channel right after a LayerTreeView is released, so that the
+// destruction of its SharedImages isn't left for the next flush, which is often
+// in the middle of the next navigation. Kill switch for crbug.com/569098933.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFlushGpuChannelOnLayerTreeViewRelease);
+
 // When enabled, FontAccessManager ensures the requesting frame is active
 // before consuming transient user activation.
 // Kill switch for crbug.com/556250086.

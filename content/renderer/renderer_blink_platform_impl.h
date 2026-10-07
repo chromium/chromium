@@ -162,6 +162,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool IsGpuRemoteDisconnected() override;
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
+  void FlushGpuChannelIfEstablished() override;
   bool RTCSmoothnessAlgorithmEnabled() override;
   std::optional<double> GetWebRtcMaxCaptureFrameRate() override;
   scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(

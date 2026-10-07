@@ -631,6 +631,11 @@ class BLINK_PLATFORM_EXPORT Platform {
       base::OnceCallback<void(scoped_refptr<gpu::GpuChannelHost>)>;
   virtual void EstablishGpuChannel(EstablishGpuChannelCallback callback);
 
+  // Sends the deferred messages of the GPU channel right away, if a channel is
+  // established and not lost. Unlike the methods above, this never establishes
+  // a channel.
+  virtual void FlushGpuChannelIfEstablished();
+
   // Media stream ----------------------------------------------------
   virtual scoped_refptr<media::AudioCapturerSource> NewAudioCapturerSource(
       blink::WebLocalFrame* web_frame,

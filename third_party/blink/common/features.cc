@@ -728,6 +728,9 @@ BASE_FEATURE_PARAM(std::string,
                    "filter",
                    "one_euro_filter");
 
+BASE_FEATURE(kFlushGpuChannelOnLayerTreeViewRelease,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFontAccessCheckFrameIsActive, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockPartialResponseWithoutRange,
