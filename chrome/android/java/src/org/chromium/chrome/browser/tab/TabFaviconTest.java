@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -36,6 +37,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -52,6 +56,7 @@ public class TabFaviconTest {
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private WebContents mWebContents;
+    private @Mock WebContents mNewWebContents;
     @Mock private FaviconHelper mFaviconHelper;
 
     private UserDataHost mUserDataHost;
@@ -368,5 +373,30 @@ public class TabFaviconTest {
         Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
         assertNotNull(promise);
         assertTrue(promise.isRejected());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testOnContentChanged_deduplicatesCallsWhenOptimizationsEnabled() {
+        // setUp() already called setWebContents once during construction via
+        // onContentChanged(mTab).
+        verify(mTabFaviconJni, times(1)).setWebContents(12345L, mWebContents);
+
+        mTabFavicon.onContentChanged(mTab);
+        verify(mTabFaviconJni, times(1)).setWebContents(12345L, mWebContents);
+
+        doReturn(mNewWebContents).when(mTab).getWebContents();
+        mTabFavicon.onContentChanged(mTab);
+        verify(mTabFaviconJni, times(1)).setWebContents(12345L, mNewWebContents);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testOnContentChanged_callsEveryTimeWhenOptimizationsDisabled() {
+        // setUp() called initWebContents directly without updating TabWebContentsUserData.
+        verify(mTabFaviconJni, times(1)).setWebContents(12345L, mWebContents);
+
+        mTabFavicon.onContentChanged(mTab);
+        verify(mTabFaviconJni, times(2)).setWebContents(12345L, mWebContents);
     }
 }

@@ -18,6 +18,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -113,7 +114,14 @@ public class TabFavicon extends TabWebContentsUserData {
         mNavigationTransitionsIdealFaviconSize = getNavigationTransitionsIdealFaviconSize();
         mNativeTabFavicon = TabFaviconJni.get().init(tab, mNavigationTransitionsIdealFaviconSize);
         if (tab.getWebContents() != null) {
-            initWebContents(tab.getWebContents());
+            if (ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {
+                // Call onContentChanged() rather than initWebContents() directly so
+                // TabWebContentsUserData#mWebContents is populated and the subsequent
+                // notifyContentChanged() call in TabImpl#initWebContents() is a no-op.
+                onContentChanged(tab);
+            } else {
+                initWebContents(tab.getWebContents());
+            }
         }
     }
 
