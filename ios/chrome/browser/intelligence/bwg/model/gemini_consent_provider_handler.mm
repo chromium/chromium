@@ -55,8 +55,9 @@
 }
 
 - (BOOL)isGeminiLiveIntroShown {
-  return gemini::DidGeminiLiveIntroPlay(_prefService) &&
-         !ShouldForceGeminiLiveFRE();
+  return (gemini::DidGeminiLiveIntroPlay(_prefService) &&
+          !ShouldForceGeminiLiveFRE()) ||
+         ShouldSkipGeminiLiveIntro();
 }
 
 - (BOOL)hasMicrophoneAccess {

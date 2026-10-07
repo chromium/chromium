@@ -881,6 +881,18 @@ const FeatureEntry::FeatureVariation kGeminiAureusVariations[] = {
     {"Foreground Quota Refresh Enabled",
      kGeminiAureusForegroundQuotaRefreshEnabled, nullptr}};
 
+const FeatureEntry::FeatureParam kGeminiLiveSkipIntro[] = {
+    {kGeminiLiveSkipIntroParam, "true"}};
+const FeatureEntry::FeatureParam kGeminiLiveDisableIPH[] = {
+    {kGeminiLiveDisableIPHParam, "true"}};
+const FeatureEntry::FeatureParam kGeminiLiveSkipIntroAndDisableIPH[] = {
+    {kGeminiLiveSkipIntroParam, "true"},
+    {kGeminiLiveDisableIPHParam, "true"}};
+const FeatureEntry::FeatureVariation kGeminiLiveVariations[] = {
+    {"Skip Intro", kGeminiLiveSkipIntro, nullptr},
+    {"Disable IPH", kGeminiLiveDisableIPH, nullptr},
+    {"Skip Intro and Disable IPH", kGeminiLiveSkipIntroAndDisableIPH, nullptr}};
+
 const FeatureEntry::FeatureParam kGeminiFREExperimentVisualRich[] = {
     {kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}};
 const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightConvenience[] =
@@ -2187,7 +2199,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kGeminiNavigationPromo)},
     {"gemini-live", flag_descriptions::kGeminiLiveName,
      flag_descriptions::kGeminiLiveDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiLive)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiLive,
+                                    kGeminiLiveVariations,
+                                    "GeminiLive")},
     {"gemini-live-dormant-reasons",
      flag_descriptions::kGeminiLiveDormantReasonsName,
      flag_descriptions::kGeminiLiveDormantReasonsDescription, flags_ui::kOsIos,

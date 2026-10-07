@@ -198,6 +198,18 @@ bool IsGeminiEligibilityAblationEnabled();
 BASE_DECLARE_FEATURE(kGeminiLive);
 bool IsGeminiLiveEnabled();
 
+// Parameter to skip the Gemini Live FRE intro.
+inline constexpr char kGeminiLiveSkipIntroParam[] = "skip_intro";
+
+// Returns true if the Gemini Live FRE intro should be skipped.
+bool ShouldSkipGeminiLiveIntro();
+
+// Parameter to disable the Gemini Live IPH and New badge.
+inline constexpr char kGeminiLiveDisableIPHParam[] = "disable_iph";
+
+// Returns true if the Gemini Live IPH and New badge are disabled.
+bool IsGeminiLiveIPHDisabled();
+
 // Feature flag for Gemini Live Dormant Reasons.
 BASE_DECLARE_FEATURE(kGeminiLiveDormantReasons);
 bool IsGeminiLiveDormantReasonsEnabled();
