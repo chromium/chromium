@@ -87,9 +87,6 @@ source_set("impl") {
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views/frame:toolbar_button_provider",
-      "//chrome/browser/ui/views/page_action",
-      "//chrome/browser/ui/views/webauthn/ambient",
       "//chrome/browser/webauthn",
       "//components/autofill/content/browser",
       "//components/autofill/core/browser",
@@ -122,10 +119,7 @@ source_set("impl") {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
   if (!is_android) {
-    deps += [
-      "//chrome/browser/ui:browser_window_header",
-      "//chrome/browser/ui/views/frame:browser_view_header",
-    ]
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
   }
 }
 
@@ -150,7 +144,6 @@ if (!is_android) {
       "//chrome/app/vector_icons",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/passwords:test_support_ui",
-      "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/autofill/content/browser",

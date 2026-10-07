@@ -87,10 +87,6 @@ class WebUIBubbleDialogView;
 FORWARD_DECLARE_TEST(InProcessBrowserTest,
                      RunsScheduledLayoutOnAnchoredBubbles);
 
-namespace ambient_signin {
-class AmbientSigninBubbleView;
-}
-
 namespace arc {
 class ArcSplashScreenDialogView;
 class BaseDialogDelegateView;
@@ -924,7 +920,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::WebUIBubbleDialogView;
   FRIEND_TEST_ALL_PREFIXES(::InProcessBrowserTest,
                            RunsScheduledLayoutOnAnchoredBubbles);
-  friend class ::ambient_signin::AmbientSigninBubbleView;
   friend class ::arc::ArcSplashScreenDialogView;
   friend class ::arc::BaseDialogDelegateView;
   friend class ::arc::ResizeConfirmationDialogView;
