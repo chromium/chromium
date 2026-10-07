@@ -133,6 +133,10 @@ struct COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
   // The credentials mode of the request. Not supported on iOS.
   ::network::mojom::CredentialsMode credentials_mode;
 
+  // The fetch request mode of the request. Not supported on iOS.
+  ::network::mojom::RequestMode fetch_request_mode =
+      ::network::mojom::RequestMode::kNavigate;
+
   // The isolation info of the request, this won't be persisted to db and will
   // be invalidate during download resumption in new browser session. Not
   // supported on iOS.

@@ -1072,3 +1072,62 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchLocalNetworkAccessBrowserTest, Fetch) {
   ASSERT_NO_FATAL_FAILURE(
       RunScriptAndCheckResultingMessage(script, "backgroundfetchsuccess"));
 }
+
+class BackgroundFetchCorsBrowserTest : public BackgroundFetchBrowserTest {
+ public:
+  BackgroundFetchCorsBrowserTest() {
+    base::FieldTrialParams download_params;
+    // Set the DownloadService retry delay to 0 to prevent a 20-second timeout
+    // delay when a background fetch correctly fails due to CORS
+    // restrictions.
+    download_params["retry_delay_ms"] = "0";
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {{download::kDownloadServiceFeature, download_params}}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    BackgroundFetchBrowserTest::SetUpOnMainThread();
+
+    cross_origin_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    cross_origin_server_->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(cross_origin_server_->Start());
+  }
+
+ protected:
+  std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackgroundFetchCorsBrowserTest,
+                       FailsWithoutCorsHeaders) {
+  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                CONTENT_SETTING_ALLOW);
+
+  GURL cross_origin_url =
+      cross_origin_server_->GetURL("/background_fetch/types_of_cheese.txt");
+  std::string script =
+      "StartFetchFromWindowWithUrl('" + cross_origin_url.spec() + "')";
+
+  // The fetch should fail because of CORS restrictions.
+  offline_content_provider_observer_->ResumeOnNextUpdate();
+  ASSERT_NO_FATAL_FAILURE(
+      RunScriptAndCheckResultingMessage(script, "backgroundfetchfail"));
+}
+
+IN_PROC_BROWSER_TEST_F(BackgroundFetchCorsBrowserTest,
+                       SucceedsWithCorsHeaders) {
+  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                CONTENT_SETTING_ALLOW);
+
+  GURL cross_origin_url = cross_origin_server_->GetURL(
+      "/background_fetch/types_of_cheese_cors.txt");
+  std::string script =
+      "StartFetchFromWindowWithUrl('" + cross_origin_url.spec() + "')";
+
+  // The fetch should succeed because the response has CORS headers.
+  offline_content_provider_observer_->ResumeOnNextUpdate();
+  ASSERT_NO_FATAL_FAILURE(
+      RunScriptAndCheckResultingMessage(script, "backgroundfetchsuccess"));
+}

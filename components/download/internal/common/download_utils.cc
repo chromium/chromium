@@ -492,7 +492,13 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   // See also:
   // - https://crbug.com/952834
   // - https://github.com/whatwg/fetch/issues/896#issuecomment-484423278
-  request->mode = network::mojom::RequestMode::kNavigate;
+  //
+  // Note that while top-level navigations use kNavigate (which bypasses CORS
+  // restrictions in the network service), Background Fetch requests require
+  // strict adoption of the originating fetch request mode (kCors) to prevent
+  // cross-origin information leaks.
+  request->mode = params->fetch_request_mode();
+  request->credentials_mode = params->credentials_mode();
 
   bool has_upload_data = false;
   if (params->post_body()) {
@@ -636,6 +642,7 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.bytes_wasted = item.GetBytesWasted();
   in_progress_info.auto_resume_count = item.GetAutoResumeCount();
   in_progress_info.credentials_mode = item.GetCredentialsMode();
+  in_progress_info.fetch_request_mode = item.GetFetchRequestMode();
   auto range_request_offset = item.GetRangeRequestOffset();
   in_progress_info.range_request_from = range_request_offset.first;
   in_progress_info.range_request_to = range_request_offset.second;

@@ -10,4 +10,6 @@ BASE_FEATURE(kDownloadServiceFeature,
              "DownloadService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBackgroundFetchCorsEnforcement, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace download

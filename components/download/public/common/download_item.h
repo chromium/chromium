@@ -368,6 +368,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // The credentials mode of the request.
   virtual ::network::mojom::CredentialsMode GetCredentialsMode() const = 0;
 
+  // The fetch request mode of the request.
+  virtual ::network::mojom::RequestMode GetFetchRequestMode() const = 0;
+
   // The isolation mode of the request.
   virtual const std::optional<net::IsolationInfo>& GetIsolationInfo() const = 0;
 

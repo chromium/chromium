@@ -31,6 +31,7 @@
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
@@ -128,6 +129,7 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
       blink::mojom::FetchAPIRequestPtr request_ptr = CreateFetchAPIRequest(
           GURL(pair.first), pair.second, FetchAPIRequestHeadersMap(),
           blink::mojom::Referrer::New(), false);
+      request_ptr->mode = network::mojom::RequestMode::kCors;
       auto request = base::MakeRefCounted<BackgroundFetchRequestInfo>(
           request_counter++, std::move(request_ptr),
           /* has_request_body= */ false);

@@ -21,4 +21,5 @@ message RequestParams {
   optional bool fetch_error_body = 4;
   optional bool require_safety_checks = 5 [default = true];
   optional int32 credentials_mode = 6;  // network::mojom::CredentialsMode.
+  optional int32 fetch_request_mode = 7;  // network::mojom::RequestMode.
 }

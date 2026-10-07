@@ -157,6 +157,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     credentials_mode_ = credentials_mode;
   }
 
+  // The requests' fetch request mode.
+  void set_fetch_request_mode(
+      ::network::mojom::RequestMode fetch_request_mode) {
+    fetch_request_mode_ = fetch_request_mode;
+  }
+
   // Body of the HTTP POST request.
   void set_post_body(scoped_refptr<network::ResourceRequestBody> post_body) {
     post_body_ = post_body;
@@ -326,6 +332,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   ::network::mojom::CredentialsMode credentials_mode() const {
     return credentials_mode_;
   }
+  ::network::mojom::RequestMode fetch_request_mode() const {
+    return fetch_request_mode_;
+  }
   scoped_refptr<network::ResourceRequestBody> post_body() { return post_body_; }
   int64_t post_id() const { return post_id_; }
   bool prefer_cache() const { return prefer_cache_; }
@@ -415,6 +424,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool use_if_range_;
   std::string method_;
   ::network::mojom::CredentialsMode credentials_mode_;
+  ::network::mojom::RequestMode fetch_request_mode_;
   scoped_refptr<network::ResourceRequestBody> post_body_;
   int64_t post_id_;
   bool prefer_cache_;

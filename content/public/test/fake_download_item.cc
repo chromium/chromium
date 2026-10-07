@@ -210,6 +210,15 @@ FakeDownloadItem::GetDownloadCreationType() const {
   return ::network::mojom::CredentialsMode::kInclude;
 }
 
+::network::mojom::RequestMode FakeDownloadItem::GetFetchRequestMode() const {
+  return fetch_request_mode_;
+}
+
+void FakeDownloadItem::SetFetchRequestMode(
+    ::network::mojom::RequestMode fetch_request_mode) {
+  fetch_request_mode_ = fetch_request_mode;
+}
+
 const std::optional<net::IsolationInfo>& FakeDownloadItem::GetIsolationInfo()
     const {
   return isolation_info_;

@@ -35,6 +35,7 @@ DownloadCreateInfo::DownloadCreateInfo(
       ukm_source_id(ukm::kInvalidSourceId),
       is_content_initiated(false),
       credentials_mode(::network::mojom::CredentialsMode::kInclude),
+      fetch_request_mode(::network::mojom::RequestMode::kNavigate),
       isolation_info(std::nullopt) {}
 
 DownloadCreateInfo::DownloadCreateInfo()

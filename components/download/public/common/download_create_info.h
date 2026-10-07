@@ -194,6 +194,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // javascript, see Access-Control-Allow-Credentials header.
   ::network::mojom::CredentialsMode credentials_mode;
 
+  // The fetch request mode of the request.
+  ::network::mojom::RequestMode fetch_request_mode;
+
   // Isolation info for the download request, mainly for same site cookies.
   std::optional<net::IsolationInfo> isolation_info;
 

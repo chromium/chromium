@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -108,6 +109,7 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
       auto fetch_request = blink::mojom::FetchAPIRequest::New();
       fetch_request->referrer = blink::mojom::Referrer::New();
       fetch_request->url = GURL(storage_key.origin().GetURL().spec() + request);
+      fetch_request->mode = network::mojom::RequestMode::kCors;
       CreateRequestWithProvidedResponse(fetch_request->method,
                                         fetch_request->url,
                                         TestResponseBuilder(200).Build());

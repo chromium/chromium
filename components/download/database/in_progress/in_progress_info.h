@@ -128,6 +128,10 @@ struct InProgressInfo {
   ::network::mojom::CredentialsMode credentials_mode =
       ::network::mojom::CredentialsMode::kInclude;
 
+  // The fetch request mode of the request.
+  ::network::mojom::RequestMode fetch_request_mode =
+      ::network::mojom::RequestMode::kNavigate;
+
   int64_t range_request_from = kInvalidRange;
   int64_t range_request_to = kInvalidRange;
 

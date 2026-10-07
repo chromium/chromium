@@ -64,6 +64,7 @@ class FakeDownloadItem : public download::DownloadItem {
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
+  ::network::mojom::RequestMode GetFetchRequestMode() const override;
   const std::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   bool IsDone() const override;
   const std::string& GetETag() const override;
@@ -176,6 +177,7 @@ class FakeDownloadItem : public download::DownloadItem {
   void SetDangerType(download::DownloadDangerType danger_type);
   void SetInsecureDownloadStatus(
       download::DownloadItem::InsecureDownloadStatus insecure_download_status);
+  void SetFetchRequestMode(::network::mojom::RequestMode fetch_request_mode);
 
  private:
   base::ObserverList<Observer> observers_;
@@ -211,6 +213,8 @@ class FakeDownloadItem : public download::DownloadItem {
   bool open_when_complete_ = false;
   bool is_dangerous_ = false;
   bool is_insecure_ = false;
+  ::network::mojom::RequestMode fetch_request_mode_ =
+      ::network::mojom::RequestMode::kNavigate;
   std::optional<net::IsolationInfo> isolation_info_;
   download::DownloadDangerType danger_type_ =
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
