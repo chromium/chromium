@@ -179,11 +179,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(
       sandbox::policy::features::kAndroidGpuSandbox);
-  // Bypass the WebAudio output buffer, to reduce audio latency.
-  // TODO(crbug.com/436988695): Remove when the long term solution is
-  // implemented.
-  feature_overrides.EnableFeature(
-      blink::features::kWebAudioBypassOutputBuffering);
   // TODO(crbug.com/437004266): Remove when the feature is stable.
   feature_overrides.EnableFeature(
       features::kAlwaysUseAudioManagerOutputFramesPerBuffer);

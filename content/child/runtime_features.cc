@@ -451,6 +451,15 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
       // This feature is not ready for non-desktop devices. See
       // crbug.com/522529331.
       base::android::device_info::is_desktop());
+  if (base::android::device_info::is_desktop() &&
+      !base::FeatureList::GetStateIfOverridden(
+           blink::features::kWebAudioBypassOutputBuffering)
+           .has_value()) {
+    // TODO(crbug.com/436988695): Remove when the long term solution is
+    // implemented.
+    WebRuntimeFeatures::EnableFeatureFromString("WebAudioBypassOutputBuffering",
+                                                true);
+  }
 #endif
 
   // TODO(rodneyding): This is a rare case for a stable feature
