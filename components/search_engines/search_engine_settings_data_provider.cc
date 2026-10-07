@@ -59,6 +59,17 @@ PrepopulatedAndRecentlyVisitedTemplateUrls::operator=(
 PrepopulatedAndRecentlyVisitedTemplateUrls::
     ~PrepopulatedAndRecentlyVisitedTemplateUrls() = default;
 
+DefaultSearchEnginePickerData::DefaultSearchEnginePickerData() = default;
+DefaultSearchEnginePickerData::DefaultSearchEnginePickerData(
+    const DefaultSearchEnginePickerData& other) = default;
+DefaultSearchEnginePickerData& DefaultSearchEnginePickerData::operator=(
+    const DefaultSearchEnginePickerData& other) = default;
+DefaultSearchEnginePickerData::DefaultSearchEnginePickerData(
+    DefaultSearchEnginePickerData&& other) = default;
+DefaultSearchEnginePickerData& DefaultSearchEnginePickerData::operator=(
+    DefaultSearchEnginePickerData&& other) = default;
+DefaultSearchEnginePickerData::~DefaultSearchEnginePickerData() = default;
+
 SearchEngineSettingsDataProvider::SearchEngineSettingsDataProvider(
     TemplateURLService& template_url_service,
     const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
@@ -148,6 +159,49 @@ PrepopulatedAndRecentlyVisitedTemplateUrls SearchEngineSettingsDataProvider::
       ::internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
           prepopulate_data_resolver_->GetPrepopulatedEngines()));
   ::internal::SortAndFilterRecentlyVisitedURLs(data.recently_visited_urls);
+
+  return data;
+}
+
+DefaultSearchEnginePickerData
+SearchEngineSettingsDataProvider::GetDefaultSearchEnginePickerData() const {
+  DefaultSearchEnginePickerData data;
+  const TemplateURL* default_search_provider =
+      template_url_service_->GetDefaultSearchProvider();
+
+  for (TemplateURL* url : template_url_service_->GetTemplateURLs()) {
+    // The current default search engine is always shown.
+    if (url == default_search_provider) {
+      data.primary.push_back(url);
+      continue;
+    }
+
+    if (!template_url_service_->ShowInDefaultList(url)) {
+      continue;
+    }
+
+    // `HiddenFromLists()` is not used here: it would also hide engines whose
+    // keyword is claimed by a custom, site search or extension engine, which
+    // is irrelevant to the picker since keywords are not displayed. Only hide
+    // an engine when the engine winning its keyword is itself shown in the
+    // picker (e.g. a policy-provided or regulatory program engine reusing a
+    // prepopulated keyword), to avoid showing duplicates.
+    const TemplateURL* keyword_winner =
+        template_url_service_->GetTemplateURLForKeyword(url->keyword());
+    if (keyword_winner && keyword_winner != url &&
+        template_url_service_->ShowInDefaultList(keyword_winner)) {
+      continue;
+    }
+
+    // TODO(crbug.com/567524562): Revisit the logic to ensure non-regional
+    // prepopulated engines as also skipped.
+    data.primary.push_back(url);
+  }
+
+  std::ranges::sort(
+      data.primary,
+      ::internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
+          prepopulate_data_resolver_->GetPrepopulatedEngines()));
 
   return data;
 }

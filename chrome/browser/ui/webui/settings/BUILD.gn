@@ -320,6 +320,7 @@ source_set("impl") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/search_engines",
+    "//components/search_engines/search_engine_choice:switches",
     "//components/signin/core/browser",
     "//components/signin/public/base",
     "//components/site_engagement/content",

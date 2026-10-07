@@ -50,6 +50,10 @@ export interface SearchEnginesInfo {
   [key: string]: SearchEngine[];
 }
 
+export interface DefaultSearchEnginePickerData {
+  primary: SearchEngine[];
+}
+
 export interface CategorizedTemplateUrls {
   /**
    * Active site shortcut search engines (normal search engines including
@@ -137,6 +141,8 @@ export interface SearchEnginesBrowserProxy {
 
   getCategorizedTemplateUrls(): Promise<CategorizedTemplateUrls>;
 
+  getDefaultSearchEnginePickerData(): Promise<DefaultSearchEnginePickerData>;
+
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
 
   getSaveGuestChoice(): Promise<boolean|null>;
@@ -192,6 +198,11 @@ export class SearchEnginesBrowserProxyImpl implements
   getCategorizedTemplateUrls() {
     return sendWithPromise<CategorizedTemplateUrls>(
         'getCategorizedTemplateUrls');
+  }
+
+  getDefaultSearchEnginePickerData() {
+    return sendWithPromise<DefaultSearchEnginePickerData>(
+        'getDefaultSearchEnginePickerData');
   }
 
   getSearchEnginesList() {

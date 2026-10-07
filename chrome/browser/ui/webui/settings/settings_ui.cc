@@ -131,6 +131,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_switches.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -680,6 +681,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "searchSettingsUpdate",
       base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
+  html_source->AddBoolean(
+      "pickerWithMoreEngines",
+      base::FeatureList::IsEnabled(switches::kSearchSettingsWithMoreEngines));
 
   html_source->AddString(
       "settingsRefresh2026",

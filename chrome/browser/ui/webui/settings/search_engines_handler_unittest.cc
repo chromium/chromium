@@ -660,4 +660,53 @@ TEST_F(SearchEnginesHandlerTest, SearchEngineEditStartedWithUnknownEngine) {
   EXPECT_FALSE(has_edit_controller());
 }
 
+TEST_F(SearchEnginesHandlerTest, GetDefaultSearchEnginePickerData) {
+  ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+
+  // Add a non-default custom search engine, which should be excluded from
+  // `primary`.
+  AddSearchEngine(template_url_service, "bar.com", u"bar_com",
+                  /*prepopulated_id=*/0, /*url=*/std::nullopt);
+  web_ui()->ClearTrackedCalls();
+
+  base::ListValue args;
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getDefaultSearchEnginePickerData", args);
+
+  ASSERT_EQ(1U, web_ui()->call_data().size());
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ("callback_id", call_data.arg1()->GetString());
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::DictValue& response = call_data.arg3()->GetDict();
+
+  const base::ListValue* primary = response.FindList("primary");
+  ASSERT_TRUE(primary);
+
+  bool found_bing = false;
+  bool found_default_custom = false;
+  bool found_non_default_custom = false;
+  for (const auto& entry : *primary) {
+    ASSERT_TRUE(entry.is_dict());
+    const base::DictValue& dict = entry.GetDict();
+    const std::string* keyword = dict.FindString("keyword");
+    ASSERT_TRUE(keyword);
+    if (*keyword ==
+        base::UTF16ToUTF8(TemplateURLPrepopulateData::bing.keyword)) {
+      found_bing = true;
+    } else if (*keyword == "foo_com") {
+      found_default_custom = true;
+    } else if (*keyword == "bar_com") {
+      found_non_default_custom = true;
+    }
+  }
+  EXPECT_TRUE(found_bing);
+  EXPECT_TRUE(found_default_custom);
+  EXPECT_FALSE(found_non_default_custom);
+}
+
 }  // namespace settings

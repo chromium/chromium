@@ -60,6 +60,8 @@ struct CategorizedTemplateUrls {
 
 // Container for search engines split into prepopulated and recently visited
 // lists, used primarily by mobile settings screens.
+// TODO(crbug.com/568358837): Handle data differences with
+// `DefaultSearchEnginePickerData` and merge into it.
 struct PrepopulatedAndRecentlyVisitedTemplateUrls {
   PrepopulatedAndRecentlyVisitedTemplateUrls();
   PrepopulatedAndRecentlyVisitedTemplateUrls(
@@ -78,6 +80,32 @@ struct PrepopulatedAndRecentlyVisitedTemplateUrls {
   // A limited number of recently visited URLs, defined and sorted through
   // `SortAndFilterRecentlyVisitedURLs()`.
   TemplateURL::TemplateURLVector recently_visited_urls;
+};
+
+// Container for search engines displayed in the default search engine picker
+// dialog in settings.
+struct DefaultSearchEnginePickerData {
+  DefaultSearchEnginePickerData();
+  DefaultSearchEnginePickerData(const DefaultSearchEnginePickerData& other);
+  DefaultSearchEnginePickerData& operator=(
+      const DefaultSearchEnginePickerData& other);
+  DefaultSearchEnginePickerData(DefaultSearchEnginePickerData&& other);
+  DefaultSearchEnginePickerData& operator=(
+      DefaultSearchEnginePickerData&& other);
+  ~DefaultSearchEnginePickerData();
+
+  // Primary engines shown in the main radio group (regional prepopulated
+  // engines, policy-created default search providers, and the current default
+  // search engine). This always includes the current default search engine.
+  //
+  // TODO(crbug.com/567524787): Attach a reason to each entry explaining why it
+  // is shown (e.g. regional prepopulated, non-regional prepopulated, policy
+  // recommended/enforced, current DSE), computed in
+  // `GetDefaultSearchEnginePickerData()`.
+  TemplateURL::TemplateURLVector primary;
+
+  // TODO(crbug.com/568358837): Populate and use it.
+  TemplateURL::TemplateURLVector recently_visited;
 };
 
 // Defines the category of template URLs to be displayed in different UI
@@ -150,6 +178,10 @@ class SearchEngineSettingsDataProvider {
   // engines for mobile settings screens.
   PrepopulatedAndRecentlyVisitedTemplateUrls
   GetPrepopulatedAndRecentlyVisitedTemplateURLs() const;
+
+  // Returns the search engines to display in the default search engine picker
+  // dialog in settings.
+  DefaultSearchEnginePickerData GetDefaultSearchEnginePickerData() const;
 
   // Returns template URLs filtered by `category` and sorted appropriately
   // (managed first, then alphabetically for site search).

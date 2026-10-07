@@ -59,6 +59,11 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   base::DictValue GetCategorizedTemplateUrls();
 
+  // Retrieves the default search engine picker data and returns it to WebUI.
+  void HandleGetDefaultSearchEnginePickerData(const base::ListValue& args);
+
+  base::DictValue GetDefaultSearchEnginePickerData();
+
   // Retrieves all search engines and returns them to WebUI.
   // TODO (crbug.com/494551138): Remove once `SearchSettingsUpdate` is launched.
   void HandleGetSearchEnginesList(const base::ListValue& args);

@@ -29,7 +29,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
+import type {DefaultSearchEnginePickerData, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 import {getCss} from './search_page.css.js';
 import {getHtml} from './search_page.html.js';
@@ -75,6 +75,10 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       // With this enabled, the shortcuts settings are present on this page
       // rather than the search engines subpage.
       searchSettingsUpdateEnabled_: {type: Boolean},
+
+      // Whether the version of the picker with the "More options" entry point
+      // is enabled by feature flags.
+      pickerWithMoreEnginesEnabled_: {type: Boolean},
     };
   }
 
@@ -85,6 +89,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   protected accessor defaultSearchEngine_: SearchEngine|null = null;
   protected accessor searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');
+  protected accessor pickerWithMoreEnginesEnabled_: boolean =
+      loadTimeData.getBoolean('pickerWithMoreEngines');
   protected accessor searchPageTitle_: string = '';
   protected accessor confirmationToastLabel_: string = '';
 
@@ -98,23 +104,20 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
         'default_search_provider_data.template_url_data',
         'defaultSearchProviderDataPref_');
 
-    if (this.searchSettingsUpdateEnabled_) {
-      // Only prepopulated regional search engines, the current default search
-      // engine, and enterprise policy search engines (both mandatory and
-      // recommended) should be visible in the search engine list dialog.
-      // Standard custom user-added search engines are excluded. No need to
-      // sort these since `activeSiteShortcuts` is already in the expected order
-      // (sorted regional search engines first, then policy engines and the
-      // default engine if not already in the list).
+    if (this.searchSettingsUpdateEnabled_ ||
+        this.pickerWithMoreEnginesEnabled_) {
       const updateSearchEngines =
-          (categorizedTemplateUrls: CategorizedTemplateUrls) => {
-            this.searchEngines_ =
-                categorizedTemplateUrls.activeSiteShortcuts.filter(
-                    engine => engine.isPrepopulated || engine.default ||
-                        engine.isManaged || engine.isRecommendedFromPolicy);
+          (pickerData: DefaultSearchEnginePickerData) => {
+            this.searchEngines_ = pickerData.primary;
           };
-      this.browserProxy_.getCategorizedTemplateUrls().then(updateSearchEngines);
-      this.addWebUiListener('search-engines-changed', updateSearchEngines);
+      this.browserProxy_.getDefaultSearchEnginePickerData().then(
+          updateSearchEngines);
+      this.addWebUiListener('search-engines-changed', () => {
+        // TODO(crbug.com/567524562): Look into emitting a dedicated event that
+        // will pass the new picker data as payload.
+        this.browserProxy_.getDefaultSearchEnginePickerData().then(
+            updateSearchEngines);
+      });
       return;
     }
 

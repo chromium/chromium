@@ -4,7 +4,7 @@
 
 // clang-format off
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {CategorizedTemplateUrls, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
+import type {DefaultSearchEnginePickerData, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions, Router, routes, resetRouterForTesting, loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -42,33 +42,17 @@ function generateSearchEngineInfo(): SearchEnginesInfo {
   };
 }
 
-const sampleEngines = {
-  defaultPrepopulated: createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, default: true, id: 'db:0'}),
-  prepopulated: createSampleSearchEngine(
-      {canBeDefault: true, id: 'db:1', isPrepopulated: true}),
-  // A standard user-added custom site search shortcut (e.g., github.com or
-  // wikipedia.org keyword). This is excluded from the default search engine
-  // choice dialog so custom keywords do not clutter the default engine options.
-  custom: createSampleSearchEngine({canBeDefault: true, id: 'db:2'}),
-  managed: createSampleSearchEngine(
-      {canBeDefault: true, id: 'db:3', isManaged: true}),
-  recommended: createSampleSearchEngine(
-      {canBeDefault: true, id: 'db:4', isRecommendedFromPolicy: true}),
-};
+function generateDefaultSearchEnginePickerData():
+    DefaultSearchEnginePickerData {
+  const searchEngines0 =
+      createSampleSearchEngine({canBeDefault: true, default: true, id: 'db:0'});
+  const searchEngines1 =
+      createSampleSearchEngine({canBeDefault: true, id: 'db:1'});
+  const searchEngines2 =
+      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
 
-function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
   return {
-    activeSiteShortcuts: [
-      sampleEngines.defaultPrepopulated,
-      sampleEngines.prepopulated,
-      sampleEngines.custom,
-      sampleEngines.managed,
-      sampleEngines.recommended,
-    ],
-    inactiveSiteShortcuts: [],
-    activeFeatureShortcuts: [],
-    inactiveFeatureShortcuts: [],
+    primary: [searchEngines0, searchEngines1, searchEngines2],
   };
 }
 
@@ -80,7 +64,10 @@ suite('SearchPageTests', function() {
   let metrics: MetricsTracker;
 
   setup(async function() {
-    loadTimeData.overrideValues({searchSettingsUpdate: false});
+    loadTimeData.overrideValues({
+      searchSettingsUpdate: false,
+      pickerWithMoreEngines: false,
+    });
     resetRouterForTesting();
 
     prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
@@ -268,6 +255,36 @@ suite('SearchPageTests', function() {
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
     assertEquals(SearchEnginesInteractions.SUBPAGE_NAVIGATED, interaction);
   });
+
+  test(
+      'Fetches picker data when SearchSettingsWithMoreEngines is enabled',
+      async function() {
+        page.remove();
+        loadTimeData.overrideValues({
+          searchSettingsUpdate: false,
+          pickerWithMoreEngines: true,
+        });
+        browserProxy.setDefaultSearchEnginePickerData(
+            generateDefaultSearchEnginePickerData());
+
+        page = document.createElement('settings-search-page');
+        document.body.appendChild(page);
+        await browserProxy.whenCalled('getDefaultSearchEnginePickerData');
+        await microtasksFinished();
+
+        const openSearchEngineListButton =
+            page.shadowRoot.querySelector<HTMLButtonElement>(
+                '#openDialogButton')!;
+        openSearchEngineListButton.click();
+        await microtasksFinished();
+
+        const searchEngineListDialog =
+            page.shadowRoot.querySelector('settings-search-engine-list-dialog');
+        assertTrue(!!searchEngineListDialog);
+        assertDeepEquals(
+            generateDefaultSearchEnginePickerData().primary,
+            searchEngineListDialog.searchEngines);
+      });
 });
 
 suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
@@ -278,7 +295,10 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
   let metrics: MetricsTracker;
 
   setup(async function() {
-    loadTimeData.overrideValues({searchSettingsUpdate: true});
+    loadTimeData.overrideValues({
+      searchSettingsUpdate: true,
+      pickerWithMoreEngines: false,
+    });
     resetRouterForTesting();
 
     prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
@@ -289,14 +309,15 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
 
     metrics = fakeMetricsPrivate();
     browserProxy = new TestSearchEnginesBrowserProxy();
-    browserProxy.setCategorizedTemplateUrls(generateCategorizedTemplateUrls());
+    browserProxy.setDefaultSearchEnginePickerData(
+        generateDefaultSearchEnginePickerData());
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-search-page');
     document.body.appendChild(page);
 
-    await browserProxy.whenCalled('getCategorizedTemplateUrls');
+    await browserProxy.whenCalled('getDefaultSearchEnginePickerData');
     await microtasksFinished();
   });
 
@@ -307,7 +328,7 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
   });
 
   test(
-      'Categorized template URLs passed to search engine list dialog',
+      'Primary search engines passed to search engine list dialog',
       async function() {
         // Open the search engine list dialog.
         const openSearchEngineListButton =
@@ -322,31 +343,22 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
             page.shadowRoot.querySelector('settings-search-engine-list-dialog');
         assertTrue(!!searchEngineListDialog);
 
-        const activeSiteShortcuts =
-            generateCategorizedTemplateUrls().activeSiteShortcuts;
         assertDeepEquals(
-            [
-              sampleEngines.defaultPrepopulated,
-              sampleEngines.prepopulated,
-              sampleEngines.custom,
-              sampleEngines.managed,
-              sampleEngines.recommended,
-            ],
-            activeSiteShortcuts);
-
-        // Verify that the dialog received only the eligible default search
-        // engine archetypes in the expected rank order, without duplicates,
-        // and that custom user-added site search shortcuts
-        // (sampleEngines.custom) are excluded so custom keywords do not clutter
-        // the default search provider selection pop-up.
-        assertDeepEquals(
-            [
-              sampleEngines.defaultPrepopulated,
-              sampleEngines.prepopulated,
-              sampleEngines.managed,
-              sampleEngines.recommended,
-            ],
+            generateDefaultSearchEnginePickerData().primary,
             searchEngineListDialog.searchEngines);
+
+        // Simulate a change in search engines.
+        const updatedPickerData = generateDefaultSearchEnginePickerData();
+        updatedPickerData.primary[0]!.default = false;
+        updatedPickerData.primary[2]!.default = true;
+        browserProxy.setDefaultSearchEnginePickerData(updatedPickerData);
+        browserProxy.resetResolver('getDefaultSearchEnginePickerData');
+        webUIListenerCallback('search-engines-changed');
+        await browserProxy.whenCalled('getDefaultSearchEnginePickerData');
+        await microtasksFinished();
+
+        assertDeepEquals(
+            updatedPickerData.primary, searchEngineListDialog.searchEngines);
       });
 
   test('ControlledByExtension', async function() {

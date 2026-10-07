@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo, CategorizedTemplateUrls, SearchEnginesInteractions, ChoiceMadeLocation} from 'chrome://settings/settings.js';
+import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo, DefaultSearchEnginePickerData, CategorizedTemplateUrls, SearchEnginesInteractions, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -22,6 +22,10 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     inactiveFeatureShortcuts: [],
   };
 
+  private defaultSearchEnginePickerData_: DefaultSearchEnginePickerData = {
+    primary: [],
+  };
+
   private searchEnginesInfo_: SearchEnginesInfo =
       {defaults: [], actives: [], others: [], extensions: []};
 
@@ -30,6 +34,7 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getCategorizedTemplateUrls',
+      'getDefaultSearchEnginePickerData',
       'getSearchEnginesList',
       'getSaveGuestChoice',
       'removeSearchEngine',
@@ -77,6 +82,11 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.categorizedTemplateUrls_);
   }
 
+  getDefaultSearchEnginePickerData() {
+    this.methodCalled('getDefaultSearchEnginePickerData');
+    return Promise.resolve(this.defaultSearchEnginePickerData_);
+  }
+
   getSearchEnginesList() {
     this.methodCalled('getSearchEnginesList');
     return Promise.resolve(this.searchEnginesInfo_);
@@ -101,6 +111,14 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
    */
   setCategorizedTemplateUrls(categorizedTemplateUrls: CategorizedTemplateUrls) {
     this.categorizedTemplateUrls_ = categorizedTemplateUrls;
+  }
+
+  /**
+   * Sets the response to be returned by `getDefaultSearchEnginePickerData`.
+   */
+  setDefaultSearchEnginePickerData(
+      defaultSearchEnginePickerData: DefaultSearchEnginePickerData) {
+    this.defaultSearchEnginePickerData_ = defaultSearchEnginePickerData;
   }
 
   /**

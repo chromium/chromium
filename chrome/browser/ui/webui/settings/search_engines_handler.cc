@@ -154,6 +154,11 @@ void SearchEnginesHandler::RegisterMessages() {
           &SearchEnginesHandler::HandleGetCategorizedTemplateUrls,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getDefaultSearchEnginePickerData",
+      base::BindRepeating(
+          &SearchEnginesHandler::HandleGetDefaultSearchEnginePickerData,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "getSearchEnginesList",
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
@@ -252,6 +257,20 @@ base::DictValue SearchEnginesHandler::GetCategorizedTemplateUrls() {
   settings_data_provider_->MaybeRecordSettingsPageLoadMetrics(data);
 
   return search_engines_data;
+}
+
+base::DictValue SearchEnginesHandler::GetDefaultSearchEnginePickerData() {
+  search_engines::DefaultSearchEnginePickerData data =
+      settings_data_provider_->GetDefaultSearchEnginePickerData();
+
+  base::ListValue primary;
+  for (TemplateURL* template_url : data.primary) {
+    primary.Append(CreateDictionaryForEngine(template_url));
+  }
+
+  base::DictValue picker_data;
+  picker_data.Set("primary", std::move(primary));
+  return picker_data;
 }
 
 base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
@@ -476,6 +495,25 @@ void SearchEnginesHandler::HandleGetCategorizedTemplateUrls(
   }
 
   ResolveJavascriptCallback(callback_id, GetCategorizedTemplateUrls());
+}
+
+void SearchEnginesHandler::HandleGetDefaultSearchEnginePickerData(
+    const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  // This adds the TemplateURLService observer.
+  AllowJavascript();
+
+  // Don't send an update if the TemplateURLService is not ready. Once it is
+  // loaded, the TemplateURLService will send an update through the observer.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service || !template_url_service->loaded()) {
+    return;
+  }
+
+  ResolveJavascriptCallback(callback_id, GetDefaultSearchEnginePickerData());
 }
 
 void SearchEnginesHandler::HandleGetSearchEnginesList(
