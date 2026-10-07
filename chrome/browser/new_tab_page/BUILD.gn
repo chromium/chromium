@@ -16,14 +16,11 @@ source_set("new_tab_page") {
     "modules/file_suggestion/drive_service.h",
     "modules/file_suggestion/drive_service_factory.h",
     "modules/file_suggestion/drive_suggestion_handler.h",
-    "modules/file_suggestion/microsoft_files_page_handler.h",
-    "modules/microsoft_modules_helper.h",
     "modules/modules_constants.h",
     "modules/modules_switches.h",
     "modules/new_tab_page_modules.h",
     "modules/v2/calendar/calendar_fake_data_helper.h",
     "modules/v2/calendar/google_calendar_page_handler.h",
-    "modules/v2/calendar/outlook_calendar_page_handler.h",
     "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h",
     "modules/v2/most_relevant_tab_resumption/url_visit_types_mojom_traits.h",
     "new_tab_page_util.h",
@@ -58,6 +55,13 @@ source_set("new_tab_page") {
     public += [
       "chrome_colors/chrome_colors_factory.h",
       "chrome_colors/chrome_colors_service.h",
+
+      # The Microsoft Files and Outlook Calendar modules are not available on
+      # Android (their mojo interfaces are only registered in
+      # chrome_browser_interface_binders_webui_parts_desktop.cc).
+      "modules/file_suggestion/microsoft_files_page_handler.h",
+      "modules/microsoft_modules_helper.h",
+      "modules/v2/calendar/outlook_calendar_page_handler.h",
       "modules/v2/tab_groups/tab_groups_page_handler.h",
     ]
     public_deps += [
@@ -77,13 +81,10 @@ source_set("impl") {
     "modules/file_suggestion/drive_service.cc",
     "modules/file_suggestion/drive_service_factory.cc",
     "modules/file_suggestion/drive_suggestion_handler.cc",
-    "modules/file_suggestion/microsoft_files_page_handler.cc",
-    "modules/microsoft_modules_helper.cc",
     "modules/modules_switches.cc",
     "modules/new_tab_page_modules.cc",
     "modules/v2/calendar/calendar_fake_data_helper.cc",
     "modules/v2/calendar/google_calendar_page_handler.cc",
-    "modules/v2/calendar/outlook_calendar_page_handler.cc",
     "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.cc",
     "new_tab_page_util.cc",
     "one_google_bar/one_google_bar_data.cc",
@@ -135,6 +136,9 @@ source_set("impl") {
     sources += [
       "chrome_colors/chrome_colors_factory.cc",
       "chrome_colors/chrome_colors_service.cc",
+      "modules/file_suggestion/microsoft_files_page_handler.cc",
+      "modules/microsoft_modules_helper.cc",
+      "modules/v2/calendar/outlook_calendar_page_handler.cc",
       "modules/v2/tab_groups/tab_groups_page_handler.cc",
     ]
     deps += [

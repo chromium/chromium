@@ -179,20 +179,6 @@ class NewTabPageUI
       mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
           pending_receiver);
 
-  // Instantiates the implementor of
-  // npt::calendar::mojom::OutlookCalendarPageHandler mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
-          pending_receiver);
-
-  // Instantiates the implementor of
-  // file_suggestion::mojom::MicrosoftFilesPageHandler mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<file_suggestion::mojom::MicrosoftFilesPageHandler>
-          pending_receiver);
-
   // Instantiates the implementor of the composebox::mojom::PageHandlerFactory
   // mojo interface inside the new tab page.
   void BindInterface(
@@ -205,9 +191,6 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<foo::mojom::FooHandler> pending_receiver);
 #endif
-
-  void BindInterface(mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>
-                         pending_page_handler);
 
   void BindInterface(mojo::PendingReceiver<
                      ntp::most_relevant_tab_resumption::mojom::PageHandler>
@@ -222,6 +205,23 @@ class NewTabPageUI
           pending_receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
+  void BindInterface(mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>
+                         pending_page_handler);
+
+  // Instantiates the implementor of
+  // npt::calendar::mojom::OutlookCalendarPageHandler mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
+          pending_receiver);
+
+  // Instantiates the implementor of
+  // file_suggestion::mojom::MicrosoftFilesPageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<file_suggestion::mojom::MicrosoftFilesPageHandler>
+          pending_receiver);
+
   void BindInterface(
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandlerFactory>
           pending_receiver);
@@ -349,6 +349,9 @@ class NewTabPageUI
   std::unique_ptr<NtpPromoHandler> ntp_promo_handler_;
   mojo::Receiver<ntp_promo::mojom::NtpPromoHandlerFactory>
       ntp_promo_handler_factory_receiver_;
+  std::unique_ptr<MicrosoftFilesPageHandler> microsoft_files_handler_;
+  std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
+  std::unique_ptr<TabGroupsPageHandler> tab_groups_handler_;
 #endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ActionChipsHandler> action_chips_handler_;
   mojo::Receiver<action_chips::mojom::ActionChipsHandlerFactory>
@@ -384,9 +387,6 @@ class NewTabPageUI
   // Mojo implementations for modules:
   std::unique_ptr<DriveSuggestionHandler> drive_handler_;
   std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
-  std::unique_ptr<MicrosoftFilesPageHandler> microsoft_files_handler_;
-  std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
-  std::unique_ptr<TabGroupsPageHandler> tab_groups_handler_;
 
   base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};
 
