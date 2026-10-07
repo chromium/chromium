@@ -38,6 +38,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Size;
 import android.view.ContextThemeWrapper;
+import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,6 +62,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.DragEventBuilder;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -114,6 +116,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.ResourceManager;
@@ -1915,5 +1918,71 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.shutDown();
         verify(mContentView).setEventOffsetHandlerForDragDrop(null);
         verify(mTab).removeObserver(any());
+    }
+
+    @Test
+    public void testDragEnd_forwardedToSourceThatMissedIt() {
+        setUpDragStateTracker(mWebContents, mContentView, /* isDragStarted= */ true);
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_STARTED));
+
+        // The source's drag state stays started, as if it was detached and missed the drag end.
+        DragEvent dragEndEvent = createDragEvent(DragEvent.ACTION_DRAG_ENDED);
+        mCompositorViewHolder.dispatchDragEvent(dragEndEvent);
+        verify(mContentView).onDrag(mContentView, dragEndEvent);
+        verify(mContentView).onDragEvent(dragEndEvent);
+    }
+
+    @Test
+    public void testDragEnd_notForwardedToSourceThatHandledIt() {
+        DragStateTracker tracker =
+                setUpDragStateTracker(mWebContents, mContentView, /* isDragStarted= */ true);
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        // The source handles the drag end, which resets its drag state.
+        when(tracker.isDragStarted()).thenReturn(false);
+
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        verifyDragEndNotForwarded(mContentView);
+    }
+
+    @Test
+    public void testDragEnd_notForwardedToDestroyedSource() {
+        setUpDragStateTracker(mWebContents, mContentView, /* isDragStarted= */ true);
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        // The source tab is closed during the drag.
+        when(mWebContents.isDestroyed()).thenReturn(true);
+
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        verifyDragEndNotForwarded(mContentView);
+    }
+
+    @Test
+    public void testDragEnd_notForwardedForDragFromElsewhere() {
+        DragStateTracker tracker =
+                setUpDragStateTracker(mWebContents, mContentView, /* isDragStarted= */ false);
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        when(tracker.isDragStarted()).thenReturn(true);
+
+        mCompositorViewHolder.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        verifyDragEndNotForwarded(mContentView);
+    }
+
+    private static DragEvent createDragEvent(int action) {
+        return DragEventBuilder.newBuilder().setAction(action).build();
+    }
+
+    private static DragStateTracker setUpDragStateTracker(
+            WebContents webContents, ContentView contentView, boolean isDragStarted) {
+        DragStateTracker tracker = mock(DragStateTracker.class);
+        when(tracker.isDragStarted()).thenReturn(isDragStarted);
+        ViewAndroidDelegate delegate = mock(ViewAndroidDelegate.class);
+        when(delegate.getDragStateTracker()).thenReturn(tracker);
+        when(webContents.getViewAndroidDelegate()).thenReturn(delegate);
+        when(contentView.getWebContents()).thenReturn(webContents);
+        return tracker;
+    }
+
+    private static void verifyDragEndNotForwarded(ContentView contentView) {
+        verify(contentView, never()).onDrag(any(), any());
+        verify(contentView, never()).onDragEvent(any());
     }
 }

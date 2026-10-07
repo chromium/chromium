@@ -111,9 +111,11 @@ import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.SPenSupport;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
@@ -230,6 +232,13 @@ public class CompositorViewHolder extends FrameLayout
      * current Tab.
      */
     private @Nullable ContentView mContentView;
+
+    /**
+     * The ContentView that the current drag started from. Used to send it ACTION_DRAG_ENDED if it
+     * was removed from the view hierarchy during the drag (e.g. its tab was switched away from),
+     * since Android only sends that event to attached views.
+     */
+    private @Nullable ContentView mDragSourceContentView;
 
     // Cache objects that should not be created frequently.
     private final Rect mCacheRect = new Rect();
@@ -1022,6 +1031,7 @@ public class CompositorViewHolder extends FrameLayout
         mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
         if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
             releaseDragAndDropPermissions();
+            trackDragSource();
         } else if (e.getAction() == DragEvent.ACTION_DROP) {
             mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
             if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
@@ -1029,8 +1039,42 @@ public class CompositorViewHolder extends FrameLayout
             }
         }
         boolean ret = super.dispatchDragEvent(e);
+        if (e.getAction() == DragEvent.ACTION_DRAG_ENDED) {
+            maybeEndDragInDetachedSource(e);
+        }
         mEventOffsetHandler.onPostDispatchDragEvent(e.getAction());
         return ret;
+    }
+
+    /** Remembers the current ContentView if the drag that's starting came from it. */
+    private void trackDragSource() {
+        ContentView contentView = getContentView();
+        mDragSourceContentView = isDragStartedFrom(contentView) ? contentView : null;
+    }
+
+    /**
+     * Sends ACTION_DRAG_ENDED to the drag source if it didn't get it from Android. Without this,
+     * the source web contents stays in drag mode and ignores input.
+     */
+    private void maybeEndDragInDetachedSource(DragEvent e) {
+        ContentView source = mDragSourceContentView;
+        mDragSourceContentView = null;
+        // The drag state resets once the source handles ACTION_DRAG_ENDED, so this only runs if the
+        // source didn't get the event, e.g. because it was removed from the view hierarchy.
+        if (source == null || !isDragStartedFrom(source)) return;
+        // Detaching a view mid-drag clears its interest in the drag, so ViewGroup#dispatchDragEvent
+        // would drop this event. Deliver it the way View#dispatchDragEvent does: to the drag
+        // listeners, then to the view itself.
+        if (!source.onDrag(source, e)) source.onDragEvent(e);
+    }
+
+    /** Returns whether a drag started from the given ContentView and hasn't ended there yet. */
+    private static boolean isDragStartedFrom(@Nullable ContentView contentView) {
+        WebContents webContents = contentView != null ? contentView.getWebContents() : null;
+        if (webContents == null || webContents.isDestroyed()) return false;
+        ViewAndroidDelegate delegate = webContents.getViewAndroidDelegate();
+        DragStateTracker tracker = delegate != null ? delegate.getDragStateTracker() : null;
+        return tracker != null && tracker.isDragStarted();
     }
 
     @Override
