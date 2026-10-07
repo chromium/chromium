@@ -23,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/embedder_support/pref_names.h"
@@ -536,56 +535,23 @@ blink::UserAgentBrandList GenerateBrandVersionList(
   return ShuffleBrandList(brand_version_list, seed);
 }
 
-// Process greased overridden brand version which is either major version or
-// full version, return the corresponding output version type.
-blink::UserAgentBrandVersion GetProcessedGreasedBrandVersion(
-    const std::string& greasey_brand,
-    const std::string& greasey_version,
-    blink::UserAgentBrandVersionType output_version_type) {
-  std::string greasey_major_version;
-  std::string greasey_full_version;
-  base::Version version(greasey_version);
-  DCHECK(version.IsValid());
-
-  // If the greased overridden version is a significant version type:
-  // * Major version: set the major version as the overridden version
-  // * Full version number: extending the version number with ".0.0.0"
-  // If the overridden version is full version format:
-  // * Major version: set the major version to match significant version format
-  // * Full version: set the full version as the overridden version
-  // https://wicg.github.io/ua-client-hints/#user-agent-full-version
-  if (version.components().size() > 1) {
-    greasey_major_version = base::NumberToString(version.components()[0]);
-    greasey_full_version = greasey_version;
-  } else {
-    greasey_major_version = greasey_version;
-    greasey_full_version = base::StrCat({greasey_version, ".0.0.0"});
-  }
-
-  blink::UserAgentBrandVersion output_greasey_bv = {
-      greasey_brand,
-      output_version_type == blink::UserAgentBrandVersionType::kFullVersion
-          ? greasey_full_version
-          : greasey_major_version};
-  return output_greasey_bv;
-}
-
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     int seed,
     blink::UserAgentBrandVersionType output_version_type) {
-  std::string greasey_brand;
-  std::string greasey_version;
   const std::vector<std::string> greasey_chars = {" ", "(", ":", "-", ".", "/",
                                                   ")", ";", "=", "?", "_"};
   const std::vector<std::string> greased_versions = {"8", "99", "24"};
   // See the spec:
   // https://wicg.github.io/ua-client-hints/#create-arbitrary-brands-section
-  greasey_brand =
+  std::string greasey_brand =
       base::StrCat({"Not", greasey_chars[(seed) % greasey_chars.size()], "A",
                     greasey_chars[(seed + 1) % greasey_chars.size()], "Brand"});
-  greasey_version = greased_versions[seed % greased_versions.size()];
-  return GetProcessedGreasedBrandVersion(greasey_brand, greasey_version,
-                                         output_version_type);
+  std::string greasey_version =
+      greased_versions[seed % greased_versions.size()];
+  return {greasey_brand,
+          output_version_type == blink::UserAgentBrandVersionType::kFullVersion
+              ? base::StrCat({greasey_version, ".0.0.0"})
+              : greasey_version};
 }
 
 bool GetMobileBitForUAMetadata() {
