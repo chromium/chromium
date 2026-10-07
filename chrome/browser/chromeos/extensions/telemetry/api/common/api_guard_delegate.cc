@@ -183,7 +183,8 @@ void IsContextUserOwner(content::BrowserContext* context,
 
 class ApiGuardDelegateImpl : public ApiGuardDelegate {
  public:
-  ApiGuardDelegateImpl();
+  explicit ApiGuardDelegateImpl(
+      IsAppUiOpenAndSecureCallback is_app_ui_open_and_secure_callback);
   ApiGuardDelegateImpl(const ApiGuardDelegateImpl&) = delete;
   ApiGuardDelegateImpl& operator=(const ApiGuardDelegateImpl&) = delete;
   ~ApiGuardDelegateImpl() override;
@@ -202,10 +203,14 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
                     CanAccessApiCallback callback) override;
 
  private:
+  IsAppUiOpenAndSecureCallback is_app_ui_open_and_secure_callback_;
   std::unique_ptr<AsyncConditionChecker> condition_checker_;
 };
 
-ApiGuardDelegateImpl::ApiGuardDelegateImpl() = default;
+ApiGuardDelegateImpl::ApiGuardDelegateImpl(
+    IsAppUiOpenAndSecureCallback is_app_ui_open_and_secure_callback)
+    : is_app_ui_open_and_secure_callback_(
+          std::move(is_app_ui_open_and_secure_callback)) {}
 
 ApiGuardDelegateImpl::~ApiGuardDelegateImpl() = default;
 
@@ -236,7 +241,7 @@ void ApiGuardDelegateImpl::CanAccessApi(content::BrowserContext* context,
   }
 
   condition_checker_->AppendChecker(
-      base::BindOnce(&IsTelemetryExtensionAppUiOpenAndSecure,
+      base::BindOnce(is_app_ui_open_and_secure_callback_,
                      base::Unretained(context), base::Unretained(extension)),
       "Companion app UI is not open or not secure");
 
@@ -260,7 +265,15 @@ std::unique_ptr<ApiGuardDelegate> ApiGuardDelegate::Factory::Create() {
   if (test_factory_) {
     return test_factory_->CreateInstance();
   }
-  return base::WrapUnique<ApiGuardDelegate>(new ApiGuardDelegateImpl());
+  return base::WrapUnique<ApiGuardDelegate>(new ApiGuardDelegateImpl(
+      base::BindRepeating(&IsTelemetryExtensionAppUiOpenAndSecure)));
+}
+
+// static
+std::unique_ptr<ApiGuardDelegate> ApiGuardDelegate::Factory::CreateForTesting(
+    IsAppUiOpenAndSecureCallback is_app_ui_open_and_secure_callback) {
+  return base::WrapUnique<ApiGuardDelegate>(
+      new ApiGuardDelegateImpl(std::move(is_app_ui_open_and_secure_callback)));
 }
 
 // static

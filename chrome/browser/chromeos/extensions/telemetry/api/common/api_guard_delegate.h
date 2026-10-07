@@ -31,9 +31,15 @@ extern const char kTelemetryExtensionSkipManufacturerCheckForTesting[];
 // test-friendly. E.g. check if the extension is force installed by policy.
 class ApiGuardDelegate {
  public:
+  using IsAppUiOpenAndSecureCallback =
+      base::RepeatingCallback<bool(content::BrowserContext*,
+                                   const extensions::Extension*)>;
+
   class Factory {
    public:
     static std::unique_ptr<ApiGuardDelegate> Create();
+    static std::unique_ptr<ApiGuardDelegate> CreateForTesting(
+        IsAppUiOpenAndSecureCallback is_app_ui_open_and_secure_callback);
     static void SetForTesting(Factory* test_factory);
 
     virtual ~Factory();

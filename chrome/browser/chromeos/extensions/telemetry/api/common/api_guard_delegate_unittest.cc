@@ -10,76 +10,47 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/session/session_controller.h"
-#include "ash/public/cpp/session/session_types.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
-#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
-#include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/run_loop.h"
-#include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/ssl_status.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
-#include "net/base/net_errors.h"
-#include "net/cert/cert_status_flags.h"
-#include "net/cert/x509_certificate.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
 struct ExtensionInfoTestParams {
   ExtensionInfoTestParams(const std::string& extension_id,
-                          const std::string& app_ui_url,
                           const std::string& matches_origin,
                           const std::string& manufacturer)
       : extension_id(extension_id),
-        app_ui_url(app_ui_url),
         matches_origin(matches_origin),
         manufacturer(manufacturer) {}
   ExtensionInfoTestParams(const ExtensionInfoTestParams& other) = default;
   ~ExtensionInfoTestParams() = default;
 
   const std::string extension_id;
-  const std::string app_ui_url;
   const std::string matches_origin;
   const std::string manufacturer;
 };
 
 constexpr char kGoogleExtensionId[] = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-constexpr char kGoogleAllowedUrl[] =
-    "https://googlechromelabs.github.io/cros-sample-telemetry-extension/"
-    "test-page";
 constexpr char kGoogleAllowedUrlPattern[] =
     "*://googlechromelabs.github.io/cros-sample-telemetry-extension/test-page/"
     "*";
@@ -92,49 +63,39 @@ const std::vector<ExtensionInfoTestParams>& GetAllExtensionInfoTestParams() {
       // Make sure the Google extension is allowed for every OEM.
       ExtensionInfoTestParams(
           /*extension_id=*/kGoogleExtensionId,
-          /*app_ui_url=*/kGoogleAllowedUrl,
           /*matches_origin=*/kGoogleAllowedUrlPattern,
           /*manufacturer=*/"HP"),
       ExtensionInfoTestParams(
           /*extension_id=*/kGoogleExtensionId,
-          /*app_ui_url=*/kGoogleAllowedUrl,
           /*matches_origin=*/kGoogleAllowedUrlPattern,
           /*manufacturer=*/"ASUS"),
       ExtensionInfoTestParams(
           /*extension_id=*/kGoogleExtensionId,
-          /*app_ui_url=*/kGoogleAllowedUrl,
           /*matches_origin=*/kGoogleAllowedUrlPattern,
           /*manufacturer=*/"Acer"),
       ExtensionInfoTestParams(
           /*extension_id=*/kGoogleExtensionId,
-          /*app_ui_url=*/kGoogleAllowedUrl,
           /*matches_origin=*/kGoogleAllowedUrlPattern,
           /*manufacturer=*/"Lenovo"),
       // Make sure the extensions of each OEM are allowed on their device.
       ExtensionInfoTestParams(
           /*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
-          /*app_ui_url=*/"https://hpcs-appschr.hpcloud.hp.com",
           /*matches_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*",
           /*manufacturer=*/"HP"),
       ExtensionInfoTestParams(
           /*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
-          /*app_ui_url=*/
-          "https://dlcdnccls.asus.com/app/myasus_for_chromebook/ ",
           /*matches_origin=*/"https://dlcdnccls.asus.com/*",
           /*manufacturer=*/"ASUS"),
       ExtensionInfoTestParams(
           /*extension_id=*/"aoefhlbfcighemjpchndkhonjfjoehnm",
-          /*app_ui_url=*/"https://acerpartners.com/acerbooster",
           /*matches_origin=*/"https://acerpartners.com/*",
           /*manufacturer=*/"Acer"),
       ExtensionInfoTestParams(
           /*extension_id=*/"mconamggkmbalafmibfjlcmimnlbgmlb",
-          /*app_ui_url=*/"https://chromebookdiags.lenovo.com",
           /*matches_origin=*/"https://chromebookdiags.lenovo.com/*",
           /*manufacturer=*/"Lenovo"),
       ExtensionInfoTestParams(
           /*extension_id=*/"hoalheabnfilagemmocodoambpgngdcd",
-          /*app_ui_url=*/"https://cscpwa.asus.com",
           /*matches_origin=*/"https://cscpwa.asus.com/*",
           /*manufacturer=*/"ASUS"),
   });
@@ -145,9 +106,9 @@ const std::vector<ExtensionInfoTestParams>& GetAllExtensionInfoTestParams() {
 // access Telemetry Extension APIs. All tests are parameterized with the
 // following parameters:
 // * |extension_id| - id of the extension under test.
-// * |app_ui_url| - page URL of the app associated with the extension's id.
 // * |matches_origin| - externally_connectable's matches entry of the
 //                      extension's manifest.json.
+// * |manufacturer| - manufacturer of the device.
 // Note: All tests must be defined using the TEST_P macro and must use the
 // INSTANTIATE_TEST_SUITE_P macro to instantiate the test suite.
 class ApiGuardDelegateTest
@@ -161,7 +122,6 @@ class ApiGuardDelegateTest
   void SetUp() override {
     ash::cros_healthd::FakeCrosHealthd::Initialize();
     BrowserWithTestWindowTest::SetUp();
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     CreateExtension();
 
@@ -179,17 +139,28 @@ class ApiGuardDelegateTest
   }
 
  protected:
+  virtual TestingProfile* target_profile() { return profile(); }
+
   extensions::ExtensionId extension_id() const {
     return GetParam().extension_id;
   }
-
-  std::string app_ui_url() const { return GetParam().app_ui_url; }
 
   std::string matches_origin() const { return GetParam().matches_origin; }
 
   std::string manufacturer() const { return GetParam().manufacturer; }
 
-  const extensions::Extension* extension() { return extension_.get(); }
+  const extensions::Extension* target_extension() {
+    return target_extension_.get();
+  }
+
+  std::unique_ptr<ApiGuardDelegate> CreateApiGuardDelegate() {
+    return ApiGuardDelegate::Factory::CreateForTesting(base::BindRepeating(
+        &ApiGuardDelegateTest::IsAppUiOpenAndSecure, base::Unretained(this)));
+  }
+
+  void SetAppUiOpenAndSecure(bool is_open_and_secure) {
+    is_app_ui_open_and_secure_ = is_open_and_secure;
+  }
 
   void SetUserAsOwner() {
     // Make sure the current user is affiliated.
@@ -216,27 +187,16 @@ class ApiGuardDelegateTest
         std::move(telemetry_info));
   }
 
-  void OpenAppUIUrlAndSetCertificateWithStatus(net::CertStatus cert_status) {
-    const base::FilePath certs_dir = net::GetTestCertsDirectory();
-    scoped_refptr<net::X509Certificate> test_cert(
-        net::ImportCertFromFile(certs_dir, "ok_cert.pem"));
-    ASSERT_TRUE(test_cert);
-
-    // Open the app page url and set valid certificate to bypass the
-    // IsAppUiOpenAndSecure() check.
-    AddTab(browser(), GURL(app_ui_url()));
-
-    // AddTab() adds a new tab at index 0.
-    auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
-    auto* entry = web_contents->GetController().GetVisibleEntry();
-    content::SSLStatus& ssl = entry->GetSSL();
-    ssl.certificate = test_cert;
-    ssl.cert_status = cert_status;
+ private:
+  bool IsAppUiOpenAndSecure(content::BrowserContext* context,
+                            const extensions::Extension* extension) {
+    EXPECT_EQ(context, target_profile());
+    EXPECT_EQ(extension, target_extension());
+    return is_app_ui_open_and_secure_;
   }
 
- private:
   void CreateExtension() {
-    extension_ =
+    target_extension_ =
         extensions::ExtensionBuilder("Test ChromeOS System Extension")
             .SetManifestKey("chromeos_system_extension", base::DictValue())
             .SetManifestKey(
@@ -248,9 +208,9 @@ class ApiGuardDelegateTest
             .Build();
   }
 
-  ash::BrowserControllerImpl browser_controller_;
+  bool is_app_ui_open_and_secure_ = false;
   ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
-  scoped_refptr<const extensions::Extension> extension_;
+  scoped_refptr<const extensions::Extension> target_extension_;
 };
 
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
@@ -258,9 +218,9 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
   user_manager::UserManager::Get()->SetOwnerId(regular_user);
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -270,11 +230,11 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 }
 
 TEST_P(ApiGuardDelegateTest, OwnershipDelayed) {
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  SetAppUiOpenAndSecure(true);
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
 
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   // Trigger async ownership retrieval.
@@ -285,27 +245,12 @@ TEST_P(ApiGuardDelegateTest, OwnershipDelayed) {
   EXPECT_FALSE(error.has_value()) << error.value();
 }
 
-TEST_P(ApiGuardDelegateTest, AppNotOpen) {
+TEST_P(ApiGuardDelegateTest, AppNotOpenOrNotSecure) {
   SetUserAsOwner();
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  SetAppUiOpenAndSecure(false);
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
-                                   future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-  std::optional<std::string> error = future.Get();
-  ASSERT_TRUE(error.has_value());
-  EXPECT_EQ("Companion app UI is not open or not secure", error.value());
-}
-
-TEST_P(ApiGuardDelegateTest, AppIsOpenButNotSecure) {
-  SetUserAsOwner();
-  OpenAppUIUrlAndSetCertificateWithStatus(
-      /*cert_status=*/net::CERT_STATUS_INVALID);
-
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -316,14 +261,14 @@ TEST_P(ApiGuardDelegateTest, AppIsOpenButNotSecure) {
 
 TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
   SetUserAsOwner();
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  SetAppUiOpenAndSecure(true);
 
   // Make sure device manufacturer is not allowed.
   SetDeviceManufacturer("NOT_ALLOWED");
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -335,7 +280,7 @@ TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
 
 TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
   SetUserAsOwner();
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  SetAppUiOpenAndSecure(true);
   // Append the switch to skip the manufacturer check.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kTelemetryExtensionSkipManufacturerCheckForTesting);
@@ -343,9 +288,9 @@ TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
   // Make sure device manufacturer is not allowed.
   SetDeviceManufacturer("NOT_ALLOWED");
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -355,11 +300,11 @@ TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
 
 TEST_P(ApiGuardDelegateTest, NoError) {
   SetUserAsOwner();
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  SetAppUiOpenAndSecure(true);
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -387,9 +332,9 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
 };
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, ExtensionNotForceInstalled) {
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -398,45 +343,22 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, ExtensionNotForceInstalled) {
   EXPECT_EQ("This extension is not installed by the admin", error.value());
 }
 
-TEST_P(ApiGuardDelegateAffiliatedUserTest, AppNotOpen) {
+TEST_P(ApiGuardDelegateAffiliatedUserTest, AppNotOpenOrNotSecure) {
   {
     extensions::ExtensionManagementPrefUpdater<
         sync_preferences::TestingPrefServiceSyncable>
-        updater(profile()->GetTestingPrefService());
+        updater(target_profile()->GetTestingPrefService());
     // Make sure the extension is marked as force-installed.
     updater.SetIndividualExtensionAutoInstalled(
         extension_id(), extension_urls::kChromeWebstoreUpdateURL,
         /*forced=*/true);
   }
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  SetAppUiOpenAndSecure(false);
+
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
-                                   future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-  std::optional<std::string> error = future.Get();
-  ASSERT_TRUE(error.has_value());
-  EXPECT_EQ("Companion app UI is not open or not secure", error.value());
-}
-
-TEST_P(ApiGuardDelegateAffiliatedUserTest, AppIsOpenButNotSecure) {
-  {
-    extensions::ExtensionManagementPrefUpdater<
-        sync_preferences::TestingPrefServiceSyncable>
-        updater(profile()->GetTestingPrefService());
-    // Make sure the extension is marked as force-installed.
-    updater.SetIndividualExtensionAutoInstalled(
-        extension_id(), extension_urls::kChromeWebstoreUpdateURL,
-        /*forced=*/true);
-  }
-
-  OpenAppUIUrlAndSetCertificateWithStatus(
-      /*cert_status=*/net::CERT_STATUS_INVALID);
-
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -449,21 +371,21 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, ManufacturerNotAllowed) {
   {
     extensions::ExtensionManagementPrefUpdater<
         sync_preferences::TestingPrefServiceSyncable>
-        updater(profile()->GetTestingPrefService());
+        updater(target_profile()->GetTestingPrefService());
     // Make sure the extension is marked as force-installed.
     updater.SetIndividualExtensionAutoInstalled(
         extension_id(), extension_urls::kChromeWebstoreUpdateURL,
         /*forced=*/true);
   }
 
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  SetAppUiOpenAndSecure(true);
 
   // Make sure device manufacturer is not allowed.
   SetDeviceManufacturer("NOT_ALLOWED");
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -477,18 +399,18 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, NoError) {
   {
     extensions::ExtensionManagementPrefUpdater<
         sync_preferences::TestingPrefServiceSyncable>
-        updater(profile()->GetTestingPrefService());
+        updater(target_profile()->GetTestingPrefService());
     // Make sure the extension is marked as force-installed.
     updater.SetIndividualExtensionAutoInstalled(
         extension_id(), extension_urls::kChromeWebstoreUpdateURL,
         /*forced=*/true);
   }
 
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  SetAppUiOpenAndSecure(true);
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
   ASSERT_TRUE(future.Wait());
   std::optional<std::string> error = future.Get();
@@ -498,28 +420,6 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, NoError) {
 INSTANTIATE_TEST_SUITE_P(All,
                          ApiGuardDelegateAffiliatedUserTest,
                          testing::ValuesIn(GetAllExtensionInfoTestParams()));
-
-class WebContentsCloseWaiter : public content::WebContentsObserver {
- public:
-  explicit WebContentsCloseWaiter(content::WebContents* contents);
-  WebContentsCloseWaiter(const WebContentsCloseWaiter&) = delete;
-  WebContentsCloseWaiter& operator=(const WebContentsCloseWaiter&) = delete;
-
-  void Wait() { ASSERT_TRUE(future_.Wait()) << "Web contents did not close."; }
-
- private:
-  // content::WebContentsObserver overrides.
-  void WebContentsDestroyed() override;
-
-  base::test::TestFuture<void> future_;
-};
-
-WebContentsCloseWaiter::WebContentsCloseWaiter(content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
-
-void WebContentsCloseWaiter::WebContentsDestroyed() {
-  future_.SetValue();
-}
 
 class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
  public:
@@ -539,80 +439,37 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
     // Above overrides need to be done before creating extensions.
     ApiGuardDelegateTest::SetUp();
 
-    ash::Shell::Get()->session_controller()->SetSessionInfo(ash::SessionInfo{
-        .can_lock_screen = true,
-        .should_lock_screen_automatically = false,
-        .add_user_session_policy = ash::AddUserSessionPolicy::ALLOWED,
-        .state = session_manager::SessionState::RMA,
-    });
+    shimless_profile_ =
+        CreateProfile(ash::kShimlessRmaAppBrowserContextBaseName);
   }
 
   void TearDown() override {
-    if (ash::shimless_rma::ExternalAppDialog::GetWebContents()) {
-      WebContentsCloseWaiter waiter(
-          ash::shimless_rma::ExternalAppDialog::GetWebContents());
-      ash::shimless_rma::ExternalAppDialog::CloseForTesting();
-      waiter.Wait();
-    }
+    shimless_profile_ = nullptr;
     ApiGuardDelegateTest::TearDown();
   }
 
  protected:
-  void OpenShimlessRmaAppDialog() {
-    ash::shimless_rma::ExternalAppDialog::InitParams params;
-    params.context = profile();
-    params.app_name = "App Name";
-    params.content_url = GURL(app_ui_url());
-    ash::shimless_rma::ExternalAppDialog::Show(params);
-
-    // Wait for WebContents being created.
-    base::RunLoop().RunUntilIdle();
-    auto* content = ash::shimless_rma::ExternalAppDialog::GetWebContents();
-    CHECK(content);
-
-    web_app::CommitPendingIsolatedWebAppNavigation(content);
-  }
+  TestingProfile* target_profile() override { return shimless_profile_; }
 
   // BrowserWithTestWindowTest overrides.
   std::optional<std::string> GetDefaultProfileName() override {
-    return ash::kShimlessRmaAppBrowserContextBaseName;
-  }
-
-  // Do nothing for special profile for shimless RMA App.
-  void LogIn(std::string_view email, const GaiaId& gaia_id) override {}
-  void SwitchActiveUser(const std::string& email) override {}
-  void OnUserProfileCreated(const std::string& email,
-                            Profile* profile) override {}
-
-  // Standalone dialogs in Shimless RMA run without a desktop `Browser`.
-  // Returning `nullptr` prevents `BrowserWithTestWindowTest::SetUp()` from
-  // allocating an unmanaged `TestBrowserWindow` on the heap when no `Browser`
-  // is instantiated.
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    return nullptr;
-  }
-
-  // Returning `nullptr` prevents `BrowserWithTestWindowTest::SetUp()` from
-  // creating a desktop `Browser` for `ShimlessRmaAppProfile`. This profile does
-  // not instantiate regular user services like `WaapUIMetricsService`, which
-  // `BrowserWindowFeatures` expects for normal browser windows.
-  std::unique_ptr<BrowserWindowInterface> CreateBrowser(
-      Profile* profile,
-      BrowserWindowInterface::Type browser_type,
-      bool hosted_app,
-      BrowserWindow* browser_window) override {
-    return nullptr;
+    // Shimless RMA runs without a user session or a Browser window. Returning
+    // std::nullopt skips the default user login, profile creation, and Browser
+    // instantiation in BrowserWithTestWindowTest::SetUp().
+    return std::nullopt;
   }
 
  private:
+  raw_ptr<TestingProfile> shimless_profile_ = nullptr;
   std::unique_ptr<ScopedChromeOSSystemExtensionInfo>
       chromeos_system_extension_info_;
 };
 
 TEST_P(ApiGuardDelegateShimlessRMAAppTest, IwaNotOpen) {
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  SetAppUiOpenAndSecure(false);
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -622,14 +479,14 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, IwaNotOpen) {
 }
 
 TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
-  OpenShimlessRmaAppDialog();
+  SetAppUiOpenAndSecure(true);
 
   // Make sure device manufacturer is not allowed.
   SetDeviceManufacturer("NOT_ALLOWED");
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -640,11 +497,11 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
 }
 
 TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
-  OpenShimlessRmaAppDialog();
+  SetAppUiOpenAndSecure(true);
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
   ASSERT_TRUE(future.Wait());
   std::optional<std::string> error = future.Get();
@@ -652,7 +509,7 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
 }
 
 TEST_P(ApiGuardDelegateTest, OwnerCheckUsesCallingProfile) {
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  SetAppUiOpenAndSecure(true);
 
   // Log in a second user, mark them as the device owner and make them the
   // active user. The calling profile still belongs to the first user.
@@ -663,9 +520,9 @@ TEST_P(ApiGuardDelegateTest, OwnerCheckUsesCallingProfile) {
   user_manager::UserManager::Get()->SwitchActiveUser(second_user);
   ASSERT_TRUE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   std::optional<std::string> error = future.Get();
@@ -677,12 +534,12 @@ TEST_P(ApiGuardDelegateTest, AffiliationCheckUsesCallingProfile) {
   {
     extensions::ExtensionManagementPrefUpdater<
         sync_preferences::TestingPrefServiceSyncable>
-        updater(profile()->GetTestingPrefService());
+        updater(target_profile()->GetTestingPrefService());
     updater.SetIndividualExtensionAutoInstalled(
         extension_id(), extension_urls::kChromeWebstoreUpdateURL,
         /*forced=*/true);
   }
-  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  SetAppUiOpenAndSecure(true);
 
   // Log in a second user, mark them as the device owner and affiliated, and
   // make them the active user. The calling profile still belongs to the first
@@ -696,9 +553,9 @@ TEST_P(ApiGuardDelegateTest, AffiliationCheckUsesCallingProfile) {
                                                         /*is_affiliated=*/true);
   user_manager::UserManager::Get()->SwitchActiveUser(second_user);
 
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  auto api_guard_delegate = CreateApiGuardDelegate();
   base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
+  api_guard_delegate->CanAccessApi(target_profile(), target_extension(),
                                    future.GetCallback());
 
   std::optional<std::string> error = future.Get();
@@ -711,9 +568,6 @@ INSTANTIATE_TEST_SUITE_P(
     ApiGuardDelegateShimlessRMAAppTest,
     testing::Values(ExtensionInfoTestParams(
         /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-        /*app_ui_url=*/
-        "isolated-app://"
-        "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic",
         /*matches_origin=*/
         "isolated-app://"
         "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/*",
