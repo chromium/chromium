@@ -191,6 +191,9 @@ composebox-favicon-group {
   --composebox-favicon-border-color: var(--cr-menu-background-color,
       var(--color-composebox-background,
           #fff));
+  /* The menu is themed, so let the favicon skeleton loader follow the theme. */
+  --composebox-favicon-skeleton-color: var(--color-sys-surface-variant,
+      var(--cr-fallback-color-surface-variant));
   margin-inline-end: 10px;
   margin-inline-start: auto;
 }

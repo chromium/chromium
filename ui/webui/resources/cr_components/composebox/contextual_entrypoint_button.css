@@ -324,6 +324,14 @@ cr-icon-button {
   }
 }
 
+/* The omnibox and Lens searchbox are themed, so let the favicon skeleton
+ * loader follow the ColorProvider token (light, dark, and custom themes). */
+:host([apply-context-button-background]) #entrypoint,
+:host([is-lens-searchbox_]) #entrypoint {
+  --composebox-favicon-skeleton-color: var(--color-sys-surface-variant,
+      var(--cr-fallback-color-surface-variant));
+}
+
 #entrypoint:not(:hover) {
   background-color:
       var(--cr-composebox-entrypoint-background-color, transparent);
