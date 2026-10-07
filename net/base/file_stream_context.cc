@@ -172,6 +172,12 @@ FileStream::Context::OpenResult FileStream::Context::OpenFileImpl(
 #endif
   base::File file(path, open_flags);
   if (!file.IsValid()) {
+#if BUILDFLAG(IS_ANDROID)
+    if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+      return OpenResult(base::File(),
+                        IOResult(FileErrorToNetError(file.error_details()), 0));
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     return OpenResult(base::File(),
                       IOResult::FromOSError(logging::GetLastSystemErrorCode()));
   }

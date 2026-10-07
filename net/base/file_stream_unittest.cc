@@ -49,6 +49,8 @@ using net::test::IsError;
 using net::test::IsOk;
 
 #if BUILDFLAG(IS_ANDROID)
+#include <cerrno>
+
 #include "base/test/test_file_util.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -997,6 +999,18 @@ TEST_F(FileStreamTest, DISABLED_ContentUriRead) {
     data_read.append(buf->data(), result->InBytes());
   }
   EXPECT_EQ(static_cast<uint64_t>(file_size.value()), total_bytes_read);
+}
+
+TEST_F(FileStreamTest, ContentUriOpenFailureDoesNotUseErrno) {
+  FileStream stream(base::SingleThreadTaskRunner::GetCurrentDefault());
+  int flags =
+      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC;
+  TestCompletionCallback callback;
+  errno = 0;
+  int rv = stream.Open(base::FilePath("content://org.chromium.NonExistent/1"),
+                       flags, AsErrorCallback(callback.callback()));
+  EXPECT_THAT(callback.GetResult(rv), testing::Not(IsOk()));
+  EXPECT_FALSE(stream.IsOpen());
 }
 #endif
 
