@@ -183,25 +183,37 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // Called to progress the request without calling shouldInterceptRequest.
   void SendNoIntercept();
 
+  void ContinueRestartAfterCustomHeaders();
   void ContinueAfterIntercept();
   void ContinueAfterInterceptWithOverride(
       std::unique_ptr<embedder_support::WebResourceResponse> response,
       std::unique_ptr<embedder_support::InputStream> input_stream);
+  void ContinueFollowRedirectAfterCustomHeaders(
+      network::HttpRequestHeadersUpdateParams headers_update_params,
+      std::optional<GURL> new_url,
+      network::HttpRequestHeadersUpdateParams custom_headers_update_params);
 
-  // Reverts any custom, embedder-provided headers (e.g. origin-matched headers)
-  // applied on the request, and returns an update that can be passed down to
-  // revert the headers on downstream UrlLoaders.
+  // Reverts any custom, embedder-provided headers (e.g. origin-matched headers
+  // or headers from the Dynamic Headers API) applied on the request, and
+  // returns an an update that can be passed down to revert the headers on
+  // downstream UrlLoaders.
   // This modifies the internal `request_`, and consumes
   // `custom_headers_inverse_`.
+  // This should be called on redirects, so that the next redirect hop does not
+  // reuse custom headers created for a previous hop.
   network::HttpRequestHeadersUpdateParams RevertCustomHeaders();
 
-  // Applies any custom, embedder-provided headers (e.g. origin-matched headers)
-  // that match the current request.
+  // Applies any custom, embedder-provided headers (e.g. origin-matched headers
+  // or headers that come from the Dynamic Headers API) that match the current
+  // request.
   // When called from `InterceptedRequest::FollowRedirect`, the caller should
-  // use the returned update to apply the headers to downstream UrlLoaders.
+  // use the update returned through the callback to apply the headers to
+  // downstream UrlLoaders.
   // This modifies the internal `request_` and tracks an update to revert the
   // change in `custom_headers_inverse_`.
-  network::HttpRequestHeadersUpdateParams ApplyCustomHeaders();
+  using CustomHeadersCallback =
+      base::OnceCallback<void(network::HttpRequestHeadersUpdateParams)>;
+  void ApplyCustomHeaders(CustomHeadersCallback callback);
 
   // Computes the `AwOriginMatchedHeaders` that match the current request.
   // This method does not modify the request, but returns an update that can
@@ -413,10 +425,28 @@ void InterceptedRequest::Restart() {
   // Process custom headers only if the request has not been redirected.
   // When the request has gone through a redirect, `FollowRedirect` processes
   // custom headers.
-  if (!request_was_redirected_) {
+  if (request_was_redirected_) {
+    ContinueRestartAfterCustomHeaders();
+  } else {
     RevertCustomHeaders();
-    ApplyCustomHeaders();
+    // It is safe to ignore the HttpRequestHeadersUpdateParams resulting from
+    // ApplyCustomHeaders because ApplyCustomHeaders already applies the headers
+    // on the request, and loader->Start() called down the line is initialized
+    // with our request. The HttpRequestHeadersUpdateParams result is primarily
+    // relevant for cases where the loader had already been initialized with a
+    // different request, and we need to update the request that such loader
+    // tracks, separately from our request.
+    ApplyCustomHeaders(
+        base::IgnoreArgs<network::HttpRequestHeadersUpdateParams>(
+            base::BindOnce(
+                &InterceptedRequest::ContinueRestartAfterCustomHeaders,
+                weak_factory_.GetWeakPtr())));
   }
+}
+
+void InterceptedRequest::ContinueRestartAfterCustomHeaders() {
+  std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
+      GetIoThreadClient();
 
   request_.load_flags =
       UpdateLoadFlags(request_.load_flags, io_thread_client.get());
@@ -563,8 +593,7 @@ InterceptedRequest::RevertCustomHeaders() {
   return result;
 }
 
-network::HttpRequestHeadersUpdateParams
-InterceptedRequest::ApplyCustomHeaders() {
+void InterceptedRequest::ApplyCustomHeaders(CustomHeadersCallback callback) {
   network::HttpRequestHeadersUpdateParams custom_headers_update =
       ComputeOriginMatchedHeaders();
 
@@ -573,7 +602,8 @@ InterceptedRequest::ApplyCustomHeaders() {
   custom_headers_inverse_ = custom_headers_update.ApplyAndReturnInverse(
       request_.headers, request_.cors_exempt_headers);
 
-  return custom_headers_update;
+  // TODO(b/527005583): Apply headers from the Dynamic Headers API.
+  std::move(callback).Run(std::move(custom_headers_update));
 }
 
 network::HttpRequestHeadersUpdateParams
@@ -846,17 +876,24 @@ void InterceptedRequest::FollowRedirect(
   // 4. The target UrlLoader makes the network request for https://b.com, with
   //    ("X-Header-B": "value-b") and any other headers computed by the target
   //    UrlLoader.
-  network::HttpRequestHeadersUpdateParams revert_update = RevertCustomHeaders();
+  network::HttpRequestHeadersUpdateParams revert_custom_headers_update =
+      RevertCustomHeaders();
   // Propagate the removal of custom headers for previous redirects to
   // headers_update_params, which is passed down to chained UrlLoaders.
-  headers_update_params.MergeFromInChain(revert_update);
+  headers_update_params.MergeFromInChain(revert_custom_headers_update);
 
-  // Apply any custom headers that match the new hop, and propagate them
-  // through headers_update_params for downstream UrlLoaders.
-  network::HttpRequestHeadersUpdateParams custom_headers_update =
-      ApplyCustomHeaders();
-  headers_update_params.MergeFromInChain(custom_headers_update);
+  // Apply any custom headers that match the new hop.
+  ApplyCustomHeaders(base::BindOnce(
+      &InterceptedRequest::ContinueFollowRedirectAfterCustomHeaders,
+      weak_factory_.GetWeakPtr(), std::move(headers_update_params), new_url));
+}
 
+void InterceptedRequest::ContinueFollowRedirectAfterCustomHeaders(
+    network::HttpRequestHeadersUpdateParams headers_update_params,
+    std::optional<GURL> new_url,
+    network::HttpRequestHeadersUpdateParams custom_headers_update_params) {
+  headers_update_params.MergeFromInChain(
+      std::move(custom_headers_update_params));
   if (target_loader_) {
     target_loader_->FollowRedirect(std::move(headers_update_params), new_url);
   }
