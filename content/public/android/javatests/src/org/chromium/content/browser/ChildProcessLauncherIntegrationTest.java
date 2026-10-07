@@ -144,6 +144,7 @@ public class ChildProcessLauncherIntegrationTest {
     @CommandLineFlags.Add({
         "disable-features=SpareRendererForSitePerProcess,AndroidWarmUpSpareRendererWithTimeout"
     })
+    @DisabledTest(message = "https://crbug.com/563051722")
     public void testCrossDomainNavigationDoNotLoseImportance() throws Throwable {
         testCrossDomainNavigationDoNotLoseImportance(null);
     }
