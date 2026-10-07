@@ -626,6 +626,13 @@ bool SharedImageStub::ValidateGpuMemoryBufferHandle(
     return true;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (channel_->client_type() == viz::mojom::GpuClientType::kRenderer) {
+    LOG(ERROR) << "AHardwareBuffers are not allowed from renderer processes";
+    return false;
+  }
+#endif
+
   // TODO(crbug.com/565252393): Add validation
   return true;
 }
