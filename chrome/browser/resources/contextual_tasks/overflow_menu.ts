@@ -61,7 +61,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
           {type: Boolean},
       isAimEligible: {type: Boolean},
       isCobrowseEligible: {type: Boolean},
-      isHandshakeComplete: {type: Boolean},
       webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
@@ -84,7 +83,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
           'contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow');
   accessor isAimEligible: boolean = false;
   accessor isCobrowseEligible: boolean = false;
-  accessor isHandshakeComplete: boolean = false;
 
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
@@ -157,8 +155,7 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   }
 
   protected shouldShowPinButton_(): boolean {
-    return this.isPinButtonEnabled && this.isAiPage &&
-        this.isHandshakeComplete;
+    return this.isPinButtonEnabled && this.isAiPage;
   }
 
   protected getPinButtonTooltip_(): string {
