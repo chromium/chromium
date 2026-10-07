@@ -29,19 +29,32 @@ suite('HistoryFilterChipsTest', function() {
     browserService.resetResolver('recordAction');
   });
 
-  test('InitialState', () => {
+  test('ActorFilterVisibilityAndInitialState', async () => {
+    // If the parent does not pass `showActorFilter`, do not show the filter by
+    // default.
+    assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
+    assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
+
+    element.showActorFilter = true;
+    await microtasksFinished();
     const userChip =
         element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
     const actorChip =
         element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
     assertTrue(!!userChip);
     assertTrue(!!actorChip);
-
     assertFalse(userChip.hasAttribute('selected'));
     assertFalse(actorChip.hasAttribute('selected'));
+
+    element.showActorFilter = false;
+    await microtasksFinished();
+    assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
+    assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
   });
 
   test('ToggleUserChip', async () => {
+    element.showActorFilter = true;
+    await microtasksFinished();
     const userChip =
         element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
     assertTrue(!!userChip);
@@ -80,6 +93,8 @@ suite('HistoryFilterChipsTest', function() {
   });
 
   test('ToggleActorChip', async () => {
+    element.showActorFilter = true;
+    await microtasksFinished();
     const actorChip =
         element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
     assertTrue(!!actorChip);
@@ -123,6 +138,8 @@ suite('HistoryFilterChipsTest', function() {
   });
 
   test('ToggleBothChips', async () => {
+    element.showActorFilter = true;
+    await microtasksFinished();
     const userChip =
         element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
     const actorChip =
@@ -190,6 +207,7 @@ suite('HistoryFilterChipsTest', function() {
   });
 
   test('CriticalActionsIcons', async () => {
+    element.showActorFilter = true;
     loadTimeData.overrideValues({
       isCriticalActionsEnabled: true,
     });
@@ -214,5 +232,29 @@ suite('HistoryFilterChipsTest', function() {
     // <if expr="not _google_chrome">
     assertEquals('', actorIcon.icon);
     // </if>
+  });
+
+  test('DeviceFilterVisibilityAndInitialState', async () => {
+    // If the parent does not pass `showDeviceFilter`, do not show the filter by
+    // default.
+    assertFalse(!!element.shadowRoot.querySelector('#deviceSelect'));
+
+    element.devices = [{name: 'Device 1'}, {name: 'Device 2'}];
+    element.showDeviceFilter = true;
+    await microtasksFinished();
+    const deviceSelect =
+        element.shadowRoot.querySelector<HTMLSelectElement>('#deviceSelect');
+    assertTrue(!!deviceSelect);
+    assertEquals(3, deviceSelect.options.length);
+    assertEquals('All devices', deviceSelect.options[0]!.textContent.trim());
+    assertTrue(deviceSelect.options[0]!.selected);
+    assertEquals('Device 1', deviceSelect.options[1]!.textContent.trim());
+    assertFalse(deviceSelect.options[1]!.selected);
+    assertEquals('Device 2', deviceSelect.options[2]!.textContent.trim());
+    assertFalse(deviceSelect.options[2]!.selected);
+
+    element.showDeviceFilter = false;
+    await microtasksFinished();
+    assertFalse(!!element.shadowRoot.querySelector('#deviceSelect'));
   });
 });

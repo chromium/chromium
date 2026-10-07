@@ -32,11 +32,17 @@ export class HistoryFilterChipsElement extends CrLitElement {
 
   static override get properties() {
     return {
+      showDeviceFilter: {type: Boolean},
+      devices: {type: Array},
+      showActorFilter: {type: Boolean},
       userVisits: {type: Boolean},
       actorVisits: {type: Boolean},
     };
   }
 
+  accessor showDeviceFilter: boolean = false;
+  accessor devices: Array<{name: string}> = [];
+  accessor showActorFilter: boolean = false;
   // These values are used to filter the history query; true indicates that
   // results for the respective value should be included.
   private accessor userVisits: boolean = true;

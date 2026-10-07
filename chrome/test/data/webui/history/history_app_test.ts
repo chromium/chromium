@@ -584,16 +584,20 @@ suite('HistoryFilterChipsVisibility', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function createPage() {
+  function createPage(devices?: Array<{name: string}>) {
     element = document.createElement('history-app');
+    if (devices) {
+      element.setDevicesForTesting(devices);
+    }
     document.body.appendChild(element);
     return microtasksFinished();
   }
 
-  test('FilterChipsVisible', async () => {
+  test('FilterChipsVisible_ActorFilterOnly', async () => {
     loadTimeData.overrideValues({
       isBrowsingHistoryActorIntegrationM3Enabled: true,
       isGlicWebActuationAvailable: true,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
     });
     // Re-create the element to pick up the new loadTimeData.
     await createPage();
@@ -604,6 +608,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isBrowsingHistoryActorIntegrationM3Enabled: false,
       isGlicWebActuationAvailable: true,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
     });
     // Re-create the element to pick up the new loadTimeData.
     await createPage();
@@ -614,9 +619,43 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isBrowsingHistoryActorIntegrationM3Enabled: true,
       isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
     });
     // Re-create the element to pick up the new loadTimeData.
     await createPage();
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('FilterChipsVisible_DeviceFilterOnly', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryActorIntegrationM3Enabled: false,
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: true,
+    });
+    // Re-create the element to pick up the new loadTimeData.
+    await createPage([{name: 'Device 1'}, {name: 'Device 2'}]);
+    assertTrue(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('FilterChipsNotVisible_DeviceFilterOff', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryActorIntegrationM3Enabled: false,
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+    });
+    // Re-create the element to pick up the new loadTimeData.
+    await createPage([{name: 'Device 1'}, {name: 'Device 2'}]);
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('FilterChipsNotVisible_SingleDevice', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryActorIntegrationM3Enabled: false,
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: true,
+    });
+    // Re-create the element to pick up the new loadTimeData.
+    await createPage([{name: 'Device 1'}]);
     assertFalse(isChildVisible(element, '#historyFilterChips'));
   });
 
@@ -624,6 +663,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isBrowsingHistoryActorIntegrationM3Enabled: true,
       isGlicWebActuationAvailable: true,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
     });
     await createPage();
 
@@ -658,8 +698,9 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isBrowsingHistoryActorIntegrationM3Enabled: true,
       isGlicWebActuationAvailable: true,
+      isBrowsingHistoryFilterByDeviceEnabled: true,
     });
-    await createPage();
+    await createPage([{name: 'Device 1'}, {name: 'Device 2'}]);
 
     assertTrue(isChildVisible(element, '#historyFilterChips'));
 

@@ -5,7 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
- * #include=cr-shared-style-lit
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #include=cr-shared-style-lit md-select-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -18,6 +19,16 @@
 }
 
 .filter-chip-container {
+  align-items: center;
   display: flex;
   gap: 8px;
+}
+
+.md-select {
+  --md-select-side-padding: 8px;
+  --md-select-width: auto;
+  border-radius: var(--cr-chip-border-radius, 8px);
+  font-size: var(--cr-chip-font-size, 12px);
+  font-weight: 500;
+  height: var(--cr-chip-height, 28px);
 }
