@@ -1053,7 +1053,8 @@ public class CustomTabsConnection {
     }
 
     /** See {@link ClientManager#resetPostMessageHandlerForSession(SessionHolder, WebContents)}. */
-    public void resetPostMessageHandlerForSession(SessionHolder session, WebContents webContents) {
+    public void resetPostMessageHandlerForSession(
+            @Nullable SessionHolder session, @Nullable WebContents webContents) {
         mClientManager.resetPostMessageHandlerForSession(session, webContents);
     }
 
@@ -1681,7 +1682,7 @@ public class CustomTabsConnection {
     }
 
     /**
-     * @see {@link notifyNavigationEvent(SessionHolder, int, int)}
+     * @see #notifyNavigationEvent(SessionHolder, int, Integer)
      */
     public boolean notifyNavigationEvent(@Nullable SessionHolder session, int navigationEvent) {
         return notifyNavigationEvent(session, navigationEvent, /* errorCode= */ null);
@@ -1823,13 +1824,13 @@ public class CustomTabsConnection {
      * @return true if application was successfully notified. To protect Chrome exceptions in the
      *     client application are swallowed and false is returned.
      */
-    public boolean notifyOpenInBrowser(SessionHolder session, Tab tab) {
+    public boolean notifyOpenInBrowser(@Nullable SessionHolder session, Tab tab) {
         EngagementSignalsHandler engagementSignalsHandler = getEngagementSignalsHandler(session);
-        if (tab != null && engagementSignalsHandler != null) {
+        if (engagementSignalsHandler != null) {
             engagementSignalsHandler.notifyOpenInBrowser(tab);
         }
         // Reset the client data header for the WebContents since it's not a CCT tab anymore.
-        if (tab != null && tab.getWebContents() != null) {
+        if (tab.getWebContents() != null) {
             CustomTabsConnectionJni.get().setClientDataHeader(tab.getWebContents(), "");
         }
         return safeExtraCallback(
@@ -1859,7 +1860,7 @@ public class CustomTabsConnection {
     }
 
     /**
-     * Calls {@link CustomTabsCallback#extraCallbackWithResult)}. Wraps calling
+     * Calls {@link CustomTabsCallback#extraCallbackWithResult}. Wraps calling
      * sendExtraCallbackWithResult in a try/catch so that exceptions thrown by the host app don't
      * crash Chrome.
      */

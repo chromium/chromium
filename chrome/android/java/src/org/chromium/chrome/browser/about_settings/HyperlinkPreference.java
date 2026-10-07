@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.about_settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -33,8 +35,9 @@ public class HyperlinkPreference extends Preference {
 
     @Override
     protected void onClick() {
+        var activity = assertNonNull(ContextUtils.activityFromContext(getContext()));
         CustomTabActivity.showInfoPage(
-                ContextUtils.activityFromContext(getContext()),
+                activity,
                 LocalizationUtils.substituteLocalePlaceholder(getContext().getString(mUrlResId)));
     }
 }

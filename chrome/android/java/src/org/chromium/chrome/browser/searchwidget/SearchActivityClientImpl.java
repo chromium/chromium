@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -178,7 +179,8 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     }
 
     @Override
-    public boolean isOmniboxResult(int requestCode, Intent intent) {
+    @Contract("_, null -> false")
+    public boolean isOmniboxResult(int requestCode, @Nullable Intent intent) {
         return requestCode == getClientUniqueRequestCode()
                 && IntentUtils.isTrustedIntentFromSelf(intent)
                 && !TextUtils.isEmpty(intent.getDataString());

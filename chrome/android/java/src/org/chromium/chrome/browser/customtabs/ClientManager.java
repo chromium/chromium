@@ -694,7 +694,7 @@ class ClientManager {
 
     /** See {@link PostMessageHandler#reset(WebContents)}. */
     public void resetPostMessageHandlerForSession(
-            SessionHolder session, @Nullable WebContents webContents) {
+            @Nullable SessionHolder session, @Nullable WebContents webContents) {
         callOnSession(
                 session,
                 params -> {

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.searchactivityutils;
 import android.app.Activity;
 import android.content.Intent;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
@@ -106,7 +107,8 @@ public interface SearchActivityClient {
      * @param intent the intent data received in {@link Activity#onActivityResult}
      * @return true if the response captures legitimate Omnibox result.
      */
-    boolean isOmniboxResult(int requestCode, Intent intent);
+    @Contract("_, null -> false")
+    boolean isOmniboxResult(int requestCode, @Nullable Intent intent);
 
     /**
      * Process the {@link Activity#onActivityResult} payload for Omnibox navigation result.
