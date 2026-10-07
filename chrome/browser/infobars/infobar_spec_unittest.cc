@@ -184,7 +184,8 @@ TEST_F(InfoBarSpecTest, BuildSpecWithExtraButtonAndCustomView) {
   auto builder = InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR);
   builder.AddExtraButton(u"Extra", extra_cb)
       .SetCloseOnCancel(false)
-      .SetCloseOnExtraButton(false);
+      .SetCloseOnExtraButton(false)
+      .SetAllowDuplicates(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   builder.SetCustomViewCallback(base::BindRepeating(
@@ -200,6 +201,7 @@ TEST_F(InfoBarSpecTest, BuildSpecWithExtraButtonAndCustomView) {
   EXPECT_TRUE(extra_called);
   EXPECT_FALSE(spec.close_on_cancel());
   EXPECT_FALSE(spec.close_on_extra_button());
+  EXPECT_TRUE(spec.allow_duplicates());
 
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_FALSE(spec.custom_view_callback().is_null());

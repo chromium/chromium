@@ -127,6 +127,7 @@ class InfoBarSpec {
   bool should_hide_in_fullscreen() const { return should_hide_in_fullscreen_; }
   bool should_animate() const { return should_animate_; }
   bool is_closeable() const { return is_closeable_; }
+  bool allow_duplicates() const { return allow_duplicates_; }
   bool close_on_accept() const { return close_on_accept_; }
   bool close_on_cancel() const { return close_on_cancel_; }
   bool close_on_extra_button() const { return close_on_extra_button_; }
@@ -177,6 +178,7 @@ class InfoBarSpec {
   bool should_hide_in_fullscreen_ = false;
   bool should_animate_ = true;
   bool is_closeable_ = true;
+  bool allow_duplicates_ = false;
   bool close_on_accept_ = true;
   bool close_on_cancel_ = true;
   bool close_on_extra_button_ = true;
@@ -278,6 +280,8 @@ class InfoBarSpec::Builder {
   Builder& SetShouldHideInFullscreen(bool should_hide_in_fullscreen);
   Builder& SetShouldAnimate(bool should_animate);
   Builder& SetIsCloseable(bool is_closeable);
+  // Allows multiple instances of this spec to coexist on the same tab.
+  Builder& SetAllowDuplicates(bool allow_duplicates);
   // Pressing the OK button closes the infobar by default. Pass false to
   // keep it up, e.g. when the button starts work whose outcome the infobar
   // is still describing.

@@ -130,6 +130,12 @@ InfoBarSpec::Builder& InfoBarSpec::Builder::SetIsCloseable(bool is_closeable) {
   return *this;
 }
 
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetAllowDuplicates(
+    bool allow_duplicates) {
+  spec_.allow_duplicates_ = allow_duplicates;
+  return *this;
+}
+
 InfoBarSpec::Builder& InfoBarSpec::Builder::SetCloseOnAccept(
     bool close_on_accept) {
   spec_.close_on_accept_ = close_on_accept;

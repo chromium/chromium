@@ -89,6 +89,13 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     return spec_.identifier();
   }
 
+  bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override {
+    if (spec_.allow_duplicates()) {
+      return false;
+    }
+    return ConfirmInfoBarDelegate::EqualsDelegate(delegate);
+  }
+
   std::u16string GetMessageText() const override {
     if (params_.message_text.has_value()) {
       return *params_.message_text;
@@ -531,6 +538,40 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
         ->set_shown();
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
     return added_infobar;
+  }
+  return nullptr;
+}
+
+infobars::InfoBar* BrowserInfoBarManager::Replace(
+    infobars::InfoBar* old_infobar,
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+    InfoBarShowParams params) {
+  auto it = registered_specs_.find(identifier);
+  if (it == registered_specs_.end()) {
+    return nullptr;
+  }
+  CHECK(old_infobar);
+  CHECK(params.scope.value_or(it->second.scope()) == InfoBarScope::kTab);
+
+  infobars::InfoBarManager* manager = old_infobar->owner();
+  if (!manager) {
+    return nullptr;
+  }
+
+  content::WebContents* contents =
+      ContentInfoBarManager::WebContentsFromInfoBar(old_infobar);
+  if (!contents) {
+    return nullptr;
+  }
+
+  static_cast<RegistryInfoBarDelegate*>(old_infobar->delegate())
+      ->suppress_result();
+  if (auto* replaced_infobar = manager->ReplaceInfoBar(
+          old_infobar, CreateInfoBarForSpec(it->second, contents,
+                                            std::move(params), *this))) {
+    static_cast<RegistryInfoBarDelegate*>(replaced_infobar->delegate())
+        ->set_shown();
+    return replaced_infobar;
   }
   return nullptr;
 }

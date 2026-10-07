@@ -63,6 +63,12 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
       infobars::InfoBarDelegate::InfoBarIdentifier identifier,
       InfoBarShowParams params);
 
+  // Replaces `old_infobar` in place without reporting a result for it.
+  infobars::InfoBar* Replace(
+      infobars::InfoBar* old_infobar,
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+      InfoBarShowParams params = InfoBarShowParams());
+
   // Shows the infobar in every browser. Returns true if any instance was
   // added.
   bool ShowGlobally(infobars::InfoBarDelegate::InfoBarIdentifier identifier);

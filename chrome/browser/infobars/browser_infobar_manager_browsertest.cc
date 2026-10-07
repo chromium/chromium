@@ -1354,6 +1354,82 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   histogram_tester.ExpectTotalCount("InfoBar.Centralized.Ignored", 0);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       AllowDuplicatesAndReplace) {
+  base::HistogramTester histogram_tester;
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Default Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .SetAllowDuplicates(true)
+                          .SetResultCallback(base::BindLambdaForTesting(
+                              [&](content::WebContents*, InfoBarResult result) {
+                                results.push_back(result);
+                              }))
+                          .Build());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
+
+  // Both instances share the same message text, so without
+  // SetAllowDuplicates(true) the second Show() would be deduplicated.
+  infobars::InfoBar* infobar1 = manager()->Show(tab, identifier);
+  ASSERT_TRUE(infobar1);
+
+  infobars::InfoBar* infobar2 = manager()->Show(tab, identifier);
+  ASSERT_TRUE(infobar2);
+  EXPECT_NE(infobar1, infobar2);
+  ASSERT_EQ(2u, infobar_manager->infobars().size());
+
+  InfoBarShowParams replace_params;
+  replace_params.message_text = u"Session 1 Updated";
+  infobars::InfoBar* replaced_infobar =
+      manager()->Replace(infobar1, identifier, std::move(replace_params));
+  ASSERT_TRUE(replaced_infobar);
+  ASSERT_EQ(2u, infobar_manager->infobars().size());
+  EXPECT_EQ(replaced_infobar, infobar_manager->infobars()[0]);
+  EXPECT_EQ(infobar2, infobar_manager->infobars()[1]);
+  EXPECT_EQ(u"Session 1 Updated", replaced_infobar->delegate()
+                                      ->AsConfirmInfoBarDelegate()
+                                      ->GetMessageText());
+
+  EXPECT_TRUE(results.empty());
+  histogram_tester.ExpectTotalCount("InfoBar.Centralized.Ignored", 0);
+
+  manager()->Hide(replaced_infobar);
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  manager()->Hide(infobar2);
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
+  EXPECT_TRUE(results.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       DuplicatesRejectedWithoutAllowDuplicates) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Default Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .Build());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
+
+  infobars::InfoBar* infobar1 = manager()->Show(tab, identifier);
+  ASSERT_TRUE(infobar1);
+
+  // Same identifier and message text, so ConfirmInfoBarDelegate's
+  // EqualsDelegate() treats it as a duplicate and the add is rejected.
+  EXPECT_FALSE(manager()->Show(tab, identifier));
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_EQ(infobar1, infobar_manager->infobars()[0]);
+
+  manager()->Hide(infobar1);
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CustomViewCallback) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
