@@ -8,67 +8,30 @@
     ],
     "gtest_tests": [
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//media/cast:cast_unittests",
         "module_scheme": "gtest",
         "name": "cast_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "cast_unittests",
         "test_id_prefix": "ninja://media/cast:cast_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//components:components_unittests",
         "module_scheme": "gtest",
         "name": "components_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//media:media_unittests",
         "module_scheme": "gtest",
         "name": "media_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//chrome/browser/media/router:openscreen_unittests",
         "module_scheme": "gtest",
         "name": "openscreen_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "openscreen_unittests",
         "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
       }
@@ -81,71 +44,30 @@
     ],
     "gtest_tests": [
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//media/cast:cast_unittests",
         "module_scheme": "gtest",
         "name": "cast_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-26"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "cast_unittests",
         "test_id_prefix": "ninja://media/cast:cast_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//components:components_unittests",
         "module_scheme": "gtest",
         "name": "components_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-26"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//media:media_unittests",
         "module_scheme": "gtest",
         "name": "media_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-26"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//chrome/browser/media/router:openscreen_unittests",
         "module_scheme": "gtest",
         "name": "openscreen_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-26"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "openscreen_unittests",
         "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
       }
@@ -158,51 +80,23 @@
     ],
     "gtest_tests": [
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//media/cast:cast_unittests",
         "module_scheme": "gtest",
         "name": "cast_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-11"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "cast_unittests",
         "test_id_prefix": "ninja://media/cast:cast_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//components:components_unittests",
         "module_scheme": "gtest",
         "name": "components_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-11"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//media:media_unittests",
         "module_scheme": "gtest",
         "name": "media_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-11"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/"
       }
