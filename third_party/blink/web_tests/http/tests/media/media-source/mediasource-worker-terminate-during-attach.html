@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<title>Destroying a worker context before MediaSourceHandle attachment fails cleanly</title>
+<script src="/w3c/resources/testharness.js"></script>
+<script src="/w3c/resources/testharnessreport.js"></script>
+<body>
+<script>
+// Regression test for https://crbug.com/569659190: when a worker creates a
+// MediaSourceHandle and its context is destroyed before a main-thread media
+// element attaches to that handle, MediaSource::ContextDestroyed() must notify
+// the CrossThreadMediaSourceAttachment so attachment fails cleanly with
+// MEDIA_ERR_SRC_NOT_SUPPORTED rather than accessing a swept MediaSource.
+
+function waitForEvent(target, name) {
+  return new Promise(resolve => {
+    target.addEventListener(name, resolve, {once: true});
+  });
+}
+
+promise_test(async t => {
+  assert_true(MediaSource.canConstructInDedicatedWorker,
+              'MediaSource.canConstructInDedicatedWorker');
+
+  const lockName = 'worker-close-lock';
+  const worker = new Worker(
+      `mediasource-worker-terminate-during-attach.js?lock=${lockName}&close`);
+  worker.onerror = t.unreached_func('worker error');
+  const handle = await new Promise(resolve => {
+    worker.onmessage = e => resolve(e.data);
+  });
+  assert_true(handle instanceof MediaSourceHandle, 'must be a MediaSourceHandle');
+
+  // The worker holds |lockName| with a never-resolving promise, so this lock
+  // request resolves only once the worker's ExecutionContext is destroyed
+  // (after MediaSource::ContextDestroyed() has run on the worker thread).
+  await navigator.locks.request(lockName, () => {});
+
+  const video = document.createElement('video');
+  document.body.appendChild(video);
+  t.add_cleanup(() => {
+    video.srcObject = null;
+    video.remove();
+  });
+
+  video.srcObject = handle;
+  await waitForEvent(video, 'error');
+  assert_equals(video.error.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED);
+}, 'Worker calling close() after transferring MediaSourceHandle fails attachment cleanly');
+
+promise_test(async t => {
+  assert_true(MediaSource.canConstructInDedicatedWorker,
+              'MediaSource.canConstructInDedicatedWorker');
+
+  const lockName = 'worker-terminate-lock';
+  const worker = new Worker(
+      `mediasource-worker-terminate-during-attach.js?lock=${lockName}`);
+  worker.onerror = t.unreached_func('worker error');
+  const handle = await new Promise(resolve => {
+    worker.onmessage = e => resolve(e.data);
+  });
+  assert_true(handle instanceof MediaSourceHandle, 'must be a MediaSourceHandle');
+
+  worker.terminate();
+  // Wait until the worker's ExecutionContext has been destroyed on the worker
+  // thread before starting attachment on the main thread.
+  await navigator.locks.request(lockName, () => {});
+
+  const video = document.createElement('video');
+  document.body.appendChild(video);
+  t.add_cleanup(() => {
+    video.srcObject = null;
+    video.remove();
+  });
+
+  video.srcObject = handle;
+  await waitForEvent(video, 'error');
+  assert_equals(video.error.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED);
+}, 'Terminating worker before setting srcObject fails attachment cleanly');
+</script>
+</body>

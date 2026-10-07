@@ -274,7 +274,13 @@ class MediaSource final : public EventTarget,
   // and reset: the actual derived type of the attachment (same-thread vs
   // cross-thread, for instance) must be the same semantic as the actual derived
   // type of the tracer. Further, if there is no attachment, then there must be
-  // no tracer that's tracking an active attachment.
+  // no tracer that's tracking an active attachment. For
+  // SameThreadMediaSourceAttachment, both are set in
+  // StartAttachingToMediaElement(). For CrossThreadMediaSourceAttachment,
+  // |media_source_attachment_| is set in handle() when the attachment is
+  // created so that ContextDestroyed() can notify the attachment even before
+  // attachment starts on the main thread (and |attachment_tracer_| is always
+  // null).
   scoped_refptr<MediaSourceAttachmentSupplement> media_source_attachment_
       GUARDED_BY(attachment_link_lock_);
   Member<MediaSourceTracer> attachment_tracer_

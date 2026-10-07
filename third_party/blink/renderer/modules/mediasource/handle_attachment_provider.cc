@@ -21,6 +21,9 @@ HandleAttachmentProvider::HandleAttachmentProvider(
 
 HandleAttachmentProvider::~HandleAttachmentProvider() {
   DVLOG(1) << __func__ << " this=" << this;
+  if (attachment_) {
+    attachment_->Unregister();
+  }
 }
 
 scoped_refptr<MediaSourceAttachment>

@@ -1225,11 +1225,15 @@ MediaSourceHandleImpl* MediaSource::handle() {
     // Lazily create the handle, since it indirectly holds a
     // CrossThreadMediaSourceAttachment (until attachment starts or the handle
     // is transferred) which holds a strong reference to us until attachment is
-    // actually started and later closed. PassKey provider usage here ensures
-    // that we are allowed to call the attachment constructor.
+    // actually started and later closed. Also store the attachment in
+    // |media_source_attachment_| immediately so ContextDestroyed() can
+    // synchronize with and notify it even if the worker context is destroyed
+    // before attachment starts on the main thread. PassKey provider usage here
+    // ensures that we are allowed to call the attachment constructor.
     scoped_refptr<CrossThreadMediaSourceAttachment> attachment =
         base::MakeRefCounted<CrossThreadMediaSourceAttachment>(
             this, AttachmentCreationPassKeyProvider::GetPassKey());
+    media_source_attachment_ = attachment;
     scoped_refptr<HandleAttachmentProvider> attachment_provider =
         base::MakeRefCounted<HandleAttachmentProvider>(std::move(attachment));
 
@@ -1379,15 +1383,14 @@ bool MediaSource::StartWorkerAttachingToMainThreadMediaElement(
     return false;  // See comments in ContextDestroyed().
   }
 
-  if (media_source_attachment_ || attachment_tracer_) {
-    return false;  // Already attached.
-  }
-
+  // |media_source_attachment_| was already populated in handle() when
+  // |attachment| was created, and CrossThreadMediaSourceAttachment prevents
+  // reuse after attachment has started/closed.
+  DCHECK_EQ(media_source_attachment_, attachment);
   DCHECK(IsClosed());
   TRACE_EVENT_BEGIN(
       "media", "MediaSource::StartWorkerAttachingToMainThreadMediaElement",
       perfetto::NamedTrack::FromPointer("blink::MediaSource", this));
-  media_source_attachment_ = attachment;
   return true;
 }
 
@@ -1462,23 +1465,26 @@ void MediaSource::ContextDestroyed() {
   }
 
   // Worker context destruction could race CrossThreadMediaSourceAttachment's
-  // StartAttachingToMediaElement on the main thread: we could finish
-  // ContextDestroyed() here, and in the case of not yet ever having been
-  // attached using a particular CrossThreadMediaSourceAttachent, then receive a
-  // StartWorkerAttachingToMainThreadMediaElement() call before unregistration
-  // of us has completed. Therefore, we use our |attachment_link_lock_| to also
-  // protect a flag here that lets us know to fail any future attempt to start
-  // attaching to us.
+  // StartAttachingToMediaElement() on the main thread: the main thread could
+  // hold |attachment_state_lock_| and be calling (or waiting on
+  // |attachment_link_lock_| inside)
+  // StartWorkerAttachingToMainThreadMediaElement() while ContextDestroyed()
+  // runs on the worker thread. Setting |context_already_destroyed_| under
+  // |attachment_link_lock_| causes an in-progress
+  // StartWorkerAttachingToMainThreadMediaElement() to fail, and because
+  // |media_source_attachment_| is populated in handle() as soon as the
+  // CrossThreadMediaSourceAttachment is created, we will also acquire the
+  // attachment's |attachment_state_lock_| via RunExclusively() below before
+  // ContextDestroyed() returns (preventing worker heap teardown while the main
+  // thread is still inside StartWorkerAttachingToMainThreadMediaElement()) and
+  // notify the attachment via OnMediaSourceContextDestroyed().
   scoped_refptr<MediaSourceAttachmentSupplement> attachment;
   {
     base::AutoLock lock(attachment_link_lock_);
     context_already_destroyed_ = true;
 
-    // If not yet attached, the flag, above, will prevent us from ever
-    // successfully attaching, and we can return. There is no attachment on
-    // which we need (or can) call OnMediaSourceContextDestroyed() here. And any
-    // attachments owned by this context will soon (or have already been)
-    // unregistered.
+    // If |attachment| is null, either handle() was never called or a previous
+    // attachment was already closed, so there is no attachment to notify.
     attachment = media_source_attachment_;
     if (!attachment) {
       DCHECK(IsClosed());
@@ -1487,11 +1493,13 @@ void MediaSource::ContextDestroyed() {
     }
   }
 
-  // We need to let our current attachment know that our context is destroyed.
-  // This will let it handle cases like returning sane values for
-  // BufferedInternal and SeekableInternal and stop further use of us via the
-  // attachment. We need to hold the attachment's |attachment_state_lock_| when
-  // doing this detachment.
+  // Let our attachment know that our context is destroyed. This will let it
+  // reject any future StartAttachingToMediaElement(), return sane values for
+  // BufferedInternal and SeekableInternal, and stop further use of us via the
+  // attachment. Taking the attachment's |attachment_state_lock_| via
+  // RunExclusively() also ensures any concurrent StartAttachingToMediaElement()
+  // on the main thread has finished accessing |this| before worker heap
+  // termination proceeds.
   bool cb_ran = attachment->RunExclusively(
       true /* abort if unsafe to use underlying demuxer */,
       blink::BindOnce(&MediaSource::DetachWorkerOnContextDestruction_Locked,
@@ -1499,7 +1507,8 @@ void MediaSource::ContextDestroyed() {
                       true /* safe to notify underlying demuxer */));
 
   if (!cb_ran) {
-    // Main-thread is already detaching or destructing the underlying demuxer.
+    // Either attachment never started, or the main thread is already detaching
+    // or destructing the underlying demuxer.
     CHECK(attachment->RunExclusively(
         false /* do not abort */,
         blink::BindOnce(&MediaSource::DetachWorkerOnContextDestruction_Locked,
@@ -1522,7 +1531,8 @@ void MediaSource::DetachWorkerOnContextDestruction_Locked(
              << ", notify_close=" << notify_close;
 
     // Close() could not race our dispatch: it must happen on worker thread, on
-    // which we're called synchronously only if we're attached.
+    // which we're called synchronously only if we have an unclosed attachment
+    // (created in handle()).
     DCHECK(media_source_attachment_);
 
     // We're only called for CrossThread attachments, which use no tracer.
@@ -1532,15 +1542,16 @@ void MediaSource::DetachWorkerOnContextDestruction_Locked(
     media_source_attachment_->OnMediaSourceContextDestroyed();
 
     if (!notify_close) {
-      // In this case, not only is our context shutting down, but the media
-      // element is also at least tearing down the WebMediaPlayer (and the
-      // underlying demuxer owned by it) already. We can do some simple cleanup,
-      // but must not access |*web_media_source_| or our SourceBuffers'
-      // |*web_source_buffer_|'s. We're helped by the demuxer not calling us or
-      // our SourceBuffers unless in scope of a call initiated by a SourceBuffer
-      // during media parsing, which cannot occur after our context destruction.
-      // Underlying buffered media is removed during demuxer teardown itself,
-      // which is certain to be happening already or soon in this case.
+      // In this case, our context is shutting down and either attachment never
+      // started, or the media element is already at least tearing down the
+      // WebMediaPlayer (and the underlying demuxer owned by it). We can do some
+      // simple cleanup, but must not access |*web_media_source_| or our
+      // SourceBuffers' |*web_source_buffer_|'s. We're helped by the demuxer not
+      // calling us or our SourceBuffers unless in scope of a call initiated by
+      // a SourceBuffer during media parsing, which cannot occur after our
+      // context destruction. Underlying buffered media is removed during
+      // demuxer teardown itself, which is certain to be happening already or
+      // soon in this case.
       media_source_attachment_.reset();
       attachment_tracer_ = nullptr;  // For consistency with same-thread usage.
       if (!IsClosed()) {

@@ -24,7 +24,11 @@ namespace blink {
 // mediasource. Once attached, only the media element and the mediasource should
 // have references to the attachment object, and when they close the attachment
 // and drop their references, there should be no other references remaining,
-// enabling GC. This object serves as a provider of either a never-yet attached
+// enabling GC. If all handle instances are destroyed without TakeAttachment()
+// ever being called, ~HandleAttachmentProvider() calls Unregister() on the
+// attachment to release its strong reference to the MediaSource and break the
+// reference cycle with MediaSource::media_source_attachment_. This object
+// serves as a provider of either a never-yet attached
 // CrossThreadMediaSourceAttachment for a handle instance (and its potential
 // descendants due to serialization), or a nullptr once that attachment was
 // started. Locking is used to prevent read/write collision for this scenario.

@@ -112,10 +112,13 @@ class CrossThreadMediaSourceAttachment final
   bool FullyAttachedOrSameThread(SourceBufferPassKey) const final
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
 
+  // Called on either the main or worker thread by
+  // HandleAttachmentProvider::~HandleAttachmentProvider() if all
+  // MediaSourceHandle instances are destroyed without ever starting attachment.
+  void Unregister() final LOCKS_EXCLUDED(attachment_state_lock_);
+
   // MediaSourceAttachment methods called on the main thread by the media
-  // element. Unregister() is not used because MSE-in-Worker does not use object
-  // URLs.
-  void Unregister() final;
+  // element.
   MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*,
                                                   bool* success) final
       LOCKS_EXCLUDED(attachment_state_lock_);
@@ -204,10 +207,12 @@ class CrossThreadMediaSourceAttachment final
 
   // Cache of the registered worker-thread MediaSource. Retains strong reference
   // on all Oilpan heaps, from construction of this object until Unregister() is
-  // called. This lets the main thread successfully attach (modulo normal
-  // reasons why StartAttaching..() can fail) to the worker-thread MediaSource
-  // even if there were no other strong references other than this one on the
-  // worker-thread Oilpan heap to the MediaSource.
+  // called (when the handle is destroyed without ever attaching) or
+  // StartAttachingToMediaElement() is called. This lets the main thread
+  // successfully attach (modulo normal reasons why StartAttaching..() can fail)
+  // to the worker-thread MediaSource even if there were no other strong
+  // references other than this one on the worker-thread Oilpan heap to the
+  // MediaSource.
   CrossThreadPersistent<MediaSource> registered_media_source_
       GUARDED_BY(attachment_state_lock_);
 

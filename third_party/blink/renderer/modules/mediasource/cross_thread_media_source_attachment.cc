@@ -425,6 +425,7 @@ void CrossThreadMediaSourceAttachment::OnMediaSourceContextDestroyed() {
   // We shouldn't be notified more than once.
   DCHECK(!media_source_context_destroyed_);
   media_source_context_destroyed_ = true;
+  registered_media_source_ = nullptr;
 }
 
 bool CrossThreadMediaSourceAttachment::FullyAttachedOrSameThread(
@@ -455,8 +456,12 @@ bool CrossThreadMediaSourceAttachment::RunExclusively(
 
   // We must never be called if the MSE API context has already destructed.
   DCHECK(!media_source_context_destroyed_);
-  DCHECK(attached_media_source_);
-  DCHECK(have_ever_attached_);
+
+  // |attached_media_source_| is set iff StartAttachingToMediaElement()
+  // succeeded. Both may be false here when called from
+  // MediaSource::ContextDestroyed() if handle() was created on the worker
+  // thread but attachment never started on the main thread.
+  DCHECK_EQ(!!attached_media_source_, have_ever_attached_);
 
   if (abort_if_not_fully_attached &&
       (media_element_context_destroyed_ || !attached_element_ ||
@@ -473,8 +478,17 @@ bool CrossThreadMediaSourceAttachment::RunExclusively(
 }
 
 void CrossThreadMediaSourceAttachment::Unregister() {
-  // MSE-in-Worker does NOT use object URLs, so this should not be called.
-  NOTREACHED();
+  DVLOG(1) << __func__ << " this=" << this;
+  base::AutoLock lock(attachment_state_lock_);
+  // Called by ~HandleAttachmentProvider() if all MediaSourceHandle instances
+  // were destroyed without TakeAttachment() being called. Drop our strong
+  // reference to the worker MediaSource to break the reference cycle with
+  // MediaSource::media_source_attachment_. If the worker context is already
+  // being destroyed, Oilpan's HeapBase::Terminate() clears cross-thread
+  // persistents itself.
+  if (!media_source_context_destroyed_) {
+    registered_media_source_ = nullptr;
+  }
 }
 
 MediaSourceTracer*
@@ -516,16 +530,17 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
     // started closing.
     DCHECK(!have_ever_started_closing_);
 
-    // Likewise, we must never have been able to receive the worker context
-    // destruction notification if we've never been successfully attached.
-    DCHECK(!media_source_context_destroyed_);
+    // If the worker context was destroyed before we acquired
+    // |attachment_state_lock_|, MediaSource::ContextDestroyed() has already
+    // notified us via OnMediaSourceContextDestroyed() (which also clears
+    // |registered_media_source_|).
+    if (media_source_context_destroyed_) {
+      DCHECK(!registered_media_source_);
+      *success = false;
+      return nullptr;
+    }
 
-    // Fail if already unregistered. This should be rare: caller's retrieval of
-    // this attachment instance is done by finding us in the registry. Probably
-    // the only reason we might now be unregistered would be an intervening
-    // action (like explicit revocation) occurrring on the worker thread.
-    // (Worker's context destruction could also cause this, but we've already
-    // checked this, above.)
+    // Also fail if |registered_media_source_| was already cleared by Oilpan.
     if (!registered_media_source_) {
       DVLOG(1) << __func__ << " this=" << this << ", element=" << element
                << ": failed: unregistered already";
@@ -547,14 +562,13 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
         registered_media_source_->StartWorkerAttachingToMainThreadMediaElement(
             WrapRefCounted(this));
     if (!*success) {
-      DVLOG(1)
-          << __func__ << " this=" << this << ", element=" << element
-          << ": failed: MediaSource possibly in use via another attachment";
+      DVLOG(1) << __func__ << " this=" << this << ", element=" << element
+               << ": failed: worker context is being destroyed";
       return nullptr;
     }
 
     attached_element_ = element;
-    attached_media_source_ = registered_media_source_;
+    attached_media_source_ = std::move(registered_media_source_);
     main_runner_ =
         element->GetExecutionContext()->GetTaskRunner(TaskType::kPostedMessage);
     DCHECK(main_runner_->BelongsToCurrentThread());
