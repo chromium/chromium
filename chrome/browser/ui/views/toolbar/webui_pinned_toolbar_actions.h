@@ -73,6 +73,7 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   int GetWidth() const;
 
  private:
+  friend class PinnedActionTestAccessor;
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckPinnedToolbarActionColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIPinnedToolbarActionsBrowserTest,

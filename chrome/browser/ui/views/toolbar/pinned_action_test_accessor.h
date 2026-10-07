@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_ACTION_TEST_ACCESSOR_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/actions/action_id.h"
@@ -77,6 +78,14 @@ class PinnedActionTestAccessor {
   // Triggers a click on the action button.
   void Click() const;
 
+  // Returns the ordered list of action IDs currently in the toolbar container
+  // (pinned actions followed by popped-out actions).
+  static std::vector<actions::ActionId> GetActionIds(
+      BrowserWindowInterface* browser);
+
+  // Returns true if the toolbar divider is currently visible.
+  static bool IsDividerVisible(BrowserWindowInterface* browser);
+
   // Synchronously waits for any ongoing toolbar layout animations to finish.
   static void WaitForAnimation(BrowserWindowInterface* browser);
 
@@ -85,6 +94,8 @@ class PinnedActionTestAccessor {
 
  private:
   static PinnedToolbarActions* GetPinnedToolbarActions(
+      BrowserWindowInterface* browser);
+  static PinnedToolbarActionsContainer* GetViewsContainer(
       BrowserWindowInterface* browser);
   PinnedToolbarActions* GetPinnedToolbarActions() const;
   actions::ActionItem* GetActionItem() const;

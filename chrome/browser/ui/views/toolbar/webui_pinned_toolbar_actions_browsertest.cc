@@ -146,31 +146,36 @@ class WebUIPinnedToolbarActionsBrowserTest
     : public WebUIPinnedToolbarActionsTestBase {
  protected:
   // Polls the accessibility tree of `web_contents` until the node with
-  // `node_id` is a button exposing `expected_name` and `expected_description`.
+  // `node_id` is a toggle button exposing `expected_name`,
+  // `expected_description`, and `expected_checked_state`.
   testing::AssertionResult WaitForButtonAccessibleState(
       content::WebContents* web_contents,
       ui::AXNodeID node_id,
       std::string_view expected_name,
-      std::string_view expected_description) {
+      std::string_view expected_description,
+      ax::mojom::CheckedState expected_checked_state =
+          ax::mojom::CheckedState::kFalse) {
     std::optional<ui::AXNodeData> node;
     if (base::test::RunUntil([&]() {
           node = FindAccessibilityNodeData(
               web_contents, [node_id](const ui::AXNodeData& data) {
                 return data.id == node_id;
               });
-          return node && node->role == ax::mojom::Role::kButton &&
+          return node && node->role == ax::mojom::Role::kToggleButton &&
                  node->GetStringAttribute(ax::mojom::StringAttribute::kName) ==
                      expected_name &&
                  node->GetStringAttribute(
                      ax::mojom::StringAttribute::kDescription) ==
-                     expected_description;
+                     expected_description &&
+                 node->GetCheckedState() == expected_checked_state;
         })) {
       return testing::AssertionSuccess();
     }
     return testing::AssertionFailure()
            << "Expected name=\"" << expected_name << "\" description=\""
            << expected_description
-           << "\". Actual: " << (node ? node->ToString() : "<missing>");
+           << "\" checked_state=" << expected_checked_state
+           << ". Actual: " << (node ? node->ToString() : "<missing>");
   }
 };
 
@@ -386,10 +391,12 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   ASSERT_TRUE(WaitForPinnedActionVisible(mojom_action));
 
   // Verify it's highlighted.
-  EXPECT_TRUE(EvalJsOnPinnedAction(mojom_action,
-                                   "return !!btn && "
-                                   "btn.hasAttribute('is-menu-open');")
-                  .ExtractBool());
+  EXPECT_TRUE(
+      EvalJsOnPinnedAction(mojom_action,
+                           "return !!btn && "
+                           "btn.hasAttribute('is-menu-open') && "
+                           "btn.getAttribute('aria-pressed') === 'true';")
+          .ExtractBool());
 
   // Deactivate action.
   webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
@@ -402,10 +409,12 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   ASSERT_TRUE(WaitForPinnedActionVisible(mojom_action));
 
   // Verify it's not highlighted.
-  EXPECT_TRUE(EvalJsOnPinnedAction(mojom_action,
-                                   "return !!btn && "
-                                   "!btn.hasAttribute('is-menu-open');")
-                  .ExtractBool());
+  EXPECT_TRUE(
+      EvalJsOnPinnedAction(mojom_action,
+                           "return !!btn && "
+                           "!btn.hasAttribute('is-menu-open') && "
+                           "btn.getAttribute('aria-pressed') === 'false';")
+          .ExtractBool());
 
   // Activate action.
   webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
@@ -415,7 +424,8 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return EvalJsOnPinnedAction(mojom_action,
                                 "return !!btn && "
-                                "btn.hasAttribute('is-menu-open');")
+                                "btn.hasAttribute('is-menu-open') && "
+                                "btn.getAttribute('aria-pressed') === 'true';")
         .ExtractBool();
   }));
 
@@ -487,6 +497,30 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinUnpinnable) {
   // Make pinnable.
   SetPinnableProperty(action_id, true);
   ASSERT_TRUE(WaitForPinnedActionVisible(mojom_action));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ButtonVisibility) {
+  actions::ActionId action_id = kActionShowTranslate;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
+
+  model_->UpdatePinnedState(action_id, true);
+  ASSERT_TRUE(WaitForPinnedActionVisible(mojom_action));
+
+  auto* action_item = actions::ActionManager::Get().FindAction(
+      action_id, BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action_item);
+
+  // Hide the action item and verify it is no longer seen in the toolbar.
+  action_item->SetVisible(false);
+  ASSERT_TRUE(WaitForPinnedActionHidden(mojom_action));
+  EXPECT_TRUE(model_->Contains(action_id));
+  EXPECT_NO_FATAL_FAILURE(VerifyPinnedToolbarWidth());
+
+  // Make the action item visible again and verify it reappears.
+  action_item->SetVisible(true);
+  ASSERT_TRUE(WaitForPinnedActionVisible(mojom_action));
+  EXPECT_NO_FATAL_FAILURE(VerifyPinnedToolbarWidth());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
@@ -598,17 +632,31 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     print_node = FindAccessibilityNodeData(
         web_contents, [&](const ui::AXNodeData& data) {
-          return data.role == ax::mojom::Role::kButton &&
+          return data.role == ax::mojom::Role::kToggleButton &&
                  data.GetStringAttribute(ax::mojom::StringAttribute::kName) ==
                      default_name;
         });
     return print_node.has_value();
-  })) << "No button named \""
+  })) << "No toggle button named \""
       << default_name << "\" found.";
   const ui::AXNodeID print_node_id = print_node->id;
 
   ASSERT_TRUE(WaitForButtonAccessibleState(web_contents, print_node_id,
-                                           default_name, default_description));
+                                           default_name, default_description,
+                                           ax::mojom::CheckedState::kFalse));
+
+  // Verify checked state updates when highlighted.
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   true);
+  ASSERT_TRUE(WaitForButtonAccessibleState(web_contents, print_node_id,
+                                           default_name, default_description,
+                                           ax::mojom::CheckedState::kTrue));
+
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   false);
+  ASSERT_TRUE(WaitForButtonAccessibleState(web_contents, print_node_id,
+                                           default_name, default_description,
+                                           ax::mojom::CheckedState::kFalse));
 
   // Test all values are provided.
   action_item->SetTooltipText(u"tooltip");

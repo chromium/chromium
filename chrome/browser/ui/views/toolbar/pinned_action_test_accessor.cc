@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
@@ -19,6 +23,8 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -63,14 +69,20 @@ actions::ActionItem* PinnedActionTestAccessor::GetActionItem() const {
   return nullptr;
 }
 
-PinnedToolbarActionsContainer* PinnedActionTestAccessor::GetViewsContainer()
-    const {
-  auto* pinned_actions = GetPinnedToolbarActions();
+// static
+PinnedToolbarActionsContainer* PinnedActionTestAccessor::GetViewsContainer(
+    BrowserWindowInterface* browser) {
+  auto* pinned_actions = GetPinnedToolbarActions(browser);
   if (!pinned_actions) {
     return nullptr;
   }
   return views::AsViewClass<PinnedToolbarActionsContainer>(
       pinned_actions->GetContainerView());
+}
+
+PinnedToolbarActionsContainer* PinnedActionTestAccessor::GetViewsContainer()
+    const {
+  return GetViewsContainer(browser_);
 }
 
 PinnedActionToolbarButton* PinnedActionTestAccessor::GetViewsButton() const {
@@ -242,14 +254,73 @@ void PinnedActionTestAccessor::Click() const {
 }
 
 // static
+std::vector<actions::ActionId> PinnedActionTestAccessor::GetActionIds(
+    BrowserWindowInterface* browser) {
+  std::vector<actions::ActionId> result;
+  if (auto* container = GetViewsContainer(browser)) {
+    for (views::View* child : container->children()) {
+      if (views::Button::AsButton(child)) {
+        result.push_back(
+            static_cast<PinnedActionToolbarButton*>(child)->GetActionId());
+      }
+    }
+    return result;
+  }
+  auto* pinned_actions = GetPinnedToolbarActions(browser);
+  if (!pinned_actions) {
+    return result;
+  }
+  auto* webui_actions = static_cast<WebUIPinnedToolbarActions*>(pinned_actions);
+  for (const auto& state :
+       webui_actions->delegate_->GetState().pinned_toolbar_actions_state) {
+    if (auto id = webui_toolbar::PinnedToolbarActionToActionId(state->action)) {
+      result.push_back(*id);
+    }
+  }
+  return result;
+}
+
+// static
+bool PinnedActionTestAccessor::IsDividerVisible(
+    BrowserWindowInterface* browser) {
+  if (auto* container = GetViewsContainer(browser)) {
+    for (views::View* child : container->children()) {
+      if (child->GetProperty(views::kElementIdentifierKey) ==
+          kPinnedToolbarActionsContainerDividerElementId) {
+        return child->GetVisible();
+      }
+    }
+    return false;
+  }
+  auto* pinned_actions = GetPinnedToolbarActions(browser);
+  if (!pinned_actions) {
+    return false;
+  }
+  auto* webui_actions = static_cast<WebUIPinnedToolbarActions*>(pinned_actions);
+  return std::ranges::contains(
+      webui_actions->delegate_->GetState().pinned_toolbar_actions_state,
+      toolbar_ui_api::mojom::PinnedToolbarAction::kDivider,
+      &toolbar_ui_api::mojom::PinnedToolbarActionState::action);
+}
+
+// static
 void PinnedActionTestAccessor::WaitForAnimation(
     BrowserWindowInterface* browser) {
   auto* pinned_actions = GetPinnedToolbarActions(browser);
   if (!pinned_actions) {
     return;
   }
+  // Post `PostOrQueueActionAfterAnimation` to the task runner rather than
+  // calling it synchronously so that any pending UI tasks (such as dialog close
+  // notifications that trigger toolbar state or animation changes) run first.
+  // In the Views implementation, `WaitForAnimatingLayoutManager` always yields
+  // via `RunLoop::Run()`, whereas `WebUIPinnedToolbarActions` runs its callback
+  // synchronously if no buttons are currently animating.
   base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
-  pinned_actions->PostOrQueueActionAfterAnimation(loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PinnedToolbarActions::PostOrQueueActionAfterAnimation,
+                     base::Unretained(pinned_actions), loop.QuitClosure()));
   loop.Run();
 }
 

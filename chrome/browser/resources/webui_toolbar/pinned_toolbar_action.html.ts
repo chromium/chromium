@@ -16,6 +16,7 @@ export function getHtml(this: PinnedToolbarActionElement) {
       ?is-activated="${this.state.activated}"
       title="${this.getTooltip_()}"
       aria-label="${this.state.accessibilityText || this.state.tooltip}"
+      aria-pressed="${this.state.highlighted || this.trackedHighlighted}"
       draggable="${this.isDraggable()}"
       @dragstart="${this.onDragstart}"
       @dragend="${this.onDragend}"
