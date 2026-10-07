@@ -2538,6 +2538,9 @@ inline constexpr char kWatchdogExtensionActive[] =
 // given by the PartnerBookmarksProvider and either the user-visible renamed
 // title or an empty string if the bookmark node was removed.
 inline constexpr char kPartnerBookmarkMappings[] = "partnerbookmarks.mappings";
+
+// Boolean that is true when the AppStoreRatingEnabled policy is enabled.
+inline constexpr char kAppRatingPolicyEnabled[] = "app_rating_policy_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Whether DNS Quick Check is disabled in proxy resolution.

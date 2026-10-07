@@ -2550,6 +2550,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers,
     base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+  { key::kAppStoreRatingEnabled,
+    prefs::kAppRatingPolicyEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 // clang-format on
 

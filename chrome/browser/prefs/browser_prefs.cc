@@ -1719,6 +1719,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFeatureNotificationsEnabled, true);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kAppRatingPolicyEnabled, true);
   registry->RegisterBooleanPref(policy::policy_prefs::kBackForwardCacheEnabled,
                                 true);
   registry->RegisterBooleanPref(policy::policy_prefs::kReadAloudEnabled, true);

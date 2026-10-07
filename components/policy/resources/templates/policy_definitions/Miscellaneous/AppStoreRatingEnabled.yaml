@@ -1,9 +1,13 @@
-caption: Allows users to be shown the <ph name="IOS_NAME">iOS</ph> App Store Rating promo
+caption: Allows users to be shown the app rating promo on <ph name="IOS_NAME">iOS</ph> and <ph name="ANDROID_NAME">Android</ph>
 desc: |-
-  When the policy is not set or set to Enabled, the App Store Rating promo may be shown to the user, at most once per year.
-  When the policy is set to Disabled, the App Store Rating promo will not be shown to the user.
+  Controls whether the in-app rating promo can be shown to users.
+
+  Setting the policy to Enabled or leaving it unset allows the App Store Rating promo to be shown to the user, at most once per year.
+
+  Setting the policy to Disabled prevents the App Store Rating promo from being shown to the user.
 supported_on:
 - ios:110-
+- android:157-
 features:
   dynamic_refresh: true
   per_profile: false

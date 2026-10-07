@@ -11,10 +11,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
@@ -64,6 +66,12 @@ public class AppRatingPromoController {
                 triggerAppRatingReviewFlow(activity, profile, /* tracker= */ null);
             }
             return true;
+        }
+
+        // Check if the enterprise policy AppStoreRatingEnabled is disabled.
+        PrefService localState = LocalStatePrefs.get();
+        if (localState == null || !localState.getBoolean(Pref.APP_RATING_POLICY_ENABLED)) {
+            return false;
         }
 
         if (!Locale.CANADA.getCountry().equalsIgnoreCase(countryCode)) {
