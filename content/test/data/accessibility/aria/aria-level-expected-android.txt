@@ -1,20 +1,33 @@
-#<skip -- Bots not failing>
-android.webkit.WebView focusable focused scrollable
-++android.view.View clickable heading name='H3'
-++android.view.View clickable heading name='ARIA heading level 3'
-++android.view.View collection hierarchical row_count=2
-++++android.view.View
-++++++android.view.View clickable collection_item name='Tree item at level 1'
-++++++android.view.View clickable collection_item name='Tree item at level 2'
-++++android.view.View clickable name='Tree item at level 3'
-++++android.view.View clickable name='Tree item at level 20'
-++++android.view.View clickable name='Tree item at level 1'
-++++android.view.View clickable name='Tree item at level 1'
-++++android.view.View clickable name='Tree item at level 1'
-++android.widget.GridView collection row_count=2 column_count=1
-++++android.view.View
-++++++android.view.View clickable collection_item name='Cell at level 1' row_span=1 column_span=1
-++++android.view.View
-++++++android.view.View clickable collection_item name='Cell at level 2' row_index=1 row_span=1 column_span=1
-++++android.view.View
-++++android.view.View
+android.webkit.WebView focusable focused
+++android.widget.TextView role_description='heading 2' heading interesting name='Level 2'
+++android.widget.TextView role_description='heading' heading interesting name='Level 9'
+++android.widget.TextView role_description='heading 1' heading interesting name='Level 1'
+++android.widget.TextView role_description='heading 3' heading interesting name='Level 3'
+++android.widget.TextView role_description='heading 3' heading interesting name='Level 3'
+++android.widget.TextView role_description='heading 4' heading interesting name='Level 4'
+++android.widget.TextView role_description='heading 5' heading interesting name='Level 5'
+++android.view.View role_description='tree' collection hierarchical interesting item_count=4 row_count=4
+++++android.view.View role_description='tree item' clickable collection_item expanded name='Tree item at level 1' item_index=0 row_index=0 expanded_state=3
+++++++android.widget.TextView name='Tree item at level 1'
+++++++android.view.View
+++++++++android.view.View role_description='tree item' clickable collection_item name='Tree item at level 2' item_index=0 row_index=0
+++++++++android.view.View role_description='tree item' clickable collection_item name='Tree item at level 2, aria-level is 0' item_index=0 row_index=0
+++++android.view.View role_description='tree item' clickable collection_item name='Tree item at level 3' item_index=0 row_index=0
+++++android.view.View role_description='tree item' clickable collection_item name='Tree item at level 20' item_index=0 row_index=0
+++++android.view.View role_description='tree item' clickable collection_item name='Tree item at level 1' item_index=1 row_index=1
+++++android.view.View role_description='tree item' clickable collection_item name='Tree item at level 1' item_index=2 row_index=2
+++++android.view.View role_description='tree item' clickable collection_item name='Tree item at level 1' item_index=3 row_index=3
+++android.widget.GridView clickable collection interesting item_count=0 row_count=0 column_count=1
+++++android.view.View name='Cell at level 1' row_index=0
+++++++android.view.View collection_item name='Cell at level 1' row_index=0 row_span=1 column_index=0 column_span=1
+++++android.view.View name='Cell at level 2' row_index=1
+++++++android.view.View collection_item name='Cell at level 2' row_index=1 row_span=1 column_index=0 column_span=1
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item interesting name='List item at level 1' item_index=0 row_index=0 row_span=1 column_span=1
+++++android.view.View collection_item interesting name='List item at level 3' item_index=0 row_index=0 row_span=1 column_span=1
+++android.widget.ListView collection hierarchical item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item interesting name='List item at level 2' item_index=0 row_index=0 row_span=1 column_span=1
+++++android.widget.ListView collection hierarchical item_count=1 row_count=1 column_count=1
+++++++android.view.View collection_item interesting name='List item at level 2' item_index=0 row_index=0 row_span=1 column_span=1
+++++++android.view.View collection_item interesting name='List item at level 7' item_index=0 row_index=0 row_span=1 column_span=1
+
