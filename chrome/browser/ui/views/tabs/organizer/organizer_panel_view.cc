@@ -23,6 +23,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -37,14 +38,40 @@
 
 namespace {
 
+// Custom WebView which forwards accelerators to the browser.
+//
+// This is required because on Mac, keypresses are routed directly to the
+// WebContents without touching the normal browser event handling logic unless
+// they're forwarded (for example, by an UnhandledKeyboardEventHandler).
+class OrganizerPanelWebView : public views::WebView {
+  METADATA_HEADER(OrganizerPanelWebView, views::WebView)
+ public:
+  explicit OrganizerPanelWebView(Profile* profile) : WebView(profile) {}
+  ~OrganizerPanelWebView() override = default;
+
+  // views::WebView:
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override {
+    return keyboard_event_handler_.HandleKeyboardEvent(event,
+                                                       GetFocusManager());
+  }
+
+ private:
+  views::UnhandledKeyboardEventHandler keyboard_event_handler_;
+};
+
+BEGIN_METADATA(OrganizerPanelWebView)
+END_METADATA
+
 // The normal implementation of the panel view.
 class OrganizerPanelViewImpl : public OrganizerPanelView {
  public:
   explicit OrganizerPanelViewImpl(BrowserWindowInterface& browser)
       : OrganizerPanelView(browser) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    auto web_view = std::make_unique<views::WebView>(browser.GetProfile());
-    web_view->set_allow_accelerators(true);
+    auto* const web_view = AddChildView(
+        std::make_unique<OrganizerPanelWebView>(browser.GetProfile()));
     webui::SetBrowserWindowInterface(web_view->GetWebContents(), &browser);
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
         web_view->GetWebContents(), SK_ColorTRANSPARENT);
@@ -54,7 +81,6 @@ class OrganizerPanelViewImpl : public OrganizerPanelView {
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
     web_view->SetProperty(views::kElementIdentifierKey, kWebViewElementId);
-    AddChildView(std::move(web_view));
   }
 };
 
