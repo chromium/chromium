@@ -370,7 +370,7 @@ ui::ImageModel ContextualSearchCueTarget::GetOmniboxChipIcon() const {
 
   const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      vector_icons::kGoogleGLogoIcon;
+      vector_icons::kGoogleGLogoMonochromeIcon;
 #else
       vector_icons::kSearchIcon;
 #endif
