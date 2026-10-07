@@ -909,9 +909,21 @@ public class FeedSurfaceMediator
                                     mPositionToRestore = RecyclerView.NO_POSITION;
                                     final var originalAnimator =
                                             mCoordinator.getRecyclerView().getItemAnimator();
-                                    mCoordinator
-                                            .getRecyclerView()
-                                            .setItemAnimator(new ItemAnimatorWithoutAnimation());
+                                    // Skip item animations until the restore completes. With a
+                                    // null ItemAnimator, RecyclerView skips its animation steps,
+                                    // so removed items can't be left behind as stale views, as
+                                    // happens with ItemAnimatorWithoutAnimation, which never
+                                    // reports its items as finished. See b/517926260.
+                                    if (ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList
+                                                    .FEED_NULL_ITEM_ANIMATOR_ON_SCROLL_RESTORE)) {
+                                        mCoordinator.getRecyclerView().setItemAnimator(null);
+                                    } else {
+                                        mCoordinator
+                                                .getRecyclerView()
+                                                .setItemAnimator(
+                                                        new ItemAnimatorWithoutAnimation());
+                                    }
                                     final Runnable onComplete =
                                             () -> {
                                                 mGetRestoringStateSupplier.set(

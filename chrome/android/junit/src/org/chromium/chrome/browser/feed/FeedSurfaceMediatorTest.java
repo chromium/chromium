@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -20,10 +21,17 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Looper;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,8 +54,12 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtilsJni;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -66,6 +78,10 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FeedSurfaceMediatorTest {
@@ -78,6 +94,7 @@ public class FeedSurfaceMediatorTest {
 
     // Mocked JNI.
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private GestureNavigationUtils.Natives mGestureNavigationUtilsJniMock;
     @Mock private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     @Mock private IdentityServicesProvider mIdentityService;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
@@ -105,6 +122,7 @@ public class FeedSurfaceMediatorTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mRecyclerView = new RecyclerView(mActivity);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
+        GestureNavigationUtilsJni.setInstanceForTesting(mGestureNavigationUtilsJniMock);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
@@ -405,6 +423,241 @@ public class FeedSurfaceMediatorTest {
         mRecyclerView.smoothScrollBy(0, 100);
 
         verify(listener, times(1)).onScrollStateChanged(RecyclerView.SCROLL_STATE_SETTLING);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FEED_NULL_ITEM_ANIMATOR_ON_SCROLL_RESTORE)
+    public void testScrollRestore_disablesItemAnimatorUntilRestoreCompletes() {
+        when(mGestureNavigationUtilsJniMock.shouldAnimateBackForwardTransitions()).thenReturn(true);
+        RecyclerView.ItemAnimator originalAnimator = new DefaultItemAnimator();
+        TestRecyclerView recyclerView = createTestRecyclerView(originalAnimator);
+        createMediatorWithScrollStateToRestore(/* position= */ 3);
+
+        // The list reaches the saved position.
+        when(mListLayoutHelper.findFirstVisibleItemPosition()).thenReturn(3);
+        recyclerView.scrollAndRunScrollCallback();
+
+        // Item animations are disabled with a null animator, not a custom no-op one.
+        assertNull(recyclerView.getItemAnimator());
+        assertEquals(RestoringState.WAITING_TO_RESTORE, getRestoringState());
+
+        // Once RecyclerView has finished animating, the original animator is restored.
+        shadowOf(Looper.getMainLooper()).idle();
+
+        assertEquals(originalAnimator, recyclerView.getItemAnimator());
+        assertEquals(RestoringState.RESTORED, getRestoringState());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.FEED_NULL_ITEM_ANIMATOR_ON_SCROLL_RESTORE)
+    public void testScrollRestore_featureFlagDisabled_usesNoOpItemAnimator() {
+        when(mGestureNavigationUtilsJniMock.shouldAnimateBackForwardTransitions()).thenReturn(true);
+        RecyclerView.ItemAnimator originalAnimator = new DefaultItemAnimator();
+        TestRecyclerView recyclerView = createTestRecyclerView(originalAnimator);
+        createMediatorWithScrollStateToRestore(/* position= */ 3);
+
+        when(mListLayoutHelper.findFirstVisibleItemPosition()).thenReturn(3);
+        recyclerView.scrollAndRunScrollCallback();
+
+        // With the feature flag off, the previous no-op animator is installed instead of null.
+        assertNotNull(recyclerView.getItemAnimator());
+        assertNotEquals(originalAnimator, recyclerView.getItemAnimator());
+
+        // The original animator is still restored afterwards.
+        shadowOf(Looper.getMainLooper()).idle();
+
+        assertEquals(originalAnimator, recyclerView.getItemAnimator());
+        assertEquals(RestoringState.RESTORED, getRestoringState());
+    }
+
+    @Test
+    public void testScrollRestore_beforeReachingSavedPosition_keepsItemAnimator() {
+        when(mGestureNavigationUtilsJniMock.shouldAnimateBackForwardTransitions()).thenReturn(true);
+        RecyclerView.ItemAnimator originalAnimator = new DefaultItemAnimator();
+        TestRecyclerView recyclerView = createTestRecyclerView(originalAnimator);
+        createMediatorWithScrollStateToRestore(/* position= */ 3);
+
+        when(mListLayoutHelper.findFirstVisibleItemPosition()).thenReturn(1);
+        recyclerView.scrollAndRunScrollCallback();
+
+        assertEquals(originalAnimator, recyclerView.getItemAnimator());
+        shadowOf(Looper.getMainLooper()).idle();
+        assertEquals(RestoringState.WAITING_TO_RESTORE, getRestoringState());
+    }
+
+    @Test
+    public void testScrollRestore_withoutBackForwardTransitions_keepsItemAnimator() {
+        when(mGestureNavigationUtilsJniMock.shouldAnimateBackForwardTransitions())
+                .thenReturn(false);
+        RecyclerView.ItemAnimator originalAnimator = new DefaultItemAnimator();
+        TestRecyclerView recyclerView = createTestRecyclerView(originalAnimator);
+        createMediatorWithScrollStateToRestore(/* position= */ 3);
+
+        when(mListLayoutHelper.findFirstVisibleItemPosition()).thenReturn(3);
+        recyclerView.scrollAndRunScrollCallback();
+
+        assertEquals(originalAnimator, recyclerView.getItemAnimator());
+    }
+
+    /**
+     * Uses a real RecyclerView to check that list changes laid out while the scroll restore has
+     * item animations disabled don't leave stale views behind, e.g. a stuck loading spinner.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FEED_NULL_ITEM_ANIMATOR_ON_SCROLL_RESTORE)
+    public void testScrollRestore_listChangesDuringRestore_leaveNoStaleViews() {
+        when(mGestureNavigationUtilsJniMock.shouldAnimateBackForwardTransitions()).thenReturn(true);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout root = new FrameLayout(activity);
+        activity.setContentView(root);
+        RecyclerView recyclerView = new RecyclerView(activity);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        TestAdapter adapter = new TestAdapter();
+        recyclerView.setAdapter(adapter);
+        RecyclerView.ItemAnimator originalAnimator = new DefaultItemAnimator();
+        recyclerView.setItemAnimator(originalAnimator);
+        root.addView(
+                recyclerView, new FrameLayout.LayoutParams(400, 5 * TestAdapter.ITEM_HEIGHT_PX));
+        for (int i = 0; i < 10; i++) adapter.add(adapter.getItemCount(), "card" + i);
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(3));
+
+        when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(recyclerView);
+        when(mFeedSurfaceCoordinator.getView()).thenReturn(recyclerView);
+        createMediatorWithScrollStateToRestore(/* position= */ 1);
+        when(mListLayoutHelper.findFirstVisibleItemPosition()).thenReturn(1);
+
+        // The restore scroll reaches the saved position. In the same frame, the feed removes an
+        // on-screen card and shows a loading spinner.
+        recyclerView.scrollBy(0, TestAdapter.ITEM_HEIGHT_PX);
+        adapter.remove("card2");
+        adapter.add(2, "spinner");
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(3));
+
+        assertEquals(RestoringState.RESTORED, getRestoringState());
+        assertEquals(originalAnimator, recyclerView.getItemAnimator());
+        assertEquals(new ArrayList<String>(), getStaleChildTags(recyclerView));
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            View child = recyclerView.getChildAt(i);
+            assertTrue(
+                    "Item " + child.getTag() + " was never released",
+                    recyclerView.getChildViewHolder(child).isRecyclable());
+        }
+
+        // Later, the spinner is removed while on screen, using the original animator.
+        adapter.remove("spinner");
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(3));
+
+        assertEquals(new ArrayList<String>(), getStaleChildTags(recyclerView));
+    }
+
+    /** Creates a mediator with a bound feed and a saved scroll position to restore. */
+    private void createMediatorWithScrollStateToRestore(int position) {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        mFeedSurfaceMediator = createMediator();
+        mFeedSurfaceMediator.updateContent();
+
+        FeedScrollState state = new FeedScrollState();
+        state.position = position;
+        mFeedSurfaceMediator.restoreSavedInstanceState(state.toJson());
+    }
+
+    /** Makes the mediator use a new {@link TestRecyclerView} with the given item animator. */
+    private TestRecyclerView createTestRecyclerView(RecyclerView.ItemAnimator itemAnimator) {
+        TestRecyclerView recyclerView = new TestRecyclerView(mActivity);
+        recyclerView.setItemAnimator(itemAnimator);
+        when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(recyclerView);
+        when(mFeedSurfaceCoordinator.getView()).thenReturn(recyclerView);
+        return recyclerView;
+    }
+
+    private int getRestoringState() {
+        return mFeedSurfaceMediator.getRestoringStateSupplier().get();
+    }
+
+    /** Returns tags of children that the RecyclerView's LayoutManager no longer tracks. */
+    private static List<String> getStaleChildTags(RecyclerView recyclerView) {
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        List<View> tracked = new ArrayList<>();
+        for (int i = 0; i < layoutManager.getChildCount(); i++) {
+            tracked.add(layoutManager.getChildAt(i));
+        }
+        List<String> stale = new ArrayList<>();
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            View child = recyclerView.getChildAt(i);
+            if (!tracked.contains(child)) stale.add(String.valueOf(child.getTag()));
+        }
+        return stale;
+    }
+
+    /**
+     * A real RecyclerView, as View mocks are not allowed, that hands the test the scroll listener
+     * added by the mediator and the callback it posts for the next frame. The view isn't attached
+     * to a window, so it would never run that callback itself.
+     */
+    private static class TestRecyclerView extends RecyclerView {
+        private OnScrollListener mScrollListener;
+        private Runnable mAnimationCallback;
+
+        TestRecyclerView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void addOnScrollListener(OnScrollListener listener) {
+            super.addOnScrollListener(listener);
+            mScrollListener = listener;
+        }
+
+        @Override
+        public void postOnAnimation(Runnable action) {
+            mAnimationCallback = action;
+        }
+
+        /** Notifies the mediator of a scroll and runs the callback it posts for the next frame. */
+        void scrollAndRunScrollCallback() {
+            mAnimationCallback = null;
+            mScrollListener.onScrolled(this, 0, 0);
+            assertNotNull(mAnimationCallback);
+            mAnimationCallback.run();
+        }
+    }
+
+    /** A minimal adapter whose item views are tagged with their key. */
+    private static class TestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        static final int ITEM_HEIGHT_PX = 100;
+        private final List<String> mItems = new ArrayList<>();
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = new FrameLayout(parent.getContext());
+            view.setLayoutParams(
+                    new RecyclerView.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT_PX));
+            return new RecyclerView.ViewHolder(view) {};
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            holder.itemView.setTag(mItems.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return mItems.size();
+        }
+
+        void add(int position, String key) {
+            mItems.add(position, key);
+            notifyItemInserted(position);
+        }
+
+        void remove(String key) {
+            int position = mItems.indexOf(key);
+            mItems.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
     private FeedSurfaceMediator createMediator() {

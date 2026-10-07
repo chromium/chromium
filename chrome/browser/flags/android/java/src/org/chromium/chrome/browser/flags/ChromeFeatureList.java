@@ -604,6 +604,8 @@ public abstract class ChromeFeatureList {
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
             "FeedImageMemoryCacheSizePercentage";
     public static final String FEED_LOADING_PLACEHOLDER = "FeedLoadingPlaceholder";
+    public static final String FEED_NULL_ITEM_ANIMATOR_ON_SCROLL_RESTORE =
+            "FeedNullItemAnimatorOnScrollRestore";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FLUID_RESIZE = "FluidResize";
     public static final String FLYOUT_IN_BOOKMARKS_BAR = "FlyoutInBookmarksBar";
