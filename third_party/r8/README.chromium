@@ -32,7 +32,9 @@ Local Modifications:
 * Added "playground" directory for quick "how does this optimize" tests.
 * Added "dump_inputs.py" and "print_version.sh" scripts.
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
-  * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
+  * Used in "build/android/gyp/dex.py" to enable desugar dependencies and to
+    discard global synthetics during per-library dexing
+    (--ignore-global-synthetics).
   * Also compiled into cipd/bin/custom_d8 by 3pp.
 
 Update Instructions:
