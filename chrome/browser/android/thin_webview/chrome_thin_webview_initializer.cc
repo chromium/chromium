@@ -34,6 +34,7 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
 void ChromeThinWebViewInitializer::SetContextMenuPopulatorFactory(
     content::WebContents* web_contents,
     const base::android::JavaRef<jobject>& jpopulator_factory) {
+  ContextMenuHelper::CreateForWebContents(web_contents);
   auto* helper = ContextMenuHelper::FromWebContents(web_contents);
   if (helper) {
     helper->SetPopulatorFactory(jpopulator_factory);

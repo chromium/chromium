@@ -90,6 +90,7 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
+#include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -616,6 +617,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   // Track permission recovery success rate for the tab.
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       web_contents);
+
+  ContextMenuHelper::CreateForWebContents(web_contents);
 
   // Attach TrustedVaultEncryptionKeysTabHelper to the tab.
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
