@@ -1112,7 +1112,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     case contextual_search::ContextUploadStatus::kValidationFailed:
     case contextual_search::ContextUploadStatus::kUploadExpired:
       [self handleFailedAttachment:item.identifier];
-      break;
+      return;
     case contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady:
       // Signals are ready, we are no longer waiting.
       _awaitingAttachmentSignals = NO;

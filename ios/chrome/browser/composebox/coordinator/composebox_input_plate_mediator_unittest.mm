@@ -18,10 +18,12 @@
 #import "base/test/task_environment.h"
 #import "components/contextual_search/contextual_search_context_controller.h"
 #import "components/contextual_search/contextual_search_service.h"
+#import "components/contextual_search/contextual_search_types.h"
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 #import "components/contextual_search/internal/test_composebox_query_controller.h"
 #import "components/contextual_search/mock_contextual_search_context_controller.h"
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
+#import "components/lens/lens_overlay_mime_type.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -128,6 +130,9 @@
 // Stored items for testing.
 @property(nonatomic, strong) NSArray<ComposeboxInputItem*>* items;
 
+// Number of times `updateState:forItemWithIdentifier:` was called.
+@property(nonatomic, readonly) NSUInteger updateStateCallCount;
+
 // Whether the given control(s) are shown.
 - (BOOL)showsControls:(ComposeboxInputPlateControls)controls;
 
@@ -142,6 +147,7 @@
 }
 - (void)updateState:(ComposeboxInputItemState)state
     forItemWithIdentifier:(const base::UnguessableToken&)identifier {
+  _updateStateCallCount++;
 }
 - (void)setUIInputState:(ComposeboxUIInputState*)state {
   using enum ComposeboxMode;
@@ -1925,6 +1931,59 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   for (NSUInteger i = 0; i < consumer.items.count; ++i) {
     EXPECT_FALSE(consumer.items[i].isAutoAdded) << "Item at index " << i;
   }
+}
+
+// Tests that when an upload fails in `onContextUploadStatusChanged:`, the item
+// is removed via `handleFailedAttachment:` and
+// `updateState:forItemWithIdentifier:` is not called for the removed item.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       UploadFailureDoesNotUpdateRemovedItemState) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  base::UnguessableToken server_token = base::UnguessableToken::Create();
+  item.serverToken = server_token;
+  ASSERT_EQ(consumer.updateStateCallCount, 0U);
+
+  [mediator onContextUploadStatusChanged:server_token
+                                mimeType:lens::MimeType::kAnnotatedPageContent
+                     contextUploadStatus:contextual_search::
+                                             ContextUploadStatus::kUploadFailed
+                               errorType:std::nullopt];
+
+  EXPECT_EQ(consumer.items.count, 0U);
+  EXPECT_EQ(consumer.updateStateCallCount, 0U);
 }
 
 }  // namespace
