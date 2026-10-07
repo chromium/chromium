@@ -32,6 +32,7 @@ MagicStack.Clank.NewTabPage.Module.TopImpressionV2
 Media.InputStreamDuration
 Media.OutputStreamDuration
 MobileStartup.LaunchCause
+NewTabPage.Customization.BottomSheet.Shown
 NewTabPage.TimeSpent
 Notifications.Scheduler.NotificationLifeCycleEvent.Tips
 Omnibox.SuggestionUsed.ClientSummarizedResultType
@@ -47,6 +48,7 @@ PasswordManager.ProfileStore.TotalAccountsHiRes3.ByType.Overall.
 PasswordManager.ProfileStore.TotalAccountsHiRes3.WithScheme.Https
 PasswordManager.SaveUIDismissalReason
 PasswordManager.SavedPasswordIsGenerated
+Privacy.DeleteBrowsingData.Action
 Session.TotalDuration
 Session.TotalDuration.WithAccount
 Signin.IOSNumberOfDeviceAccounts

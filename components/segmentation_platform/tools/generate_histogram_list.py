@@ -21,11 +21,23 @@ SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..')
 )
 
-# Path to the directory containing segmentation platform models.
-# TODO(haileywang): Also include home_modules/ folder.
-MODEL_DIR = os.path.join(
-    SRC_ROOT, 'components', 'segmentation_platform', 'embedder', 'default_model'
-)
+# Paths to the directories containing segmentation platform models.
+MODEL_DIRS = [
+    os.path.join(
+        SRC_ROOT,
+        'components',
+        'segmentation_platform',
+        'embedder',
+        'default_model',
+    ),
+    os.path.join(
+        SRC_ROOT,
+        'components',
+        'segmentation_platform',
+        'embedder',
+        'home_modules',
+    ),
+]
 
 # Name of the golden files.
 # TODO(haileywang): Add ukm metrics.
@@ -50,29 +62,58 @@ def _GetUserActionsFilePath():
     return os.path.join(component_directory, 'tools', USER_ACTIONS_FILENAME)
 
 
-def _FindMetrics(cwd, patterns):
-    """Finds all metrics matching the given patterns."""
-    metrics = set()
-    for root, _, files in os.walk(cwd):
-        for filename in files:
-            if not filename.endswith('.cc') or filename.endswith(
-                ('_unittest.cc', '_test.cc')
-            ):
-                continue
+# Matches an argument that is either a string literal (captured as group 1) or
+# the name of a `const char[]` constant (captured as the `var` group).
+_LITERAL_OR_CONST_ARG = r'(?:"([^"]+)"|(?P<var>\w+))'
 
-            file_path = os.path.join(root, filename)
-            with open(file_path, 'r', encoding='utf-8') as f:
-                try:
-                    file_contents = f.read()
-                    for pattern in patterns:
-                        for match in pattern.finditer(file_contents):
-                            metrics.add(match.group(1))
-                except Exception as e:
-                    print(f"Error reading file {file_path}: {e}")
+
+def _FindMetrics(dirs, patterns):
+    """Finds all metrics matching the given patterns.
+
+    Each pattern captures the metric name as group 1. Patterns built with
+    _LITERAL_OR_CONST_ARG may instead capture a constant name in the `var`
+    group, which is resolved against the `const char[]` declarations in the
+    same file.
+    """
+    metrics = set()
+    const_decl_pattern = re.compile(
+        r'(?:const|constexpr)\s+char\s+(\w+)\s*\[\]\s*=\s*"([^"]+)"',
+        re.MULTILINE,
+    )
+    for cwd in dirs:
+        for root, _, files in os.walk(cwd):
+            for filename in files:
+                if not filename.endswith('.cc') or filename.endswith(
+                    ('_unittest.cc', '_test.cc')
+                ):
+                    continue
+
+                file_path = os.path.join(root, filename)
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    try:
+                        file_contents = f.read()
+                        # This is a flat per-file map that ignores namespaces
+                        # and scopes, so if two constants in one file share a
+                        # name, the last declaration wins. This assumes
+                        # constants are file-scoped with unique names, which
+                        # holds for home_modules/ today.
+                        const_map = {
+                            m.group(1): m.group(2)
+                            for m in const_decl_pattern.finditer(file_contents)
+                        }
+                        for pattern in patterns:
+                            for match in pattern.finditer(file_contents):
+                                var_name = match.groupdict().get('var')
+                                if var_name is None:
+                                    metrics.add(match.group(1))
+                                elif var_name in const_map:
+                                    metrics.add(const_map[var_name])
+                    except Exception as e:
+                        print(f"Error reading file {file_path}: {e}")
     return sorted(list(metrics))
 
 
-def _FindHistograms(cwd):
+def _FindHistograms(dirs):
     """Finds all histograms used in the segmentation platform models."""
     histogram_patterns = [
         re.compile(
@@ -87,17 +128,21 @@ def _FindHistograms(cwd):
         re.compile(
             r'features::LatestOrDefaultValue\s*\(\s*"([^"]+)"', re.MULTILINE
         ),
+        re.compile(
+            r'DEFINE_UMA_FEATURE_\w+\s*\(\s*\w+\s*,\s*' + _LITERAL_OR_CONST_ARG,
+            re.MULTILINE,
+        ),
     ]
-    return _FindMetrics(cwd, histogram_patterns)
+    return _FindMetrics(dirs, histogram_patterns)
 
 
-def _FindUserActions(cwd):
+def _FindUserActions(dirs):
     """Finds all user actions used in the segmentation platform models."""
     user_action_patterns = [
         re.compile(r'FromUserAction\s*\(\s*"([^"]+)"', re.MULTILINE),
         re.compile(r'features::UserAction\s*\(\s*"([^"]+)"', re.MULTILINE),
     ]
-    return _FindMetrics(cwd, user_action_patterns)
+    return _FindMetrics(dirs, user_action_patterns)
 
 
 def _CreateFileContent(metrics):
@@ -126,7 +171,7 @@ def GetActualHistogramNames():
 
 def GetExpectedHistogramsFileContent():
     """Creates the expected content of the histograms golden file."""
-    histograms = _FindHistograms(MODEL_DIR)
+    histograms = _FindHistograms(MODEL_DIRS)
     return _CreateFileContent(histograms)
 
 
@@ -151,7 +196,7 @@ def GetActualActionNames():
 
 def GetExpectedUserActionsFileContent():
     """Creates the expected content of the user actions golden file."""
-    user_actions = _FindUserActions(MODEL_DIR)
+    user_actions = _FindUserActions(MODEL_DIRS)
     return _CreateFileContent(user_actions)
 
 

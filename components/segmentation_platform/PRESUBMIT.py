@@ -58,9 +58,14 @@ def GetPylintConfiguration(input_api, output_api) -> List:
 
 def _CheckUmaMetrics(input_api, output_api):
     """Checks if the UMA metric lists are up to date."""
-    # Path to the directory containing segmentation platform models.
-    model_dir = input_api.os_path.join(
-        'components', 'segmentation_platform', 'embedder', 'default_model'
+    # Paths to the directories containing segmentation platform models.
+    model_dirs = (
+        input_api.os_path.join(
+            'components', 'segmentation_platform', 'embedder', 'default_model'
+        ),
+        input_api.os_path.join(
+            'components', 'segmentation_platform', 'embedder', 'home_modules'
+        ),
     )
 
     # Check if any of the affected files are relevant to the histogram check.
@@ -68,7 +73,7 @@ def _CheckUmaMetrics(input_api, output_api):
     for f in input_api.AffectedFiles():
         path = f.LocalPath()
         if (
-            path.startswith(model_dir)
+            path.startswith(model_dirs)
             and path.endswith('.cc')
             and not path.endswith(('_unittest.cc', '_test.cc'))
         ):
