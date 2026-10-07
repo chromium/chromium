@@ -2154,6 +2154,16 @@ void BrowserAutofillManager::OnFocusOnNonFormFieldImpl() {
 
   ProcessPendingFormForUpload();
 
+  // The focus left the field the suggestions were shown for, so they are
+  // obsolete. Don't rely on `DidEndTextFieldEditing()` for this: Blink only
+  // dispatches it for <input> elements, not for <textarea> or contenteditable
+  // elements, and the renderer may skip it altogether (crbug.com/570488818).
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillHideSuggestionsOnFocusChange)) {
+    client().HideSuggestions(SuggestionHidingReason::kFocusChanged,
+                             /*product=*/std::nullopt);
+  }
+
   if (external_delegate_->HasActiveScreenReader()) {
     external_delegate_->OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
@@ -2170,6 +2180,18 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
     // A new form has received the focus, so we may have votes to upload for the
     // old form.
     ProcessPendingFormForUpload();
+  }
+
+  // See `OnFocusOnNonFormFieldImpl()`. Suggestions for the newly focused field
+  // itself are kept: the renderer may re-announce the focus of the same field,
+  // and `AskForValuesToFill()` for the new field may already have been
+  // processed.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillHideSuggestionsOnFocusChange) &&
+      external_delegate_->GetQueriedFieldId() &&
+      external_delegate_->GetQueriedFieldId() != field_id) {
+    client().HideSuggestions(SuggestionHidingReason::kFocusChanged,
+                             /*product=*/std::nullopt);
   }
 
   auto [form_structure, autofill_field] =

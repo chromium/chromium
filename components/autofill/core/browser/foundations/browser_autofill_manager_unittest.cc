@@ -5595,6 +5595,61 @@ TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
       AutofillManagerTestApi::pass_key());
 }
 
+// Tests that suggestions are hidden when the focus moves to a non-form field.
+// This must not depend on DidEndTextFieldEditing(), which Blink only sends for
+// <input> elements (crbug.com/570488818).
+TEST_F(BrowserAutofillManagerTest, OnFocusOnNonFormField_HidesSuggestions) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillHideSuggestionsOnFocusChange);
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(AnyNumber());
+  EXPECT_CALL(
+      autofill_client(),
+      HideSuggestions(SuggestionHidingReason::kFocusChanged, Eq(std::nullopt)));
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
+}
+
+// Tests that suggestions are hidden when the focus moves to a form field other
+// than the one the suggestions were queried for.
+TEST_F(BrowserAutofillManagerTest,
+       OnFocusOnFormField_HidesSuggestionsOfPreviouslyQueriedField) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillHideSuggestionsOnFocusChange);
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(AnyNumber());
+  EXPECT_CALL(
+      autofill_client(),
+      HideSuggestions(SuggestionHidingReason::kFocusChanged, Eq(std::nullopt)));
+  autofill_manager().OnFocusOnFormField(form, form.fields()[1].global_id(),
+                                        AutofillManagerTestApi::pass_key());
+}
+
+// Tests that suggestions are kept when the focus is (re-)announced for the
+// very field the suggestions were queried for. Screen readers may defer focus
+// events (crbug.com/969202), and the renderer may send AskForValuesToFill()
+// before FocusOnFormField() for the same field.
+TEST_F(BrowserAutofillManagerTest,
+       OnFocusOnFormField_KeepsSuggestionsOfQueriedField) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillHideSuggestionsOnFocusChange);
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(AnyNumber());
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kFocusChanged, _))
+      .Times(0);
+  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id(),
+                                        AutofillManagerTestApi::pass_key());
+}
+
 // Tests that keyboard accessory is not shown if TTF is eligible.
 TEST_F(BrowserAutofillManagerTest, TouchToFillSuggestionForIban) {
   FormData form = CreateTestIbanFormData();

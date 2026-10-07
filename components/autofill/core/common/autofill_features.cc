@@ -848,6 +848,17 @@ BASE_FEATURE(kAutofillGmailOtpPreLaunchMetrics,
 // When enabled, Greek regexes are used for parsing in branded builds.
 BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, `BrowserAutofillManager` hides suggestions as soon as the
+// renderer reports that the focus moved away from the field the suggestions
+// were shown for (FocusOnFormField() for a different field or
+// FocusOnNonFormField()). Without this, hiding relies on
+// DidEndTextFieldEditing(), which Blink only sends for <input> elements, so
+// suggestions shown for <textarea> or contenteditable elements leak into the
+// keyboard accessory after the user taps away.
+// TODO(crbug.com/570488818): Remove once the experiment is over.
+BASE_FEATURE(kAutofillHideSuggestionsOnFocusChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether `AutofillPopupHideHelper` ignores frame resize events
 // when the `WebContents` size is unchanged.
 // TODO(crbug.com/545556982): Remove after confirming there is no regression.
