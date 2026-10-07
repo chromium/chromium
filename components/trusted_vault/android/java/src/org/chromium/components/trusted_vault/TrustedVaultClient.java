@@ -197,27 +197,7 @@ public class TrustedVaultClient {
         if (factory != null) {
             return factory.createBackend(securityDomainId);
         }
-        // TODO(crbug.com/540854648): Remove this legacy fallback once the downstream
-        // implementation is migrated from @ServiceImpl(Backend.class) (which only supports
-        // CHROME_SYNC) to @ServiceImpl(BackendFactory.class).
-        if (securityDomainId == SecurityDomainId.CHROME_SYNC) {
-            Backend legacyBackend = ServiceLoaderUtil.maybeCreate(Backend.class);
-            if (legacyBackend != null) {
-                return legacyBackend;
-            }
-        }
         return new EmptyBackend();
-    }
-
-    /**
-     * Deprecated overload for downstream compatibility until callers pass SecurityDomainId.
-     *
-     * <p>TODO(crbug.com/540854648): Remove once downstream callers are migrated to
-     * get(SecurityDomainId).
-     */
-    @Deprecated
-    public static TrustedVaultClient get() {
-        return get(SecurityDomainId.CHROME_SYNC);
     }
 
     /**
