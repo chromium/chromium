@@ -185,8 +185,11 @@ Texture* CreateGLES2TextureWithLightRef(GLuint service_id, GLenum target);
 }  // namespace gles2
 
 // Drains all GL errors from `gl_api` and returns the first error encountered,
-// or GL_NO_ERROR if there were no errors.
+// or GL_NO_ERROR if there were no errors or `gl_api` is null.
 inline GLenum DrainGLErrors(gl::GLApi* gl_api) {
+  if (!gl_api) {
+    return GL_NO_ERROR;
+  }
   GLenum error = gl_api->glGetErrorFn();
   GLenum first_error = error;
   while (error != GL_NO_ERROR) {

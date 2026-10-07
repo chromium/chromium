@@ -4,8 +4,6 @@
 
 #include "gpu/command_buffer/service/raster_decoder.h"
 
-#include "cc/paint/paint_op_buffer.h"
-
 #include <limits>
 #include <memory>
 #include <string>
@@ -16,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/raster_cmd_format.h"
@@ -26,9 +25,12 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/gl_factory.h"
@@ -524,6 +526,145 @@ TEST_F(RasterDecoderOOPTest, SharedImageProviderRejectsActiveOutputMailbox) {
   sk_sp<SkImage> image = provider->OpenSharedImageForRead(mailbox, error);
   EXPECT_FALSE(image);
   EXPECT_EQ(error, cc::SharedImageProvider::Error::kNoAccess);
+}
+
+namespace {
+
+// Source backing which raises a GL error when accessed. ProduceMemory()
+// returns a working CPU representation, while ProduceSkiaGanesh() fails.
+class GLErrorOnAccessTestImageBacking : public TestImageBacking {
+ public:
+  GLErrorOnAccessTestImageBacking(const Mailbox& mailbox,
+                                  const SharedImageInfo& si_info,
+                                  bool raise_gl_error)
+      : TestImageBacking(mailbox, si_info, /*estimated_size=*/0),
+        raise_gl_error_(raise_gl_error) {
+    bitmap_.allocN32Pixels(si_info.size.width(), si_info.size.height());
+    bitmap_.eraseColor(SK_ColorRED);
+    SetCleared();
+  }
+
+  void MaybeRaiseGLError() {
+    if (raise_gl_error_) {
+      glEnable(GL_NONE);
+    }
+  }
+
+  SkPixmap pixmap() const { return bitmap_.pixmap(); }
+
+ protected:
+  std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
+
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override {
+    MaybeRaiseGLError();
+    return nullptr;
+  }
+
+ private:
+  const bool raise_gl_error_;
+  SkBitmap bitmap_;
+};
+
+class GLErrorOnAccessMemoryImageRepresentation
+    : public MemoryImageRepresentation {
+ public:
+  GLErrorOnAccessMemoryImageRepresentation(
+      SharedImageManager* manager,
+      GLErrorOnAccessTestImageBacking* backing,
+      MemoryTypeTracker* tracker)
+      : MemoryImageRepresentation(manager, backing, tracker) {}
+
+ protected:
+  SkPixmap BeginReadAccess() override {
+    auto* backing =
+        static_cast<GLErrorOnAccessTestImageBacking*>(this->backing());
+    backing->MaybeRaiseGLError();
+    return backing->pixmap();
+  }
+};
+
+std::unique_ptr<MemoryImageRepresentation>
+GLErrorOnAccessTestImageBacking::ProduceMemory(SharedImageManager* manager,
+                                               MemoryTypeTracker* tracker) {
+  return std::make_unique<GLErrorOnAccessMemoryImageRepresentation>(
+      manager, this, tracker);
+}
+
+}  // namespace
+
+class RasterDecoderOOPCopyGLErrorTest
+    : public RasterDecoderOOPTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool raise_gl_error() const { return GetParam(); }
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> CreateSourceImage(
+      const Mailbox& mailbox) {
+    SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(2, 2),
+                            gfx::ColorSpace::CreateSRGB(),
+                            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                            SHARED_IMAGE_USAGE_RASTER_READ, "TestLabel");
+    return shared_image_manager()->Register(
+        std::make_unique<GLErrorOnAccessTestImageBacking>(mailbox, si_info,
+                                                          raise_gl_error()),
+        &memory_tracker_);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, RasterDecoderOOPCopyGLErrorTest, testing::Bool());
+
+// A GL error raised while copying from a CPU-backed source must leave the
+// destination uncleared.
+TEST_P(RasterDecoderOOPCopyGLErrorTest, CopyFromMemory) {
+  if (!context_state_->GrContextIsGL()) {
+    GTEST_SKIP() << "GL error checks only apply to Ganesh-GL.";
+  }
+  Mailbox source_mailbox = Mailbox::Generate();
+  auto source_ref = CreateSourceImage(source_mailbox);
+  GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
+  CopyMailboxes(mailboxes, source_mailbox, client_texture_mailbox_);
+
+  SharedImageRepresentationFactory repr_factory(shared_image_manager(),
+                                                nullptr);
+  auto representation =
+      repr_factory.ProduceSkia(client_texture_mailbox_, context_state_.get());
+  EXPECT_FALSE(representation->IsCleared());
+
+  auto& cmd = *GetImmediateAs<cmds::CopySharedImageINTERNALImmediate>();
+  cmd.Init(0, 0, 0, 0, 2, 2, 2, 2, mailboxes);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_EQ(raise_gl_error() ? GL_INVALID_ENUM : GL_NO_ERROR, GetGLError());
+  EXPECT_EQ(!raise_gl_error(), representation->IsCleared());
+}
+
+// A GL error raised on the path that clears the destination when the source
+// can't be read must leave the destination uncleared.
+TEST_P(RasterDecoderOOPCopyGLErrorTest, ClearWhenSourceUnavailable) {
+  if (!context_state_->GrContextIsGL()) {
+    GTEST_SKIP() << "GL error checks only apply to Ganesh-GL.";
+  }
+  Mailbox source_mailbox = Mailbox::Generate();
+  auto source_ref = CreateSourceImage(source_mailbox);
+  GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
+  CopyMailboxes(mailboxes, source_mailbox, client_texture_mailbox_);
+
+  SharedImageRepresentationFactory repr_factory(shared_image_manager(),
+                                                nullptr);
+  auto representation =
+      repr_factory.ProduceSkia(client_texture_mailbox_, context_state_.get());
+  EXPECT_FALSE(representation->IsCleared());
+
+  // Scaling skips the CPU upload path.
+  auto& cmd = *GetImmediateAs<cmds::CopySharedImageINTERNALImmediate>();
+  cmd.Init(0, 0, 0, 0, 1, 1, 2, 2, mailboxes);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(!raise_gl_error(), representation->IsCleared());
 }
 
 }  // namespace raster
