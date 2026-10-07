@@ -390,8 +390,13 @@ def _InitSubprojects(android_deps_dir, build_android_deps_dir,
 
 
 def _BuildGradleCmd(build_android_deps_dir, task):
+    # --no-daemon: the packager bot runs the androidx and autorolled rolls
+    # back to back with identical buildSrc copies. A reused daemon serves the
+    # second run stale Groovy metaclass state from the first, breaking the
+    # private method call in BuildConfigGenerator.main(). A fresh JVM costs a
+    # few seconds per run.
     return [
-        _GRADLEW, '-p', build_android_deps_dir, '--stacktrace',
+        _GRADLEW, '--no-daemon', '-p', build_android_deps_dir, '--stacktrace',
         '--warning-mode', 'all', task
     ]
 
