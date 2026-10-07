@@ -240,7 +240,9 @@ BrowsingInstanceId BrowsingInstance::NextBrowsingInstanceId() {
 BrowsingInstance::~BrowsingInstance() {
   // We should only be deleted when all of the SiteInstances that refer to
   // us are gone.
-  CHECK(site_instance_map_.empty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/569105157): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(site_instance_map_.empty());
   CHECK_EQ(0u, active_contents_count_, base::NotFatalUntil::M160);
   CHECK(!default_site_instance_, base::NotFatalUntil::M160);
   CHECK(!default_site_instance_group_, base::NotFatalUntil::M160);
