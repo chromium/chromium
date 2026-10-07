@@ -736,6 +736,15 @@ void QuicSessionPool::AsyncDnsJob::DestroyOtherConnector(
         }
         return dict;
       });
+  for (EndpointConnector* other : {fresh_state_.primary_connector.get(),
+                                   fresh_state_.secondary_connector.get(),
+                                   stale_state_.primary_connector.get(),
+                                   stale_state_.secondary_connector.get()}) {
+    if (other && other != &connector) {
+      other->OnSuperseded();
+    }
+  }
+
   ConnectionState& state = GetState(connector);
   ConnectionState& other_state =
       (&state == &fresh_state_) ? stale_state_ : fresh_state_;

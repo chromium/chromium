@@ -302,6 +302,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, DnsAsyncSessionEstablishmentSync) {
 // DNS completes asynchronously and the crypto handshake completes
 // asynchronously.
 TEST_P(QuicSessionPoolAsyncDnsJobTest, DnsAsyncSessionEstablishmentAsync) {
+  base::HistogramTester histograms;
   Initialize();
   pool_->set_has_quic_ever_worked_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -345,6 +346,9 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, DnsAsyncSessionEstablishmentAsync) {
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Success.First.IPv4",
+      base::TimeDelta(), 1);
 }
 
 // DNS succeeds but provides zero endpoints. The job must fail with
@@ -2646,6 +2650,14 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SlowTimerStartsSecondaryThatSucceeds) {
       "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
       "FinalDnsResult",
       0);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Superseded.First.IPv6",
+      SlowTimerDelay() + kTimeUntilSuccess, 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Canceled.First.IPv6", 0);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Success.Second.IPv4",
+      kTimeUntilSuccess, 1);
 }
 
 // The primary connector succeeds after the secondary connector started its
@@ -2730,6 +2742,14 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, PrimarySucceedsAfterSecondaryStarted) {
       "Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime."
       "JobSuccessWithDnsInFlight",
       0);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Success.First.IPv6",
+      SlowTimerDelay(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Superseded.Second.IPv4",
+      base::TimeDelta(), 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Canceled.Second.IPv4", 0);
 }
 
 // The slow timer fires while the primary connector waits for a candidate.
@@ -3186,6 +3206,15 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, JobFailsWithMostRecentAttemptFailure) {
   histograms.ExpectTimeBucketCount("Net.QuicSession.AsyncDnsJob.TimeToFailure",
                                    SlowTimerDelay(), 1);
   histograms.ExpectTotalCount("Net.QuicSession.AsyncDnsJob.SuccessSource", 0);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Failure.First.IPv6",
+      SlowTimerDelay(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Failure.Second.IPv4",
+      base::TimeDelta(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Failure.ThirdOrLater.IPv6",
+      base::TimeDelta(), 1);
 }
 
 // The job completes before the slow timer fires. Time passing afterwards
@@ -3616,6 +3645,15 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest,
   histograms.ExpectUniqueSample(
       "Net.QuicSession.AsyncDnsJob.SuccessSource",
       static_cast<int>(SuccessSource::kSlowTimerConnector), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Superseded.First.IPv6",
+      SlowTimerDelay(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Failure.Second.IPv4",
+      base::TimeDelta(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Success.ThirdOrLater.IPv6",
+      base::TimeDelta(), 1);
 }
 
 // While DNS resolution is in flight, connectors do not cross over to the
@@ -5054,6 +5092,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
 
 TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
        FreshDnsFailsWhileStaleHangs) {
+  base::HistogramTester histograms;
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       fake_resolver_.AddFakeRequest();
   InitializeWithFakeResolver();
@@ -5098,6 +5137,9 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
 
   stale_data.ExpectAllReadDataConsumed();
   stale_data.ExpectAllWriteDataConsumed();
+  histograms.ExpectUniqueTimeSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptTime.Canceled.First.IPv4",
+      base::TimeDelta(), 1);
 }
 
 TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,

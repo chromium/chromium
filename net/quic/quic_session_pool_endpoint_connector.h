@@ -95,6 +95,10 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   // while this connector has one.
   void PopulateNetErrorDetails(NetErrorDetails* details) const;
 
+  // Cancels the attempt in flight, if any, because another connector settled
+  // the job.
+  void OnSuperseded();
+
   // QuicSessionAttempt::Delegate implementation.
   QuicSessionPool* GetQuicSessionPool() override;
   const QuicSessionAliasKey& GetKey() override;
@@ -103,6 +107,8 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   void OnQuicSessionCreationComplete(int rv) override;
 
  private:
+  void RecordAttemptTime(std::string_view result) const;
+
   // Hands the failed attempt's result and error details to the job, then
   // destroys the attempt. The job keeps the error details because the attempt
   // does not survive its own failure.

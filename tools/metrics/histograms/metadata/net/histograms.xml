@@ -5629,6 +5629,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Net.QuicSession.AsyncDnsJob.AttemptTime.{Result}.{AttemptOrder}.{AddressFamily}"
+    units="ms" expires_after="2027-02-28">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time from the start of a connection attempt by a
+    QuicSessionPool::EndpointConnector to when {Result}. Partitioned by the
+    job-wide attempt order ({AttemptOrder}) and the endpoint's address family
+    ({AddressFamily}). Recorded once per connection attempt started by a
+    QuicSessionPool::AsyncDnsJob. Only recorded when the AsyncDnsQuicJob feature
+    is enabled.
+  </summary>
+  <token key="Result">
+    <variant name="Canceled"
+        summary="the attempt was canceled before completing for reasons other
+                 than another connector settling the job"/>
+    <variant name="Failure" summary="the attempt failed"/>
+    <variant name="Success" summary="the attempt succeeded"/>
+    <variant name="Superseded"
+        summary="the attempt was canceled because another connector settled
+                 the job"/>
+  </token>
+  <token key="AttemptOrder">
+    <variant name="First" summary="first attempt"/>
+    <variant name="Second" summary="second attempt"/>
+    <variant name="ThirdOrLater" summary="third or later attempt"/>
+  </token>
+  <token key="AddressFamily">
+    <variant name="IPv4" summary="IPv4"/>
+    <variant name="IPv6" summary="IPv6"/>
+  </token>
+</histogram>
+
+<histogram
     name="Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime.{MeasurementPoint}"
     units="ms" expires_after="2027-02-28">
   <owner>bashi@chromium.org</owner>
