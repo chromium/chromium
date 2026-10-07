@@ -181,6 +181,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="VisiblePageLoaded"/>
   <int value="8" label="VisiblePageLoadingTimedOut"/>
   <int value="9" label="NoVisiblePageFound"/>
+  <int value="10" label="VisiblePagesHidden"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/after_startup_task_utils.h:StartupIsCompleteReason) -->

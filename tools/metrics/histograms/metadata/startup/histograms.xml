@@ -864,7 +864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BrowserStartupCompleteReason"
-    enum="StartupIsCompleteReason" expires_after="2026-11-16">
+    enum="StartupIsCompleteReason" expires_after="2027-10-06">
   <owner>joenotcharles@google.com</owner>
   <owner>gab@chromium.org</owner>
   <summary>

@@ -267,7 +267,10 @@ class StartupObserverTest
   }
 
   // Call at the end of the test, if no visible page will be detected.
-  void ExpectNoVisiblePage() {
+  // `expected_reason` is kVisiblePagesHidden if a visible page was detected
+  // earlier, but was hidden or closed before it finished loading.
+  void ExpectNoVisiblePage(StartupIsCompleteReason expected_reason =
+                               StartupIsCompleteReason::kNoVisiblePageFound) {
     if (GetParam() == StartupObserverFeatureParams::kFeatureDisabled) {
       // Without the feature, it waits the full failsafe timeout.
       ExpectFailsafeTimeout();
@@ -276,9 +279,8 @@ class StartupObserverTest
     task_env().FastForwardBy(kVisibleTabTimeout);
     FlushTasks();
     EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-    histogram_tester_.ExpectUniqueSample(
-        "Startup.BrowserStartupCompleteReason",
-        StartupIsCompleteReason::kNoVisiblePageFound, 1);
+    histogram_tester_.ExpectUniqueSample("Startup.BrowserStartupCompleteReason",
+                                         expected_reason, 1);
   }
 
   // Call at the end of the test if the observer is expected to wait for the
@@ -669,6 +671,178 @@ TEST_P(StartupObserverTest, PageBecomesTabAfterStart) {
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
 
   page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
+}
+
+// Tests that make sure StartupObserver detects tabs that finished loading
+// before they became visible tabs, since their loading state won't change
+// again.
+
+TEST_P(StartupObserverTest, NonVisibleTabLoadsThenBecomesVisible) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  ASSERT_FALSE(page_node->IsVisible());
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Ignore the loading state because the page isn't visible.
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetIsVisible(true);
+  ExpectVisiblePageLoaded();
+}
+
+TEST_P(StartupObserverTest, NonVisibleTabTimesOutThenBecomesVisible) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  ASSERT_FALSE(page_node->IsVisible());
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Ignore the loading state because the page isn't visible.
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetIsVisible(true);
+  if (GetParam() == StartupObserverFeatureParams::kFeatureDisabled ||
+      GetParam() ==
+          StartupObserverFeatureParams::kFeatureEnabledWaitForLoadOrTimeout) {
+    // Watching for the LoadingTimedOut state.
+    ExpectVisiblePageLoaded(
+        StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
+    return;
+  }
+
+  // Not watching for the kLoadingTimedOut state, so startup is not complete.
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ExpectFailsafeTimeout();
+}
+
+TEST_P(StartupObserverTest, VisibleNonTabLoadsThenBecomesTab) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  ASSERT_EQ(page_node->GetType(), PageType::kUnknown);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  if (GetParam() == StartupObserverFeatureParams::kFeatureDisabled) {
+    // Without the feature, StartupObserver monitors all pages, not just tabs.
+    ExpectVisiblePageLoaded();
+    return;
+  }
+
+  // Ignore the loading state because the page isn't a tab.
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetType(PageType::kTab);
+  ExpectVisiblePageLoaded();
+}
+
+// Tests that make sure StartupObserver stops waiting if all visible tabs are
+// hidden or closed before one finishes loading, but not if a visible tab
+// remains.
+
+TEST_P(StartupObserverTest, VisibleTabHiddenWhileLoading) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Eg. the window is minimized, and then the tab finishes loading. Ignore the
+  // loading state because the page isn't visible.
+  page_node->SetIsVisible(false);
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ExpectNoVisiblePage(StartupIsCompleteReason::kVisiblePagesHidden);
+}
+
+TEST_P(StartupObserverTest, VisibleTabClosedWhileLoading) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  page_node.reset();
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ExpectNoVisiblePage(StartupIsCompleteReason::kVisiblePagesHidden);
+}
+
+TEST_P(StartupObserverTest, SwitchTabsWhileLoading) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node1 = CreateNode<PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
+  page_node1->SetIsVisible(true);
+  auto page_node2 = CreateNode<PageNodeImpl>();
+  page_node2->SetType(PageType::kTab);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Switching tabs hides the old tab before showing the new one, so no tab is
+  // visible for a moment. This shouldn't time out.
+  page_node1->SetIsVisible(false);
+  page_node2->SetIsVisible(true);
+  task_env().FastForwardBy(kVisibleTabTimeout);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
+}
+
+TEST_P(StartupObserverTest, OneOfTwoVisibleTabsHidden) {
+  auto page_node1 = CreateNode<PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
+  page_node1->SetIsVisible(true);
+  auto page_node2 = CreateNode<PageNodeImpl>();
+  page_node2->SetType(PageType::kTab);
+  page_node2->SetIsVisible(true);
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Eg. one of two windows is minimized. Shouldn't time out since a visible tab
+  // still exists.
+  page_node1->SetIsVisible(false);
+  task_env().FastForwardBy(kVisibleTabTimeout);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   ExpectVisiblePageLoaded();
 }
 

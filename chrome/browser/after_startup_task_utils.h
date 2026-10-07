@@ -40,7 +40,8 @@ enum class StartupIsCompleteReason {
   kVisiblePageLoadingFinished = 7,
   kVisiblePageLoadingTimedOut = 8,
   kNoVisiblePageFound = 9,
-  kMaxValue = kNoVisiblePageFound,
+  kVisiblePagesHidden = 10,
+  kMaxValue = kVisiblePagesHidden,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:StartupIsCompleteReason)
 
