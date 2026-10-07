@@ -29,7 +29,6 @@ source_set("tab_groups") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/common/extensions",

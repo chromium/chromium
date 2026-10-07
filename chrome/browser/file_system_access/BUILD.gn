@@ -52,7 +52,6 @@ source_set("impl") {
     "//chrome/browser/download",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/safe_browsing",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/file_system_access",
     "//components/content_settings/core/browser",
     "//components/guest_view/buildflags",

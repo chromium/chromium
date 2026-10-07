@@ -112,7 +112,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
     "//chrome/browser/sessions:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/common",
     "//chrome/common:constants",

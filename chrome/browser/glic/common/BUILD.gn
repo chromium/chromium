@@ -65,7 +65,6 @@ source_set("browser_tests") {
   ]
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/tabs:tab_strip",
     ]

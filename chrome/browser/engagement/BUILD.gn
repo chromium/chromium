@@ -81,7 +81,6 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/browser",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//components/site_engagement/content",
       "//components/webapps/common",

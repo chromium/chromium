@@ -26,7 +26,6 @@ source_set("tab_capture") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/common:non_code_constants",
     "//components/sessions",

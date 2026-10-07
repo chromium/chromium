@@ -23,7 +23,6 @@ source_set("extension_action") {
   deps = [
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/extensions:extension_popup_types",
     "//chrome/browser/ui/toolbar",

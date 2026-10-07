@@ -26,7 +26,6 @@ source_set("glic_private") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/navigator",
     "//chrome/common/extensions/api",
     "//components/contextual_tasks/public",

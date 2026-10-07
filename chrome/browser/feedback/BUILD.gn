@@ -260,7 +260,6 @@ if (!is_android) {
     deps = [
       ":feedback_impl",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/updater",
       "//chrome/test:test_support",
@@ -295,7 +294,6 @@ if (!is_android) {
     deps = [
       ":feedback_impl",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/toolbar",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

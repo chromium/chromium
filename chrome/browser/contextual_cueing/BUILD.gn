@@ -68,7 +68,6 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",

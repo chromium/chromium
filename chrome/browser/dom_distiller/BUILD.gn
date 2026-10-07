@@ -75,7 +75,6 @@ if (!is_android) {
       "//base/test:test_support",
       "//build:chromeos_buildflags",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/tabs:tab_strip",

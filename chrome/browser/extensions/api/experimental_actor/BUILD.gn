@@ -21,7 +21,6 @@ source_set("experimental_actor") {
     "//chrome/browser/actor",
     "//chrome/browser/ai",
     "//chrome/browser/extensions",
-    "//chrome/browser/ui",
     "//components/actor/core:journal",
     "//components/actor/core:task_id",
   ]

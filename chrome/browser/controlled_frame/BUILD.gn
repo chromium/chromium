@@ -192,7 +192,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/renderer_context_menu:test_support",
     "//chrome/browser/serial",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hid",
     "//chrome/browser/ui/views:file_system_access_test_support",

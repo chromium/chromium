@@ -553,7 +553,6 @@ source_set("impl") {
       "desktop/data_sharing_ui_delegate_desktop.cc",
     ]
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/data_sharing",
     ]
@@ -598,7 +597,6 @@ if (!is_android) {
       ":data_sharing",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/common",
       "//chrome/test:test_support_ui",
       "//components/data_sharing/public",
