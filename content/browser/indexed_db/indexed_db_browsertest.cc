@@ -1571,10 +1571,19 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ForceCloseReopen) {
   // Use IDB in the simplest way possible.
   GURL test_url = GetTestUrl("indexeddb", "database_test.html");
   SimpleTest(test_url);
+  ASSERT_TRUE(
+      ExecJs(shell(),
+             "window.dbClosed = new Promise(resolve => "
+             "db.addEventListener('close', () => setTimeout(resolve, 0), "
+             "{once: true}));",
+             EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   // Forcibly close the bucket and delete the data while the page is still
   // active.
   DeleteBucketData(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url)));
+  // Wait for the renderer to process `ForcedClose()` and the subsequent
+  // `IDBFactory` Mojo disconnect before reopening.
+  ASSERT_TRUE(ExecJs(shell(), "window.dbClosed"));
   // Use IDB again through the same IDBFactory (`window.indexedDB`). This
   // re-creates the backing store.
   EXPECT_TRUE(ExecJs(shell(), "test()"));
