@@ -95,6 +95,7 @@ public class BottomUiThemeColorProvider extends ThemeColorProvider
 
     @Override
     public void destroy() {
+        super.destroy();
         mToolbarThemeColorProvider.removeThemeColorObserver(this);
         mToolbarThemeColorProvider.removeTintObserver(this);
         mBrowserControlsStateProvider.removeObserver(this);

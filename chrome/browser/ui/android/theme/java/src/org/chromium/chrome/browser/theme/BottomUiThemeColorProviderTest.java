@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.theme;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -167,5 +169,21 @@ public class BottomUiThemeColorProviderTest {
         mColorProvider.onBottomControlsBackgroundColorChanged(Color.YELLOW);
 
         assertEquals(newColor, mColorProvider.getThemeColor());
+    }
+
+    @Test
+    public void testDestroyClearsDownstreamObservers() {
+        ThemeColorProvider.ThemeColorObserver colorObserver =
+                mock(ThemeColorProvider.ThemeColorObserver.class);
+        ThemeColorProvider.TintObserver tintObserver = mock(ThemeColorProvider.TintObserver.class);
+        mColorProvider.addThemeColorObserver(colorObserver);
+        mColorProvider.addTintObserver(tintObserver);
+
+        mColorProvider.destroy();
+
+        mColorProvider.updatePrimaryColor(Color.BLUE, false);
+        mColorProvider.updateTint(
+                mToolbarTintOtherList, mToolbarTintOtherList, BrandedColorScheme.INCOGNITO);
+        verifyNoInteractions(colorObserver, tintObserver);
     }
 }
