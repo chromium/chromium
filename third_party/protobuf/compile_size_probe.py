@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Measures and compares compiler input and symbol sizes for protobuf.
+"""Measures and compares compiler input sizes, symbol sizes, and LLVM IR diffs.
 
 Chromium's `compile-size` trybot measures the total byte size of every source
 file and `#include`d header compiled by a translation unit, using the metric in
@@ -47,6 +47,10 @@ via Chromium's bundled `llvm-nm` (reusing the existing `.o` file when fresh or
 compiling a temporary native object with `-fno-lto -g0` when the `.o` file is
 stale or ThinLTO bitcode, as on `android-binary-size`). On macOS, Mach-O `.o`
 files do not store per-symbol byte sizes, so symbol-size collection is skipped.
+When `--diff-ir [SYMBOL]` or `--diff-source` is passed to `--compare`, it diffs
+demangled LLVM IR functions (emitted via bundled `clang++ -S -emit-llvm` and
+`llvm-cxxfilt`, without requiring external `llvm-dis` or `llvm-diff` binaries)
+or generated `.pb.h`/`.pb.cc` sources against the saved baseline.
 
 See https://crbug.com/568074904 for full background.
 """
@@ -56,6 +60,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Mapping, Sequence
 import dataclasses
+import difflib
 import json
 import os
 import pathlib
@@ -73,6 +78,8 @@ _DEFAULT_REPOSITORY_ROOT = os.path.abspath(
 _LLVM_BIN_RELATIVE_DIRECTORY = 'third_party/llvm-build/Release+Asserts/bin'
 _DEFAULT_CLANG_RELATIVE_PATH = f'{_LLVM_BIN_RELATIVE_DIRECTORY}/clang++'
 _DEFAULT_LLVM_NM_RELATIVE_PATH = f'{_LLVM_BIN_RELATIVE_DIRECTORY}/llvm-nm'
+_DEFAULT_LLVM_CXXFILT_RELATIVE_PATH = (
+    f'{_LLVM_BIN_RELATIVE_DIRECTORY}/llvm-cxxfilt')
 _DEPOT_TOOLS_AUTONINJA_RELATIVE_PATH = 'third_party/depot_tools/autoninja'
 _BASELINE_SUBDIRECTORY_NAME = '.compile_size_probe'
 
@@ -95,6 +102,16 @@ _BASELINE_FORMAT_VERSION = 1
 _LLVM_NM_SIZED_SYMBOL_PATTERN = re.compile(
     r'^([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s+([A-Za-z])\s+(.+)$')
 _LOCAL_CONSTANTS_SYMBOL_BUCKET = '<local constants (.L*)>'
+_LLVM_IR_DEFINE_BLOCK_PATTERN = re.compile(
+    r'^define\b[^\n]*?@("[^"]+"|[A-Za-z0-9_$.]+)\([^\n]*\{\n.*?\n\}',
+    re.MULTILINE | re.DOTALL,
+)
+_LLVM_IR_ATTRIBUTE_GROUP_PATTERN = re.compile(r'\s+#\d+\b')
+_LLVM_IR_METADATA_ATTACHMENT_PATTERN = re.compile(
+    r',?\s+![A-Za-z0-9_.]+\s+!\d+')
+_LLVM_IR_STRING_CONSTANT_PATTERN = re.compile(r'@\.str(?:\.\d+)?\b')
+_LLVM_IR_BLOCK_SPLIT_SENTINEL = (
+    '\n; --- COMPILE_SIZE_PROBE_BLOCK_SPLIT ---\n')
 _LLVM_BITCODE_MAGIC_HEADERS = (b'BC\xc0\xde', b'\xde\xc0\x17\x0b')
 _LTO_FLAG_PREFIXES = (
     '-flto',
@@ -329,6 +346,23 @@ class SymbolSizeDelta:
 
 
 @dataclasses.dataclass(frozen=True)
+class CodegenDiffEntry:
+    """Holds a unified diff for a function's LLVM IR or a generated source.
+
+    Attributes:
+      translation_unit: Normalized path of the translation unit that produced
+        the diff.
+      target_label: Demangled symbol signature (for `--diff-ir`) or generated
+        `.pb.h`/`.pb.cc` path (for `--diff-source`).
+      unified_diff: Unified diff lines formatted without trailing newlines.
+    """
+
+    translation_unit: str
+    target_label: str
+    unified_diff: str
+
+
+@dataclasses.dataclass(frozen=True)
 class TranslationUnitComparison:
     """Holds the before/after comparison for a single translation unit.
 
@@ -381,6 +415,9 @@ class ProbeComparisonReport:
       after_total_symbol_bytes: Sum of `after_symbol_bytes` across units.
       delta_total_symbol_bytes: Signed difference (`after_total_symbol_bytes -
         before_total_symbol_bytes`).
+      codegen_diffs: Unified diffs from `--diff-ir` and `--diff-source`.
+      codegen_diff_filter: Filter string when `--diff-ir` or `--diff-source`
+        was requested, or None when neither flag was passed.
     """
 
     baseline_name: str
@@ -391,6 +428,8 @@ class ProbeComparisonReport:
     before_total_symbol_bytes: int = 0
     after_total_symbol_bytes: int = 0
     delta_total_symbol_bytes: int = 0
+    codegen_diffs: tuple[CodegenDiffEntry, ...] = ()
+    codegen_diff_filter: str | None = None
 
     def ToDict(self) -> dict[str, Any]:
         """Serializes this comparison report to a JSON-compatible dict."""
@@ -1009,6 +1048,120 @@ def MeasureObjectSymbolSizes(
         return _RunLlvmNmOnObjectFile(llvm_nm_binary, temporary_object_path)
 
 
+def _DemangleTextWithLlvmCxxfilt(
+        raw_text: str, llvm_cxxfilt_binary: str | None) -> str:
+    """Runs `llvm-cxxfilt` over `raw_text` when the binary is available."""
+    if not llvm_cxxfilt_binary or not os.path.isfile(llvm_cxxfilt_binary):
+        return raw_text
+    completed = subprocess.run(
+        [llvm_cxxfilt_binary],
+        input=raw_text,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return completed.stdout if completed.returncode == 0 else raw_text
+
+
+def _NormalizeLlvmIrFunctionBlock(raw_block: str) -> str:
+    """Strips unstable attribute, metadata, and string IDs from IR."""
+    without_attributes = _LLVM_IR_ATTRIBUTE_GROUP_PATTERN.sub('', raw_block)
+    without_metadata = _LLVM_IR_METADATA_ATTACHMENT_PATTERN.sub(
+        '', without_attributes)
+    return _LLVM_IR_STRING_CONSTANT_PATTERN.sub(
+        '@.str', without_metadata).strip()
+
+
+def ExtractLlvmIrFunctions(
+        raw_llvm_ir: str,
+        llvm_cxxfilt_binary: str | None = None) -> dict[str, str]:
+    """Extracts `{demangled_symbol: normalized_define_block}` from LLVM IR.
+
+    Matches `define ... @<mangled>(...) { ... }` blocks prior to demangling so
+    that C++ parameter parentheses in demangled names never ambiguity-split the
+    function header. When multiple ABI variants (such as complete-object and
+    base-object constructors `C1`/`C2` or destructors `D1`/`D2`) demangle to the
+    same C++ signature, their normalized IR blocks are concatenated in module
+    order.
+    """
+    matches = list(_LLVM_IR_DEFINE_BLOCK_PATTERN.finditer(raw_llvm_ir))
+    if not matches:
+        return {}
+
+    mangled_names = [match.group(1).strip('"') for match in matches]
+    demangled_names = _DemangleTextWithLlvmCxxfilt(
+        '\n'.join(mangled_names), llvm_cxxfilt_binary).splitlines()
+    demangled_blocks = _DemangleTextWithLlvmCxxfilt(
+        _LLVM_IR_BLOCK_SPLIT_SENTINEL.join(
+            match.group(0) for match in matches),
+        llvm_cxxfilt_binary,
+    ).split(_LLVM_IR_BLOCK_SPLIT_SENTINEL)
+
+    functions: dict[str, str] = {}
+    for demangled_name, demangled_block in zip(
+            demangled_names, demangled_blocks):
+        clean_name = demangled_name.strip()
+        normalized_block = _NormalizeLlvmIrFunctionBlock(demangled_block)
+        if clean_name in functions:
+            functions[clean_name] = (
+                f'{functions[clean_name]}\n\n{normalized_block}')
+        else:
+            functions[clean_name] = normalized_block
+    return functions
+
+
+def EmitTranslationUnitLlvmIr(
+        compile_rule: NinjaCompileRule,
+        build_directory: str,
+        clang_binary: str,
+        llvm_cxxfilt_binary: str | None = None) -> dict[str, str]:
+    """Emits textual LLVM IR via `clang++ -S -emit-llvm` without `llvm-dis`.
+
+    Always compiles from source with `-fno-lto -g0 -S -emit-llvm` so that
+    `--save` and `--compare --diff-ir` pass through the identical optimization
+    pipeline regardless of whether a ThinLTO `.o` file is fresh on disk.
+    """
+    command = BuildClangCodegenCommand(
+        compile_rule=compile_rule,
+        build_directory=build_directory,
+        clang_binary=clang_binary,
+        codegen_flags=['-S', '-emit-llvm', '-o', '-'],
+    )
+    completed = subprocess.run(
+        command,
+        cwd=build_directory,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f'clang++ -emit-llvm failed for {compile_rule.translation_unit} '
+            f'(exit {completed.returncode}):\n{completed.stderr}')
+    return ExtractLlvmIrFunctions(completed.stdout, llvm_cxxfilt_binary)
+
+
+def CollectGeneratedSourceFiles(
+        compile_rule: NinjaCompileRule,
+        build_directory: str,
+        repository_root: str) -> dict[str, str]:
+    """Reads `.pb.h` and `.pb.cc` source contents for generated proto units."""
+    unit = compile_rule.translation_unit
+    if not (unit.startswith('gen/') and unit.endswith('.pb.cc')):
+        return {}
+
+    collected_files: dict[str, str] = {}
+    companion_header = unit.removesuffix('.pb.cc') + '.pb.h'
+    for relative_path in (companion_header, unit):
+        disk_path = ResolveSourceAbsolutePath(
+            relative_path, build_directory, repository_root)
+        if os.path.isfile(disk_path):
+            with open(disk_path, 'r', encoding='utf-8', errors='replace') as (
+                    file_handle):
+                collected_files[relative_path] = file_handle.read()
+    return collected_files
+
+
 def ResolveAutoninjaBinary(repository_root: str) -> str:
     """Finds `autoninja` on `PATH` or in `//third_party/depot_tools`."""
     autoninja_on_path = shutil.which('autoninja')
@@ -1180,13 +1333,15 @@ def ResolveBaselineStorageDirectory(build_directory: str) -> str:
 
 
 def _ValidateBaselineName(baseline_name: str) -> None:
-    """Raises ValueError if `baseline_name` is empty or unsafe."""
+    """Raises ValueError if `baseline_name` is unsafe or reserved."""
     if (not _SAFE_BASELINE_NAME_PATTERN.fullmatch(baseline_name)
             or baseline_name == '.'
-            or '..' in baseline_name):
+            or '..' in baseline_name
+            or baseline_name.endswith('.artifacts')):
         raise ValueError(
             f'Invalid baseline name "{baseline_name}": must contain only '
-            f'alphanumerics, underscores, hyphens, or single dots.')
+            f'alphanumerics, underscores, hyphens, or single dots, and must '
+            f'not end with ".artifacts".')
 
 
 def BaselineFilePath(baseline_directory: str, baseline_name: str) -> str:
@@ -1195,22 +1350,33 @@ def BaselineFilePath(baseline_directory: str, baseline_name: str) -> str:
     return os.path.join(baseline_directory, f'{baseline_name}.json')
 
 
+def ArtifactsFilePath(baseline_directory: str, baseline_name: str) -> str:
+    """Returns the companion codegen artifacts path for `baseline_name`."""
+    _ValidateBaselineName(baseline_name)
+    return os.path.join(baseline_directory, f'{baseline_name}.artifacts.json')
+
+
 def _CheckBaselineSaveTarget(
         baseline_directory: str,
         baseline_name: str,
         should_overwrite: bool) -> str:
-    """Validates `baseline_name` and checks for an existing baseline file.
+    """Validates `baseline_name` and checks for existing baseline files.
 
     Raises:
-      ValueError: If `baseline_name` is empty or contains unsafe characters.
-      FileExistsError: If `<baseline_directory>/<baseline_name>.json` already
-        exists and `should_overwrite` is False.
+      ValueError: If `baseline_name` is empty, unsafe, or ends with
+        `".artifacts"`.
+      FileExistsError: If `<baseline_name>.json` or
+        `<baseline_name>.artifacts.json` already exists in `baseline_directory`
+        and `should_overwrite` is False.
     """
     target_path = BaselineFilePath(baseline_directory, baseline_name)
-    if os.path.exists(target_path) and not should_overwrite:
-        raise FileExistsError(
-            f'Baseline "{baseline_name}" already exists at {target_path}; '
-            f'pass --overwrite to replace it.')
+    artifacts_path = ArtifactsFilePath(baseline_directory, baseline_name)
+    if not should_overwrite:
+        for existing_path in (target_path, artifacts_path):
+            if os.path.exists(existing_path):
+                raise FileExistsError(
+                    f'Baseline "{baseline_name}" already exists at '
+                    f'{existing_path}; pass --overwrite to replace it.')
     return target_path
 
 
@@ -1246,7 +1412,7 @@ def SaveProbeBaseline(
       baseline_directory: Directory where baseline JSON files are stored.
       baseline_name: Validated baseline identifier (without `.json`).
       should_overwrite: When False, raises `FileExistsError` if the target
-        baseline file already exists.
+        baseline or its `.artifacts.json` sidecar already exists.
 
     Returns:
       The absolute path to the written `<baseline_name>.json` file.
@@ -1257,6 +1423,12 @@ def SaveProbeBaseline(
     """
     target_path = _CheckBaselineSaveTarget(
         baseline_directory, baseline_name, should_overwrite)
+    if should_overwrite:
+        # Remove any earlier run's codegen artifacts before writing the new
+        # baseline so a partial save never pairs new sizes with stale IR.
+        artifacts_path = ArtifactsFilePath(baseline_directory, baseline_name)
+        if os.path.exists(artifacts_path):
+            os.remove(artifacts_path)
     _WriteJsonAtomically(target_path, baseline.ToDict())
     return target_path
 
@@ -1270,6 +1442,158 @@ def LoadProbeBaseline(
             f'Saved baseline "{baseline_name}" not found at {target_path}.')
     with open(target_path, 'r', encoding='utf-8') as file_handle:
         return ProbeBaseline.FromDict(json.load(file_handle))
+
+
+def SaveCodegenArtifacts(
+        baseline_directory: str,
+        baseline_name: str,
+        generated_sources_by_unit: Mapping[str, Mapping[str, str]],
+        llvm_ir_by_unit: Mapping[str, Mapping[str, str]]) -> str:
+    """Saves generated `.pb.*` sources and demangled LLVM IR atomically."""
+    target_path = ArtifactsFilePath(baseline_directory, baseline_name)
+    payload = {
+        'generated_sources_by_unit': {
+            unit: dict(sources)
+            for unit, sources in generated_sources_by_unit.items()
+        },
+        'llvm_ir_by_unit': {
+            unit: dict(functions)
+            for unit, functions in llvm_ir_by_unit.items()
+        },
+    }
+    _WriteJsonAtomically(target_path, payload)
+    return target_path
+
+
+def _RequireCodegenArtifactsPath(
+        baseline_directory: str, baseline_name: str) -> str:
+    """Returns the saved codegen artifacts path or raises FileNotFoundError."""
+    target_path = ArtifactsFilePath(baseline_directory, baseline_name)
+    if not os.path.isfile(target_path):
+        raise FileNotFoundError(
+            f'Saved codegen artifacts "{baseline_name}" not found at '
+            f'{target_path}.')
+    return target_path
+
+
+def LoadCodegenArtifacts(
+        baseline_directory: str,
+        baseline_name: str,
+) -> tuple[dict[str, dict[str, str]], dict[str, dict[str, str]]]:
+    """Loads saved `(generated_sources_by_unit, llvm_ir_by_unit)` artifacts."""
+    target_path = _RequireCodegenArtifactsPath(
+        baseline_directory, baseline_name)
+    with open(target_path, 'r', encoding='utf-8') as file_handle:
+        raw_payload = json.load(file_handle)
+    sources_by_unit = {
+        str(unit): {
+            str(path): str(content) for path, content in files.items()
+        }
+        for unit, files in raw_payload.get(
+            'generated_sources_by_unit', {}).items()
+    }
+    ir_by_unit = {
+        str(unit): {
+            str(symbol): str(block) for symbol, block in blocks.items()
+        }
+        for unit, blocks in raw_payload.get('llvm_ir_by_unit', {}).items()
+    }
+    return sources_by_unit, ir_by_unit
+
+
+def CollectCodegenArtifactsForUnits(
+        build_directory: str,
+        repository_root: str,
+        translation_units: Sequence[str],
+        clang_binary: str,
+        llvm_cxxfilt_binary: str | None = None,
+) -> tuple[dict[str, dict[str, str]], dict[str, dict[str, str]]]:
+    """Collects `.pb.*` sources and LLVM IR for `translation_units`."""
+    sources_by_unit: dict[str, dict[str, str]] = {}
+    ir_by_unit: dict[str, dict[str, str]] = {}
+    for translation_unit in translation_units:
+        rule = FindNinjaCompileRule(
+            build_directory, repository_root, translation_unit)
+        sources = CollectGeneratedSourceFiles(
+            rule, build_directory, repository_root)
+        if sources:
+            sources_by_unit[translation_unit] = sources
+        ir_functions = EmitTranslationUnitLlvmIr(
+            compile_rule=rule,
+            build_directory=build_directory,
+            clang_binary=clang_binary,
+            llvm_cxxfilt_binary=llvm_cxxfilt_binary,
+        )
+        if ir_functions:
+            ir_by_unit[translation_unit] = ir_functions
+    return sources_by_unit, ir_by_unit
+
+
+def ComputeLlvmIrFunctionDiffs(
+        before_ir_by_unit: Mapping[str, Mapping[str, str]],
+        after_ir_by_unit: Mapping[str, Mapping[str, str]],
+        symbol_substring: str) -> tuple[CodegenDiffEntry, ...]:
+    """Computes unified diffs for LLVM IR functions matching a substring."""
+    diff_entries: list[CodegenDiffEntry] = []
+    for translation_unit, after_functions in sorted(after_ir_by_unit.items()):
+        before_functions = before_ir_by_unit.get(translation_unit, {})
+        candidate_symbols = sorted(
+            set(before_functions) | set(after_functions))
+        for symbol_name in candidate_symbols:
+            if symbol_substring and symbol_substring not in symbol_name:
+                continue
+            before_ir = before_functions.get(symbol_name, '')
+            after_ir = after_functions.get(symbol_name, '')
+            if before_ir == after_ir:
+                continue
+            unified_lines = list(
+                difflib.unified_diff(
+                    before_ir.splitlines(),
+                    after_ir.splitlines(),
+                    fromfile=f'before:{symbol_name}',
+                    tofile=f'after:{symbol_name}',
+                    lineterm='',
+                ))
+            if unified_lines:
+                diff_entries.append(
+                    CodegenDiffEntry(
+                        translation_unit=translation_unit,
+                        target_label=symbol_name,
+                        unified_diff='\n'.join(unified_lines),
+                    ))
+    return tuple(diff_entries)
+
+
+def ComputeGeneratedSourceDiffs(
+        before_sources_by_unit: Mapping[str, Mapping[str, str]],
+        after_sources_by_unit: Mapping[str, Mapping[str, str]],
+) -> tuple[CodegenDiffEntry, ...]:
+    """Computes unified diffs for generated `.pb.h`/`.pb.cc` source files."""
+    diff_entries: list[CodegenDiffEntry] = []
+    for translation_unit, after_sources in sorted(
+            after_sources_by_unit.items()):
+        before_sources = before_sources_by_unit.get(translation_unit, {})
+        for file_path in sorted(set(before_sources) | set(after_sources)):
+            before_text = before_sources.get(file_path, '')
+            after_text = after_sources.get(file_path, '')
+            if before_text == after_text:
+                continue
+            unified_lines = list(
+                difflib.unified_diff(
+                    before_text.splitlines(),
+                    after_text.splitlines(),
+                    fromfile=f'before/{file_path}',
+                    tofile=f'after/{file_path}',
+                    lineterm='',
+                ))
+            if unified_lines:
+                diff_entries.append(
+                    CodegenDiffEntry(
+                        translation_unit=translation_unit,
+                        target_label=file_path,
+                        unified_diff='\n'.join(unified_lines),
+                    ))
+    return tuple(diff_entries)
 
 
 def _ByteSignPrefix(byte_count: int, should_include_sign: bool) -> str:
@@ -1475,13 +1799,18 @@ def CompareTranslationUnitSnapshots(
 def CompareProbeBaselines(
         baseline_name: str,
         before_baseline: ProbeBaseline,
-        after_baseline: ProbeBaseline) -> ProbeComparisonReport:
+        after_baseline: ProbeBaseline,
+        codegen_diffs: Sequence[CodegenDiffEntry] = (),
+        codegen_diff_filter: str | None = None) -> ProbeComparisonReport:
     """Compares translation units between before and after baselines.
 
     Args:
       baseline_name: Name of the saved `before_baseline` being compared.
       before_baseline: Previously saved ProbeBaseline snapshot.
       after_baseline: Newly measured ProbeBaseline snapshot.
+      codegen_diffs: Optional unified diffs of LLVM IR or generated sources.
+      codegen_diff_filter: Filter string when `--diff-ir` or `--diff-source`
+        was requested, or None when neither flag was passed.
 
     Returns:
       A ProbeComparisonReport summarizing total and per-unit changes.
@@ -1520,6 +1849,8 @@ def CompareProbeBaselines(
         before_total_symbol_bytes=before_symbols_total,
         after_total_symbol_bytes=after_symbols_total,
         delta_total_symbol_bytes=after_symbols_total - before_symbols_total,
+        codegen_diffs=tuple(codegen_diffs),
+        codegen_diff_filter=codegen_diff_filter,
     )
 
 
@@ -1638,6 +1969,31 @@ def _FormatTranslationUnitComparisonSection(
     return lines
 
 
+def _FormatCodegenDiffsLines(
+        codegen_diffs: Sequence[CodegenDiffEntry],
+        codegen_diff_filter: str | None = None) -> list[str]:
+    """Formats unified LLVM IR or generated source diffs."""
+    if not codegen_diffs:
+        if codegen_diff_filter is None:
+            return []
+        filter_suffix = (
+            f' (filter: "{codegen_diff_filter}")'
+            if codegen_diff_filter
+            else ''
+        )
+        return [
+            '',
+            '=== Codegen / Source Unified Diffs ===',
+            f'No differences found{filter_suffix}.',
+        ]
+    lines = ['', '=== Codegen / Source Unified Diffs ===']
+    for entry in codegen_diffs:
+        lines.append(
+            f'--- {entry.translation_unit} :: {entry.target_label} ---')
+        lines.append(entry.unified_diff)
+    return lines
+
+
 def FormatComparisonReport(report: ProbeComparisonReport) -> str:
     """Formats a human-readable comparison report across translation units."""
     unit_count = len(report.translation_units)
@@ -1662,6 +2018,9 @@ def FormatComparisonReport(report: ProbeComparisonReport) -> str:
     for comparison in report.translation_units:
         lines.append('')
         lines.extend(_FormatTranslationUnitComparisonSection(comparison))
+    lines.extend(
+        _FormatCodegenDiffsLines(
+            report.codegen_diffs, report.codegen_diff_filter))
     return '\n'.join(lines)
 
 
@@ -1671,8 +2030,8 @@ def _ParseCommandLineArguments(
     parser = argparse.ArgumentParser(
         description=(
             'Measures and compares compiler input sizes, #include chains, '
-            'and compiled symbol sizes for representative '
-            '//third_party/protobuf translation units.'))
+            'compiled symbol sizes, and LLVM IR / generated source diffs '
+            'for representative //third_party/protobuf translation units.'))
     parser.add_argument(
         '-C',
         dest='build_directory',
@@ -1686,14 +2045,14 @@ def _ParseCommandLineArguments(
         dest='save_name',
         metavar='NAME',
         help=(
-            'Save the measured baseline under '
-            '<OUT_DIR>/.compile_size_probe/<NAME>.json.'),
+            'Save the measured baseline and codegen snapshots under '
+            '<OUT_DIR>/.compile_size_probe/<NAME>.*.'),
     )
     action_group.add_argument(
         '--compare',
         dest='compare_name',
         metavar='NAME',
-        help='Compare current compiler inputs against saved baseline <NAME>.',
+        help='Compare current compiler inputs and symbols against <NAME>.',
     )
     parser.add_argument(
         '--overwrite',
@@ -1714,6 +2073,26 @@ def _ParseCommandLineArguments(
             'other relative paths resolve against the Chromium src/ root).'),
     )
     parser.add_argument(
+        '--diff-ir',
+        dest='diff_ir_symbol',
+        nargs='?',
+        const='',
+        default=None,
+        metavar='SYMBOL',
+        help=(
+            'When used with --compare, include a unified diff of demangled '
+            'LLVM IR functions (optionally filtered to SYMBOL, such as '
+            'ByteSizeLong or MergeImpl).'),
+    )
+    parser.add_argument(
+        '--diff-source',
+        dest='should_diff_source',
+        action='store_true',
+        help=(
+            'When used with --compare, include a unified diff of generated '
+            '.pb.h/.pb.cc source files.'),
+    )
+    parser.add_argument(
         '--json',
         dest='should_output_json',
         action='store_true',
@@ -1725,7 +2104,12 @@ def _ParseCommandLineArguments(
         action='store_true',
         help='Skip running autoninja on probe prerequisites before measuring.',
     )
-    return parser.parse_args(command_line_arguments)
+    parsed_arguments = parser.parse_args(command_line_arguments)
+    if (parsed_arguments.diff_ir_symbol is not None
+            or parsed_arguments.should_diff_source) and (
+                not parsed_arguments.compare_name):
+        parser.error('--diff-ir and --diff-source require --compare.')
+    return parsed_arguments
 
 
 def _ResolveDefaultClangBinary(repository_root: str) -> str:
@@ -1739,6 +2123,13 @@ def _ResolveDefaultLlvmNmBinary(repository_root: str) -> str:
     return os.path.abspath(
         os.path.join(
             repository_root, *_DEFAULT_LLVM_NM_RELATIVE_PATH.split('/')))
+
+
+def _ResolveDefaultLlvmCxxfiltBinary(repository_root: str) -> str:
+    """Returns the absolute path to Chromium's bundled `llvm-cxxfilt`."""
+    return os.path.abspath(
+        os.path.join(
+            repository_root, *_DEFAULT_LLVM_CXXFILT_RELATIVE_PATH.split('/')))
 
 
 def _SelectTranslationUnitsToMeasure(
@@ -1775,6 +2166,48 @@ def _SelectTranslationUnitsToMeasure(
             return baseline_units
         return MergeTranslationUnits((), normalized_extras)
     return MergeTranslationUnits(DEFAULT_TRANSLATION_UNITS, normalized_extras)
+
+
+def _ResolveCodegenDiffFilter(
+        parsed_arguments: argparse.Namespace) -> str | None:
+    """Returns the requested codegen diff filter, or None if not requested."""
+    if parsed_arguments.diff_ir_symbol is not None:
+        return parsed_arguments.diff_ir_symbol
+    if parsed_arguments.should_diff_source:
+        return ''
+    return None
+
+
+def _CollectRequestedCodegenDiffs(
+        parsed_arguments: argparse.Namespace,
+        baseline_directory: str,
+        build_directory: str,
+        repository_root: str,
+        translation_units: Sequence[str],
+        clang_binary: str,
+        llvm_cxxfilt_binary: str) -> tuple[CodegenDiffEntry, ...]:
+    """Computes `--diff-ir` and `--diff-source` entries when requested."""
+    should_diff_ir = parsed_arguments.diff_ir_symbol is not None
+    if not should_diff_ir and not parsed_arguments.should_diff_source:
+        return ()
+
+    before_sources, before_ir = LoadCodegenArtifacts(
+        baseline_directory, parsed_arguments.compare_name)
+    after_sources, after_ir = CollectCodegenArtifactsForUnits(
+        build_directory=build_directory,
+        repository_root=repository_root,
+        translation_units=translation_units,
+        clang_binary=clang_binary,
+        llvm_cxxfilt_binary=llvm_cxxfilt_binary,
+    )
+    diffs: list[CodegenDiffEntry] = []
+    if parsed_arguments.should_diff_source:
+        diffs.extend(ComputeGeneratedSourceDiffs(before_sources, after_sources))
+    if should_diff_ir:
+        diffs.extend(
+            ComputeLlvmIrFunctionDiffs(
+                before_ir, after_ir, parsed_arguments.diff_ir_symbol))
+    return tuple(diffs)
 
 
 def _EmitProbeOutput(
@@ -1815,7 +2248,7 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         print(
             'compile_size_probe.py: Mach-O object files do not record '
             'per-symbol byte sizes, so symbol size reporting is unavailable '
-            'on macOS.',
+            'on macOS; use --diff-ir to inspect function-level codegen.',
             file=sys.stderr,
         )
 
@@ -1823,6 +2256,7 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
     repository_root = _DEFAULT_REPOSITORY_ROOT
     clang_binary = _ResolveDefaultClangBinary(repository_root)
     llvm_nm_binary = _ResolveDefaultLlvmNmBinary(repository_root)
+    llvm_cxxfilt_binary = _ResolveDefaultLlvmCxxfiltBinary(repository_root)
     baseline_directory = ResolveBaselineStorageDirectory(build_directory)
 
     try:
@@ -1840,6 +2274,10 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         if parsed_arguments.compare_name is not None:
             before_baseline = LoadProbeBaseline(
                 baseline_directory, parsed_arguments.compare_name)
+            if (parsed_arguments.diff_ir_symbol is not None
+                    or parsed_arguments.should_diff_source):
+                _RequireCodegenArtifactsPath(
+                    baseline_directory, parsed_arguments.compare_name)
 
         translation_units = _SelectTranslationUnitsToMeasure(
             parsed_arguments, build_directory, repository_root, before_baseline)
@@ -1854,19 +2292,44 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
 
         saved_path: str | None = None
         if parsed_arguments.save_name is not None:
+            sources_by_unit, ir_by_unit = CollectCodegenArtifactsForUnits(
+                build_directory=build_directory,
+                repository_root=repository_root,
+                translation_units=translation_units,
+                clang_binary=clang_binary,
+                llvm_cxxfilt_binary=llvm_cxxfilt_binary,
+            )
             saved_path = SaveProbeBaseline(
                 baseline=current_baseline,
                 baseline_directory=baseline_directory,
                 baseline_name=parsed_arguments.save_name,
                 should_overwrite=parsed_arguments.should_overwrite,
             )
+            SaveCodegenArtifacts(
+                baseline_directory=baseline_directory,
+                baseline_name=parsed_arguments.save_name,
+                generated_sources_by_unit=sources_by_unit,
+                llvm_ir_by_unit=ir_by_unit,
+            )
 
         comparison_report: ProbeComparisonReport | None = None
         if before_baseline is not None:
+            codegen_diffs = _CollectRequestedCodegenDiffs(
+                parsed_arguments=parsed_arguments,
+                baseline_directory=baseline_directory,
+                build_directory=build_directory,
+                repository_root=repository_root,
+                translation_units=translation_units,
+                clang_binary=clang_binary,
+                llvm_cxxfilt_binary=llvm_cxxfilt_binary,
+            )
             comparison_report = CompareProbeBaselines(
                 baseline_name=parsed_arguments.compare_name,
                 before_baseline=before_baseline,
                 after_baseline=current_baseline,
+                codegen_diffs=codegen_diffs,
+                codegen_diff_filter=_ResolveCodegenDiffFilter(
+                    parsed_arguments),
             )
     except (
             FileNotFoundError,

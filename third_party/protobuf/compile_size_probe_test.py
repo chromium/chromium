@@ -73,7 +73,7 @@ _SKIP_ON_WINDOWS = unittest.skipIf(
 
 def _WriteFakeClangScript(
         script_path: str, mode_file_path: str | None = None) -> str:
-    """Writes an executable fake `clang++` script that mimics `-M -H`."""
+    """Writes a fake `clang++` script for `-M -H` and `-emit-llvm`."""
     script_contents = f"""#!/usr/bin/env python3
 import sys
 
@@ -82,6 +82,15 @@ mode_file_path = {mode_file_path!r}
 if mode_file_path:
     with open(mode_file_path, "r", encoding="utf-8") as handle:
         mode = handle.read().strip()
+
+if "-emit-llvm" in sys.argv:
+    offset = "16" if mode == "before" else "24"
+    sys.stdout.write(
+        "define i64 @Duration_ByteSizeLong(ptr %0) #1 {{\\n"
+        f"  %2 = add i64 0, {{offset}}\\n"
+        "  ret i64 %2\\n"
+        "}}\\n")
+    sys.exit(0)
 
 source_path = sys.argv[-1]
 dependencies = [
@@ -2949,6 +2958,533 @@ class CompileSizeProbeTest(unittest.TestCase):
                 'sizes, per-unit symbol deltas, Added/Removed/Resized '
                 'symbols, and "No header or symbol changes." lines.'),
         )
+
+    def testExtractLlvmIrFunctionsNormalizesAttributeGroupsAndMetadataIds(self):
+        raw_llvm_ir = (
+            'define hidden noundef i64 @Duration_ByteSizeLong(ptr %0) '
+            'unnamed_addr #6 !guid !12 {\n'
+            '  %2 = call i64 @strlen(ptr @.str.14), !dbg !18\n'
+            '  %3 = add i64 %2, 42, !dbg !19, !tbaa !20\n'
+            '  ret i64 %3, !dbg !21\n'
+            '}\n'
+        )
+        functions = compile_size_probe.ExtractLlvmIrFunctions(raw_llvm_ir)
+        self.assertEqual(
+            (
+                'define hidden noundef i64 @Duration_ByteSizeLong(ptr %0) '
+                'unnamed_addr {\n'
+                '  %2 = call i64 @strlen(ptr @.str)\n'
+                '  %3 = add i64 %2, 42\n'
+                '  ret i64 %3\n'
+                '}'
+            ),
+            functions.get('Duration_ByteSizeLong'),
+            msg=(
+                'Expected ExtractLlvmIrFunctions to normalize @.str.N '
+                'constants and strip unstable #N attribute group numbers and '
+                '!guid / !dbg / !tbaa metadata attachments.'),
+        )
+
+    def testBaselineFilePathRejectsReservedArtifactsSuffix(self):
+        with self.assertRaises(
+                ValueError,
+                msg=(
+                    'Expected BaselineFilePath to reject names ending with '
+                    '".artifacts" to prevent collisions with sidecar files.')):
+            compile_size_probe.BaselineFilePath(
+                '/tmp/baselines', 'before.artifacts')
+
+    def testComputeLlvmIrFunctionDiffsFiltersBySymbolSubstring(self):
+        before_ir = {
+            'gen/net/duration.pb.cc': {
+                'Duration::ByteSizeLong() const': (
+                    'define i64 @ByteSizeLong() {\n  ret i64 10\n}'),
+                'Duration::Clear()': 'define void @Clear() {\n  ret void\n}',
+            },
+        }
+        after_ir = {
+            'gen/net/duration.pb.cc': {
+                'Duration::ByteSizeLong() const': (
+                    'define i64 @ByteSizeLong() {\n  ret i64 30\n}'),
+                'Duration::Clear()': (
+                    'define void @Clear() {\n  call void @foo()\n  ret void\n}'
+                ),
+            },
+        }
+        diffs = compile_size_probe.ComputeLlvmIrFunctionDiffs(
+            before_ir, after_ir, 'ByteSizeLong')
+        self.assertEqual(
+            ['Duration::ByteSizeLong() const'],
+            [entry.target_label for entry in diffs],
+            msg=(
+                'Expected ComputeLlvmIrFunctionDiffs to include only '
+                'changed functions matching the requested symbol substring.'),
+        )
+
+    def testExtractLlvmIrFunctionsConcatenatesDuplicateDemangledAbiVariants(
+            self):
+        raw_llvm_ir = (
+            'define void @_ZN8DurationD2Ev(ptr %0) #1 {\n'
+            '  ret void\n'
+            '}\n'
+            'define void @_ZN8DurationD1Ev(ptr %0) #2 {\n'
+            '  call void @_ZN8DurationD2Ev(ptr %0)\n'
+            '  ret void\n'
+            '}\n'
+        )
+        with mock.patch.object(
+            compile_size_probe,
+            '_DemangleTextWithLlvmCxxfilt',
+            side_effect=[
+                'Duration::~Duration()\nDuration::~Duration()\n',
+                (
+                    'define void @Duration::~Duration()(ptr %0) #1 {\n'
+                    '  ret void\n'
+                    '}\n'
+                    f'{compile_size_probe._LLVM_IR_BLOCK_SPLIT_SENTINEL}'
+                    'define void @Duration::~Duration()(ptr %0) #2 {\n'
+                    '  call void @Duration::~Duration()(ptr %0)\n'
+                    '  ret void\n'
+                    '}'
+                ),
+            ],
+        ):
+            functions = compile_size_probe.ExtractLlvmIrFunctions(raw_llvm_ir)
+        self.assertEqual(
+            (
+                'define void @Duration::~Duration()(ptr %0) {\n'
+                '  ret void\n'
+                '}\n\n'
+                'define void @Duration::~Duration()(ptr %0) {\n'
+                '  call void @Duration::~Duration()(ptr %0)\n'
+                '  ret void\n'
+                '}'
+            ),
+            functions.get('Duration::~Duration()'),
+            msg=(
+                'Expected ExtractLlvmIrFunctions to concatenate both D2 and '
+                'D1 destructor definitions when they share a demangled name.'),
+        )
+
+    def testLoadCodegenArtifactsRaisesFileNotFoundErrorWhenMissing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            with self.assertRaises(
+                FileNotFoundError,
+                msg=(
+                    'Expected LoadCodegenArtifacts to raise FileNotFoundError '
+                    'when <name>.artifacts.json is missing.'),
+            ):
+                compile_size_probe.LoadCodegenArtifacts(
+                    temporary_directory, 'missing_baseline')
+
+    def testCommandLineRejectsDiffIrWithoutCompare(self):
+        with (
+            mock.patch('sys.stderr', io.StringIO()),
+            self.assertRaises(
+                SystemExit,
+                msg=(
+                    'Expected --diff-ir without --compare to exit with a '
+                    'command-line argument error.'),
+            ),
+        ):
+            compile_size_probe.main(
+                ['-C', 'out/Default', '--diff-ir', 'ByteSizeLong'])
+
+    def testCollectGeneratedSourceFilesReadsCompanionHeaderAndSource(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            generated_cc = os.path.join(
+                build_directory, 'gen', 'net', 'duration.pb.cc')
+            generated_h = os.path.join(
+                build_directory, 'gen', 'net', 'duration.pb.h')
+            os.makedirs(os.path.dirname(generated_cc), exist_ok=True)
+            with open(generated_cc, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('// duration.pb.cc\n')
+            with open(generated_h, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('// duration.pb.h\n')
+
+            rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/net/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            collected_sources = compile_size_probe.CollectGeneratedSourceFiles(
+                compile_rule=rule,
+                build_directory=build_directory,
+                repository_root=temporary_directory,
+            )
+
+        self.assertEqual(
+            {
+                'gen/net/duration.pb.cc': '// duration.pb.cc\n',
+                'gen/net/duration.pb.h': '// duration.pb.h\n',
+            },
+            collected_sources,
+            msg=(
+                'Expected CollectGeneratedSourceFiles to read both the '
+                'generated .pb.cc source file and its companion .pb.h header.'),
+        )
+
+    def testComputeGeneratedSourceDiffsReportsOnlyChangedFiles(self):
+        before_sources = {
+            'gen/net/duration.pb.cc': {
+                'gen/net/duration.pb.cc': 'int size = 10;\n',
+                'gen/net/duration.pb.h': '// unchanged\n',
+            },
+        }
+        after_sources = {
+            'gen/net/duration.pb.cc': {
+                'gen/net/duration.pb.cc': 'int size = 20;\n',
+                'gen/net/duration.pb.h': '// unchanged\n',
+            },
+        }
+        diffs = compile_size_probe.ComputeGeneratedSourceDiffs(
+            before_sources, after_sources)
+
+        self.assertEqual(
+            ['gen/net/duration.pb.cc'],
+            [entry.target_label for entry in diffs],
+            msg=(
+                'Expected ComputeGeneratedSourceDiffs to emit unified diffs '
+                'only for .pb.* files whose contents changed.'),
+        )
+
+    def testEmitTranslationUnitLlvmIrRaisesRuntimeErrorOnCompilerFailure(self):
+        rule = compile_size_probe.NinjaCompileRule(
+            translation_unit='gen/net/duration.pb.cc',
+            ninja_source_path='gen/net/duration.pb.cc',
+            object_target='obj/net/duration.pb.o',
+            ninja_file_path='obj/net/proto.ninja',
+            variables={},
+        )
+        with (
+            mock.patch(
+                'subprocess.run',
+                return_value=compile_size_probe.subprocess.CompletedProcess(
+                    args=['clang++'],
+                    returncode=1,
+                    stdout='',
+                    stderr='fatal error: missing header',
+                ),
+            ),
+            self.assertRaises(
+                RuntimeError,
+                msg=(
+                    'Expected EmitTranslationUnitLlvmIr to raise '
+                    'RuntimeError when clang++ -S -emit-llvm fails.'),
+            ),
+        ):
+            compile_size_probe.EmitTranslationUnitLlvmIr(
+                compile_rule=rule,
+                build_directory='/tmp/out',
+                clang_binary='/bin/clang++',
+            )
+
+    @_SKIP_ON_WINDOWS
+    def testCommandLineCompareDiffIrProducesFunctionLevelLlvmIrDiff(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                compile_size_probe.DEFAULT_TRANSLATION_UNITS,
+            )
+            extension_set_header = os.path.join(
+                temporary_directory,
+                'third_party',
+                'protobuf',
+                'src',
+                'google',
+                'protobuf',
+                'extension_set.h',
+            )
+            btree_map_header = os.path.join(
+                temporary_directory,
+                'third_party',
+                'abseil-cpp',
+                'absl',
+                'container',
+                'btree_map.h',
+            )
+            _WriteFileWithByteSize(extension_set_header, 2000)
+            _WriteFileWithByteSize(btree_map_header, 34668)
+
+            mode_file_path = os.path.join(temporary_directory, 'mode.txt')
+            with open(mode_file_path, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('before')
+            fake_clang_path = _WriteFakeClangScript(
+                os.path.join(temporary_directory, 'fake_clang.py'),
+                mode_file_path,
+            )
+
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', io.StringIO()),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--save',
+                    'before',
+                ])
+
+            with open(mode_file_path, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('after')
+
+            compare_stdout = io.StringIO()
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', compare_stdout),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--compare',
+                    'before',
+                    '--diff-ir',
+                    'ByteSizeLong',
+                ])
+            rendered_output = compare_stdout.getvalue()
+
+        self.assertIn(
+            '-  %2 = add i64 0, 16\n+  %2 = add i64 0, 24',
+            rendered_output,
+            msg=(
+                'Expected --compare --diff-ir ByteSizeLong to include the '
+                'unified LLVM IR diff for Duration_ByteSizeLong.'),
+        )
+
+    @_SKIP_ON_WINDOWS
+    def testCommandLineCompareDiffSourceProducesGeneratedSourceUnifiedDiff(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                compile_size_probe.DEFAULT_TRANSLATION_UNITS,
+            )
+            extension_set_header = os.path.join(
+                temporary_directory,
+                'third_party',
+                'protobuf',
+                'src',
+                'google',
+                'protobuf',
+                'extension_set.h',
+            )
+            _WriteFileWithByteSize(extension_set_header, 2000)
+            duration_pb_cc = os.path.join(
+                build_directory,
+                'gen',
+                'net',
+                'cert',
+                'root_store_proto_lite',
+                'duration.pb.cc',
+            )
+            with open(duration_pb_cc, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('int ByteSizeLong() { return 16; }\n')
+
+            mode_file_path = os.path.join(temporary_directory, 'mode.txt')
+            with open(mode_file_path, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('before')
+            fake_clang_path = _WriteFakeClangScript(
+                os.path.join(temporary_directory, 'fake_clang.py'),
+                mode_file_path,
+            )
+
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', io.StringIO()),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--save',
+                    'before',
+                ])
+
+            with open(duration_pb_cc, 'w', encoding='utf-8') as file_handle:
+                file_handle.write('int ByteSizeLong() { return 24; }\n')
+
+            compare_stdout = io.StringIO()
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', compare_stdout),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--compare',
+                    'before',
+                    '--diff-source',
+                ])
+            rendered_output = compare_stdout.getvalue()
+
+        self.assertIn(
+            '-int ByteSizeLong() { return 16; }\n'
+            '+int ByteSizeLong() { return 24; }',
+            rendered_output,
+            msg=(
+                'Expected --compare --diff-source to include the unified '
+                'source diff for modified generated .pb.cc files.'),
+        )
+
+    def testSaveProbeBaselineRaisesFileExistsErrorWhenSidecarArtifactsExist(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            artifacts_path = compile_size_probe.ArtifactsFilePath(
+                temporary_directory, 'before')
+            _WriteFileWithByteSize(artifacts_path, 16)
+            with self.assertRaises(
+                    FileExistsError,
+                    msg=(
+                        'Expected SaveProbeBaseline to raise FileExistsError '
+                        'when <name>.artifacts.json already exists on disk.')):
+                compile_size_probe.SaveProbeBaseline(
+                    baseline=compile_size_probe.ProbeBaseline(
+                        translation_units=()),
+                    baseline_directory=temporary_directory,
+                    baseline_name='before',
+                    should_overwrite=False,
+                )
+
+    def testMainRejectsMissingCodegenArtifactsBeforeRunningMeasurement(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            baseline_directory = (
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    temporary_directory))
+            compile_size_probe.SaveProbeBaseline(
+                baseline=compile_size_probe.ProbeBaseline(translation_units=()),
+                baseline_directory=baseline_directory,
+                baseline_name='before',
+                should_overwrite=True,
+            )
+            with (
+                mock.patch.object(
+                    compile_size_probe, 'MeasureProbeBaseline') as mock_measure,
+                mock.patch('sys.stderr', io.StringIO()),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--compare',
+                    'before',
+                    '--diff-ir',
+                    'ByteSizeLong',
+                ])
+        self.assertEqual(
+            0,
+            mock_measure.call_count,
+            msg=(
+                'Expected main() to fail before running MeasureProbeBaseline '
+                'when <name>.artifacts.json is missing for --diff-ir.'),
+        )
+
+    def testFormatComparisonReportNotesWhenRequestedCodegenDiffHasNoMatches(
+            self):
+        report = compile_size_probe.ProbeComparisonReport(
+            baseline_name='before',
+            before_total_bytes=1000,
+            after_total_bytes=1000,
+            delta_total_bytes=0,
+            translation_units=(),
+            codegen_diffs=(),
+            codegen_diff_filter='ByteSizeLng',
+        )
+
+        formatted_report = compile_size_probe.FormatComparisonReport(report)
+
+        self.assertIn(
+            '=== Codegen / Source Unified Diffs ===\n'
+            'No differences found (filter: "ByteSizeLng").',
+            formatted_report,
+            msg=(
+                'Expected FormatComparisonReport to emit an explicit '
+                'empty codegen diff section when a requested --diff-ir '
+                'filter matches no changed functions.'),
+        )
+
+    def testSaveProbeBaselineWithOverwriteRemovesStaleCodegenArtifactsSidecar(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            compile_size_probe.SaveProbeBaseline(
+                baseline=compile_size_probe.ProbeBaseline(
+                    translation_units=()),
+                baseline_directory=temporary_directory,
+                baseline_name='before',
+            )
+            compile_size_probe.SaveCodegenArtifacts(
+                baseline_directory=temporary_directory,
+                baseline_name='before',
+                generated_sources_by_unit={},
+                llvm_ir_by_unit={
+                    'gen/net/duration.pb.cc': {
+                        'Duration::Clear()': 'define void @Clear() {}',
+                    },
+                },
+            )
+            compile_size_probe.SaveProbeBaseline(
+                baseline=compile_size_probe.ProbeBaseline(
+                    translation_units=()),
+                baseline_directory=temporary_directory,
+                baseline_name='before',
+                should_overwrite=True,
+            )
+
+            with self.assertRaises(
+                    FileNotFoundError,
+                    msg=(
+                        'Expected SaveProbeBaseline(should_overwrite=True) '
+                        'to remove stale .artifacts.json sidecars before '
+                        'new codegen artifacts are written.')):
+                compile_size_probe.LoadCodegenArtifacts(
+                    temporary_directory, 'before')
 
 
 if __name__ == '__main__':

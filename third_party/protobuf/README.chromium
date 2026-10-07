@@ -130,8 +130,9 @@ Notes (hints) for the next roll(er):
   `third_party/protobuf/compile_size_probe.py -C out/Default --save pre_roll`
   before starting a roll and
   `third_party/protobuf/compile_size_probe.py -C out/Default --compare pre_roll`
-  after completing the roll to inspect header-size deltas and `#include` chains
-  before sending the CL to the `compile-size` trybot.
+  after completing the roll to inspect header-size deltas, `#include` chains,
+  and per-symbol codegen deltas (`--diff-ir` / `--diff-source`) before sending
+  the CL to the `compile-size` trybot.
 * Update README.chromium as you go so you don't forget (after step 2. above, so
   you don't nuke those changes).
 * Any argument changes to `protoc_wrapper` in `third_party/protobuf/BUILD.gn`
