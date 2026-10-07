@@ -236,6 +236,7 @@
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1222,6 +1223,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   mixed_content_settings_tab_helper_ =
       GetUserDataFactory().CreateInstance<MixedContentSettingsTabHelper>(
           tab, tab, tab.GetContents());
+
+  permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+      tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1752,6 +1756,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   mixed_content_settings_tab_helper_ =
       GetUserDataFactory().CreateInstance<MixedContentSettingsTabHelper>(
           *tab, *tab, new_contents);
+
+  permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+      new_contents);
 }
 
 customize_chrome::SidePanelController*

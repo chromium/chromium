@@ -38,6 +38,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # Chrome App window WebContents in ChromeAppDelegate::InitWebContents, so
   # the WebContents must own it.
   'FileSystemAccessPermissionRequestManager::CreateForWebContents',
+  # PermissionRecoverySuccessRateTracker lives in //components/permissions and
+  # is also attached to non-tab WebContents in
+  # PaymentHandlerWebFlowViewController::PopulateSheet, DocumentPipHost, and
+  # GlicSidePanelUi, so the WebContents must own it.
+  'permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents',
   # The task manager tag is looked up from WebContents user data by
   # WebContentsTaskProvider, is swapped in place by WebAppTabHelper, and is
   # also attached to non-tab WebContents (e.g. payment handler WebViews) and

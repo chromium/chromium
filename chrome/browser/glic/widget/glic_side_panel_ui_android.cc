@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_features.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -409,6 +410,10 @@ void GlicSidePanelUi::RequestSystemMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
+  if (web_contents) {
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        web_contents);
+  }
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
       web_contents, request,
       base::BindOnce(&GlicSidePanelUi::OnMediaAccessPermissionResult,

@@ -126,6 +126,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/payments/core/features.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/security_interstitials/core/features.h"
@@ -610,6 +611,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   mixed_content_settings_tab_helper_ =
       GetUserDataFactory().CreateInstance<MixedContentSettingsTabHelper>(
           *tab, *tab, web_contents);
+
+  // Track permission recovery success rate for the tab.
+  permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+      web_contents);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.
