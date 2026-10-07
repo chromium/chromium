@@ -104,7 +104,7 @@ void CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
   CueInterval interval = CreateCueInterval(cue);
   cue_tree_.Remove(interval);
 
-  wtf_size_t index = currently_active_cues_.Find(interval);
+  wtf_size_t index = currently_active_cues_.Find(cue);
   if (index != kNotFound) {
     DCHECK(cue->IsActive());
     currently_active_cues_.EraseAt(index);
@@ -193,15 +193,18 @@ void CueTimeline::TimeMarchesOn() {
   // kHaveNothing.
   if (media_element.getReadyState() != HTMLMediaElement::kHaveNothing &&
       media_element.GetWebMediaPlayer()) {
-    current_cues = cue_tree_.AllOverlaps(movie_time, movie_time);
+    Vector<CueInterval> current_intervals =
+        cue_tree_.AllOverlaps(movie_time, movie_time);
+    current_cues.reserve(current_intervals.size());
+    for (const auto& interval : current_intervals) {
+      current_cues.push_back(interval.Data());
+    }
   }
-
-  CueList previous_cues;
 
   // 2 - Let other cues be a list of cues, initialized to contain all the cues
   // of hidden, showing, and showing by default text tracks of the media
   // element that are not present in current cues.
-  previous_cues = currently_active_cues_;
+  CueList previous_cues = currently_active_cues_;
 
   // 3 - Let last time be the current playback position at the time this
   // algorithm was last run for this media element, if this is not the first
@@ -217,9 +220,9 @@ void CueTimeline::TimeMarchesOn() {
   // Otherwise, let missed cues be an empty list.
   CueList missed_cues;
   if (last_time >= 0 && last_seek_time < movie_time) {
-    CueList potentially_skipped_cues =
+    Vector<CueInterval> potentially_skipped_cues =
         cue_tree_.AllOverlaps(last_time, movie_time);
-    missed_cues.ReserveInitialCapacity(potentially_skipped_cues.size());
+    missed_cues.reserve(potentially_skipped_cues.size());
 
     for (CueInterval cue : potentially_skipped_cues) {
       // Consider cues that may have been missed since the last seek time. Do
@@ -229,7 +232,7 @@ void CueTimeline::TimeMarchesOn() {
       if (cue.Low() > std::max(last_seek_time, last_time) &&
           cue.High() < movie_time &&
           !newly_introduced_cues_.Contains(cue.Data())) {
-        missed_cues.push_back(cue);
+        missed_cues.push_back(cue.Data());
       }
     }
   }
@@ -254,19 +257,21 @@ void CueTimeline::TimeMarchesOn() {
 
   for (wtf_size_t i = 0; !active_set_changed && i < previous_cues_size; ++i) {
     if (!current_cues.Contains(previous_cues[i]) &&
-        previous_cues[i].Data()->IsActive())
+        previous_cues[i]->IsActive()) {
       active_set_changed = true;
+    }
   }
 
-  for (CueInterval current_cue : current_cues) {
+  for (const auto& current_cue : current_cues) {
     // Notify any cues that are already active of the current time to mark
     // past and future nodes. Any inactive cues have an empty display state;
     // they will be notified of the current time when the display state is
     // updated.
-    if (current_cue.Data()->IsActive())
-      current_cue.Data()->UpdatePastAndFutureNodes(movie_time);
-    else
+    if (current_cue->IsActive()) {
+      current_cue->UpdatePastAndFutureNodes(movie_time);
+    } else {
       active_set_changed = true;
+    }
   }
 
   if (!active_set_changed)
@@ -279,15 +284,16 @@ void CueTimeline::TimeMarchesOn() {
   // cues, then immediately pause the media element.
   for (wtf_size_t i = 0; !media_element.paused() && i < previous_cues_size;
        ++i) {
-    if (previous_cues[i].Data()->pauseOnExit() &&
-        previous_cues[i].Data()->IsActive() &&
-        !current_cues.Contains(previous_cues[i]))
+    if (previous_cues[i]->pauseOnExit() && previous_cues[i]->IsActive() &&
+        !current_cues.Contains(previous_cues[i])) {
       media_element.pause();
+    }
   }
 
   for (wtf_size_t i = 0; !media_element.paused() && i < missed_cues_size; ++i) {
-    if (missed_cues[i].Data()->pauseOnExit())
+    if (missed_cues[i]->pauseOnExit()) {
       media_element.pause();
+    }
   }
 
   // 8 - Let events be a list of tasks, initially empty. Each task in this
@@ -301,8 +307,7 @@ void CueTimeline::TimeMarchesOn() {
   for (const auto& missed_cue : missed_cues) {
     // 9 - For each text track cue in missed cues, prepare an event named enter
     // for the TextTrackCue object with the text track cue start time.
-    event_tasks.push_back(
-        std::make_pair(missed_cue.Data()->startTime(), missed_cue.Data()));
+    event_tasks.push_back(std::make_pair(missed_cue->startTime(), missed_cue));
 
     // 10 - For each text track [...] in missed cues, prepare an event
     // named exit for the TextTrackCue object with the  with the later of
@@ -313,9 +318,8 @@ void CueTimeline::TimeMarchesOn() {
     // checked when these tasks are actually queued below. This doesn't
     // affect sorting events before dispatch either, because the exit
     // event has the same time as the enter event.
-    if (missed_cue.Data()->startTime() < missed_cue.Data()->endTime()) {
-      event_tasks.push_back(
-          std::make_pair(missed_cue.Data()->endTime(), missed_cue.Data()));
+    if (missed_cue->startTime() < missed_cue->endTime()) {
+      event_tasks.push_back(std::make_pair(missed_cue->endTime(), missed_cue));
     }
   }
 
@@ -325,7 +329,7 @@ void CueTimeline::TimeMarchesOn() {
     // TextTrackCue object with the text track cue end time.
     if (!current_cues.Contains(previous_cue)) {
       event_tasks.push_back(
-          std::make_pair(previous_cue.Data()->endTime(), previous_cue.Data()));
+          std::make_pair(previous_cue->endTime(), previous_cue));
     }
   }
 
@@ -335,7 +339,7 @@ void CueTimeline::TimeMarchesOn() {
     // TextTrackCue object with the text track cue start time.
     if (!previous_cues.Contains(current_cue)) {
       event_tasks.push_back(
-          std::make_pair(current_cue.Data()->startTime(), current_cue.Data()));
+          std::make_pair(current_cue->startTime(), current_cue));
     }
   }
 
@@ -392,13 +396,12 @@ void CueTimeline::TimeMarchesOn() {
   // cues, and unset the text track cue active flag of all the cues in the
   // other cues.
   for (const auto& cue : current_cues)
-    cue.Data()->SetIsActive(true);
+    cue->SetIsActive(true);
 
   for (const auto& previous_cue : previous_cues) {
     if (!current_cues.Contains(previous_cue)) {
-      TextTrackCue* cue = previous_cue.Data();
-      cue->SetIsActive(false);
-      cue->RemoveDisplayTree();
+      previous_cue->SetIsActive(false);
+      previous_cue->RemoveDisplayTree();
     }
   }
 
@@ -410,12 +413,13 @@ void CueTimeline::TimeMarchesOn() {
 void CueTimeline::UpdateActiveCuePastAndFutureNodes() {
   double const movie_time = MediaElement().currentTime();
 
-  for (auto cue : currently_active_cues_) {
-    DCHECK(cue.Data()->IsActive());
-    if (!cue.Data()->track() || !cue.Data()->track()->IsRendered())
+  for (const auto& cue : currently_active_cues_) {
+    DCHECK(cue->IsActive());
+    if (!cue->track() || !cue->track()->IsRendered()) {
       continue;
+    }
 
-    cue.Data()->UpdatePastAndFutureNodes(movie_time);
+    cue->UpdatePastAndFutureNodes(movie_time);
   }
 
   SetCueTimestampEventTimer();
@@ -466,8 +470,8 @@ void CueTimeline::OnReadyStateReset() {
   // Deactivate all active cues
   // "The user agent must synchronously unset this flag ... whenever the media
   // element's readyState is changed back to HAVE_NOTHING."
-  for (auto cue : currently_active_cues_) {
-    cue.Data()->SetIsActive(false);
+  for (const auto& cue : currently_active_cues_) {
+    cue->SetIsActive(false);
   }
   currently_active_cues_.clear();
 
@@ -521,8 +525,8 @@ void CueTimeline::SetCueTimestampEventTimer() {
 
   double const movie_time = media_element.currentTime();
   double next_cue_timestamp_event = kInfinity;
-  for (auto cue : currently_active_cues_) {
-    auto const timestamp = cue.Data()->GetNextIntraCueTime(movie_time);
+  for (const auto& cue : currently_active_cues_) {
+    auto const timestamp = cue->GetNextIntraCueTime(movie_time);
     next_cue_timestamp_event =
         std::min(next_cue_timestamp_event, timestamp.value_or(kInfinity));
   }
@@ -552,6 +556,7 @@ void CueTimeline::DidMoveToNewDocument(Document& /*old_document*/) {
 
 void CueTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(media_element_);
+  visitor->Trace(currently_active_cues_);
   visitor->Trace(newly_introduced_cues_);
   visitor->Trace(cue_event_timer_);
   visitor->Trace(cue_timestamp_event_timer_);
