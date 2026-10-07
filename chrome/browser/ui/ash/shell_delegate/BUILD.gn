@@ -104,7 +104,6 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/i18n:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/browser_window",

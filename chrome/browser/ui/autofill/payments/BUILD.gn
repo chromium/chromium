@@ -259,7 +259,6 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//chrome/browser/autofill",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
@@ -413,7 +412,6 @@ if (!is_android && !is_chromeos_device) {
     deps = [
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/actions:actions_headers",

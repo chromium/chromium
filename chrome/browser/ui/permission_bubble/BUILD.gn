@@ -21,7 +21,6 @@ source_set("browser_tests") {
     ":test_support",
     "//base",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ui",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

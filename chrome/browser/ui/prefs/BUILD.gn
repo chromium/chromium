@@ -72,7 +72,6 @@ if (!is_android || enable_desktop_android_extensions) {
     deps = [
       "//base",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",

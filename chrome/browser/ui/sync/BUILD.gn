@@ -134,7 +134,6 @@ if (!is_android && !is_chromeos_device) {
         ":sync",
         "//base",
         "//base/test:test_support",
-        "//chrome/browser/ui",
         "//chrome/common",
         "//chrome/test:test_support_ui",
         "//content/test:test_support",

@@ -366,7 +366,6 @@ if (!is_android) {
       "//chrome/browser/password_manager:test_support_ui",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ssl:cert_verifier_test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",

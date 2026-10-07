@@ -23,7 +23,6 @@ if (!is_android) {
     deps = [
       ":call_to_action",
       "//chrome/browser",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//testing/gtest",
