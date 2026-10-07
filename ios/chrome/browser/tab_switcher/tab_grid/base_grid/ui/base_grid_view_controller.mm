@@ -1705,6 +1705,11 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   [self.collectionView selectItemAtIndexPath:selectedIndexPath
                                     animated:NO
                               scrollPosition:scrollPosition];
+
+  GridCell* selectedCell = ObjCCast<GridCell>(
+      [self.collectionView cellForItemAtIndexPath:selectedIndexPath]);
+  selectedCell.layoutGuideCenter = self.layoutGuideCenter;
+  [selectedCell registerAsSelectedCellGuide];
 }
 
 - (void)updateTabsSectionHeaderType {
