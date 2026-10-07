@@ -1043,7 +1043,9 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     /* timeToReceiveHeaderLastByteMicros= */ -1,
                     /* isProxied= */ null,
                     /* isAdaptiveNetworkStream= */ false,
-                    cacheState);
+                    cacheState,
+                    /* uploadGoodputBytesPerSec= */ -1,
+                    /* downloadGoodputBytesPerSec= */ -1);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and

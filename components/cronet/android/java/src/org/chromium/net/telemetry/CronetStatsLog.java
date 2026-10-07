@@ -71,8 +71,8 @@ public final class CronetStatsLog {
      * time_to_establish_ssl_micros, long time_to_connect_micros, long
      * time_to_send_first_byte_micros, long time_to_receive_header_last_byte_micros, int is_proxied,
      * int can_use_adaptive_network_selection, long request_body_size_kb, long
-     * response_body_size_kb, long upload_throughput_bytes_per_sec, long
-     * download_throughput_bytes_per_sec, int is_cached);<br>
+     * response_body_size_kb, long upload_goodput_bytes_per_sec, long
+     * download_goodput_bytes_per_sec, int is_cached);<br>
      */
     public static final int CRONET_TRAFFIC_REPORTED = 704;
 

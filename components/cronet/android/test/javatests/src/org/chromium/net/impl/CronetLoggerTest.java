@@ -486,6 +486,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
+        assertThat(trafficInfo.getUploadGoodputBytesPerSec()).isEqualTo(-1);
+        assertThat(trafficInfo.getDownloadGoodputBytesPerSec()).isAtLeast(-1);
         assertThat(trafficInfo.getTimeToEstablishDNSMicros()).isGreaterThan(-1);
         assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isGreaterThan(0);
         assertThat(trafficInfo.getTimeToConnectMicros()).isGreaterThan(0);
@@ -580,6 +582,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.UNSPECIFIED);
+        assertThat(trafficInfo.getUploadGoodputBytesPerSec()).isEqualTo(-1);
+        assertThat(trafficInfo.getDownloadGoodputBytesPerSec()).isEqualTo(-1);
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
         assertThat(trafficInfo.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.UNKNOWN);
@@ -680,6 +684,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.UNSPECIFIED);
+        assertThat(trafficInfo.getUploadGoodputBytesPerSec()).isEqualTo(-1);
+        assertThat(trafficInfo.getDownloadGoodputBytesPerSec()).isEqualTo(-1);
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
         assertThat(trafficInfo.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.UNKNOWN);
         assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
@@ -720,6 +726,10 @@ public final class CronetLoggerTest {
                 .isEqualTo(4);
         assertThat(mTestLogger.getLastCronetTrafficInfo().getCacheState())
                 .isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
+        assertThat(mTestLogger.getLastCronetTrafficInfo().getUploadGoodputBytesPerSec())
+                .isGreaterThan(0);
+        assertThat(mTestLogger.getLastCronetTrafficInfo().getDownloadGoodputBytesPerSec())
+                .isGreaterThan(0);
     }
 
     @Test
@@ -768,6 +778,8 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getIsBidiStream()).isTrue();
             assertThat(trafficInfo.getCacheState())
                     .isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
+            assertThat(trafficInfo.getUploadGoodputBytesPerSec()).isAtLeast(-1);
+            assertThat(trafficInfo.getDownloadGoodputBytesPerSec()).isAtLeast(-1);
             assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
             assertThat(trafficInfo.getConnectionCloseSource())
                     .isEqualTo(ConnectionCloseSource.UNKNOWN);
@@ -801,6 +813,23 @@ public final class CronetLoggerTest {
         assertThat(CronetRequestCommon.estimateHeadersSizeInBytes(headersList)).isEqualTo(0);
         headersList = null;
         assertThat(CronetRequestCommon.estimateHeadersSizeInBytes(headersList)).isEqualTo(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateGoodputBytesPerSec() {
+        // Valid calculations
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(1000, 1000000)).isEqualTo(1000);
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(500, 500000)).isEqualTo(1000);
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(2000000, 1000000))
+                .isEqualTo(2000000);
+
+        // Invalid bytes or duration
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(0, 1000000)).isEqualTo(-1);
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(-1, 1000000)).isEqualTo(-1);
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(1000, 0)).isEqualTo(-1);
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(1000, -1)).isEqualTo(-1);
+        assertThat(CronetRequestCommon.calculateGoodputBytesPerSec(-1, -1)).isEqualTo(-1);
     }
 
     @Test

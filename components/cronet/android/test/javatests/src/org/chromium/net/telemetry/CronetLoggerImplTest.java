@@ -64,6 +64,8 @@ public final class CronetLoggerImplTest {
                 .thenReturn(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
         when(mTrafficInfo.getCronetSource()).thenReturn(CronetSource.CRONET_SOURCE_UNSPECIFIED);
         when(mTrafficInfo.getCacheState()).thenReturn(CronetTrafficInfo.CacheState.UNSPECIFIED);
+        when(mTrafficInfo.getUploadGoodputBytesPerSec()).thenReturn(-1L);
+        when(mTrafficInfo.getDownloadGoodputBytesPerSec()).thenReturn(-1L);
     }
 
     @Test
@@ -73,6 +75,18 @@ public final class CronetLoggerImplTest {
         assertThat(id).isNotEqualTo(Long.MAX_VALUE);
         assertThat(id).isNotEqualTo(-1);
         assertThat(id).isNotEqualTo(0);
+    }
+
+    @Test
+    public void testBytesToKbRoundedUp() {
+        assertThat(CronetLoggerImpl.bytesToKbRoundedUp(-1)).isEqualTo(-1);
+        assertThat(CronetLoggerImpl.bytesToKbRoundedUp(0)).isEqualTo(0);
+        // A non-empty body is never reported as 0 KB.
+        assertThat(CronetLoggerImpl.bytesToKbRoundedUp(1)).isEqualTo(1);
+        assertThat(CronetLoggerImpl.bytesToKbRoundedUp(999)).isEqualTo(1);
+        assertThat(CronetLoggerImpl.bytesToKbRoundedUp(1000)).isEqualTo(1);
+        assertThat(CronetLoggerImpl.bytesToKbRoundedUp(1001)).isEqualTo(2);
+        assertThat(CronetLoggerImpl.bytesToKbRoundedUp(5_000_000)).isEqualTo(5000);
     }
 
     @Test

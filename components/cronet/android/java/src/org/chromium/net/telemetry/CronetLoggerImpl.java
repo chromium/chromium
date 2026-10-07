@@ -303,12 +303,24 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getTimeToReceiveHeaderLastByteMicros(),
                     OptionalBoolean.fromBoolean(trafficInfo.isProxied()).getValue(),
                     OptionalBoolean.fromBoolean(trafficInfo.isAdaptiveNetworkStream()).getValue(),
-                    /* request_body_size_kb= */ -1,
-                    /* response_body_size_kb= */ -1,
-                    /* upload_throughput_bytes_per_sec= */ -1,
-                    /* download_throughput_bytes_per_sec= */ -1,
+                    bytesToKbRoundedUp(trafficInfo.getRequestBodySizeInBytes()),
+                    bytesToKbRoundedUp(trafficInfo.getResponseBodySizeInBytes()),
+                    trafficInfo.getUploadGoodputBytesPerSec(),
+                    trafficInfo.getDownloadGoodputBytesPerSec(),
                     convertToProtoCacheState(trafficInfo.getCacheState()));
         }
+    }
+
+    /**
+     * Converts a body size in bytes to kilobytes (1 KB = 1000 bytes), rounded up, because
+     * CronetStatsLog expects body sizes in KB. Rounding up ensures that a non-empty body is never
+     * reported as 0 KB, so that 0 unambiguously means nothing was transferred. A value of -1
+     * (unknown) is passed through unchanged.
+     */
+    @VisibleForTesting
+    static long bytesToKbRoundedUp(long bytes) {
+        if (bytes < 0) return -1;
+        return (bytes + 999) / 1000;
     }
 
     private static int convertToProtoCacheState(CronetTrafficInfo.CacheState cacheState) {
