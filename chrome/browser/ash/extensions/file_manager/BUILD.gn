@@ -65,7 +65,6 @@ static_library("file_manager") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/notifications",
     "//chrome/browser/sharesheet",
     "//chromeos/ash/experiences/extensions/common/api",
     "//third_party/ced",
@@ -107,7 +106,6 @@ static_library("file_manager") {
     "//chrome/browser/download",
     "//chrome/browser/feedback",
     "//chrome/browser/net",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",
@@ -163,6 +161,7 @@ static_library("file_manager") {
     "//ui/chromeos/strings",
     "//ui/display",
     "//ui/gfx",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/shell_dialogs",
     "//url",
@@ -192,6 +191,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",
@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
@@ -206,12 +207,14 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/extensions/common/api",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
+    "//components/user_manager",
     "//storage/browser",
     "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/chromeos/strings",
     "//ui/display:test_support",
+    "//ui/message_center",
   ]
 }
 

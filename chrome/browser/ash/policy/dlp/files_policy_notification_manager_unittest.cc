@@ -7,9 +7,11 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -21,25 +23,32 @@
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace policy {
 
@@ -146,7 +155,12 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
 
     ASSERT_TRUE(profile_manager_.SetUp());
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        "test-user@example.com", GaiaId("12345"));
+    user_ = fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     profile_ = profile_manager_.CreateTestingProfile("test-user");
+    ash::AnnotatedAccountId::Set(profile_, account_id);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile_,
         base::BindLambdaForTesting([](content::BrowserContext* context) {
@@ -162,6 +176,8 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
 
     io_task_controller_ = GetIOTaskController(profile_);
     ASSERT_TRUE(io_task_controller_);
+    message_center::MessageCenter::Initialize();
+
     fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -172,8 +188,17 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
   void TearDown() override {
     fpnm_ = nullptr;
 
+    message_center::MessageCenter::Shutdown();
+
     profile_manager_.DeleteAllTestingProfiles();
     ash::disks::DiskMountManager::Shutdown();
+  }
+
+  message_center::Notification* GetNotification(
+      const std::string& notification_id) {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        ash::CreateUserScopedNotificationId(notification_id,
+                                            user_->username_hash()));
   }
 
   // Creates and adds a CopyOrMoveIOTask with `task_id` with type
@@ -196,6 +221,9 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
       io_task_controller_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  raw_ptr<const user_manager::User> user_ = nullptr;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   base::ScopedTempDir temp_dir_;
@@ -242,7 +270,6 @@ TEST_F(FilesPolicyNotificationManagerTest, AddTrashTask) {
 // FilesPolicyNotificationManager assigns new IDs for new notifications,
 // regardless of the action and files.
 TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const auto histogram_tester = base::HistogramTester();
 
   std::string notification_id_1 = "dlp_files_0";
@@ -253,29 +280,29 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
       base::FilePath(kFile1), base::FilePath(kFile2), base::FilePath(kFile3)};
 
   // None are shown.
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_1));
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
+  EXPECT_FALSE(GetNotification(notification_id_1));
+  EXPECT_FALSE(GetNotification(notification_id_2));
+  EXPECT_FALSE(GetNotification(notification_id_3));
   // Show first notification for upload.
   fpnm_->ShowDlpBlockedFiles(/*task_id=*/std::nullopt, files_1,
                              dlp::FileAction::kUpload);
-  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
+  EXPECT_TRUE(GetNotification(notification_id_1));
+  EXPECT_FALSE(GetNotification(notification_id_2));
+  EXPECT_FALSE(GetNotification(notification_id_3));
   // Show another notification for the same action - should get a new ID.
   fpnm_->ShowDlpBlockedFiles(/*task_id=*/std::nullopt, files_1,
                              dlp::FileAction::kUpload);
-  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
-  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
+  EXPECT_TRUE(GetNotification(notification_id_1));
+  EXPECT_TRUE(GetNotification(notification_id_2));
+  EXPECT_FALSE(GetNotification(notification_id_3));
   // Show a notification for a different action & files - should still increment
   // the ID.
   fpnm_->ShowDlpBlockedFiles(
       /*task_id=*/std::nullopt,
       {base::FilePath(kFile1), base::FilePath(kFile2)}, dlp::FileAction::kOpen);
-  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
-  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
-  EXPECT_TRUE(display_service_tester.GetNotification(notification_id_3));
+  EXPECT_TRUE(GetNotification(notification_id_1));
+  EXPECT_TRUE(GetNotification(notification_id_2));
+  EXPECT_TRUE(GetNotification(notification_id_3));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   data_controls::GetDlpHistogramPrefix() +
@@ -342,9 +369,8 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
 // Tests that calling FPNM::ShowBlockedNotifications() correctly shows block
 // notifications for a tracked IO task with blocked files.
 TEST_F(FPNMIOTaskTest, ShowBlockedNotifications_ShowsWhenHasBlockedFiles) {
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "swa-file-operation-1";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, /*is_copy=*/true).empty());
@@ -354,8 +380,8 @@ TEST_F(FPNMIOTaskTest, ShowBlockedNotifications_ShowsWhenHasBlockedFiles) {
                   dlp::FileAction::kCopy);
 
   fpnm_->ShowBlockedNotifications();
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   data_controls::GetDlpHistogramPrefix() +
@@ -370,9 +396,8 @@ TEST_F(FPNMIOTaskTest, ShowBlockedNotifications_ShowsWhenHasBlockedFiles) {
 // Tests that calling FPNM::ShowBlockedNotifications() doesn't show any
 // notifications for a tracked IO task with warning, but no blocked files.
 TEST_F(FPNMIOTaskTest, ShowBlockedNotifications_IgnoresWarnedFiles) {
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "swa-file-operation-1";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, /*is_copy=*/true).empty());
@@ -382,7 +407,7 @@ TEST_F(FPNMIOTaskTest, ShowBlockedNotifications_IgnoresWarnedFiles) {
                  dlp::FileAction::kCopy);
 
   fpnm_->ShowBlockedNotifications();
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   VerifyFilesWarningUMAs(
       histogram_tester_,
@@ -426,9 +451,8 @@ TEST_F(FPNMIOTaskTest, OnErrorItemDismissedIgnoresNonTrackedTask) {
 // button even for a single warned file.
 TEST_F(FPNMIOTaskTest,
        EnterpriseConnectors_PausedShowsWarningNotification_SingleFile_Review) {
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   file_manager::io_task::OperationType type =
@@ -459,8 +483,8 @@ TEST_F(FPNMIOTaskTest,
       Policy::kEnterpriseConnectors, /*warning_files_count=*/1);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), GetWarningTitle(dlp::FileAction::kCopy));
   EXPECT_EQ(notification->message(),
             base::ReplaceStringPlaceholders(
@@ -480,9 +504,8 @@ TEST_F(FPNMIOTaskTest,
 // button even for a single blocked file.
 TEST_F(FPNMIOTaskTest,
        EnterpriseConnectors_ErrorShowsBlockNotification_SingleFile_Review) {
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   file_manager::io_task::OperationType type =
@@ -515,8 +538,8 @@ TEST_F(FPNMIOTaskTest,
       /*blocked_files=*/1);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_POLICY_DLP_FILES_COPY_BLOCKED_TITLE, 1));
@@ -961,9 +984,8 @@ class FPNMPausedStatusNotification
 
 TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   auto [type, policy, action] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
@@ -988,8 +1010,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
       policy, /*warning_files_count=*/1);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), GetWarningTitle(action));
   EXPECT_EQ(notification->message(),
             base::ReplaceStringPlaceholders(
@@ -1012,9 +1034,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
 
 TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   auto [type, policy, action] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   bool is_copy = (type == file_manager::io_task::OperationType::kCopy);
@@ -1045,8 +1066,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
       policy, /*warning_files_count=*/2);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), GetWarningTitle(action));
   EXPECT_EQ(
       notification->message(),
@@ -1097,9 +1118,8 @@ class FPNMErrorStatusNotification
 
 TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   auto [type, policy, title_id, message_id] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
@@ -1125,8 +1145,8 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   status.policy_error.emplace(policy, /*blocked_files=*/1);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(),
             l10n_util::GetPluralStringFUTF16(title_id, 1));
   EXPECT_EQ(notification->message(),
@@ -1156,9 +1176,8 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
 
 TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   auto [type, policy, title_id, message_id] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   bool is_copy = type == file_manager::io_task::OperationType::kCopy;
@@ -1191,8 +1210,8 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   status.policy_error.emplace(policy, 2);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(),
             base::ReplaceStringPlaceholders(
                 l10n_util::GetPluralStringFUTF16(title_id, 2), u"2",
@@ -1252,9 +1271,8 @@ class FPNMTimeoutStatusNotification
 
 TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
   auto [type, action, title_id, message_id] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
-  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  EXPECT_FALSE(GetNotification(notification_id));
 
   file_manager::io_task::IOTaskId task_id = 1;
   ASSERT_FALSE(AddCopyOrMoveIOTask(
@@ -1281,8 +1299,8 @@ TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
       file_manager::io_task::PolicyErrorType::kDlpWarningTimeout);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
-  auto notification = display_service_tester.GetNotification(notification_id);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(notification_id);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), l10n_util::GetStringUTF16(title_id));
   EXPECT_EQ(notification->message(), l10n_util::GetStringUTF16(message_id));
   EXPECT_EQ(notification->buttons()[0].title,
@@ -1314,14 +1332,12 @@ class FPNMShowBlockTest
 
 TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
   auto [action, title_id] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  EXPECT_FALSE(GetNotification(kNotificationId));
   auto src_file_path = base::FilePath(kFile1);
   fpnm_->ShowDlpBlockedFiles(/*task_id=*/std::nullopt, {src_file_path}, action);
-  std::optional<message_center::Notification> notification =
-      display_service_tester.GetNotification(kNotificationId);
-  EXPECT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(kNotificationId);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(),
             l10n_util::GetPluralStringFUTF16(title_id, 1));
   EXPECT_EQ(notification->message(),
@@ -1347,16 +1363,14 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
 
 TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Multi) {
   auto [action, title_id] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  EXPECT_FALSE(GetNotification(kNotificationId));
   fpnm_->ShowDlpBlockedFiles(
       /*task_id=*/std::nullopt,
       {base::FilePath(kFile1), base::FilePath(kFile2), base::FilePath(kFile3)},
       action);
-  std::optional<message_center::Notification> notification =
-      display_service_tester.GetNotification(kNotificationId);
-  EXPECT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(kNotificationId);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(),
             base::ReplaceStringPlaceholders(
                 l10n_util::GetPluralStringFUTF16(title_id, 3), u"3",
@@ -1408,9 +1422,8 @@ class FPNMShowWarningTest
 
 TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
   auto action = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  EXPECT_FALSE(GetNotification(kNotificationId));
   auto src_file_path = base::FilePath(kFile1);
   testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
@@ -1418,9 +1431,8 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
       mock_cb.Get(), /*task_id=*/std::nullopt, {src_file_path},
       DlpFileDestination(GURL("https://example.com")), action);
 
-  std::optional<message_center::Notification> notification =
-      display_service_tester.GetNotification(kNotificationId);
-  EXPECT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(kNotificationId);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), GetWarningTitle(action));
   EXPECT_EQ(notification->message(),
             base::ReplaceStringPlaceholders(
@@ -1439,10 +1451,8 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
                   /*should_proceed=*/false))
       .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_FALSE(
-      display_service_tester.GetNotification(kNotificationId).has_value());
-  EXPECT_TRUE(
-      display_service_tester.GetNotification("dlp_files_1").has_value());
+  EXPECT_FALSE(GetNotification(kNotificationId));
+  EXPECT_TRUE(GetNotification("dlp_files_1"));
 
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
@@ -1453,9 +1463,7 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
 TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   auto action = GetParam();
 
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
-
-  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  EXPECT_FALSE(GetNotification(kNotificationId));
   testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
   fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/std::nullopt,
@@ -1463,9 +1471,8 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
                         DlpFileDestination(GURL("https://example.com")),
                         action);
 
-  std::optional<message_center::Notification> notification =
-      display_service_tester.GetNotification(kNotificationId);
-  EXPECT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(kNotificationId);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), GetWarningTitle(action));
   EXPECT_EQ(
       notification->message(),
@@ -1485,10 +1492,8 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
                   /*should_proceed=*/false))
       .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_FALSE(
-      display_service_tester.GetNotification(kNotificationId).has_value());
-  EXPECT_TRUE(
-      display_service_tester.GetNotification("dlp_files_1").has_value());
+  EXPECT_FALSE(GetNotification(kNotificationId));
+  EXPECT_TRUE(GetNotification("dlp_files_1"));
 
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
@@ -1512,13 +1517,12 @@ class FPNMShowTimeoutTest : public FilesPolicyNotificationManagerTest,
 
 TEST_P(FPNMShowTimeoutTest, TimeoutErrorShowsTimeoutNotification) {
   auto [action, title_id, message_id] = GetParam();
-  NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  EXPECT_FALSE(GetNotification(kNotificationId));
   fpnm_->ShowDlpWarningTimeoutNotification(action,
                                            /*notification_id=*/std::nullopt);
-  auto notification = display_service_tester.GetNotification(kNotificationId);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification = GetNotification(kNotificationId);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), l10n_util::GetStringUTF16(title_id));
   EXPECT_EQ(notification->message(), l10n_util::GetStringUTF16(message_id));
   EXPECT_EQ(notification->buttons()[0].title,

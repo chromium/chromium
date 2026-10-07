@@ -21,11 +21,13 @@ include_rules = [
   "+chrome/browser/extensions/api/file_system",
   "+chrome/browser/extensions/api/tab_capture",
   "+chrome/browser/file_select_helper.h",
-  "+chrome/browser/notifications",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",
+
+  "+ui/message_center/message_center.h",
+  "+ui/message_center/public/cpp",
 ]
 
 specific_include_rules = {
@@ -34,6 +36,7 @@ specific_include_rules = {
     "+chrome/browser/policy/messaging_layer/public",
   ],
   ".*test(_.*)?\\.(cc|h)": [
+    "+chrome/browser/notifications",
     "+chrome/test/base",
   ],
   ".*browsertest\\.cc": [

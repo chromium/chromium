@@ -8,19 +8,22 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "extensions/browser/event_router.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace file_manager {
 
@@ -89,32 +92,18 @@ inline constexpr char kNotificationUserActionHistogramName[] =
 // Generates a notification id based on `task_id`.
 std::string GetNotificationId(io_task::IOTaskId task_id);
 
-// Returns an instance of an 'ash' Notification with a bound click delegate.
-// The notification will have Files app system notification theme.
+// Returns an instance of an 'ash' Notification of `type` for `user` with a
+// bound click delegate. The notification ID is scoped to `user`. The
+// notification will have Files app system notification theme.
 std::unique_ptr<message_center::Notification> CreateSystemNotification(
+    message_center::NotificationType type,
+    const user_manager::User& user,
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::RichNotificationData optional_fields =
         message_center::RichNotificationData());
-
-// Returns an instance of an 'ash' Notification with title and message specified
-// by string ID values (for 110n) with a bound click delegate.
-// The notification will have Files app system notification theme.
-std::unique_ptr<message_center::Notification> CreateSystemNotification(
-    const std::string& notification_id,
-    int title_id,
-    int message_id,
-    scoped_refptr<message_center::NotificationDelegate> delegate);
-
-// Returns an instance of an 'ash' Notification with a bound click callback.
-// The notification will have Files app system notification theme.
-std::unique_ptr<message_center::Notification> CreateSystemNotification(
-    const std::string& notification_id,
-    const std::u16string& title,
-    const std::u16string& message,
-    const base::RepeatingClosure& click_callback);
 
 // Manages creation/deletion and update of system notifications on behalf
 // of the File Manager application.
@@ -136,12 +125,6 @@ class SystemNotificationManager {
   NotificationPtr CreateNotification(const std::string& notification_id,
                                      const std::u16string& title,
                                      const std::u16string& message);
-
-  // Returns an instance of an 'ash' Notification with progress value.
-  NotificationPtr CreateProgressNotification(const std::string& notification_id,
-                                             const std::u16string& title,
-                                             const std::u16string& message,
-                                             int progress);
 
   // Returns an instance of an 'ash' Notification with IOTask progress value.
   NotificationPtr CreateIOTaskProgressNotification(
@@ -185,9 +168,6 @@ class SystemNotificationManager {
       file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
-  // Returns the message center display service that manages notifications.
-  NotificationDisplayService* GetNotificationDisplayService();
-
   // Stores a reference to the DriveFS event router instance.
   void SetDriveFSEventRouter(DriveFsEventRouter* drivefs_event_router);
 
@@ -226,10 +206,6 @@ class SystemNotificationManager {
       base::RepeatingClosure cancel_callback,
       std::optional<int> button_index);
 
-  // Click handler for the progress notification.
-  void HandleProgressClick(const std::string& notification_id,
-                           std::optional<int> button_index);
-
   // Makes a notification instance for mount errors.
   NotificationPtr MakeMountErrorNotification(
       file_manager_private::MountCompletedEvent& event,
@@ -248,6 +224,36 @@ class SystemNotificationManager {
   // Helper function to show a data protection policy dialog.
   void ShowDataProtectionPolicyDialog(file_manager::io_task::IOTaskId task_id,
                                       policy::FilesDialogType type);
+
+  // Returns a user-scoped notification ID to prevent collision across profiles.
+  std::string GetScopedNotificationId(std::string_view notification_id) const;
+
+  // Returns an instance of an 'ash' Notification with a bound click delegate.
+  // The notification will have Files app system notification theme.
+  NotificationPtr CreateSystemNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      scoped_refptr<message_center::NotificationDelegate> delegate,
+      message_center::RichNotificationData optional_fields =
+          message_center::RichNotificationData()) const;
+
+  // Returns an instance of an 'ash' Notification with title and message
+  // specified by string ID values (for 110n) with a bound click delegate.
+  // The notification will have Files app system notification theme.
+  NotificationPtr CreateSystemNotification(
+      const std::string& notification_id,
+      int title_id,
+      int message_id,
+      scoped_refptr<message_center::NotificationDelegate> delegate) const;
+
+  // Returns an instance of an 'ash' Notification with a bound click callback.
+  // The notification will have Files app system notification theme.
+  NotificationPtr CreateSystemNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      const base::RepeatingClosure& click_callback) const;
 
   // Helper function bound to notification instances that hides notifications.
   void Dismiss(const std::string& notification_id);
@@ -270,6 +276,9 @@ class SystemNotificationManager {
 
   // User profile.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
+
+  // The User associated with `profile_`.
+  const raw_ref<const user_manager::User> user_;
 
   // Application name (used for notification display source).
   std::u16string const app_name_;

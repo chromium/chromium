@@ -394,6 +394,7 @@ source_set("unit_tests") {
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/base/clipboard",
     "//ui/base/data_transfer_policy",
+    "//ui/message_center",
     "//ui/shell_dialogs",
     "//url",
   ]

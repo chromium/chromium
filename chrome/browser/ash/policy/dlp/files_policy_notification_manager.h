@@ -8,10 +8,13 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
@@ -23,11 +26,17 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace policy {
 
@@ -410,11 +419,27 @@ class FilesPolicyNotificationManager
   // runs the warning callback with should_proceed set to false.
   void OnNonIOTaskWarningTimedOut(const std::string& notification_id);
 
+  // Returns a Files app system notification for `user_` with the MessageCenter
+  // ID for `notification_id`.
+  std::unique_ptr<message_center::Notification> CreateSystemNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      scoped_refptr<message_center::NotificationDelegate> delegate,
+      message_center::RichNotificationData optional_fields =
+          message_center::RichNotificationData()) const;
+
+  // Removes the notification with `notification_id` from MessageCenter.
+  void Dismiss(const std::string& notification_id);
+
   // Callback to show a policy dialog after waiting to open a Files App window.
   base::OnceCallback<void(gfx::NativeWindow)> pending_callback_;
 
   // Context for which the FPNM is created.
   raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
+
+  // User associated with `context_`.
+  const raw_ref<const user_manager::User> user_;
 
   // A map from tracked IO tasks ids to their info.
   std::map<file_manager::io_task::IOTaskId, FileTaskInfo> io_tasks_;

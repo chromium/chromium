@@ -10,9 +10,10 @@
 #include <tuple>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/gmock_callback_support.h"
@@ -42,10 +43,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_display_service_impl.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -54,9 +51,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -66,6 +65,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace policy {
@@ -135,59 +135,6 @@ class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
               (override));
 };
 
-// NotificationPlatformBridgeDelegator test implementation. Keeps track of
-// displayed notifications and allows clicking on a displayed notification.
-class TestNotificationPlatformBridgeDelegator
-    : public NotificationPlatformBridgeDelegator {
- public:
-  explicit TestNotificationPlatformBridgeDelegator(Profile* profile)
-      : NotificationPlatformBridgeDelegator(profile, base::DoNothing()) {}
-  ~TestNotificationPlatformBridgeDelegator() override = default;
-
-  // NotificationPlatformBridgeDelegator:
-  void Display(
-      NotificationHandler::Type notification_type,
-      const message_center::Notification& notification,
-      std::unique_ptr<NotificationCommon::Metadata> metadata) override {
-    notifications_.emplace(notification.id(), notification);
-    ids_.insert(notification.id());
-  }
-
-  void Close(NotificationHandler::Type notification_type,
-             const std::string& notification_id) override {
-    notifications_.erase(notification_id);
-    ids_.erase(notification_id);
-  }
-
-  void GetDisplayed(GetDisplayedNotificationsCallback callback) const override {
-    std::move(callback).Run(ids_, /*supports_sync=*/true);
-  }
-
-  std::optional<message_center::Notification> GetDisplayedNotification(
-      const std::string& notification_id) {
-    auto it = notifications_.find(notification_id);
-    if (it != notifications_.end()) {
-      return it->second;
-    }
-    return std::nullopt;
-  }
-
-  // If a notification with `notification_id` is displayed, simulates clicking
-  // on that notification with `button_index` button.
-  void Click(const std::string& notification_id,
-             std::optional<int> button_index) {
-    auto it = notifications_.find(notification_id);
-    if (it == notifications_.end()) {
-      return;
-    }
-    it->second.delegate()->Click(button_index, std::nullopt);
-  }
-
- private:
-  std::map<std::string, message_center::Notification> notifications_;
-  std::set<std::string> ids_;
-};
-
 class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
  public:
   FilesPolicyNotificationManagerBrowserTest() {
@@ -208,21 +155,47 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(
         browser()->GetProfile());
 
-    display_service_ = static_cast<NotificationDisplayServiceImpl*>(
-        NotificationDisplayServiceFactory::GetForProfile(
-            browser()->GetProfile()));
-    auto bridge = std::make_unique<TestNotificationPlatformBridgeDelegator>(
-        browser()->GetProfile());
-    bridge_ = bridge.get();
-    display_service_->SetNotificationPlatformBridgeDelegatorForTesting(
-        std::move(bridge));
-
     factory_ = std::make_unique<MockFilesPolicyDialogFactory>();
     FilesPolicyDialog::SetFactory(factory_.get());
 
     fpnm_ = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
         browser()->GetProfile());
     ASSERT_TRUE(fpnm_);
+  }
+
+  // Returns the MessageCenter ID of the notification with `notification_id`
+  // for the logged-in user.
+  std::string GetScopedNotificationId(const std::string& notification_id) {
+    const user_manager::User& user =
+        CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            browser()->GetProfile()));
+    return ash::CreateUserScopedNotificationId(notification_id,
+                                               user.username_hash());
+  }
+
+  message_center::Notification* GetDisplayedNotification(
+      const std::string& notification_id) {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        GetScopedNotificationId(notification_id));
+  }
+
+  // Simulates clicking the `button_index` button on the notification with
+  // `notification_id`.
+  void ClickNotification(const std::string& notification_id,
+                         std::optional<int> button_index) {
+    if (button_index.has_value()) {
+      message_center::MessageCenter::Get()->ClickOnNotificationButton(
+          GetScopedNotificationId(notification_id), button_index.value());
+    } else {
+      message_center::MessageCenter::Get()->ClickOnNotification(
+          GetScopedNotificationId(notification_id));
+    }
+  }
+
+  // Simulates the user dismissing the notification with `notification_id`.
+  void DismissNotification(const std::string& notification_id) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        GetScopedNotificationId(notification_id), /*by_user=*/true);
   }
 
  protected:
@@ -238,8 +211,6 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<NotificationDisplayServiceImpl, DanglingUntriaged> display_service_;
-  raw_ptr<TestNotificationPlatformBridgeDelegator, DanglingUntriaged> bridge_;
   std::unique_ptr<MockFilesPolicyDialogFactory> factory_;
   raw_ptr<policy::FilesPolicyNotificationManager, DanglingUntriaged> fpnm_ =
       nullptr;
@@ -265,10 +236,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
                         {base::FilePath("file1.txt")}, DlpFileDestination(),
                         action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, /*button_index=*/std::nullopt);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, /*button_index=*/std::nullopt);
   // The notification shouldn't be closed.
-  EXPECT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
 
   // Skip the warning timeout. The callback is only invoked when the warning
   // times out.
@@ -277,9 +248,9 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
                       /*should_proceed=*/false));
   task_runner->FastForwardBy(kWarningTimeout);
   // The warning notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
   // The warning timeout notification should be shown.
-  EXPECT_TRUE(bridge_->GetDisplayedNotification("dlp_files_1").has_value());
+  EXPECT_TRUE(GetDisplayedNotification("dlp_files_1"));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -310,10 +281,9 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileCloseCancels) {
                         {base::FilePath("file1.txt")}, DlpFileDestination(),
                         action);
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId);
-  ASSERT_TRUE(notification.has_value());
-  notification->delegate()->Close(/*by_user=*/true);
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  DismissNotification(kNotificationId);
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -347,14 +317,14 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
                         {base::FilePath("file1.txt")}, DlpFileDestination(),
                         action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, NotificationButton::OK);
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -412,24 +382,23 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/std::nullopt, warning_files,
                         DlpFileDestination(), action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, NotificationButton::OK);
 
   // Check that a new Files app is opened.
   ui_test_utils::WaitForBrowserToOpen();
   ASSERT_EQ(ash::file_manager::FileManagerUI::GetNumInstances(), 1);
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   // Show another notification and dialog. Another app should be opened.
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/std::nullopt, warning_files,
                         DlpFileDestination(), action);
 
   const std::string second_notification = "dlp_files_1";
-  ASSERT_TRUE(
-      bridge_->GetDisplayedNotification(second_notification).has_value());
-  bridge_->Click(second_notification, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(second_notification));
+  ClickNotification(second_notification, NotificationButton::OK);
 
   // Check that a new Files app is opened.
   ui_test_utils::WaitForBrowserToOpen();
@@ -452,8 +421,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
       .Times(2);
   task_runner->FastForwardBy(kWarningTimeout);
   // The warning timeout notifications should be shown.
-  ASSERT_TRUE(bridge_->GetDisplayedNotification("dlp_files_2").has_value());
-  ASSERT_TRUE(bridge_->GetDisplayedNotification("dlp_files_3").has_value());
+  EXPECT_TRUE(GetDisplayedNotification("dlp_files_2"));
+  EXPECT_TRUE(GetDisplayedNotification("dlp_files_3"));
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 2)},
                          /*warning_count_buckets=*/{base::Bucket(2, 2)},
@@ -492,8 +461,8 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
   fpnm_->ShowDlpWarning(cb.Get(), /*task_id=*/std::nullopt, warning_files,
                         DlpFileDestination(), action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, NotificationButton::OK);
 
   // Skip the timeout.
   task_runner->FastForwardBy(base::TimeDelta(base::Milliseconds(3000)));
@@ -502,7 +471,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
   ASSERT_EQ(ui_test_utils::WaitForBrowserToOpen(), FindFilesApp());
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   // Accept the warning.
   testing::Mock::VerifyAndClearExpectations(&cb);
@@ -551,14 +520,14 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, CancelShowsNoDialog) {
       {base::FilePath("file1.txt"), base::FilePath("file2.txt")},
       DlpFileDestination(), action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, NotificationButton::CANCEL);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, NotificationButton::CANCEL);
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -607,14 +576,14 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog) {
   blocked_files.emplace_back("file2.txt");
   fpnm_->ShowDlpBlockedFiles(std::nullopt, std::move(blocked_files), action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, NotificationButton::OK);
 
   // Check that a new Files app is opened.
   ASSERT_EQ(ui_test_utils::WaitForBrowserToOpen(), FindFilesApp());
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -642,10 +611,10 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileNoButtonIgnored) {
   blocked_files.emplace_back("file2.txt");
   fpnm_->ShowDlpBlockedFiles(std::nullopt, std::move(blocked_files), action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, /*button_index=*/std::nullopt);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, /*button_index=*/std::nullopt);
   // The notification shouldn't be closed.
-  EXPECT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -675,10 +644,9 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileCloseCancels) {
   blocked_files.emplace_back("file2.txt");
   fpnm_->ShowDlpBlockedFiles(std::nullopt, std::move(blocked_files), action);
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId);
-  ASSERT_TRUE(notification.has_value());
-  notification->delegate()->Close(/*by_user=*/true);
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  DismissNotification(kNotificationId);
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -730,8 +698,8 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
   blocked_files.emplace_back("file2.txt");
   fpnm_->ShowDlpBlockedFiles(std::nullopt, std::move(blocked_files), action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, NotificationButton::OK);
   // Skip the timeout.
   task_runner->FastForwardBy(base::TimeDelta(base::Milliseconds(3000)));
 
@@ -739,7 +707,7 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
   ASSERT_EQ(ui_test_utils::WaitForBrowserToOpen(), FindFilesApp());
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -777,14 +745,14 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, CancelDismisses) {
   blocked_files.emplace_back("file2.txt");
   fpnm_->ShowDlpBlockedFiles(std::nullopt, std::move(blocked_files), action);
 
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
-  bridge_->Click(kNotificationId, NotificationButton::CANCEL);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId));
+  ClickNotification(kNotificationId, NotificationButton::CANCEL);
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId));
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -1055,8 +1023,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
-  auto notification1 = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification1.has_value());
+  message_center::Notification* notification1 =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification1);
   const std::u16string warning_title =
       action == dlp::FileAction::kCopy
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
@@ -1072,12 +1041,12 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
       action == dlp::FileAction::kCopy
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_TIMEOUT_TITLE)
           : l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_TITLE);
-  notification1 = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification1.has_value());
+  notification1 = GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification1);
   EXPECT_EQ(notification1->title(), timeout_title);
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
   // Dismiss the notification.
-  bridge_->Click(kNotificationId1, std::nullopt);
+  ClickNotification(kNotificationId1, std::nullopt);
 
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
@@ -1092,7 +1061,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                          /*warning_count_buckets=*/{base::Bucket(2, 1)},
                          /*action_timedout_buckets=*/{base::Bucket(action, 1)});
 
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId1));
 }
 
 // Tests that clicking the OK button on a warning notification shown for copy or
@@ -1174,17 +1143,18 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
           : l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE);
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), title);
 
-  notification = bridge_->GetDisplayedNotification(kNotificationId2);
-  ASSERT_TRUE(notification.has_value());
+  notification = GetDisplayedNotification(kNotificationId2);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), title);
 
   // Show the first dialog.
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
-  bridge_->Click(kNotificationId1, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId1));
+  ClickNotification(kNotificationId1, NotificationButton::OK);
 
   BrowserWindowInterface* first_app;
 
@@ -1196,11 +1166,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   }
 
   // The first notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId1));
 
   // Show the second dialog.
-  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
-  bridge_->Click(kNotificationId2, NotificationButton::OK);
+  EXPECT_TRUE(GetDisplayedNotification(kNotificationId2));
+  ClickNotification(kNotificationId2, NotificationButton::OK);
 
   bool second_call_has_modal_parent = modal_parent_present_future.Take();
   if (first_call_has_modal_parent) {
@@ -1213,7 +1183,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   }
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId2));
 
   int expected_timeouts =
       !first_call_has_modal_parent + !second_call_has_modal_parent;
@@ -1257,8 +1227,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissCancels_Warning) {
 
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   const std::u16string title =
       action == dlp::FileAction::kCopy
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
@@ -1266,10 +1237,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissCancels_Warning) {
 
   // Cancel the warning.
   EXPECT_EQ(notification->title(), title);
-  bridge_->Click(kNotificationId1, NotificationButton::CANCEL);
+  ClickNotification(kNotificationId1, NotificationButton::CANCEL);
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId1));
 
   // Task info is removed when the task is cancelled.
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
@@ -1309,8 +1280,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Warning) {
   }
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   const std::u16string title =
       action == dlp::FileAction::kCopy
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
@@ -1318,11 +1290,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Warning) {
 
   // Proceed the warning.
   EXPECT_EQ(notification->title(), title);
-  bridge_->Click(kNotificationId1, NotificationButton::OK);
+  ClickNotification(kNotificationId1, NotificationButton::OK);
 
   // The warning notification should be closed or replaced by in progress one.
-  notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  EXPECT_TRUE(!notification.has_value() || notification->title() != title);
+  notification = GetDisplayedNotification(kNotificationId1);
+  EXPECT_TRUE(!notification || notification->title() != title);
 
   // Wait till IO task is complete.
   base::RunLoop().RunUntilIdle();
@@ -1395,19 +1367,20 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId2));
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   const std::u16string title = action == dlp::FileAction::kCopy
                                    ? u"2 files blocked from copying"
                                    : u"2 files blocked from moving";
   EXPECT_EQ(notification->title(), title);
 
-  notification = bridge_->GetDisplayedNotification(kNotificationId2);
-  ASSERT_TRUE(notification.has_value());
+  notification = GetDisplayedNotification(kNotificationId2);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), title);
 
   // Show the first dialog.
-  bridge_->Click(kNotificationId1, NotificationButton::OK);
+  ClickNotification(kNotificationId1, NotificationButton::OK);
 
   // Check that a new Files app is opened.
   BrowserWindowInterface* first_app = ui_test_utils::WaitForBrowserToOpen();
@@ -1417,10 +1390,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId1));
 
   // Show the second dialog. No new app should be opened.
-  bridge_->Click(kNotificationId2, NotificationButton::OK);
+  ClickNotification(kNotificationId2, NotificationButton::OK);
 
   // Check that the last active Files app is the same as before.
   ASSERT_TRUE(first_app);
@@ -1474,20 +1447,21 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissRemovesIOInfo_Error) {
   // Task Info shouldn't be removed after completion.
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   const std::u16string title = action == dlp::FileAction::kCopy
                                    ? u"2 files blocked from copying"
                                    : u"2 files blocked from moving";
   EXPECT_EQ(notification->title(), title);
 
   // Dismiss the notification.
-  bridge_->Click(kNotificationId1, NotificationButton::CANCEL);
+  ClickNotification(kNotificationId1, NotificationButton::CANCEL);
   // Task info is removed after the notification is dismissed.
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId1));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   data_controls::GetDlpHistogramPrefix() +
@@ -1527,8 +1501,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   // Task Info shouldn't be removed after completion.
   EXPECT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   const std::u16string title = action == dlp::FileAction::kCopy
                                    ? u"File blocked from copying"
                                    : u"File blocked from moving";
@@ -1538,7 +1513,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
       dlp::kDlpLearnMoreUrl);
   // Click Learn more.
-  bridge_->Click(kNotificationId1, NotificationButton::OK);
+  ClickNotification(kNotificationId1, NotificationButton::OK);
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
       dlp::kDlpLearnMoreUrl);
@@ -1546,7 +1521,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
 
   // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(GetDisplayedNotification(kNotificationId1));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   data_controls::GetDlpHistogramPrefix() +
@@ -1582,8 +1557,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   }
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
-  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  message_center::Notification* notification =
+      GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   const std::u16string title1 =
       action == dlp::FileAction::kCopy
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
@@ -1591,11 +1567,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   EXPECT_EQ(notification->title(), title1);
 
   // Proceed the warning.
-  bridge_->Click(kNotificationId1, NotificationButton::OK);
+  ClickNotification(kNotificationId1, NotificationButton::OK);
 
   // The warning notification should be closed or replaced by in progress one.
-  notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  EXPECT_TRUE(!notification.has_value() || notification->title() != title1);
+  notification = GetDisplayedNotification(kNotificationId1);
+  EXPECT_TRUE(!notification || notification->title() != title1);
 
   // Wait till IO task is complete.
   base::RunLoop().RunUntilIdle();
@@ -1607,8 +1583,8 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   const std::u16string title2 = action == dlp::FileAction::kCopy
                                     ? u"File blocked from copying"
                                     : u"File blocked from moving";
-  notification = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification.has_value());
+  notification = GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), title2);
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(

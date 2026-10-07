@@ -36,7 +36,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
@@ -170,10 +169,20 @@ class CopyOrMoveIOTaskWithScansTest
   bool UseNewConnectorsUI() { return std::get<2>(GetParam()); }
 
   void SetUp() override {
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile("test-profile");
+    // FilesPolicyNotificationManager requires a User for `profile_`.
+    TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
+    // The delegate creates a TestingProfile on LogIn().
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kAccountId)));
+    ASSERT_TRUE(profile_);
 
     std::vector<base::test::FeatureRef> enabled_features{
         ash::features::kFileTransferEnterpriseConnector};
@@ -266,8 +275,8 @@ class CopyOrMoveIOTaskWithScansTest
   }
 
   void TearDown() override {
-    profile_manager_->DeleteAllTestingProfiles();
-    profile_manager_.reset();
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
   }
 
   // Setup the expectations of the mock.
@@ -720,7 +729,8 @@ class CopyOrMoveIOTaskWithScansTest
   std::set<storage::FileSystemURL, storage::FileSystemURL::Comparator>
       warned_files_;
   storage::FileSystemURLSet directory_scanning_expectations_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   raw_ptr<policy::MockFilesPolicyNotificationManager, DanglingUntriaged> fpnm_;
   policy::WarningWithJustificationCallback warning_callback_;

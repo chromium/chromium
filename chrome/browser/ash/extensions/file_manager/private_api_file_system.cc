@@ -456,6 +456,9 @@ ExtensionFunction::ResponseAction FileWatchFunctionBase::Run() {
 
   file_manager::EventRouter* const event_router =
       file_manager::EventRouterFactory::GetForProfile(profile);
+  if (!event_router) {
+    return RespondNow(Error("Cannot find EventRouter"));
+  }
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FileWatchFunctionBase::RunAsyncOnIOThread,

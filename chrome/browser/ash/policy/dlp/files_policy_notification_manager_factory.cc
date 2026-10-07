@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace policy {
@@ -41,10 +42,13 @@ FilesPolicyNotificationManagerFactory::
 std::unique_ptr<KeyedService>
 FilesPolicyNotificationManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto files_notification_manager =
-      std::make_unique<FilesPolicyNotificationManager>(
-          Profile::FromBrowserContext(context));
-  return files_notification_manager;
+  // FilesPolicyNotificationManager requires a User. Callers handle a null
+  // manager for profiles without one, such as some test profiles.
+  if (!ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)) {
+    return nullptr;
+  }
+  return std::make_unique<FilesPolicyNotificationManager>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace policy

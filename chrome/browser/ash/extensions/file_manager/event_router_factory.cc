@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -40,9 +41,7 @@ EventRouterFactory::EventRouterFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOwnInstance)
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(extensions::EventRouterFactory::GetInstance());
@@ -60,6 +59,11 @@ EventRouterFactory::~EventRouterFactory() = default;
 std::unique_ptr<KeyedService>
 EventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // SystemNotificationManager requires a User. Profiles without one, such as
+  // some test profiles, never run the Files app.
+  if (!ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)) {
+    return nullptr;
+  }
   // NOTE: Allow g_browser_process here as this class is initialized lazily
   // with base::NoDestructor.
   return std::make_unique<EventRouter>(g_browser_process->local_state(),

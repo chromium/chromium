@@ -21,21 +21,28 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/extension.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -126,10 +133,16 @@ class FileManagerEventRouterTest : public testing::Test {
       delete;
 
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     profile_ =
         std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         nullptr, temp_dir_.GetPath());
 
@@ -156,6 +169,11 @@ class FileManagerEventRouterTest : public testing::Test {
             file_manager::util::GetDownloadsMountPointName(profile_.get())));
   }
 
+  void TearDown() override {
+    profile_.reset();
+    message_center::MessageCenter::Shutdown();
+  }
+
   const io_task::EntryStatus CreateSuccessfulEntryStatusForFileName(
       const std::string& file_name) {
     const base::FilePath file_path = temp_dir_.GetPath().Append(file_name);
@@ -169,6 +187,8 @@ class FileManagerEventRouterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
   base::ScopedTempDir temp_dir_;
@@ -316,15 +336,17 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForTrash) {
   status.outputs = std::move(output_entries);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(
-      observer,
-      OnBroadcastEvent(Property(
-          &extensions::Event::args,
-          AllOf(ExpectEventArgString(0u, "fileFullPath", "/bar.txt"),
-                ExpectEventArgString(0u, "fileSystemName", "Downloads"),
-                ExpectEventArgString(
-                    0u, "fileSystemRoot",
-                    "filesystem:chrome-extension://abc/external/Downloads/")))))
+  const std::string mount_name =
+      file_manager::util::GetDownloadsMountPointName(profile_.get());
+  EXPECT_CALL(observer,
+              OnBroadcastEvent(Property(
+                  &extensions::Event::args,
+                  AllOf(ExpectEventArgString(0u, "fileFullPath", "/bar.txt"),
+                        ExpectEventArgString(0u, "fileSystemName", mount_name),
+                        ExpectEventArgString(
+                            0u, "fileSystemRoot",
+                            storage::GetExternalFileSystemRootURIString(
+                                GURL("chrome-extension://abc"), mount_name))))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);

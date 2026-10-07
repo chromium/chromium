@@ -26,12 +26,15 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace file_manager::io_task {
 namespace {
@@ -241,11 +244,18 @@ class RestoreToDestinationIOTaskWithDLPTest
                   ->GetDlpFilesController(),
               nullptr);
 
+    // FilesPolicyNotificationManager requires a User for `profile_`.
+    ash::AnnotatedAccountId::Set(
+        profile_.get(), fake_user_manager_->GetPrimaryUser()->GetAccountId());
+    // FilesPolicyNotificationManager shows notifications via MessageCenter.
+    message_center::MessageCenter::Initialize();
     fpnm_ = std::make_unique<policy::FilesPolicyNotificationManager>(
         profile_.get());
   }
 
   void TearDown() override {
+    fpnm_.reset();
+    message_center::MessageCenter::Shutdown();
     files_controller_.reset();
     io_task_controller_ = nullptr;
     mock_rules_manager_ = nullptr;
