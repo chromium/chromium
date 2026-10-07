@@ -54,6 +54,13 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
 
  private:
   std::unique_ptr<views::View> CreateMainContentView() override;
+  // Create cardholder name view requested for card saving if an account will
+  // also be created.
+  std::unique_ptr<views::View>
+  CreateRequestCardholderNameForAccountCreationView();
+  // Create a generic cardholder name text field with prefilled name.
+  std::unique_ptr<views::Textfield> CreateCardholderNameTextfield(
+      const std::u16string& prefilled_name);
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
   std::unique_ptr<views::View> CreateLoadingRow();
