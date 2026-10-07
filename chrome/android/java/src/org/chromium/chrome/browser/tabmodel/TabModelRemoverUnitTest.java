@@ -29,13 +29,13 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
-
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.StoppedReason;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
@@ -135,7 +135,9 @@ public class TabModelRemoverUnitTest {
 
         mTabModelRemover =
                 new TabModelRemover(
-                        RuntimeEnvironment.application, mModalDialogManager, () -> mTabModel);
+                        ContextUtils.getApplicationContext(),
+                        mModalDialogManager,
+                        () -> mTabModel);
         mHandlerInOrder = inOrder(mHandler);
 
         mSavedTabGroup1 = new SavedTabGroup();
@@ -493,6 +495,7 @@ public class TabModelRemoverUnitTest {
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         mHandlerInOrder.verify(mHandler).getOngoingActorTasks();
+        verify(mActorKeyedService).stopTask(1, StoppedReason.STOPPED_BY_USER);
         mHandlerInOrder.verify(mHandler).performAction();
         verifyNoMoreInteractions(mHandler);
     }

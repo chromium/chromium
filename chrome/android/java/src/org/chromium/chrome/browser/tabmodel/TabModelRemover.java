@@ -16,9 +16,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ActorKeyedService;
-import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
-import org.chromium.chrome.browser.actor.StoppedReason;
+import org.chromium.chrome.browser.actor.ActorServiceTabUtils;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
@@ -107,7 +105,6 @@ class TabModelRemover {
     private @MonotonicNonNull ActionConfirmationManager mActionConfirmationManager;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
     private @Nullable CollaborationService mCollaborationService;
-    private @Nullable ActorKeyedService mActorKeyedService;
 
     /**
      * @param context The activity context.
@@ -239,7 +236,8 @@ class TabModelRemover {
         return (confirmationResult) -> {
             switch (confirmationResult) {
                 case CONFIRMATION_POSITIVE:
-                    stopOngoingActorTasks(handler);
+                    ActorServiceTabUtils.stopOngoingActorTasks(
+                            getProfile(), handler.getOngoingActorTasks());
                     handler.performAction();
                     return;
                 case CONFIRMATION_NEGATIVE:
@@ -250,15 +248,6 @@ class TabModelRemover {
                     assert false : "Not reached.";
             }
         };
-    }
-
-    // TODO(crbug.com/489134045): Move this function to a utility file.
-    private void stopOngoingActorTasks(TabModelRemoverFlowHandler handler) {
-        @Nullable ActorKeyedService actorKeyedService = getActorService();
-        if (actorKeyedService == null) return;
-        for (Integer taskId : handler.getOngoingActorTasks()) {
-            actorKeyedService.stopTask(taskId, StoppedReason.STOPPED_BY_USER);
-        }
     }
 
     private void leaveOrDeleteCollaboration(
@@ -401,13 +390,5 @@ class TabModelRemover {
             mCollaborationService = CollaborationServiceFactory.getForProfile(profile);
         }
         return mCollaborationService;
-    }
-
-    private @Nullable ActorKeyedService getActorService() {
-        if (mActorKeyedService == null) {
-            Profile profile = getProfile();
-            mActorKeyedService = ActorKeyedServiceFactory.getForProfile(profile);
-        }
-        return mActorKeyedService;
     }
 }

@@ -47,4 +47,22 @@ public class ActorServiceTabUtils {
         if (taskIds.isEmpty()) return Collections.emptyList();
         return new ArrayList<>(taskIds);
     }
+
+    /**
+     * Stops the given list of ongoing actor tasks for the profile.
+     *
+     * @param profile The {@link Profile} to act on.
+     * @param taskIds The list of active task IDs to stop.
+     */
+    public static void stopOngoingActorTasks(
+            @Nullable Profile profile, @Nullable List<@ActorTaskId Integer> taskIds) {
+        if (profile == null || taskIds == null || taskIds.isEmpty()) return;
+
+        ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
+        if (service == null) return;
+
+        for (@ActorTaskId Integer taskId : taskIds) {
+            service.stopTask(taskId, StoppedReason.STOPPED_BY_USER);
+        }
+    }
 }
